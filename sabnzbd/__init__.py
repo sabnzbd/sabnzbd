@@ -62,7 +62,7 @@ elif os.name == 'posix':
 
 #------------------------------------------------------------------------
 
-import sabnzbd.nzbqueue as nzbqueue
+from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader as downloader
 from sabnzbd.assembler import Assembler
@@ -263,8 +263,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     PostProcessor()
 
-    nzbqueue.init()
-    nzbqueue.read_queue(repair)
+    NzbQueue()
+    NzbQueue.do.read_queue(repair)
 
     Assembler()
 
@@ -396,7 +396,7 @@ def guard_speedlimit():
 
 def guard_top_only():
     """ Callback for change of top_only option """
-    nzbqueue.set_top_only(cfg.top_only())
+    NzbQueue.do.set_top_only(cfg.top_only())
 
 def guard_pause_on_pp():
     """ Callback for change of pause-download-on-pp """
@@ -417,7 +417,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = T('fetching msgid %s from www.newzbin.com') % msgid
 
-        future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
+        future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
 
         MSGIDGrabber.do.grab(msgid, future_nzo)
     else:
@@ -434,14 +434,14 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if cat and cat.lower()=='default': cat = None
     logging.info('Fetching %s', url)
     msg = T('Trying to fetch NZB from %s') % url
-    future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
+    future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     URLGrabber.do.add(url, future_nzo)
 
 
 def save_state(flag=False):
     """ Save all internal bookkeeping to disk """
     ArticleCache.do.flush_articles()
-    nzbqueue.save()
+    NzbQueue.do.save()
     BPSMeter.do.save()
     rss.save()
     Bookmarks.do.save()
@@ -701,7 +701,7 @@ def run_script(script):
 def empty_queues():
     """ Return True if queues empty or non-existent """
     global __INITIALIZED__
-    return (not __INITIALIZED__) or (PostProcessor.do.empty() and not nzbqueue.has_articles())
+    return (not __INITIALIZED__) or (PostProcessor.do.empty() and NzbQueue.do.is_empty())
 
 
 def keep_awake():
@@ -709,7 +709,7 @@ def keep_awake():
     """
     global KERNEL32
     if KERNEL32 and not downloader.paused():
-        if (not PostProcessor.do.empty()) or nzbqueue.has_articles():
+        if (not PostProcessor.do.empty()) or not NzbQueue.do.is_empty():
             # set ES_SYSTEM_REQUIRED
             KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
 

@@ -34,7 +34,6 @@ import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.nzbqueue
 
 
 def name_to_cat(fname, cat=None):
@@ -65,6 +64,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns: -1==Error/Retry, 0==OK, 1==Ignore
     """
+    from sabnzbd.nzbqueue import add_nzo
     if catdir is None:
         catdir = cat
 
@@ -111,7 +111,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     except:
                         nzo = None
                     if nzo:
-                        sabnzbd.nzbqueue.add_nzo(nzo)
+                        add_nzo(nzo)
         zf.close()
         try:
             if not keep: os.remove(path)
@@ -132,6 +132,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
+    from sabnzbd.nzbqueue import add_nzo
     if catdir is None:
         catdir = cat
 
@@ -176,7 +177,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             return -1
 
     if nzo:
-        sabnzbd.nzbqueue.add_nzo(nzo)
+        add_nzo(nzo)
     try:
         if not keep: os.remove(path)
     except:

@@ -1337,10 +1337,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             for line in output.split('\n'):
                 line = line.strip('\r\n \'"')
                 if n < len(values) and line:
-                    try:
-                        values[n] = int(line)
-                    except:
-                        values[n] = TRANS(line)
+                    values[n] = TRANS(line)
                 n += 1
         if values[0]:
             logging.info('Pre-Q accepts %s', name)

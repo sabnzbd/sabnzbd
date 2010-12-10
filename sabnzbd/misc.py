@@ -35,8 +35,7 @@ import glob
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import *
-import sabnzbd.nzbqueue
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -1080,7 +1079,7 @@ def get_admin_path(newstyle, name, future):
         else:
             return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
     else:
-       return cfg.cache_dir.get_path()
+        return cfg.cache_dir.get_path()
 
 def bad_fetch(nzo, url, msg='', retry=False, content=False):
     """ Create History entry for failed URL Fetch
@@ -1132,7 +1131,9 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
-    sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
+        from sabnzbd.nzbqueue import NzbQueue
+        assert isinstance(NzbQueue.do, NzbQueue)
+        NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
 
 
 def on_cleanup_list(filename, skip_nzb=False):

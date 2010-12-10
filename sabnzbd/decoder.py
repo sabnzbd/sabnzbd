@@ -32,11 +32,10 @@ except ImportError:
     HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
-import sabnzbd.nzbqueue
 from sabnzbd.encoding import name_fixer
 
 #-------------------------------------------------------------------------------
@@ -70,6 +69,7 @@ class Decoder(Thread):
         self.queue.put(None)
 
     def run(self):
+        from sabnzbd.nzbqueue import NzbQueue
         while 1:
             art_tup = self.queue.get()
             if not art_tup:
@@ -100,7 +100,7 @@ class Decoder(Thread):
 
                     article.fetcher = None
 
-                    sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
+                    NzbQueue.do.reset_try_lists(nzf, nzo)
 
                     register = False
 
@@ -142,9 +142,10 @@ class Decoder(Thread):
                 ArticleCache.do.save_article(article, data)
 
             if register:
-                sabnzbd.nzbqueue.register_article(article)
+                NzbQueue.do.register_article(article)
 
     def __search_new_server(self, article):
+        from sabnzbd.nzbqueue import NzbQueue
         article.add_to_try_list(article.fetcher)
 
         nzf = article.nzf
@@ -170,7 +171,7 @@ class Decoder(Thread):
             article.fetcher = None
 
             ## Allow all servers to iterate over this nzo and nzf again ##
-            sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
+            NzbQueue.do.reset_try_lists(nzf, nzo)
 
             if sabnzbd.LOG_ALL:
                 logging.debug('%s => found at least one untested server', article)
@@ -190,7 +191,6 @@ def decode(article, data):
     ## No point in continuing if we don't have any data left
     if data:
         nzf = article.nzf
-        nzo = nzf.nzo
         yenc, data = yCheck(data)
         ybegin, ypart, yend = yenc
         decoded_data = None

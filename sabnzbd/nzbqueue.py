@@ -23,16 +23,17 @@ import os
 import logging
 import time
 import datetime
-import glob
 
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
+from sabnzbd.misc import panic_queue, exit_sab, cat_to_opts, \
                          get_admin_path, remove_all, globber
 import sabnzbd.database as database
-from sabnzbd.decorators import *
-from sabnzbd.constants import *
+from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
+from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
+                              LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -40,17 +41,12 @@ from sabnzbd.assembler import Assembler
 from sabnzbd.utils import osx
 from sabnzbd.encoding import latin1, platform_encode
 
-def DeleteLog(name):
-    if name:
-        name = name.replace('.nzb', '.log')
-        try:
-            os.remove(os.path.join(os.path.dirname(sabnzbd.LOGFILE), name))
-        except:
-            pass
-
 #-------------------------------------------------------------------------------
 
 class NzbQueue(TryList):
+    """ Singleton NzbQueue """
+    do = None
+
     def __init__(self):
         TryList.__init__(self)
 
@@ -61,7 +57,7 @@ class NzbQueue(TryList):
         self.__nzo_table = {}
 
         self.__auto_sort = cfg.auto_sort()
-
+        NzbQueue.do = self
 
     def read_queue(self, repair):
         """ Read queue from disk, supporting repair modes
@@ -80,7 +76,7 @@ class NzbQueue(TryList):
                         nzo_ids = []
                         logging.error(Ta('Incompatible queuefile found, cannot proceed'))
                         if not repair:
-                            panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
+                            panic_queue(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
                             exit_sab(2)
                 except ValueError:
                     nzo_ids = []
@@ -335,7 +331,7 @@ class NzbQueue(TryList):
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True, keep_basic=False, del_files=False):
+    def remove(self, nzo_id, add_to_history = True, save=True, cleanup=True, keep_basic=False, del_files=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
@@ -509,7 +505,7 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def sort_queue(self, field, reverse=False):
+    def sort_queue(self, field, reverse=None):
         if isinstance(reverse, str):
             if reverse.lower() == 'desc':
                 reverse = True
@@ -568,9 +564,9 @@ class NzbQueue(TryList):
                             if position.priority < priority:
                                 self.__nzo_list.insert(p, nzo)
                                 pos = p
-                                added=True
+                                added = True
                                 break
-                            p+=1
+                            p += 1
                         if not added:
                             #if there are no other items classed as a lower priority
                             #then it will be added to the bottom of the queue
@@ -804,222 +800,36 @@ def sort_queue_function(nzo_list, method, reverse):
 
 
 #-------------------------------------------------------------------------------
-# NZBQ Wrappers
-
-__NZBQ = None  # Global pointer to NzbQueue instance
-
-def init():
-    global __NZBQ
-    if __NZBQ:
-        __NZBQ.__init__()
-    else:
-        __NZBQ = NzbQueue()
-
-def start():
-    global __NZBQ
-    if __NZBQ: __NZBQ.start()
-
-
-def stop():
-    global __NZBQ
-    if __NZBQ:
-        __NZBQ.stop()
-        try:
-            __NZBQ.join()
-        except:
-            pass
-
-def debug():
-    global __NZBQ
-    if __NZBQ: return __NZBQ.debug()
-
-
-def read_queue(repair):
-    global __NZBQ
-    if __NZBQ: __NZBQ.read_queue(repair)
-
-def move_up_bulk(nzo_id, nzf_ids):
-    global __NZBQ
-    if __NZBQ: __NZBQ.move_up_bulk(nzo_id, nzf_ids)
-
-def move_top_bulk(nzo_id, nzf_ids):
-    global __NZBQ
-    if __NZBQ: __NZBQ.move_top_bulk(nzo_id, nzf_ids)
-
-def move_down_bulk(nzo_id, nzf_ids):
-    global __NZBQ
-    if __NZBQ: __NZBQ.move_down_bulk(nzo_id, nzf_ids)
-
-def move_bottom_bulk(nzo_id, nzf_ids):
-    global __NZBQ
-    if __NZBQ: __NZBQ.move_bottom_bulk(nzo_id, nzf_ids)
-
-def remove_nzo(nzo_id, add_to_history = True, unload=False, del_files=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.remove(nzo_id, add_to_history, unload, del_files=del_files)
-
-def remove_multiple_nzos(nzo_ids):
-    global __NZBQ
-    if __NZBQ: __NZBQ.remove_multiple(nzo_ids)
-
-def remove_all_nzo():
-    global __NZBQ
-    if __NZBQ: __NZBQ.remove_all()
-
-def remove_nzf(nzo_id, nzf_id):
-    global __NZBQ
-    if __NZBQ: __NZBQ.remove_nzf(nzo_id, nzf_id)
-
-def sort_by_avg_age(reverse=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.sort_by_avg_age(reverse)
-
-def sort_by_name(reverse=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.sort_by_name(reverse)
-
-def sort_by_size(reverse=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.sort_by_size(reverse)
-
-def change_opts(nzo_id, pp):
-    global __NZBQ
-    if __NZBQ: __NZBQ.change_opts(nzo_id, pp)
-
-def change_script(nzo_id, script):
-    global __NZBQ
-    if __NZBQ: __NZBQ.change_script(nzo_id, script)
-
-def change_cat(nzo_id, cat):
-    global __NZBQ
-    if __NZBQ: __NZBQ.change_cat(nzo_id, cat)
-
-def change_name(nzo_id, name):
-    global __NZBQ
-    if __NZBQ: __NZBQ.change_name(nzo_id, name)
-
-def get_article(host):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.get_article(host)
-
-def has_articles():
-    global __NZBQ
-    if __NZBQ: return not __NZBQ.is_empty()
-
-def has_articles_for(server):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.has_articles_for(server)
-
-def has_forced_items():
-    global __NZBQ
-    if __NZBQ: return __NZBQ.has_forced_items()
-
-def register_article(article):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.register_article(article)
-
-def switch(nzo_id1, nzo_id2):
-    global __NZBQ
-    if __NZBQ:
-        return __NZBQ.switch(nzo_id1, nzo_id2)
-
-def get_position(nzo_id):
-    global __NZBQ
-    if __NZBQ:
-        return __NZBQ.get_position(nzo_id)
-
-def rename_nzo(nzo_id, name):
-    global __NZBQ
-    if __NZBQ: __NZBQ.change_name(nzo_id, name)
-
-def history_info():
-    global __NZBQ
-    if __NZBQ: return __NZBQ.history_info()
-
-def queue_info(for_cli = False):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.queue_info(for_cli = for_cli)
-
-def get_msgids():
-    global __NZBQ
-    if __NZBQ: return __NZBQ.get_msgids()
-
-def get_urls():
-    global __NZBQ
-    if __NZBQ: return __NZBQ.get_urls()
-
-def pause_multiple_nzo(jobs):
-    global __NZBQ
-    if __NZBQ: __NZBQ.pause_multiple_nzo(jobs)
-
-def resume_multiple_nzo(jobs):
-    global __NZBQ
-    if __NZBQ: __NZBQ.resume_multiple_nzo(jobs)
-
-def cleanup_nzo(nzo, keep_basic=False, del_files=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.cleanup_nzo(nzo, keep_basic, del_files=del_files)
-
-def reset_try_lists(nzf = None, nzo = None):
-    global __NZBQ
-    if __NZBQ: __NZBQ.reset_try_lists(nzf, nzo)
-
-def reset_all_try_lists():
-    global __NZBQ
-    if __NZBQ: __NZBQ.reset_all_try_lists()
-
-def save(nzo=None):
-    global __NZBQ
-    if __NZBQ: __NZBQ.save(nzo)
-
-def generate_future(msg, pp, script, cat, url, priority, nzbname):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.generate_future(msg, pp, script, cat, url, priority, nzbname)
-
-def set_top_only(value):
-    global __NZBQ
-    if __NZBQ: __NZBQ.set_top_only(value)
-
-#-------------------------------------------------------------------------------
 # Synchronized wrappers
 
 @synchronized_CV
 def add_nzo(nzo):
-    global __NZBQ
-    if __NZBQ: __NZBQ.add(nzo)
+    NzbQueue.do.add(nzo)
 
 @synchronized_CV
 def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
-    global __NZBQ
     if nzo_info is None:
         nzo_info = {}
-    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
+    NzbQueue.do.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 @synchronized_CV
 def set_priority(nzo_ids, priority):
-    global __NZBQ
-    if __NZBQ:
-        return __NZBQ.set_priority(nzo_ids, priority)
+    return NzbQueue.do.set_priority(nzo_ids, priority)
 
 @synchronized_CV
 def get_nzo(nzo_id):
-    global __NZBQ
-    if __NZBQ:
-        return __NZBQ.get_nzo(nzo_id)
+    return NzbQueue.do.get_nzo(nzo_id)
 
 @synchronized_CV
 def sort_queue(field, reverse=False):
-    global __NZBQ
-    if __NZBQ: __NZBQ.sort_queue(field, reverse)
+    NzbQueue.do.sort_queue(field, reverse)
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
 def repair_job(folder, new_nzb):
-    global __NZBQ
-    if __NZBQ: __NZBQ.repair_job(folder, new_nzb)
+    NzbQueue.do.repair_job(folder, new_nzb)
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
 def scan_jobs(all=False, action=True):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.scan_jobs(all, action)
+    return NzbQueue.do.scan_jobs(all, action)

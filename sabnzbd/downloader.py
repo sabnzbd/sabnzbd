@@ -36,7 +36,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
-import sabnzbd.nzbqueue
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
@@ -370,10 +369,11 @@ class Downloader(Thread):
         self.bandwidth_limit = cfg.bandwidth_limit()
 
     def is_paused(self):
+        from sabnzbd.nzbqueue import NzbQueue
         if not self.paused:
             return False
         else:
-            if sabnzbd.nzbqueue.has_forced_items():
+            if NzbQueue.do.has_forced_items():
                 return False
             else:
                 return True
@@ -386,6 +386,7 @@ class Downloader(Thread):
         return False
 
     def maybe_block_server(self, server):
+        from sabnzbd.nzbqueue import NzbQueue
         if server.optional and server.active and (server.bad_cons/server.threads) > 3:
             # Optional and active server had too many problems,
             # disable it now and send a re-enable plan to the scheduler
@@ -394,10 +395,11 @@ class Downloader(Thread):
             server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
             logging.warning(Ta('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
-            sabnzbd.nzbqueue.reset_all_try_lists()
+            NzbQueue.do.reset_all_try_lists()
 
 
     def run(self):
+        from sabnzbd.nzbqueue import NzbQueue
         self.decoder.start()
 
         while 1:
@@ -419,7 +421,7 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
-                        sabnzbd.nzbqueue.reset_all_try_lists()
+                        NzbQueue.do.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -430,7 +432,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not (server.active and sabnzbd.nzbqueue.has_articles_for(server)):
+                if not (server.active and NzbQueue.do.has_articles_for(server)):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -449,7 +451,7 @@ class Downloader(Thread):
                         request_server_info(server)
                         break
 
-                    article = sabnzbd.nzbqueue.get_article(server)
+                    article = NzbQueue.do.get_article(server)
 
                     if not article:
                         break
@@ -524,7 +526,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 CV.acquire()
-                while (not sabnzbd.nzbqueue.has_articles() or self.is_paused() or self.delayed or self.postproc) and not \
+                while (NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
                     CV.wait()
                 CV.release()
@@ -647,7 +649,7 @@ class Downloader(Thread):
                                     if penalty and (block or server.optional):
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
-                                    sabnzbd.nzbqueue.reset_all_try_lists()
+                                    NzbQueue.do.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
@@ -687,7 +689,7 @@ class Downloader(Thread):
                             server.active = False
                             server.errormsg = T('Server %s requires user/password') % ''
                             self.plan_server(server.id, 0)
-                            sabnzbd.nzbqueue.reset_all_try_lists()
+                            NzbQueue.do.reset_all_try_lists()
                         msg = T('Server %s requires user/password') % ('%s:%s' % (nw.server.host, nw.server.port))
                         self.__reset_nw(nw, msg, quit=True)
 
@@ -712,6 +714,7 @@ class Downloader(Thread):
         return None
 
     def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False, quit=False):
+        from sabnzbd.nzbqueue import NzbQueue
         server = nw.server
         article = nw.article
         fileno = None
@@ -750,7 +753,7 @@ class Downloader(Thread):
             nzo = nzf.nzo
 
             ## Allow all servers to iterate over each nzo/nzf again ##
-            sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
+            NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
             nw.terminate(quit=quit)

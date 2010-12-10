@@ -38,7 +38,7 @@ from sabnzbd.constants import *
 from sabnzbd.misc import launch_a_browser,get_filename,get_ext,diskfree
 from sabnzbd.utils import osx
 
-import sabnzbd.nzbqueue as nzbqueue
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.config as config
 import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader as downloader
@@ -305,7 +305,7 @@ class SABnzbdDelegate(NSObject):
 
     def queueUpdate(self):
         try:
-            qnfo = sabnzbd.nzbqueue.queue_info()
+            qnfo = NzbQueue.do.queue_info()
             pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
             bytesleftprogess = 0
@@ -415,7 +415,7 @@ class SABnzbdDelegate(NSObject):
 
     def stateUpdate(self):
         try:
-            qnfo = sabnzbd.nzbqueue.queue_info()
+            qnfo = NzbQueue.do.queue_info()
             bpsnow = BPSMeter.do.get_bps()
             if downloader.paused():
                 self.state = T('Paused')
@@ -661,7 +661,7 @@ class SABnzbdDelegate(NSObject):
         mode = sender.representedObject()
         #logging.info("[osx] purge %s" % (mode))
         if mode == "queue":
-            nzbqueue.remove_all_nzo()
+            NzbQueue.do.remove_all_nzo()
         elif mode == "history":
             history_db = sabnzbd.database.get_history_handle()
             history_db.remove_history()

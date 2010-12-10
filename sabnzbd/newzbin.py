@@ -35,12 +35,11 @@ except:
 from threading import *
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import BOOKMARK_FILE_NAME
 from sabnzbd.decorators import synchronized
 from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert
 from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
-import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
 from sabnzbd.utils import osx
 
@@ -71,9 +70,10 @@ class MSGIDGrabber(Thread):
     do = None # Link to instance of thread
 
     def __init__(self):
+        from sabnzbd.nzbqueue import NzbQueue
         Thread.__init__(self)
         self.queue = Queue.Queue()
-        for tup in sabnzbd.nzbqueue.get_msgids():
+        for tup in NzbQueue.do.get_msgids():
             self.queue.put(tup)
         self.shutdown = False
         MSGIDGrabber.do = self
@@ -89,6 +89,7 @@ class MSGIDGrabber(Thread):
 
     def run(self):
         """ Process the queue (including waits and retries) """
+        from sabnzbd.nzbqueue import NzbQueue
         def sleeper(delay):
             for n in range(delay):
                 if not self.shutdown:
@@ -123,7 +124,8 @@ class MSGIDGrabber(Thread):
                 except:
                     logging.error(Ta('Failed to update newzbin job %s'), msgid)
                     logging.info("Traceback: ", exc_info = True)
-                    sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
+
+                    NzbQueue.do.remove(nzo.nzo_id, False)
                 msgid = None
             else:
                 if filename:

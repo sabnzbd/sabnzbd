@@ -25,7 +25,7 @@ import re
 import logging
 import Queue
 import urllib
-from threading import *
+from threading import Thread
 
 import socket
 try:
@@ -37,7 +37,7 @@ except:
 import sabnzbd
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
-import sabnzbd.nzbqueue as nzbqueue
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 
 #------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
-        for tup in sabnzbd.nzbqueue.get_urls():
+        for tup in NzbQueue.do.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo, _RETRIES))
         self.shutdown = False
@@ -170,7 +170,7 @@ class URLGrabber(Thread):
                     res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url)
                     if res == 0:
-                        nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                        NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     elif res == -2:
                         self.add(url, future_nzo)
                     elif matrix_id:
@@ -181,7 +181,7 @@ class URLGrabber(Thread):
                 # Check if a supported archive
                 else:
                     if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority, url=future_nzo.url) == 0:
-                        nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                        NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     else:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:

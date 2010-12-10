@@ -431,7 +431,7 @@ def process_job(nzo):
     ## Clean up the NZO
     try:
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
-        sabnzbd.nzbqueue.cleanup_nzo(nzo, keep_basic=not all_ok)
+        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
         logging.error(Ta('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info = True)

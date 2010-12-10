@@ -34,10 +34,12 @@ except ImportError:
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
+                              DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
+                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, clean_folder, \
-                         sanitize_filename, globber, sanitize_foldername
+                         sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1
@@ -582,8 +584,8 @@ class NzbObject(TryList):
 
         self.create_group_folder = cfg.create_group_folders()
 
-        # Remove leading msgid_XXXX and trailing .nzb
-        self.work_name, self.msgid = SplitFileName(self.work_name)
+        # Remove leading msgid_dddd and trailing .nzb
+        self.work_name, self.msgid = split_filename(self.work_name)
         if msgid:
             self.msgid = msgid
 
@@ -669,6 +671,11 @@ class NzbObject(TryList):
             accept, name, pp, cat, script, priority, group = \
                     sabnzbd.proxy_pre_queue(self.final_name_pw, pp, cat, script,
                                             self.priority, self.bytes, self.groups)
+            accept = int_conv(accept)
+            pp = int_conv(pp)
+            priority = int_conv(priority)
+
+            group = str(group)
             if accept < 1:
                 self.purge_data()
                 raise TypeError
@@ -1261,13 +1268,10 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
 
 #-------------------------------------------------------------------------------
 
-################################################################################
-# SplitFileName
-#
-# Isolate newzbin msgid from filename and remove ".nzb"
-# Return (nice-name, msg-id)
-################################################################################
-def SplitFileName(name):
+def split_filename(name):
+    """ Isolate newzbin msgid from filename and remove ".nzb"
+        Return (nice-name, msg-id)
+    """
     name = name.strip()
     if name.find('://') < 0:
         m = RE_NEWZBIN.match(name)
@@ -1284,7 +1288,9 @@ def SplitFileName(name):
 
 
 def format_time_string(seconds, days=0):
-
+    """ Given seconds and days, return formatted day/hour/min/sec string
+        LACKS I18N !!
+    """
     try:
         seconds = int(seconds)
     except:

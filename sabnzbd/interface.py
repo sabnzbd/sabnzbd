@@ -46,7 +46,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader as downloader
-import sabnzbd.nzbqueue as nzbqueue
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 
@@ -547,17 +547,17 @@ class NzoPage(object):
         nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
 
         if index != None:
-            nzbqueue.switch(nzo_id, index)
+            NzbQueue.do.switch(nzo_id, index)
         if name != None:
-            sabnzbd.nzbqueue.change_name(nzo_id, special_fixer(name))
+            NzbQueue.do.change_name(nzo_id, special_fixer(name))
         if cat != None:
-            sabnzbd.nzbqueue.change_cat(nzo_id,cat)
+            NzbQueue.do.change_cat(nzo_id,cat)
         if script != None:
-            sabnzbd.nzbqueue.change_script(nzo_id,script)
+            NzbQueue.do.change_script(nzo_id,script)
         if pp != None:
-            sabnzbd.nzbqueue.change_opts(nzo_id,pp)
+            NzbQueue.do.change_opts(nzo_id,pp)
         if priority != None and nzo and nzo.priority != int(priority):
-            sabnzbd.nzbqueue.set_priority(nzo_id, priority)
+            NzbQueue.do.set_priority(nzo_id, priority)
 
         args = [arg for arg in args if arg != 'save']
         extra = '/'.join(args)
@@ -571,7 +571,7 @@ class NzoPage(object):
         if kwargs['action_key'] == 'Delete':
             for key in kwargs:
                 if kwargs[key] == 'on':
-                    nzbqueue.remove_nzf(nzo_id, key)
+                    NzbQueue.do.remove_nzf(nzo_id, key)
 
         elif kwargs['action_key'] == 'Top' or kwargs['action_key'] == 'Up' or \
              kwargs['action_key'] == 'Down' or kwargs['action_key'] == 'Bottom':
@@ -580,15 +580,15 @@ class NzoPage(object):
                 if kwargs[key] == 'on':
                     nzf_ids.append(key)
             if kwargs['action_key'] == 'Top':
-                nzbqueue.move_top_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Up':
-                nzbqueue.move_up_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Down':
-                nzbqueue.move_down_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Bottom':
-                nzbqueue.move_bottom_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
 
-        if nzbqueue.get_nzo(nzo_id):
+        if sabnzbd.nzbqueue.get_nzo(nzo_id):
             url = cherrypy._urljoin(self.__root, nzo_id)
         else:
             url = cherrypy._urljoin(self.__root, '../queue')
@@ -602,7 +602,7 @@ class QueuePage(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
-        self.__verboseList = []
+        self.__verbose_list = []
         self.__prim = prim
 
     @cherrypy.expose
@@ -611,7 +611,7 @@ class QueuePage(object):
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
 
-        info, pnfo_list, bytespersec, self.__verboseList, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__dict__, start=start, limit=limit, dummy2=dummy2)
+        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -626,14 +626,14 @@ class QueuePage(object):
         uid = kwargs.get('uid')
         del_files = int_conv(kwargs.get('del_files'))
         if uid:
-            nzbqueue.remove_nzo(uid, False, del_files=del_files)
+            NzbQueue.do.remove(uid, False, del_files=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def purge(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbqueue.remove_all_nzo()
+        NzbQueue.do.remove_all()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -643,7 +643,7 @@ class QueuePage(object):
         nzo_id = kwargs.get('nzo_id')
         nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
-            nzbqueue.remove_nzf(nzo_id, nzf_id)
+            NzbQueue.do.remove_nzf(nzo_id, nzf_id)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -658,10 +658,10 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg: return msg
         uid = kwargs.get('uid')
-        if self.__verboseList.count(uid):
-            self.__verboseList.remove(uid)
+        if self.__verbose_list.count(uid):
+            self.__verbose_list.remove(uid)
         else:
-            self.__verboseList.append(uid)
+            self.__verbose_list.append(uid)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -683,7 +683,7 @@ class QueuePage(object):
         uid1 = kwargs.get('uid1')
         uid2 = kwargs.get('uid2')
         if uid1 and uid2:
-            nzbqueue.switch(uid1, uid2)
+            NzbQueue.do.switch(uid1, uid2)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -693,7 +693,7 @@ class QueuePage(object):
         nzo_id = kwargs.get('nzo_id')
         pp = kwargs.get('pp', '')
         if nzo_id and pp and pp.isdigit():
-            nzbqueue.change_opts(nzo_id, int(pp))
+            NzbQueue.do.change_opts(nzo_id, int(pp))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -705,7 +705,7 @@ class QueuePage(object):
         if nzo_id and script:
             if script == 'None':
                 script = None
-            nzbqueue.change_script(nzo_id, script)
+            NzbQueue.do.change_script(nzo_id, script)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -717,11 +717,11 @@ class QueuePage(object):
         if nzo_id and cat:
             if cat == 'None':
                 cat = None
-            nzbqueue.change_cat(nzo_id, cat)
+            NzbQueue.do.change_cat(nzo_id, cat)
             cat, pp, script, priority = cat_to_opts(cat)
-            nzbqueue.change_script(nzo_id, script)
-            nzbqueue.change_opts(nzo_id, pp)
-            nzbqueue.set_priority(nzo_id, priority)
+            NzbQueue.do.change_script(nzo_id, script)
+            NzbQueue.do.change_opts(nzo_id, pp)
+            NzbQueue.do.set_priority(nzo_id, priority)
 
         raise queueRaiser(self.__root, kwargs)
 
@@ -758,7 +758,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg: return msg
         uid = kwargs.get('uid', '')
-        nzbqueue.pause_multiple_nzo(uid.split(','))
+        NzbQueue.do.pause_multiple_nzo(uid.split(','))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -766,35 +766,35 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg: return msg
         uid = kwargs.get('uid', '')
-        nzbqueue.resume_multiple_nzo(uid.split(','))
+        NzbQueue.do.resume_multiple_nzo(uid.split(','))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def set_priority(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbqueue.set_priority(kwargs.get('nzo_id'), kwargs.get('priority'))
+        sabnzbd.nzbqueue.set_priority(kwargs.get('nzo_id'), kwargs.get('priority'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def sort_by_avg_age(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbqueue.sort_queue('avg_age', kwargs.get('dir'))
+        sabnzbd.nzbqueue.sort_queue('avg_age', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def sort_by_name(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbqueue.sort_queue('name', kwargs.get('dir'))
+        sabnzbd.nzbqueue.sort_queue('name', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def sort_by_size(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbqueue.sort_queue('size', kwargs.get('dir'))
+        sabnzbd.nzbqueue.sort_queue('size', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -979,7 +979,7 @@ class ConfigPage(object):
             new[svr] = {}
         conf['servers'] = new
 
-        conf['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+        conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1033,7 +1033,7 @@ def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
         path = os.path.join(cfg.download_dir.get_path(), path)
-        nzbqueue.repair_job(path, None)
+        sabnzbd.nzbqueue.repair_job(path, None)
 
 
 #------------------------------------------------------------------------------
@@ -2050,7 +2050,7 @@ class ConnectionInfo(object):
 
         header['lastmail'] = self.__lastmail
 
-        header['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+        header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
 
 

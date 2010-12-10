@@ -32,7 +32,7 @@ from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.downloader as downloader
-import sabnzbd.nzbqueue as nzbqueue
+from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repair_job
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
@@ -123,11 +123,11 @@ def _api_queue(name, output, kwargs):
 def _api_queue_delete(output, value, kwargs):
     """ API: accepts output, value """
     if value.lower()=='all':
-        nzbqueue.remove_all_nzo()
+        NzbQueue.do.remove_all()
         return report(output)
     elif value:
         items = value.split(',')
-        nzbqueue.remove_multiple_nzos(items)
+        NzbQueue.do.remove_multiple(items)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -137,7 +137,7 @@ def _api_queue_delete_nzf(output, value, kwargs):
     """ API: accepts value(=nzo_id), value2(=nzf_id) """
     value2 = kwargs.get('value2')
     if value and value2:
-        nzbqueue.remove_nzf(value, value2)
+        NzbQueue.do.remove_nzf(value, value2)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -147,7 +147,7 @@ def _api_queue_rename(output, value, kwargs):
     """ API: accepts output, value(=old name), value2(=new name) """
     value2 = kwargs.get('value2')
     if value and value2:
-        nzbqueue.rename_nzo(value, special_fixer(value2))
+        NzbQueue.do.change_name(value, special_fixer(value2))
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -161,7 +161,7 @@ def _api_queue_change_complete_action(output, value, kwargs):
 
 def _api_queue_purge(output, value, kwargs):
     """ API: accepts output """
-    nzbqueue.remove_all_nzo()
+    NzbQueue.do.remove_all()
     return report(output)
 
 
@@ -169,7 +169,7 @@ def _api_queue_pause(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        nzbqueue.pause_multiple_nzo(items)
+        NzbQueue.do.pause_multiple_nzo(items)
     return report(output)
 
 
@@ -177,7 +177,7 @@ def _api_queue_resume(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        nzbqueue.resume_multiple_nzo(items)
+        NzbQueue.do.resume_multiple_nzo(items)
     return report(output)
 
 
@@ -190,7 +190,7 @@ def _api_queue_priority(output, value, kwargs):
                 priority = int(value2)
             except:
                 return report(output, _MSG_INT_VALUE)
-            pos = nzbqueue.set_priority(value, priority)
+            pos = set_priority(value, priority)
             # Returns the position in the queue, -1 is incorrect job-id
             return report(output, keyword='position', data=pos)
         except:
@@ -204,7 +204,7 @@ def _api_queue_sort(output, value, kwargs):
     sort = kwargs.get('sort')
     direction = kwargs.get('dir')
     if sort:
-        nzbqueue.sort_queue(sort, direction)
+        sort_queue(sort, direction)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -219,12 +219,12 @@ def _api_queue_default(output, value, kwargs):
     if output in ('xml', 'json'):
         if sort and sort != 'index':
             reverse = direction.lower() == 'desc'
-            nzbqueue.sort_queue(sort, reverse)
+            sort_queue(sort, reverse)
 
         # &history=1 will show unprocessed items in the history
         history = bool(kwargs.get('history'))
 
-        info, pnfo_list, bytespersec, verboseList, dictn = \
+        info, pnfo_list, bytespersec, verbose_list, dictn = \
             build_queue(history=history, start=start, limit=limit, output=output)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
@@ -311,7 +311,7 @@ def _api_switch(name, output, kwargs):
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
     if value and value2:
-        pos, prio = nzbqueue.switch(value, value2)
+        pos, prio = NzbQueue.do.switch(value, value2)
         # Returns the new position and new priority (if different)
         if output not in ('xml', 'json'):
             return report(output, data=(pos, prio))
@@ -330,7 +330,7 @@ def _api_change_cat(name, output, kwargs):
         cat = value2
         if cat == 'None':
             cat = None
-        nzbqueue.change_cat(nzo_id, cat)
+        NzbQueue.do.change_cat(nzo_id, cat)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -345,7 +345,7 @@ def _api_change_script(name, output, kwargs):
         script = value2
         if script.lower() == 'none':
             script = None
-        nzbqueue.change_script(nzo_id, script)
+        NzbQueue.do.change_script(nzo_id, script)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -355,7 +355,7 @@ def _api_change_opts(name, output, kwargs):
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
     if value and value2 and value2.isdigit():
-        nzbqueue.change_opts(value, int(value2))
+        NzbQueue.do.change_opts(value, int(value2))
     return report(output)
 
 
@@ -421,7 +421,8 @@ def _api_addid(name, output, kwargs):
 
     newzbin_url = _RE_NEWZBIN_URL.search(name.lower())
 
-    if name: name = name.strip()
+    if name:
+        name = name.strip()
     if name and (name.isdigit() or len(name)==5):
         sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
         return report(output)
@@ -530,7 +531,7 @@ def _api_osx_icon(name, output, kwargs):
 
 def _api_rescan(name, output, kwargs):
     """ API: accepts output """
-    nzbqueue.scan_jobs(all=False, action=True)
+    scan_jobs(all=False, action=True)
     return report(output)
 
 
@@ -808,15 +809,15 @@ def handle_server_api(output, kwargs):
 
 
 #------------------------------------------------------------------------------
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, output=None):
     if output:
         converter = unicoder
     else:
         converter = xml_name
 
-    if not verboseList:
-        verboseList = []
+    if not verbose_list:
+        verbose_list = []
     if dictionary:
         dictn = dictionary
     else:
@@ -888,7 +889,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         priority = pnfo[PNFO_PRIORITY_FIELD]
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
-        if verbose or verboseList:
+        if verbose or verbose_list:
             finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
             active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
             queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
@@ -948,7 +949,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
             finished = []
             active = []
             queued = []
-            if verbose or nzo_id in verboseList:#this will list files in the xml output, wanted yes/no?
+            if verbose or nzo_id in verbose_list:#this will list files in the xml output, wanted yes/no?
                 slot['verbosity'] = "True"
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
@@ -1007,7 +1008,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         info['slots'] = slotinfo
     else:
         info['slots'] = []
-        verboseList = []
+        verbose_list = []
 
     #Paging of the queue using limit and/or start values
     if limit > 0:
@@ -1026,7 +1027,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         except:
             pass
 
-    return info, pnfo_list, bytespersec, verboseList, dictn
+    return info, pnfo_list, bytespersec, verbose_list, dictn
 
 
 #------------------------------------------------------------------------------
@@ -1034,7 +1035,7 @@ def qstatus_data():
     """Build up the queue status as a nested object and output as a JSON object
     """
 
-    qnfo = nzbqueue.queue_info()
+    qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
@@ -1081,7 +1082,7 @@ def qstatus_data():
 
 #------------------------------------------------------------------------------
 def build_file_list(id):
-    qnfo = nzbqueue.queue_info()
+    qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
@@ -1145,13 +1146,13 @@ def build_file_list(id):
 def json_list(section, lst):
     """Output a simple list as a JSON object
     """
-    i = 0
+    n = 0
     d = []
     for item in lst:
         c = {}
-        c['id'] = '%s' % i
+        c['id'] = '%s' % n
         c['name'] = item
-        i += 1
+        n += 1
         d.append(c)
 
     return { section : d }
@@ -1161,7 +1162,7 @@ def json_list(section, lst):
 def rss_qstatus():
     """ Return a RSS feed with the queue status
     """
-    qnfo = nzbqueue.queue_info()
+    qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     rss = RSS()
@@ -1205,16 +1206,16 @@ def rss_qstatus():
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
             cfg.cherryhost(), cfg.cherryport() )
-        statusLine  = []
-        statusLine.append('<tr>')
+        status_line  = []
+        status_line.append('<tr>')
         #Total MB/MB left
-        statusLine.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
+        status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
         #ETA
         sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
-        statusLine.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
-        statusLine.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
-        statusLine.append("</tr>")
-        item.description = ''.join(statusLine)
+        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
+        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
+        status_line.append("</tr>")
+        item.description = ''.join(status_line)
         rss.addItem(item)
 
     rss.channel.lastBuildDate = std_time(time.time())
@@ -1246,7 +1247,7 @@ def retry_job(job, new_nzb):
         history_db = cherrypy.thread_data.history_db
         path = history_db.get_path(job)
         if path:
-            nzbqueue.repair_job(platform_encode(path), new_nzb)
+            repair_job(platform_encode(path), new_nzb)
             history_db.remove_history(job)
             return True
     return False
@@ -1339,7 +1340,7 @@ def build_header(prim):
     header['session'] = cfg.api_key()
 
     bytespersec = BPSMeter.do.get_bps()
-    qnfo = nzbqueue.queue_info()
+    qnfo = NzbQueue.do.queue_info()
 
     bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
     bytes = qnfo[QNFO_BYTES_FIELD]
@@ -1531,12 +1532,12 @@ def get_active_history(queue=None, items=None):
         queue = PostProcessor.do.get_queue()
 
     for nzo in queue:
-        t = build_history_info(nzo)
+        history = build_history_info(nzo)
         item = {}
         item['completed'], item['name'], item['nzb_name'], item['category'], item['pp'], item['script'], item['report'], \
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
-            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
+            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = history
         item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
@@ -1616,20 +1617,14 @@ def std_time(when):
 
 
 def list_scripts(default=False):
-    """ Return a list of script names """
+    """ Return a list of script names, optionally with 'Default' added """
     lst = []
-    dd = cfg.script_dir.get_path()
-
-    if dd and os.access(dd, os.R_OK):
+    path = cfg.script_dir.get_path()
+    if path and os.access(path, os.R_OK):
+        lst = [os.path.basename(script) for script in globber(path) if script not in ('_bzr', '.bzr')]
         if default:
-            lst = ['Default', 'None']
-        else:
-            lst = ['None']
-        for script in globber(dd):
-            if os.path.isfile(script):
-                sc = os.path.basename(script)
-                if sc != "_svn" and sc != ".svn":
-                    lst.append(sc)
+            lst.insert(0, 'Default')
+        lst.insert(0, 'None')
     return lst
 
 
