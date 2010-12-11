@@ -513,13 +513,13 @@ function loadtitle() {
 		d.addErrback(handleServerError);
 	}
 
-	function deletehistoryitem(elem, pnode)
+	function deletehistoryitem(elem, del, pnode)
 	{
     //deletes an item from the history - passed variable is the id (uid) of the history item to delete(and also the id of the history element)
         el = document.getElementById(elem)
         el.parentNode.removeChild(el);
 
-		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, _dc: Math.random(), session: session});
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, del_files: del, _dc: Math.random(), session: session});
 	}
 
     function handleServerError(){}

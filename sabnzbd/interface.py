@@ -418,6 +418,15 @@ class MainPage(object):
         else:
             raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def retry_pp(self, **kwargs):
+        # Duplicate of History/retry_pp to please the SMPL skin :(
+        msg = check_session(kwargs)
+        if msg: return msg
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        raise dcRaiser(self.__root, kwargs)
+
+
 #------------------------------------------------------------------------------
 class NzoPage(object):
     def __init__(self, web_dir, root, prim):
@@ -595,6 +604,7 @@ class NzoPage(object):
         if url and not url.endswith('/'):
             url += '/'
         raise dcRaiser(url, kwargs)
+
 
 #------------------------------------------------------------------------------
 class QueuePage(object):

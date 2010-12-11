@@ -377,9 +377,10 @@ def _api_history(name, output, kwargs):
             history_db.remove_history()
             return report(output)
         elif value:
+            del_files = bool(int_conv(kwargs.get('del_files')))
             jobs = value.split(',')
-            history_db = cherrypy.thread_data.history_db
-            history_db.remove_history(jobs)
+            for job in jobs:
+                del_hist_job(job, del_files)
             return report(output)
         else:
             return report(output, _MSG_NO_VALUE)
