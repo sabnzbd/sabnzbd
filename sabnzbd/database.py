@@ -190,7 +190,7 @@ class HistoryDB(object):
 
         # Get the number of results
         if self.execute('select count(*) from History WHERE name LIKE ?', (search,)):
-            total_items = self.c.fetchone()['count(*)']
+            total_items = self.c.fetchone().get('count(*)')
         else:
             total_items = -1
 
@@ -223,7 +223,7 @@ class HistoryDB(object):
         # Total Size of the history
         if self.execute('''SELECT sum(bytes) FROM history'''):
             f = self.c.fetchone()
-            total = f['sum(bytes)']
+            total = f.get('sum(bytes)')
         else:
             total = 0
 
@@ -234,7 +234,7 @@ class HistoryDB(object):
 
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (month_timest,)):
             f = self.c.fetchone()
-            month = f['sum(bytes)']
+            month = f.get('sum(bytes)')
         else:
             month = 0
 
@@ -243,7 +243,7 @@ class HistoryDB(object):
 
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (week_timest,)):
             f = self.c.fetchone()
-            week = f['sum(bytes)']
+            week = f.get('sum(bytes)')
         else:
             week = 0
 
@@ -256,7 +256,7 @@ class HistoryDB(object):
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
             f = self.c.fetchone()
             try:
-                data = zlib.decompress(f['script_log'])
+                data = zlib.decompress(f.get('script_log'))
             except:
                 data = ''
         return data
@@ -264,7 +264,7 @@ class HistoryDB(object):
     def get_name(self, nzo_id):
         t = (nzo_id,)
         if self.execute('SELECT name FROM history WHERE nzo_id=?', t):
-            return self.c.fetchone()['name']
+            return self.c.fetchone().get('name')
         else:
             return ''
 
@@ -272,7 +272,7 @@ class HistoryDB(object):
     def get_path(self, nzo_id):
         t = (nzo_id,)
         if self.execute('SELECT path FROM history WHERE nzo_id=?', t):
-            return self.c.fetchone()['path']
+            return self.c.fetchone().get('path')
         else:
             return ''
 
