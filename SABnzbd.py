@@ -74,7 +74,7 @@ from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
-import sabnzbd.downloader as downloader
+import sabnzbd.downloader
 from sabnzbd.encoding import unicoder
 from sabnzbd.utils import osx
 
@@ -1412,7 +1412,7 @@ def main():
             sabnzbd.halt()
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
-            if downloader.paused():
+            if sabnzbd.downloader.Downloader.do.paused:
                 re_argv.append('-p')
             if autorestarted:
                 re_argv.append('--autorestarted')

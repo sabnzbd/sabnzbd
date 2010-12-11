@@ -41,7 +41,7 @@ from sabnzbd.utils import osx
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.config as config
 import sabnzbd.scheduler as scheduler
-import sabnzbd.downloader as downloader
+import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.newzbin import Bookmarks
@@ -95,7 +95,7 @@ class SABnzbdDelegate(NSObject):
 
         #Variables
         self.state = "Idle"
-        self.speed = downloader.get_limit()
+        self.speed = sabnzbd.downloader.Downloader.do.get_limit()
         self.version_notify = 1
         self.status_removed = 0
 
@@ -417,7 +417,7 @@ class SABnzbdDelegate(NSObject):
         try:
             qnfo = NzbQueue.do.queue_info()
             bpsnow = BPSMeter.do.get_bps()
-            if downloader.paused():
+            if sabnzbd.downloader.Downloader.do.paused:
                 self.state = T('Paused')
                 if sabnzbd.scheduler.pause_int() != "0":
                     self.setMenuTitle("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
@@ -454,7 +454,7 @@ class SABnzbdDelegate(NSObject):
 
     def iconUpdate(self):
         try:
-            if downloader.paused():
+            if sabnzbd.downloader.Downloader.do.paused:
                 self.status_item.setImage_(self.icons['pause'])
             else:
                 self.status_item.setImage_(self.icons['idle'])
@@ -463,7 +463,7 @@ class SABnzbdDelegate(NSObject):
 
     def pauseUpdate(self):
         try:
-            if downloader.paused():
+            if sabnzbd.downloader.Downloader.do.paused:
                 if self.isLeopard:
                     self.resume_menu_item.setHidden_(NO)
                     self.pause_menu_item.setHidden_(YES)
@@ -482,7 +482,7 @@ class SABnzbdDelegate(NSObject):
 
     def speedlimitUpdate(self):
         try:
-            speed = int(downloader.get_limit())
+            speed = int(sabnzbd.downloader.Downloader.do.get_limit())
             if self.speed != speed :
                 self.speed = speed
                 speedsValues = self.menu_speed.numberOfItems()
@@ -654,14 +654,14 @@ class SABnzbdDelegate(NSObject):
         #logging.info("[osx] speed limit to %s" % (sender.representedObject()))
         speed = int(sender.representedObject())
         if speed != self.speed:
-            downloader.limit_speed(speed)
+            sabnzbd.downloader.Downloader.do.limit_speed(speed)
             self.speedlimitUpdate()
 
     def purgeAction_(self, sender):
         mode = sender.representedObject()
         #logging.info("[osx] purge %s" % (mode))
         if mode == "queue":
-            NzbQueue.do.remove_all_nzo()
+            NzbQueue.do.remove_all()
         elif mode == "history":
             history_db = sabnzbd.database.get_history_handle()
             history_db.remove_history()
@@ -672,7 +672,7 @@ class SABnzbdDelegate(NSObject):
         if minutes:
             scheduler.plan_resume(minutes)
         else:
-            downloader.pause_downloader()
+            sabnzbd.downloader.Downloader.do.pause()
 
     def resumeAction_(self, sender):
         scheduler.plan_resume(0)

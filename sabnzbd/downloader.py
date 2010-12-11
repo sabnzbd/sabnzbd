@@ -50,151 +50,6 @@ _PENALTY_SHORT   = 1    # Minimal penalty when no_penalties is set
 TIMER_LOCK = RLock()
 
 #------------------------------------------------------------------------------
-# Wrapper functions
-
-__DOWNLOADER = None  # Global pointer to post-proc instance
-
-
-def init(paused):
-    global __DOWNLOADER
-    if __DOWNLOADER:
-        __DOWNLOADER.__init__(paused or __DOWNLOADER.paused)
-    else:
-        __DOWNLOADER = Downloader(paused)
-
-def start():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.start()
-
-
-def servers():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.servers
-
-def stop():
-    global __DOWNLOADER
-    CV.acquire()
-    try:
-        __DOWNLOADER.stop()
-    finally:
-        CV.notifyAll()
-        CV.release()
-    try:
-        __DOWNLOADER.join()
-    except:
-        pass
-
-def alive():
-    global __DOWNLOADER
-    if __DOWNLOADER:
-        return __DOWNLOADER.isAlive()
-    else:
-        return False
-
-#------------------------------------------------------------------------------
-@synchronized_CV
-def check():
-    global __DOWNLOADER
-    if __DOWNLOADER:
-        __DOWNLOADER.check_timers()
-
-@synchronized_CV
-def pause_downloader(save=True):
-    global __DOWNLOADER
-    if __DOWNLOADER:
-        __DOWNLOADER.pause()
-        if cfg.autodisconnect():
-            __DOWNLOADER.disconnect()
-        if save:
-            sabnzbd.save_state()
-
-@synchronized_CV
-def resume_downloader():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.resume()
-
-@synchronized_CV
-def delay_downloader():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.delay()
-
-@synchronized_CV
-def undelay_downloader():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.undelay()
-
-@synchronized_CV
-def idle_downloader():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.wait_postproc()
-
-@synchronized_CV
-def unidle_downloader():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.resume_postproc()
-
-@synchronized_CV
-def limit_speed(value):
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.limit_speed(int(value))
-    logging.info("Bandwidth limit set to %s", value)
-
-def update_server(oldserver, newserver):
-    global __DOWNLOADER
-    try:
-        CV.acquire()
-        try:
-            __DOWNLOADER.init_server(oldserver, newserver)
-        finally:
-            CV.notifyAll()
-            CV.release()
-    except:
-        logging.exception("Error accessing DOWNLOADER?")
-
-@synchronized_CV
-def set_paused(state):
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.paused = state
-
-@synchronized_CV
-def unblock(server):
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
-
-@synchronized_CV
-def unblock_all():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.unblock_all()
-
-@synchronized_CV
-def wakeup():
-    # Just let the decorator rattle the semaphore
-    pass
-
-
-#------------------------------------------------------------------------------
-
-def paused():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.paused
-
-def get_limit():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.get_limit()
-
-def disconnect():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.disconnect()
-
-def delayed():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.delayed
-
-def active_primaries():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.active_primaries()
-
-#------------------------------------------------------------------------------
 class Server(object):
     def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
                  password = None, optional=False, retention=0):
@@ -245,6 +100,10 @@ class Server(object):
 #------------------------------------------------------------------------------
 
 class Downloader(Thread):
+    """ Singleton Downloader Thread
+    """
+    do = None
+
     def __init__(self, paused=False):
         Thread.__init__(self)
 
@@ -280,7 +139,7 @@ class Downloader(Thread):
             self.init_server(None, server)
 
         self.decoder = Decoder(self.servers)
-
+        Downloader.do = self
 
     def init_server(self, oldserver, newserver):
         """ Setup or re-setup single server
@@ -325,42 +184,54 @@ class Downloader(Thread):
 
         return primary
 
-    def stop(self):
-        self.shutdown = True
-        osx.sendGrowlMsg("SABnzbd",T('Shutting down'),osx.NOTIFICATION['startup'])
+    @synchronized_CV
+    def set_paused(self, state):
+        self.paused = state
 
+    @synchronized_CV
     def resume(self):
         logging.info("Resuming")
         self.paused = False
 
-    def pause(self):
+    @synchronized_CV
+    def pause(self, save=True):
         logging.info("Pausing")
         osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
         self.paused = True
         if self.is_paused():
             BPSMeter.do.reset()
+        if cfg.autodisconnect():
+            self.disconnect()
+        if save:
+            sabnzbd.save_state()
 
+    @synchronized_CV
     def delay(self):
         logging.debug("Delaying")
         self.delayed = True
 
+    @synchronized_CV
     def undelay(self):
         logging.debug("Undelaying")
         self.delayed = False
 
-    def wait_postproc(self):
+    @synchronized_CV
+    def wait_for_postproc(self):
         logging.info("Waiting for post-processing to finish")
         self.postproc = True
 
-    def resume_postproc(self):
+    @synchronized_CV
+    def resume_from_postproc(self):
         logging.info("Post-processing finished, resuming download")
         self.postproc = False
 
     def disconnect(self):
         self.force_disconnect = True
 
+    @synchronized_CV
     def limit_speed(self, value):
-        self.bandwidth_limit = value
+        self.bandwidth_limit = int(value)
+        logging.info("Bandwidth limit set to %s", value)
 
     def get_limit(self):
         return self.bandwidth_limit
@@ -812,6 +683,7 @@ class Downloader(Thread):
                 del self._timers[server_id]
                 self.init_server(server_id, server_id)
 
+    @synchronized_CV
     @synchronized(TIMER_LOCK)
     def unblock(self, server_id):
         # Remove timer
@@ -826,10 +698,12 @@ class Downloader(Thread):
                 self.init_server(server_id, server_id)
                 break
 
+
     def unblock_all(self):
         for server_id in self._timers.keys():
             self.unblock(server_id)
 
+    @synchronized_CV
     @synchronized(TIMER_LOCK)
     def check_timers(self):
         """ Make sure every server without a non-expired timer is active """
@@ -848,6 +722,34 @@ class Downloader(Thread):
                 if server.id not in kicked and not server.active:
                     logging.debug('Forcing activation of server %s', server.id)
                     self.init_server(server.id, server.id)
+
+    @synchronized_CV
+    def update_server(self, oldserver, newserver):
+        self.init_server(oldserver, newserver)
+
+    @synchronized_CV
+    def wakeup(self):
+        """ Just rattle the semaphore
+        """
+        pass
+
+    def stop(self):
+        self.shutdown = True
+        osx.sendGrowlMsg("SABnzbd",T('Shutting down'),osx.NOTIFICATION['startup'])
+
+
+def stop():
+    CV.acquire()
+    try:
+        Downloader.do.stop()
+    finally:
+        CV.notifyAll()
+        CV.release()
+    try:
+        Downloader.do.join()
+    except:
+        pass
+
 
 #------------------------------------------------------------------------------
 def clues_login(text):

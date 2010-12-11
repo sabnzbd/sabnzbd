@@ -45,7 +45,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
 from sabnzbd.postproc import PostProcessor
-import sabnzbd.downloader as downloader
+from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -344,7 +344,7 @@ class MainPage(object):
         if msg: return msg
 
         scheduler.plan_resume(0)
-        downloader.pause_downloader()
+        Downloader.do.pause()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -752,7 +752,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg: return msg
         scheduler.plan_resume(0)
-        downloader.pause_downloader()
+        Downloader.do.pause()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -811,7 +811,7 @@ class QueuePage(object):
     def set_speedlimit(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        downloader.limit_speed(int_conv(kwargs.get('value')))
+        Downloader.do.limit_speed(int_conv(kwargs.get('value')))
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1443,7 +1443,7 @@ def handle_server(kwargs, root=None):
         config.ConfigServer(server, kwargs)
 
     config.save_config()
-    downloader.update_server(old_server, server)
+    Downloader.do.update_server(old_server, server)
     if root:
         raise dcRaiser(root, kwargs)
 
@@ -2066,7 +2066,7 @@ class ConnectionInfo(object):
 
         header['servers'] = []
 
-        for server in downloader.servers()[:]:
+        for server in Downloader.do.servers[:]:
             busy = []
             connected = 0
 
@@ -2121,7 +2121,7 @@ class ConnectionInfo(object):
     def disconnect(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        downloader.disconnect()
+        Downloader.do.disconnect()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2177,7 +2177,7 @@ class ConnectionInfo(object):
     def unblock_server(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        downloader.unblock(kwargs.get('server'))
+        Downloader.do.unblock(kwargs.get('server'))
         # Short sleep so that UI shows new server status
         time.sleep(1.0)
         raise dcRaiser(self.__root, kwargs)

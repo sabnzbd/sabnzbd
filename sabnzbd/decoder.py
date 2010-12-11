@@ -63,7 +63,7 @@ class Decoder(Thread):
     def decode(self, article, lines):
         self.queue.put((article, lines))
         if self.queue.qsize() > MAX_DECODE_QUEUE:
-            sabnzbd.downloader.delay_downloader()
+            sabnzbd.downloader.Downloader.do.delay()
 
     def stop(self):
         self.queue.put(None)
@@ -75,8 +75,8 @@ class Decoder(Thread):
             if not art_tup:
                 break
 
-            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.downloader.delayed():
-                sabnzbd.downloader.undelay_downloader()
+            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.downloader.Downloader.do.delayed:
+                sabnzbd.downloader.Downloader.do.undelay()
 
             article, lines = art_tup
             nzf = article.nzf
@@ -96,7 +96,7 @@ class Decoder(Thread):
                 except IOError, e:
                     logme = Ta('Decoding %s failed') % article
                     logging.info(logme)
-                    sabnzbd.downloader.pause_downloader()
+                    sabnzbd.downloader.Downloader.do.pause()
 
                     article.fetcher = None
 

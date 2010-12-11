@@ -31,7 +31,7 @@ import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.downloader as downloader
+from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repair_job
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
@@ -439,7 +439,7 @@ def _api_addid(name, output, kwargs):
 def _api_pause(name, output, kwargs):
     """ API: accepts output """
     scheduler.plan_resume(0)
-    downloader.pause_downloader()
+    Downloader.do.pause()
     return report(output)
 
 
@@ -519,7 +519,7 @@ def _api_restart_repair(name, output, kwargs):
 
 def _api_disconnect(name, output, kwargs):
     """ API: accepts output """
-    downloader.disconnect()
+    Downloader.do.disconnect()
     return report(output)
 
 
@@ -557,7 +557,7 @@ def _api_config_speedlimit(output, kwargs):
             value = int(value)
         except:
             return report(output, _MSG_NO_VALUE)
-        downloader.limit_speed(value)
+        Downloader.do.limit_speed(value)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -565,7 +565,7 @@ def _api_config_speedlimit(output, kwargs):
 
 def _api_config_get_speedlimit(output, kwargs):
     """ API: accepts output """
-    return report(output, keyword='speedlimit', data=int(downloader.get_limit()))
+    return report(output, keyword='speedlimit', data=int(Downloader.do.get_limit()))
 
 
 def _api_config_set_colorscheme(output, kwargs):
@@ -805,7 +805,7 @@ def handle_server_api(output, kwargs):
     else:
         config.ConfigServer(name, kwargs)
         old_name = None
-    downloader.update_server(old_name, name)
+    Downloader.do.update_server(old_name, name)
     return name
 
 
@@ -912,7 +912,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
         slot['mb'] = "%.2f" % mb
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
-        if not downloader.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
+        if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
             slot['status'] = "Downloading"
             found_active = True
         else:
@@ -1057,14 +1057,14 @@ def qstatus_data():
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
     state = "IDLE"
-    if downloader.paused():
+    if Downloader.do.paused:
         state = "PAUSED"
     elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
         state = "DOWNLOADING"
 
     status = {
         "state" : state,
-        "paused" : downloader.paused(),
+        "paused" : Downloader.do.paused,
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : BPSMeter.do.get_bps() / KIBI,
         "speed" : to_units(BPSMeter.do.get_bps(), dec_limit=1),
@@ -1310,10 +1310,10 @@ def build_header(prim):
     else:
         color = ''
 
-    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__, 'paused':downloader.paused(),
+    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__, 'paused': Downloader.do.paused,
                'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
                'uptime':uptime, 'color_scheme':color }
-    speed_limit = downloader.get_limit()
+    speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
         speed_limit = ''
 
@@ -1354,7 +1354,7 @@ def build_header(prim):
     header['size']       = format_bytes(bytes)
 
     status = ''
-    if downloader.paused():
+    if Downloader.do.paused:
         status = 'Paused'
     elif bytespersec > 0:
         status = 'Downloading'
@@ -1676,7 +1676,7 @@ def del_from_section(kwargs):
                 del item
                 config.save_config()
                 if section == 'servers':
-                    downloader.update_server(keyword, None)
+                    Downloader.do.update_server(keyword, None)
         return True
     else:
         return False

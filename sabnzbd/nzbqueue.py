@@ -688,7 +688,7 @@ class NzbQueue(TryList):
             if not self.__nzo_list:
                 # Close server connections
                 if cfg.autodisconnect():
-                    sabnzbd.downloader.disconnect()
+                    sabnzbd.downloader.Downloader.do.disconnect()
 
                 # Sets the end-of-queue back on if disabled
                 # adding an nzb and re-adding for more blocks disables it

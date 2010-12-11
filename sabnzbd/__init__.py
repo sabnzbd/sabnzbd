@@ -64,7 +64,7 @@ elif os.name == 'posix':
 
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
-import sabnzbd.downloader as downloader
+from sabnzbd.downloader import Downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 import sabnzbd.misc as misc
@@ -268,7 +268,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     Assembler()
 
-    downloader.init(pause_downloader)
+    Downloader(pause_downloader)
 
     DirScanner()
 
@@ -297,7 +297,7 @@ def start():
         Assembler.do.start()
 
         logging.debug('Starting downloader')
-        downloader.start()
+        Downloader.do.start()
 
         scheduler.start()
 
@@ -346,7 +346,7 @@ def halt():
 
         ## Stop Required Objects ##
         logging.debug('Stopping downloader')
-        downloader.stop()
+        Downloader.stop()
 
         logging.debug('Stopping assembler')
         Assembler.do.stop()
@@ -392,7 +392,7 @@ def guard_restart():
 
 def guard_speedlimit():
     """ Callback for change of bandwidth_limit, sets actual speed """
-    downloader.limit_speed(cfg.bandwidth_limit())
+    Downloader.do.limit_speed(cfg.bandwidth_limit())
 
 def guard_top_only():
     """ Callback for change of top_only option """
@@ -404,7 +404,7 @@ def guard_pause_on_pp():
         pass # Not safe to idle downloader, because we don't know
              # if post-processing is active now
     else:
-        downloader.unidle_downloader()
+        Downloader.do.resume_from_postproc()
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on newzbin report number, attributes optional
@@ -456,7 +456,7 @@ def pause_all():
     """
     global PAUSED_ALL
     PAUSED_ALL = True
-    sabnzbd.downloader.pause_downloader()
+    Downloader.do.pause()
     logging.debug('PAUSED_ALL active')
 
 def unpause_all():
@@ -464,7 +464,7 @@ def unpause_all():
     """
     global PAUSED_ALL
     PAUSED_ALL = False
-    sabnzbd.downloader.resume_downloader()
+    Downloader.do.resume()
     logging.debug('PAUSED_ALL inactive')
 
 
@@ -577,7 +577,7 @@ def enable_server(server):
         logging.warning(Ta('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
-    downloader.update_server(server, server)
+    Downloader.do.update_server(server, server)
 
 
 def disable_server(server):
@@ -589,7 +589,7 @@ def disable_server(server):
         logging.warning(Ta('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
-    downloader.update_server(server, server)
+    Downloader.do.update_server(server, server)
 
 
 def system_shutdown():
@@ -708,7 +708,7 @@ def keep_awake():
     """ If we still have work to do, keep Windows system awake
     """
     global KERNEL32
-    if KERNEL32 and not downloader.paused():
+    if KERNEL32 and not sabnzbd.downloader.Downloader.do.paused:
         if (not PostProcessor.do.empty()) or not NzbQueue.do.is_empty():
             # set ES_SYSTEM_REQUIRED
             KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
@@ -717,11 +717,11 @@ def keep_awake():
 def CheckFreeSpace():
     """ Check if enough disk space is free, if not pause downloader and send email
     """
-    if cfg.download_free() and not downloader.paused():
+    if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
         if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
             logging.warning(Ta('Too little diskspace forcing PAUSE'))
             # Pause downloader, but don't save, since the disk is almost full!
-            downloader.pause_downloader(save=False)
+            Downloader.do.pause(save=False)
             emailer.diskfull()
 
 
@@ -927,7 +927,7 @@ def check_all_tasks():
     if not sabnzbd.PostProcessor.do.isAlive():
         logging.info('Restarting because of crashed postprocessor')
         return False
-    if not sabnzbd.downloader.alive():
+    if not Downloader.do.isAlive():
         logging.info('Restarting because of crashed downloader')
         return False
     if not Assembler.do.isAlive():
@@ -935,10 +935,10 @@ def check_all_tasks():
         return False
 
     # Kick the downloader, in case it missed the semaphore
-    sabnzbd.downloader.wakeup()
+    Downloader.do.wakeup()
 
     # Make sure the right servers are active
-    sabnzbd.downloader.check()
+    Downloader.do.check_timers()
 
     # Restartable threads
     if not DirScanner.do.isAlive():
@@ -953,7 +953,7 @@ def check_all_tasks():
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
-        sabnzbd.downloader.unblock_all()
+        sabnzbd.downloader.Downloader.do.unblock_all()
 
     # Check one-shot pause
     sabnzbd.scheduler.pause_check()
@@ -963,7 +963,7 @@ def check_all_tasks():
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def active_primaries():
-    return sabnzbd.downloader.active_primaries()
+    return sabnzbd.downloader.Downloader.do.active_primaries()
 
 
 def proxy_postproc(nzo):

@@ -159,7 +159,7 @@ class PostProcessor(Thread):
 
             ## Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
-                sabnzbd.downloader.idle_downloader()
+                sabnzbd.downloader.Downloader.do.wait_for_postproc()
             cfg.complete_dir.set_create()
 
             self.__busy = True
@@ -167,7 +167,7 @@ class PostProcessor(Thread):
                 self.remove(nzo)
 
             ## Allow download to proceed
-            sabnzbd.downloader.unidle_downloader()
+            sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
 #end PostProcessor class
 
@@ -485,7 +485,7 @@ def parring(nzo, workdir):
             sabnzbd.QUEUECOMPLETEACTION_GO = False
             nzo.priority = TOP_PRIORITY
             sabnzbd.nzbqueue.add_nzo(nzo)
-            sabnzbd.downloader.unidle_downloader()
+            sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
         logging.info('Par2 check finished on %s', filename)
 

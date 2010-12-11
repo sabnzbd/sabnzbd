@@ -90,7 +90,7 @@ def init():
             action = scheduled_resume
             arguments = []
         elif action_name == 'pause':
-            action = sabnzbd.downloader.pause_downloader
+            action = sabnzbd.downloader.Downloader.do.pause
             arguments = []
         elif action_name == 'pause_all':
             action = sabnzbd.pause_all
@@ -106,7 +106,7 @@ def init():
         elif action_name == 'resume_post':
             action = pp_resume
         elif action_name == 'speedlimit' and arguments != []:
-            action = sabnzbd.downloader.limit_speed
+            action = sabnzbd.downloader.Downloader.do.limit_speed
         elif action_name == 'enable_server' and arguments != []:
             action = sabnzbd.enable_server
         elif action_name == 'disable_server' and arguments != []:
@@ -185,7 +185,7 @@ def restart(force=False):
             SCHEDULE_GUARD_FLAG = False
             stop()
 
-            analyse(sabnzbd.downloader.paused())
+            analyse(sabnzbd.sabnzbd.downloader.Downloader.do.paused)
 
             init()
             start()
@@ -299,11 +299,11 @@ def analyse(was_paused=False):
             sabnzbd.pause_all()
         else:
             sabnzbd.unpause_all()
-        sabnzbd.downloader.set_paused(paused or paused_all)
+        sabnzbd.downloader.Downloader.do.set_paused(paused or paused_all)
 
     PostProcessor.do.pause = pause_post
     if speedlimit:
-        sabnzbd.downloader.limit_speed(speedlimit)
+        sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
     for serv in servers:
         try:
             config.get_config('servers', serv).enable.set(servers[serv])
@@ -346,7 +346,7 @@ def plan_resume(interval):
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug('Schedule resume at %s', __PAUSE_END)
         __SCHED.add_single_task(__oneshot_resume, '', interval*60, kronos.method.sequential, [__PAUSE_END], None)
-        sabnzbd.downloader.pause_downloader()
+        sabnzbd.downloader.Downloader.do.pause()
     else:
         __PAUSE_END = None
         sabnzbd.unpause_all()
