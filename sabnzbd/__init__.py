@@ -257,7 +257,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     Bookmarks()
     rss.init()
-    scheduler.init()
 
     BPSMeter.do.read()
 
@@ -275,6 +274,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     MSGIDGrabber()
 
     URLGrabber()
+
+    scheduler.init()
 
     if evalSched:
         scheduler.analyse(pause_downloader)
