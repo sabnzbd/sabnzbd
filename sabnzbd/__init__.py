@@ -347,7 +347,7 @@ def halt():
 
         ## Stop Required Objects ##
         logging.debug('Stopping downloader')
-        Downloader.stop()
+        sabnzbd.downloader.stop()
 
         logging.debug('Stopping assembler')
         Assembler.do.stop()
