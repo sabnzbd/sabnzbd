@@ -29,7 +29,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re
+from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder
 
@@ -306,10 +306,9 @@ class RSSQueue(object):
                     n = 0
 
                     for n in xrange(regcount):
-                        myCat = defCat
-                        myPP = ''
-                        myScript = ''
-                        myPrio = 0
+                        myPP = defPP
+                        myScript = defScript
+                        myPrio = defPrio
 
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
@@ -317,18 +316,19 @@ class RSSQueue(object):
                             myCat = cat_convert(category)
                         else:
                             myCat = defCat
+                        myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         if notdefault(rePPs[n]):
                             myPP = rePPs[n]
                         elif not (reCats[n] or category):
-                            myPP = defPP
+                            myPP = catPP
                         if notdefault(reScripts[n]):
                             myScript = reScripts[n]
                         elif not (notdefault(reCats[n]) or category):
-                            myScript = defScript
+                            myScript = catScript
                         if notdefault(rePrios[n]):
                             myPrio = rePrios[n]
                         elif not (notdefault(rePrios[n]) or category):
-                            myPrio = defPrio
+                            myPrio = catPrio
 
                         if cfg.no_dupes():
                             dup = dup_title(title)
