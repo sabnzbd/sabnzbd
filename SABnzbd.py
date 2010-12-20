@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,4):
-    print "Sorry, requires Python 2.4 or higher."
+if sys.version_info < (2,5):
+    print "Sorry, requires Python 2.5 or higher."
     sys.exit(1)
 
 import logging
@@ -37,7 +37,7 @@ except ValueError:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
     sys.exit(1)
 except:
-    print "The following modules need to be installed: Cheetah, cherrypy(included, unpack the zip), sqlite(if python 2.4)"
+    print "The following modules need to be installed: Cheetah, cherrypy(included, unpack the zip)"
     sys.exit(1)
 
 import cherrypy
@@ -56,7 +56,7 @@ except:
         from pysqlite2.dbapi2 import version as sqlite3_version
     except:
         if os.name != 'nt':
-            print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
+            print "Sorry, requires Python module sqlite3"
             print "Try: apt-get install python-pysqlite2"
             sys.exit(1)
         else:

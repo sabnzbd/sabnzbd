@@ -47,12 +47,11 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 You need to have Python installed and some modules.
 
 Unix/Linux/OSX
-    Python-2.4.4            http://www.python.org
-OR
-    Python-2.5.4            http://www.python.org
+    Python-2.5 or 2.6       http://www.python.org
 
 Windows
     Python-2.5.latest       http://www.activestate.com
+    Python-2.6.latest
 
 Essential modules
     cheetah-2.0.1+          http://www.cheetahtemplate.org/
@@ -61,16 +60,13 @@ Essential modules
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
                             http://chuchusoft.com/par2_tbb/index.html (multi-core)
 
-Essential modules for python 2.4 ONLY
-    pysqlite3 >= 2.3.4      http://pysqlite.org (python-pysqlite2)
-
 Optional modules
     unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
     gnu gettext             http://www.gnu.org/software/gettext/
 
 Optional modules Windows
-    pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
