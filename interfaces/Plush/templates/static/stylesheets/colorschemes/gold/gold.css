@@ -668,6 +668,7 @@ tr:hover .nzb_status_grippie {
  
 .queueTable td.download-title { 
   width: 50%;
+  height:44px;
 }
  
 .nzb_status_col {
