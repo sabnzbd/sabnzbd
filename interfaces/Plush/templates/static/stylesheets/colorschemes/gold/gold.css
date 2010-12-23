@@ -1480,6 +1480,11 @@ legend .config_sprite_container {
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
 
+table#connectionsTable tr td {
+	padding:2px;
+	border:1px solid #ccc;
+}
+
 /* jqueryui config */
 .ui-tabs .ui-tabs-nav li a {
 	font-size:95%;

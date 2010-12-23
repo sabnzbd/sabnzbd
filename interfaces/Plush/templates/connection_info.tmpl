@@ -22,11 +22,11 @@
 	<div id="tabs-warnings">
 		<!--#if $warnings#-->
 			<p><a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a></p>
-			<small><ol class="numbered_list">
+			<table id="connectionsTable">
 			<!--#for $warn in $warnings#-->
-				<li><pre>$warn</pre></li>
+				<tr><td nowrap>$warn.replace("\n","</td><td>")</td></tr>
 			<!--#end for#-->
-			</ol></small>
+			</table>
 		<!--#else#-->
 			<p>$T('none')</p>
 		<!--#end if#-->
