@@ -1241,6 +1241,9 @@ table.nzoTable {
 	padding-left: 20px;
 	padding: 10px;
 	text-align: left;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
 }
 /*
 #config_content a {
@@ -1376,6 +1379,10 @@ fieldset.EntryFieldSet {
 			padding: 4px 22px 4px 4px;
 			text-decoration: none;
 			width: 100%;
+			border-radius: 10px 0px 0px 10px;
+			-moz-border-radius: 10px 0px 0px 10px;
+			-webkit-border-top-right-radius: 0px;
+			-webkit-border-bottom-right-radius: 0px;
 		}
  
 			.config_nav li a .config_sprite_container {
