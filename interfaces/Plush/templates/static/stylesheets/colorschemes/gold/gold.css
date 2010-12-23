@@ -542,8 +542,11 @@ body {
 
 #queue_sort_list {
 	margin-right:-202px;
-	margin-top:28px;
-	width:202px;
+	margin-top:26px;
+	width:201px;
+	z-index:999999;
+	border:1px solid #403f3f;
+	border-left:0px;
 }
  
 /* ---------------------------------------------------------------------------------------------------------------
