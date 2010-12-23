@@ -542,8 +542,11 @@ body {
 
 #queue_sort_list {
 	margin-right:-202px;
-	margin-top:28px;
-	width:202px;
+	margin-top:26px;
+	width:201px;
+	z-index:999999;
+	border:1px solid #403f3f;
+	border-left:0px;
 }
  
 /* ---------------------------------------------------------------------------------------------------------------
@@ -665,6 +668,7 @@ tr:hover .nzb_status_grippie {
  
 .queueTable td.download-title { 
   width: 50%;
+  height:44px;
 }
  
 .nzb_status_col {
@@ -697,7 +701,8 @@ tr:hover .nzb_status_grippie {
 }
  
 .queueTable td.historyTitle { 
-  padding:11px 0;
+  padding:0px;
+  height:44px;
   width: 50%;
 }
  
@@ -721,7 +726,7 @@ tr:hover .nzb_status_grippie {
 }
  
 .queueTable .eta {
-	padding-left: 6px;
+	padding: 0 6px 0 6px;
 	text-align: center;
 }
  
@@ -1235,12 +1240,15 @@ table.nzoTable {
 }
 
 #config_container {
-	background: #bbb;
-	font-size: 10pt;
+	background: #666;
+	font-size:95%;
 	min-height: 435px;
 	padding-left: 20px;
 	padding: 10px;
 	text-align: left;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
 }
 /*
 #config_content a {
@@ -1376,6 +1384,10 @@ fieldset.EntryFieldSet {
 			padding: 4px 22px 4px 4px;
 			text-decoration: none;
 			width: 100%;
+			border-radius: 10px 0px 0px 10px;
+			-moz-border-radius: 10px 0px 0px 10px;
+			-webkit-border-top-right-radius: 0px;
+			-webkit-border-bottom-right-radius: 0px;
 		}
  
 			.config_nav li a .config_sprite_container {
@@ -1391,10 +1403,9 @@ fieldset.EntryFieldSet {
 			}
  
 	.config_nav .nav_active {
-		background-color: #bbb;
-		color: #000;
+		background-color: #666;
+		color: #fff;
 	}
- 
 
 legend .config_sprite_container {
 	display: inline;
@@ -1468,7 +1479,17 @@ legend .config_sprite_container {
 
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
- 
+
+table#connectionsTable tr td {
+	padding:2px;
+	border:1px solid #ccc;
+}
+
+/* jqueryui config */
+.ui-tabs .ui-tabs-nav li a {
+	font-size:95%;
+}
+
 /* FF2 to rescue */
 .sucker {
 	font-weight: bold;
@@ -1490,7 +1511,10 @@ legend .config_sprite_container {
 	cursor: pointer;
 	margin-bottom: 40px;
 	margin: 10px;
-	padding: 36px;
+	padding: 8px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
 }
  
 .left_links {
@@ -1505,13 +1529,12 @@ legend .config_sprite_container {
 		display: block;
 		font-size: 9pt;
 		font-weight: bold;
-		padding: 2px 5px;
 		text-decoration: none;
 	}
  
 		.left_links a:hover {
-			background-color: #bbb;
-			color: #000; 
+			background-color: #666;
+			color: #fff; 
 		}
  
 .config_margin { margin: 5px 10px 0 110px; }
@@ -1528,20 +1551,19 @@ legend .config_sprite_container {
 		display: block;
 		font-size: 9pt;
 		font-weight: bold;
-		padding: 2px 5px;
 		text-decoration: none;
 	}
  
 		.right_links a:hover {
-			background-color: #bbb;
-			color: #000;
+			background-color: #666;
+			color: #fff; 
 		}
  
 .center { text-align: center; }
  
 .xsmall { font-size: x-small; }
  
-.config_body { background: #ddd; }
+.config_body { background: #b1b1b1; }
  
 #configbox_latest_warnings a { color: white; }
  

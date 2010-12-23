@@ -4,7 +4,7 @@
 jQuery(document).ready(function($){
 
     // rounding
-	if ($.browser.safari) { // slow down rounding just a hair for Safari or it spazzes out
+/*	if ($.browser.safari) { // slow down rounding just a hair for Safari or it spazzes out
 		setTimeout (function(){
 	    	$('.config_nav li a').corner("round tl bl");
 	    	$('#config_container').corner("round");
@@ -16,7 +16,7 @@ jQuery(document).ready(function($){
 	    	$('#config_container').corner("round");
 	    	$('#config_content legend').corner("round");
 	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
-	}
+	}*/
 
 	// Confirm user exits without saving changes first
 	if (config_pane != 'NZO') {
