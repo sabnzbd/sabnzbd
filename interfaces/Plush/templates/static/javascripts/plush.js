@@ -552,7 +552,7 @@ jQuery(function($){
 					$("#queue-pagination").pagination( $.plush.queuenoofslots , {
 						current_page: $.plush.queuecurpage,
 						items_per_page: $.plush.queuePerPage,
-						num_display_entries: 3,
+						num_display_entries: 4,
 						num_edge_entries: 1,
 						prev_text: "&laquo; "+$.plush.Tprev, // translation
 						next_text: $.plush.Tnext+" &raquo;", // translation
