@@ -10,8 +10,8 @@ jQuery(function($){
 		
 		refreshRate:   			$.cookie('refreshRate')     ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
 		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // refresh rate in seconds
-		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 10,	// pagination - nzbs per page
-		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 10,	// pagination - nzbs per page
+		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 5,	// pagination - nzbs per page
+		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 5,	// pagination - nzbs per page
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
