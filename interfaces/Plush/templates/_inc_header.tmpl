@@ -9,6 +9,7 @@
 <head>
     
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
     
     <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/jqueryui/smoothness/jquery-ui-1.8.7.custom.css?$version"/>
     #if $color_scheme#
@@ -20,18 +21,94 @@
     #end if#
     
     <script type="text/javascript" src="$path/static/javascripts/lib.js?$version"></script>
-    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
 
+#if $pane=="Main"#
+    <script type="text/javascript" src="$path/static/javascripts/plush.js?$version"></script>
+	<script type="text/javascript">
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
+        	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
+			$.plush.Init();		// Initialize Plush UI
+			$.plush.Refresh();	// Initiate Plush refresh cycle
+		});
+    </script>
+#else if $pane=="Nzo"#
+    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
+	<script type="text/javascript">
+        var config_pane = "NZO"; // re-uses config's js/css
+		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+    </script>
+#else#
+    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
 	<script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";
         var apikey = "$session";
 		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
     </script>
+#end if#
     
 </head>
-<body class="config_body">
-    
+<body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
+
+	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
+
+
+#if $pane=="Main"#
+	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
+    <ul class="sf-menu sf-navbar">
+        <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
+        <li><a id="manual_refresh_wrapper"><b>$T('Plush-button-refresh')</b></a></li>
+        <li>
+            <a class="sf-with-ul">$T('Plush-options')</a>
+            <ul>
+                <li id="plush_options"><a>$T('Plush-plushoptions')</a></li>
+                <li><a class="sf-with-ul">$T('menu-help')</a>
+                    <ul>
+                        <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
+                        <li><a href="http://forums.sabnzbd.org" target="_blank">$T('menu-forums')</a></li>
+                        <li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
+                    </ul>
+                </li>
+                <li><a href="connections/disconnect?session=$session" class="pointer">$T('link-forceDisc')</a></li>
+                <li><a href="config/restart?session=$session" class="pointer" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a></li>
+                <li><a href="shutdown?session=$session" class="pointer" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
+            </ul>
+        </li>
+        <li>
+  			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
+      		<ul class="config_links">
+	            <li><a href="connections">$T('menu-cons')</a></li>
+	            <li><a href="config/general">$T('cmenu-general')</a></li>
+	            <li><a href="config/directories">$T('cmenu-folders')</a></li>
+	            <li><a href="config/switches">$T('cmenu-switches')</a></li>
+	            <li><a href="config/server">$T('cmenu-servers')</a></li>
+	            <li><a href="config/scheduling">$T('cmenu-scheduling')</a></li>
+	            <li><a href="config/rss">$T('cmenu-rss')</a></li>
+	            <li><a href="config/email">$T('cmenu-email')</a></li>
+	            <li><a href="config/newzbin">$T('cmenu-newzbin')</a></li>
+	            <li><a href="config/categories">$T('cmenu-cat')</a></li>
+	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
+      		</ul>
+      	</li>
+	    <!--#if $new_release#-->
+        <li><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a></li>
+	    <!--#end if#-->
+	    <!--#if $warning#-->
+        <li><a id="warning_message">$warning.replace(' ','&nbsp;')</a></li>
+	    <!--#end if#-->
+    </ul>
+	</div>
+
+#else if $pane=="Nzo"#
+
+    <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="../../">$T('button-back')</a></div></div>
+
+#else#
+
     <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="$path/">$T('button-back')</a></div></div>
     
     <div class="config_nav">
@@ -63,3 +140,5 @@
     
     <div id="config_container" class="config_margin">
         <div id="config_content">
+
+#end if#

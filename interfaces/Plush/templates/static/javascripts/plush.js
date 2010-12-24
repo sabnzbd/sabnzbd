@@ -1070,9 +1070,3 @@ jQuery(function($){
 	}; // end $.plush object
 
 });
-
-
-jQuery(document).ready(function($){
-	$.plush.Init();		// Initialize Plush UI
-	$.plush.Refresh();	// Initiate Plush refresh cycle
-});

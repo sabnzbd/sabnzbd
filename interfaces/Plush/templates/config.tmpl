@@ -1,12 +1,10 @@
 <!--#set global $pane="Config"#-->
 <!--#set global $help_uri="Configure"#-->
-<!--#include $webdir + "/config_inc_header.tmpl"#-->
-
+<!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <div class="center">
     <small><i>$T('confgFile'):</i></small> <font color="blue">$configfn</font>
     <br/><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<br>
 </div>
 
-
-<!--#include $webdir + "/config_inc_footer.tmpl"#-->
+<!--#include $webdir + "/_inc_footer.tmpl"#-->

@@ -1,28 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
-<html>
-<head>
-    <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
-    
-    <!--#if $color_scheme#-->
-    <link rel="shortcut icon" type="image/ico" href="../../static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
-    <!--#else#-->
-    <link rel="shortcut icon" type="image/ico" href="../../static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/gold/gold.css?$version"/>
-    <!--#end if#-->
-
-    <script type="text/javascript" src="../../static/javascripts/lib.js?$version"></script>
-    <script type="text/javascript" src="../../static/javascripts/config.js?$version"></script>
-
-	<script type="text/javascript">
-        var config_pane = "NZO"; // re-uses config's js/css
-		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
-    </script>
-
-</head>
-<body class="nzo">
-
-    <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="../../">$T('button-back')</a></div></div>
+<!--#set global $pane="Nzo"#-->
+<!--#set global $help_uri=""#-->
+<!--#include $webdir + "/_inc_header.tmpl"#-->
 
 	<!--#if $varExists('slot')#-->
 		<form action="save" method="post" class="nzo_save_form">
@@ -119,5 +97,4 @@
     </form>
 
 
-</body>
-</html>
+<!--#include $webdir + "/_inc_footer.tmpl"#-->
