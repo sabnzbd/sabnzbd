@@ -1,5 +1,7 @@
 #if $pane=="Connections" or $pane=="Config"#
     #set global $path = '..'#
+#else if $pane=="Main"#
+    #set global $path = ''#
 #else#
     #set global $path = '../..'#
 #end if#
@@ -53,68 +55,42 @@
     
 </head>
 <body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
-
+	
+	<div class="wrapper">  
+		<div class="navigation">
+			<ul class="menu" rel="sam1" style="float:right">  
+			#if $pane=="Main"#
+				<li class="first"><a href="#" id="add_nzb"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/add_nzb.png" />$T('Plush-addnzb')</a></li>  
+				<li><a href="#" id="plush_options"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/options.png" />$T('options').capitalize()</a></li>  
+				<li><a href="#" id="manual_refresh_wrapper"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/refresh.png" />$T('Plush-button-refresh')</a></li>  
+				<li class="last"><a href="#" id="help" target="_blank" class="icon_nav_help"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/help.png" />$T('help').capitalize()</a></li>  
+			#else#
+				<li class="first last"><a href="#" id="help" target="_blank" class="icon_nav_help"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/help.png" />$T('help').capitalize()</a></li>  
+			#end if#
+			</ul>  
+			<ul class="menu" rel="sam1">  
+				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="$path/" class="icon_nav_download"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/downloads.png" />&nbsp;$T('downloads').capitalize()</a></li>  
+				<li#if $pane=="Connections"# class="active"#end if#><a href="$path/connections" class="icon_nav_connections"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/connections.png" />&nbsp;$T('connections').capitalize()</a></li>  
+				<li#if $pane=="RSS"# class="active"#end if#><a href="$path/config/rss" class="icon_nav_rss"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/rss.png" />&nbsp;$T('rss').upper()</a></li>  
+				<li#if $pane=="Config"# class="active last"#else# class="last"#end if#><a href="$path/config"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/config.png" />&nbsp;$T('config').capitalize()</a></li>  
+			</ul>  
+		</div>
+	</div>
+	
 	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
 
-
 #if $pane=="Main"#
-	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
-    <ul class="sf-menu sf-navbar">
-        <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
-        <li><a id="manual_refresh_wrapper"><b>$T('Plush-button-refresh')</b></a></li>
-        <li>
-            <a class="sf-with-ul">$T('Plush-options')</a>
-            <ul>
-                <li id="plush_options"><a>$T('Plush-plushoptions')</a></li>
-                <li><a class="sf-with-ul">$T('menu-help')</a>
-                    <ul>
-                        <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
-                        <li><a href="http://forums.sabnzbd.org" target="_blank">$T('menu-forums')</a></li>
-                        <li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
-                    </ul>
-                </li>
-                <li><a href="connections/disconnect?session=$session" class="pointer">$T('link-forceDisc')</a></li>
-                <li><a href="config/restart?session=$session" class="pointer" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a></li>
-                <li><a href="shutdown?session=$session" class="pointer" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
-            </ul>
-        </li>
-        <li>
-  			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
-      		<ul class="config_links">
-	            <li><a href="connections">$T('menu-cons')</a></li>
-	            <li><a href="config/general">$T('cmenu-general')</a></li>
-	            <li><a href="config/directories">$T('cmenu-folders')</a></li>
-	            <li><a href="config/switches">$T('cmenu-switches')</a></li>
-	            <li><a href="config/server">$T('cmenu-servers')</a></li>
-	            <li><a href="config/scheduling">$T('cmenu-scheduling')</a></li>
-	            <li><a href="config/rss">$T('cmenu-rss')</a></li>
-	            <li><a href="config/email">$T('cmenu-email')</a></li>
-	            <li><a href="config/newzbin">$T('cmenu-newzbin')</a></li>
-	            <li><a href="config/categories">$T('cmenu-cat')</a></li>
-	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
-      		</ul>
-      	</li>
-	    <!--#if $new_release#-->
-        <li><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a></li>
-	    <!--#end if#-->
-	    <!--#if $warning#-->
-        <li><a id="warning_message">$warning.replace(' ','&nbsp;')</a></li>
-	    <!--#end if#-->
-    </ul>
-	</div>
 
 #else if $pane=="Nzo"#
-
-    <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="../../">$T('button-back')</a></div></div>
-
+	<br/>
+#else if $pane=="RSS" or $pane=="Connections"#
+	<br/>
+	<div style="width:85%; margin:auto;">
 #else#
-
-    <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="$path/">$T('button-back')</a></div></div>
     
+	<br/>
     <div class="config_nav">
         <ul>
-            <li><a class="#if $pane=="Connections"#nav_active#end if#" href="$path/connections">
-            	<div class="config_sprite_container sprite_config_nav_connections">$T('menu-cons')</div></a></li>
             <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">
             	<div class="config_sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
             <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">
@@ -125,8 +101,6 @@
             	<div class="config_sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
             <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">
             	<div class="config_sprite_container sprite_config_nav_scheduling">$T('Plush-cmenu-scheduling')</div></a></li>
-            <li><a class="#if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">
-            	<div class="config_sprite_container sprite_config_nav_rss">$T('cmenu-rss')</div></a></li>
             <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">
             	<div class="config_sprite_container sprite_config_nav_email">$T('cmenu-email')</div></a></li>
             <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">

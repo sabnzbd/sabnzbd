@@ -27,6 +27,11 @@ jQuery(document).ready(function($){
 			window.onbeforeunload = null;
 		});
 	}
+
+	// modals
+	$("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
+		innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+	});
 	
 	// jqueryui tabs/buttons
 	$('.juiButton').button();

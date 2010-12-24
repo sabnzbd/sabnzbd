@@ -21,20 +21,15 @@
 
 		    <table class="rssTable">
 		        <tr>
-		            <th></th>
 		            <th>$T('enabled').capitalize()</th>
 		            <th>$T('feed')</th>
 		            <th>URL</th>
+		            <th></th>
 		        </tr>
 		    <!--#set $odd = False#-->
 		    <!--#for $feed_item in $feeds#-->
 		        <!--#set $odd = not $odd#-->
 		        <tr class="<!--#if $odd then "odd" else "even"#-->">
-		            <td><form action="del_rss_feed" method="get">
-		                <input type="hidden" name="session" value="$session">
-		                <input type="hidden" value="$feed_item" name="feed">
-		                <input type="submit" class="juiButton" style="padding:0;" value="$T('button-del')"></form>
-		            </td>
 		            <td><form action="upd_rss_feed" method="post">
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
@@ -42,8 +37,13 @@
 		                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed_item]['enable'] then "CHECKED" else "" #-->/>
 		                </form>
 		            </td>
-		            <td><strong><a href="?feed=$rss[$feed_item]['link']#tabs-feed" <!--#if $active_feed == $feed_item#-->id="activeFeedLink"<!--#end if#-->>$feed_item</a></strong></td>
+		            <td><strong><a class="juiButton" href="?feed=$rss[$feed_item]['link']#tabs-feed" <!--#if $active_feed == $feed_item#-->id="activeFeedLink"<!--#end if#-->>$feed_item</a></strong></td>
 		            <td>$rss[$feed_item]['uri']</td>
+		            <td><form action="del_rss_feed" method="get">
+		                <input type="hidden" name="session" value="$session">
+		                <input type="hidden" value="$feed_item" name="feed">
+		                <input type="submit" class="juiButton" style="padding:0;" value="$T('button-del')"></form>
+		            </td>
 		        </tr>
 		    <!--#end for#-->
 			</table>

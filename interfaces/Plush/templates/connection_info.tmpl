@@ -5,7 +5,6 @@
 <div class="tabs">
 	<ul>
 		<li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
-		<li><a href="#tabs-info">$T('info').capitalize()</a></li>
 		<li><a href="#tabs-repair">$T('button-repair')</a></li>
 		<!--#if $lastmail#-->
 			<li><a href="#tabs-lastmail">Last Mail</a></li>
@@ -19,8 +18,18 @@
 		<!--#end if#-->
 	</ul>
 	<div id="tabs-warnings">
+		<p>
+			<a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a>
+			<a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a>
+			<a href="showweb?session=$session" class="juiButton">$T('link-showWeblog')</a>
+			<strong>$T('logging'):</strong> <select class="xsmall" id="logging_level">
+				<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
+				<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
+				<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
+			</select>
+		</p>
+		<p><!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#--></p>
 		<!--#if $warnings#-->
-			<p><a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a></p>
 			<table id="connectionsTable">
 			<!--#for $warn in $warnings#-->
 				<tr><td nowrap>$warn.replace("\n","</td><td>")</td></tr>
@@ -29,19 +38,6 @@
 		<!--#else#-->
 			<p>$T('none')</p>
 		<!--#end if#-->
-	</div>
-	<div id="tabs-info">
-		<p><strong>$T('confgFile'):</strong> $configfn</p>
-		<p><strong>$T('version'):</strong> $version</p>
-		<p><strong>$T('uptime'):</strong> $uptime</p>
-		<p><a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a>
-		   <a href="showweb?session=$session" class="juiButton">$T('link-showWeblog')</a></p>
-		<p><strong>$T('logging'):</strong> <select class="xsmall" id="logging_level">
-			<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
-			<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
-			<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
-		</select></p>
-		<p><!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#--></p>
 	</div>
 	<div id="tabs-repair">
 
@@ -120,5 +116,6 @@
 	<!--#end if#-->
 	
 </div>
+
 
 <!--#include $webdir + "/_inc_footer.tmpl"#-->

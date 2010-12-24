@@ -92,6 +92,8 @@ jQuery(function($){
 			
 		InitMainMenu : function() {
 
+			$('.juiButton').button();
+
 			// Main menu -- uses jQuery hoverIntent
 			$("#main_menu ul.sf-menu").superfish({
 				autoArrows:	true,
@@ -113,11 +115,14 @@ jQuery(function($){
 			);
 	
 			// modals
+			$("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
+				innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+			});
 			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(),
-				innerWidth:"350px", innerHeight:"350px", initialWidth:"350px", initialHeight:"350px", speed:0, opacity:0.7
+				innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
 			});
 			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(),
-				innerWidth:"275px", innerHeight:"250px", initialWidth:"275px", initialHeight:"250px", speed:0, opacity:0.7
+				innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
 			});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
@@ -264,6 +269,7 @@ jQuery(function($){
 			    //e.target.style.cursor = "default";
 
 				$.plush.Refresh(true);
+				return false;
 			});
 
 		}, // end $.plush.InitMainMenu()

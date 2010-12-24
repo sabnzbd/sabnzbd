@@ -219,6 +219,105 @@ body {
 	width:190px;
 }
 
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+ 
+    queue + history overall container
+ 
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+.wrapper {
+	width:85%;
+	margin:auto;
+}
+.navigation {  
+    width: 100%;  
+    height: 30px;  
+    position: relative;  
+    /*margin-bottom: 30px;*/
+}  
+.navigation ul {  
+    margin: 0;  
+    padding: 0;  
+}  
+  
+.navigation ul.menu {  
+    height: 30px;  
+    float:left;  
+    /*border-left: 1px solid rgba(0,0,0,0.3);  
+    border-right: 1px solid rgba(255,255,255,0.3);  */
+}  
+  
+.navigation ul.menu li {  
+    list-style: none;  
+    float:left;  
+    height: 29px;  
+    text-align: center;  
+    background: -webkit-gradient(radial, 50% 100%, 10, 50% 50%, 90, from(rgba(144,114,0,1)), to(rgba(70,70,70, 1)) );  
+    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
+    }  
+  
+.navigation ul li a {  
+	font-weight:bold;
+    display: block;  
+    padding: 0 14px 0 4px;  
+    border-left: 1px solid rgba(255,255,255,0.1);  
+    border-right: 1px solid rgba(0,0,0,0.1);  
+    text-align: center;  
+    line-height: 29px;  
+    background : -webkit-gradient(linear, right top, right bottom, from(rgb(168,168,168)), to(rgb(69,69,69)));  
+    background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));  
+    -webkit-transition-property: background;  
+    -webkit-transition-duration: 700ms;  
+    -moz-transition-property: background;  
+    -moz-transition-duration: 700ms;  
+    }  
+  
+.navigation ul.menu li.first, .navigation ul li.first a {
+  	-moz-border-radius-bottomleft: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+}
+  
+.navigation ul.menu li.last, .navigation ul li.last a {
+  	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+}
+
+.navigation ul li a:hover {  
+    background: transparent none;  
+    text-decoration:none;
+}  
+  
+.navigation ul li.active a{  
+    background: -webkit-gradient(radial, 50% 100%, 10, 50% 50%, 90, from(rgba(144,114,41,1)), to(rgba(70,70,70, 1)) );  
+    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
+}  
+
+.navigation ul li a img {
+	opacity: .25;
+	margin:0 4px -3px 6px;
+}
+
+.navigation ul li.active a img {
+	opacity: 1.00;
+}
+
+.navigation ul li a:hover img {
+	opacity: 1.00;
+}
+
+/*
+.navigation div.icon_nav_download { background: url('images/nav/downloads.png') 6px 50% no-repeat; }
+.navigation div.icon_nav_connections { background: url('images/nav/connections.png') 6px 50% no-repeat; }
+.navigation ul li a.icon_nav_rss { background: url('images/nav/rss.png') 6px 50% no-repeat; }
+.navigation span.icon_nav_config { background: url('images/nav/downloads.png') 6px 50% no-repeat; width:30px; }
+.navigation div.icon_nav_help { background: url('images/nav/help.png') 6px 50% no-repeat; }
+*/
+
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
  
@@ -1093,7 +1192,6 @@ tr:hover .history_added { color: black; }
 #uploadTip {
 	overflow: hidden;
 }
-
 
 
 
