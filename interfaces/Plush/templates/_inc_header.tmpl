@@ -75,8 +75,10 @@
 				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="$path/config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
 			</ul>  
 		</div>
-        <!--#if $new_release#--><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a><!--#end if#-->
-	    <!--#if $warning#--><a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a><!--#end if#-->
+		#if $pane=="Main"#
+	        #if $new_release#<a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
+		    #if $warning#<a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
+		#end if#
 	</div>
 	
 	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
