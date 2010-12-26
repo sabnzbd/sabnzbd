@@ -27,6 +27,11 @@ jQuery(document).ready(function($){
 			window.onbeforeunload = null;
 		});
 	}
+
+	// modals
+	$("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
+		innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+	});
 	
 	// jqueryui tabs/buttons
 	$('.juiButton').button();
@@ -35,6 +40,13 @@ jQuery(document).ready(function($){
 			expires: 1 // store cookie for a day, without, it would be a session cookie
 		}
 	});
+
+	// kludge for jqueryui tabs, using cookie option above for some reason does not select the default 1st tab
+	$('.tabs').each(function(index) {
+	    if (!$(this).children('ul.ui-tabs-nav').children('li.ui-tabs-selected').length)
+	    	$(this).tabs('select',0);
+	});
+    
 	// kludge for jqueryui tabs, clicking for an existing tab doesnt switch to it
 	$('#activeFeedLink').click(function(){
 		// tab-feed focus

@@ -37,11 +37,6 @@ http://www.stilbuero.de
 Copyright (c) 2006 Klaus Hartl
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery Corner
-http://jquery.malsup.com/corner/
-Authors: Dave Methvin & Mike Alsup
-See LICENSE-MIT & LICENSE-GPL
-
 jQuery FlipTip (with modifications by pairofdimes)
 http://learningjquery.com
 Copyright (c) 2010 Karl Swedberg

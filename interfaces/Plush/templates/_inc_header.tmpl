@@ -1,5 +1,7 @@
 #if $pane=="Connections" or $pane=="Config"#
     #set global $path = '..'#
+#else if $pane=="Main"#
+    #set global $path = ''#
 #else#
     #set global $path = '../..'#
 #end if#
@@ -9,6 +11,7 @@
 <head>
     
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
     
     <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/jqueryui/smoothness/jquery-ui-1.8.7.custom.css?$version"/>
     #if $color_scheme#
@@ -20,24 +23,78 @@
     #end if#
     
     <script type="text/javascript" src="$path/static/javascripts/lib.js?$version"></script>
-    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
 
+#if $pane=="Main"#
+    <script type="text/javascript" src="$path/static/javascripts/plush.js?$version"></script>
+	<script type="text/javascript">
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
+        	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
+			$.plush.Init();		// Initialize Plush UI
+			$.plush.Refresh();	// Initiate Plush refresh cycle
+		});
+    </script>
+#else if $pane=="Nzo"#
+    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
+	<script type="text/javascript">
+        var config_pane = "NZO"; // re-uses config's js/css
+		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+    </script>
+#else#
+    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
 	<script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";
         var apikey = "$session";
 		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
     </script>
+#end if#
     
 </head>
-<body class="config_body">
+<body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
+	
+	<div class="wrapper">  
+		<div class="navigation">
+			<ul class="menu" rel="sam1" style="float:right">  
+			#if $pane=="Main"#
+				<li class="first"><a href="#" id="add_nzb"><span class="icon_nav_addnzb">$T('Plush-addnzb')</span></a></li>  
+				<li><a href="#" id="plush_options"><span class="icon_nav_options">$T('options').capitalize()</span></a></li>  
+				<li><a href="#" id="manual_refresh_wrapper"><span class="icon_nav_refresh">$T('Plush-button-refresh')</span></a></li>  
+				<li class="last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
+			#else#
+				<li class="first last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
+			#end if#
+			</ul>  
+			<ul class="menu" rel="sam1">  
+				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="$path/"><span class="icon_nav_download">$T('downloads').capitalize()</span></a></li>  
+				<li#if $pane=="Connections"# class="active"#end if#><a href="$path/connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>  
+				<li#if $pane=="RSS"# class="active"#end if#><a href="$path/config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>  
+				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="$path/config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
+			</ul>  
+		</div>
+		#if $pane=="Main"#
+	        #if $new_release#<a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
+		    #if $warning#<a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
+		#end if#
+	</div>
+	
+	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
+
+#if $pane=="Main"#
+
+#else if $pane=="Nzo"#
+	<br/>
+#else if $pane=="RSS" or $pane=="Connections"#
+	<br/>
+	<div style="width:85%; margin:auto;">
+#else#
     
-    <div id="config_go_back"><div class="main_sprite_container sprite_sabnzbdplus_logo"><a href="$path/">$T('button-back')</a></div></div>
-    
+	<br/>
     <div class="config_nav">
         <ul>
-            <li><a class="#if $pane=="Connections"#nav_active#end if#" href="$path/connections">
-            	<div class="config_sprite_container sprite_config_nav_connections">$T('menu-cons')</div></a></li>
             <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">
             	<div class="config_sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
             <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">
@@ -48,8 +105,6 @@
             	<div class="config_sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
             <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">
             	<div class="config_sprite_container sprite_config_nav_scheduling">$T('Plush-cmenu-scheduling')</div></a></li>
-            <li><a class="#if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">
-            	<div class="config_sprite_container sprite_config_nav_rss">$T('cmenu-rss')</div></a></li>
             <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">
             	<div class="config_sprite_container sprite_config_nav_email">$T('cmenu-email')</div></a></li>
             <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">
@@ -63,3 +118,5 @@
     
     <div id="config_container" class="config_margin">
         <div id="config_content">
+
+#end if#
