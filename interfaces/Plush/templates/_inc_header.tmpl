@@ -1,9 +1,9 @@
 #if $pane=="Connections" or $pane=="Config"#
-    #set global $path = '..'#
+    #set global $path = '../'#
 #else if $pane=="Main"#
     #set global $path = ''#
 #else#
-    #set global $path = '../..'#
+    #set global $path = '../../'#
 #end if#
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
@@ -11,21 +11,21 @@
 <head>
     
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
-    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${path}rss?mode=history"/>
     
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/jqueryui/smoothness/jquery-ui-1.8.7.custom.css?$version"/>
+    <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/smoothness/jquery-ui-1.8.7.custom.css?$version"/>
     #if $color_scheme#
-    <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
+    <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
     #else#
-    <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/gold/gold.css?$version"/>
+    <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/gold/gold.css?$version"/>
     #end if#
     
-    <script type="text/javascript" src="$path/static/javascripts/lib.js?$version"></script>
+    <script type="text/javascript" src="${path}static/javascripts/lib.js?$version"></script>
 
 #if $pane=="Main"#
-    <script type="text/javascript" src="$path/static/javascripts/plush.js?$version"></script>
+    <script type="text/javascript" src="${path}static/javascripts/plush.js?$version"></script>
 	<script type="text/javascript">
 	    jQuery(function($){
         	$.plush.apikey = "$session";
@@ -38,13 +38,13 @@
 		});
     </script>
 #else if $pane=="Nzo"#
-    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
+    <script type="text/javascript" src="${path}static/javascripts/config.js?$version"></script>
 	<script type="text/javascript">
         var config_pane = "NZO"; // re-uses config's js/css
 		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
     </script>
 #else#
-    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
+    <script type="text/javascript" src="${path}static/javascripts/config.js?$version"></script>
 	<script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";
@@ -69,10 +69,10 @@
 			#end if#
 			</ul>  
 			<ul class="menu" rel="sam1">  
-				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="$path/"><span class="icon_nav_download">$T('downloads').capitalize()</span></a></li>  
-				<li#if $pane=="Connections"# class="active"#end if#><a href="$path/connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>  
-				<li#if $pane=="RSS"# class="active"#end if#><a href="$path/config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>  
-				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="$path/config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
+				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('downloads').capitalize()</span></a></li>  
+				<li#if $pane=="Connections"# class="active"#end if#><a href="${path}connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>  
+				<li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>  
+				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
 			</ul>  
 		</div>
 		#if $pane=="Main"#
@@ -95,23 +95,23 @@
 	<br/>
     <div class="config_nav">
         <ul>
-            <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">
+            <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="${path}config/general">
             	<div class="config_sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
-            <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">
+            <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="${path}config/directories">
             	<div class="config_sprite_container sprite_config_nav_folders">$T('cmenu-folders')</div></a></li>
-            <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="$path/config/switches">
+            <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="${path}config/switches">
             	<div class="config_sprite_container sprite_config_nav_switches">$T('cmenu-switches')</div></a></li>
-            <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="$path/config/server">
+            <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="${path}config/server">
             	<div class="config_sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
-            <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">
+            <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="${path}config/scheduling">
             	<div class="config_sprite_container sprite_config_nav_scheduling">$T('Plush-cmenu-scheduling')</div></a></li>
-            <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">
+            <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="${path}config/email">
             	<div class="config_sprite_container sprite_config_nav_email">$T('cmenu-email')</div></a></li>
-            <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">
+            <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="${path}config/newzbin">
             	<div class="config_sprite_container sprite_config_nav_indexsites">$T('cmenu-newzbin')</div></a></li>
-            <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="$path/config/categories">
+            <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="${path}config/categories">
             	<div class="config_sprite_container sprite_config_nav_categories">$T('cmenu-cat')</div></a></li>
-            <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="$path/config/sorting">
+            <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="${path}config/sorting">
             	<div class="config_sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
         </ul>
     </div>

@@ -254,7 +254,7 @@ body {
     
 .navigation ul li.active a{  
     background: -webkit-gradient(linear, right top, right bottom, from(#333), to(#666) );  
-    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
+    background: -moz-linear-gradient(top, #333 0%, #666 100%);  
 }  
 
 .navigation ul.menu li {  
@@ -263,7 +263,7 @@ body {
     height: 29px;  
     text-align: center;  
     background: -webkit-gradient(linear, right top, right bottom, from(#111), to(#444) );  
-    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
+    background: -moz-linear-gradient(top, #111 0%, #444 100%);  
     }  
   
 .navigation ul li a {  
