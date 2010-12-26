@@ -60,19 +60,19 @@
 		<div class="navigation">
 			<ul class="menu" rel="sam1" style="float:right">  
 			#if $pane=="Main"#
-				<li class="first"><a href="#" id="add_nzb"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/add_nzb.png" />$T('Plush-addnzb')</a></li>  
-				<li><a href="#" id="plush_options"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/options.png" />$T('options').capitalize()</a></li>  
-				<li><a href="#" id="manual_refresh_wrapper"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/refresh.png" />$T('Plush-button-refresh')</a></li>  
-				<li class="last"><a href="#" id="help" target="_blank" class="icon_nav_help"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/help.png" />$T('help').capitalize()</a></li>  
+				<li class="first"><a href="#" id="add_nzb"><span class="icon_nav_addnzb">$T('Plush-addnzb')</span></a></li>  
+				<li><a href="#" id="plush_options"><span class="icon_nav_options">$T('options').capitalize()</span></a></li>  
+				<li><a href="#" id="manual_refresh_wrapper"><span class="icon_nav_refresh">$T('Plush-button-refresh')</span></a></li>  
+				<li class="last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
 			#else#
-				<li class="first last"><a href="#" id="help" target="_blank" class="icon_nav_help"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/help.png" />$T('help').capitalize()</a></li>  
+				<li class="first last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
 			#end if#
 			</ul>  
 			<ul class="menu" rel="sam1">  
-				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="$path/" class="icon_nav_download"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/downloads.png" />&nbsp;$T('downloads').capitalize()</a></li>  
-				<li#if $pane=="Connections"# class="active"#end if#><a href="$path/connections" class="icon_nav_connections"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/connections.png" />&nbsp;$T('connections').capitalize()</a></li>  
-				<li#if $pane=="RSS"# class="active"#end if#><a href="$path/config/rss" class="icon_nav_rss"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/rss.png" />&nbsp;$T('rss').upper()</a></li>  
-				<li#if $pane=="Config"# class="active last"#else# class="last"#end if#><a href="$path/config"><img src="$path/static/stylesheets/colorschemes/gold/images/nav/config.png" />&nbsp;$T('config').capitalize()</a></li>  
+				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="$path/"><span class="icon_nav_download">$T('downloads').capitalize()</span></a></li>  
+				<li#if $pane=="Connections"# class="active"#end if#><a href="$path/connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>  
+				<li#if $pane=="RSS"# class="active"#end if#><a href="$path/config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>  
+				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="$path/config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
 			</ul>  
 		</div>
 	</div>

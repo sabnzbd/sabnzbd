@@ -225,7 +225,7 @@ body {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
  
-    queue + history overall container
+    navigation
  
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
@@ -251,20 +251,25 @@ body {
     /*border-left: 1px solid rgba(0,0,0,0.3);  
     border-right: 1px solid rgba(255,255,255,0.3);  */
 }  
-  
+    
+.navigation ul li.active a{  
+    background: -webkit-gradient(linear, right top, right bottom, from(#333), to(#666) );  
+    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
+}  
+
 .navigation ul.menu li {  
     list-style: none;  
     float:left;  
     height: 29px;  
     text-align: center;  
-    background: -webkit-gradient(radial, 50% 100%, 10, 50% 50%, 90, from(rgba(144,114,0,1)), to(rgba(70,70,70, 1)) );  
+    background: -webkit-gradient(linear, right top, right bottom, from(#111), to(#444) );  
     background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
     }  
   
 .navigation ul li a {  
 	font-weight:bold;
     display: block;  
-    padding: 0 14px 0 4px;  
+    padding: 0 14px 0 0;  
     border-left: 1px solid rgba(255,255,255,0.1);  
     border-right: 1px solid rgba(0,0,0,0.1);  
     text-align: center;  
@@ -291,11 +296,6 @@ body {
     background: transparent none;  
     text-decoration:none;
 }  
-  
-.navigation ul li.active a{  
-    background: -webkit-gradient(radial, 50% 100%, 10, 50% 50%, 90, from(rgba(144,114,41,1)), to(rgba(70,70,70, 1)) );  
-    background: -moz-radial-gradient(center 80px 45deg, circle cover, rgba(255,180,0,1) 0%, rgba(70,70,70, 1) 100%);  
-}  
 
 .navigation ul li a img {
 	opacity: .25;
@@ -310,13 +310,31 @@ body {
 	opacity: 1.00;
 }
 
-/*
-.navigation div.icon_nav_download { background: url('images/nav/downloads.png') 6px 50% no-repeat; }
-.navigation div.icon_nav_connections { background: url('images/nav/connections.png') 6px 50% no-repeat; }
-.navigation ul li a.icon_nav_rss { background: url('images/nav/rss.png') 6px 50% no-repeat; }
-.navigation span.icon_nav_config { background: url('images/nav/downloads.png') 6px 50% no-repeat; width:30px; }
-.navigation div.icon_nav_help { background: url('images/nav/help.png') 6px 50% no-repeat; }
-*/
+
+
+.navigation ul li a span {
+	padding-left:28px;
+	background-repeat:no-repeat;
+	background-position:8px 0px;
+}
+.navigation ul li a span.icon_nav_download { background-image: url('images/nav/downloads-grey.png'); }
+.navigation ul li.active a span.icon_nav_download, .navigation ul li a:hover span.icon_nav_download { background-image: url('images/nav/downloads.png'); }
+.navigation ul li a span.icon_nav_connections { background-image: url('images/nav/connections-grey.png'); }
+.navigation ul li.active a span.icon_nav_connections, .navigation ul li a:hover span.icon_nav_connections { background-image: url('images/nav/connections.png'); }
+.navigation ul li a span.icon_nav_rss { background-image: url('images/nav/rss-grey.png'); }
+.navigation ul li.active a span.icon_nav_rss, .navigation ul li a:hover span.icon_nav_rss { background-image: url('images/nav/rss.png'); }
+.navigation ul li a span.icon_nav_config { background-image: url('images/nav/config.png'); }
+.navigation ul li.active a span.icon_nav_config, .navigation ul li a:hover span.icon_nav_config { background-image: url('images/nav/config.png'); }
+
+.navigation ul li a span.icon_nav_addnzb { background-image: url('images/nav/addnzb-grey.png'); }
+.navigation ul li.active a span.icon_nav_addnzb, .navigation ul li a:hover span.icon_nav_addnzb { background-image: url('images/nav/addnzb.png'); }
+.navigation ul li a span.icon_nav_options { background-image: url('images/nav/options.png'); }
+.navigation ul li.active a span.icon_nav_options, .navigation ul li a:hover span.icon_nav_options { background-image: url('images/nav/options.png'); }
+.navigation ul li a span.icon_nav_refresh { background-image: url('images/nav/refresh-grey.png'); }
+.navigation ul li.active a span.icon_nav_refresh, .navigation ul li a:hover span.icon_nav_refresh { background-image: url('images/nav/refresh.png'); }
+.navigation ul li a span.icon_nav_help { background-image: url('images/nav/help-grey.png'); }
+.navigation ul li.active a span.icon_nav_help, .navigation ul li a:hover span.icon_nav_help { background-image: url('images/nav/help.png'); }
+
 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -665,7 +683,7 @@ body {
 	margin: 10px 0 0;
 }
  
-#queue_logo {
+.sabnzbd_logo {
 	float: left;
 	height: 40px;
 	padding-left: 50px;
@@ -1246,7 +1264,22 @@ tr:hover .history_added { color: black; }
 	padding: 20px 0 0 50px;
 }
 
-
+#help_modal {
+	text-align:center;
+	padding:20px;
+}
+#help_modal table {
+	margin:0 auto 20px;
+	border-spacing:4px;
+	font-size:110%;
+}
+#help_modal .sabnzbd_logo {
+	float:none;
+	display:block;
+	margin:auto;
+	padding:0px;
+	width:100px;
+}
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
