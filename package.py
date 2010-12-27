@@ -414,7 +414,7 @@ if target == 'app':
     #os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
 
     # Copy README.txt
-    os.system("cp README.txt /Volumes/%s/" % volume)
+    os.system("cp README.rtf /Volumes/%s/" % volume)
 
     #Hide dock icon for the app
     #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
