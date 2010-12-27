@@ -95,7 +95,10 @@ class SABnzbdDelegate(NSObject):
 
         #Variables
         self.state = "Idle"
-        self.speed = sabnzbd.downloader.Downloader.do.get_limit()
+        try:
+            self.speed = sabnzbd.downloader.Downloader.do.get_limit()
+        except:
+            self.speed = 0
         self.version_notify = 1
         self.status_removed = 0
 
