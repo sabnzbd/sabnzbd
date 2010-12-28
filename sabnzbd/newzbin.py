@@ -111,7 +111,7 @@ class MSGIDGrabber(Thread):
                 pp = nzo.pp
                 script = nzo.script
                 cat = nzo.cat
-                if not cat:
+                if cat == '*' or not cat:
                     cat = cat_convert(newzbin_cat)
 
                 priority = nzo.priority

@@ -160,7 +160,7 @@ class URLGrabber(Thread):
                 pp = future_nzo.pp
                 script = future_nzo.script
                 cat = future_nzo.cat
-                if cat is None and category:
+                if (cat is None or cat == '*') and category:
                     cat = misc.cat_convert(category)
                 priority = future_nzo.priority
                 nzbname = future_nzo.custom_name

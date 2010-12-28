@@ -95,7 +95,7 @@ def clear_feed(feed):
 def notdefault(item):
     """ Return True if not None/"None"/"Default"/""
     """
-    return bool(item) and isinstance(item, str) and item.lower() not in ('default', 'none')
+    return bool(item) and isinstance(item, str) and item.lower() not in ('default', 'none', '*')
 
 
 def ListUris():
