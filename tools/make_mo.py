@@ -24,6 +24,7 @@ import re
 import sys
 import gettext
 
+TOOL = 'msgfmt'
 PO_DIR = 'po/main'
 POE_DIR = 'po/email'
 PON_DIR = 'po/nsis'
@@ -126,16 +127,6 @@ LanguageTable = {
     'yo' : ('Yoruba', 'Yorùbá'),
     'zu' : ('Zulu', 'isi Zulu'),
 }
-
-# Determine location of PyGetText tool
-path, exe = os.path.split(sys.executable)
-if os.name == 'nt':
-    TOOL = os.path.join(path, r'Tools\i18n\msgfmt.py')
-else:
-    TOOL = os.path.join(path, 'msgfmt.py')
-if not os.path.exists(TOOL):
-    TOOL = 'msgfmt'
-
 
 # Filter for retrieving readable language from PO file
 RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
@@ -241,6 +232,12 @@ def patch_nsis():
         dst.write(line)
     dst.close()
 
+
+# Determine location of MsgFmt tool
+path, py = os.path.split(sys.argv[0])
+tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
+if os.path.exists(tl):
+    TOOL = tl
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'
