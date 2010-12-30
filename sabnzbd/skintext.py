@@ -664,6 +664,7 @@ SKIN_TEXT = {
     'Plush-freeSpace' : TT('Free Space'),
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
+    'Plush-downloads' : TT('Downloads'),
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),
