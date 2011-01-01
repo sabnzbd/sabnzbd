@@ -357,6 +357,8 @@ SKIN_TEXT = {
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'opt-replace_spaces' : TT('Replace Spaces in Foldername'),
     'explain-replace_spaces' : TT('Replace spaces with underscores in folder names.'),
+    'opt-replace_dots' : TT('Replace dots in Foldername'),
+    'explain-replace_dots' : TT('Replace dots with spaces in folder names.'),
     'opt-replace_illegal' : TT('Replace Illegal Characters in Folder Names'),
     'explain-replace_illegal' : TT('Replace illegal characters in folder names by equivalents (otherwise remove).'),
     'opt-auto_browser' : TT('Launch Browser on Startup'),

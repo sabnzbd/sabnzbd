@@ -1101,7 +1101,7 @@ SWITCH_LIST = \
             ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
              'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
              'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
-             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename'
              )
