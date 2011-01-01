@@ -16,7 +16,7 @@
 
 
 	<div id="tabs-processingSwitches">
-	
+
 	    <table cellpadding=2>
 	        <tr>
 	            <td class=alignRight><div class="tucker">$T('opt-quick_check'):</div></td>
@@ -74,6 +74,11 @@
 	            <td><small>$T('explain-sfv_check')</small></td>
 	        </tr>
 	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-unpack_check'):</div></td>
+	            <td><input type="checkbox" name="unpack_check" value="1" <!--#if $unpack_check > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-unpack_check')</small></td>
+	        </tr>
+	        <tr>
 	            <td class=alignRight valign=top><div class="tucker">$T('opt-top_only'):</div></td>
 	            <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
 	            <td><small>$T('explain-top_only')</small></td>
@@ -87,7 +92,7 @@
 	        <!--#end if#-->
 	    </table>
 
-	</div>	
+	</div>
 
 
 	<div id="tabs-switches">
@@ -143,10 +148,10 @@
 
 	</div>
 
-	
+
 	<div id="tabs-otherSwitches">
-	
-	
+
+
 	    <table cellpadding=2>
 	        <tr>
 	            <td class=alignRight><div class="tucker">$T('opt-check_new_rel'):</div></td>

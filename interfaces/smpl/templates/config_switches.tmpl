@@ -66,6 +66,11 @@
 		    <span class="tips">$T('explain-sfv_check')</span></label>
 		<br class="clear" />
 
+		    <label><span class="label">$T('opt-unpack_check'):</span>
+		    <input class="radio" type="checkbox" name="unpack_check" value="1" <!--#if $unpack_check > 0 then 'checked="1"' else ""#--> />
+		    <span class="tips">$T('explain-unpack_check')</span></label>
+		<br class="clear" />
+
 		    <span class="label">$T('opt-pre_script'):</span>
             <select name="pre_script" id="pre_script" class="select">
             <!--#for $sc in $script_list#-->

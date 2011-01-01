@@ -373,8 +373,29 @@ checkCookie();
 checkrefresh();
 }
 
+function hashchanged() {
+    // We might be able to skip some of what onpageload does, but this works.
+    onpageload();
+}
+if ("onhashchange" in window) {
+    // TODO: Use jQuery history or hashchange modules or perhaps
+    // reallysimplehistory -- those will poll in browsers that don't
+    // support onhashchange (but recent Chrome, Firefox, and Safari do).
+
+    // TODO: Fix the other interfaces.  Plush and Classic are OK if only
+    // because they don't seem to use #fragments.  Mobile is NOT OK as the
+    // following proves:
+    //
+    // Go to http://localhost:8085/sabnzbd/m/#history and then click on
+    // an item to go to #history_nzb.  The back button now works, but
+    // afterwards the forward button won't.  (Chrome 8.0.552.231 on OS X
+    // 10.5.8)
+    window.onhashchange = hashchanged;
+}
+
 function loadtitle() {
-    url = document.URL
+    // document.URL isn't updated when someone clicks on "#/dv1/"; can't use it.
+    url = window.location.toString();
     if (url.match('#'))
     {
         index = url.lastIndexOf('#');
