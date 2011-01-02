@@ -287,7 +287,6 @@ data_files = [
          'GPL3.txt',
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
-         'LICENSE.txt',
          'ISSUES.txt',
          'nzbmatrix.txt',
          'nzb.ico',
