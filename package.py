@@ -553,6 +553,9 @@ else:
     # Make sure all source files are Unix format
     import shutil
 
+    # Create MO files
+    os.system('python tools/make_mo.py all')
+
     root = 'srcdist'
     root = os.path.normpath(os.path.abspath(root))
     if not os.path.exists(root):
