@@ -1,6 +1,6 @@
 ; -*- coding: latin-1 -*-
 ;
-; Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+; Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -133,14 +133,14 @@ Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 
 ;make sure sabnzbd.exe isnt running..if so abort
-        loop:
-        StrCpy $0 "SABnzbd.exe"
-		KillProc::FindProcesses
-        StrCmp $0 "0" endcheck
-        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
-        exitinstall:
-        Abort
-        endcheck:
+  loop:
+  StrCpy $0 "SABnzbd.exe"
+  KillProc::FindProcesses
+  StrCmp $0 "0" endcheck
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
+  exitinstall:
+  Abort
+  endcheck:
 FunctionEnd
 
 
@@ -148,9 +148,9 @@ Section "SABnzbd" SecDummy
 SetOutPath "$INSTDIR"
 
 IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
-    IfFileExists $INSTDIR\language\us-en.txt endWarnExist 0
-        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgOldQueue) IDOK endWarnExist IDCANCEL 0
-        Abort
+  IfFileExists $INSTDIR\language\us-en.txt endWarnExist 0
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgOldQueue) IDOK endWarnExist IDCANCEL 0
+    Abort
 endWarnExist:
 
 ; add files / whatever that need to be installed here.
@@ -166,12 +166,12 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 
-    ;Create shortcuts
-    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd-console.exe"
-    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://wiki.sabnzbd.org/"
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  ;Create shortcuts
+  CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd-console.exe"
+  WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://wiki.sabnzbd.org/"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
 
 
@@ -181,16 +181,16 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
 SectionEnd ; end of default section
 
 Section /o $(MsgRunAtStart) startup
-    CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
+  CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
 SectionEnd ;
 
 Section $(MsgIcon) desktop
-    CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
+  CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
 
 Section /o $(MsgAssoc) assoc
-    ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
-    ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+  ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+  ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
 SectionEnd ; end of file association section
 
 ; begin uninstall settings/section
@@ -199,129 +199,135 @@ UninstallText $(MsgUninstall)
 Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isnt running..if so shut it down
 
-    StrCpy $0 "sabnzbd.exe"
-    DetailPrint "Searching for processes called '$0'"
-    KillProc::FindProcesses
-    StrCmp $1 "-1" wooops
-    DetailPrint "-> Found $0 processes"
+  StrCpy $0 "sabnzbd.exe"
+  DetailPrint "Searching for processes called '$0'"
+  KillProc::FindProcesses
+  StrCmp $1 "-1" wooops
+  DetailPrint "-> Found $0 processes"
 
-    StrCmp $0 "0" completed
-    Sleep 1500
+  StrCmp $0 "0" completed
+  Sleep 1500
 
-    StrCpy $0 "sabnzbd.exe"
-    DetailPrint "Killing all processes called '$0'"
-    KillProc::KillProcesses
-    StrCmp $1 "-1" wooops
-    DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
+  StrCpy $0 "sabnzbd.exe"
+  DetailPrint "Killing all processes called '$0'"
+  KillProc::KillProcesses
+  StrCmp $1 "-1" wooops
+  DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
 
-    Goto completed
+  Goto completed
 
-    wooops:
-    DetailPrint "-> Error: Something went wrong :-("
-    Abort
+  wooops:
+  DetailPrint "-> Error: Something went wrong :-("
+  Abort
 
-    completed:
-    DetailPrint "Process Killed"
+  completed:
+  DetailPrint "Process Killed"
 
 
-    ; add delete commands to delete whatever files/registry keys/etc you installed here.
-    Delete "$INSTDIR\uninstall.exe"
-    DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd"
-    DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd"
+  ; add delete commands to delete whatever files/registry keys/etc you installed here.
+  Delete "$INSTDIR\uninstall.exe"
+  DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd"
+  DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd"
 
-    ; Delete installation files are carefully as possible
-    ; Using just rmdir /r "$instdir" is considered unsafe!
-    Delete   "$INSTDIR\email\email-de.tmpl"
-    Delete   "$INSTDIR\email\email-en.tmpl"
-    Delete   "$INSTDIR\email\email-nl.tmpl"
-    Delete   "$INSTDIR\email\email-fr.tmpl"
-    Delete   "$INSTDIR\email\email-sv.tmpl"
-    Delete   "$INSTDIR\email\email-da.tmpl"
-    Delete   "$INSTDIR\email\email-nb.tmpl"
-    Delete   "$INSTDIR\email\rss-de.tmpl"
-    Delete   "$INSTDIR\email\rss-en.tmpl"
-    Delete   "$INSTDIR\email\rss-nl.tmpl"
-    Delete   "$INSTDIR\email\rss-fr.tmpl"
-    Delete   "$INSTDIR\email\rss-sv.tmpl"
-    Delete   "$INSTDIR\email\rss-da.tmpl"
-    Delete   "$INSTDIR\email\rss-nb.tmpl"
-    RMDir    "$INSTDIR\email"
-    RMDir /r "$INSTDIR\locale"
-    RMDir /r "$INSTDIR\interfaces\Classic"
-    RMDir /r "$INSTDIR\interfaces\Plush"
-    RMDir /r "$INSTDIR\interfaces\smpl"
-    RMDir /r "$INSTDIR\interfaces\Mobile"
-    RMDir /r "$INSTDIR\interfaces\wizard"
-    RMDir "$INSTDIR\interfaces"
-    RMDir /r "$INSTDIR\win\par2"
-    RMDir /r "$INSTDIR\win\unrar"
-    RMDir /r "$INSTDIR\win\unzip"
-    RMDir /r "$INSTDIR\win"
-    Delete "$INSTDIR\licenses\*.txt"
-    Delete "$INSTDIR\licenses\Python\*.txt"
-    RMDir "$INSTDIR\licenses\Python"
-    RMDir "$INSTDIR\licenses"
-    Delete "$INSTDIR\lib\libeay32.dll"
-    Delete "$INSTDIR\lib\pywintypes25.dll"
-    Delete "$INSTDIR\lib\ssleay32.dll"
-    Delete "$INSTDIR\lib\sabnzbd.zip"
-    Delete "$INSTDIR\lib\*.pyd"
-    RMDir  /r "$INSTDIR\lib\"
-    Delete "$INSTDIR\CHANGELOG.txt"
-    Delete "$INSTDIR\COPYRIGHT.txt"
-    Delete "$INSTDIR\email.tmpl"
-    Delete "$INSTDIR\GPL2.txt"
-    Delete "$INSTDIR\GPL3.txt"
-    Delete "$INSTDIR\INSTALL.txt"
-    Delete "$INSTDIR\ISSUES.txt"
-    Delete "$INSTDIR\LICENSE.txt"
-    Delete "$INSTDIR\nzbmatrix.txt"
-    Delete "$INSTDIR\MSVCR71.dll"
-    Delete "$INSTDIR\nzb.ico"
-    Delete "$INSTDIR\PKG-INFO"
-    Delete "$INSTDIR\python25.dll"
-    Delete "$INSTDIR\python26.dll"
-    Delete "$INSTDIR\README.txt"
-    Delete "$INSTDIR\SABnzbd-console.exe"
-    Delete "$INSTDIR\SABnzbd.exe"
-    Delete "$INSTDIR\Sample-PostProc.cmd"
-    Delete "$INSTDIR\Uninstall.exe"
-    Delete "$INSTDIR\w9xpopen.exe"
-    RMDir "$INSTDIR"
+  ; Delete installation files are carefully as possible
+  ; Using just rmdir /r "$instdir" is considered unsafe!
+  Delete   "$INSTDIR\email\email-de.tmpl"
+  Delete   "$INSTDIR\email\email-en.tmpl"
+  Delete   "$INSTDIR\email\email-nl.tmpl"
+  Delete   "$INSTDIR\email\email-fr.tmpl"
+  Delete   "$INSTDIR\email\email-sv.tmpl"
+  Delete   "$INSTDIR\email\email-da.tmpl"
+  Delete   "$INSTDIR\email\email-nb.tmpl"
+  Delete   "$INSTDIR\email\rss-de.tmpl"
+  Delete   "$INSTDIR\email\rss-en.tmpl"
+  Delete   "$INSTDIR\email\rss-nl.tmpl"
+  Delete   "$INSTDIR\email\rss-fr.tmpl"
+  Delete   "$INSTDIR\email\rss-sv.tmpl"
+  Delete   "$INSTDIR\email\rss-da.tmpl"
+  Delete   "$INSTDIR\email\rss-nb.tmpl"
+  RMDir    "$INSTDIR\email"
+  RMDir /r "$INSTDIR\locale"
+  RMDir /r "$INSTDIR\interfaces\Classic"
+  RMDir /r "$INSTDIR\interfaces\Plush"
+  RMDir /r "$INSTDIR\interfaces\smpl"
+  RMDir /r "$INSTDIR\interfaces\Mobile"
+  RMDir /r "$INSTDIR\interfaces\wizard"
+  RMDir "$INSTDIR\interfaces"
+  RMDir /r "$INSTDIR\win\par2"
+  RMDir /r "$INSTDIR\win\unrar"
+  RMDir /r "$INSTDIR\win\unzip"
+  RMDir /r "$INSTDIR\win"
+  Delete "$INSTDIR\licenses\*.txt"
+  Delete "$INSTDIR\licenses\Python\*.txt"
+  RMDir "$INSTDIR\licenses\Python"
+  RMDir "$INSTDIR\licenses"
+  Delete "$INSTDIR\lib\libeay32.dll"
+  Delete "$INSTDIR\lib\pywintypes25.dll"
+  Delete "$INSTDIR\lib\ssleay32.dll"
+  Delete "$INSTDIR\lib\sabnzbd.zip"
+  Delete "$INSTDIR\lib\*.pyd"
+  RMDir  /r "$INSTDIR\lib\"
+  RMDir  /r "$INSTDIR\po\email"
+  RMDir  /r "$INSTDIR\po\main"
+  RMDir  /r "$INSTDIR\po\nsis"
+  RMDIR  "$INSTDIR\po"
+  Delete "$INSTDIR\CHANGELOG.txt"
+  Delete "$INSTDIR\COPYRIGHT.txt"
+  Delete "$INSTDIR\email.tmpl"
+  Delete "$INSTDIR\GPL2.txt"
+  Delete "$INSTDIR\GPL3.txt"
+  Delete "$INSTDIR\INSTALL.txt"
+  Delete "$INSTDIR\ISSUES.txt"
+  Delete "$INSTDIR\LICENSE.txt"
+  Delete "$INSTDIR\nzbmatrix.txt"
+  Delete "$INSTDIR\MSVCR71.dll"
+  Delete "$INSTDIR\nzb.ico"
+  Delete "$INSTDIR\PKG-INFO"
+  Delete "$INSTDIR\python25.dll"
+  Delete "$INSTDIR\python26.dll"
+  Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\SABnzbd-console.exe"
+  Delete "$INSTDIR\SABnzbd.exe"
+  Delete "$INSTDIR\SABnzbd-helper.exe"
+  Delete "$INSTDIR\SABnzbd-service.exe"
+  Delete "$INSTDIR\Sample-PostProc.cmd"
+  Delete "$INSTDIR\Uninstall.exe"
+  Delete "$INSTDIR\w9xpopen.exe"
+  RMDir "$INSTDIR"
 
-    !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
-    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
-    RMDir  "$SMPROGRAMS\$MUI_TEMP"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+  RMDir  "$SMPROGRAMS\$MUI_TEMP"
 
-    Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
 
-    Delete "$DESKTOP\SABnzbd.lnk"
+  Delete "$DESKTOP\SABnzbd.lnk"
 
-    DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
+  DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
 
-    ${unregisterExtension} ".nzb" "NZB File"
+  ${unregisterExtension} ".nzb" "NZB File"
 
 
 SectionEnd ; end of uninstall section
 
 Section "un.$(MsgDelSettings)" DelSettings
-    Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
-    RMDir /r "$LOCALAPPDATA\sabnzbd\admin"
+  Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
+  RMDir /r "$LOCALAPPDATA\sabnzbd\admin"
 SectionEnd
 
 
 Section "un.$(MsgDelLogs)" DelLogs
-    RMDir /r "$LOCALAPPDATA\sabnzbd\logs"
+  RMDir /r "$LOCALAPPDATA\sabnzbd\logs"
 SectionEnd
 
 
 Section "un.$(MsgDelCache)" DelCache
-    RMDir /r "$LOCALAPPDATA\sabnzbd\cache"
-    RMDir "$LOCALAPPDATA\sabnzbd"
+  RMDir /r "$LOCALAPPDATA\sabnzbd\cache"
+  RMDir "$LOCALAPPDATA\sabnzbd"
 SectionEnd
 
 ; eof
