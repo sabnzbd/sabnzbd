@@ -222,7 +222,7 @@ def patch_nsis():
                         line = '%s%s} "%s"\n' % (leader, lng, trans)
                         new.append(line)
                     elif lng is None:
-                        print 'Warning: unsupported language %s, add to table in this script' % langname
+                        print 'Warning: unsupported language %s (%s), add to table in this script' % (langname, lcode)
         else:
             new.append(line)
     src.close()

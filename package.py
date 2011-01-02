@@ -295,7 +295,6 @@ data_files = [
          'PKG-INFO',
          'licenses/',
          'locale/',
-         'po/',
          'email/',
          'interfaces/Classic/',
          'interfaces/smpl/',
@@ -349,9 +348,9 @@ if target == 'app':
     options['description'] = 'SABnzbd ' + str(my_version)
 
     #remove prototype and iphone interfaces
-    os.system("rm -rf interfaces/prototype>/dev/null")
-    os.system("rm -rf interfaces/Concept>/dev/null")
-    os.system("rm -rf interfaces/iphone>/dev/null")
+    #os.system("rm -rf interfaces/prototype>/dev/null")
+    #os.system("rm -rf interfaces/Concept>/dev/null")
+    #os.system("rm -rf interfaces/iphone>/dev/null")
 
     #Create MO files
     os.system('python ./tools/make_mo.py all')
@@ -400,15 +399,17 @@ if target == 'app':
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     #cleanup src dir
-    os.system("rm -rf dist/>/dev/null")
-    os.system("rm -rf build/>/dev/null")
-    os.system("find ./ -name *.pyc | xargs rm")
-    os.system("rm -rf NSIS_Installer.nsi")
-    os.system("rm -rf win/")
-    os.system("rm -rf cherrypy*.zip")
+    #os.system("rm -rf dist/>/dev/null")
+    #os.system("rm -rf build/>/dev/null")
+    #os.system("find ./ -name *.pyc | xargs rm")
+    #os.system("rm -rf NSIS_Installer.nsi")
+    #os.system("rm -rf win/")
+    #os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
-    os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
+    os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "cherrypy*.zip" '
+              './ >/dev/null' % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     #os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
@@ -561,6 +562,7 @@ else:
         os.mkdir(root)
 
     # Set data files
+    data_files.extend(['po/'])
     options['data_files'] = PairList(data_files)
     options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 
