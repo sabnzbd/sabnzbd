@@ -330,15 +330,15 @@ SectionEnd
 ;Language strings
 ; MsgWarnRunning 'Please close "SABnzbd.exe" first'
   LangString MsgStartSab    ${LANG_ENGLISH} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_DANISH} "Start SABnzbd (hidden)"
+  LangString MsgStartSab    ${LANG_DANISH} "Start SABnzbd"
   LangString MsgStartSab    ${LANG_GERMAN} "SABnzbd starten (unsichtbar)"
-  LangString MsgStartSab    ${LANG_FRENCH} "Lancer SABnzbd (caché)"
+  LangString MsgStartSab    ${LANG_FRENCH} "Démarrer SABnzbd (caché)"
   LangString MsgStartSab    ${LANG_NORWEGIAN} "Start SABnzbd (hidden)"
   LangString MsgStartSab    ${LANG_DUTCH} "Start SABnzbd (verborgen)"
   LangString MsgStartSab    ${LANG_SWEDISH} "Starta SABnzbd (dold)"
 
   LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_DANISH} "Show Release Notes"
+  LangString MsgShowRelNote ${LANG_DANISH} "Vis udgivelsesbemærkninger"
   LangString MsgShowRelNote ${LANG_GERMAN} "Versionshinweise anzeigen"
   LangString MsgShowRelNote ${LANG_FRENCH} "Afficher les notes de version"
   LangString MsgShowRelNote ${LANG_NORWEGIAN} "Show Release Notes"
@@ -346,7 +346,7 @@ SectionEnd
   LangString MsgShowRelNote ${LANG_SWEDISH} "Visa release noteringar"
 
   LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_DANISH} "Support the project, Donate!"
+  LangString MsgSupportUs   ${LANG_DANISH} "Støtte projektet, donere!"
   LangString MsgSupportUs   ${LANG_GERMAN} "Bitte unterstützen Sie das Projekt durch eine Spende!"
   LangString MsgSupportUs   ${LANG_FRENCH} "Supportez le projet, faites un don !"
   LangString MsgSupportUs   ${LANG_NORWEGIAN} "Support the project, Donate!"
@@ -354,7 +354,7 @@ SectionEnd
   LangString MsgSupportUs   ${LANG_SWEDISH} "Donera och stöd detta projekt!"
 
   LangString MsgCloseSab    ${LANG_ENGLISH} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_DANISH} "Please close $\"SABnzbd.exe$\" first"
+  LangString MsgCloseSab    ${LANG_DANISH} "Luk 'SABnzbd.exe' først"
   LangString MsgCloseSab    ${LANG_GERMAN} "Schliessen Sie bitte zuerst $\"SABnzbd.exe$\"."
   LangString MsgCloseSab    ${LANG_FRENCH} "Quittez $\"SABnzbd.exe$\" avant l'installation, SVP"
   LangString MsgCloseSab    ${LANG_NORWEGIAN} "Please close $\"SABnzbd.exe$\" first"
@@ -370,7 +370,7 @@ SectionEnd
   LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_DANISH} "This will uninstall SABnzbd from your system"
+  LangString MsgUninstall   ${LANG_DANISH} "Dette vil afinstallere SABnzbd fra dit system"
   LangString MsgUninstall   ${LANG_GERMAN} "Dies entfernt SABnzbd von Ihrem System"
   LangString MsgUninstall   ${LANG_FRENCH} "Ceci désinstallera SABnzbd de votre système"
   LangString MsgUninstall   ${LANG_NORWEGIAN} "This will uninstall SABnzbd from your system"
@@ -378,7 +378,7 @@ SectionEnd
   LangString MsgUninstall   ${LANG_SWEDISH} "Detta kommer att avinstallera SABnzbd från systemet"
 
   LangString MsgRunAtStart  ${LANG_ENGLISH} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_DANISH} "Run at startup"
+  LangString MsgRunAtStart  ${LANG_DANISH} "Kør ved opstart"
   LangString MsgRunAtStart  ${LANG_GERMAN} "Beim Systemstart ausführen"
   LangString MsgRunAtStart  ${LANG_FRENCH} "Lancer au démarrage"
   LangString MsgRunAtStart  ${LANG_NORWEGIAN} "Run at startup"
@@ -386,7 +386,7 @@ SectionEnd
   LangString MsgRunAtStart  ${LANG_SWEDISH} "Kör vid uppstart"
 
   LangString MsgIcon        ${LANG_ENGLISH} "Desktop Icon"
-  LangString MsgIcon        ${LANG_DANISH} "Desktop Icon"
+  LangString MsgIcon        ${LANG_DANISH} "Skrivebords ikon"
   LangString MsgIcon        ${LANG_GERMAN} "Desktop-Symbol"
   LangString MsgIcon        ${LANG_FRENCH} "Icône sur le Bureau"
   LangString MsgIcon        ${LANG_NORWEGIAN} "Desktop Icon"
@@ -394,7 +394,7 @@ SectionEnd
   LangString MsgIcon        ${LANG_SWEDISH} "Skrivbordsikon"
 
   LangString MsgAssoc       ${LANG_ENGLISH} "NZB File association"
-  LangString MsgAssoc       ${LANG_DANISH} "NZB File association"
+  LangString MsgAssoc       ${LANG_DANISH} "NZB filtilknytning"
   LangString MsgAssoc       ${LANG_GERMAN} "Mit NZB-Dateien verknüpfen"
   LangString MsgAssoc       ${LANG_FRENCH} "Association des fichiers NZB"
   LangString MsgAssoc       ${LANG_NORWEGIAN} "NZB File association"
@@ -402,7 +402,7 @@ SectionEnd
   LangString MsgAssoc       ${LANG_SWEDISH} "NZB Filassosication"
 
   LangString MsgDelProgram  ${LANG_ENGLISH} "Delete Program"
-  LangString MsgDelProgram  ${LANG_DANISH} "Delete Program"
+  LangString MsgDelProgram  ${LANG_DANISH} "Slet program"
   LangString MsgDelProgram  ${LANG_GERMAN} "Programm löschen"
   LangString MsgDelProgram  ${LANG_FRENCH} "Supprimer le programme"
   LangString MsgDelProgram  ${LANG_NORWEGIAN} "Delete Program"
@@ -410,15 +410,15 @@ SectionEnd
   LangString MsgDelProgram  ${LANG_SWEDISH} "Ta bort programmet"
 
   LangString MsgDelSettings ${LANG_ENGLISH} "Delete Settings"
-  LangString MsgDelSettings ${LANG_DANISH} "Delete Settings"
+  LangString MsgDelSettings ${LANG_DANISH} "Slet instillinger"
   LangString MsgDelSettings ${LANG_GERMAN} "Einstellungen löschen"
-  LangString MsgDelSettings ${LANG_FRENCH} "Supprimer Paramètres"
+  LangString MsgDelSettings ${LANG_FRENCH} "Supprimer les Paramètres"
   LangString MsgDelSettings ${LANG_NORWEGIAN} "Delete Settings"
   LangString MsgDelSettings ${LANG_DUTCH} "Verwijder instellingen"
   LangString MsgDelSettings ${LANG_SWEDISH} "Ta bort inställningar"
 
   LangString MsgDelLogs     ${LANG_ENGLISH} "Delete Logs"
-  LangString MsgDelLogs     ${LANG_DANISH} "Delete Logs"
+  LangString MsgDelLogs     ${LANG_DANISH} "Slet logs"
   LangString MsgDelLogs     ${LANG_GERMAN} "Protokoll löschen"
   LangString MsgDelLogs     ${LANG_FRENCH} "Supprimer les logs"
   LangString MsgDelLogs     ${LANG_NORWEGIAN} "Delete Logs"
@@ -426,9 +426,9 @@ SectionEnd
   LangString MsgDelLogs     ${LANG_SWEDISH} "Ta bort logg"
 
   LangString MsgDelCache    ${LANG_ENGLISH} "Delete Cache"
-  LangString MsgDelCache    ${LANG_DANISH} "Delete Cache"
+  LangString MsgDelCache    ${LANG_DANISH} "Slet hukommelse"
   LangString MsgDelCache    ${LANG_GERMAN} "Cache löschen"
-  LangString MsgDelCache    ${LANG_FRENCH} "Supprimer le cache"
+  LangString MsgDelCache    ${LANG_FRENCH} "Supprimer le Cache"
   LangString MsgDelCache    ${LANG_NORWEGIAN} "Delete Cache"
   LangString MsgDelCache    ${LANG_DUTCH} "Verwijder Cache"
   LangString MsgDelCache    ${LANG_SWEDISH} "Ta bort temporär-mapp"
