@@ -25,6 +25,10 @@ import re
 import datetime
 import time
 import cherrypy
+try:
+    import win32api, win32file
+except ImportError:
+    pass
 
 
 import sabnzbd
@@ -1626,7 +1630,11 @@ def list_scripts(default=False):
     lst = []
     path = cfg.script_dir.get_path()
     if path and os.access(path, os.R_OK):
-        lst = [os.path.basename(script) for script in globber(path) if script not in ('_bzr', '.bzr')]
+        for script in globber(path):
+            if os.path.isfile(script):
+                if (sabnzbd.WIN32 and not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
+                   (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
+                    lst.append(os.path.basename(script))
         if default:
             lst.insert(0, 'Default')
         lst.insert(0, 'None')
