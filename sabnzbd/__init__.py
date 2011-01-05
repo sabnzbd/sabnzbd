@@ -691,7 +691,7 @@ def change_queue_complete_action(action, new=True):
 
 def run_script(script):
     """ Run a user script (queue complete only) """
-    command = os.path.join(cfg.script_dir.get_path(), script)
+    command = [os.path.join(cfg.script_dir.get_path(), script)]
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('Spawning external command %s', command)
     subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
