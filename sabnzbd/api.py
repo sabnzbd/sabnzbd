@@ -93,6 +93,10 @@ def _api_set_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
     if kwargs.get('section') == 'servers':
         kwargs['keyword'] = handle_server_api(output, kwargs)
+    elif kwargs.get('section') == 'rss':
+        kwargs['keyword'] = handle_rss_api(output, kwargs)
+    elif kwargs.get('section') == 'categories':
+        kwargs['keyword'] = handle_cat_api(output, kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
@@ -791,7 +795,7 @@ class xml_factory(object):
 
 #------------------------------------------------------------------------------
 def handle_server_api(output, kwargs):
-    """ Special handler for API-call 'set_config'
+    """ Special handler for API-call 'set_config' [servers]
     """
     name = kwargs.get('keyword')
     if not name:
@@ -814,6 +818,42 @@ def handle_server_api(output, kwargs):
         config.ConfigServer(name, kwargs)
         old_name = None
     Downloader.do.update_server(old_name, name)
+    return name
+
+
+#------------------------------------------------------------------------------
+def handle_rss_api(output, kwargs):
+    """ Special handler for API-call 'set_config' [rss]
+    """
+    name = kwargs.get('keyword')
+    if not name:
+        name = kwargs.get('name')
+    if not name:
+        return None
+
+    feed = config.get_config('rss', name)
+    if feed:
+        feed.set_dict(kwargs)
+    else:
+        config.ConfigRSS(name, kwargs)
+    return name
+
+
+#------------------------------------------------------------------------------
+def handle_cat_api(output, kwargs):
+    """ Special handler for API-call 'set_config' [categories]
+    """
+    name = kwargs.get('keyword')
+    if not name:
+        name = kwargs.get('name')
+    if not name:
+        return None
+
+    feed = config.get_config('categories', name)
+    if feed:
+        feed.set_dict(kwargs)
+    else:
+        config.ConfigCat(name, kwargs)
     return name
 
 
