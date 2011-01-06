@@ -306,16 +306,15 @@ class RSSQueue(object):
                     n = 0
 
                     for n in xrange(regcount):
+                        myCat = defCat
                         myPP = defPP
                         myScript = defScript
                         myPrio = defPrio
 
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
-                        elif category:
+                        elif category and not defCat:
                             myCat = cat_convert(category)
-                        else:
-                            myCat = defCat
                         myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         if notdefault(rePPs[n]):
                             myPP = rePPs[n]
