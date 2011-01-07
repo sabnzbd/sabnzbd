@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -160,7 +160,7 @@ class URLGrabber(Thread):
                 pp = future_nzo.pp
                 script = future_nzo.script
                 cat = future_nzo.cat
-                if cat is None and category:
+                if (cat is None or cat == '*') and category:
                     cat = misc.cat_convert(category)
                 priority = future_nzo.priority
                 nzbname = future_nzo.custom_name

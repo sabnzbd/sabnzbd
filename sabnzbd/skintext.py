@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -328,6 +328,8 @@ SKIN_TEXT = {
     'explain-no_dupes' : TT('Skip a job if a backed-up .nzb with the same name exists.'),
     'opt-sfv_check' : TT('Enable SFV-based checks'),
     'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
+    'opt-folder_rename' : TT('Enable folder rename'),
+    'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-dirscan_opts' : TT('Default Post-Processing'),
     'explain-dirscan_opts' : TT('Used when no post-processing is defined by the category.'),
     'opt-dirscan_script' : TT('Default User Script'),
@@ -355,6 +357,8 @@ SKIN_TEXT = {
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'opt-replace_spaces' : TT('Replace Spaces in Foldername'),
     'explain-replace_spaces' : TT('Replace spaces with underscores in folder names.'),
+    'opt-replace_dots' : TT('Replace dots in Foldername'),
+    'explain-replace_dots' : TT('Replace dots with spaces in folder names.'),
     'opt-replace_illegal' : TT('Replace Illegal Characters in Folder Names'),
     'explain-replace_illegal' : TT('Replace illegal characters in folder names by equivalents (otherwise remove).'),
     'opt-auto_browser' : TT('Launch Browser on Startup'),
@@ -664,6 +668,7 @@ SKIN_TEXT = {
     'Plush-freeSpace' : TT('Free Space'),
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
+    'Plush-downloads' : TT('Downloads'),
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),

@@ -9,10 +9,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 <html>
 <head>
-    
+
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${path}rss?mode=history"/>
-    
+
     <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/smoothness/jquery-ui-1.8.7.custom.css?$version"/>
     #if $color_scheme#
     <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
@@ -21,7 +21,7 @@
     <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
     <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/gold/gold.css?$version"/>
     #end if#
-    
+
     <script type="text/javascript" src="${path}static/javascripts/lib.js?$version"></script>
 
 #if $pane=="Main"#
@@ -52,35 +52,35 @@
 		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
     </script>
 #end if#
-    
+
 </head>
 <body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
-	
-	<div class="wrapper">  
+
+	<div class="wrapper">
 		<div class="navigation">
-			<ul class="menu" rel="sam1" style="float:right">  
+			<ul class="menu" rel="sam1" style="float:right">
 			#if $pane=="Main"#
-				<li class="first"><a href="#" id="add_nzb"><span class="icon_nav_addnzb">$T('Plush-addnzb')</span></a></li>  
-				<li><a href="#" id="plush_options"><span class="icon_nav_options">$T('options').capitalize()</span></a></li>  
-				<li><a href="#" id="manual_refresh_wrapper"><span class="icon_nav_refresh">$T('Plush-button-refresh')</span></a></li>  
-				<li class="last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
+				<li class="first"><a href="#" id="add_nzb"><span class="icon_nav_addnzb">$T('Plush-addnzb')</span></a></li>
+				<li><a href="#" id="plush_options"><span class="icon_nav_options">$T('Plush-options').capitalize()</span></a></li>
+				<li><a href="#" id="manual_refresh_wrapper"><span class="icon_nav_refresh">$T('Plush-button-refresh')</span></a></li>
+				<li class="last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>
 			#else#
-				<li class="first last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>  
+				<li class="first last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>
 			#end if#
-			</ul>  
-			<ul class="menu" rel="sam1">  
-				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('downloads').capitalize()</span></a></li>  
-				<li#if $pane=="Connections"# class="active"#end if#><a href="${path}connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>  
-				<li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>  
-				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('config').capitalize()</span></a></li>  
-			</ul>  
+			</ul>
+			<ul class="menu" rel="sam1">
+				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('Plush-downloads').capitalize()</span></a></li>
+				<li#if $pane=="Connections"# class="active"#end if#><a href="${path}connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>
+				<li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
+				<li#if $pane!="RSS" and ($pane=="Config" or $path=='../..')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
+			</ul>
 		</div>
 		#if $pane=="Main"#
 	        #if $new_release#<a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
 		    #if $warning#<a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
 		#end if#
 	</div>
-	
+
 	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
 
 #if $pane=="Main"#
@@ -91,7 +91,7 @@
 	<br/>
 	<div style="width:85%; margin:auto;">
 #else#
-    
+
 	<br/>
     <div class="config_nav">
         <ul>
@@ -115,7 +115,7 @@
             	<div class="config_sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
         </ul>
     </div>
-    
+
     <div id="config_container" class="config_margin">
         <div id="config_content">
 

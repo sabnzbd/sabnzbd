@@ -66,6 +66,11 @@
 		    <span class="tips">$T('explain-sfv_check')</span></label>
 		<br class="clear" />
 
+		    <label><span class="label">$T('opt-folder_rename'):</span>
+		    <input class="radio" type="checkbox" name="folder_rename" value="1" <!--#if $folder_rename > 0 then 'checked="1"' else ""#--> />
+		    <span class="tips">$T('explain-folder_rename')</span></label>
+		<br class="clear" />
+
 		    <span class="label">$T('opt-pre_script'):</span>
             <select name="pre_script" id="pre_script" class="select">
             <!--#for $sc in $script_list#-->
@@ -134,6 +139,11 @@
 			<label><span class="label">$T('opt-replace_spaces'):</span>
 		    <input class="radio" type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then 'checked="1"' else ""#--> />
 		    <span class="tips">$T('explain-replace_spaces')</span></label>
+ 		<br class="clear" />
+
+			<label><span class="label">$T('opt-replace_dots'):</span>
+		    <input class="radio" type="checkbox" name="replace_dots" value="1" <!--#if $replace_dots > 0 then 'checked="1"' else ""#--> />
+		    <span class="tips">$T('explain-replace_dots')</span></label>
  		<br class="clear" />
 
 			<label><span class="label">$T('opt-replace_illegal'):</span>

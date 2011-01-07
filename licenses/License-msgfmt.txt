@@ -1,0 +1,4 @@
+The file tools/msgfmt.py was taken from the Python for Windows distribution
+and is covered by the general Python license.
+
+Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>

@@ -16,7 +16,7 @@
 
 
 	<div id="tabs-processingSwitches">
-	
+
 	    <table cellpadding=2>
 	        <tr>
 	            <td class=alignRight><div class="tucker">$T('opt-quick_check'):</div></td>
@@ -74,6 +74,11 @@
 	            <td><small>$T('explain-sfv_check')</small></td>
 	        </tr>
 	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-folder_rename'):</div></td>
+	            <td><input type="checkbox" name="folder_rename" value="1" <!--#if $folder_rename > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-folder_rename')</small></td>
+	        </tr>
+	        <tr>
 	            <td class=alignRight valign=top><div class="tucker">$T('opt-top_only'):</div></td>
 	            <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
 	            <td><small>$T('explain-top_only')</small></td>
@@ -87,7 +92,7 @@
 	        <!--#end if#-->
 	    </table>
 
-	</div>	
+	</div>
 
 
 	<div id="tabs-switches">
@@ -143,10 +148,10 @@
 
 	</div>
 
-	
+
 	<div id="tabs-otherSwitches">
-	
-	
+
+
 	    <table cellpadding=2>
 	        <tr>
 	            <td class=alignRight><div class="tucker">$T('opt-check_new_rel'):</div></td>
@@ -177,6 +182,11 @@
 	            <td class=alignRight><div class="tucker">$T('opt-replace_spaces'):</div></td>
 	            <td><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /></td>
 	            <td><small>$T('explain-replace_spaces')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-replace_dots'):</div></td>
+	            <td><input type="checkbox" name="replace_dots" value="1" <!--#if $replace_dots > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-replace_dots')</small></td>
 	        </tr>
 	        <tr>
 	            <td class=alignRight><div class="tucker">$T('opt-replace_illegal'):</div></td>

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -111,7 +111,7 @@ class MSGIDGrabber(Thread):
                 pp = nzo.pp
                 script = nzo.script
                 cat = nzo.cat
-                if not cat:
+                if cat == '*' or not cat:
                     cat = cat_convert(newzbin_cat)
 
                 priority = nzo.priority

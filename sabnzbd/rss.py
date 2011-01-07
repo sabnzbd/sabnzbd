@@ -95,7 +95,7 @@ def clear_feed(feed):
 def notdefault(item):
     """ Return True if not None/"None"/"Default"/""
     """
-    return bool(item) and isinstance(item, str) and item.lower() not in ('default', 'none')
+    return bool(item) and isinstance(item, str) and item.lower() not in ('default', 'none', '*')
 
 
 def ListUris():
@@ -306,16 +306,15 @@ class RSSQueue(object):
                     n = 0
 
                     for n in xrange(regcount):
+                        myCat = defCat
                         myPP = defPP
                         myScript = defScript
                         myPrio = defPrio
 
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
-                        elif category:
+                        elif category and not defCat:
                             myCat = cat_convert(category)
-                        else:
-                            myCat = defCat
                         myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         if notdefault(rePPs[n]):
                             myPP = rePPs[n]

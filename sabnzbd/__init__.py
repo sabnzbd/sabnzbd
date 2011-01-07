@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -679,7 +679,7 @@ def change_queue_complete_action(action, new=True):
         action = None
 
     if new:
-        cfg.queue_complete.set(action)
+        cfg.queue_complete.set(action or '')
         config.save_config()
 
     #keep the name of the action for matching the current select in queue.tmpl
@@ -691,7 +691,7 @@ def change_queue_complete_action(action, new=True):
 
 def run_script(script):
     """ Run a user script (queue complete only) """
-    command = os.path.join(cfg.script_dir.get_path(), script)
+    command = [os.path.join(cfg.script_dir.get_path(), script)]
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('Spawning external command %s', command)
     subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,

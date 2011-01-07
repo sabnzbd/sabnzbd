@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,6 +25,10 @@ import re
 import datetime
 import time
 import cherrypy
+try:
+    import win32api, win32file
+except ImportError:
+    pass
 
 
 import sabnzbd
@@ -71,8 +75,12 @@ def api_handler(kwargs):
     mode = kwargs.get('mode', '')
     output = kwargs.get('output')
     name = kwargs.get('name', '')
+    callback = kwargs.get('callback', '')
 
-    return _api_table.get(mode, _api_undefined)(name, output, kwargs)
+    response = _api_table.get(mode, _api_undefined)(name, output, kwargs)
+    if output == 'json' and callback:
+        response = '%s(%s)' % (callback, response)
+    return response
 
 
 #------------------------------------------------------------------------------
@@ -85,6 +93,10 @@ def _api_set_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
     if kwargs.get('section') == 'servers':
         kwargs['keyword'] = handle_server_api(output, kwargs)
+    elif kwargs.get('section') == 'rss':
+        kwargs['keyword'] = handle_rss_api(output, kwargs)
+    elif kwargs.get('section') == 'categories':
+        kwargs['keyword'] = handle_cat_api(output, kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
@@ -783,7 +795,7 @@ class xml_factory(object):
 
 #------------------------------------------------------------------------------
 def handle_server_api(output, kwargs):
-    """ Special handler for API-call 'set_config'
+    """ Special handler for API-call 'set_config' [servers]
     """
     name = kwargs.get('keyword')
     if not name:
@@ -806,6 +818,42 @@ def handle_server_api(output, kwargs):
         config.ConfigServer(name, kwargs)
         old_name = None
     Downloader.do.update_server(old_name, name)
+    return name
+
+
+#------------------------------------------------------------------------------
+def handle_rss_api(output, kwargs):
+    """ Special handler for API-call 'set_config' [rss]
+    """
+    name = kwargs.get('keyword')
+    if not name:
+        name = kwargs.get('name')
+    if not name:
+        return None
+
+    feed = config.get_config('rss', name)
+    if feed:
+        feed.set_dict(kwargs)
+    else:
+        config.ConfigRSS(name, kwargs)
+    return name
+
+
+#------------------------------------------------------------------------------
+def handle_cat_api(output, kwargs):
+    """ Special handler for API-call 'set_config' [categories]
+    """
+    name = kwargs.get('keyword')
+    if not name:
+        name = kwargs.get('name')
+    if not name:
+        return None
+
+    feed = config.get_config('categories', name)
+    if feed:
+        feed.set_dict(kwargs)
+    else:
+        config.ConfigCat(name, kwargs)
     return name
 
 
@@ -1622,7 +1670,11 @@ def list_scripts(default=False):
     lst = []
     path = cfg.script_dir.get_path()
     if path and os.access(path, os.R_OK):
-        lst = [os.path.basename(script) for script in globber(path) if script not in ('_bzr', '.bzr')]
+        for script in globber(path):
+            if os.path.isfile(script):
+                if (sabnzbd.WIN32 and not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
+                   (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
+                    lst.append(os.path.basename(script))
         if default:
             lst.insert(0, 'Default')
         lst.insert(0, 'None')

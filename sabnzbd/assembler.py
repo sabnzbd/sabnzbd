@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -255,8 +255,10 @@ def check_encrypted_rar(nzo, filepath):
     if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
         zf = RarFile(filepath)
         encrypted = zf.encrypted
-        if encrypted:
-            nzo.encrypted = True
+        if encrypted and int(nzo.encrypted) < 2:
+            nzo.encrypted = 1
+        else:
+            encrypted = False
         zf.close()
         del zf
     return encrypted

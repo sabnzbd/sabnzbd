@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: utf-8 -*-
-# Copyright 2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2010-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ import re
 import sys
 import gettext
 
+TOOL = 'msgfmt'
 PO_DIR = 'po/main'
 POE_DIR = 'po/email'
 PON_DIR = 'po/nsis'
@@ -127,16 +128,6 @@ LanguageTable = {
     'zu' : ('Zulu', 'isi Zulu'),
 }
 
-# Determine location of PyGetText tool
-path, exe = os.path.split(sys.executable)
-if os.name == 'nt':
-    TOOL = os.path.join(path, r'Tools\i18n\msgfmt.py')
-else:
-    TOOL = os.path.join(path, 'msgfmt.py')
-if not os.path.exists(TOOL):
-    TOOL = 'msgfmt'
-
-
 # Filter for retrieving readable language from PO file
 RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
@@ -231,7 +222,7 @@ def patch_nsis():
                         line = '%s%s} "%s"\n' % (leader, lng, trans)
                         new.append(line)
                     elif lng is None:
-                        print 'Warning: unsupported language %s, add to table in this script' % langname
+                        print 'Warning: unsupported language %s (%s), add to table in this script' % (langname, lcode)
         else:
             new.append(line)
     src.close()
@@ -241,6 +232,12 @@ def patch_nsis():
         dst.write(line)
     dst.close()
 
+
+# Determine location of MsgFmt tool
+path, py = os.path.split(sys.argv[0])
+tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
+if os.path.exists(tl):
+    TOOL = tl
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'

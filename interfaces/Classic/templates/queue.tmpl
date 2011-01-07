@@ -63,7 +63,7 @@ $T('onQueueFinish'):
         <tr class="<!--#if $odd then "odd" else "even"#--> $slot.priority $slot.status">
         <td><a class="verbosity_link" href="./tog_uid_verbose?session=$session&uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
         <td>
-            <input type="submit" onclick="if(confirm('$T('confirm').replace("'","`") ')){ if (confirm('$T('delFiles').replace("'","`") ')) window.location='delete?uid=$slot.nzo_id&del_files=1&session=$session'; else window.location='delete?uid=$slot.nzo_id&del_files=0&session=$session'; return false;}" value="$T('button-del')">
+            <input type="submit" onclick="if (confirm('$T('delFiles').replace("'","`") ')) window.location='delete?uid=$slot.nzo_id&del_files=1&session=$session'; else window.location='delete?uid=$slot.nzo_id&del_files=0&session=$session'; return false;" value="$T('button-del')">
             <!--#if $slot.status == 'Paused'#-->
                 <form action="resume_nzo" method="get">
                 <input type="hidden" value="$slot.nzo_id" name="uid">

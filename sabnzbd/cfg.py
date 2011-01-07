@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -197,7 +197,7 @@ enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
 ssl_type = OptionStr('misc', 'ssl_type', 'v23')
-unpack_check = OptionBool('misc', 'unpack_check', True)
+unpack_check = OptionBool('misc', 'unpack_check', False)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 
 # Internal options, not saved in INI file

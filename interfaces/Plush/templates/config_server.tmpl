@@ -14,18 +14,18 @@
 		<!--#set $cur = 0#-->
 		<!--#for $server in $slist#-->
 			<!--#set $cur = $cur + 1#-->
-				<li><a href="#tabs-server$cur">$servers[$server]['host']:$servers[$server]['port']</a></li>
+				<li><a href="#tabs-server$cur">$server</a></li>
 		    <!--#end for#-->
 		<!--#end if#-->
 	</ul>
-	
-	
-	
+
+
+
 	<div id="tabs-addServer">
-	
+
 		<form action="addServer" method="post" autocomplete="off">
 		<input type="hidden" name="session" value="$session">
-	
+
 	    <table cellpadding=2>
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host"/></td></tr>
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port"/></td></tr>
@@ -33,16 +33,16 @@
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username"/></td></tr>
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password"/></td></tr>
 	    </table>
-	
+
 	    <br/>
-	
+
 	    <table>
 	    <tr><td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
 	    <tr><td class="alignRight"><div class="sucker">$T('srv-retention'):</div></td><td><input type="text" size="5" name="retention"/>&nbsp;<small>$T('days')</small></td></tr>
 	    <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('seconds')</small></td></tr>
-	
+
 	    <tr><td colspan="2">&nbsp;</td></tr>
-	
+
 	    <tr>
 	    	<td class="alignRight"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
 	    	<td><label for="enable"><strong>$T('srv-enable')</strong></label></td>
@@ -59,13 +59,13 @@
 	    	<td class="alignRight"><input type="checkbox" name="optional" id="optional" value="1"/></td>
 	    	<td><label for="optional"><strong>$T('srv-optional')</strong></label></td>
 	    </tr>
-	
+
 	    <tr><td></td><td><br/>
 			<input type="submit" value="$T('button-addServer')" />
 			<input type="button" value="$T('button-testServer')" class="testServer" />
 			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 		</td></tr>
-	
+
 	    </table>
 
 		</form>
@@ -78,12 +78,12 @@
 	<!--#for $server in $slist#-->
 		<!--#set $cur = $cur + 1#-->
 	<div id="tabs-server$cur">
-		
-		
+
+
 		<form action="saveServer" method="post" autocomplete="off">
 		<input type="hidden" name="session" value="$session">
-	
-<!--	
+
+<!--
 	    <legend class="server<!--#if int($servers[$server]['enable']) != 0#--><!--#if int($servers[$server]['fillserver']) != 0#-->Backup<!--#else if int($servers[$server]['optional']) != 0#-->Optional<!--#else#-->Enabled<!--#end if#--><!--#else#-->Disabled<!--#end if#-->"><span class="config_sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> </legend>
 -->
 
@@ -94,9 +94,9 @@
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
 	        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
 	    </table>
-	
+
 	    <br/>
-	
+
 	    <table>
 	    <tr>
 	        <td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td>
@@ -128,7 +128,7 @@
 	        <td><label for="optional$cur"><strong>$T('srv-optional')</strong></label></td>
 	    </tr>
 	    </table>
-	
+
 		<table><tr><td colspan="2">
 			<br/><input type="hidden" name="server" value="$server"/>
 			<input type="button" value="$T('button-delServer')" class="delServer" rel="$T('Plush-confirm') "/>
@@ -136,7 +136,7 @@
 			<input type="button" value="$T('button-testServer')" class="testServer" />
 			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 		</td></tr></table>
-	
+
 	    <!--#if 'amounts' in $servers[$server]#-->
 		<br/><strong>$T('Bandwidth'):</strong>
 	    <table border="1" >
@@ -146,7 +146,7 @@
 	           <td>&nbsp;&nbsp;&nbsp;&nbsp;$T('thisWeek')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][2]</td></tr>
 	    </table>
 	    <!--#end if#-->
-	
+
 		</form>
 
 	</div>

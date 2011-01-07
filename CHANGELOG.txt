@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha9 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush top menu and navigation improvements
+- Active jobs sometimes showed up as orphaned jobs
+- Post processing retries in SMPL skin (not fully funtional)
+- Apply category attributes to RSS feed jobs correctly
+- Drop support for Python 2.4
+- Add json-p support by support 'callback' parameter in API
+-------------------------------------------------------------------------------
  0.6.0Alpha8 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Prevent active and waiting post-processing jobs from showing up

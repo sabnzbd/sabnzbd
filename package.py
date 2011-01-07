@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -155,7 +155,8 @@ def CreateTar(folder, fname, release):
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'tools/make_mo.py'): # One day add: 'setup.py'
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'tools/make_mo.py', 'tools/msgfmt.py'): # One day add: 'setup.py'
+                    # Force Linux/OSX scripts as excutable
                     tarinfo.mode = 0755
                 else:
                     tarinfo.mode = 0644
@@ -286,7 +287,6 @@ data_files = [
          'GPL3.txt',
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
-         'LICENSE.txt',
          'ISSUES.txt',
          'nzbmatrix.txt',
          'nzb.ico',
@@ -295,7 +295,6 @@ data_files = [
          'PKG-INFO',
          'licenses/',
          'locale/',
-         'po/',
          'email/',
          'interfaces/Classic/',
          'interfaces/smpl/',
@@ -349,9 +348,9 @@ if target == 'app':
     options['description'] = 'SABnzbd ' + str(my_version)
 
     #remove prototype and iphone interfaces
-    os.system("rm -rf interfaces/prototype>/dev/null")
-    os.system("rm -rf interfaces/Concept>/dev/null")
-    os.system("rm -rf interfaces/iphone>/dev/null")
+    #os.system("rm -rf interfaces/prototype>/dev/null")
+    #os.system("rm -rf interfaces/Concept>/dev/null")
+    #os.system("rm -rf interfaces/iphone>/dev/null")
 
     #Create MO files
     os.system('python ./tools/make_mo.py all')
@@ -400,21 +399,23 @@ if target == 'app':
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     #cleanup src dir
-    os.system("rm -rf dist/>/dev/null")
-    os.system("rm -rf build/>/dev/null")
-    os.system("find ./ -name *.pyc | xargs rm")
-    os.system("rm -rf NSIS_Installer.nsi")
-    os.system("rm -rf win/")
-    os.system("rm -rf cherrypy*.zip")
+    #os.system("rm -rf dist/>/dev/null")
+    #os.system("rm -rf build/>/dev/null")
+    #os.system("find ./ -name *.pyc | xargs rm")
+    #os.system("rm -rf NSIS_Installer.nsi")
+    #os.system("rm -rf win/")
+    #os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
-    os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
+    os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "cherrypy*.zip" '
+              './ >/dev/null' % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     #os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
 
     # Copy README.txt
-    os.system("cp README.txt /Volumes/%s/" % volume)
+    os.system("cp README.rtf /Volumes/%s/" % volume)
 
     #Hide dock icon for the app
     #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
@@ -552,14 +553,18 @@ else:
     # Make sure all source files are Unix format
     import shutil
 
+    # Create MO files
+    os.system('python tools/make_mo.py all')
+
     root = 'srcdist'
     root = os.path.normpath(os.path.abspath(root))
     if not os.path.exists(root):
         os.mkdir(root)
 
     # Set data files
+    data_files.extend(['po/'])
     options['data_files'] = PairList(data_files)
-    options['data_files'].append(('tools', ['tools/make_mo.py']))
+    options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 
     # Copy the data files
     for set in options['data_files']:
