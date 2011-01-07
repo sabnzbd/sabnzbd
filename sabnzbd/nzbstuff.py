@@ -579,7 +579,7 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.new_caching = True
-        self.encrypted = False
+        self.encrypted = 0
         self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
@@ -888,6 +888,9 @@ class NzbObject(TryList):
 
     def resume(self):
         self.status = 'Queued'
+        if self.encrypted:
+            # If user resumes after encryption warning, no more auto-pauses
+            self.encrypted = 2
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
