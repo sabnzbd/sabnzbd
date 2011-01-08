@@ -335,6 +335,11 @@ body {
 .navigation ul li a span.icon_nav_help { background-image: url('images/nav/help-grey.png'); }
 .navigation ul li.active a span.icon_nav_help, .navigation ul li a:hover span.icon_nav_help { background-image: url('images/nav/help.png'); }
 
+#nav_text {
+	padding: 2px 0 0 10px;
+	font-size:90%;
+}
+#last_warning {cursor:default;}
 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
