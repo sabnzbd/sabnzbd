@@ -2,154 +2,211 @@
 <!--#set global $help_uri="Configure+Servers+V2"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
-
-
-<div class="tabs">
-	<ul>
-		<li><a href="#tabs-addServer">$T('addServer')</a></li>
-		<!--#if $servers#-->
-			<!--#set $count=0#-->
-		<!--#set $slist = $servers.keys()#-->
-		<!--#$slist.sort()#-->
-		<!--#set $cur = 0#-->
-		<!--#for $server in $slist#-->
-			<!--#set $cur = $cur + 1#-->
-				<li><a href="#tabs-server$cur">$server</a></li>
-		    <!--#end for#-->
-		<!--#end if#-->
-	</ul>
-
-
-
-	<div id="tabs-addServer">
-
+<div id="config-components">
+    
+    <div id="core-component-group0" class="component-group clearfix">
+	    <input type="button" class="juiButton" id="addServerButton" style="padding:4px;" value="$T('button-addServer')" />
+	    <script>
+	    	jQuery('#addServerButton').click(function(){
+	    		jQuery('#core-component-group0').hide();
+	    		jQuery('#core-component-group1').show();
+	    	});
+	    </script>
+	</div>
+    
+    <div id="core-component-group1" class="component-group clearfix" style="display:none;">
 		<form action="addServer" method="post" autocomplete="off">
 		<input type="hidden" name="session" value="$session">
+        <div class="component-group-desc">
+            <h3>$T('addServer')</h3>
+            <p>
+				<input type="submit" class="juiButton" style="padding:4px;" value="$T('button-addServer')" /><br/><br/>
+				<input type="button" class="juiButton" style="padding:4px;" value="$T('button-testServer')" class="testServer" />
+				<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			</p>
+        </div>
+        <fieldset class="component-group-list">
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="host">
+                    <span class="component-title">$T('srv-host')</span>
+				    <input type="text" size="25" name="host"/>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="port">
+                    <span class="component-title">$T('srv-port')</span>
+				    <input type="text" size="10" name="port"/>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="username">
+                    <span class="component-title">$T('srv-username')</span>
+				    <input type="text" size="25" name="username"/>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="password">
+                    <span class="component-title">$T('srv-password')</span>
+				    <input type="text" size="25" name="password"/>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="connections">
+                    <span class="component-title"># $T('srv-connections')</span>
+				    <input type="text" size="10" name="connections"/>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="retention">
+                    <span class="component-title">$T('srv-retention')</span>
+				    <input type="text" size="10" name="retention"/> <i>$T('days')</i>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="timeout">
+                    <span class="component-title">$T('srv-timeout')</span>
+				    <input type="text" size="10" name="timeout"/> <i>$T('seconds')</i>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="clearfix" for="enable">
+                    <span class="component-title">&nbsp;</span>
+			    	<input type="checkbox" name="enable" id="enable" value="1" checked="1"/>
+			    	<strong>$T('srv-enable')</strong>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="clearfix" for="ssl">
+                    <span class="component-title">&nbsp;</span>
+			    	<input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
+			    	<strong>$T('srv-ssl')</strong>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="clearfix" for="fillserver">
+                    <span class="component-title">&nbsp;</span>
+			    	<input type="checkbox" name="fillserver" id="fillserver" value="1"/>
+			    	<strong>$T('srv-fillserver')</strong>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="clearfix" for="optional">
+                    <span class="component-title">&nbsp;</span>
+			    	<input type="checkbox" name="optional" id="optional" value="1"/>
+			    	<strong>$T('srv-optional')</strong>
+                </label>
+            </div>
+        </fieldset>
+        </form>
+	</div><!-- /component-group1 -->
 
-	    <table cellpadding=2>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host"/></td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port"/></td></tr>
-	        <tr><td colspan=2>&nbsp;</td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username"/></td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password"/></td></tr>
-	    </table>
-
-	    <br/>
-
-	    <table>
-	    <tr><td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
-	    <tr><td class="alignRight"><div class="sucker">$T('srv-retention'):</div></td><td><input type="text" size="5" name="retention"/>&nbsp;<small>$T('days')</small></td></tr>
-	    <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('seconds')</small></td></tr>
-
-	    <tr><td colspan="2">&nbsp;</td></tr>
-
-	    <tr>
-	    	<td class="alignRight"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
-	    	<td><label for="enable"><strong>$T('srv-enable')</strong></label></td>
-	    </tr>
-	    <tr>
-	    	<td class="alignRight"><input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/></td>
-	    	<td><label for="ssl"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#--></label></td>
-	    </tr>
-	    <tr>
-	    	<td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
-	    	<td><label for="fillserver"><strong>$T('srv-fillserver')</strong></label></td>
-	    </tr>
-	    <tr>
-	    	<td class="alignRight"><input type="checkbox" name="optional" id="optional" value="1"/></td>
-	    	<td><label for="optional"><strong>$T('srv-optional')</strong></label></td>
-	    </tr>
-
-	    <tr><td></td><td><br/>
-			<input type="submit" value="$T('button-addServer')" />
-			<input type="button" value="$T('button-testServer')" class="testServer" />
-			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-		</td></tr>
-
-	    </table>
-
-		</form>
-
-	</div>
-
-
-
+	<!--#set $slist = $servers.keys()#-->
+	<!--#$slist.sort()#-->
 	<!--#set $cur = 0#-->
 	<!--#for $server in $slist#-->
 		<!--#set $cur = $cur + 1#-->
-	<div id="tabs-server$cur">
+	    
+	    <div id="core-component-group$cur" class="component-group clearfix">
+			<form action="saveServer" method="post" autocomplete="off">
+			<input type="hidden" name="session" value="$session">
+			<input type="hidden" name="server" value="$server"/>
+	        <div class="component-group-desc">
+	            <h3>$server</h3>
+	            <p>
+					<input type="submit" class="juiButton" style="padding:4px;" value="$T('button-addServer')" />
+					<br/><br/>
+					<input type="button" class="juiButton testServer" style="padding:4px;" value="$T('button-testServer')" />
+					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<br/><br/>
+					<input type="button" class="juiButton delServer" style="padding:4px;" value="$T('button-delServer')" rel="$T('Plush-confirm') "/>
+				</p>
 
+			    <!--#if 'amounts' in $servers[$server]#-->
+			    <br/>
+				<p>
+					<strong>$T('Bandwidth'):</strong><br/>
+				    $T('total'): $servers[$server]['amounts'][0]<br/>
+				    $T('today'): $servers[$server]['amounts'][3]<br/>
+				    $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
+				    $T('thisMonth'): $servers[$server]['amounts'][1]
+			    </p>
+			    <!--#end if#-->
+	        </div>
+	        <fieldset class="component-group-list">
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="host">
+	                    <span class="component-title">$T('srv-host')</span>
+					    <input type="text" size="25" name="host" value="$servers[$server]['host']" />
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="port">
+	                    <span class="component-title">$T('srv-port')</span>
+					    <input type="text" size="10" name="port" value="$servers[$server]['port']" />
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="username">
+	                    <span class="component-title">$T('srv-username')</span>
+					    <input type="text" size="25" name="username" value="$servers[$server]['username']" />
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="password">
+	                    <span class="component-title">$T('srv-password')</span>
+					    <input type="text" size="25" name="password" value="$servers[$server]['password']" />
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="connections">
+	                    <span class="component-title"># $T('srv-connections')</span>
+					    <input type="text" size="10" name="connections" value="$servers[$server]['connections']" />
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="retention">
+	                    <span class="component-title">$T('srv-retention')</span>
+					    <input type="text" size="10" name="retention" value="$servers[$server]['retention']" /> <i>$T('days')</i>
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="nocheck clearfix" for="timeout">
+	                    <span class="component-title">$T('srv-timeout')</span>
+					    <input type="text" size="10" name="timeout" value="$servers[$server]['timeout']" /> <i>$T('seconds')</i>
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="clearfix" for="enable">
+	                    <span class="component-title">&nbsp;</span>
+				    	<input type="checkbox" name="enable" id="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
+				    	<strong>$T('srv-enable')</strong>
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="clearfix" for="ssl">
+	                    <span class="component-title">&nbsp;</span>
+				    	<input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+				    	<strong>$T('srv-ssl')</strong>
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="clearfix" for="fillserver">
+	                    <span class="component-title">&nbsp;</span>
+				    	<input type="checkbox" name="fillserver" id="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
+				    	<strong>$T('srv-fillserver')</strong>
+	                </label>
+	            </div>
+	            <div class="field-pair">
+	                <label class="clearfix" for="optional">
+	                    <span class="component-title">&nbsp;</span>
+				    	<input type="checkbox" name="optional" id="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />
+				    	<strong>$T('srv-optional')</strong>
+	                </label>
+	            </div>
+	        </fieldset>
+	        </form>
+		</div><!-- /component-group$cur -->
 
-		<form action="saveServer" method="post" autocomplete="off">
-		<input type="hidden" name="session" value="$session">
-
-<!--
-	    <legend class="server<!--#if int($servers[$server]['enable']) != 0#--><!--#if int($servers[$server]['fillserver']) != 0#-->Backup<!--#else if int($servers[$server]['optional']) != 0#-->Optional<!--#else#-->Enabled<!--#end if#--><!--#else#-->Disabled<!--#end if#-->"><span class="config_sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> </legend>
--->
-
-	    <table cellpadding=2>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
-	        <tr><td colspan=2>&nbsp;</td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
-	        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
-	    </table>
-
-	    <br/>
-
-	    <table>
-	    <tr>
-	        <td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td>
-	        <td><input type="text" size="5" name="connections" value="$servers[$server]['connections']"/></td>
-	    </tr>
-	    <tr>
-	        <td class="alignRight"><div class="sucker">$T('srv-retention'):</div></td>
-	        <td><input type="text" size="5" name="retention" value="$servers[$server]['retention']"/>&nbsp;<small>$T('days')</small></td>
-	    </tr>
-	    <tr>
-	        <td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td>
-	        <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>$T('seconds')</small></td>
-	    </tr>
-	    <tr><td colspan="2">&nbsp;</td></tr>
-	    <tr>
-	        <td class="alignRight"><input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></td>
-	        <td><label for="enable$cur"><strong>$T('srv-enable')</strong></label></td>
-	    </tr>
-	    <tr>
-	        <td class="alignRight"><input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /></td>
-	        <td><label for="ssl$cur"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#--></label></td>
-	    </tr>
-	    <tr>
-	        <td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
-	        <td><label for="fillserver$cur"><strong>$T('srv-fillserver')</strong></label></td>
-	    </tr>
-	    <tr>
-	        <td class="alignRight"><input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></td>
-	        <td><label for="optional$cur"><strong>$T('srv-optional')</strong></label></td>
-	    </tr>
-	    </table>
-
-		<table><tr><td colspan="2">
-			<br/><input type="hidden" name="server" value="$server"/>
-			<input type="button" value="$T('button-delServer')" class="delServer" rel="$T('Plush-confirm') "/>
-			<input type="submit" value="$T('button-saveChanges')"/>
-			<input type="button" value="$T('button-testServer')" class="testServer" />
-			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-		</td></tr></table>
-
-	    <!--#if 'amounts' in $servers[$server]#-->
-		<br/><strong>$T('Bandwidth'):</strong>
-	    <table border="1" >
-	       <tr><td>$T('total')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][0]</td>
-	           <td>&nbsp;&nbsp;&nbsp;&nbsp;$T('thisMonth')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][1]</td></tr>
-	       <tr><td>$T('today')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][3]</td>
-	           <td>&nbsp;&nbsp;&nbsp;&nbsp;$T('thisWeek')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][2]</td></tr>
-	    </table>
-	    <!--#end if#-->
-
-		</form>
-
-	</div>
 	<!--#end for#-->
 
 </div>
