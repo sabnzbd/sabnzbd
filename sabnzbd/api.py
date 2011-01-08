@@ -800,24 +800,16 @@ def handle_server_api(output, kwargs):
     name = kwargs.get('keyword')
     if not name:
         name = kwargs.get('name')
-    if not name:
-        host = kwargs.get('host')
-        port = kwargs.get('port', '119')
-        if host:
-            name = '%s:%s' % (host, port)
-        else:
-            return name
 
-    server = config.get_config('servers', name)
-    if server:
-        server.set_dict(kwargs)
-        old_name = name
-        name = '%s:%s' % (server.host(), server.port())
-        server.rename(name)
-    else:
-        config.ConfigServer(name, kwargs)
-        old_name = None
-    Downloader.do.update_server(old_name, name)
+    if name:
+        server = config.get_config('servers', name)
+        if server:
+            server.set_dict(kwargs)
+            old_name = name
+        else:
+            config.ConfigServer(name, kwargs)
+            old_name = None
+        Downloader.do.update_server(old_name, name)
     return name
 
 

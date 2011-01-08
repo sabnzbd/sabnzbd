@@ -395,9 +395,9 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                      rarpath, rar_set, extraction_path)
 
         try:
-            newfiles, rars = RAR_Extract(rarpath, len(rar_sets[rar_set]),
+            fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
                                          nzo, rar_set, extraction_path)
-            success = newfiles and rars
+            success = not fail
         except:
             success = False
             msg = sys.exc_info()[1]
@@ -406,6 +406,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
             nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
             logging.error(Ta('Error "%s" while running rar_unpack on %s'), msg, setname)
+            logging.debug("Traceback: ", exc_info = True)
 
         if success:
             logging.debug('rar_unpack(): Rars: %s', rars)
@@ -433,27 +434,58 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
     return not success, extracted_files
 
 
-def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
+def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
+    """ Unpack single rar set 'rarfile' to 'extraction_path',
+        with password tries
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
+    """
+
+    if nzo.password:
+        passwords = [nzo.password]
+    else:
+        passwords = []
+        pw_file = cfg.password_file.get_path()
+        try:
+            pwf = open(pw_file, 'r')
+            passwords = pwf.read().split('\n')
+            # Remove empty lines and space-only passwords and remove surrounding spaces
+            passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+            pwf.close()
+            logging.info('Read the passwords file %s', pw_file)
+        except IOError:
+            pass
+        if not nzo.encrypted:
+            # If we're not sure about encryption, start with empty password
+            passwords.insert(0, '')
+
+    for password in passwords:
+        if password: logging.debug('Trying unrar with password "%s"', password)
+        fail, new_files, rars = rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password)
+        if fail != 2:
+            break
+    return fail, new_files, rars
+
+
+def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile' to 'extraction_path'
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
     start = time()
 
-    logging.debug("RAR_Extract(): Extractionpath: %s",
+    logging.debug("rar_extract(): Extractionpath: %s",
                   extraction_path)
 
     try:
         zf = RarFile(rarfile)
         expected_files = zf.unamelist()
-        zf.close()
     except:
-        nzo.fail_msg = T('Failed opening main archive (encrypted or damaged)')
-        nzo.set_unpack_info('Unpack', u'[%s] %s' % (unicoder(setname), T('Failed opening main archive (encrypted or damaged)')), set=setname)
+        logging.info('Archive %s probably has full encryption', rarfile)
+        expected_files = []
+    finally:
+        zf.close()
 
-        logging.info('Archive %s probably encrypted, skipping', rarfile)
-        return ((), ())
-
-    if nzo.password:
-        password = '-p%s' % nzo.password
+    if password:
+        password = '-p%s' % password
     else:
         password = '-p-'
 
@@ -541,7 +573,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
             msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), filename)
-            fail = 1
+            fail = 2
 
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
@@ -553,7 +585,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
                 proc.close()
             p.wait()
 
-            return ((), ())
+            return (fail, (), ())
 
     if proc:
         proc.close()
@@ -578,18 +610,19 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
             if missing:
                 nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
-                logging.debug("Expecting files: %s" % expected_files)
+                logging.debug("Expecting files: %s" % str(expected_files))
                 msg = T('Unpacking failed, these file(s) are missing:') + ';' + u';'.join([unicoder(item) for item in missing])
                 nzo.set_unpack_info('Unpack', msg, set=setname)
-                return ((), ())
+                return (1, (), ())
         else:
             logging.info('Skipping unrar file check due to unreliable file names or old unrar')
 
+    nzo.fail_msg = ''
     msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
     logging.info('%s', msg)
 
-    return (extracted, rarfiles)
+    return (0, extracted, rarfiles)
 
 #------------------------------------------------------------------------------
 # (Un)Zip Functions

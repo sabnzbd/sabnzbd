@@ -1050,7 +1050,7 @@ def orphan_add(kwargs):
 LIST_DIRPAGE = ( \
     'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
-    'email_dir', 'permissions', 'log_dir'
+    'email_dir', 'permissions', 'log_dir', 'password_file'
 )
 
 class ConfigDirectories(object):
@@ -1378,7 +1378,7 @@ class ConfigServer(object):
 
     @cherrypy.expose
     def addServer(self, **kwargs):
-        return handle_server(kwargs, self.__root)
+        return handle_server(kwargs, self.__root, True)
 
 
     @cherrypy.expose
@@ -1399,7 +1399,25 @@ class ConfigServer(object):
         del_from_section(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
-def handle_server(kwargs, root=None):
+
+#------------------------------------------------------------------------------
+def unique_svr_name(server):
+    """ Return a unique variant on given server name
+    """
+    num = 0
+    svr = 1
+    new_name = server
+    while svr:
+        if num:
+            new_name = '%s@%d' % (server, num)
+        else:
+            new_name = '%s' % server
+        svr = config.get_config('servers', new_name)
+        num += 1
+    return new_name
+
+
+def handle_server(kwargs, root=None, new_svr=False):
     """ Internal server handler """
     msg = check_session(kwargs)
     if msg: return msg
@@ -1423,7 +1441,7 @@ def handle_server(kwargs, root=None):
     if msg:
         return msg
 
-    server = '%s:%s' % (host, port)
+    server = host
 
     svr = None
     old_server = kwargs.get('server')
@@ -1432,12 +1450,14 @@ def handle_server(kwargs, root=None):
     if not svr:
         svr = config.get_config('servers', server)
 
-    if svr:
+    if new_svr:
+        server = unique_svr_name(server)
+
+    if svr and not new_svr:
         for kw in ('fillserver', 'ssl', 'enable', 'optional'):
             if kw not in kwargs.keys():
                 kwargs[kw] = None
         svr.set_dict(kwargs)
-        svr.rename(server)
     else:
         old_server = None
         config.ConfigServer(server, kwargs)
