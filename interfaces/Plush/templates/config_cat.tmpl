@@ -2,14 +2,14 @@
 <!--#set global $help_uri="configure-categories"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
+<div style="padding:10px;">
 
-<div class="tabs">
-	<ul>
-		<li><a href="#tabs-categories">$T('cmenu-cat')</a></li>
-		<li><a href="#tabs-info">$T('info').capitalize()</a></li>
-	</ul>
-
-	<div id="tabs-categories">
+		<div style="font-size:100%">
+			$T('explain-configCat')
+	        $T('explain-catTags')
+			$T('explain-relFolder'): <i>$defdir</i>
+		</div>
+		<br/>
 
 	    <!--#set $odd = False#-->
 	    <!--#set $cur = 0#-->
@@ -40,9 +40,9 @@
 					<input type="hidden" name="session" value="$session">
 		            <input type="hidden" value="$slot.name" name="name"/>
 					<!--#if $slot.name != '*'#-->
-			            <input type="text" name="newname" size="10" value="$slot.name"/>
+			            <input type="text" name="newname" size="15" value="$slot.name"/>
 		            <!--#else#-->
-						<input type="text" name="newname" size="10" value="$T('default')" disabled="disabled"/>
+						<input type="text" name="newname" size="15" value="$T('default')" disabled="disabled"/>
 					<!--#end if#-->
 		        </td>
 
@@ -82,16 +82,16 @@
 		        </td>
 		        <!--#end if#-->
 
-		        <td><input type="text" size="20" name="dir" value="$slot.dir"/></td>
+		        <td><input type="text" size="30" name="dir" value="$slot.dir"/></td>
 
-		        <td><input type="text" size="20" name="newzbin" value="$slot.newzbin"/></td>
+		        <td><input type="text" size="30" name="newzbin" value="$slot.newzbin"/></td>
 
 		        <td class="lastCol" nowrap>
 
-					<input type="submit" class="Save juiButton" style="padding:0px" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->"/>
+					<input type="submit" class="Save juiButton" style="padding:4px" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->"/>
 
 		            <!--#if $slot.name and $slot.name != '*'#-->
-		            <input type="button" class="Delete juiButton" style="padding:0px" value="$T('button-delCat')" name="$slot.name" />
+		            <input type="button" class="Delete juiButton" style="padding:4px" value="$T('button-delCat')" name="$slot.name" />
 		            <!--#end if#-->
 
 		        </td>
@@ -100,14 +100,6 @@
 		    </table>
 		    </form>
 	    <!--#end for#-->
-
-	</div>
-
-	<div id="tabs-info">
-		<p>$T('explain-configCat')</p>
-        <p>$T('explain-catTags')</p>
-		<p>$T('explain-relFolder') <font color=blue>$defdir</font></p>
-	</div>
 
 </div>
 
