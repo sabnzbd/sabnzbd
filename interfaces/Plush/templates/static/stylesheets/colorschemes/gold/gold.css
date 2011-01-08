@@ -1374,7 +1374,7 @@ table.nzoTable {
 }
 
 #config_container {
-	background: #666;
+	background: #363636;
 	font-size:95%;
 	min-height: 435px;
 	padding-left: 20px;
@@ -1391,7 +1391,7 @@ table.nzoTable {
 } 
 */
 #config_content {
-	overflow: auto;
+	overflow: hidden;
 	width: 100%;
 }
   #config_content .center {
@@ -1511,7 +1511,7 @@ fieldset.EntryFieldSet {
  
 		.config_nav li a {
 			background-color: #b1b1b1;
-			color: #000;
+			color: #363636;
 			display: block;
 			font-size: 9pt;
 			font-weight: bold;
@@ -1537,7 +1537,7 @@ fieldset.EntryFieldSet {
 			}
  
 	.config_nav .nav_active {
-		background-color: #666;
+		background-color: #363636;
 		color: #fff;
 	}
 
@@ -1659,7 +1659,7 @@ table#connectionsTable tr td {
  
 	.left_links a {
 		background-color: #ddd;
-		color: #666;
+		color: #363636;
 		display: block;
 		font-size: 9pt;
 		font-weight: bold;
@@ -1727,3 +1727,65 @@ table#connectionsTable tr td {
 *+html {
   overflow-x:visible;
 }
+
+
+
+
+
+
+/*
+	new config design, this css code comes from Sickbeard
+*/
+#config  { padding: 0px; text-align: center; }
+#config * { margin:0; padding:0; font-family: "Trebuchet MS", Verdana, sans-serif; }
+#config ul { list-style-type:none; }
+#config h3 { font-size:1.5em; color:#000; }
+#config h4 { font-size:1em; color:#333; text-transform: uppercase; margin:0 0 .2em; }
+#config h5 { font-size:1em; color:#000; margin:0 0 .2em; }
+#config p, #config li { font-size:1.2em; line-height:1.3; }
+
+#config .path { font-size:1em; color:#333; font-family: Verdana;}
+#config .jumbo {font-size: 16px !important;}
+
+#config-content {
+	display: block; width: 100%; text-align: left; padding:0 0 40px; clear: both; background: #fff; margin: 0px auto;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+#config-components { float: left; width: auto; }
+#config-components-border { float: left; width: auto; border-top: 1px solid #999999; padding: 5px 0;}
+
+#config .component-group { border-bottom: 1px dotted #666; padding: 15px 15px 25px; position: relative; }
+#config .component-group-desc { float: left; width: 200px; }
+#config .component-group-desc h3 { font-size: 1.5em;  }
+#config .component-group-desc p { margin: .8em 0; width: 85%; font-size: 1.2em; color: #666;}
+#config .component-group-desc p.note { margin: .8em 0; width: 90%; font-size: 1.2em; color: #333;}
+#config .component-group-list { float: left; width: 620px; }
+
+#config fieldset {border:0; outline: 0;  }
+
+#config div.field-pair { margin: .9em 0 1.4em;  }
+#config div.field-pair input { float: left; margin-right: 6px; }
+
+#config label.nocheck { padding-left: 20px; }
+#config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
+#config label span.component-desc { font-size: 1.0em; font-style:italic;  }
+
+#config div.field-pair select { font-size: 1.1em; border: 1px solid #d4d0c8;}
+#config div.field-pair select option { padding: 0 10px; line-height: 1.4; }
+
+
+#config-settings { float: right; width: 200px; background: #fffae5; border-bottom: 1px dotted #666; border-top: 1px solid #999;padding: 20px 0 30px; margin-right: 20px; }
+#config-settings .config-settings-group { margin: 0 15px 15px; border-bottom: 1px dotted #999; padding-bottom: 15px; }
+#config-settings .config-settings-group h2 { margin-bottom: 0; }
+#config-settings .config-settings-group p {font-size: 1.1em; color: #666; margin: .6em 0 1em; }
+#config-settings .config-settings-group div.field-pair { margin: 1.2em 0 .6em; }
+#config-settings .config-settings-group input {float: left;}
+
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
