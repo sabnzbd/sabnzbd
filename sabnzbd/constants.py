@@ -15,7 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-CONFIG_VERSION = 18
+CONFIG_VERSION = 19
+
 QUEUE_VERSION = 9
 POSTPROC_QUEUE_VERSION = 1
 

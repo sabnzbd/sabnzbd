@@ -23,7 +23,7 @@ import os
 import logging
 import threading
 import sabnzbd.misc
-import sabnzbd.constants as constants
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
@@ -31,8 +31,6 @@ from sabnzbd.decorators import synchronized
 CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
 
-
-__CONFIG_VERSION = '18'     # Minumum INI file version required
 
 CFG = {}                    # Holds INI structure
                             # uring re-write this variable is global allow
@@ -404,7 +402,7 @@ class ConfigCat(object):
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
         self.newzbin = OptionList(name, 'newzbin', add=False)
-        self.priority = OptionNumber(name, 'priority', constants.DEFAULT_PRIORITY, add=False)
+        self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
         add_to_database('categories', self.__name, self)
@@ -509,9 +507,9 @@ class ConfigRSS(object):
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
         self.enable = OptionBool(name, 'enable', add=False)
-        self.priority = OptionNumber(name, 'priority', constants.DEFAULT_PRIORITY, constants.DEFAULT_PRIORITY, 2, add=False)
+        self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
         self.filters = OptionFilters(name, 'filters', add=False)
-        self.filters.set([['', '', '', 'A', '*', constants.DEFAULT_PRIORITY]])
+        self.filters.set([['', '', '', 'A', '*', DEFAULT_PRIORITY]])
 
         self.set_dict(values)
         add_to_database('rss', self.__name, self)
@@ -643,7 +641,7 @@ def read_config(path):
             if not sabnzbd.WIN32:
                 prev = os.umask(077)
             fp = open(path, "w")
-            fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
+            fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
             fp.close()
             if not sabnzbd.WIN32:
                 os.umask(prev)
@@ -653,14 +651,14 @@ def read_config(path):
     try:
         CFG = configobj.ConfigObj(path)
         try:
-            if int(CFG['__version__']) > int(__CONFIG_VERSION):
+            if int(CFG['__version__']) > int(CONFIG_VERSION):
                 return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
-        except KeyError:
-            CFG['__version__'] = __CONFIG_VERSION
-        except ValueError:
-            CFG['__version__'] = __CONFIG_VERSION
+        except (KeyError, ValueError):
+            CFG['__version__'] = CONFIG_VERSION
     except configobj.ConfigObjError, strerror:
         return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+
+    CFG['__version__'] = CONFIG_VERSION
 
     if 'misc' in CFG:
         compatibility_fix(CFG['misc'])
@@ -784,7 +782,7 @@ def get_categories(cat=0):
         database['categories'] = {}
     cats = database['categories']
     if '*' not in cats:
-        ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : constants.NORMAL_PRIORITY})
+        ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : NORMAL_PRIORITY})
     if not isinstance(cat, int):
         try:
             cats = cats[cat]
