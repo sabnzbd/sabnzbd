@@ -159,6 +159,7 @@ admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_sa
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=True)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 SIZE_LIMIT = OptionStr('misc', 'size_limit')
+password_file = OptionDir('misc', 'password_file', '', create=False)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:
@@ -220,6 +221,7 @@ def set_root_folders(home, lcldata):
     admin_dir.set_root(lcldata)
     dirscan_dir.set_root(home)
     log_dir.set_root(lcldata)
+    password_file.set_root(home)
 
 def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())
