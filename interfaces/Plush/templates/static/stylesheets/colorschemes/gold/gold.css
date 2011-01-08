@@ -1734,7 +1734,7 @@ table#connectionsTable tr td {
 
 
 /*
-	new config design, this css code comes from Sickbeard
+	new config design, adapted from Sickbeard
 */
 #config  { padding: 0px; text-align: center; }
 #config * { margin:0; padding:0; font-family: "Trebuchet MS", Verdana, sans-serif; }
@@ -1749,6 +1749,7 @@ table#connectionsTable tr td {
 
 #config-content {
 	display: block; width: 100%; text-align: left; padding:0 0 40px; clear: both; background: #fff; margin: 0px auto;
+	background: #ebebeb;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 }

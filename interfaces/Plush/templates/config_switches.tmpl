@@ -2,190 +2,33 @@
 <!--#set global $help_uri="Configure+Switches+V2"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
-<form action="saveSwitches" method="post" name="fullform">
-<input type="hidden" name="session" value="$session">
+<form action="saveSwitches" method="post" name="fullform" id="fullform">
+<input type="hidden" name="session" id="session" value="$session">
 
 <div id="config-components">
     
     <div id="core-component-group1" class="component-group clearfix">
         <div class="component-group-desc">
-            <h3>$T('processingSwitches')</h3>
+            <h3>General Switches</h3>
         </div>
         <fieldset class="component-group-list">
             <div class="field-pair">
-	            <input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="quick_check">
-                    <span class="component-title">$T('opt-quick_check')</span>
-                    <span class="component-desc">$T('explain-quick_check')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="enable_unrar">
-                    <span class="component-title">$T('opt-enable_unrar')</span>
-                    <span class="component-desc">$T('explain-enable_unrar')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="enable_unzip">
-                    <span class="component-title">$T('opt-enable_unzip')</span>
-                    <span class="component-desc">$T('explain-enable_unzip')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="enable_filejoin">
-                    <span class="component-title">$T('opt-enable_filejoin')</span>
-                    <span class="component-desc">$T('explain-enable_filejoin')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="enable_tsjoin">
-                    <span class="component-title">$T('opt-enable_tsjoin')</span>
-                    <span class="component-desc">$T('explain-ts_join')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="enable_par_cleanup">
-                    <span class="component-title">$T('opt-enable_par_cleanup')</span>
-                    <span class="component-desc">$T('explain-enable_par_cleanup')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="fail_on_crc">
-                    <span class="component-title">$T('opt-fail_on_crc')</span>
-                    <span class="component-desc">$T('explain-fail_on_crc')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="safe_postproc">
-                    <span class="component-title">$T('opt-safe_postproc')</span>
-                    <span class="component-desc">$T('explain-safe_postproc')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="pause_on_pwrar">
-                    <span class="component-title">$T('opt-pause_on_pwrar')</span>
-                    <span class="component-desc">$T('explain-pause_on_pwrar')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="no_dupes">
-                    <span class="component-title">$T('opt-no_dupes')</span>
-                    <span class="component-desc">$T('explain-no_dupes')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="sfv_check">
-                    <span class="component-title">$T('opt-sfv_check')</span>
-                    <span class="component-desc">$T('explain-sfv_check')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="folder_rename" value="1" <!--#if $folder_rename > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="folder_rename">
-                    <span class="component-title">$T('opt-folder_rename')</span>
-                    <span class="component-desc">$T('explain-folder_rename')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="top_only">
-                    <span class="component-title">$T('opt-top_only')</span>
-                    <span class="component-desc">$T('explain-top_only')</span>
-                </label>
-            </div>
-	        <!--#if $nt#-->
-            <div class="field-pair">
-	            <input type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="par2_multicore">
-                    <span class="component-title">$T('opt-par2_multicore')</span>
-                    <span class="component-desc">$T('explain-par2_multicore')</span>
-                </label>
-            </div>
-	        <!--#end if#-->
-        </fieldset>
-	</div><!-- /component-group1 -->
-    
-    <div id="core-component-group3" class="component-group clearfix">
-        <div class="component-group-desc">
-            <h3>$T('otherSwitches')</h3>
-        </div>
-        <fieldset class="component-group-list">
-            <div class="field-pair">
-	            <input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> />
+	            <input type="checkbox" name="check_new_rel" id="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> />
                 <label class="clearfix" for="check_new_rel">
                     <span class="component-title">$T('opt-check_new_rel')</span>
                     <span class="component-desc">$T('explain-check_new_rel')</span>
                 </label>
             </div>
             <div class="field-pair">
-	            <input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
+	            <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
                 <label class="clearfix" for="auto_browser">
                     <span class="component-title">$T('opt-auto_browser')</span>
                     <span class="component-desc">$T('explain-auto_browser')</span>
                 </label>
             </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="auto_disconnect">
-                    <span class="component-title">$T('opt-auto_disconnect')</span>
-                    <span class="component-desc">$T('explain-auto_disconnect')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="send_group">
-                    <span class="component-title">$T('opt-send_group')</span>
-                    <span class="component-desc">$T('explain-send_group')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="auto_sort">
-                    <span class="component-title">$T('opt-auto_sort')</span>
-                    <span class="component-desc">$T('explain-auto_sort')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="replace_spaces">
-                    <span class="component-title">$T('opt-replace_spaces')</span>
-                    <span class="component-desc">$T('explain-replace_spaces')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="replace_dots" value="1" <!--#if $replace_dots > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="replace_dots">
-                    <span class="component-title">$T('opt-replace_dots')</span>
-                    <span class="component-desc">$T('explain-replace_dots')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="replace_illegal">
-                    <span class="component-title">$T('opt-replace_illegal')</span>
-                    <span class="component-desc">$T('explain-replace_illegal')</span>
-                </label>
-            </div>
-            <div class="field-pair">
-	            <input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="pause_on_post_processing">
-                    <span class="component-title">$T('opt-pause_on_post_processing')</span>
-                    <span class="component-desc">$T('explain-pause_on_post_processing')</span>
-                </label>
-            </div>
 	        <!--#if $have_ampm#-->
             <div class="field-pair">
-                <input type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> />
+                <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> />
                 <label class="clearfix" for="ampm">
                     <span class="component-title">$T('opt-ampm')</span>
                     <span class="component-desc">$T('explain-ampm')</span>
@@ -193,17 +36,88 @@
             </div>
 	        <!--#end if#-->
         </fieldset>
-	</div><!-- /component-group3 -->
-    
-    <div id="core-component-group2" class="component-group clearfix">
+	</div><!-- /component-group1 -->
+        
+    <div id="core-component-group1" class="component-group clearfix">
         <div class="component-group-desc">
-            <h3>$T('switches').capitalize()</h3>
+            <h3>Server Switches</h3>
         </div>
         <fieldset class="component-group-list">
             <div class="field-pair">
+	            <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="auto_disconnect">
+                    <span class="component-title">$T('opt-auto_disconnect')</span>
+                    <span class="component-desc">$T('explain-auto_disconnect')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="send_group" id="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="send_group">
+                    <span class="component-title">$T('opt-send_group')</span>
+                    <span class="component-desc">$T('explain-send_group')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="ssl_type">
+                    <span class="component-title">$T('opt-ssl_type')</span>
+			        <select name="ssl_type" id="ssl_type">
+			            <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
+			            <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
+			            <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
+					</select>
+                </label>
+                <label class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
+                    <span class="component-desc">$T('explain-ssl_type')</span>
+                </label>
+            </div>
+        </fieldset>
+	</div><!-- /component-group1 -->
+
+    <div id="core-component-group1" class="component-group clearfix">
+        <div class="component-group-desc">
+            <h3>Queue Switches</h3>
+        </div>
+        <fieldset class="component-group-list">
+            <div class="field-pair">
+	            <input type="checkbox" name="no_dupes" id="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="no_dupes">
+                    <span class="component-title">$T('opt-no_dupes')</span>
+                    <span class="component-desc">$T('explain-no_dupes')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="pause_on_post_processing">
+                    <span class="component-title">$T('opt-pause_on_post_processing')</span>
+                    <span class="component-desc">$T('explain-pause_on_post_processing')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="pause_on_pwrar" id="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="pause_on_pwrar">
+                    <span class="component-title">$T('opt-pause_on_pwrar')</span>
+                    <span class="component-desc">$T('explain-pause_on_pwrar')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="top_only">
+                    <span class="component-title">$T('opt-top_only')</span>
+                    <span class="component-desc">$T('explain-top_only')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="auto_sort">
+                    <span class="component-title">$T('opt-auto_sort')</span>
+                    <span class="component-desc">$T('explain-auto_sort')</span>
+                </label>
+            </div>
+            <div class="field-pair">
                 <label class="nocheck clearfix" for="pre_script">
                     <span class="component-title">$T('opt-pre_script')</span>
-			        <select name="pre_script">
+			        <select name="pre_script" id="pre_script">
 			        <!--#for $sc in $script_list#-->
 			        <!--#if $sc.lower() == $pre_script.lower()#-->
 			            <option value="$sc" selected>$sc</option>
@@ -218,44 +132,18 @@
                     <span class="component-desc">$T('explain-pre_script')</span>
                 </label>
             </div>
-            <div class="field-pair">
-                <label class="nocheck clearfix" for="par_option">
-                    <span class="component-title">$T('opt-par_option')</span>
-			        <input type="text" name="par_option" value="$par_option"/>
-                </label>
-                <label class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
-                    <span class="component-desc">$T('explain-par_option')</span>
-                </label>
-            </div>
-		    <!--#if $have_nice#-->
-            <div class="field-pair">
-                <label class="nocheck clearfix" for="nice">
-                    <span class="component-title">$T('opt-nice')</span>
-		            <input type="text" name="nice" value="$nice"/>
-                </label>
-                <label class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
-                    <span class="component-desc">$T('explain-nice')</span>
-                </label>
-            </div>
-		    <!--#end if#-->
-		    <!--#if $have_ionice#-->
-            <div class="field-pair">
-                <label class="nocheck clearfix" for="ionice">
-                    <span class="component-title">$T('opt-ionice')</span>
-		            <input type="text" name="ionice" value="$ionice"/>
-                </label>
-                <label class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
-                    <span class="component-desc">$T('explain-ionice')</span>
-                </label>
-            </div>
-		    <!--#end if#-->
+        </fieldset>
+	</div><!-- /component-group1 -->
+
+    <div id="core-component-group1" class="component-group clearfix">
+        <div class="component-group-desc">
+            <h3>$T('processingSwitches')</h3>
+        </div>
+        <fieldset class="component-group-list">
             <div class="field-pair">
                 <label class="nocheck clearfix" for="ignore_samples">
                     <span class="component-title">$T('opt-ignore_samples')</span>
-			        <select name="ignore_samples">
+			        <select name="ignore_samples" id="ignore_samples">
 			            <option value="0" <!--#if $ignore_samples == 0 then "selected" else ""#--> >$T('igsam-off')</option>
 			            <option value="1" <!--#if $ignore_samples == 1 then "selected" else ""#--> >$T('igsam-del')</option>
 			            <option value="2" <!--#if $ignore_samples == 2 then "selected" else ""#--> >$T('igsam-not')</option>
@@ -267,21 +155,149 @@
                 </label>
             </div>
             <div class="field-pair">
-                <label class="nocheck clearfix" for="ssl_type">
-                    <span class="component-title">$T('opt-ssl_type')</span>
-			        <select name="ssl_type">
-			            <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
-			            <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
-			            <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
-					</select>
+	            <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="quick_check">
+                    <span class="component-title">$T('opt-quick_check')</span>
+                    <span class="component-desc">$T('explain-quick_check')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable_unrar">
+                    <span class="component-title">$T('opt-enable_unrar')</span>
+                    <span class="component-desc">$T('explain-enable_unrar')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable_unzip">
+                    <span class="component-title">$T('opt-enable_unzip')</span>
+                    <span class="component-desc">$T('explain-enable_unzip')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable_filejoin">
+                    <span class="component-title">$T('opt-enable_filejoin')</span>
+                    <span class="component-desc">$T('explain-enable_filejoin')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable_tsjoin">
+                    <span class="component-title">$T('opt-enable_tsjoin')</span>
+                    <span class="component-desc">$T('explain-ts_join')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="enable_par_cleanup" id="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable_par_cleanup">
+                    <span class="component-title">$T('opt-enable_par_cleanup')</span>
+                    <span class="component-desc">$T('explain-enable_par_cleanup')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="fail_on_crc" id="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="fail_on_crc">
+                    <span class="component-title">$T('opt-fail_on_crc')</span>
+                    <span class="component-desc">$T('explain-fail_on_crc')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="safe_postproc">
+                    <span class="component-title">$T('opt-safe_postproc')</span>
+                    <span class="component-desc">$T('explain-safe_postproc')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="sfv_check">
+                    <span class="component-title">$T('opt-sfv_check')</span>
+                    <span class="component-desc">$T('explain-sfv_check')</span>
+                </label>
+            </div>
+	        <!--#if $nt#-->
+            <div class="field-pair">
+	            <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="par2_multicore">
+                    <span class="component-title">$T('opt-par2_multicore')</span>
+                    <span class="component-desc">$T('explain-par2_multicore')</span>
+                </label>
+            </div>
+	        <!--#end if#-->
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="par_option">
+                    <span class="component-title">$T('opt-par_option')</span>
+			        <input type="text" name="par_option" id="par_option" value="$par_option"/>
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
-                    <span class="component-desc">$T('explain-ssl_type')</span>
+                    <span class="component-desc">$T('explain-par_option')</span>
                 </label>
             </div>
-	    </fieldset>
-	</div><!-- /component-group2 -->
+		    <!--#if $have_nice#-->
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="nice">
+                    <span class="component-title">$T('opt-nice')</span>
+		            <input type="text" name="nice" id="nice" value="$nice"/>
+                </label>
+                <label class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
+                    <span class="component-desc">$T('explain-nice')</span>
+                </label>
+            </div>
+		    <!--#end if#-->
+		    <!--#if $have_ionice#-->
+            <div class="field-pair">
+                <label class="nocheck clearfix" for="ionice">
+                    <span class="component-title">$T('opt-ionice')</span>
+		            <input type="text" name="ionice" id="ionice" value="$ionice"/>
+                </label>
+                <label class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
+                    <span class="component-desc">$T('explain-ionice')</span>
+                </label>
+            </div>
+		    <!--#end if#-->
+        </fieldset>
+	</div><!-- /component-group1 -->
+    
+    <div id="core-component-group3" class="component-group clearfix">
+        <div class="component-group-desc">
+            <h3>Naming Switches</h3>
+        </div>
+        <fieldset class="component-group-list">
+            <div class="field-pair">
+	            <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if $folder_rename > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="folder_rename">
+                    <span class="component-title">$T('opt-folder_rename')</span>
+                    <span class="component-desc">$T('explain-folder_rename')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="replace_spaces" id="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="replace_spaces">
+                    <span class="component-title">$T('opt-replace_spaces')</span>
+                    <span class="component-desc">$T('explain-replace_spaces')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if $replace_dots > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="replace_dots">
+                    <span class="component-title">$T('opt-replace_dots')</span>
+                    <span class="component-desc">$T('explain-replace_dots')</span>
+                </label>
+            </div>
+            <div class="field-pair">
+	            <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="replace_illegal">
+                    <span class="component-title">$T('opt-replace_illegal')</span>
+                    <span class="component-desc">$T('explain-replace_illegal')</span>
+                </label>
+            </div>
+        </fieldset>
+	</div><!-- /component-group3 -->
 
 </div><!-- /config-components -->
 

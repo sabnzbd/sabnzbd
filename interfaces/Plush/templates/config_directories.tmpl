@@ -2,8 +2,8 @@
 <!--#set global $help_uri="Configure+Directories+V2"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
-<form action="saveDirectories" method="post" name="fullform">
-<input type="hidden" name="session" value="$session">
+<form action="saveDirectories" method="post" name="fullform" id="fullform">
+<input type="hidden" name="session" id="session" value="$session">
 
 <div id="config-components">
     
@@ -17,7 +17,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="download_dir">
                     <span class="component-title">$T('opt-download_dir')</span>
-			        <input type="text" size="50" name="download_dir" value="$download_dir">
+			        <input type="text" size="50" name="download_dir" id="download_dir" value="$download_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -27,7 +27,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="download_free">
                     <span class="component-title">$T('opt-download_free')</span>
-			        <input type="text" size="8" name="download_free" value="$download_free">
+			        <input type="text" size="8" name="download_free" id="download_free" value="$download_free">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -37,7 +37,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="complete_dir">
                     <span class="component-title">$T('opt-complete_dir')</span>
-			        <input type="text" size="50" id="complete_dir" name="complete_dir" value="$complete_dir">
+			        <input type="text" size="50" id="complete_dir" name="complete_dir" id="complete_dir" value="$complete_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -48,7 +48,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="permissions">
                     <span class="component-title">$T('opt-permissions')</span>
-			        <input type="text" size="10" name="permissions" value="$permissions">
+			        <input type="text" size="10" name="permissions" id="permissions" value="$permissions">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -59,7 +59,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="dirscan_dir">
                     <span class="component-title">$T('opt-dirscan_dir')</span>
-			        <input type="text" size="50" name="dirscan_dir" value="$dirscan_dir">
+			        <input type="text" size="50" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -69,7 +69,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="dirscan_speed">
                     <span class="component-title">$T('opt-dirscan_speed')</span>
-			        <input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">
+			        <input type="text" size="8" name="dirscan_speed" id="dirscan_speed" value="$dirscan_speed">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -79,7 +79,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="script_dir">
                     <span class="component-title">$T('opt-script_dir')</span>
-			        <input type="text" size="50" name="script_dir" value="$script_dir">
+			        <input type="text" size="50" name="script_dir" id="script_dir" value="$script_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -89,7 +89,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="email_dir">
                     <span class="component-title">$T('opt-email_dir')</span>
-			        <input type="text" size="50" name="email_dir" value="$email_dir">
+			        <input type="text" size="50" name="email_dir" id="email_dir" value="$email_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -99,7 +99,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="password_file">
                     <span class="component-title">$T('opt-password_file')</span>
-			        <input type="text" size="50" name="password_file" value="$password_file">
+			        <input type="text" size="50" name="password_file" id="password_file" value="$password_file">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -118,7 +118,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="admin_dir">
                     <span class="component-title">$T('opt-admin_dir')</span>
-			        <input type="text" size="50" name="admin_dir" value="$admin_dir">
+			        <input type="text" size="50" name="admin_dir" id="admin_dir" value="$admin_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -128,7 +128,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="log_dir">
                     <span class="component-title">$T('opt-log_dir')</span>
-			        <input type="text" size="50" name="log_dir" value="$log_dir">
+			        <input type="text" size="50" name="log_dir" id="log_dir" value="$log_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
@@ -138,7 +138,7 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="nzb_backup_dir">
                     <span class="component-title">$T('opt-nzb_backup_dir')</span>
-			        <input type="text" size="50" name="nzb_backup_dir" value="$nzb_backup_dir">
+			        <input type="text" size="50" name="nzb_backup_dir" id="nzb_backup_dir" value="$nzb_backup_dir">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
