@@ -1773,6 +1773,10 @@ table#connectionsTable tr td {
 #config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
 #config label span.component-desc { font-size: 1.0em; font-style:italic;  }
 
+#config div.nocheck { padding-left: 20px; }
+#config div span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
+#config div span.component-desc { font-size: 1.0em; font-style:italic;  }
+
 #config div.field-pair select { font-size: 1.1em; border: 1px solid #d4d0c8;}
 #config div.field-pair select option { padding: 0 10px; line-height: 1.4; }
 
