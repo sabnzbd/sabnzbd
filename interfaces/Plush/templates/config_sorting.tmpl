@@ -205,15 +205,12 @@
                     <span class="component-title">$T('opt-tvsort')</span>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix" for="tvfoldername">
                     <span class="component-title">$T('sortString')</span>
-		    		<input type="text" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()">
-                </label>
-                <div class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
+		    		<input type="text" size="50" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()">
 		    		<input type="button" class="juiButton" onclick="tvClear()" value="$T('button-clear')"/>
-                </div>
+                </label>
             </div>
             <div class="field-pair">
                 <div class="nocheck clearfix">
@@ -231,7 +228,7 @@
                     </span>
                 </div>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix">
                     <span class="component-title">$T('example')</span>
                     <span class="component-desc" id="previewtv"></span>
@@ -329,7 +326,7 @@
                     <span class="component-title">$T('opt-movieSort')</span>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
 			    <input type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> />
                 <label class="clearfix" for="movie_extra_folder">
                     <span class="component-title">$T('opt-movieExtra')</span>
@@ -338,20 +335,14 @@
             <div class="field-pair">
                 <label class="nocheck clearfix" for="moviefoldername">
                     <span class="component-title">$T('sortString')</span>
-		    		<input type="text" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()">
-                </label>
-                <div class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
+		    		<input type="text" size="50" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()">
 		    		<input type="button" class="juiButton" onclick="movieClear()" value="$T('button-clear')"/>
-                </div>
+                </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix" for="movieextra">
                     <span class="component-title">$T('multiPartLabel')</span>
-	    			<input type="text" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()">
-                </label>
-                <label class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
+	    			<input type="text" size="50" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()">
 		    		<input type="button" class="juiButton" onclick="movieClearExtra()" value="$T('button-clear')"/>
                 </label>
             </div>
@@ -362,7 +353,7 @@
 				    <input type="button" class="juiButton" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')"/>
                 </div>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix">
                     <span class="component-title">$T('example')</span>
                     <span class="component-desc" id="previewmovie"></span>
@@ -444,27 +435,29 @@
                     <span class="component-title">$T('opt-dateSort')</span>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix" for="datefoldername">
                     <span class="component-title">$T('sortString')</span>
-		    		<input type="text" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()">
-                </label>
-                <div class="nocheck clearfix">
-                    <span class="component-title">&nbsp;</span>
+		    		<input type="text" size="50" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()">
 		    		<input type="button" class="juiButton" onclick="dateClear()" value="$T('button-clear')"/>
-                </div>
+                </label>
             </div>
             <div class="field-pair">
-                <div class="nocheck clearfix" disabled="true">
+                <div class="nocheck clearfix">
                     <span class="component-title">$T('presetSort')</span>
                     <span class="component-desc">
 			    		<input type="button" class="juiButton" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')"/>
 			    		<input type="button" class="juiButton" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')"/>
+                    </span>
+                </div>
+                <div class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
+                    <span class="component-desc">
 			    		<input type="button" class="juiButton" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')"/>
                     </span>
                 </div>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix">
                     <span class="component-title">$T('example')</span>
                     <span class="component-desc" id="previewdate"></span>

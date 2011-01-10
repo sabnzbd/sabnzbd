@@ -133,9 +133,9 @@ jQuery(function($){
 					$('#maxSpeed-option').val('');
 				var str = $('#maxSpeed-option').val();
 				if (str && str!="")
-					$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+					$('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
 				else
-					$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+					$('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -1005,9 +1005,9 @@ jQuery(function($){
 			if ($("#maxSpeed-option").val() != str && !$.plush.focusedOnSpeedChanger)
 				$("#maxSpeed-option").val(str);
 			if (str && str!="")
-				$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+				$('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
 			else
-				$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+				$('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 		},
 		
 

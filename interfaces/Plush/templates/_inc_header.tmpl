@@ -58,7 +58,7 @@
 
 	<div class="wrapper">
 		<div class="navigation">
-			<ul class="menu" rel="sam1" style="float:right">
+			<ul class="menu" id="navigation_menu_right">
 			#if $pane=="Main"#
 				<li class="first"><a href="#" id="add_nzb"><span class="icon_nav_addnzb">$T('Plush-addnzb')</span></a></li>
 				<li><a href="#" id="plush_options"><span class="icon_nav_options">$T('Plush-options').capitalize()</span></a></li>
@@ -68,7 +68,7 @@
 				<li class="first last"><a href="#" id="help" target="_blank"><span class="icon_nav_help">$T('help').capitalize()</span></a></li>
 			#end if#
 			</ul>
-			<ul class="menu" rel="sam1">
+			<ul class="menu" id="navigation_menu_left">
 				<li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('Plush-downloads').capitalize()</span></a></li>
 				<li#if $pane=="Connections"# class="active"#end if#><a href="${path}connections"><span class="icon_nav_connections">$T('connections').capitalize()</span></a></li>
 				<li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
@@ -77,7 +77,7 @@
 		</div>
 		<div id="nav_text">
 			SABnzbd $version &sdot;
-			<span id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> Warnings</span>
+			<a href="${path}connections/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> Warnings</a>
 			#if $pane=="Main"#
 		        #if $new_release#&sdot; <a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
 			    #if $warning#&sdot; <a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
@@ -88,15 +88,14 @@
 	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
 
 #if $pane=="Main"#
-
 #else if $pane=="Nzo"#
-	<br/>
-#else if $pane=="RSS" or $pane=="Connections"#
-	<br/>
-	<div style="width:85%; margin:auto;">
+#else if $pane=="Connections" or $pane =="RSS"#
+    <div id="config_container" class="config_margin lang-$active_lang">
+        <div id="config_content">
 #else#
-
-	<br/>
+	#if $pane=="Connections"#
+	#else if $pane=="RSS"#
+	#else#
     <div class="config_nav">
         <ul>
             <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="${path}config/general">
@@ -119,10 +118,9 @@
             	<div class="config_sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
         </ul>
     </div>
-
-    <div id="config_container" class="config_margin">
+	#end if#
+    <div id="config_container" class="config_margin#if $pane=="Categories"# config_margin_wide#end if#">
         <div id="config_content">
 			<div id="config">
 				<div id="config-content" class="clearfix">
-
 #end if#

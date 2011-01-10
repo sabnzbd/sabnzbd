@@ -35,7 +35,7 @@ else:
 	                </select>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix" for="dayofweek">
                     <span class="component-title">$T('sch-frequency')</span>
 	                <select name="dayofweek" id="dayofweek">
@@ -60,7 +60,7 @@ else:
 	                </select>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="nocheck clearfix" for="arguments">
                     <span class="component-title">$T('sch-arguments')</span>
 	                <input type="text" size="20" name="arguments" id="arguments" value=""/>
@@ -84,11 +84,13 @@ else:
 	    <!--#if $schedlines#-->
 		    <table id="schedulingTable">
 		    <!--#set $schednum = 0#-->
+		    <!--#set $odd = False#-->
 		    <!--#for $line in $schedlines#-->
+			    <!--#set $odd = not $odd#-->
 		        <form action="delSchedule" method="post">
 					<input type="hidden" name="session" id="session" value="$session">
 			        <input type="hidden" name="line" id="line" value="$line"/>
-		            <div class="field-pair">
+		            <div class="field-pair<!--#if $odd then "" else " alt"#-->">
 		                <label class="nocheck clearfix" for="email_dir">
 		                    <span class="component-title"><strong>$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</strong> $taskinfo[$schednum][3] $taskinfo[$schednum][4]</span>
 							<input type="submit" class="juiButton" style="padding:4px;" value="$T('button-delSchedule')"/>
