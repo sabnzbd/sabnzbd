@@ -148,13 +148,16 @@ def send_with_template(prefix, parm):
     for temp in lst:
         if os.access(temp, os.R_OK):
             source = _decode_file(temp)
-            message = Template(source=source,
-                                searchList=[parm],
-                                filter=EmailFilter,
-                                compilerSettings={'directiveStartToken': '<!--#',
-                                                  'directiveEndToken': '#-->'})
-            ret = send(message.respond())
-            del message
+            if source:
+                message = Template(source=source,
+                                    searchList=[parm],
+                                    filter=EmailFilter,
+                                    compilerSettings={'directiveStartToken': '<!--#',
+                                                      'directiveEndToken': '#-->'})
+                ret = send(message.respond())
+                del message
+            else:
+                ret = T('Invalid encoding of email template %s') % temp
     return ret
 
 
@@ -228,19 +231,16 @@ def _decode_file(path):
     source = fp.read()
     fp.close()
 
-    return source.decode(encoding)
+    try:
+        return source.decode(encoding)
+    except:
+        return ''
 
 
 ################################################################################
-try:
-    from email.message import Message
-    from email.header import Header
-    from email.encoders import encode_quopri
-except:
-    # Python 2.4 uses different names
-    from email.Message import Message
-    from email.Header import Header
-    from email.Encoders import encode_quopri
+from email.message import Message
+from email.header import Header
+from email.encoders import encode_quopri
 
 RE_HEADER = re.compile(r'^([^:]+):(.*)')
 
@@ -260,7 +260,6 @@ def _prepare_message(txt):
     code = 'ISO-8859-1'
 
     msg = Message()
-    msg.set_charset(code)
     payload = []
     body = False
     header = False
@@ -285,11 +284,8 @@ def _prepare_message(txt):
 
     msg.set_payload('\n'.join(payload), code)
 
-    # Prevent double header (because it will be added again by encode_quopri)
-    try:
-        del msg['Content-Transfer-Encoding']
-    except KeyError:
-        pass
+    # Check for proper encoding, else call it explicitly
+    if not msg.has_key('Content-Transfer-Encoding'):
+        encode_quopri(msg)
 
-    encode_quopri(msg)
     return msg.as_string()
