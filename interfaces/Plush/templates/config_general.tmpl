@@ -110,15 +110,15 @@
             <div class="field-pair alt">
                 <label class="nocheck clearfix" for="apikey">
                     <span class="component-title">$T('opt-apikey')</span>
-                    <div style="float:left">
-						<input type="text" style="width:200px;" id="apikey" value="$session">
-						<br/><br/>
-						<input type="button" value="$T('button-apikey')" id="generate_new_apikey">
-						<span class="component-desc">$T('explain-apikey')</span>
-					</div>
+					<input type="text" style="width:200px;" id="apikey" value="$session">
+                </label>
+                <label class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
+					<span class="component-desc">$T('explain-apikey')</span>
+					<input type="button" class="juiButton" value="$T('button-apikey')" id="generate_new_apikey">
                 </label>
             </div>
-            <div class="field-pair alt">
+            <div class="field-pair">
                 <label class="clearfix" for="disable_api_key">
 				    <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if $disable_api_key > 0 then 'checked="1"' else ""#--> />
                     <span class="component-title">$T('opt-disableApikey')</span>
