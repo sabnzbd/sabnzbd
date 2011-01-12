@@ -1,30 +1,9 @@
 #if $pane!="Main"#
-
 		#if $pane!="Connections" and $pane !="RSS"#</div>#end if#
-	</div>
-	<div class="clearfix"></div>
-
-    #if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Index Sites" or $pane=="Sorting"#
-        <div class="left_links">
-            <a id="save"><span class="config_sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
-        </div>
-    #end if#
-    #if $pane=="General"#
-        <div class="left_links">
-            <a href="../restart?session=$session" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">
-            	<span class="config_sprite_container sprite_config_general_restart">&nbsp;</span> $T('button-restart') SABnzbd</a>
-        </div>
-    #end if#
-    #if $pane=="Email"#
-        <div class="left_links">
-            <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">
-            	<span class="config_sprite_container sprite_config_email_test">&nbsp;</span> $T('link-testEmail')</a>
-        </div>
-    #end if#
-
+			</div>
+			<div class="clearfix"></div>
         </div>
     </div>
-
 #end if#
 
 	<!-- modals -->

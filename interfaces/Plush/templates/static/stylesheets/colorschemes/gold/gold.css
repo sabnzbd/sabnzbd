@@ -1282,7 +1282,7 @@ tr:hover .history_added { color: black; }
 	padding: 20px 0 0 50px;
 }
 #plush_options_modal .juiButton, #add_nzb_modal .juiButton {
-	color:#fff;
+	color:#3383bb;
 }
 
 #help_modal {
@@ -1491,7 +1491,6 @@ fieldset.EntryFieldSet {
   }
 
 
-
 /* Vertical Tabs - adapted from http://jquery-ui.googlecode.com/svn/trunk/demos/tabs/vertical.html
 ----------------------------------
 .ui-tabs-vertical { width: 100%; }
@@ -1638,11 +1637,6 @@ legend .config_sprite_container {
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
 
-table.connectionsTable tr td {
-	padding:2px;
-	border:1px solid #ccc;
-}
-
 /* jqueryui config */
 .ui-tabs .ui-tabs-nav li a {
 	font-size:95%;
@@ -1682,20 +1676,21 @@ table.connectionsTable tr td {
 .left_links {
 	float: left;
 	margin: 5px 0 0 10px;
-	padding-left: 20px;
+	padding-left: 190px;
 }
  
 	.left_links a {
-		background-color: #ddd;
-		color: #363636;
+		background-color: #363636;
+		color: #ddd;
 		display: block;
+		float:left;
 		font-size: 9pt;
 		font-weight: bold;
 		text-decoration: none;
 	}
  
 		.left_links a:hover {
-			background-color: #666;
+			background-color: #000;
 			color: #fff; 
 		}
  
@@ -1792,6 +1787,7 @@ table.connectionsTable tr td {
 #config .component-group-desc p { margin: .8em 0; width: 85%; font-size: 1.2em; color: #666;}
 #config .component-group-desc p.note { margin: .8em 0; width: 90%; font-size: 1.2em; color: #333;}
 #config .component-group-list { float: left; width: 540px; }
+#config .component-group-last { border-bottom: 0px; padding: 15px 15px 25px; position: relative; }
 
 #config fieldset {border:0; outline: 0;  }
 
