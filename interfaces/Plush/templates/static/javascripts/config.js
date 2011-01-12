@@ -122,15 +122,17 @@ jQuery(document).ready(function($){
         case 'General':
 			$('#apikey').click(function(){ $('#apikey').select() });
 			$('#generate_new_apikey').click(function(){
-				$.ajax({
-					type: "POST",
-					url: "../../tapi",
-					data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
-					success: function(msg){
-						$('#apikey').val(msg);
-						$('#hiddenSession').val(msg);
-					}
-				});
+				if (confirm($(this).attr('rel'))) {
+					$.ajax({
+						type: "POST",
+						url: "../../tapi",
+						data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
+						success: function(msg){
+							$('#apikey,#session').val(msg);
+							window.location.reload();
+						}
+					});
+				}
 			});
         	$('#sabnzbd_restart').click(function(){
         		return confirm($(this).attr('rel'));

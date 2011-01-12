@@ -3,7 +3,7 @@
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <form action="saveGeneral" method="post" name="fullform" id="fullform" autocomplete="off">
-<input type="hidden" id="hiddenSession" name="session" id="session" value="$session">
+<input type="hidden" id="session" name="session" value="$session">
 
 <div id="config-components">
     
@@ -115,7 +115,7 @@
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
 					<span class="component-desc">$T('explain-apikey')</span>
-					<input type="button" class="juiButton" value="$T('button-apikey')" id="generate_new_apikey">
+					<input type="button" class="juiButton" value="$T('button-apikey')" id="generate_new_apikey" rel="$T('Plush-confirm')">
                 </label>
             </div>
             <div class="field-pair">
