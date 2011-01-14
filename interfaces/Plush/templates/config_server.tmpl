@@ -3,7 +3,7 @@
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <div id="config-components">
-    
+
     <div id="core-component-group0" class="component-group clearfix">
 	    <input type="button" class="juiButton" id="addServerButton" style="padding:4px;" value="$T('button-addServer')" />
 	    <script>
@@ -13,7 +13,7 @@
 	    	});
 	    </script>
 	</div>
-    
+
     <div id="core-component-group1" class="component-group clearfix" style="display:none;">
 		<form action="addServer" method="post" autocomplete="off">
 		<input type="hidden" name="session" value="$session">
@@ -105,13 +105,13 @@
 	<!--#set $cur = 0#-->
 	<!--#for $server in $slist#-->
 		<!--#set $cur = $cur + 1#-->
-	    
+
 	    <div id="core-component-group$cur" class="component-group clearfix">
 			<form action="saveServer" method="post" autocomplete="off">
 			<input type="hidden" name="session" value="$session">
 			<input type="hidden" name="server" value="$server"/>
 	        <div class="component-group-desc">
-	            <h3>Server Definition</h3>
+	            <h3>$T('defServer')</h3>
 	            <p>
 					<input type="submit" class="juiButton" style="padding:4px;" value="$T('button-saveChanges')" />
 					<br/><br/>
@@ -124,7 +124,7 @@
 			    <!--#if 'amounts' in $servers[$server]#-->
 			    <br/>
 				<p>
-					<strong>$T('Bandwidth'):</strong><br/>
+					<strong>$T('srv-bandwidth'):</strong><br/>
 				    $T('total'): $servers[$server]['amounts'][0]<br/>
 				    $T('today'): $servers[$server]['amounts'][3]<br/>
 				    $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
