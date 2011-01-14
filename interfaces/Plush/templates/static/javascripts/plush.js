@@ -133,9 +133,9 @@ jQuery(function($){
 					$('#maxSpeed-option').val('');
 				var str = $('#maxSpeed-option').val();
 				if (str && str!="")
-					$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+					$('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
 				else
-					$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+					$('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -334,7 +334,7 @@ jQuery(function($){
 			};
 
 			// static-element tooltips
-			$('body').delegate('#time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			$('body').delegate('#last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
 			  var link = this,
 			      $link = $(this);
 
@@ -1005,9 +1005,9 @@ jQuery(function($){
 			if ($("#maxSpeed-option").val() != str && !$.plush.focusedOnSpeedChanger)
 				$("#maxSpeed-option").val(str);
 			if (str && str!="")
-				$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+				$('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
 			else
-				$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+				$('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 		},
 		
 
@@ -1062,7 +1062,7 @@ jQuery(function($){
 		// ***************************************************************
 		//	$.plush.SetWarnings(have_warnings,last_warning) -- called from queue.tmpl
 		SetWarnings : function(have_warnings,last_warning) {
-			$('#have_warnings').html('('+have_warnings+')');		// Update warnings count/latest warning text in main menu
+			$('#have_warnings').html(have_warnings);		// Update warnings count/latest warning text in main menu
 			$('#last_warning').attr('title',last_warning);
 		},
 

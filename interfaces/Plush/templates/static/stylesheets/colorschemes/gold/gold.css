@@ -231,14 +231,14 @@ body {
 --------------------------------------------------------------------------------------------------------------- */
 
 .wrapper {
-	width:85%;
+	width:100%;
 	margin:auto;
 }
 .navigation {  
     width: 100%;  
-    height: 30px;  
+    height: 30px;
     position: relative;  
-    /*margin-bottom: 30px;*/
+    padding: 0;
 }  
 .navigation ul {  
     margin: 0;  
@@ -247,10 +247,15 @@ body {
   
 .navigation ul.menu {  
     height: 30px;  
-    float:left;  
-    /*border-left: 1px solid rgba(0,0,0,0.3);  
-    border-right: 1px solid rgba(255,255,255,0.3);  */
-}  
+}
+.navigation ul#navigation_menu_left {  
+    margin-left:110px;
+    float:left;
+}
+.navigation ul#navigation_menu_right {  
+    margin-right:110px;
+    float:right;
+}
     
 .navigation ul li.active a{  
     background: -webkit-gradient(linear, right top, right bottom, from(#333), to(#666) );  
@@ -335,6 +340,13 @@ body {
 .navigation ul li a span.icon_nav_help { background-image: url('images/nav/help-grey.png'); }
 .navigation ul li.active a span.icon_nav_help, .navigation ul li a:hover span.icon_nav_help { background-image: url('images/nav/help.png'); }
 
+#nav_text {
+    padding: 3px 126px 0 126px;
+	font-size:90%;
+}
+#last_warning {
+	color:#000;
+}
 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -522,7 +534,7 @@ body {
 	cursor: default;
 	font-weight: normal;
 	margin: 32px 0 0 38px;
-	width:180px;
+	width:140px;
 	overflow:hidden;
 }
 
@@ -535,7 +547,13 @@ body {
 	white-space:nowrap;
 }
 
-.queue-buttons-speed a:hover {
+#speed-wrapper {
+	margin-top:21px;
+	float:none;
+	padding:0;
+}
+
+#speed-wrapper a:hover {
 	text-decoration:none;
 }
 	
@@ -674,9 +692,9 @@ body {
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
-  margin:0 auto;
-  padding:12px 0 0 45px;
-  width:372px;
+  margin: auto;
+  padding:13px 0 0 20px;
+  width:350px;
 }
  
 .sprite_sabnzbdplus_logo {
@@ -695,7 +713,7 @@ body {
 	width: 68px; 
 	height: 12px;
 	margin-top: 20px;
-	padding: 3px 0px 7px;
+	padding: 3px 0 7px;
 	text-align: center;
 }
  
@@ -785,7 +803,13 @@ tr:hover .nzb_status_grippie {
  
 .queueTable td.download-title { 
   width: 50%;
-  height:44px;
+  height:28px;
+}
+
+.queueTable td.historyTitle { 
+  padding:0px;
+  width: 50%;
+  height:28px;
 }
  
 .nzb_status_col {
@@ -816,13 +840,7 @@ tr:hover .nzb_status_grippie {
 	width: 138px;
 	margin: 4px 0px 0px 100px;
 }
- 
-.queueTable td.historyTitle { 
-  padding:0px;
-  height:44px;
-  width: 50%;
-}
- 
+
 .queueTable tr:hover td.historyTitle {
 	background-color: #f9f9f9; /* IE7 */
 	color: #000; }
@@ -1263,6 +1281,9 @@ tr:hover .history_added { color: black; }
 #plush_options_modal, #add_nzb_modal {
 	padding: 20px 0 0 50px;
 }
+#plush_options_modal .juiButton, #add_nzb_modal .juiButton {
+	color:#3383bb;
+}
 
 #help_modal {
 	text-align:center;
@@ -1369,7 +1390,7 @@ table.nzoTable {
 }
 
 #config_container {
-	background: #666;
+	background: #363636;
 	font-size:95%;
 	min-height: 435px;
 	padding-left: 20px;
@@ -1379,21 +1400,10 @@ table.nzoTable {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
-/*
-#config_content a {
-  color:#000;
-  text-decoration:underline;
-} 
-*/
 #config_content {
-	overflow: auto;
+	overflow: hidden;
 	width: 100%;
 }
-  #config_content .center {
-    background:#eee;
-    border:1px solid #aaa;
-    padding:5px 7px;
-  }
   #config_content .catheaderinfo { font-weight:bold;}
  
 #config_go_back {
@@ -1456,6 +1466,9 @@ fieldset.EntryFieldSet {
   .catTable th {
     font-weight:bold;
   }
+  .catTable tr.odd {
+  	background-color:#ddd;
+  }
   .catTable td.lastCol {
 	width:8%;
   }
@@ -1470,9 +1483,24 @@ fieldset.EntryFieldSet {
 	color:#FFF;
 	font-weight:bold;
   }
-  .rssTable td {
-	background-color:#DDD;
+  .rssTable tr {
+	background-color:#eee;
   }
+  .rssTable tr.odd {
+  	background-color:#ddd;
+  }
+
+
+/* Vertical Tabs - adapted from http://jquery-ui.googlecode.com/svn/trunk/demos/tabs/vertical.html
+----------------------------------
+.ui-tabs-vertical { width: 100%; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 11em; margin-right:10px;}
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; width:12em; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; }
+*/
+
 
 #schedulingTable td, #switchesTable td {
     padding:3px 3px 5px;
@@ -1506,7 +1534,7 @@ fieldset.EntryFieldSet {
  
 		.config_nav li a {
 			background-color: #b1b1b1;
-			color: #000;
+			color: #363636;
 			display: block;
 			font-size: 9pt;
 			font-weight: bold;
@@ -1532,7 +1560,7 @@ fieldset.EntryFieldSet {
 			}
  
 	.config_nav .nav_active {
-		background-color: #666;
+		background-color: #363636;
 		color: #fff;
 	}
 
@@ -1609,14 +1637,13 @@ legend .config_sprite_container {
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
 
-table#connectionsTable tr td {
-	padding:2px;
-	border:1px solid #ccc;
-}
-
 /* jqueryui config */
 .ui-tabs .ui-tabs-nav li a {
 	font-size:95%;
+}
+
+.tabs div {
+	text-align:left;
 }
 
 /* FF2 to rescue */
@@ -1649,26 +1676,28 @@ table#connectionsTable tr td {
 .left_links {
 	float: left;
 	margin: 5px 0 0 10px;
-	padding-left: 20px;
+	padding-left: 190px;
 }
  
 	.left_links a {
-		background-color: #ddd;
-		color: #666;
+		background-color: #363636;
+		color: #ddd;
 		display: block;
+		float:left;
 		font-size: 9pt;
 		font-weight: bold;
 		text-decoration: none;
 	}
  
 		.left_links a:hover {
-			background-color: #666;
+			background-color: #000;
 			color: #fff; 
 		}
  
-.config_margin { margin: 5px 10px 0 110px; }
-.config_margin.lang-de-de { margin: 5px 10px 0 140px; }
- 
+.config_margin { margin: 5px 110px 0 110px; }
+.config_margin.lang-de-de { margin: 5px 110px 0 140px; }
+.config_margin_wide { margin-right:10px; }
+
 .right_links {
 	float: right;
 	margin: 5px 40px 0 0;
@@ -1722,3 +1751,72 @@ table#connectionsTable tr td {
 *+html {
   overflow-x:visible;
 }
+
+
+
+
+
+
+/*
+	new config design, adapted from Sickbeard
+*/
+#config  { padding: 0px; text-align: center; }
+#config * { margin:0; font-family: "Trebuchet MS", Verdana, sans-serif; }
+#config ul { list-style-type:none; }
+#config h3 { font-size:1.5em; color:#000; }
+#config h4 { font-size:1em; color:#333; text-transform: uppercase; margin:0 0 .2em; }
+#config h5 { font-size:1em; color:#000; margin:0 0 .2em; }
+#config p, #config li { font-size:1.2em; line-height:1.3; }
+
+#config .path { font-size:1em; color:#333; font-family: Verdana;}
+#config .jumbo {font-size: 16px !important;}
+
+#config-content {
+	display: block; width: 100%; text-align: left; padding:0 0 40px; clear: both; background: #fff; margin: 0px auto;
+	background: #ebebeb;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+#config-components { float: left; width: auto; }
+#config-components-border { float: left; width: auto; border-top: 1px solid #999999; padding: 5px 0;}
+
+#config .component-group { border-bottom: 1px dotted #666; padding: 15px 15px 25px; position: relative; }
+#config .component-group-desc { float: left; width: 200px; }
+#config .component-group-desc h3 { font-size: 1.5em;  }
+#config .component-group-desc p { margin: .8em 0; width: 85%; font-size: 1.2em; color: #666;}
+#config .component-group-desc p.note { margin: .8em 0; width: 90%; font-size: 1.2em; color: #333;}
+#config .component-group-list { float: left; width: 540px; }
+#config .component-group-last { border-bottom: 0px; padding: 15px 15px 25px; position: relative; }
+
+#config fieldset {border:0; outline: 0;  }
+
+#config div.field-pair { padding: .5em 0 .5em;  }
+#config div.field-pair.alt { background-color:#ddd;  }
+#config div.field-pair input { float: left; margin-right: 6px; }
+
+#config label.nocheck { padding-left: 20px; }
+#config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
+#config label span.component-desc { font-size: 1.0em; font-style:italic;  }
+
+#config div.nocheck { padding-left: 20px; }
+#config div span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
+#config div span.component-desc { font-size: 1.0em; font-style:italic;  }
+
+#config div.field-pair select { font-size: 1.1em; border: 1px solid #d4d0c8;}
+#config div.field-pair select option { padding: 0 10px; line-height: 1.4; }
+
+
+#config-settings { float: right; width: 200px; background: #fffae5; border-bottom: 1px dotted #666; border-top: 1px solid #999;padding: 20px 0 30px; margin-right: 20px; }
+#config-settings .config-settings-group { margin: 0 15px 15px; border-bottom: 1px dotted #999; padding-bottom: 15px; }
+#config-settings .config-settings-group h2 { margin-bottom: 0; }
+#config-settings .config-settings-group p {font-size: 1.1em; color: #666; margin: .6em 0 1em; }
+#config-settings .config-settings-group div.field-pair { margin: 1.2em 0 .6em; }
+#config-settings .config-settings-group input {float: left;}
+
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */

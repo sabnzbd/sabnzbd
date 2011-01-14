@@ -5,16 +5,10 @@
 <div class="tabs">
 	<ul>
 		<li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
+		<li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
 		<li><a href="#tabs-repair">$T('button-repair')</a></li>
 		<!--#if $lastmail#-->
 			<li><a href="#tabs-lastmail">Last Mail</a></li>
-		<!--#end if#-->
-		<!--#if $servers#-->
-			<!--#set $count=0#-->
-			<!--#for $server in $servers#-->
-				<!--#set $count=$count+1#-->
-				<li><a href="#tabs-server$count">$server[0]:$server[1] ($server[2])</a></li>
-		    <!--#end for#-->
 		<!--#end if#-->
 	</ul>
 	<div id="tabs-warnings">
@@ -29,18 +23,27 @@
 			</select>
 		</p>
 		<p><!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#--></p>
+		<br/>
 		<!--#if $warnings#-->
-			<table id="connectionsTable">
+			<table class="rssTable">
+		        <tr>
+		            <th>When</th>
+		            <th>Type</th>
+		            <th>Warning</th>
+		        </tr>
+		    <!--#set $odd = False#-->
 			<!--#for $warn in $warnings#-->
-				<tr><td nowrap>$warn.replace("\n","</td><td>")</td></tr>
+		        <!--#set $odd = not $odd#-->
+		        <tr class="<!--#if $odd then "odd" else "even"#-->">
+					<td>$warn.replace("\n","</td><td>")</td></tr>
 			<!--#end for#-->
 			</table>
 		<!--#else#-->
 			<p>$T('none')</p>
 		<!--#end if#-->
 	</div>
-	<div id="tabs-repair">
 
+	<div id="tabs-repair">
 		<table>
 			<tr><td>
 				<form action="saveGeneral" method="post">
@@ -56,33 +59,29 @@
 
 		<!--#if $folders#-->
 			<br/><hr/><br/>
-			<!--#if $folders#-->$T('explain-orphans')<!--#end if#-->
-			<table class="catTable">
-				<tr>
-					<th></th>
-					<th></th>
-					<th>$T('name')</th>
-				</tr>
-				<!--#set $odd = False#-->
-				<!--#for $folder in $folders#-->
-					<!--#set $odd = not $odd#-->
-					<tr class="<!--#if $odd then "odd" else "even"#-->">
-					<td>
-						<form action="delete" method="get">
+			<!--#if $folders#--><p><strong class="center">$T('explain-orphans')</strong></p><br/><!--#end if#-->
+			<table class="rssTable">
+		        <tr>
+		            <th colspan="2"></th>
+		            <th>Name</th>
+		        </tr>
+		    <!--#set $odd = False#-->
+			<!--#for $folder in $folders#-->
+	        <!--#set $odd = not $odd#-->
+		        <tr class="<!--#if $odd then "odd" else "even"#-->">
+					<td><form action="delete" method="get">
 						<input type="hidden" value="$folder" name="name">
 						<input type="hidden" value="$session" name="session">
-						<input type="submit" class="juiButton" style="padding:0px" value="$T('button-delCat')">
-						</form>
-					</td>
-					<td>
-						<form action="add" method="get">
+						<input type="submit" class="juiButton" value="$T('button-delCat')">
+					</form></td>
+					<td><form action="add" method="get">
 						<input type="hidden" value="$folder" name="name">
 						<input type="hidden" value="$session" name="session">
-						<input type="submit" class="juiButton" style="padding:0px" value="$T('button-add')">
-						</form>
-					</td>
+						<input type="submit" class="juiButton" value="$T('button-add')">
+					</form></td>
 					<td>$folder</td>
-				<!--#end for#-->
+				</tr>
+			<!--#end for#-->
 			</table>
 		<!--#end if#-->
 	</div>
@@ -95,25 +94,39 @@
 	<!--#end if#-->
 
 
+	<div id="tabs-connections">
 	<!--#if $servers#-->
 		<!--#set $count=0#-->
 		<!--#for $server in $servers#-->
 			<!--#set $count=$count+1#-->
-				<div id="tabs-server$count">
-					$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#-->
-					<br/><br/>
-			        <!--#if not $server[5]#-->
-			            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
-			            &nbsp;&nbsp;$server[6]
-			        <!--#end if#-->
-					<small><!--#if $server[3]#--><ol class="numbered_list">
-					<!--#for $thrd in $server[3]#-->
-						<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
-					<!--#end for#-->
-					</ol><!--#else#-->$T('none')<!--#end if#--></small>
-				</div>
+			<p>Server: <strong>$server[0]:$server[1]</strong></p>
+			<p>$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
+			<p># Connections: $server[2]</p>
+	        <!--#if not $server[5]#-->
+	            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
+	            &nbsp;&nbsp;$server[6]
+	        <!--#end if#-->
+			<!--#if $server[3]#-->
+				<table class="rssTable">
+			        <tr>
+			            <th>Article Origination</th>
+			            <th>Filename</th>
+			            <th>File Set</th>
+			        </tr>
+			    <!--#set $odd = False#-->
+				<!--#for $thrd in $server[3]#-->
+		        <!--#set $odd = not $odd#-->
+			        <tr class="<!--#if $odd then "odd" else "even"#-->">
+						<td>$thrd[1]</td><td>$thrd[2]</td><td>$thrd[3]</td></tr>
+				<!--#end for#-->
+				</table>
+			<!--#end if#-->
+			<br/><hr/><br/>
 	    <!--#end for#-->
+	<!--#else#-->
+		<p>$T('none')</p>
 	<!--#end if#-->
+	</div>
 	
 </div>
 

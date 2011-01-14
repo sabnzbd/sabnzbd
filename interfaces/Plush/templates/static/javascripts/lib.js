@@ -167,8 +167,6 @@ c.fn["inner"+b]=function(){return this[0]?parseFloat(c.css(this[0],d,"padding"))
 b],f.body["scroll"+b],f.documentElement["scroll"+b],f.body["offset"+b],f.documentElement["offset"+b]);else if(e===B){f=c.css(f,d);var h=parseFloat(f);return c.isNaN(h)?f:h}else return this.css(d,typeof e==="string"?e:e+"px")}})})(window);
 
 
-
-
 /*!
  * jQuery UI 1.8.7
  *

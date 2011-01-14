@@ -1,32 +1,10 @@
-#if $pane=="RSS" or $pane=="Connections"#
-    </div>
-#else if $pane!="Main"#
-
-    #if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Index Sites" or $pane=="Sorting"#
-        <div class="left_links">
-            <a id="save"><span class="config_sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
-        </div>
-    #end if#
-    #if $pane=="General"#
-        <div class="left_links">
-            <a href="../restart?session=$session" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">
-            	<span class="config_sprite_container sprite_config_general_restart">&nbsp;</span> $T('button-restart') SABnzbd</a>
-        </div>
-    #end if#
-    #if $pane=="Email"#
-        <div class="left_links">
-            <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">
-            	<span class="config_sprite_container sprite_config_email_test">&nbsp;</span> $T('link-testEmail')</a>
-        </div>
-    #end if#
-
+#if $pane!="Main"#
+		#if $pane!="Connections" and $pane !="RSS"#</div>#end if#
+			</div>
+			<div class="clearfix"></div>
         </div>
     </div>
-
 #end if#
-
-
-
 
 	<!-- modals -->
 	<div style='display:none'>
@@ -46,9 +24,9 @@
 	#if $pane=="Main"#
 		<div id="plush_options_modal">
 
-			<p><a href="connections/disconnect?session=$session" class="juiButton" style="color:black;">$T('link-forceDisc')</a></p>
-            <p><a href="config/restart?session=$session" class="juiButton" style="color:black;" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a>
-                <a href="shutdown?session=$session" class="juiButton" style="color:black;" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
+			<p><a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
+            <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a>
+                <a href="shutdown?session=$session" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
             <br/>
 
 	       	$T('Plush-refreshRate'):
@@ -81,17 +59,18 @@
 		</div>
 		
 		<div id="add_nzb_modal">
-			<input type="text" id="addID_input" size="30" /> <input type="submit" id="addID" value="$T('Plush-fetch')" />
+			<input type="text" id="addID_input" size="31" />
+			<input type="submit" id="addID" value="$T('Plush-fetch')" class="juiButton" />
 			<br/><br/>
 		    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-				$T('Plush-uploadTip')<br/>
 			    <input type="hidden" name="apikey" value="$session" />
    				<input type="hidden" name="mode" value="addfile" />
    				<input type="file" id="uploadNZBFile" name="name" size="12" style="width:180px;" />
-				<input type="submit" value="Upload" />
+				<input type="submit" value="Upload" class="juiButton" />
 				<span id="uploadingSpinner" class="loading" style="display:none">&nbsp;</span>
+				<br/><i>$T('Plush-uploadTip')</i>
 				<br/><br/>
-				$T('pp')
+				<i>$T('pp'):</i>
 				<table>
 					<!--#if $cat_list#-->
 					<tr><td style="text-align:right">$T('category'):</td>
@@ -132,7 +111,7 @@
             	</table>
 
 				<br/>
-				$T('Plush-addnzb-filename'):<br/>
+				<i>$T('Plush-addnzb-filename'):</i><br/>
 			    <input type="text" name="nzbname" id="addID_nzbname" size="38" />
 
 			</form>

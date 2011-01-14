@@ -302,6 +302,7 @@ SKIN_TEXT = {
     'explain-log_dir' : TT('Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>'),
     'opt-nzb_backup_dir' : TT('.nzb Backup Folder'),
     'explain-nzb_backup_dir' : TT('Location where .nzb files will be stored.'),
+    'base-folder' : TT('Default Base Folder'),
 
 # Config->Switches
     'switchesConfig' : TT('Switches configuration'),
@@ -376,9 +377,16 @@ SKIN_TEXT = {
     'explain-ssl_type' : TT('Use V23 unless your provider requires otherwise!'),
     'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
     'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
+    'swtag-general' : 'General',
+    'swtag-server' : 'Server',
+    'swtag-queue' : 'Queue',
+    'swtag-pp' : 'Post processing',
+    'swtag-naming' : 'Naming',
+
 
 # Config->Server
     'configServer' : TT('Server configuration'),
+    'defServer' : TT('Server definition'),
     'addServer' : TT('Add Server'),
     'srv-host' : TT('Host'),
     'srv-port' : TT('Port'),
@@ -396,6 +404,7 @@ SKIN_TEXT = {
     'button-testServer' : TT('Test Server'),
     'srv-testing' : TT('Testing server details...'),
     'srv-testHint' : TT('Click below to test.'),
+    'srv-bandwidth' : TT('Bandwidth'),
 
 # Config->Scheduling
     'configSchedule' : TT('Scheduling configuration'),
@@ -417,7 +426,7 @@ SKIN_TEXT = {
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />The checking frequency is in the General page of the configuration.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'),
     'button-delFeed' : TT('Delete Feed'),
-    'button-preFeed' : TT('Preview'),
+    'button-preFeed' : TT('Read Feed'),
     'button-forceFeed' : TT('Force Download'),
     'rss-order' : TT('Order'),
     'rss-type' : TT('Type'),
