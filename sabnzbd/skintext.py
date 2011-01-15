@@ -212,6 +212,12 @@ SKIN_TEXT = {
     'lastWarnings' : TT('Latest Warnings'),
     'clearWarnings' : TT('clear'),
     'server-blocked' : TT('Unblock'),
+    'article-id' : TT('Article identifier'),
+    'file-set' : TT('File set'),
+    'warn-when' : TT('When'),
+    'warn-type' : TT('Type'),
+    'warning' : TT('Warning'),
+    'enabled' : TT('Enabled'),
 
 # Configuration
     'configuration' : TT('Configuration'),

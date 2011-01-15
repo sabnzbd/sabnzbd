@@ -8,7 +8,7 @@
 		<li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
 		<li><a href="#tabs-repair">$T('button-repair')</a></li>
 		<!--#if $lastmail#-->
-			<li><a href="#tabs-lastmail">Last Mail</a></li>
+			<li><a href="#tabs-lastmail">$T('emailResult')</a></li>
 		<!--#end if#-->
 	</ul>
 	<div id="tabs-warnings">
@@ -27,9 +27,9 @@
 		<!--#if $warnings#-->
 			<table class="rssTable">
 		        <tr>
-		            <th>When</th>
-		            <th>Type</th>
-		            <th>Warning</th>
+		            <th>$T('warn-when')</th>
+		            <th>$T('warn-type')</th>
+		            <th>$T('warning')</th>
 		        </tr>
 		    <!--#set $odd = False#-->
 			<!--#for $warn in $warnings#-->
@@ -63,7 +63,7 @@
 			<table class="rssTable">
 		        <tr>
 		            <th colspan="2"></th>
-		            <th>Name</th>
+		            <th>$T('name')</th>
 		        </tr>
 		    <!--#set $odd = False#-->
 			<!--#for $folder in $folders#-->
@@ -86,7 +86,7 @@
 		<!--#end if#-->
 	</div>
 
-	
+
 	<!--#if $lastmail#-->
 		<div id="tabs-lastmail">
 			<small>$lastmail</small>
@@ -99,9 +99,9 @@
 		<!--#set $count=0#-->
 		<!--#for $server in $servers#-->
 			<!--#set $count=$count+1#-->
-			<p>Server: <strong>$server[0]:$server[1]</strong></p>
+			<p>$T('swtag-server'): <strong>$server[0]:$server[1]</strong></p>
 			<p>$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
-			<p># Connections: $server[2]</p>
+			<p># $T('connections'): $server[2]</p>
 	        <!--#if not $server[5]#-->
 	            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
 	            &nbsp;&nbsp;$server[6]
@@ -109,9 +109,9 @@
 			<!--#if $server[3]#-->
 				<table class="rssTable">
 			        <tr>
-			            <th>Article Origination</th>
-			            <th>Filename</th>
-			            <th>File Set</th>
+			            <th>$T('article-id')</th>
+			            <th>$T('filename')</th>
+			            <th>$T('file-set')</th>
 			        </tr>
 			    <!--#set $odd = False#-->
 				<!--#for $thrd in $server[3]#-->
@@ -127,7 +127,7 @@
 		<p>$T('none')</p>
 	<!--#end if#-->
 	</div>
-	
+
 </div>
 
 
