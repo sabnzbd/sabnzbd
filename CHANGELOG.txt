@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha10 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed issue in email that prevented HTML emails templates from working
+- Identical host:port combos are allowed for Usenet servers now
+- After auto-pause om encrypted files don't stop again after the user resumes
+- In RSS feeds give the feed-level category priority over the trackers's derived category
+- Add API handlers for new [rss] and [categories] entries.
+- Fix incorrect handling of End-Of-Queue script when NICE or IONICE parameters have been set
+- Filter hidden files and folders from script pick list
+- Make "folder_check" accessible from the UI
+- End-of-queue action could be be cleared properly from the INI file
+-------------------------------------------------------------------------------
  0.6.0Alpha9 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Plush top menu and navigation improvements
