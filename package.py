@@ -155,7 +155,7 @@ def CreateTar(folder, fname, release):
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'tools/make_mo.py', 'tools/msgfmt.py'): # One day add: 'setup.py'
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'make_mo.py', 'msgfmt.py'): # One day add: 'setup.py'
                     # Force Linux/OSX scripts as excutable
                     tarinfo.mode = 0755
                 else:
