@@ -217,6 +217,7 @@ SKIN_TEXT = {
     'warn-when' : TT('When'),
     'warn-type' : TT('Type'),
     'warning' : TT('Warning'),
+    'warnings' : TT('Warnings'),
     'enabled' : TT('Enabled'),
 
 # Configuration
