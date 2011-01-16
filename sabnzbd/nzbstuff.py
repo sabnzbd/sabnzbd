@@ -1064,7 +1064,7 @@ class NzbObject(TryList):
         for nzf in self.finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        if self.new_caching:
+        if self.new_caching and not self.futuretype:
             if keep_basic:
                 clean_folder(wpath, 'SABnzbd_nz?_*')
                 clean_folder(wpath, 'SABnzbd_article_*')
