@@ -1204,6 +1204,7 @@ def QuickCheck(set, nzo):
 
     result = False
     nzf_list = nzo.finished_files
+
     for file in md5pack:
         file = name_fixer(file)
         if sabnzbd.misc.on_cleanup_list(file, False):
@@ -1213,15 +1214,15 @@ def QuickCheck(set, nzo):
         for nzf in nzf_list:
             if file == name_fixer(nzf.filename):
                 found = True
-                if nzf.md5sum == md5pack[file]:
+                if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
                     result = True
                 else:
-                    logging.debug('Quick-check of file %s failed!', file)
+                    logging.info('Quick-check of file %s failed!', file)
                     return False # When any file fails, just stop
                 break
         if not found:
-            logging.debug('Cannot Quick-check missing file %s!', file)
+            logging.info('Cannot Quick-check missing file %s!', file)
             return False # Missing file is failure
     return result
 
