@@ -237,19 +237,26 @@ def _analyse_matrix(fn, matrix_id):
 
     # Check for an error response
     if data and data.startswith('error'):
-        # Check if we are required to wait - if so sleep the urlgrabber
-        m = _RE_MATRIX_ERR.search(data)
-        if m:
-            wait = int(m.group(1))
-            if wait:
-                logging.debug('Sleeping URL grabber %s sec', wait)
-                time.sleep(min(wait, 60))
-                # Return, but tell the urlgrabber to retry
-                return (None, msg, True)
+        wait = 0
+        # Check for daily limit
+        if 'daily_limit' in data:
+            # Daily limit reached, just wait 2 minutes before trying again
+            wait = 120
         else:
-            # Clear error message, don't retry
-            msg = Ta('Problem accessing nzbmatrix server (%s)') % data
-            return (None, msg, False)
+            # Check if we are required to wait - if so sleep the urlgrabber
+            m = _RE_MATRIX_ERR.search(data)
+            if m:
+                wait = int(m.group(1))
+            else:
+                # Clear error message, don't retry
+                msg = Ta('Problem accessing nzbmatrix server (%s)') % data
+                return (None, msg, False)
+        if wait:
+            wait = min(wait, 120)
+            logging.debug('Sleeping URL grabber %s sec', wait)
+            time.sleep(wait)
+            # Return, but tell the urlgrabber to retry
+            return (None, msg, True)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably a temporary problem, keep trying
