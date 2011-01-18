@@ -1131,9 +1131,9 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
-        from sabnzbd.nzbqueue import NzbQueue
-        assert isinstance(NzbQueue.do, NzbQueue)
-        NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
+    from sabnzbd.nzbqueue import NzbQueue
+    assert isinstance(NzbQueue.do, NzbQueue)
+    NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
 
 
 def on_cleanup_list(filename, skip_nzb=False):
