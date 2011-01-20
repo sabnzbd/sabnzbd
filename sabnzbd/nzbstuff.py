@@ -626,7 +626,7 @@ class NzbObject(TryList):
         # disable the reading of the DTD file from newzbin.com
         # by setting "feature_external_ges" to 0.
 
-        if nzb:
+        if nzb and '<nzb' in nzb:
             handler = NzbParser(self)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
@@ -648,6 +648,11 @@ class NzbObject(TryList):
 
             sabnzbd.backup_nzb(filename, nzb)
             sabnzbd.save_compressed(adir, filename, nzb)
+
+        if not self.files and not reuse:
+            self.purge_data(keep_basic=False)
+            logging.warning(Ta('Empty NZB file %s'), filename)
+            raise ValueError
 
         if cat is None:
             for grp in self.groups:
