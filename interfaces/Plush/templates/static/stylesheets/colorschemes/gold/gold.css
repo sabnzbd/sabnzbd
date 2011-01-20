@@ -1385,14 +1385,11 @@ table.nzoTable {
  
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-#config_content select {
-	background-color: #fff;
-}
 
 #config_container {
 	background: #363636;
 	font-size:95%;
-	min-height: 435px;
+	min-height: 345px;
 	padding-left: 20px;
 	padding: 10px;
 	text-align: left;
@@ -1665,8 +1662,6 @@ legend .config_sprite_container {
  
 .left_links a, .right_links a {
 	cursor: pointer;
-	margin-bottom: 40px;
-	margin: 10px;
 	padding: 8px;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -1682,8 +1677,7 @@ legend .config_sprite_container {
 	.left_links a {
 		background-color: #363636;
 		color: #ddd;
-		display: block;
-		float:left;
+		display: inline;
 		font-size: 9pt;
 		font-weight: bold;
 		text-decoration: none;
@@ -1776,6 +1770,7 @@ legend .config_sprite_container {
 	background: #ebebeb;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
+	min-height: 305px; 
 }
 
 #config-components { float: left; width: auto; }
@@ -1793,7 +1788,7 @@ legend .config_sprite_container {
 
 #config div.field-pair { padding: .5em 0 .5em;  }
 #config div.field-pair.alt { background-color:#ddd;  }
-#config div.field-pair input { float: left; margin-right: 6px; }
+#config div.field-pair input { float: left; margin-right: 10px; }
 
 #config label.nocheck { padding-left: 20px; }
 #config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
