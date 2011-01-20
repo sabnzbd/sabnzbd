@@ -9,8 +9,8 @@
 		<li><a href="#tabs-rss">My Feeds</a></li>
 		<!--#if $active_feed#-->
 		<li><a href="#tabs-settings">$active_feed Settings</a></li>
-		<li><a href="#tabs-filters">$active_feed $T('filters').capitalize()</a></li>
-		<li><a href="#tabs-downloaded">$active_feed $T('rss-done') (<!--#echo len($downloaded)#-->)</a></li>
+		<li><a href="#tabs-filters">$T('filters').capitalize()</a></li>
+		<li><a href="#tabs-downloaded">$T('rss-done') (<!--#echo len($downloaded)#-->)</a></li>
 		<!--#end if#-->
 	</ul>
 
@@ -65,7 +65,7 @@
 		    <form action="add_rss_feed" method="post">
 		    	<table>
 		        	<tr><td>$T('name')</td><td><input type="text" size="10" name="feed" value="$feed"/></td></tr>
-		        	<tr><td>$T('newFeedURI')</td><td><textarea rows="3" cols="80" name="uri"></textarea></td></tr>
+		        	<tr><td>$T('newFeedURI')</td><td><input type="text" size="80" name="uri"/></td></tr>
 		        	<tr><td></td><td><input type="submit" class="juiButton" value="Add Feed"/></td></tr>
 		    	</table>
 		        <input type="hidden" name="session" value="$session">
@@ -96,7 +96,7 @@
 
 				<tr><td></td><td><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
 
-				<tr><td>$T('newFeedURI')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
+				<tr><td>$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
 	
 	            <!--#if $rss[$feed]['pick_cat']#-->
             	<tr><td>$T('category')</td><td>
