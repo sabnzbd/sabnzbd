@@ -1667,9 +1667,9 @@ def list_scripts(default=False):
                 if (sabnzbd.WIN32 and not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))
+        lst.insert(0, 'None')
         if default:
             lst.insert(0, 'Default')
-        lst.insert(0, 'None')
     return lst
 
 
