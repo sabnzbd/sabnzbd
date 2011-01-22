@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-01-20 23:15+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-01-22 11:24+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -1382,8 +1382,8 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
-#: sabnzbd/skintext.py:104 sabnzbd/skintext.py:209 sabnzbd/skintext.py:403
-msgid "Connections"
+#: sabnzbd/skintext.py:104 sabnzbd/skintext.py:197
+msgid "Status"
 msgstr ""
 
 #: sabnzbd/skintext.py:105 sabnzbd/skintext.py:748
@@ -1666,10 +1666,6 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: sabnzbd/skintext.py:197
-msgid "Status"
-msgstr ""
-
 #: sabnzbd/skintext.py:200
 msgid "Force Disconnect"
 msgstr ""
@@ -1704,6 +1700,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py:208
 msgid "+ Debug"
+msgstr ""
+
+#: sabnzbd/skintext.py:209 sabnzbd/skintext.py:403
+msgid "Connections"
 msgstr ""
 
 #: sabnzbd/skintext.py:210

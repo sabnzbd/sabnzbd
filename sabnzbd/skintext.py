@@ -101,7 +101,7 @@ SKIN_TEXT = {
     'menu-queue' : TT('Queue'),
     'menu-history' : TT('History'),
     'menu-config' : TT('Config'),
-    'menu-cons' : TT('Connections'),
+    'menu-cons' : TT('Status'),
     'menu-help' : TT('Help'),
     'menu-wiki' : TT('Wiki'),
     'menu-forums' : TT('Forum'),
