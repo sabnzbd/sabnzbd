@@ -1441,13 +1441,16 @@ def handle_server(kwargs, root=None, new_svr=False):
     if msg:
         return msg
 
+    # Default server name is just the host name
     server = host
 
     svr = None
     old_server = kwargs.get('server')
     if old_server:
         svr = config.get_config('servers', old_server)
-    if not svr:
+    if svr:
+        server = old_server
+    else:
         svr = config.get_config('servers', server)
 
     if new_svr:
@@ -2124,7 +2127,7 @@ class ConnectionInfo(object):
                 connected = T('&nbsp;Resolving address')
             busy.sort()
 
-            header['servers'].append((server.host, server.port, connected, busy, server.ssl,
+            header['servers'].append((server.id, '', connected, busy, server.ssl,
                                       server.active, server.errormsg, server.fillserver, server.optional))
 
         wlist = []

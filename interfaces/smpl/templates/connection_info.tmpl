@@ -18,9 +18,9 @@ $T('logging'):
     <ul>
     <!--#for $server in $servers#-->
         <li>
-            $server[0]:$server[1]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
+            $server[0]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
             <!--#if not $server[5]#-->
-                <a class="config" href="./connections/unblock_server?server=$server[0]:$server[1]&session=$session">
+                <a class="config" href="./connections/unblock_server?server=$server[0]&session=$session">
                 ($T('server-blocked'))</a>
                 &nbsp;&nbsp;$server[6]
             <!--#end if#-->
