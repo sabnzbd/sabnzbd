@@ -78,6 +78,7 @@ class URLGrabber(Thread):
             (url, future_nzo, retry_count) = self.queue.get()
             if not url:
                 continue
+            url = url.replace(' ', '')
 
             try:
                 del_bookmark = not future_nzo
