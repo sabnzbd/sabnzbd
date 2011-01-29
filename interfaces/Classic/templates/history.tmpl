@@ -6,10 +6,16 @@
 <span class="SubMenu">
 	<a href="./purge?session=$session" onclick="return confirm('$T('purgeHistConf').replace("'","`") ');">$T('purgeHist')</a> |
     <!--#if $isverbose#-->
-        <a href="./tog_verbose?session=$session">$T('hideDetails')</a>
+        <a href="./tog_verbose?session=$session">$T('hideDetails')</a> |
     <!--#else#-->
-        <a href="./tog_verbose?session=$session">$T('showDetails')</a>
+        <a href="./tog_verbose?session=$session">$T('showDetails')</a> |
     <!--#end if#-->
+	<!--#if $failed_only#-->
+        <a href="./tog_failed_only?session=$session">$T('showFailedHis')</a>
+    <!--#else#-->
+        <a href="./tog_failed_only?session=$session">$T('showAllHis')</a>
+    <!--#end if#-->
+
 </span>
 
 <br>

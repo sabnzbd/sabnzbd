@@ -382,6 +382,7 @@ def _api_history(name, output, kwargs):
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     search = kwargs.get('search')
+    failed_only = kwargs.get('failed_only')
 
     if name == 'delete':
         if value.lower()=='all':
@@ -399,7 +400,7 @@ def _api_history(name, output, kwargs):
     elif not name:
         history, pnfo_list, bytespersec = build_header(True)
         history['total_size'], history['month_size'], history['week_size'] = get_history_size()
-        history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
+        history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search, failed_only=failed_only)
         return report(output, keyword='history', data=remove_callable(history))
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -1435,7 +1436,7 @@ def get_history_size():
     bytes, month, week = history_db.get_history_size()
     return (format_bytes(bytes), format_bytes(month), format_bytes(week))
 
-def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None):
+def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0):
 
     if not verbose_list:
         verbose_list = []
@@ -1448,6 +1449,10 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         start = int(start)
     except:
         start = 0
+    try:
+        failed_only = int(failed_only)
+    except:
+        failed_only = 0
 
     def matches_search(text, search_text):
         # Replace * with .* and ' ' with .
@@ -1490,7 +1495,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         history_db = get_history_handle()
 
     # Fetch history items
-    items, fetched_items, total_items = history_db.fetch_history(start, limit, search)
+    items, fetched_items, total_items = history_db.fetch_history(start, limit, search, failed_only)
 
     # Fetch which items should show details from the cookie
     k = []

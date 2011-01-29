@@ -192,6 +192,8 @@ SKIN_TEXT = {
     'hideDetails' : TT('Hide details'),
     'showDetails' : TT('Show details'),
     'sizeHist' : TT('History Size'),
+    'showFailedHis' : TT('Failed only'),
+    'showAllHis' : TT('Show all'),
     'completed' : TT('Completed'),
     'size' : TT('Size'),
     'status' : TT('Status'),

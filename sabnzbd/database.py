@@ -169,7 +169,7 @@ class HistoryDB(object):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
-    def fetch_history(self, start=None, limit=None, search=None):
+    def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
 
         if not search:
             # Default value
@@ -200,7 +200,10 @@ class HistoryDB(object):
             limit = total_items
 
         t = (search, start, limit)
-        fetch_ok = self.execute("""SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?""", t)
+        if failed_only:
+            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? AND STATUS = "Failed" ORDER BY completed desc LIMIT ?, ?''', t)
+        else:
+            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?''', t)
 
         if fetch_ok:
             items = self.c.fetchall()
