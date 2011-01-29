@@ -195,15 +195,16 @@ def process_job(nzo):
     nzo.save_attribs()
     flag_repair, flag_unpack, flag_delete = nzo.repair_opts
 
+    # Get the NZB name
+    filename = nzo.final_name
+    msgid = nzo.msgid
+
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
         nzo.set_pp(3)
         nzo.status = 'Failed'
-        return False
-
-    # Get the NZB name
-    filename = nzo.final_name
-    msgid = nzo.msgid
+        nzo.save_attribs()
+        all_ok = False
 
     try:
 
@@ -236,7 +237,7 @@ def process_job(nzo):
                 return False
 
         ## Check if user allows unsafe post-processing
-        if cfg.safe_postproc():
+        if flag_repair and cfg.safe_postproc():
             all_ok = all_ok and not par_error
 
         # Set complete dir to workdir in case we need to abort
