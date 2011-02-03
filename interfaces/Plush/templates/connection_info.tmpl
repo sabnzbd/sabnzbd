@@ -99,11 +99,11 @@
 		<!--#set $count=0#-->
 		<!--#for $server in $servers#-->
 			<!--#set $count=$count+1#-->
-			<p>$T('swtag-server'): <strong>$server[0]:$server[1]</strong></p>
+			<p>$T('swtag-server'): <strong>$server[0]</strong></p>
 			<p>$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
 			<p># $T('connections'): $server[2]</p>
 	        <!--#if not $server[5]#-->
-	            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
+	            <a href="./unblock_server?server=$server[0]&session=$session">($T('server-blocked'))</a>
 	            &nbsp;&nbsp;$server[6]
 	        <!--#end if#-->
 			<!--#if $server[3]#-->

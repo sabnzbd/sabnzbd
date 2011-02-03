@@ -837,7 +837,6 @@ def main():
                 fork = True
             autobrowser = False
             sabnzbd.DAEMON = True
-            consoleLogging = False
             re_argv.append(opt)
         elif opt in ('-f', '--config-file'):
             inifile = arg
@@ -913,6 +912,7 @@ def main():
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
+    consoleLogging = consoleLogging and not sabnzbd.DAEMON
 
     # No console logging needed for OSX app
     noConsoleLoggingOSX = (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)

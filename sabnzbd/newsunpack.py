@@ -440,6 +440,7 @@ def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
 
+    fail = 0
     if nzo.password:
         passwords = [nzo.password]
     else:
@@ -454,9 +455,11 @@ def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
             logging.info('Read the passwords file %s', pw_file)
         except IOError:
             pass
-        if not nzo.encrypted:
-            # If we're not sure about encryption, start with empty password
-            passwords.insert(0, '')
+
+    if not passwords or not nzo.encrypted:
+        # If we're not sure about encryption, start with empty password
+        # and make sure we have at least the empty password
+        passwords.insert(0, '')
 
     for password in passwords:
         if password: logging.debug('Trying unrar with password "%s"', password)

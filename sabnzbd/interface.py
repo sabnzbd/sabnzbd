@@ -827,6 +827,7 @@ class HistoryPage(object):
         self.__web_dir = web_dir
         self.__verbose = False
         self.__verbose_list = []
+        self.__failed_only = False
         self.__prim = prim
 
     @cherrypy.expose
@@ -834,10 +835,14 @@ class HistoryPage(object):
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         search = kwargs.get('search')
+        failed_only = kwargs.get('failed_only')
+        if failed_only is None:
+            failed_only = self.__failed_only
 
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
+        history['failed_only'] = failed_only
 
         if cfg.newzbin_username() and cfg.newzbin_password():
             history['newzbinDetails'] = True
@@ -849,7 +854,7 @@ class HistoryPage(object):
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                to_units(grand), to_units(month), to_units(week), to_units(day)
 
-        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
+        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
 
         if search:
             history['search'] = escape(search)
@@ -929,6 +934,13 @@ class HistoryPage(object):
                         self.__verbose_list.remove(job)
                     else:
                         self.__verbose_list.append(job)
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def tog_failed_only(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        self.__failed_only = not self.__failed_only
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1441,13 +1453,16 @@ def handle_server(kwargs, root=None, new_svr=False):
     if msg:
         return msg
 
+    # Default server name is just the host name
     server = host
 
     svr = None
     old_server = kwargs.get('server')
     if old_server:
         svr = config.get_config('servers', old_server)
-    if not svr:
+    if svr:
+        server = old_server
+    else:
         svr = config.get_config('servers', server)
 
     if new_svr:
@@ -2124,7 +2139,7 @@ class ConnectionInfo(object):
                 connected = T('&nbsp;Resolving address')
             busy.sort()
 
-            header['servers'].append((server.host, server.port, connected, busy, server.ssl,
+            header['servers'].append((server.id, '', connected, busy, server.ssl,
                                       server.active, server.errormsg, server.fillserver, server.optional))
 
         wlist = []
