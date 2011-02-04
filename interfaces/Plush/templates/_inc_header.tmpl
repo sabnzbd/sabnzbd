@@ -13,7 +13,7 @@
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${path}rss?mode=history"/>
 
-    <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/overcast/jquery-ui-1.8.7.custom.css?$version"/>
+    <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/overcast/jquery-ui-1.8.9.custom.css?$version"/>
     #if $color_scheme#
     <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
     <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
@@ -75,7 +75,10 @@
 				<li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
 			</ul>
 		</div>
-		<div id="nav_text">
+		<div id="nav_text_right">
+			<!--#if $loadavg#-->$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span><!--#end if#-->
+		</div>
+		<div id="nav_text_left">
 			SABnzbd $version &sdot;
 			<a href="${path}connections/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a>
 			#if $pane=="Main"#

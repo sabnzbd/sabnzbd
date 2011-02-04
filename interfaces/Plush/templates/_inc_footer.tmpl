@@ -25,7 +25,7 @@
 		<div id="plush_options_modal">
 
 			<p><a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
-            <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a>
+            <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n\n")#">$T('sch-restart')</a>
                 <a href="shutdown?session=$session" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
             <br/>
 
@@ -114,6 +114,16 @@
 				<i>$T('Plush-addnzb-filename'):</i><br/>
 			    <input type="text" name="nzbname" id="addID_nzbname" size="38" />
 
+			</form>
+		</div>
+
+		<div id="retry_modal">
+			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
+				<input type="hidden" id="retry_modal_job" name="job" />
+				<input type="hidden" name="session" value="$session" />
+				<br/><p><span id="retry_modal_title">title</span></p>
+				<br/><p>Optional Supplemental NZB:<br/><input type="file" name="nzbfile" /></p>
+				<br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
 			</form>
 		</div>
 	#end if#

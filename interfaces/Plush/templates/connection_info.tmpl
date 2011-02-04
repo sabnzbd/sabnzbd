@@ -103,7 +103,7 @@
 			<p>$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
 			<p># $T('connections'): $server[2]</p>
 	        <!--#if not $server[5]#-->
-	            <a href="./unblock_server?server=$server[0]&session=$session">($T('server-blocked'))</a>
+	            <a href="./unblock_server?server=$server[0]&session=$session" class="juiButton">$T('server-blocked')</a>
 	            &nbsp;&nbsp;$server[6]
 	        <!--#end if#-->
 			<!--#if $server[3]#-->
