@@ -75,7 +75,12 @@
 				<li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
 			</ul>
 		</div>
-		<div id="nav_text">
+		<div id="nav_text_right">
+			#if $pane=="Main"#
+				<a href="$new_rel_url" target="_blank">$T('refresh')</a>
+			#end if#
+		</div>
+		<div id="nav_text_left">
 			SABnzbd $version &sdot;
 			<a href="${path}connections/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a>
 			#if $pane=="Main"#

@@ -258,29 +258,32 @@ body {
 }
     
 .navigation ul li.active a{  
-    background: -webkit-gradient(linear, right top, right bottom, from(#333), to(#666) );  
-    background: -moz-linear-gradient(top, #333 0%, #666 100%);  
+    background-color:#000;
+    background: -webkit-gradient(linear, right top, right bottom, from(#000), to(#333) );  
+    background: -moz-linear-gradient(top, #000 0%, #333 100%);  
 }  
 
 .navigation ul.menu li {  
     list-style: none;  
     float:left;  
-    height: 29px;  
+    height: 24px;  
     text-align: center;  
-    background: -webkit-gradient(linear, right top, right bottom, from(#111), to(#444) );  
-    background: -moz-linear-gradient(top, #111 0%, #444 100%);  
+    background-color:#000;
+    background: -webkit-gradient(linear, right top, right bottom, from(#000), to(#333) );  
+    background: -moz-linear-gradient(top, #000 0%, #333 100%);  
     }  
   
 .navigation ul li a {  
 	font-weight:bold;
     display: block;  
-    padding: 0 14px 0 0;  
+    padding: 0 8px 0 0;  
     border-left: 1px solid rgba(255,255,255,0.1);  
     border-right: 1px solid rgba(0,0,0,0.1);  
     text-align: center;  
-    line-height: 29px;  
-    background : -webkit-gradient(linear, right top, right bottom, from(rgb(168,168,168)), to(rgb(69,69,69)));  
-    background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));  
+    line-height: 24px;  
+    background-color:#363636;
+/*    background : -webkit-gradient(linear, right top, right bottom, from(rgb(168,168,168)), to(rgb(69,69,69)));  
+    background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));  */
     -webkit-transition-property: background;  
     -webkit-transition-duration: 700ms;  
     -moz-transition-property: background;  
@@ -304,7 +307,7 @@ body {
 
 .navigation ul li a img {
 	opacity: .25;
-	margin:0 4px -3px 6px;
+	margin:0 8px -3px 6px;
 }
 
 .navigation ul li.active a img {
@@ -318,9 +321,9 @@ body {
 
 
 .navigation ul li a span {
-	padding-left:28px;
+	padding-left:26px;
 	background-repeat:no-repeat;
-	background-position:8px 0px;
+	background-position:6px 0px;
 }
 .navigation ul li a span.icon_nav_download { background-image: url('images/nav/downloads-grey.png'); }
 .navigation ul li.active a span.icon_nav_download, .navigation ul li a:hover span.icon_nav_download { background-image: url('images/nav/downloads.png'); }
@@ -340,9 +343,20 @@ body {
 .navigation ul li a span.icon_nav_help { background-image: url('images/nav/help-grey.png'); }
 .navigation ul li.active a span.icon_nav_help, .navigation ul li a:hover span.icon_nav_help { background-image: url('images/nav/help.png'); }
 
-#nav_text {
-    padding: 3px 126px 0 126px;
+#nav_text_right {
+	clear:both;
+	float:right;
+    padding: 0 119px 0 20px;
 	font-size:90%;
+	display:none;
+}
+#nav_text_left {
+	clear:left;
+    padding: 0 20px 0 119px;
+	font-size:90%;
+}
+#nav_text_left a, #nav_text_right a {
+	color:#000;
 }
 #last_warning {
 	color:#000;
