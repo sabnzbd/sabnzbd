@@ -266,7 +266,7 @@ body {
 .navigation ul.menu li {  
     list-style: none;  
     float:left;  
-    height: 24px;  
+    height: 26px;  
     text-align: center;  
     background-color:#000;
     background: -webkit-gradient(linear, right top, right bottom, from(#000), to(#333) );  
@@ -280,7 +280,7 @@ body {
     border-left: 1px solid rgba(255,255,255,0.1);  
     border-right: 1px solid rgba(0,0,0,0.1);  
     text-align: center;  
-    line-height: 24px;  
+    line-height: 26px;  
     background-color:#363636;
 /*    background : -webkit-gradient(linear, right top, right bottom, from(rgb(168,168,168)), to(rgb(69,69,69)));  
     background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));  */

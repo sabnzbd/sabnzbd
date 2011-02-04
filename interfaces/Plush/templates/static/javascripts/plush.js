@@ -1068,6 +1068,12 @@ jQuery(function($){
 
 
 		// ***************************************************************
+		//	$.plush.SetLoadavg(str) -- called from history.tmpl
+		SetLoadavg : function(str) {
+			$('#loadavg').html(str);
+		},
+
+		// ***************************************************************
 		//	$.plush.SetHistoryStats(str) -- called from history.tmpl
 		SetHistoryStats : function(str) {
 			$('#history_stats').html(str);

@@ -6,7 +6,10 @@
 
     jQuery(function($) {
         $.plush.histnoofslots      = $noofslots;
-        $.plush.SetHistoryStats("<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $day_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$day_size</strong>&nbsp;$T('today')<!--#end if #--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('total')<!--#end if #-->");
+        <!--#if $loadavg#-->
+        $.plush.SetLoadavg("$loadavg");
+        <!--#end if#-->
+        $.plush.SetHistoryStats("<!--#if $day_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$day_size</strong>&nbsp;$T('today')<!--#end if #--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('total')<!--#end if #-->");
 	});
 
 </script>
