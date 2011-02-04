@@ -76,14 +76,11 @@
 			</ul>
 		</div>
 		<div id="nav_text_right">
-			#if $pane=="Main"#
-				<a href="$new_rel_url" target="_blank">$T('refresh')</a>
-			#end if#
+			<!--#if $loadavg#-->$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span><!--#end if#-->
 		</div>
 		<div id="nav_text_left">
 			SABnzbd $version &sdot;
 			<a href="${path}connections/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a>
-			<!--#if $loadavg#-->&sdot; $T('ft-sysload')&nbsp;<span id="loadavg">$loadavg</span><!--#end if#-->
 			#if $pane=="Main"#
 		        #if $new_release#&sdot; <a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
 			    #if $warning#&sdot; <a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
