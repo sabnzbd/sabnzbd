@@ -116,6 +116,16 @@
 
 			</form>
 		</div>
+
+		<div id="retry_modal">
+			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
+				<input type="hidden" id="retry_modal_job" name="job" />
+				<input type="hidden" name="session" value="$session" />
+				<br/><p><span id="retry_modal_title">title</span></p>
+				<br/><p>Optional Supplemental NZB:<br/><input type="file" name="nzbfile" /></p>
+				<br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
+			</form>
+		</div>
 	#end if#
 	
 	</div>

@@ -1031,10 +1031,6 @@ tr:hover .history_added { color: black; }
 	margin-right: 2px;
 	width: 16px;
 }
-.retry-nzbfile-input {
-	border:0;
-	font-size:75%;
-} 
 .hvFaded {
 	opacity: .25;
 	/*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";

@@ -798,7 +798,12 @@ jQuery(function($){
 			
 			// nzb retry, click 'add nzb' link to show upload form
 			$('#history .retry-nzbfile').live('click',function(){
-				$(this).hide().next('.retry-nzbfile-input').show();
+				//$(this).hide().next('.retry-nzbfile-input').show();
+				$('#retry_modal_title').text( $(this).parent().parent().prev().children('a:first').text() );
+				$('#retry_modal_job').val( $(this).parent().parent().parent().attr('id') );
+				$.colorbox({ inline:true, href:"#retry_modal", title:$(this).text(),
+					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+				});
 				return false;
 			});
 			

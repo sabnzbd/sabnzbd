@@ -27,22 +27,21 @@
     <td class="historyTitle">
         <a href="scriptlog?name=$line.nzo_id" class="modal-detail" rel="details">$line.name</a>
 
-
 		<div style="display:none">
-<div id="details-$line.nzo_id">
-<table width="100%">
-    <tr><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th></tr>
-<%
-compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S'))
-%>
-        <tr>
-        <td>$compl</td>
-        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
-        <td>$line.size</td><td>$Tx('post-'+$line.status)</td>
-
-        </tr>
-</table>
-<br/><br/>
+			<div id="details-$line.nzo_id">
+			<table width="100%">
+			    <tr><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th></tr>
+			<%
+			compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S'))
+			%>
+			        <tr>
+			        <td>$compl</td>
+			        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
+			        <td>$line.size</td><td>$Tx('post-'+$line.status)</td>
+			
+			        </tr>
+			</table>
+			<br/><br/>
 
             <!--#set $oddLine = not False#-->
             <!--#for $stage in $line.stage_log#-->
@@ -105,9 +104,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_
 			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
 				<input type="hidden" value="$line.nzo_id" name="job" />
 				<input type="hidden" name="session" value="$session" />
-				<input type="submit" value="$T('button-retry')" />
-				<a href="#" class="retry-nzbfile"><small>$T('Plush-addnzb')</small></a>
-				<input type="file" class="retry-nzbfile-input" name="nzbfile" style="display:none" />
+				&nbsp;<a href="#" class="retry-nzbfile">$T('button-retry')</a>
 			</form>
 		<!--#end if#-->
         <!--#if $line.action_line#-->
