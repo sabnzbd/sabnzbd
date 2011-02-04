@@ -1173,7 +1173,7 @@ def loadavg():
     if sabnzbd.WIN32 or sabnzbd.DARWIN:
         return ""
     try:
-        return "%.2f, %.2f, %.2f" % os.getloadavg()
+        return "%.2f | %.2f | %.2f" % os.getloadavg()
     except:
         return ""
 
