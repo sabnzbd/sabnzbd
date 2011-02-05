@@ -1155,6 +1155,8 @@ def main():
         except:
             logging.info('[osx] IO priority setting not supported')
 
+    logging.info('Read INI file %s', inifile)
+
     if autobrowser != None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
     else:
