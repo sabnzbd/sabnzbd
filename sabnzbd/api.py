@@ -379,16 +379,20 @@ def _api_fullstatus(name, output, kwargs):
 
 def _api_history(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), start, limit, search """
-    value = kwargs.get('value')
+    value = kwargs.get('value', '')
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
 
     if name == 'delete':
-        if value.lower()=='all':
+        value = value.lower()
+        if value in ('all', 'failed', 'completed'):
             history_db = cherrypy.thread_data.history_db
-            history_db.remove_history()
+            if value in ('all', 'failed'):
+                history_db.remove_failed()
+            if value in ('all', 'completed'):
+                history_db.remove_completed()
             return report(output)
         elif value:
             del_files = bool(int_conv(kwargs.get('del_files')))

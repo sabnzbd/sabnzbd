@@ -188,11 +188,13 @@ SKIN_TEXT = {
 
 # History page
     'purgeHist' : TT('Purge History'),
-    'purgeHistConf' : TT('Delete all items from History?'),
+    'purgeHistFailed' : TT('Purge Failed History'),
+    'purgeHistConf' : TT('Delete all completed items from History?'),
+    'purgeHistFailedConf' : TT('Delete all failed items from History?'),
     'hideDetails' : TT('Hide details'),
     'showDetails' : TT('Show details'),
     'sizeHist' : TT('History Size'),
-    'showFailedHis' : TT('Failed only'),
+    'showFailedHis' : TT('Show Failed'),
     'showAllHis' : TT('Show all'),
     'completed' : TT('Completed'),
     'size' : TT('Size'),
@@ -692,9 +694,9 @@ SKIN_TEXT = {
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),
-    'smpl-purgehist' : TT('Delete All'),
+    'smpl-purgehist' : TT('Delete Completed'),
     'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),
-    'smpl-purgefailhist' : TT('Delete Failed Items'),
+    'smpl-purgefailhist' : TT('Delete Failed'),
     'smpl-links' : TT('Links'),
     'smpl-size' : TT('Size'),
     'smpl-path' : TT('Path'),
