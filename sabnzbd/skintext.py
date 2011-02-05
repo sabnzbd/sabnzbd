@@ -386,11 +386,11 @@ SKIN_TEXT = {
     'explain-ssl_type' : TT('Use V23 unless your provider requires otherwise!'),
     'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
     'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
-    'swtag-general' : 'General',
-    'swtag-server' : 'Server',
-    'swtag-queue' : 'Queue',
-    'swtag-pp' : 'Post processing',
-    'swtag-naming' : 'Naming',
+    'swtag-general' : TT('General'),
+    'swtag-server' : TT('Server'),
+    'swtag-queue' : TT('Queue'),
+    'swtag-pp' : TT('Post processing'),
+    'swtag-naming' : TT('Naming'),
 
 
 # Config->Server

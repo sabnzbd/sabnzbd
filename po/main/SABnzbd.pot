@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-02-05 10:25+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-02-05 11:48+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-#: SABnzbdDelegate.py:147 sabnzbd/skintext.py:101
+#: SABnzbdDelegate.py:147 sabnzbd/skintext.py:101 sabnzbd/skintext.py:391
 msgid "Queue"
 msgstr ""
 
@@ -1402,7 +1402,7 @@ msgstr ""
 msgid "IRC"
 msgstr ""
 
-#: sabnzbd/skintext.py:109
+#: sabnzbd/skintext.py:109 sabnzbd/skintext.py:389
 msgid "General"
 msgstr ""
 
@@ -2361,6 +2361,18 @@ msgstr ""
 
 #: sabnzbd/skintext.py:388
 msgid "Show times in AM/PM notation (does not affect scheduler)."
+msgstr ""
+
+#: sabnzbd/skintext.py:390
+msgid "Server"
+msgstr ""
+
+#: sabnzbd/skintext.py:392
+msgid "Post processing"
+msgstr ""
+
+#: sabnzbd/skintext.py:393
+msgid "Naming"
 msgstr ""
 
 #: sabnzbd/skintext.py:397
