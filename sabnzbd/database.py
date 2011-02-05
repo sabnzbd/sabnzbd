@@ -141,7 +141,7 @@ class HistoryDB(object):
             logging.info("Traceback: ", exc_info = True)
 
     def remove_completed(self):
-        return self.execute("""DELETE FROM history WHERE status = 'Completed'""")
+        return self.execute("""DELETE FROM history WHERE status = 'Completed'""", save=True)
 
     def remove_failed(self):
         return self.execute("""DELETE FROM history WHERE status = 'Failed'""", save=True)
