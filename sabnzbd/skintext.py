@@ -774,4 +774,10 @@ SKIN_TEXT = {
     'wizard-step-four' :  TT('Step Four'),
     'wizard-step-five' :  TT('Step Five'),
 
+#Special
+    'yourRights' : TT('''
+SABnzbd comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain conditions.
+It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
+''')
     }

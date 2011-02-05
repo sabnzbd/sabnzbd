@@ -8,7 +8,7 @@
 
 	<!-- modals -->
 	<div style='display:none'>
-		
+
 		<div id="help_modal">
 			<table>
 				<tr><td><strong>$T('menu-wiki'):</strong></td><td><a href="$helpuri$help_uri" target="_blank">$helpuri$help_uri</a></td></tr>
@@ -17,15 +17,15 @@
 			</table>
 			<div class="sabnzbd_logo main_sprite_container sprite_sabnzbdplus_logo"></div>
 			<p><strong>SABnzbd $T('version'):</strong> $version</p>
-			<p><small>Copyright (C) 2008-2010, The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</small></p>
-			<p><small>SABnzbd comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.</small></p>
+			<p><small>Copyright (C) 2008-2011, The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</small></p>
+			<p><small>$T('yourRights')</small></p>
 		</div>
-		
+
 	#if $pane=="Main"#
 		<div id="plush_options_modal">
 
 			<p><a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
-            <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n\n")#">$T('sch-restart')</a>
+            <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">$T('sch-restart')</a>
                 <a href="shutdown?session=$session" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
             <br/>
 
@@ -57,7 +57,7 @@
            	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/><br/>
            	<span id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</span>
 		</div>
-		
+
 		<div id="add_nzb_modal">
 			<input type="text" id="addID_input" size="31" />
 			<input type="submit" id="addID" value="$T('Plush-fetch')" class="juiButton" />
@@ -127,7 +127,7 @@
 			</form>
 		</div>
 	#end if#
-	
+
 	</div>
 
 

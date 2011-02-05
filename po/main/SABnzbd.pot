@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-01-29 13:20+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-02-05 10:25+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Limit Speed"
 msgstr ""
 
-#: SABnzbdDelegate.py:186 sabnzbd/api.py:1314 sabnzbd/skintext.py:62
+#: SABnzbdDelegate.py:186 sabnzbd/api.py:1316 sabnzbd/skintext.py:62
 #: sabnzbd/skintext.py:577
 msgid "None"
 msgstr ""
@@ -246,15 +246,15 @@ msgstr ""
 msgid "Loading %s failed"
 msgstr ""
 
-#: sabnzbd/api.py:1316 sabnzbd/interface.py:90 sabnzbd/skintext.py:61
+#: sabnzbd/api.py:1318 sabnzbd/interface.py:90 sabnzbd/skintext.py:61
 msgid "Default"
 msgstr ""
 
-#: sabnzbd/api.py:1427
+#: sabnzbd/api.py:1429
 msgid "unknown"
 msgstr ""
 
-#: sabnzbd/api.py:1462
+#: sabnzbd/api.py:1464
 msgid "Failed to compile regex for search term: %s"
 msgstr ""
 
@@ -3506,6 +3506,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py:775
 msgid "Step Five"
+msgstr ""
+
+#: sabnzbd/skintext.py:778
+msgid ""
+"\n"
+"SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
+"This is free software, and you are welcome to redistribute it under certain conditions.\n"
+"It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.\n"
 msgstr ""
 
 #: sabnzbd/tvsort.py:277
