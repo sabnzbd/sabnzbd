@@ -139,7 +139,8 @@ def _api_queue_delete(output, value, kwargs):
         return report(output)
     elif value:
         items = value.split(',')
-        NzbQueue.do.remove_multiple(items)
+        del_files = int_conv(kwargs.get('del_files'))
+        NzbQueue.do.remove_multiple(items, del_files)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
