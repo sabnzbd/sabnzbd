@@ -8,8 +8,7 @@
 <!--#set $msg=$T('askTestEmail')#-->
 <a href="./disconnect?session=$session">$T('link-forceDisc')</a> |
 <a href="./testmail?session=$session" onclick="javascript:return confirm('$msg')">$T('link-testEmail')</a> |
-<a href="./showlog?session=$session">$T('link-showLog')</a> |
-<a href="./showweb?session=$session">$T('link-showWeblog')</a>
+<a href="./showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):
 <select onChange="location = './change_loglevel?session=$session&loglevel='+this.options[this.selectedIndex].value">
     <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
