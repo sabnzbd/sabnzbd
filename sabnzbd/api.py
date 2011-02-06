@@ -554,6 +554,18 @@ def _api_rescan(name, output, kwargs):
     return report(output)
 
 
+def _api_eval_sort(name, output, kwargs):
+    """ API: evaluate sorting expression """
+    import sabnzbd.tvsort
+    value = kwargs.get('value', '')
+    title = kwargs.get('title')
+    path = sabnzbd.tvsort.eval_sort(name, value, title)
+    if path is None:
+        return report(output, _MSG_NOT_IMPLEMENTED)
+    else:
+        return report(output, keyword='result', data=path)
+
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -664,7 +676,8 @@ _api_table = {
     'restart_repair'  : _api_restart_repair,
     'disconnect'      : _api_disconnect,
     'osx_icon'        : _api_osx_icon,
-    'rescan'          : _api_rescan
+    'rescan'          : _api_rescan,
+    'eval_sort'       : _api_eval_sort
 }
 
 _api_queue_table = {
