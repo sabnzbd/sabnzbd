@@ -453,8 +453,18 @@ jQuery(function($){
 			
 			// NZB individual deletion
 			$('#queue').delegate('.sprite_ql_cross','click', function(event) {
-				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
-					delid = $(event.target).parent().parent().attr('id');
+				$('#delete_nzb_modal_title').text( $(this).parent().prev().prev().prev().children('a:first').text() );
+				$('#delete_nzb_modal_job').val( $(this).parent().parent().attr('id') );
+				$('#delete_nzb_modal_remove_files').button('enable');
+				$('#delete_nzb_modal_mode').val( 'queue' );
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
+					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+
+//				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
+/*					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeTo('normal',0.25);
 					$.plush.pendingQueueRefresh = true;
 					$.ajax({
@@ -470,7 +480,7 @@ jQuery(function($){
 						}
 					});
 				}
-			});
+*/
 
 			// NZB change priority
 			$('#queue .proc_priority').live('change',function(){
@@ -808,13 +818,14 @@ jQuery(function($){
 			
 			// NZB individual removal
 			$('#history').delegate('.sprite_ql_cross','click', function(event) {
-				$('#delete_history_modal_title').text( $(this).parent().prev().prev().children('a:first').text() );
-				$('#delete_history_modal_job').val( $(this).parent().parent().attr('id') );
+				$('#delete_nzb_modal_title').text( $(this).parent().prev().prev().children('a:first').text() );
+				$('#delete_nzb_modal_job').val( $(this).parent().parent().attr('id') );
+				$('#delete_nzb_modal_mode').val( 'history' );
 				if ($(this).parent().parent().children('td:first').children().hasClass('sprite_hv_error'))
-					$('#delete_history_modal_remove_files').button('enable');
+					$('#delete_nzb_modal_remove_files').button('enable');
 				else
-					$('#delete_history_modal_remove_files').button('disable');
-				$.colorbox({ inline:true, href:"#delete_history_modal", title:$(this).text(),
+					$('#delete_nzb_modal_remove_files').button('disable');
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
 					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
 				});
 				return false;
@@ -822,24 +833,29 @@ jQuery(function($){
 
 //			if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
 			
-			$('#delete_history_modal_remove_nzb, #delete_history_modal_remove_files','#delete_history_modal').click(function(e){
+			$('#delete_nzb_modal_remove_nzb, #delete_nzb_modal_remove_files','#delete_nzb_modal').click(function(e){
 				var del_files=0;
-				if ($(this).attr('id')=="delete_history_modal_remove_files")
+				if ($(this).attr('id')=="delete_nzb_modal_remove_files")
 					del_files=1;
 				
-				delid = $('#delete_history_modal_job').val();
+				delid = $('#delete_nzb_modal_job').val();
+				mode = $('#delete_nzb_modal_mode').val();
 				$('#'+delid).fadeTo('normal',0.25);
 				$.plush.pendingHistoryRefresh = true;
+				$.colorbox.close();
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: {mode:'history', name:'delete', value: delid, del_files: del_files, apikey: $.plush.apikey},
+					data: {mode:mode, name:'delete', value: delid, del_files: del_files, apikey: $.plush.apikey},
 					success: function(){
 						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 							$.plush.histforcerepagination = true;
 							$.plush.RefreshHistory($.plush.histcurpage-1);
-						} else
-							$.plush.RefreshHistory();
+						} else if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.skipRefresh = false;
+							$.plush.queueforcerepagination = true;
+							$.plush.RefreshQueue($.plush.queuecurpage-1);
+						}
 					}
 				});
 				return false;

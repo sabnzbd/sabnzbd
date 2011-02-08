@@ -46,8 +46,8 @@
                 <option value="50%">50%</option>
                 <option value="40%">40%</option>
            	</select><br/><br/>
-           	<input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")<br/><br/>
-           	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/><br/>
+           	<!-- <input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")<br/><br/>
+           	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/><br/> -->
            	<span id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</span>
 		</div>
 
@@ -120,11 +120,12 @@
 			</form>
 		</div>
 
-		<div id="delete_history_modal">
-			<input type="hidden" id="delete_history_modal_job" name="job" />
-			<br/><br/><p class="center"><strong id="delete_history_modal_title">title</strong></p>
-			<br/><br/><p class="center"><input type="submit" id="delete_history_modal_remove_nzb" value="Remove from History" class="juiButton" /></p>
-			<br/><br/><p class="center"><input type="submit" id="delete_history_modal_remove_files" value="Remove from History &amp; Delete Files" class="juiButton" /></p>
+		<div id="delete_nzb_modal">
+			<input type="hidden" id="delete_nzb_modal_job" />
+			<input type="hidden" id="delete_nzb_modal_mode" />
+			<br/><br/><p class="center"><strong id="delete_nzb_modal_title">title</strong></p>
+			<br/><br/><p class="center"><input type="submit" id="delete_nzb_modal_remove_nzb" value="Remove NZB" class="juiButton" /></p>
+			<br/><br/><p class="center"><input type="submit" id="delete_nzb_modal_remove_files" value="Remove NZB &amp; Delete Files" class="juiButton" /></p>
 		</div>
 
 	#end if#
