@@ -15,6 +15,7 @@ jQuery(function($){
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
+		failedOnly:				$.cookie('failedOnly') 		 == 0 ? 0 : 1,		// prevent refreshing when hovering queue
 		multiOps:               $.cookie('multiOps') 		 == 1 ? true : false, // is multi-operations menu visible in queue
 		multiOpsChecks:         null,
 		
@@ -887,6 +888,13 @@ jQuery(function($){
 				}
 			});
 
+			// show all / show failed
+			$('#failed_only').change(function(){
+				$.plush.failedOnly = $("#failed_only").val();
+				$.cookie('failedOnly', $.plush.failedOnly, { expires: 365 });
+				$.plush.RefreshHistory();
+			}).val($.plush.failedOnly);
+
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
 				
@@ -1016,12 +1024,14 @@ jQuery(function($){
 				$.plush.histcurpage = page;
 			
 			if ($('#historySearchBox').val() && $.plush.histPerPage == "1") // history disabled
-				var data = {start: 0, limit: 0, search: $('#historySearchBox').val() };
+				var data = {failed_only: $.plush.failedOnly, start: 0, limit: 0, search: $('#historySearchBox').val() };
 			else if ($('#historySearchBox').val())
-				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
+				var data = {failed_only: $.plush.failedOnly, start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
 			else
-				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
-				
+				var data = {failed_only: $.plush.failedOnly, start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
+			
+			
+			
 			$.ajax({
 				type: "POST",
 				url: "history/",
