@@ -188,11 +188,13 @@ SKIN_TEXT = {
 
 # History page
     'purgeHist' : TT('Purge History'),
-    'purgeHistConf' : TT('Delete all items from History?'),
+    'purgeHistFailed' : TT('Purge Failed History'),
+    'purgeHistConf' : TT('Delete all completed items from History?'),
+    'purgeHistFailedConf' : TT('Delete all failed items from History?'),
     'hideDetails' : TT('Hide details'),
     'showDetails' : TT('Show details'),
     'sizeHist' : TT('History Size'),
-    'showFailedHis' : TT('Failed only'),
+    'showFailedHis' : TT('Show Failed'),
     'showAllHis' : TT('Show all'),
     'completed' : TT('Completed'),
     'size' : TT('Size'),
@@ -386,11 +388,11 @@ SKIN_TEXT = {
     'explain-ssl_type' : TT('Use V23 unless your provider requires otherwise!'),
     'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
     'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
-    'swtag-general' : 'General',
-    'swtag-server' : 'Server',
-    'swtag-queue' : 'Queue',
-    'swtag-pp' : 'Post processing',
-    'swtag-naming' : 'Naming',
+    'swtag-general' : TT('General'),
+    'swtag-server' : TT('Server'),
+    'swtag-queue' : TT('Queue'),
+    'swtag-pp' : TT('Post processing'),
+    'swtag-naming' : TT('Naming'),
 
 
 # Config->Server
@@ -692,9 +694,9 @@ SKIN_TEXT = {
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),
-    'smpl-purgehist' : TT('Delete All'),
+    'smpl-purgehist' : TT('Delete Completed'),
     'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),
-    'smpl-purgefailhist' : TT('Delete Failed Items'),
+    'smpl-purgefailhist' : TT('Delete Failed'),
     'smpl-links' : TT('Links'),
     'smpl-size' : TT('Size'),
     'smpl-path' : TT('Path'),
@@ -774,4 +776,10 @@ SKIN_TEXT = {
     'wizard-step-four' :  TT('Step Four'),
     'wizard-step-five' :  TT('Step Five'),
 
+#Special
+    'yourRights' : TT('''
+SABnzbd comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under certain conditions.
+It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
+''')
     }

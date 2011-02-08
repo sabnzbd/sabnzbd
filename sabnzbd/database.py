@@ -140,15 +140,15 @@ class HistoryDB(object):
             logging.error(Ta('Failed to close database, see log'))
             logging.info("Traceback: ", exc_info = True)
 
-    def remove_all(self):
-        return self.execute("""DELETE FROM history""")
+    def remove_completed(self):
+        return self.execute("""DELETE FROM history WHERE status = 'Completed'""", save=True)
 
     def remove_failed(self):
-        return self.execute('''DELETE FROM history WHERE status="Failed"''', save=True)
+        return self.execute("""DELETE FROM history WHERE status = 'Failed'""", save=True)
 
     def remove_history(self, jobs=None):
         if jobs is None:
-            self.remove_all()
+            self.remove_completed()
         else:
             if type(jobs) == type(''):
                 jobs = [jobs]

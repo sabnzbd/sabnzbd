@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha11 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush tweaks
+- Failed URL-based NZB fetches were not moved to History but became dead queue entries
+- Empty NZB files are now refused
+- Make some hard-coded texts in Plush translatable
+- Encrypted rar files without available password were not reported properly
+- Remove race condition which could cause crash of URL-based NZB fetches
+-------------------------------------------------------------------------------
  0.6.0Alpha10 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed issue in email that prevented HTML emails templates from working

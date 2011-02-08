@@ -6,8 +6,7 @@ window.onload = function() {
 <h3>$T('connections')</h3>
 <a class="config" onClick="lr('connections/disconnect', '', '-1', this.parentNode.id);">$T('link-forceDisc')</a> |
 <a class="config" onClick="testemail();">$T('link-testEmail')</a> |
-<a class="config" href="connections/showlog?session=$session">$T('link-showLog')</a> |
-<a class="config" href="connections/showweb?session=$session">$T('link-showWeblog')</a>
+<a class="config" href="connections/showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):
 <select onChange="javascript:lr('connections/change_loglevel','loglevel='+this.options[this.selectedIndex].value)">
     <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>

@@ -636,7 +636,7 @@ class QueuePage(object):
         uid = kwargs.get('uid')
         del_files = int_conv(kwargs.get('del_files'))
         if uid:
-            NzbQueue.do.remove(uid, False, del_files=del_files)
+            NzbQueue.do.remove(uid, False, keep_basic=not del_files, del_files=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose

@@ -356,9 +356,9 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove_multiple(self, nzo_ids):
+    def remove_multiple(self, nzo_ids, del_files=False):
         for nzo_id in nzo_ids:
-            self.remove(nzo_id, add_to_history = False, save = False)
+            self.remove(nzo_id, add_to_history = False, save = False, keep_basic=not del_files, del_files=del_files)
         # Save with invalid nzo_id, to that only queue file is saved
         self.save('x')
 

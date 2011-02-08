@@ -404,12 +404,13 @@ class RSSQueue(object):
         """ Run all the URI's and filters
         """
         if not sabnzbd.PAUSED_ALL:
-            logging.info('Starting scheduled RSS read-out')
             active = False
             feeds = config.get_rss()
             for feed in feeds.keys():
                 try:
                     if feeds[feed].enable.get():
+                        if not active:
+                            logging.info('Starting scheduled RSS read-out')
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
@@ -423,7 +424,7 @@ class RSSQueue(object):
                     pass
             if active:
                 self.save()
-            logging.info('Finished scheduled RSS read-out')
+                logging.info('Finished scheduled RSS read-out')
 
 
     @synchronized(LOCK)

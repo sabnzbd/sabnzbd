@@ -139,7 +139,8 @@ def _api_queue_delete(output, value, kwargs):
         return report(output)
     elif value:
         items = value.split(',')
-        NzbQueue.do.remove_multiple(items)
+        del_files = int_conv(kwargs.get('del_files'))
+        NzbQueue.do.remove_multiple(items, del_files)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -378,16 +379,20 @@ def _api_fullstatus(name, output, kwargs):
 
 def _api_history(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), start, limit, search """
-    value = kwargs.get('value')
+    value = kwargs.get('value', '')
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
 
     if name == 'delete':
-        if value.lower()=='all':
+        value = value.lower()
+        if value in ('all', 'failed', 'completed'):
             history_db = cherrypy.thread_data.history_db
-            history_db.remove_history()
+            if value in ('all', 'failed'):
+                history_db.remove_failed()
+            if value in ('all', 'completed'):
+                history_db.remove_completed()
             return report(output)
         elif value:
             del_files = bool(int_conv(kwargs.get('del_files')))
@@ -549,6 +554,18 @@ def _api_rescan(name, output, kwargs):
     return report(output)
 
 
+def _api_eval_sort(name, output, kwargs):
+    """ API: evaluate sorting expression """
+    import sabnzbd.tvsort
+    value = kwargs.get('value', '')
+    title = kwargs.get('title')
+    path = sabnzbd.tvsort.eval_sort(name, value, title)
+    if path is None:
+        return report(output, _MSG_NOT_IMPLEMENTED)
+    else:
+        return report(output, keyword='result', data=path)
+
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -659,7 +676,8 @@ _api_table = {
     'restart_repair'  : _api_restart_repair,
     'disconnect'      : _api_disconnect,
     'osx_icon'        : _api_osx_icon,
-    'rescan'          : _api_rescan
+    'rescan'          : _api_rescan,
+    'eval_sort'       : _api_eval_sort
 }
 
 _api_queue_table = {

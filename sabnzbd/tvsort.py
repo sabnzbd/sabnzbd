@@ -1073,3 +1073,32 @@ def is_full_path(file):
     except:
         pass
     return False
+
+
+def eval_sort(sorttype, expression, name=None):
+    """ Preview a sort expression, to be used by API """
+    from sabnzbd.api import Ttemplate
+    path = ''
+    if sorttype == 'series':
+        name = name or ('%s S01E03 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
+        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv', force=True)
+    elif sorttype == 'generic':
+        name = name or (Ttemplate('movie-sp-name') + ' (2009)')
+        sorter = sabnzbd.tvsort.GenericSorter(name, path, 'tv')
+    elif sorttype == 'date':
+        name = name or (Ttemplate('show-name') + ' 2009-01-02')
+        sorter = sabnzbd.tvsort.DateSorter(name, path, 'tv')
+    else:
+        return None
+    sorter.sort_string = expression
+    sorter.matched = True
+    path = sorter.get_final_path()
+    path = os.path.normpath(os.path.join(path, sorter.filename_set))
+    if sorter.rename_or_not:
+        path += '.avi'
+    else:
+        if sabnzbd.WIN32:
+            path += '\\'
+        else:
+            path += '/'
+    return path
