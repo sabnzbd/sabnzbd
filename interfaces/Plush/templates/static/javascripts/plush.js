@@ -798,7 +798,6 @@ jQuery(function($){
 			
 			// nzb retry, click 'add nzb' link to show upload form
 			$('#history .retry-nzbfile').live('click',function(){
-				//$(this).hide().next('.retry-nzbfile-input').show();
 				$('#retry_modal_title').text( $(this).parent().parent().prev().children('a:first').text() );
 				$('#retry_modal_job').val( $(this).parent().parent().parent().attr('id') );
 				$.colorbox({ inline:true, href:"#retry_modal", title:$(this).text(),
@@ -809,22 +808,41 @@ jQuery(function($){
 			
 			// NZB individual removal
 			$('#history').delegate('.sprite_ql_cross','click', function(event) {
-				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
-					delid = $(event.target).parent().parent().attr('id');
-					$('#'+delid).fadeTo('normal',0.25);
-					$.plush.pendingHistoryRefresh = true;
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'history', name:'delete', value: delid, apikey: $.plush.apikey},
-						success: function(){
-							if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
-								$.plush.histforcerepagination = true;
-								$.plush.RefreshHistory($.plush.histcurpage-1);
-							}
-						}
-					});
-				}
+				$('#delete_history_modal_title').text( $(this).parent().prev().prev().children('a:first').text() );
+				$('#delete_history_modal_job').val( $(this).parent().parent().attr('id') );
+				if ($(this).parent().parent().children('td:first').children().hasClass('sprite_hv_error'))
+					$('#delete_history_modal_remove_files').button('enable');
+				else
+					$('#delete_history_modal_remove_files').button('disable');
+				$.colorbox({ inline:true, href:"#delete_history_modal", title:$(this).text(),
+					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+
+//			if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
+			
+			$('#delete_history_modal_remove_nzb, #delete_history_modal_remove_files','#delete_history_modal').click(function(e){
+				var del_files=0;
+				if ($(this).attr('id')=="delete_history_modal_remove_files")
+					del_files=1;
+				
+				delid = $('#delete_history_modal_job').val();
+				$('#'+delid).fadeTo('normal',0.25);
+				$.plush.pendingHistoryRefresh = true;
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'history', name:'delete', value: delid, del_files: del_files, apikey: $.plush.apikey},
+					success: function(){
+						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.histforcerepagination = true;
+							$.plush.RefreshHistory($.plush.histcurpage-1);
+						} else
+							$.plush.RefreshHistory();
+					}
+				});
+				return false;
 			});
 			
 			// Remove NZB hover states -- done here rather than in CSS:hover due to sprites

@@ -114,11 +114,19 @@
 			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
 				<input type="hidden" id="retry_modal_job" name="job" />
 				<input type="hidden" name="session" value="$session" />
-				<br/><p><span id="retry_modal_title">title</span></p>
+				<br/><p><strong id="retry_modal_title">title</strong></p>
 				<br/><p>Optional Supplemental NZB:<br/><input type="file" name="nzbfile" /></p>
 				<br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
 			</form>
 		</div>
+
+		<div id="delete_history_modal">
+			<input type="hidden" id="delete_history_modal_job" name="job" />
+			<br/><br/><p class="center"><strong id="delete_history_modal_title">title</strong></p>
+			<br/><br/><p class="center"><input type="submit" id="delete_history_modal_remove_nzb" value="Remove from History" class="juiButton" /></p>
+			<br/><br/><p class="center"><input type="submit" id="delete_history_modal_remove_files" value="Remove from History &amp; Delete Files" class="juiButton" /></p>
+		</div>
+
 	#end if#
 
 	</div>
