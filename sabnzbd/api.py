@@ -386,8 +386,8 @@ def _api_history(name, output, kwargs):
     failed_only = kwargs.get('failed_only')
 
     if name == 'delete':
-        value = value.lower()
-        if value in ('all', 'failed', 'completed'):
+        special = value.lower()
+        if special in ('all', 'failed', 'completed'):
             history_db = cherrypy.thread_data.history_db
             if value in ('all', 'failed'):
                 history_db.remove_failed()
