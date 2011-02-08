@@ -110,6 +110,13 @@
 			</form>
 		</div>
 
+		<div id="history_purge_modal" class="center">
+			<br/><br/><strong>Purge History</strong>
+			<br/><br/><input type="submit" name="all" value="Purge All NZBs" class="juiButton" />
+			<br/><br/><input type="submit" name="failed" value="Purge Failed NZBs" class="juiButton" />
+			<br/><br/><input type="submit" name="completed" value="Purge Completed NZBs" class="juiButton" />
+		</div>
+
 		<div id="retry_modal">
 			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
 				<input type="hidden" id="retry_modal_job" name="job" />
@@ -120,12 +127,12 @@
 			</form>
 		</div>
 
-		<div id="delete_nzb_modal">
+		<div id="delete_nzb_modal" class="center">
 			<input type="hidden" id="delete_nzb_modal_job" />
 			<input type="hidden" id="delete_nzb_modal_mode" />
-			<br/><br/><p class="center"><strong id="delete_nzb_modal_title">title</strong></p>
-			<br/><br/><p class="center"><input type="submit" id="delete_nzb_modal_remove_nzb" value="Remove NZB" class="juiButton" /></p>
-			<br/><br/><p class="center"><input type="submit" id="delete_nzb_modal_remove_files" value="Remove NZB &amp; Delete Files" class="juiButton" /></p>
+			<br/><br/><strong id="delete_nzb_modal_title">title</strong><br/><br/>
+			<input type="submit" id="delete_nzb_modal_remove_nzb" value="Remove NZB" class="juiButton" />
+			<input type="submit" id="delete_nzb_modal_remove_files" value="Remove NZB &amp; Delete Files" class="juiButton" />
 		</div>
 
 	#end if#

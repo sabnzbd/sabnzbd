@@ -458,10 +458,11 @@ jQuery(function($){
 				$('#delete_nzb_modal_remove_files').button('enable');
 				$('#delete_nzb_modal_mode').val( 'queue' );
 				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
-					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
 				});
 				return false;
 			});
+			
 
 //				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 /*					delid = $(event.target).parent().parent().attr('id');
@@ -756,14 +757,23 @@ jQuery(function($){
 			
 			// Purge
 			$('#hist_purge').click(function(event) {
-				if (confirm( $.plush.TconfirmPurgeH )) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'history', name:'delete', value:'all', apikey: $.plush.apikey},
-						success: $.plush.RefreshHistory
-					});
-				}
+				$.colorbox({ inline:true, href:"#history_purge_modal", title:$(this).text(),
+					innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+			$('#history_purge_modal input:submit').click(function(){
+				var value = $(this).attr('name');
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'history', name:'delete', value:value, apikey: $.plush.apikey},
+					success: function(){
+						$.colorbox.close();
+						$.plush.modalOpen=false;
+						$.plush.RefreshHistory();
+					}
+				});
 			});
 
 			// refresh on mouseout after deletion
@@ -826,7 +836,7 @@ jQuery(function($){
 				else
 					$('#delete_nzb_modal_remove_files').button('disable');
 				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
-					innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
 				});
 				return false;
 			});
