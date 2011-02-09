@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha12 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Delete from History did not always work
+- "Add server" dialog was broken
+- Add confirmation dialog to deleting from RSS feed table
+- Improve Queue and History deletion and purge in Plush
+- Cosmetic improvements to Plush
+-------------------------------------------------------------------------------
  0.6.0Alpha11 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Plush tweaks
