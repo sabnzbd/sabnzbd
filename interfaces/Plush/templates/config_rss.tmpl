@@ -44,7 +44,8 @@
 		            <td><form action="del_rss_feed" method="get">
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
-		                <input type="submit" class="juiButton" value="$T('button-x')"></form>
+                                <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-x')"/>
+		                </form>
 		            </td>
 		        </tr>
 		    <!--#end for#-->
@@ -96,7 +97,7 @@
 				<tr><td></td><td><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
 
 				<tr><td>$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
-	
+
 	            <!--#if $rss[$feed]['pick_cat']#-->
             	<tr><td>$T('category')</td><td>
 	                <select name="cat">
@@ -145,13 +146,13 @@
 		                </optgroup>
 		            </select>
                 </td></tr>
-	
+
 				<tr><td></td><td>
 					<br/>
 		            <input type="submit" class="juiButton" value="$T('button-save') Settings"/>
 		        	<input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/>
 		        </td></tr>
-		        
+
 	        </table>
 
             <input type="hidden" name="feed" value="$feed"/>
@@ -329,7 +330,7 @@
 
 
 		<h1>$T('rss-matched') (<!--#echo len($matched)#-->)</h1>
-		
+
 	    <!--#if $matched#-->
 		    <table class="rssTable">
 		        <tr>
