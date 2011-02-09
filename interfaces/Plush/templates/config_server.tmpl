@@ -68,31 +68,31 @@
                 </label>
             </div>
             <div class="field-pair alt">
+                <input type="checkbox" name="enable" id="enable" value="1" checked="1"/>
                 <label class="clearfix" for="enable">
-                    <span class="component-title">&nbsp;</span>
-			    	<input type="checkbox" name="enable" id="enable" value="1" checked="1"/>
-			    	<strong>$T('srv-enable')</strong>
+                    <span class="component-title">$T('srv-enable')</span>
+                    <span class="component-desc">&nbsp;</span>
                 </label>
             </div>
             <div class="field-pair alt">
+                <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
                 <label class="clearfix" for="ssl">
-                    <span class="component-title">&nbsp;</span>
-			    	<input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
-			    	<strong>$T('srv-ssl')</strong>
+                    <span class="component-title">$T('srv-ssl')</span>
+                    <span class="component-desc">&nbsp;</span>
                 </label>
             </div>
             <div class="field-pair alt">
+                <input type="checkbox" name="fillserver" id="fillserver" value="1"/>
                 <label class="clearfix" for="fillserver">
-                    <span class="component-title">&nbsp;</span>
-			    	<input type="checkbox" name="fillserver" id="fillserver" value="1"/>
-			    	<strong>$T('srv-fillserver')</strong>
+                    <span class="component-title">$T('srv-fillserver')</span>
+                    <span class="component-desc">&nbsp;</span>
                 </label>
             </div>
             <div class="field-pair alt">
+                <input type="checkbox" name="optional" id="optional" value="1"/>
                 <label class="clearfix" for="optional">
-                    <span class="component-title">&nbsp;</span>
-			    	<input type="checkbox" name="optional" id="optional" value="1"/>
-			    	<strong>$T('srv-optional')</strong>
+                    <span class="component-title">$T('srv-optional')</span>
+                    <span class="component-desc">&nbsp;</span>
                 </label>
             </div>
         </fieldset>
@@ -175,34 +175,35 @@
 					    <input type="text" size="10" name="timeout" value="$servers[$server]['timeout']" /> <i>$T('seconds')</i>
 	                </label>
 	            </div>
-	            <div class="field-pair alt">
-	                <label class="clearfix" for="enable">
-	                    <span class="component-title">&nbsp;</span>
-				    	<input type="checkbox" name="enable" id="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
-				    	<strong>$T('srv-enable')</strong>
-	                </label>
-	            </div>
-	            <div class="field-pair alt">
-	                <label class="clearfix" for="ssl">
-	                    <span class="component-title">&nbsp;</span>
-				    	<input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-				    	<strong>$T('srv-ssl')</strong>
-	                </label>
-	            </div>
-	            <div class="field-pair alt">
-	                <label class="clearfix" for="fillserver">
-	                    <span class="component-title">&nbsp;</span>
-				    	<input type="checkbox" name="fillserver" id="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
-				    	<strong>$T('srv-fillserver')</strong>
-	                </label>
-	            </div>
-	            <div class="field-pair alt">
-	                <label class="clearfix" for="optional">
-	                    <span class="component-title">&nbsp;</span>
-				    	<input type="checkbox" name="optional" id="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />
-				    	<strong>$T('srv-optional')</strong>
-	                </label>
-	            </div>
+
+            <div class="field-pair alt">
+                <input type="checkbox" name="enable" id="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="enable">
+                    <span class="component-title">$T('srv-enable')</span>
+                    <span class="component-desc">&nbsp;</span>
+                </label>
+            </div>
+            <div class="field-pair alt">
+                <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+                <label class="clearfix" for="ssl">
+                    <span class="component-title">$T('srv-ssl')</span>
+                    <span class="component-desc">&nbsp;</span>
+                </label>
+            </div>
+            <div class="field-pair alt">
+                <input type="checkbox" name="fillserver" id="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="fillserver">
+                    <span class="component-title">$T('srv-fillserver')</span>
+                    <span class="component-desc">&nbsp;</span>
+                </label>
+            </div>
+            <div class="field-pair alt">
+                <input type="checkbox" name="optional" id="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />
+                <label class="clearfix" for="optional">
+                    <span class="component-title">$T('srv-optional')</span>
+                    <span class="component-desc">&nbsp;</span>
+                </label>
+            </div>
 	        </fieldset>
 	        </form>
 		</div><!-- /component-group$cur -->
