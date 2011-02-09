@@ -765,10 +765,15 @@ jQuery(function($){
 			});
 			$('#history_purge_modal input:submit').click(function(){
 				var value = $(this).attr('name');
+				var del_files=0
+				if (value=="delete") {
+					del_files=1;
+					value="failed";
+				}
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: {mode:'history', name:'delete', value:value, apikey: $.plush.apikey},
+					data: {mode:'history', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
 					success: function(){
 						$.colorbox.close();
 						$.plush.modalOpen=false;
