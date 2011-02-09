@@ -746,6 +746,16 @@ jQuery(function($){
 				nzo_ids = nzo_ids.substr(1);
 				if (!nzo_ids) return;
 
+				$('#delete_nzb_modal_title').text( $("INPUT[type='checkbox']:checked","#queueTable").size() + " NZBs" );
+				$('#delete_nzb_modal_job').val( nzo_ids );
+				$('#delete_nzb_modal_mode').val( 'queue' );
+				$('#delete_nzb_modal_remove_files').button('enable');
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
+				});
+				return false;
+
+/*
 				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 					$.ajax({
 						type: "POST",
@@ -754,6 +764,7 @@ jQuery(function($){
 						success: $.plush.RefreshQueue
 					});
 				}
+*/
 			});
 
 		}, // end $.plush.InitQueueMultiOperations()
@@ -882,11 +893,14 @@ jQuery(function($){
 						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 							$.plush.histforcerepagination = true;
 							$.plush.RefreshHistory($.plush.histcurpage-1);
-						} else if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+						}
+						if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 							$.plush.skipRefresh = false;
 							$.plush.queueforcerepagination = true;
 							$.plush.RefreshQueue($.plush.queuecurpage-1);
 						}
+						if (delid.indexOf(','))
+							$.plush.RefreshQueue();
 					}
 				});
 				return false;
