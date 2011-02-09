@@ -189,7 +189,11 @@ class HistoryDB(object):
             search = '%' + search + '%'
 
         # Get the number of results
-        if self.execute('select count(*) from History WHERE name LIKE ?', (search,)):
+        if failed_only:
+            res = self.execute('select count(*) from History WHERE name LIKE ? AND STATUS = "Failed"', (search,))
+        else:
+            res = self.execute('select count(*) from History WHERE name LIKE ?', (search,))
+        if res:
             total_items = self.c.fetchone().get('count(*)')
         else:
             total_items = -1
