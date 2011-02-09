@@ -76,7 +76,7 @@
 			</ul>
 		</div>
 		<div id="nav_text_right">
-			<!--#if $loadavg#-->$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span><!--#end if#-->
+			#if $loadavg#$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span>#end if#
 		</div>
 		<div id="nav_text_left">
 			SABnzbd $version &sdot;

@@ -15,6 +15,7 @@ jQuery(function($){
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
+		failedOnly:				$.cookie('failedOnly') 		 == 0 ? 0 : 1,		// prevent refreshing when hovering queue
 		multiOps:               $.cookie('multiOps') 		 == 1 ? true : false, // is multi-operations menu visible in queue
 		multiOpsChecks:         null,
 		
@@ -198,17 +199,32 @@ jQuery(function($){
 				});
 			});
 					
-			// Queue purge
+			// Queue Purge
 			$('#queue_purge').click(function(event) {
-				if(confirm($('#queue_purge').attr('rel'))){
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'queue', name:'delete', value:'all', apikey: $.plush.apikey},
-						success: $.plush.RefreshQueue
-					});
-				}
+				$.colorbox({ inline:true, href:"#queue_purge_modal", title:'',
+					innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+				});
+				return false;
 			});
+			$('#queue_purge_modal input:submit').click(function(){
+				var value = $(this).attr('name');
+				var del_files=0
+				if (value=="delete") {
+					del_files=1;
+					value="all";
+				}
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'queue', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+					success: function(){
+						$.colorbox.close();
+						$.plush.modalOpen=false;
+						$.plush.RefreshQueue();
+					}
+				});
+			});
+
 			
 			// Queue sort (6-in-1)
 			$('#queue_sort_list .queue_sort').click(function(event) {
@@ -453,8 +469,19 @@ jQuery(function($){
 			
 			// NZB individual deletion
 			$('#queue').delegate('.sprite_ql_cross','click', function(event) {
-				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
-					delid = $(event.target).parent().parent().attr('id');
+				$('#delete_nzb_modal_title').text( $(this).parent().prev().prev().prev().children('a:first').text() );
+				$('#delete_nzb_modal_job').val( $(this).parent().parent().attr('id') );
+				$('#delete_nzb_modal_remove_files').button('enable');
+				$('#delete_nzb_modal_mode').val( 'queue' );
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+			
+
+//				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
+/*					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeTo('normal',0.25);
 					$.plush.pendingQueueRefresh = true;
 					$.ajax({
@@ -470,7 +497,7 @@ jQuery(function($){
 						}
 					});
 				}
-			});
+*/
 
 			// NZB change priority
 			$('#queue .proc_priority').live('change',function(){
@@ -719,6 +746,16 @@ jQuery(function($){
 				nzo_ids = nzo_ids.substr(1);
 				if (!nzo_ids) return;
 
+				$('#delete_nzb_modal_title').text( $("INPUT[type='checkbox']:checked","#queueTable").size() + " NZBs" );
+				$('#delete_nzb_modal_job').val( nzo_ids );
+				$('#delete_nzb_modal_mode').val( 'queue' );
+				$('#delete_nzb_modal_remove_files').button('enable');
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
+				});
+				return false;
+
+/*
 				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 					$.ajax({
 						type: "POST",
@@ -727,6 +764,7 @@ jQuery(function($){
 						success: $.plush.RefreshQueue
 					});
 				}
+*/
 			});
 
 		}, // end $.plush.InitQueueMultiOperations()
@@ -746,14 +784,28 @@ jQuery(function($){
 			
 			// Purge
 			$('#hist_purge').click(function(event) {
-				if (confirm( $.plush.TconfirmPurgeH )) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'history', name:'delete', value:'all', apikey: $.plush.apikey},
-						success: $.plush.RefreshHistory
-					});
+				$.colorbox({ inline:true, href:"#history_purge_modal", title:$(this).text(),
+					innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+			$('#history_purge_modal input:submit').click(function(){
+				var value = $(this).attr('name');
+				var del_files=0
+				if (value=="delete") {
+					del_files=1;
+					value="failed";
 				}
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'history', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+					success: function(){
+						$.colorbox.close();
+						$.plush.modalOpen=false;
+						$.plush.RefreshHistory();
+					}
+				});
 			});
 
 			// refresh on mouseout after deletion
@@ -798,7 +850,6 @@ jQuery(function($){
 			
 			// nzb retry, click 'add nzb' link to show upload form
 			$('#history .retry-nzbfile').live('click',function(){
-				//$(this).hide().next('.retry-nzbfile-input').show();
 				$('#retry_modal_title').text( $(this).parent().parent().prev().children('a:first').text() );
 				$('#retry_modal_job').val( $(this).parent().parent().parent().attr('id') );
 				$.colorbox({ inline:true, href:"#retry_modal", title:$(this).text(),
@@ -809,22 +860,50 @@ jQuery(function($){
 			
 			// NZB individual removal
 			$('#history').delegate('.sprite_ql_cross','click', function(event) {
-				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
-					delid = $(event.target).parent().parent().attr('id');
-					$('#'+delid).fadeTo('normal',0.25);
-					$.plush.pendingHistoryRefresh = true;
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'history', name:'delete', value: delid, apikey: $.plush.apikey},
-						success: function(){
-							if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
-								$.plush.histforcerepagination = true;
-								$.plush.RefreshHistory($.plush.histcurpage-1);
-							}
+				$('#delete_nzb_modal_title').text( $(this).parent().prev().prev().children('a:first').text() );
+				$('#delete_nzb_modal_job').val( $(this).parent().parent().attr('id') );
+				$('#delete_nzb_modal_mode').val( 'history' );
+				if ($(this).parent().parent().children('td:first').children().hasClass('sprite_hv_error'))
+					$('#delete_nzb_modal_remove_files').button('enable');
+				else
+					$('#delete_nzb_modal_remove_files').button('disable');
+				$.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
+					innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
+				});
+				return false;
+			});
+
+//			if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
+			
+			$('#delete_nzb_modal_remove_nzb, #delete_nzb_modal_remove_files','#delete_nzb_modal').click(function(e){
+				var del_files=0;
+				if ($(this).attr('id')=="delete_nzb_modal_remove_files")
+					del_files=1;
+				
+				delid = $('#delete_nzb_modal_job').val();
+				mode = $('#delete_nzb_modal_mode').val();
+				$('#'+delid).fadeTo('normal',0.25);
+				$.plush.pendingHistoryRefresh = true;
+				$.colorbox.close();
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:mode, name:'delete', value: delid, del_files: del_files, apikey: $.plush.apikey},
+					success: function(){
+						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.histforcerepagination = true;
+							$.plush.RefreshHistory($.plush.histcurpage-1);
 						}
-					});
-				}
+						if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.skipRefresh = false;
+							$.plush.queueforcerepagination = true;
+							$.plush.RefreshQueue($.plush.queuecurpage-1);
+						}
+						if (delid.indexOf(','))
+							$.plush.RefreshQueue();
+					}
+				});
+				return false;
 			});
 			
 			// Remove NZB hover states -- done here rather than in CSS:hover due to sprites
@@ -842,6 +921,13 @@ jQuery(function($){
 					$(this).removeClass('sprite_ql_cross_on');
 				}
 			});
+
+			// show all / show failed
+			$('#failed_only').change(function(){
+				$.plush.failedOnly = $("#failed_only").val();
+				$.cookie('failedOnly', $.plush.failedOnly, { expires: 365 });
+				$.plush.RefreshHistory();
+			}).val($.plush.failedOnly);
 
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
@@ -972,12 +1058,14 @@ jQuery(function($){
 				$.plush.histcurpage = page;
 			
 			if ($('#historySearchBox').val() && $.plush.histPerPage == "1") // history disabled
-				var data = {start: 0, limit: 0, search: $('#historySearchBox').val() };
+				var data = {failed_only: $.plush.failedOnly, start: 0, limit: 0, search: $('#historySearchBox').val() };
 			else if ($('#historySearchBox').val())
-				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
+				var data = {failed_only: $.plush.failedOnly, start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
 			else
-				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
-				
+				var data = {failed_only: $.plush.failedOnly, start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
+			
+			
+			
 			$.ajax({
 				type: "POST",
 				url: "history/",
