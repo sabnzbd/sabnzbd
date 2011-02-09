@@ -199,17 +199,32 @@ jQuery(function($){
 				});
 			});
 					
-			// Queue purge
+			// Queue Purge
 			$('#queue_purge').click(function(event) {
-				if(confirm($('#queue_purge').attr('rel'))){
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'queue', name:'delete', value:'all', apikey: $.plush.apikey},
-						success: $.plush.RefreshQueue
-					});
-				}
+				$.colorbox({ inline:true, href:"#queue_purge_modal", title:'',
+					innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+				});
+				return false;
 			});
+			$('#queue_purge_modal input:submit').click(function(){
+				var value = $(this).attr('name');
+				var del_files=0
+				if (value=="delete") {
+					del_files=1;
+					value="all";
+				}
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'queue', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+					success: function(){
+						$.colorbox.close();
+						$.plush.modalOpen=false;
+						$.plush.RefreshQueue();
+					}
+				});
+			});
+
 			
 			// Queue sort (6-in-1)
 			$('#queue_sort_list .queue_sort').click(function(event) {
