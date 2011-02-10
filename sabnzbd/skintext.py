@@ -185,6 +185,10 @@ SKIN_TEXT = {
     'eoq-scripts' : TT('Scripts'),
     'purgeQueue' : TT('Purge Queue'),
     'purgeQueueConf' : TT('Delete all items from the queue?'),
+    'purgeNZBs' : TT('Purge NZBs'),
+    'purgeNZBs-Files' : TT('Purge NZBs & Delete Files'),
+    'removeNZB' : TT('Remove NZB'),
+    'removeNZB-Files' : TT('Remove NZB & Delete Files'),
 
 # History page
     'purgeHist' : TT('Purge History'),
@@ -199,6 +203,11 @@ SKIN_TEXT = {
     'completed' : TT('Completed'),
     'size' : TT('Size'),
     'status' : TT('Status'),
+    'purgeFailed' : TT('Purge Failed NZBs'),
+    'purgeFailed-Files' : TT('Purge Failed NZBs & Delete Files'),
+    'purgeCompl' : TT('Purge Completed NZBs'),
+    'opt-extra-NZB' : TT('Optional Supplemental NZB'),
+
 
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'),
