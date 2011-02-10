@@ -627,6 +627,9 @@ class NzbObject(TryList):
         # by setting "feature_external_ges" to 0.
 
         if nzb and '<nzb' in nzb:
+            if 'A&A)' in nzb:
+                # Fix needed to compensate for the idiocy at newzbin.com
+                nzb = nzb.replace('A&A)', 'A&amp;A)')
             handler = NzbParser(self)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
