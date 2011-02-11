@@ -324,9 +324,9 @@ class RSSQueue(object):
                             myScript = reScripts[n]
                         elif not (notdefault(reCats[n]) or category):
                             myScript = catScript
-                        if notdefault(rePrios[n]):
+                        if rePrios[n] != str(DEFAULT_PRIORITY):
                             myPrio = rePrios[n]
-                        elif not (notdefault(rePrios[n]) or category):
+                        elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
                         if cfg.no_dupes():
