@@ -32,6 +32,7 @@ SKIN_TEXT = {
     'post-Completed'     : TT('Completed'),
     'post-Failed'        : TT('Failed'),
     'post-Queued'        : TT('Queued'),
+    'post-Paused'        : TT('Paused'),
     'post-Repairing'     : TT('Repairing...'),
     'post-Extracting'    : TT('Extracting...'),
     'post-Moving'        : TT('Moving...'),

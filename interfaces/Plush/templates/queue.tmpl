@@ -56,7 +56,7 @@
 	</td>
 
     <td class="download-title">
-        <a href="nzb/$slot.nzo_id/" title="$T('status'): $slot.status<br/>$T('nzo-age'): $slot.avg_age">$slot.filename</a>
+        <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age">$slot.filename</a>
     </td>
 
     <td>
@@ -72,7 +72,7 @@
         <!--#if not $paused and $slot.status != "Paused"#-->
         <span title="$slot.eta">$slot.timeleft&nbsp;$T('Plush-left')</span>
         <!--#else#-->
-        $slot.status
+        $T('post-'+$slot.status)
         <!--#end if#-->
     </td>
 

@@ -1139,7 +1139,7 @@ class ConfigSwitches(object):
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw)()
 
-        conf['script_list'] = list_scripts()
+        conf['script_list'] = list_scripts() or ['None']
         conf['have_ampm'] = HAVE_AMPM
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
