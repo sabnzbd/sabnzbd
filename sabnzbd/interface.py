@@ -1547,7 +1547,7 @@ class ConfigRss(object):
 
         # Find a unique new Feed name
         unum = 1
-        txt = Ta('Feed') #pot: Used as default Feed name in Config->RSS
+        txt = Ta('Feed') #: Used as default Feed name in Config->RSS
         while txt + str(unum) in feeds:
             unum += 1
         conf['feed'] = txt + str(unum)

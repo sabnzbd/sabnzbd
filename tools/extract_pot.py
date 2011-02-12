@@ -17,7 +17,6 @@
 
 # Extract translatable strings from all PY files
 
-import glob
 import os
 import sys
 import re
@@ -55,6 +54,57 @@ DOMAIN_NSIS = 'SABnsis'
 PARMS = '-d %s -p %s -k T -k Ta -k TT -o %s.pot.tmp' % (DOMAIN, PO_DIR, DOMAIN)
 FILES = 'SABnzbd.py SABHelper.py SABnzbdDelegate.py sabnzbd/*.py sabnzbd/utils/*.py'
 
+FILE_CACHE = {}
+def get_a_line(src, number):
+    """ Retrieve line 'number' from file 'src' with caching """
+    global FILE_CACHE
+    if src not in FILE_CACHE:
+        FILE_CACHE[src] = []
+        for line in open(src, 'r'):
+            FILE_CACHE[src].append(line)
+    try:
+        return FILE_CACHE[src][number-1]
+    except:
+        return ''
+
+
+RE_LINE = re.compile(r'\s*([^: \t]+)\s*:\s*(\d+)')
+RE_CONTEXT = re.compile(r'#:\s*(.*)$')
+def get_context(line):
+    """ Read context info from source file and append to line.
+        input: "#: filepath.py:123 filepath2.py:456"
+        output: "#: filepath.py:123 # [context info] # filepath2.py:456 # [context info 2]"
+    """
+    if not line.startswith('#:'):
+        return line
+
+    newlines = []
+    for item in line[2:].strip('\r\n').split():
+        m = RE_LINE.search(item)
+        if m:
+            src = m.group(1)
+            number = m.group(2)
+        else:
+            newlines.append(item)
+            continue
+
+        srcline = get_a_line(src, int(number)).strip('\r\n')
+        context = ''
+        m = RE_CONTEXT.search(srcline)
+        if m:
+            context = m.group(1)
+        else:
+            if 'logging.error(' in srcline:
+                context = 'Error message'
+            elif 'logging.warning(' in srcline:
+                context = 'Warning message'
+        if context:
+            newlines.append('%s [%s]' % (item, context))
+        else:
+            newlines.append(item)
+
+    return '#: ' + ' # '.join(newlines) + '\n'
+
 if not os.path.exists(PO_DIR):
     os.makedirs(PO_DIR)
 
@@ -89,6 +139,8 @@ for line in src:
     if header:
         if not ('"POT-Creation-Date:' in line or '"Generated-By:' in line):
             continue
+    elif line.startswith('#:'):
+        line = get_context(line)
     dst.write(line)
 
 src.close()
