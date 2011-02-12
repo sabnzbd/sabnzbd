@@ -463,6 +463,8 @@ SKIN_TEXT = {
     'rss-notMatched' : TT('Not matched'),
     'rss-done' : TT('Downloaded'),
     'link-download' : TT('Download'),
+    'tableFeeds' : TT('Feeds'), #pot: Tab title for Config->Feeds
+    'feedSettings' : TT('Settings'), #pot: Tab title for Config->Feeds
 
 # Config->Email
     'configEmail' : TT('Email Notification'),

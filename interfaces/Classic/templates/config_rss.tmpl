@@ -236,6 +236,7 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form action="download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session">
                 <input type="submit" value="$T('link-download')">
@@ -262,6 +263,7 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form action="download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session">
                 <input type="submit" value="$T('link-download')">

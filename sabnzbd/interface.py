@@ -1546,9 +1546,10 @@ class ConfigRss(object):
 
         # Find a unique new Feed name
         unum = 1
-        while 'Feed'+str(unum) in feeds:
+        txt = Ta('Feed') #pot: Used as default Feed name in Config->RSS
+        while txt + str(unum) in feeds:
             unum += 1
-        conf['feed'] = 'Feed' + str(unum)
+        conf['feed'] = txt + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1556,6 +1557,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def save_rss_rate(self, **kwargs):
+        """ Save changed RSS automatic readout rate """
         msg = check_session(kwargs)
         if msg: return msg
         cfg.rss_rate.set(kwargs.get('rss_rate'))
@@ -1563,6 +1565,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
+        """ Update Feed level attributes """
         msg = check_session(kwargs)
         if msg: return msg
         if kwargs.get('enable') is not None:
@@ -1579,6 +1582,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def toggle_rss_feed(self, **kwargs):
+        """ Toggle automatic read-out flag of Feed """
         msg = check_session(kwargs)
         if msg: return msg
         try:
@@ -1595,6 +1599,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def add_rss_feed(self, **kwargs):
+        """ Add one new RSS feed definition """
         msg = check_session(kwargs)
         if msg: return msg
         feed= Strip(kwargs.get('feed')).strip('[]')
@@ -1609,11 +1614,17 @@ class ConfigRss(object):
             # Otherwise first-run detection can fail
             sabnzbd.rss.clear_feed(feed)
             config.save_config()
-
-        raise dcRaiser(self.__root, kwargs)
+            self.__refresh_readout = feed
+            self.__refresh_download = False
+            self.__refresh_force = False
+            self.__refresh_ignore = True
+            raise rssRaiser(self.__root, kwargs)
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def upd_rss_filter(self, **kwargs):
+        """ Save updated filter definition """
         msg = check_session(kwargs)
         if msg: return msg
         try:
@@ -1634,6 +1645,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def pos_rss_filter(self, **kwargs):
+        """ Change position of a filter """
         msg = check_session(kwargs)
         if msg: return msg
         feed = kwargs.get('feed')
@@ -1652,6 +1664,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
+        """ Remove complete RSS feed """
         msg = check_session(kwargs)
         if msg: return msg
         kwargs['section'] = 'rss'
@@ -1661,6 +1674,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def del_rss_filter(self, **kwargs):
+        """ Remove one RSS filter """
         msg = check_session(kwargs)
         if msg: return msg
         try:
@@ -1674,6 +1688,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def download_rss_feed(self, *args, **kwargs):
+        """ Force download of all matching jobs in a feed """
         msg = check_session(kwargs)
         if msg: return msg
         if 'feed' in kwargs:
@@ -1686,6 +1701,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def test_rss_feed(self, *args, **kwargs):
+        """ Read the feed content again and show results """
         msg = check_session(kwargs)
         if msg: return msg
         if 'feed' in kwargs:
@@ -1698,26 +1714,8 @@ class ConfigRss(object):
 
 
     @cherrypy.expose
-    def rss_download(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        feed = kwargs.get('feed')
-        id = kwargs.get('id')
-        cat = kwargs.get('cat')
-        pp = kwargs.get('pp')
-        script = kwargs.get('script')
-        priority = kwargs.get('priority', NORMAL_PRIORITY)
-        nzbname = kwargs.get('nzbname')
-        if id and id.isdigit():
-            sabnzbd.add_msgid(id, pp, script, cat, priority, nzbname)
-        elif id:
-            sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
-        # Need to pass the title instead
-        sabnzbd.rss.flag_downloaded(feed, id)
-        raise rssRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
     def download(self, **kwargs):
+        """ Download NZB from provider (Download button) """
         msg = check_session(kwargs)
         if msg: return msg
         feed = kwargs.get('feed')
@@ -1732,7 +1730,7 @@ class ConfigRss(object):
 
             if url and url.isdigit():
                 sabnzbd.add_msgid(url, pp, script, cat, prio, nzbname)
-            elif id:
+            elif url:
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
@@ -2321,55 +2319,6 @@ def ShowOK(url):
 ''' % (escape(url), T('Back'), T('Job "%s" was re-added to the queue') % escape(url))
 
 
-def _make_link(qfeed, job):
-    # Return downlink for a job
-    url = job.get('url', '')
-    status = job.get('status', '')
-    title = job.get('title', '')
-    cat = job.get('cat')
-    pp = job.get('pp')
-    script = job.get('script')
-    prio = job.get('prio')
-    rule = job.get('rule', 0)
-
-    name = urllib.quote_plus(url)
-    if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
-        nzbname = ''
-    else:
-        nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(latin1(title)))
-    if cat:
-        cat = '&cat=' + escape(cat)
-    else:
-        cat = ''
-    if pp is None:
-        pp = ''
-    else:
-        pp = '&pp=' + escape(str(pp))
-    if script:
-        script = '&script=' + escape(script)
-    else:
-        script = ''
-    if prio:
-        prio = '&priority=' + str(prio)
-    else:
-        prio = ''
-
-    star = '&nbsp;*' * int(status.endswith('*'))
-    if rule < 0:
-        rule = '&nbsp;%s!' % T('duplicate')
-    else:
-        rule = '&nbsp;#%s' % str(rule)
-
-    if url.isdigit():
-        title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
-    else:
-        title = xml_name(title)
-
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s%s<br/>' % \
-           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('Download'), title, star, rule)
-
-
-
 
 def GetRssLog(feed):
     def make_item(job):
@@ -2379,10 +2328,15 @@ def GetRssLog(feed):
             title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
         else:
             title = xml_name(title)
+        if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
+            nzbname = ""
+        else:
+            nzbname = xml_name(title)
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
-               job.get('rule', 0)
+               job.get('rule', 0), \
+               nzbname
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
@@ -2415,13 +2369,13 @@ def ShowRssLog(feed, all):
     for x in names:
         job = jobs[x]
         if job['status'][0] == 'G':
-            goodStr.append(_make_link(qfeed, job))
+            goodStr.append('')
 
     badStr = []
     for x in names:
         job = jobs[x]
         if job['status'][0] == 'B':
-            badStr.append(_make_link(qfeed, job))
+            badStr.append('')
 
     if all:
         return '''
