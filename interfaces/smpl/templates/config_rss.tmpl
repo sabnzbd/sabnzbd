@@ -226,6 +226,10 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     </table>
     </fieldset>
 
+	<!--#if $error#-->
+		<br/><b>$error</b><br/><br/>
+	<!--#end if#-->
+
 	<br/>
     <h3>$T('rss-matched')</h3>
     <table id="catTable">

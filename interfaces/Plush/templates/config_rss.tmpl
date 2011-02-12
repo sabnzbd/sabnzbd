@@ -327,7 +327,9 @@
 		</form>
 		<br/><br/>
 
-
+		<!--#if $error#-->
+			<b>$error</b><br/><br/>
+		<!--#end if#-->
 
 		<h1>$T('rss-matched') (<!--#echo len($matched)#-->)</h1>
 

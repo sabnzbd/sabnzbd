@@ -1537,9 +1537,10 @@ class ConfigRss(object):
                 self.__refresh_download = False
                 self.__refresh_force = False
                 self.__refresh_ignore = False
-            sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force, \
+            msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force, \
                                  ignoreFirst=self.__refresh_ignore, readout=readout)
             self.__refresh_readout = None
+            conf['error'] = msg
 
             conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
 

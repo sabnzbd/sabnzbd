@@ -244,7 +244,7 @@ SKIN_TEXT = {
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
-    'backup' : TT('Backup'),
+    'backup' : TT('Backup'), #pot: Indicates that server is Backup server in Status page
 
 # Config->General
     'generalConfig' : TT('General configuration'),

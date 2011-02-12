@@ -31,7 +31,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts
 import sabnzbd.emailer as emailer
-from sabnzbd.encoding import latin1, unicoder
+from sabnzbd.encoding import latin1, unicoder, xml_name
 
 import sabnzbd.utils.feedparser as feedparser
 
@@ -250,16 +250,19 @@ class RSSQueue(object):
             d = feedparser.parse(uri.replace('feed://', 'http://'))
             logging.debug("Done parsing %s", uri)
             if not d:
-                logging.info(Ta('Failed to retrieve RSS from %s'), uri)
-                return T('Failed to retrieve RSS from %s') % uri
+                msg = Ta('Failed to retrieve RSS from %s: %s') % (uri, '?')
+                logging.info(msg)
+                return unicoder(msg)
 
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
-                logging.info(Ta('Failed to retrieve RSS from %s: %s'), uri, str(d['bozo_exception']))
-                return T('Failed to retrieve RSS from %s: %s') % (uri, str(d['bozo_exception']))
+                msg = Ta('Failed to retrieve RSS from %s: %s') % (uri, xml_name(str(d['bozo_exception'])))
+                logging.info(msg)
+                return unicoder(msg)
             if not entries:
-                logging.info('RSS Feed was empty: %s', uri)
-                return ''
+                msg = Ta('RSS Feed was empty: %s') % uri
+                logging.info(msg)
+                return unicoder(msg)
         else:
             entries = jobs.keys()
 
