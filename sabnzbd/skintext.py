@@ -190,6 +190,7 @@ SKIN_TEXT = {
     'purgeNZBs-Files' : TT('Purge NZBs & Delete Files'), #: Queue page button
     'removeNZB' : TT('Remove NZB'), #: Queue page button
     'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
+    'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button
@@ -448,22 +449,23 @@ SKIN_TEXT = {
     'newFeedURI' : TT('New Feed URL'),
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />The checking frequency is in the General page of the configuration.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
-    'button-delFeed' : TT('Delete Feed'),
-    'button-preFeed' : TT('Read Feed'),
-    'button-forceFeed' : TT('Force Download'),
-    'rss-order' : TT('Order'),
-    'rss-type' : TT('Type'),
-    'rss-filter' : TT('Filter'),
-    'rss-skip' : TT('Skip'),
-    'rss-accept' : TT('Accept'),
-    'rss-reject' : TT('Reject'),
-    'rss-must' : TT('Requires'),
-    'rss-mustcat' : TT('RequiresCat'),
-    'rss-delFilter' : TT('X'),
-    'rss-matched' : TT('Matched'),
-    'rss-notMatched' : TT('Not matched'),
-    'rss-done' : TT('Downloaded'),
-    'link-download' : TT('Download'),
+    'addFeed' : TT('Add Feed'), #: Config->RSS button
+    'button-delFeed' : TT('Delete Feed'),#: Config->RSS button
+    'button-preFeed' : TT('Read Feed'),#: Config->RSS button
+    'button-forceFeed' : TT('Force Download'),#: Config->RSS button
+    'rss-order' : TT('Order'), #: Config->RSS table column header
+    'rss-type' : TT('Type'), #: Config->RSS table column header
+    'rss-filter' : TT('Filter'), #: Config->RSS table column header
+    'rss-skip' : TT('Skip'), #: Config->RSS table column header
+    'rss-accept' : TT('Accept'), #: Config->RSS filter-type selection menu
+    'rss-reject' : TT('Reject'), #: Config->RSS filter-type selection menu
+    'rss-must' : TT('Requires'), #: Config->RSS filter-type selection menu
+    'rss-mustcat' : TT('RequiresCat'), #: Config->RSS filter-type selection menu
+    'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
+    'rss-matched' : TT('Matched'), #: Config->RSS section header
+    'rss-notMatched' : TT('Not matched'), #: Config->RSS section header
+    'rss-done' : TT('Downloaded'), #: Config->RSS section header
+    'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
 

@@ -229,6 +229,8 @@ def _api_queue_default(output, value, kwargs):
     direction = kwargs.get('dir')
     start = kwargs.get('start')
     limit = kwargs.get('limit')
+    trans = kwargs.get('trans')
+
     if output in ('xml', 'json'):
         if sort and sort != 'index':
             reverse = direction.lower() == 'desc'
@@ -238,7 +240,7 @@ def _api_queue_default(output, value, kwargs):
         history = bool(kwargs.get('history'))
 
         info, pnfo_list, bytespersec, verbose_list, dictn = \
-            build_queue(history=history, start=start, limit=limit, output=output)
+            build_queue(history=history, start=start, limit=limit, output=output, trans=trans)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
@@ -870,7 +872,7 @@ def handle_cat_api(output, kwargs):
 
 #------------------------------------------------------------------------------
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, output=None):
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None):
     if output:
         converter = unicoder
     else:
@@ -1003,7 +1005,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
 
-        slot['avg_age'] = calc_age(average_date)
+        slot['avg_age'] = calc_age(average_date, bool(trans))
         slot['verbosity'] = ""
         if web_dir:
             finished = []
@@ -1647,11 +1649,20 @@ def calc_timeleft(bytesleft, bps):
         return '0:00:00'
 
 
-def calc_age(date):
+def calc_age(date, trans=False):
     """
     Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
+    When 'trans' is True, time symbols will be translated.
     """
+    if trans:
+        d = T('d') #: Single letter abbreviation of day
+        h = T('h') #: Single letter abbreviation of hour
+        m = T('m') #: Single letter abbreviation of minute
+    else:
+        d = 'd'
+        h = 'h'
+        m = 'm'
     try:
         now = datetime.datetime.now()
         #age = str(now - date).split(".")[0] #old calc_age
@@ -1662,11 +1673,11 @@ def calc_age(date):
         #only one value should be returned
         #if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
         if dage.days:
-            age = '%sd' % (dage.days)
+            age = '%s%s' % (dage.days, d)
         elif seconds/3600:
-            age = '%sh' % (seconds/3600)
+            age = '%s%s' % (seconds/3600, h)
         else:
-            age = '%sm' % (seconds/60)
+            age = '%s%s' % (seconds/60, m)
     except:
         age = "-"
 

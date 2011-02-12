@@ -621,7 +621,8 @@ class QueuePage(object):
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
 
-        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2)
+        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
+                                                                                       self.__prim, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
