@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-02-12 15:07+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-02-12 15:25+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -1154,7 +1154,7 @@ msgid "Failed to retrieve RSS from %s: %s"
 msgstr ""
 
 #: sabnzbd/rss.py:263
-msgid "RSS Feed was empty: %s"
+msgid "RSS Feed %s was empty"
 msgstr ""
 
 #: sabnzbd/rss.py:559 [Warning message]

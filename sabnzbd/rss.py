@@ -260,7 +260,7 @@ class RSSQueue(object):
                 logging.info(msg)
                 return unicoder(msg)
             if not entries:
-                msg = Ta('RSS Feed was empty: %s') % uri
+                msg = Ta('RSS Feed %s was empty') % uri
                 logging.info(msg)
                 return unicoder(msg)
         else:
