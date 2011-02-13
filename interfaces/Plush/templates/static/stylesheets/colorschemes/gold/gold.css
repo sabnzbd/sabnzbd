@@ -1411,7 +1411,11 @@ table.nzoTable {
 	width: 100%;
 }
   #config_content .catheaderinfo { font-weight:bold;}
- 
+  #config_content div.tabs {
+  	min-height:338px;
+  	overflow:auto;
+  }
+  
 #config_go_back {
 	padding: 1px;
 	text-align: center;
@@ -1779,6 +1783,7 @@ legend .config_sprite_container {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	min-height: 305px; 
+	overflow:auto;
 }
 
 #config-components { width: auto; }
