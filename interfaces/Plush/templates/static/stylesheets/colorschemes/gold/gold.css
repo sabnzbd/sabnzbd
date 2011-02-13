@@ -1680,7 +1680,6 @@ legend .config_sprite_container {
 .left_links {
 	float: left;
 	margin: 5px 0 0 10px;
-	padding-left: 190px;
 }
  
 	.left_links a {
@@ -1782,30 +1781,31 @@ legend .config_sprite_container {
 	min-height: 305px; 
 }
 
-#config-components { float: left; width: auto; }
+#config-components { width: auto; }
 #config-components-border { float: left; width: auto; border-top: 1px solid #999999; padding: 5px 0;}
 
 #config .component-group { border-bottom: 1px dotted #666; padding: 15px 15px 25px; position: relative; }
-#config .component-group-desc { float: left; width: 200px; }
+#config .component-group-desc { float: left; width: 23%;}
 #config .component-group-desc h3 { font-size: 1.5em;  }
 #config .component-group-desc p { margin: .8em 0; width: 85%; font-size: 1.2em; color: #666;}
 #config .component-group-desc p.note { margin: .8em 0; width: 90%; font-size: 1.2em; color: #333;}
-#config .component-group-list { float: left; width: 540px; }
+#config .component-group-list { margin-left:25%; width: 75%; }
 #config .component-group-last { border-bottom: 0px; padding: 15px 15px 25px; position: relative; }
 
 #config fieldset {border:0; outline: 0;  }
 
-#config div.field-pair { padding: .5em 0 .5em;  }
+#config div.field-pair { padding: .5em;  }
 #config div.field-pair.alt { background-color:#ddd;  }
-#config div.field-pair input { float: left; margin-right: 10px; }
+#config div.field-pair input { float: left; }
+#config input[type='text'] { padding-left: 5px; height: 1.7em; } 
 
-#config label.nocheck { padding-left: 20px; }
-#config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
+#config label.nocheck { padding-left: 13px; }
+#config label span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 25%; margin-right: 10px;}
 #config label span.component-desc { font-size: 1.0em; font-style:italic;  }
 
-#config div.nocheck { padding-left: 20px; }
-#config div span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 160px; margin-right: 10px;}
-#config div span.component-desc { font-size: 1.0em; font-style:italic;  }
+#config div.nocheck { padding-left: 13px; }
+#config div span.component-title { font-size: 1.2em; font-weight: bold; float: left; width: 25%; margin-left: 10px; margin-right: 10px;}
+#config div span.component-desc { font-size: 1.0em; font-style:italic; width: 75%; }
 
 #config div.field-pair select { font-size: 1.1em; border: 1px solid #d4d0c8;}
 #config div.field-pair select option { padding: 0 10px; line-height: 1.4; }
@@ -1824,3 +1824,10 @@ legend .config_sprite_container {
 * html .clearfix { height: 1%; }
 .clearfix { display: block; }
 /* End hide from IE-mac */
+
+.multiple_cats {
+padding: 5px 10px;
+}
+.apikey {
+width:220px;
+}

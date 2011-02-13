@@ -507,6 +507,9 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
         command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
                    '%s' % rarfile, '%s/' % extraction_path]
 
+    if cfg.ignore_unrar_dates():
+        command.insert(3, '-tsm-')
+
     stup, need_shell, command, creationflags = build_command(command)
 
     logging.debug("Running unrar %s", command)

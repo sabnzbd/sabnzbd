@@ -23,52 +23,54 @@ sabnzbd.skintext - Language strings used in the templates
 SKIN_TEXT = {
 
 # Special texts
-    'stage-download'     : TT('Download'),
-    'stage-repair'       : TT('Repair'),
-    'stage-filejoin'     : TT('Join files'),
-    'stage-unpack'       : TT('Unpack'),
-    'stage-script'       : TT('Script'),
+    'stage-download'     : TT('Download'), #: Queue status "download"
+    'stage-repair'       : TT('Repair'), #: PP phase "repair"
+    'stage-filejoin'     : TT('Join files'), #: PP phase "filejoin"
+    'stage-unpack'       : TT('Unpack'), #: PP phase "unpack"
+    'stage-script'       : TT('Script'), #: PP phase "script"
 
-    'post-Completed'     : TT('Completed'),
-    'post-Failed'        : TT('Failed'),
-    'post-Queued'        : TT('Queued'),
-    'post-Repairing'     : TT('Repairing...'),
-    'post-Extracting'    : TT('Extracting...'),
-    'post-Moving'        : TT('Moving...'),
-    'post-Running'       : TT('Running script...'),
-    'post-Fetching'      : TT('Fetching extra blocks...'),
-    'post-QuickCheck'    : TT('Quick Check...'),
-    'post-Verifying'     : TT('Verifying...'),
+    'post-Completed'     : TT('Completed'), #: PP status
+    'post-Failed'        : TT('Failed'), #: PP status
+    'post-Queued'        : TT('Queued'), #: PP status
+    'post-Paused'        : TT('Paused'), #: PP status
+    'post-Repairing'     : TT('Repairing...'), #: PP status
+    'post-Extracting'    : TT('Extracting...'), #: PP status
+    'post-Moving'        : TT('Moving...'), #: PP status
+    'post-Running'       : TT('Running script...'), #: PP status
+    'post-Fetching'      : TT('Fetching extra blocks...'), #: PP status
+    'post-QuickCheck'    : TT('Quick Check...'), #: PP status
+    'post-Verifying'     : TT('Verifying...'), #: PP status
+    'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
 
-    'sch-frequency'      : TT('Frequency'),
-    'sch-action'         : TT('Action'),
-    'sch-arguments'      : TT('Arguments'),
-    'sch-task'           : TT('Task'),
-    'sch-disable_server' : TT('disable server'),
-    'sch-enable_server'  : TT('enable server'),
-    'sch-resume'         : TT('Resume'),
-    'sch-pause'          : TT('Pause'),
-    'sch-shutdown'       : TT('Shutdown'),
-    'sch-restart'        : TT('Restart'),
-    'sch-speedlimit'     : TT('Speedlimit'),
-    'sch-pause_all'      : TT('Pause All'),
-    'sch-pause_post'     : TT('Pause post-processing'),
-    'sch-resume_post'    : TT('Resume post-processing'),
-    'sch-scan_folder'    : TT('Scan watched folder'),
-    'sch-rss_scan'       : TT('Read RSS feeds'),
+    'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
+    'sch-action'         : TT('Action'), #:  #: Config->Scheduler
+    'sch-arguments'      : TT('Arguments'), #:  #: Config->Scheduler
+    'sch-task'           : TT('Task'), #:  #: Config->Scheduler
+    'sch-disable_server' : TT('disable server'), #:  #: Config->Scheduler
+    'sch-enable_server'  : TT('enable server'), #:  #: Config->Scheduler
+    'sch-resume'         : TT('Resume'), #:  #: Config->Scheduler
+    'sch-pause'          : TT('Pause'), #:  #: Config->Scheduler
+    'sch-shutdown'       : TT('Shutdown'), #:  #: Config->Scheduler
+    'sch-restart'        : TT('Restart'), #:  #: Config->Scheduler
+    'sch-speedlimit'     : TT('Speedlimit'), #:  #: Config->Scheduler
+    'sch-pause_all'      : TT('Pause All'), #:  #: Config->Scheduler
+    'sch-pause_post'     : TT('Pause post-processing'), #:  #: Config->Scheduler
+    'sch-resume_post'    : TT('Resume post-processing'), #:  #: Config->Scheduler
+    'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
+    'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
 
 # General texts
-    'default' : TT('Default'),
-    'none' : TT('None'),
-    'KBs' : TT('KB/s'),
-    'MB' : TT('MB'),
-    'GB' : TT('GB'),
-    'hour' : TT('hour'),
-    'hours' : TT('hours'),
-    'minute' : TT('min'),
-    'minutes' : TT('mins'),
-    'second' : TT('sec'),
-    'seconds' : TT('seconds'),
+    'default' : TT('Default'), #: Default value, used in dropdown menus
+    'none' : TT('None'), #: No value, used in dropdown menus
+    'KBs' : TT('KB/s'), #: Speed indicator kilobytes/sec
+    'MB' : TT('MB'), #: Megabytes
+    'GB' : TT('GB'), #: Gigabytes
+    'hour' : TT('hour'), #: One hour
+    'hours' : TT('hours'), #: Multiple hours
+    'minute' : TT('min'), #: One minute
+    'minutes' : TT('mins'), #: Multiple minutes
+    'second' : TT('sec'), #: One second
+    'seconds' : TT('seconds'), #: Multiple seconds
     'day' : TT('day'),
     'days' : TT('days'),
     'month' : TT('Month'),
@@ -88,45 +90,45 @@ SKIN_TEXT = {
     'total' : TT('Total'),
 
 # General template elements
-    'signOn' : TT('The automatic usenet download tool'),
-    'button-save' : TT('Save'),
-    'queued' : TT('Queued'),
-    'button-back' : TT('Back'),
-    'button-x' : TT('X'),
-    'confirm' : TT('Are you sure?'),
-    'delFiles' : TT('Delete all downloaded files?'),
+    'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
+    'button-save' : TT('Save'), #: "Save" button
+    'queued' : TT('Queued'), #: "Queued" used to show amount of jobs
+    'button-back' : TT('Back'), #: Generic "Back" button
+    'button-x' : TT('X'), #: Generic "Delete" button, short form
+    'confirm' : TT('Are you sure?'), #: Used in confirmation popups
+    'delFiles' : TT('Delete all downloaded files?'),  #: Used in confirmation popups
 
 # Header
-    'menu-home' : TT('Home'),
-    'menu-queue' : TT('Queue'),
-    'menu-history' : TT('History'),
-    'menu-config' : TT('Config'),
-    'menu-cons' : TT('Status'),
-    'menu-help' : TT('Help'),
-    'menu-wiki' : TT('Wiki'),
-    'menu-forums' : TT('Forum'),
-    'menu-irc' : TT('IRC'),
-    'cmenu-general' : TT('General'),
-    'cmenu-folders' : TT('Folders'),
-    'cmenu-switches' : TT('Switches'),
-    'cmenu-servers' : TT('Servers'),
-    'cmenu-scheduling' : TT('Scheduling'),
-    'cmenu-rss' : TT('RSS'),
-    'cmenu-email' : TT('Email'),
-    'cmenu-newzbin' : TT('Index Sites'),
-    'cmenu-cat' : TT('Categories'),
-    'cmenu-sorting' : TT('Sorting'),
+    'menu-home' : TT('Home'), #: Main menu item
+    'menu-queue' : TT('Queue'), #: Main menu item
+    'menu-history' : TT('History'), #: Main menu item
+    'menu-config' : TT('Config'), #: Main menu item
+    'menu-cons' : TT('Status'), #: Main menu item
+    'menu-help' : TT('Help'), #: Main menu item
+    'menu-wiki' : TT('Wiki'), #: Main menu item
+    'menu-forums' : TT('Forum'), #: Main menu item
+    'menu-irc' : TT('IRC'), #: Main menu item
+    'cmenu-general' : TT('General'), #: Main menu item
+    'cmenu-folders' : TT('Folders'), #: Main menu item
+    'cmenu-switches' : TT('Switches'), #: Main menu item
+    'cmenu-servers' : TT('Servers'), #: Main menu item
+    'cmenu-scheduling' : TT('Scheduling'), #: Main menu item
+    'cmenu-rss' : TT('RSS'), #: Main menu item
+    'cmenu-email' : TT('Email'), #: Main menu item
+    'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
+    'cmenu-cat' : TT('Categories'), #: Main menu item
+    'cmenu-sorting' : TT('Sorting'), #: Main menu item
 
 # Footer
-    'ft-download' : TT('Download Dir'),
-    'ft-complete' : TT('Complete Dir'),
-    'ft-speed' : TT('Download speed'),
-    'ft-queued' : TT('Queued'),
-    'ft-paused' : TT('PAUSED'),
-    'ft-buffer@2' : TT('Cached %s articles (%s)'),
-    'ft-sysload' : TT('Sysload'),
-    'ft-warning' : TT('WARNINGS'),
-    'ft-newRelease@1' : TT('New release %s available at'),
+    'ft-download' : TT('Download Dir'), # Used in Footer
+    'ft-complete' : TT('Complete Dir'), # Used in Footer
+    'ft-speed' : TT('Download speed'), # Used in Footer
+    'ft-queued' : TT('Queued'), # Used in Footer
+    'ft-paused' : TT('PAUSED'), # Used in Footer
+    'ft-buffer@2' : TT('Cached %s articles (%s)'), # Used in Footer
+    'ft-sysload' : TT('Sysload'), # Used in Footer
+    'ft-warning' : TT('WARNINGS'), # Used in Footer
+    'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
     'addNewJobs' : TT('Add new downloads'),
@@ -159,70 +161,81 @@ SKIN_TEXT = {
     'enterID' : TT('&nbsp;or Report ID'),
 
 # Queue page
-    'link-sortByName' : TT('Sort by name'),
-    'link-sortByAge' : TT('Sort by age'),
-    'link-sortBySize' : TT('Sort by size'),
-    'link-hideFiles' : TT('Hide files'),
-    'link-showFiles' : TT('Show files'),
-    'onQueueFinish' : TT('On queue finish'),
-    'shutdownPc' : TT('Shutdown PC'),
-    'standbyPc' : TT('Standby PC'),
-    'hibernatePc' : TT('Hibernate PC'),
-    'shutdownSab' : TT('Shutdown SABnzbd'),
-    'speedLimit' : TT('Speed Limit'),
-    'pauseFor' : TT('Pause for'),
-    'mode' : TT('Processing'),
-    'order' : TT('Order'),
-    'name' : TT('Name'),
-    'remainTotal' : TT('Remain/Total'),
-    'eta' : TT('ETA'),
-    'age' : TT('AGE'),
-    'button-del' : TT('Del'),
-    'button-resume' : TT('Resume'),
-    'button-pause' : TT('Pause'),
-    'button-retry' : TT('Retry'),
-    'eoq-actions' : TT('Actions'),
-    'eoq-scripts' : TT('Scripts'),
-    'purgeQueue' : TT('Purge Queue'),
-    'purgeQueueConf' : TT('Delete all items from the queue?'),
+    'link-sortByName' : TT('Sort by name'), #: Queue page button
+    'link-sortByAge' : TT('Sort by age'), #: Queue page button
+    'link-sortBySize' : TT('Sort by size'), #: Queue page button
+    'link-hideFiles' : TT('Hide files'), #: Queue page button
+    'link-showFiles' : TT('Show files'), #: Queue page button
+    'onQueueFinish' : TT('On queue finish'),  #: Queue page selection menu
+    'shutdownPc' : TT('Shutdown PC'), #: Queue page end-of-queue action
+    'standbyPc' : TT('Standby PC'), #: Queue page end-of-queue action
+    'hibernatePc' : TT('Hibernate PC'), #: Queue page end-of-queue action
+    'shutdownSab' : TT('Shutdown SABnzbd'), #: Queue page end-of-queue action
+    'speedLimit' : TT('Speed Limit'), #: Queue page selection menu or entry box
+    'pauseFor' : TT('Pause for'), #: Queue page button or entry box
+    'mode' : TT('Processing'), #: Queue page table column header
+    'order' : TT('Order'), #: Queue page table column header
+    'name' : TT('Name'), #: Queue page table column header
+    'remainTotal' : TT('Remain/Total'), #: Queue page table column header
+    'eta' : TT('ETA'), #: Queue page table column header, "estimated time of arrival"
+    'age' : TT('AGE'), #: Queue page table column header, "age of the NZB"
+    'button-del' : TT('Del'),  #: Queue page table, "Delete" button
+    'button-resume' : TT('Resume'), #: Queue page button
+    'button-pause' : TT('Pause'), #: Queue page button
+    'button-retry' : TT('Retry'), #: Queue page button
+    'eoq-actions' : TT('Actions'), #: Queue end-of-queue selection box
+    'eoq-scripts' : TT('Scripts'), #: Queue page table, script selection menu
+    'purgeQueue' : TT('Purge Queue'), #: Queue page button
+    'purgeQueueConf' : TT('Delete all items from the queue?'), #: Confirmation popup
+    'purgeNZBs' : TT('Purge NZBs'), #: Queue page button
+    'purgeNZBs-Files' : TT('Purge NZBs & Delete Files'), #: Queue page button
+    'removeNZB' : TT('Remove NZB'), #: Queue page button
+    'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
+    'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
 
 # History page
-    'purgeHist' : TT('Purge History'),
-    'purgeHistFailed' : TT('Purge Failed History'),
-    'purgeHistConf' : TT('Delete all completed items from History?'),
-    'purgeHistFailedConf' : TT('Delete all failed items from History?'),
-    'hideDetails' : TT('Hide details'),
-    'showDetails' : TT('Show details'),
-    'sizeHist' : TT('History Size'),
-    'showFailedHis' : TT('Show Failed'),
-    'showAllHis' : TT('Show all'),
-    'completed' : TT('Completed'),
-    'size' : TT('Size'),
-    'status' : TT('Status'),
+    'purgeHist' : TT('Purge History'), #: History page button
+    'purgeHistFailed' : TT('Purge Failed History'), #: History page button
+    'purgeHistConf' : TT('Delete all completed items from History?'), #: Confirmation popup
+    'purgeHistFailedConf' : TT('Delete all failed items from History?'), #: Confirmation popup
+    'hideDetails' : TT('Hide details'), #: Button/link hiding History job details
+    'showDetails' : TT('Show details'), #: Button/link showing History job details
+    'sizeHist' : TT('History Size'), #: History: amount of downloaded data
+    'showFailedHis' : TT('Show Failed'), #: Button or link showing only failed History jobs
+    'showAllHis' : TT('Show all'), #: Button or link showing all History jobs
+    'completed' : TT('Completed'), #: History: job status
+    'size' : TT('Size'), #: History table header
+    'status' : TT('Status'), #: History table header
+    'purgeFailed' : TT('Purge Failed NZBs'), #: Button to delete all failed jobs in History
+    'purgeFailed-Files' : TT('Purge Failed NZBs & Delete Files'), #: Button to delete all failed jobs in History, including files
+    'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
+    'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
+    'msg-path' : TT('Path'), #: Path as displayed in History details
+
 
 # Connections page
-    'link-forceDisc' : TT('Force Disconnect'),
+    'link-forceDisc' : TT('Force Disconnect'), #: Status page button
     'askTestEmail' : TT('This will send a test email to your account.'),
-    'link-showLog' : TT('Show Logging'),
-    'link-showWeblog' : TT('Show Weblogging'),
-    'link-testEmail' : TT('Test Email'),
-    'logging' : TT('Logging'),
-    'log-errWarn' : TT('Errors/Warning'),
-    'log-info' : TT('+ Info'),
-    'log-debug' : TT('+ Debug'),
-    'connections' : TT('Connections'),
-    'thread' : TT('Thread'),
-    'emailResult' : TT('Email Test Result'),
-    'lastWarnings' : TT('Latest Warnings'),
-    'clearWarnings' : TT('clear'),
-    'server-blocked' : TT('Unblock'),
-    'article-id' : TT('Article identifier'),
-    'file-set' : TT('File set'),
-    'warn-when' : TT('When'),
-    'warn-type' : TT('Type'),
-    'warning' : TT('Warning'),
-    'warnings' : TT('Warnings'),
-    'enabled' : TT('Enabled'),
+    'link-showLog' : TT('Show Logging'), #: Status page button
+    'link-showWeblog' : TT('Show Weblogging'), #: Status page button
+    'link-testEmail' : TT('Test Email'), #: Status page button
+    'logging' : TT('Logging'), #: Status page selection menu
+    'log-errWarn' : TT('Errors/Warning'), #: Status page table header
+    'log-info' : TT('+ Info'), #: Status page logging selection value
+    'log-debug' : TT('+ Debug'), #: Status page logging selection value
+    'connections' : TT('Connections'), #: Status page tab header
+    'thread' : TT('Thread'), #: Status page, server threads
+    'emailResult' : TT('Email Test Result'), #: Status page, title for email test result
+    'lastWarnings' : TT('Latest Warnings'), #: Status page, table header
+    'clearWarnings' : TT('clear'),  #: Status page button
+    'server-blocked' : TT('Unblock'), #: Status page button
+    'article-id' : TT('Article identifier'), #: Status page, article identifier
+    'file-set' : TT('File set'), #: Status page, par-set that article belongs to
+    'warn-when' : TT('When'), #: Status page, table column header, when error occured
+    'warn-type' : TT('Type'), #: Status page, table column header, type of message
+    'warning' : TT('Warning'), #: Status page, table column header, actual message
+    'warnings' : TT('Warnings'), #: Footer: indicator of warnings
+    'enabled' : TT('Enabled'), #: Status page, indicator that server is enabled
 
 # Configuration
     'configuration' : TT('Configuration'),
@@ -234,6 +247,7 @@ SKIN_TEXT = {
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
+    'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
 
 # Config->General
     'generalConfig' : TT('General configuration'),
@@ -435,23 +449,27 @@ SKIN_TEXT = {
     'configRSS' : TT('RSS Configuration'),
     'newFeedURI' : TT('New Feed URL'),
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />The checking frequency is in the General page of the configuration.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
-    'feed' : TT('Feed'),
-    'button-delFeed' : TT('Delete Feed'),
-    'button-preFeed' : TT('Read Feed'),
-    'button-forceFeed' : TT('Force Download'),
-    'rss-order' : TT('Order'),
-    'rss-type' : TT('Type'),
-    'rss-filter' : TT('Filter'),
-    'rss-skip' : TT('Skip'),
-    'rss-accept' : TT('Accept'),
-    'rss-reject' : TT('Reject'),
-    'rss-must' : TT('Requires'),
-    'rss-mustcat' : TT('RequiresCat'),
-    'rss-delFilter' : TT('X'),
-    'rss-matched' : TT('Matched'),
-    'rss-notMatched' : TT('Not matched'),
-    'rss-done' : TT('Downloaded'),
-    'link-download' : TT('Download'),
+    'feed' : TT('Feed'), #: Config->RSS, tab header
+    'addFeed' : TT('Add Feed'), #: Config->RSS button
+    'button-delFeed' : TT('Delete Feed'),#: Config->RSS button
+    'button-preFeed' : TT('Read Feed'),#: Config->RSS button
+    'button-forceFeed' : TT('Force Download'),#: Config->RSS button
+    'rss-order' : TT('Order'), #: Config->RSS table column header
+    'rss-type' : TT('Type'), #: Config->RSS table column header
+    'rss-filter' : TT('Filter'), #: Config->RSS table column header
+    'rss-skip' : TT('Skip'), #: Config->RSS table column header
+    'rss-accept' : TT('Accept'), #: Config->RSS filter-type selection menu
+    'rss-reject' : TT('Reject'), #: Config->RSS filter-type selection menu
+    'rss-must' : TT('Requires'), #: Config->RSS filter-type selection menu
+    'rss-mustcat' : TT('RequiresCat'), #: Config->RSS filter-type selection menu
+    'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
+    'rss-matched' : TT('Matched'), #: Config->RSS section header
+    'rss-notMatched' : TT('Not matched'), #: Config->RSS section header
+    'rss-done' : TT('Downloaded'), #: Config->RSS section header
+    'link-download' : TT('Download'), #: Config->RSS button "download item"
+    'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
+    'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
+    'rssDetails' : TT('RSS Details'), #: Config->RSS button
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
@@ -568,32 +586,22 @@ SKIN_TEXT = {
     'button-DailyF' : TT('Daily Folders'),
 
 # NZO
-    'nzoDetails' : TT('Edit NZB Details'),
-    'nzoName' : TT('Name'),
-    'nzo-delete' : TT('Delete'),
-    'nzo-top' : TT('Top'),
-    'nzo-up' : TT('Up'),
-    'nzo-down' : TT('Down'),
-    'nzo-bottom' : TT('Bottom'),
-    'nzo-all' : TT('All'),
-    'nzo-none' : TT('None'),
-    'nzo-invert' : TT('Invert'),
-    'nzo-filename' : TT('Filename'),
-    'nzo-subject' : TT('Subject'),
-    'nzo-age' : TT('Age'),
-    'nzo-selection' : TT('Selection'),
+    'nzoDetails' : TT('Edit NZB Details'), #: Job details page
+    'nzoName' : TT('Name'), #: Job details page
+    'nzo-delete' : TT('Delete'), #: Job details page, delete button
+    'nzo-top' : TT('Top'), #: Job details page, move file to top
+    'nzo-up' : TT('Up'),  #: Job details page, move file one place up
+    'nzo-down' : TT('Down'), #: Job details page, move file one place down
+    'nzo-bottom' : TT('Bottom'),  #: Job details page, move file to bottom
+    'nzo-all' : TT('All'),  #: Job details page, select all files
+    'nzo-none' : TT('None'), #: Job details page, select no files
+    'nzo-invert' : TT('Invert'), #: Job details page, invert file selection
+    'nzo-filename' : TT('Filename'), #: Job details page, filename column header
+    'nzo-subject' : TT('Subject'),  #: Job details page, subject column header
+    'nzo-age' : TT('Age'), #: Job details page, file age column header
+    'nzo-selection' : TT('Selection'), #: Job details page, section header
+    'nzo-action' : TT('Action'), #: Job details page, section header
 
-# Internal texts
-
-# Errors and Warnings
-    'msg-path' : TT('Path'),
-    'stage-download' : TT('Download'),
-    'stage-repair' : TT('Repair'),
-    'stage-filejoin' : TT('Join files'),
-    'stage-unpack' : TT('Unpack'),
-    'stage-script' : TT('Script'),
-
-#Growl Messages
 
 #OSX Menu
     'Mobile-confirm-delete' : TT('Are you sure you want to delete'),
@@ -735,21 +743,18 @@ SKIN_TEXT = {
 #Wizard
     'wizard-quickstart' :  TT('SABnzbd Quick-Start Wizard'),
     'wizard-version' :  TT('SABnzbd Version'),
-    'wizard-previous' :  TT('Previous'),
-    'wizard-next' :  TT('Next'),
-    'wizard-zoom' :  TT('Zoom'),
-    'wizard-skin' :  TT('Skin'),
-    'wizard-explain-skin' :  TT('Which skin would you like to use for SABnzbd?'),
-    'wizard-access' :  TT('Access'),
+    'wizard-previous' :  TT('Previous'), #: Button to go to previous Wizard page
+    'wizard-next' :  TT('Next'), #: Button to go to next Wizard page
+    'wizard-access' :  TT('Access'), #: Wizard step in which the web server is set
     'wizard-access-anypc' :  TT('I want SABnzbd to be viewable by any pc on my network.'),
     'wizard-access-mypc' :  TT('I want SABnzbd to be viewable from my pc only.'),
     'wizard-access-pass' :  TT('Password protect access to SABnzbd (recommended)'),
     'wizard-access-https' :  TT('Enable HTTPS access to SABnzbd.'),
-    'wizard-misc' :  TT('Misc'),
+    'wizard-misc' :  TT('Misc'), #: Wizard step
     'wizard-misc-browser' :  TT('Launch my internet browser with the SABnzbd page when the program starts.'),
     'wizard-server' :  TT('Server Details'),
     'wizard-explain-server' :  TT('Please enter in the details of your primary usenet provider.'),
-    'wizard-server-help' :  TT('Help'),
+    'wizard-server-help' :  TT('Help'), #: Wizard help link
     'wizard-server-help1' :  TT('In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.'),
     'wizard-server-help2' :  TT('Don\'t have a usenet provider? We recommend trying %s.'),
     'wizard-server-con-explain' :  TT('The number of connections allowed by your provider'),
@@ -759,22 +764,22 @@ SKIN_TEXT = {
     'wizard-server-number' :  TT('Please enter a whole number.'),
     'wizard-index-explain' :  TT('If you are a member of newzbin or nzbmatrix, you may enter your username and password here so we can fetch their nzb\'s. This stage can be skipped if you don\'t use either services.'),
     'wizard-index-bookmark' :  TT('Automatically download bookmarked posts.'),
-    'wizard-optional' :  TT('Optional'),
-    'wizard-example' :  TT('E.g.'),
-    'wizard-button-testServer' :  TT('Test Server'),
-    'wizard-restarting' :  TT('Restarting SABnzbd...'),
-    'wizard-complete' :  TT('Setup is now complete!'),
-    'wizard-tip1' :  TT('SABnzbd will now be running in the background.'),
-    'wizard-tip2' :  TT('Closing any browser windows/tabs will NOT close SABnzbd.'),
-    'wizard-tip3' :  TT('After SABnzbd has finished restarting you will be able to access it at the following location: %s'),
-    'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'),
-    'wizard-tip-wiki' :  TT('Further help can be found on our'),
-    'wizard-goto' :  TT('Go to SABnzbd'),
-    'wizard-step-one' :  TT('Step One'),
-    'wizard-step-two' :  TT('Step Two'),
-    'wizard-step-three' :  TT('Step Three'),
-    'wizard-step-four' :  TT('Step Four'),
-    'wizard-step-five' :  TT('Step Five'),
+    'wizard-optional' :  TT('Optional'), #: As in "this item is optional"
+    'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
+    'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
+    'wizard-restarting' :  TT('Restarting SABnzbd...'), #: Wizard step
+    'wizard-complete' :  TT('Setup is now complete!'), #: Wizard step
+    'wizard-tip1' :  TT('SABnzbd will now be running in the background.'), #: Wizard tip
+    'wizard-tip2' :  TT('Closing any browser windows/tabs will NOT close SABnzbd.'), #: Wizard tip
+    'wizard-tip3' :  TT('After SABnzbd has finished restarting you will be able to access it at the following location: %s'), #: Wizard tip
+    'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'), #: Wizard tip
+    'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
+    'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
+    'wizard-step-one' :  TT('Step One'), #: Wizard step
+    'wizard-step-two' :  TT('Step Two'), #: Wizard step
+    'wizard-step-three' :  TT('Step Three'), #: Wizard step
+    'wizard-step-four' :  TT('Step Four'), #: Wizard step
+    'wizard-step-five' :  TT('Step Five'), #: Wizard step
 
 #Special
     'yourRights' : TT('''

@@ -110,12 +110,12 @@
             <div class="field-pair alt">
                 <label class="nocheck clearfix" for="apikey">
                     <span class="component-title">$T('opt-apikey')</span>
-					<input type="text" style="width:200px;" id="apikey" value="$session">
+					<input type="text" id="apikey" value="$session" class="apikey">
+					<input type="button" class="juiButton" value="$T('button-apikey')" id="generate_new_apikey" rel="$T('Plush-confirm')">
                 </label>
                 <label class="nocheck clearfix">
                     <span class="component-title">&nbsp;</span>
 					<span class="component-desc">$T('explain-apikey')</span>
-					<input type="button" class="juiButton" value="$T('button-apikey')" id="generate_new_apikey" rel="$T('Plush-confirm')">
                 </label>
             </div>
             <div class="field-pair">

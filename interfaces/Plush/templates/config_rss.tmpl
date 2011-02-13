@@ -6,9 +6,9 @@
 
 <div class="tabs">
 	<ul>
-		<li><a href="#tabs-rss">My Feeds</a></li>
+		<li><a href="#tabs-rss">$T('tableFeeds')</a></li>
 		<!--#if $active_feed#-->
-		<li><a href="#tabs-settings">$active_feed Settings</a></li>
+		<li><a href="#tabs-settings">$active_feed $T('feedSettings')</a></li>
 		<li><a href="#tabs-filters">$T('filters').capitalize()</a></li>
 		<li><a href="#tabs-downloaded">$T('rss-done') (<!--#echo len($downloaded)#-->)</a></li>
 		<!--#end if#-->
@@ -44,7 +44,8 @@
 		            <td><form action="del_rss_feed" method="get">
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
-		                <input type="submit" class="juiButton" value="$T('button-x')"></form>
+                                <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-x')"/>
+		                </form>
 		            </td>
 		        </tr>
 		    <!--#end for#-->
@@ -56,7 +57,7 @@
 
 		<p>
 			<br/>
-	        <input type="submit" class="juiButton" value="Add Feed" onclick="jQuery('#pane-rss-details').hide(); jQuery('#pane-add-feed').toggle();"/>
+	        <input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').hide(); jQuery('#pane-add-feed').toggle();"/>
 	        <input type="submit" class="juiButton" value="RSS Details" onclick="jQuery('#pane-add-feed').hide(); jQuery('#pane-rss-details').toggle();"/>
 	    </p>
 
@@ -65,7 +66,7 @@
 		    	<table>
 		        	<tr><td>$T('name')</td><td><input type="text" size="10" name="feed" value="$feed"/></td></tr>
 		        	<tr><td>$T('newFeedURI')</td><td><input type="text" size="80" name="uri"/></td></tr>
-		        	<tr><td></td><td><input type="submit" class="juiButton" value="Add Feed"/></td></tr>
+		        	<tr><td></td><td><input type="submit" class="juiButton" value="T$('addFeed')"/></td></tr>
 		    	</table>
 		        <input type="hidden" name="session" value="$session">
 		    </form>
@@ -96,7 +97,7 @@
 				<tr><td></td><td><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
 
 				<tr><td>$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
-	
+
 	            <!--#if $rss[$feed]['pick_cat']#-->
             	<tr><td>$T('category')</td><td>
 	                <select name="cat">
@@ -145,13 +146,13 @@
 		                </optgroup>
 		            </select>
                 </td></tr>
-	
+
 				<tr><td></td><td>
 					<br/>
 		            <input type="submit" class="juiButton" value="$T('button-save') Settings"/>
 		        	<input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/>
 		        </td></tr>
-		        
+
 	        </table>
 
             <input type="hidden" name="feed" value="$feed"/>
@@ -326,10 +327,12 @@
 		</form>
 		<br/><br/>
 
-
+		<!--#if $error#-->
+			<b>$error</b><br/><br/>
+		<!--#end if#-->
 
 		<h1>$T('rss-matched') (<!--#echo len($matched)#-->)</h1>
-		
+
 	    <!--#if $matched#-->
 		    <table class="rssTable">
 		        <tr>
@@ -344,6 +347,7 @@
 		        <tr class="<!--#if $odd then "odd" else "even"#-->">
 		        <td><form action="download" method="get">
 		                <input type="hidden" name="url" value="$job[0]"/>
+		                <input type="hidden" name="nzbname" value="$job[4]"/>
 		                <input type="hidden" value="$feed" name="feed"/>
 		                <input type="hidden" name="session" value="$session">
 		                <input type="submit" class="juiButton" value="$T('link-download')">
@@ -377,6 +381,7 @@
 		        <tr class="<!--#if $odd then "odd" else "even"#-->">
 		        <td><form action="download" method="get">
 		                <input type="hidden" name="url" value="$job[0]"/>
+		                <input type="hidden" name="nzbname" value="$job[4]"/>
 		                <input type="hidden" value="$feed" name="feed"/>
 		                <input type="hidden" name="session" value="$session">
 		                <input type="submit" class="juiButton" value="$T('link-download')">

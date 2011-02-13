@@ -226,6 +226,10 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     </table>
     </fieldset>
 
+	<!--#if $error#-->
+		<br/><b>$error</b><br/><br/>
+	<!--#end if#-->
+
 	<br/>
     <h3>$T('rss-matched')</h3>
     <table id="catTable">
@@ -241,6 +245,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form id="download_$feed">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session" />
                 <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
@@ -268,6 +273,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form id="download_$feed">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session" />
                 <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />

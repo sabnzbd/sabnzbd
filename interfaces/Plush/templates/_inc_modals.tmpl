@@ -111,17 +111,17 @@
 		</div>
 
 		<div id="queue_purge_modal" class="center">
-			<br/><br/><strong>Purge Queue</strong>
-			<br/><br/><input type="submit" name="all" value="Purge NZBs" class="juiButton" />
-			<br/><br/><input type="submit" name="delete" value="Purge NZBs &amp; Delete Files" class="juiButton" />
+			<br/><br/><strong>$T('purgeQueue')</strong>
+			<br/><br/><input type="submit" name="all" value="$T('purgeNZBs')" class="juiButton" />
+			<br/><br/><input type="submit" name="delete" value="$T('purgeNZBs-Files')" class="juiButton" />
 		</div>
 
 		<div id="history_purge_modal" class="center">
-			<br/><br/><strong>Purge History</strong>
+			<br/><br/><strong>$T('purgeHist')</strong>
 			<!--<br/><br/><input type="submit" name="all" value="Purge All NZBs" class="juiButton" />-->
-			<br/><br/><input type="submit" name="failed" value="Purge Failed NZBs" class="juiButton" />
-			<br/><br/><input type="submit" name="delete" value="Purge Failed NZBs &amp; Delete Files" class="juiButton" />
-			<br/><br/><input type="submit" name="completed" value="Purge Completed NZBs" class="juiButton" />
+			<br/><br/><input type="submit" name="failed" value="$T('purgeFailed')" class="juiButton" />
+			<br/><br/><input type="submit" name="delete" value="$T('purgeFailed-Files')" class="juiButton" />
+			<br/><br/><input type="submit" name="completed" value="$T('purgeCompl')" class="juiButton" />
 		</div>
 
 		<div id="retry_modal">
@@ -129,7 +129,7 @@
 				<input type="hidden" id="retry_modal_job" name="job" />
 				<input type="hidden" name="session" value="$session" />
 				<br/><p><strong id="retry_modal_title">title</strong></p>
-				<br/><p>Optional Supplemental NZB:<br/><input type="file" name="nzbfile" /></p>
+				<br/><p>$T('opt-extra-NZB'):<br/><input type="file" name="nzbfile" /></p>
 				<br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
 			</form>
 		</div>
@@ -138,8 +138,8 @@
 			<input type="hidden" id="delete_nzb_modal_job" />
 			<input type="hidden" id="delete_nzb_modal_mode" />
 			<br/><br/><strong id="delete_nzb_modal_title">title</strong><br/><br/>
-			<input type="submit" id="delete_nzb_modal_remove_nzb" value="Remove NZB" class="juiButton" />
-			<input type="submit" id="delete_nzb_modal_remove_files" value="Remove NZB &amp; Delete Files" class="juiButton" />
+			<input type="submit" id="delete_nzb_modal_remove_nzb" value="$T('removeNZB')" class="juiButton" />
+			<input type="submit" id="delete_nzb_modal_remove_files" value="$T('removeNZB-Files')" class="juiButton" />
 		</div>
 
 	#end if#

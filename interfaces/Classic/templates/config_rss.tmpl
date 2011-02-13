@@ -222,6 +222,10 @@
     </div>
     </fieldset>
 
+	<!--#if $error#-->
+		<br/><br/><b>$error</b><br/><br/>
+	<!--#end if#-->
+
     <h3>$T('rss-matched')</h3>
     <table id="catTable">
         <tr>
@@ -236,6 +240,7 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form action="download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session">
                 <input type="submit" value="$T('link-download')">
@@ -262,6 +267,7 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form action="download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session">
                 <input type="submit" value="$T('link-download')">
@@ -331,7 +337,8 @@
             <td><form action="del_rss_feed" method="get">
                 <input type="hidden" name="session" value="$session">
                 <input type="hidden" value="$feed" name="feed">
-                <input type="submit" value="$T('button-del')"></form>
+                <input type="button" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-del')"/>
+                </form>
             </td>
             <td><form action="upd_rss_feed" method="post">
                 <input type="hidden" name="session" value="$session">

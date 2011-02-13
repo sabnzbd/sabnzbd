@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="Configure+Switches+V2"#-->
+<!--#set global $help_uri="Configure+Switches+V3"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <form action="saveSwitches" method="post" name="fullform" id="fullform">
@@ -120,9 +120,9 @@
 			        <select name="pre_script" id="pre_script">
 			        <!--#for $sc in $script_list#-->
 			        <!--#if $sc.lower() == $pre_script.lower()#-->
-			            <option value="$sc" selected>$sc</option>
+			            <option value="$sc" selected>$Tspec($sc)</option>
 			        <!--#else#-->
-			            <option value="$sc">$sc</option>
+			            <option value="$sc">$Tspec($sc)</option>
 			        <!--#end if#-->
 			        <!--#end for#-->
 			        </select>
