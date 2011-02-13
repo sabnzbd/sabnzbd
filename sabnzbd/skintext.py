@@ -468,6 +468,7 @@ SKIN_TEXT = {
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
+    'rssDetails' : TT('RSS Details'), #: Config->RSS button
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
