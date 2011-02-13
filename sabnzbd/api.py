@@ -1387,7 +1387,7 @@ def build_header(prim):
     header['speedlimit'] = "%s" % speed_limit
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
-    header['last_warning'] = sabnzbd.GUIHANDLER.last()
+    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
     if prim:
         header['webdir'] = sabnzbd.WEB_DIR
