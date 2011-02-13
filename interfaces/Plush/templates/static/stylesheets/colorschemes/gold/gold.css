@@ -924,6 +924,7 @@ tr:hover .nzb_status_grippie {
 	color:#000;
 	border:0;
 	margin-right:2px;
+	padding:1px;
 }
 #multiops_inputs a {
 	cursor:pointer;
@@ -1786,7 +1787,6 @@ legend .config_sprite_container {
 	min-height: 305px; 
 	overflow:auto;
 }
-input.ui-button { padding: .15em; }
 input.ui-button { padding: .2em .5em; }
 
 #config-components { width: auto; }
