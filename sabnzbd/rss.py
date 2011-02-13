@@ -177,6 +177,9 @@ class RSSQueue(object):
         self.shutdown = False
 
         def dup_title(title):
+            """ Check if this title was in this or other feeds
+                Return matching feed name
+            """
             title = title.lower()
             for fd in self.jobs:
                 for lk in self.jobs[fd]:
@@ -332,12 +335,8 @@ class RSSQueue(object):
                         elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
-                        if cfg.no_dupes():
-                            dup = dup_title(title)
-                            if dup:
-                                logging.debug("Rejected as duplicate")
-                                n = dup
-                                break
+                        if cfg.no_dupes() and dup_title(title):
+                            priority = DUP_PRIORITY
 
                         if category and reTypes[n] == 'C':
                             found = re.search(regexes[n], category)

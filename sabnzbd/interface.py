@@ -486,6 +486,7 @@ class NzoPage(object):
         n = 0
         for pnfo in pnfo_list:
             if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
+                nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
                 repair = pnfo[PNFO_REPAIR_FIELD]
                 unpack = pnfo[PNFO_UNPACK_FIELD]
                 delete = pnfo[PNFO_DELETE_FIELD]
@@ -496,7 +497,7 @@ class NzoPage(object):
                 cat = pnfo[PNFO_EXTRA_FIELD1]
                 if not cat:
                     cat = 'None'
-                filename = xml_name(pnfo[PNFO_FILENAME_FIELD])
+                filename = xml_name(nzo.final_name_pw_clean)
                 priority = pnfo[PNFO_PRIORITY_FIELD]
 
                 slot['nzo_id'] =  str(nzo_id)
