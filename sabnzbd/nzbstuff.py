@@ -36,7 +36,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY
+                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, clean_folder, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
@@ -477,6 +477,7 @@ NzbObjectMapper = (
     ('extra4',                       'save_timeout'),  # Save timeout for this NZO
     ('extra5',                       'new_caching'),   # New style caching
     ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
+    ('duplicate',                    'duplicate'),     # Was detected as a duplicate
     ('create_group_folder',          'create_group_folder')
 )
 
@@ -559,6 +560,7 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.deleted = False
         self.parsed = False
+        self.duplicate = False
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -605,10 +607,8 @@ class NzbObject(TryList):
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
         adir = os.path.join(wdir, JOB_ADMIN)
 
-        if (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename):
-            # File already exists and we have no_dupes set
-            logging.warning(Ta('Skipping duplicate NZB "%s"'), filename)
-            raise TypeError
+        # Duplicate checking, needs to be done before the backup
+        duplicate = (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename)
 
         if reuse:
             remove_all(adir, 'SABnzbd_nz?_*')
@@ -707,6 +707,12 @@ class NzbObject(TryList):
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
             self.priority = LOW_PRIORITY
+
+        if duplicate or self.priority == DUP_PRIORITY:
+            logging.warning(Ta('Pausing duplicate NZB "%s"'), filename)
+            self.duplicate = True
+            self.pause()
+            self.priority = NORMAL_PRIORITY
 
         if self.priority == PAUSED_PRIORITY:
             self.priority = NORMAL_PRIORITY
@@ -878,10 +884,20 @@ class NzbObject(TryList):
 
     @property
     def final_name_pw(self):
+        prefix = ''
+        if self.duplicate:
+            prefix = Ta('DUPLICATE') + ' / '
+        if self.encrypted and self.status == 'Paused':
+            prefix += Ta('ENCRYPTED') + ' / '
+        if self.password:
+            return '%s%s / %s' % (prefix, self.final_name, self.password)
+        else:
+            return '%s%s' % (prefix, self.final_name)
+
+    @property
+    def final_name_pw_clean(self):
         if self.password:
             return '%s / %s' % (self.final_name, self.password)
-        elif self.encrypted and self.status == 'Paused':
-            return '%s [%s]' % (self.final_name, Ta('ENCRYPTED'))
         else:
             return self.final_name
 
@@ -899,6 +915,8 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
+        # If user resumes after duplicate warning, reset duplicate indicator
+        self.duplicate = False
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
