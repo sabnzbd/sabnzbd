@@ -522,15 +522,15 @@ body {
 	color:white;
 	width:120px;
 	border:0px;
-	margin: 9px 9px 1px 1px;
+	margin: 7px 9px 1px 1px;
 	padding-right:20px;
+	border:1px solid #444;
 	/*background-color: black;*/
 	/*background: url('images/sprite-main.png') no-repeat top right;
 	background-position: 0 -671px;*/
 }
 #historySearchBox:hover,#historySearchBox:focus {
 	border:1px solid gray;
-	margin: 8px 8px 0 0;
 }
 
 #hdr-queue {
@@ -892,6 +892,7 @@ tr:hover .nzb_status_grippie {
 
 #multiops_bar {
 	height:51px;
+	color:grey;
 }
 #multiops_title {
 	color: #C0C0C0;
@@ -1411,7 +1412,11 @@ table.nzoTable {
 	width: 100%;
 }
   #config_content .catheaderinfo { font-weight:bold;}
- 
+  #config_content div.tabs {
+  	min-height:338px;
+  	overflow:auto;
+  }
+  
 #config_go_back {
 	padding: 1px;
 	text-align: center;
@@ -1779,7 +1784,9 @@ legend .config_sprite_container {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	min-height: 305px; 
+	overflow:auto;
 }
+input.ui-button { padding: .2em .5em; }
 
 #config-components { width: auto; }
 #config-components-border { float: left; width: auto; border-top: 1px solid #999999; padding: 5px 0;}
