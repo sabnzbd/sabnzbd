@@ -30,7 +30,7 @@ msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
 #: NSIS_Installer.nsi:370
-msgid "                  >>>> WARNING <<<<\r\n\r\nIf not empty, download your current queue with the old program.\r\nThe new program will ignore your current queue!"
+msgid "                  >>>> WARNING <<<<\r\n\r\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
 
 #: NSIS_Installer.nsi:378
