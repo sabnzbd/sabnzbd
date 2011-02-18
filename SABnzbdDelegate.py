@@ -46,6 +46,7 @@ import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.database import get_history_handle
+from sabnzbd.api import check_trans
 
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
 start_time = NSDate.date()
@@ -86,11 +87,9 @@ class SABnzbdDelegate(NSObject):
         #Wait for SABnzbd Initialisation
         #cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-        if (debug == 1) : NSLog("[osx] yes=%s" % (T('Yes')))
-
-        while T('Yes')[0:1]=="#":
+        # Wait for translated texts to be loaded
+        while not check_trans():
             time.sleep(0.5)
-            if (debug == 1) : NSLog("[osx] yes=%s" % (T('Yes')))
             if (debug == 1) : NSLog("[osx] language file not loaded, waiting")
 
         #Variables

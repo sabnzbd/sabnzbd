@@ -1355,6 +1355,11 @@ def cache_skin_trans():
     for txt in SKIN_TEXT:
         _SKIN_CACHE[txt] = Tx(SKIN_TEXT.get(txt, txt))
 
+def check_trans():
+    """ Check whether language has been initialized
+    """
+    global _SKIN_CACHE
+    return bool(_SKIN_CACHE)
 
 def build_header(prim):
     try:
