@@ -243,12 +243,12 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $matched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form id="download_$feed">
+        <td><form action="config/rss/download">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" name="nzbname" value="$job[4]"/>
-                <input type="hidden" value="$feed" name="feed"/>
+                <input type="hidden" name="feed" value="$feed"/>
                 <input type="hidden" name="session" value="$session" />
-                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
+                <input type="submit" value="$T('link-download')"/>
             </form>
         </td>
         <td>$job[2]</td>
@@ -271,12 +271,12 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $unmatched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form id="download_$feed">
+        <td><form id="config/rss/download">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
                 <input type="hidden" name="session" value="$session" />
-                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
+                <input type="submit" value="$T('link-download')"/>
             </form>
         </td>
         <td>$job[2]</td>
