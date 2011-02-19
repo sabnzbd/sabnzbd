@@ -3036,7 +3036,7 @@ msgid ""
 "Use the \"Groups / Indexer tags\" column to map groups and tags to your "
 "categories.<br/>Wildcards are supported. Use commas to seperate terms."
 msgstr ""
-"Utilisez les colonnes \\\"Groupes / Tags indexeur\\\" pour classer les "
+"Utilisez les colonnes \"Groupes / Tags indexeur\" pour classer les "
 "groupes et les tags de vos catégories.<br/>\r\n"
 "Utilisez des virgules pour séparer les termes."
 
