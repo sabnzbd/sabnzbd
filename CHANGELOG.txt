@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.0Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix problem in smpl skin's RSS download buttons
+- Fix paging and flag display in Wizard
+- Add clear-downloaded jobs in RSS
+-------------------------------------------------------------------------------
  0.6.0Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Text and translation fixes
