@@ -41,6 +41,17 @@ hr {
     border-style:none none dotted;
 }
 
+.container { 
+	width:700px;
+	margin: 0px auto;
+}
+
+.language {
+	width:175px;
+	text-align: center;
+	float: left;
+}
+
 .float {
 	float:left;
 }
