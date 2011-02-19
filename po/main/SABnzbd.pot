@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-02-18 22:44+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-02-19 14:46+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -1029,39 +1029,43 @@ msgstr ""
 msgid "Failed to import %s files from %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:644 [Warning message] # sabnzbd/nzbstuff.py:649 [Warning message]
+#: sabnzbd/nzbstuff.py:646 [Warning message] # sabnzbd/nzbstuff.py:651 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:657 [Warning message]
+#: sabnzbd/nzbstuff.py:659 [Warning message]
 msgid "Empty NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:712 [Warning message]
+#: sabnzbd/nzbstuff.py:715 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:889
+#: sabnzbd/nzbstuff.py:892 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:891
+#: sabnzbd/nzbstuff.py:894 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:942
+#: sabnzbd/nzbstuff.py:896 [Queue indicator for oversized job]
+msgid "TOO LARGE"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:947
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:946
+#: sabnzbd/nzbstuff.py:951
 msgid "%s articles were malformed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:950
+#: sabnzbd/nzbstuff.py:955
 msgid "%s articles were missing"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:979 [Error message]
+#: sabnzbd/nzbstuff.py:984 [Error message]
 msgid "Error importing %s"
 msgstr ""
 
