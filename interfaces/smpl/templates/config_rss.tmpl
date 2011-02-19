@@ -237,7 +237,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <th>&nbsp;</th>
             <th>&nbsp;$T('rss-skip')&nbsp;</th>
             <th>&nbsp;$T('rss-filter')&nbsp;</th>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $matched#-->
@@ -265,7 +265,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <th>&nbsp;</th>
             <th>&nbsp;$T('rss-skip')&nbsp;</th>
             <th>&nbsp;$T('rss-filter')&nbsp;</th>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $unmatched#-->
@@ -288,9 +288,16 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 
 	<br/>
     <h3>$T('rss-done')</h3>
+	<!--#if $downloaded#-->
+		<form id="clean_rss_jobs">
+			<input type="hidden" name="feed" value="$feed"/>
+			<input type="hidden" name="session" value="$session" />
+			<input type="submit" value="$T('button-clear')" onclick="javascript:submitconfig('config/rss/clean_rss_jobs', this,'clean_rss_jobs','1' ); return false;" />
+		</form>
+    <!--#end if#-->
     <table id="catTable">
         <tr>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $downloaded#-->
@@ -333,7 +340,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <table id="catTable">
         <tr>
             <th></th>
-            <th>Enabled</th>
+            <th>$T('enabled')</th>
             <th>$T('feed')</th>
             <th>URL</th>
         </tr>
