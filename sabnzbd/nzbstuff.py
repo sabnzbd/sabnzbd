@@ -920,8 +920,9 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
-        # If user resumes after duplicate warning, reset duplicate indicator
+        # If user resumes after warning, reset duplicate/oversized indicator
         self.duplicate = False
+        self.oversized = False
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
