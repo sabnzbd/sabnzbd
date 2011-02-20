@@ -99,12 +99,12 @@ jQuery(function($){
 			$("#main_menu ul.sf-menu").superfish({
 				autoArrows:	true,
 	  			dropShadows: false,
-			    speed:0, delay:0
+			    speed:0, delay:800
 	  		});
 	  		$(".queue-buttons ul").superfish({
 	  		    autoArrows: false,
 	  		    dropShadows: false,
-			    speed:0, delay:0
+			    speed:0, delay:800
 	  		});
 			$('.sprite_q_menu_pausefor').hover(
 				function(){ $(this).addClass('sprite_q_menu_pauseforsfHover'); },
@@ -128,7 +128,8 @@ jQuery(function($){
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
- 								  .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
+ 								  .blur(function(){ $.plush.focusedOnSpeedChanger = false; })
+ 								  .parent().click(function(){ $("#maxSpeed-option").focus(); });
 			$("#maxSpeed-enable,#maxSpeed-disable").click( function(e) {	// works with hitting enter
 				if ($(e.target).attr('id')=="maxSpeed-disable")
 					$('#maxSpeed-option').val('');
