@@ -232,7 +232,7 @@
             <th>&nbsp;</th>
             <th>&nbsp;$T('rss-skip')&nbsp;</th>
             <th>&nbsp;$T('rss-filter')&nbsp;</th>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $matched#-->
@@ -259,7 +259,7 @@
             <th>&nbsp;</th>
             <th>&nbsp;$T('rss-skip')&nbsp;</th>
             <th>&nbsp;$T('rss-filter')&nbsp;</th>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $unmatched#-->
@@ -281,9 +281,16 @@
     </table>
 
     <h3>$T('rss-done')</h3>
+	<!--#if $downloaded#-->
+		<form action="clean_rss_jobs" method="get">
+			<input type="hidden" value="$feed" name="feed"/>
+			<input type="hidden" name="session" value="$session">
+			<input type="submit" value="$T('button-clear')">
+		</form><br/>
+	<!--#end if#-->
     <table id="catTable">
         <tr>
-            <th>Title</th>
+            <th>$T('sort-title')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $job in $downloaded#-->
@@ -326,7 +333,7 @@
     <table id="catTable">
         <tr>
             <th></th>
-            <th>Enabled</th>
+            <th>$T('enabled')</th>
             <th>$T('feed')</th>
             <th>URL</th>
         </tr>

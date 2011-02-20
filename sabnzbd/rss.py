@@ -90,6 +90,11 @@ def clear_feed(feed):
     global __RSS
     if __RSS: __RSS.clear_feed(feed)
 
+def clear_downloaded(feed):
+    global __RSS
+    if __RSS: __RSS.clear_downloaded(feed)
+
+
 ################################################################################
 
 def notdefault(item):
@@ -157,6 +162,7 @@ class RSSQueue(object):
         #        Each element is another dictionary:
         #           status : 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
         #               '*' added means: from the initial batch
+        #               '-' added to 'D' means downloaded, but not displayed anymore
         #           title : Title
         #           url : URL or MsgId
         #           cat : category
@@ -470,6 +476,14 @@ class RSSQueue(object):
         # Remove any previous references to this feed name, and start fresh
         if feed in self.jobs:
             del self.jobs[feed]
+
+    @synchronized(LOCK)
+    def clear_downloaded(self, feed):
+        # Mark downloaded jobs, so that they won't be displayed any more.
+        if feed in self.jobs:
+            for item in self.jobs[feed]:
+                if self.jobs[feed][item]['status'] == 'D':
+                    self.jobs[feed][item]['status'] = 'D-'
 
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)

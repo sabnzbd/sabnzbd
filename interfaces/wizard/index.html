@@ -11,25 +11,15 @@ function selectLang(lang)
 <div class="bigger">
 <h3>Language</h3>
 Please choose your prefered language<br /><br />
-<div class="full-width">
-    <table class="full-width align-center">
-        <tr>
-            <!--#for $l, $language in $languages#-->
-                <td class="align-center">
-                    <div>
-                        <label for="$language" class="skin-select" onclick="javascript:selectLang('$l')">
-                            <img src="static/images/flags/${l}.png" border="0" />
-                        </label>
-                    </div>
-                </td>
-            <!--#end for#-->
-        </tr>
-        <tr>
-            <!--#for $l, $language in $languages#-->
-                <td class="align-center"><label for="$language">$language</label><br/><input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked=true' else ''#-->></td>
-            <!--#end for#-->
-        </tr>
-    </table>
+<div class="container">
+	<!--#for $l, $language in $languages#-->
+	<div class="language">
+		<label class="skin-select">
+			<img src="static/images/flags/${l}.png" border="0" />
+			<br />$language<br /><input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked=true' else ''#-->>
+		</label>
+	</div>
+	<!--#end for#-->
 </div>
 </div>
 </div>

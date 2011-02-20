@@ -478,6 +478,7 @@ NzbObjectMapper = (
     ('extra5',                       'new_caching'),   # New style caching
     ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
     ('duplicate',                    'duplicate'),     # Was detected as a duplicate
+    ('oversized',                    'oversized'),     # Was detected as oversized
     ('create_group_folder',          'create_group_folder')
 )
 
@@ -561,6 +562,7 @@ class NzbObject(TryList):
         self.deleted = False
         self.parsed = False
         self.duplicate = False
+        self.oversized = False
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -706,6 +708,7 @@ class NzbObject(TryList):
         if not reuse and limit and self.bytes > limit:
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
+            self.oversized = True
             self.priority = LOW_PRIORITY
 
         if duplicate or self.priority == DUP_PRIORITY:
@@ -886,9 +889,11 @@ class NzbObject(TryList):
     def final_name_pw(self):
         prefix = ''
         if self.duplicate:
-            prefix = Ta('DUPLICATE') + ' / '
+            prefix = Ta('DUPLICATE') + ' / ' #: Queue indicator for duplicate job
         if self.encrypted and self.status == 'Paused':
-            prefix += Ta('ENCRYPTED') + ' / '
+            prefix += Ta('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
+        if self.oversized and self.status == 'Paused':
+            prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
         if self.password:
             return '%s%s / %s' % (prefix, self.final_name, self.password)
         else:
@@ -915,8 +920,9 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
-        # If user resumes after duplicate warning, reset duplicate indicator
+        # If user resumes after warning, reset duplicate/oversized indicator
         self.duplicate = False
+        self.oversized = False
 
     def add_parfile(self, parfile):
         self.files.append(parfile)

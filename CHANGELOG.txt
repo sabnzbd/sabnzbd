@@ -1,4 +1,22 @@
 -------------------------------------------------------------------------------
+ 0.6.0Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix problem in smpl skin's RSS download buttons
+- Fix paging and flag display in Wizard
+- Add clear-downloaded jobs in RSS
+-------------------------------------------------------------------------------
+ 0.6.0Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Text and translation fixes
+-------------------------------------------------------------------------------
+ 0.6.0Alpha13 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Duplicate NZBs will not be rejected but entered the queue
+  as "paused" and flagged. Manual resuming will start the download anyway.
+- Add INI-only option to ignore unrar timestamps
+- More Plush touch-ups
+- Translation updates
+-------------------------------------------------------------------------------
  0.6.0Alpha12 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Delete from History did not always work

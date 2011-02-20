@@ -158,7 +158,7 @@ class Wizard(object):
         # Create Indexers page
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 4
+        info['number'] = 3
         info['newzbin_user'] = cfg.newzbin_username()
         info['newzbin_pass'] = cfg.newzbin_password.get_stars()
         info['newzbin_bookmarks'] = cfg.newzbin_bookmarks()
@@ -186,7 +186,7 @@ class Wizard(object):
         # Show Restart screen
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Four')
-        info['number'] = 5
+        info['number'] = 4
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()
 

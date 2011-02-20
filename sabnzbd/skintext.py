@@ -202,7 +202,7 @@ SKIN_TEXT = {
     'showDetails' : TT('Show details'), #: Button/link showing History job details
     'sizeHist' : TT('History Size'), #: History: amount of downloaded data
     'showFailedHis' : TT('Show Failed'), #: Button or link showing only failed History jobs
-    'showAllHis' : TT('Show all'), #: Button or link showing all History jobs
+    'showAllHis' : TT('Show All'), #: Button or link showing all History jobs
     'completed' : TT('Completed'), #: History: job status
     'size' : TT('Size'), #: History table header
     'status' : TT('Status'), #: History table header
@@ -240,7 +240,7 @@ SKIN_TEXT = {
 # Configuration
     'configuration' : TT('Configuration'),
     'confgFile' : TT('Config File'),
-    'explain-Restart' : TT('The button below will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
+    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'button-restart' : TT('Restart'),
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br/>You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
@@ -322,7 +322,8 @@ SKIN_TEXT = {
     'explain-password_file' : TT('File containing all passwords to be tried on encrypted RAR files.'),
     'systemFolders' : TT('System Folders'),
     'opt-admin_dir' : TT('Administrative Folder'),
-    'explain-admin_dir' : TT('Location for queue admin and history database.<br /><i>Can only be changed when queue is empty.</i><br /><i>Data will <b>not</b> be moved.</i><br /><i>Requires SABnzbd restart!</i>'),
+    'explain-admin_dir1' : TT('Location for queue admin and history database.<br /><i>Can only be changed when queue is empty.</i>'),
+    'explain-admin_dir2' : TT('<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>'),
     'opt-log_dir' : TT('Log Folder'),
     'explain-log_dir' : TT('Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>'),
     'opt-nzb_backup_dir' : TT('.nzb Backup Folder'),
@@ -345,7 +346,7 @@ SKIN_TEXT = {
     'opt-enable_par_cleanup' : TT('Enable Par Cleanup'),
     'explain-enable_par_cleanup' : TT('Cleanup par files (if verifiying/repairing succeded).'),
     'opt-fail_on_crc' : TT('Fail on yEnc CRC Errors'),
-    'explain-fail_on_crc' : TT('Use backup servers on yEnc crc errors.'),
+    'explain-fail_on_crc' : TT('When article has a CRC error, try to get it from another server.'),
     'opt-top_only' : TT('Only Get Articles for Top of Queue'),
     'explain-top_only' : TT('Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.'),
     'opt-safe_postproc' : TT('Post-Process Only Verified Jobs'),
@@ -464,7 +465,7 @@ SKIN_TEXT = {
     'rss-mustcat' : TT('RequiresCat'), #: Config->RSS filter-type selection menu
     'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
-    'rss-notMatched' : TT('Not matched'), #: Config->RSS section header
+    'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
@@ -521,7 +522,7 @@ SKIN_TEXT = {
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
-    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use comma\'s to seperate terms.'),
+    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to seperate terms.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
     'catTags' : TT('Groups / Indexer tags'),

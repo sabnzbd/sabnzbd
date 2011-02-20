@@ -148,7 +148,7 @@ Section "SABnzbd" SecDummy
 SetOutPath "$INSTDIR"
 
 IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
-  IfFileExists $INSTDIR\language\us-en.txt endWarnExist 0
+  IfFileExists $INSTDIR\locale\nl\LC_MESSAGES\SABnzbd.mo endWarnExist 0
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgOldQueue) IDOK endWarnExist IDCANCEL 0
     Abort
 endWarnExist:
@@ -367,13 +367,13 @@ SectionEnd
   LangString MsgCloseSab    ${LANG_DUTCH} "Sluit $\"SABnzbd.exe$\" eerst af"
   LangString MsgCloseSab    ${LANG_SWEDISH} "Var vänlig stäng $\"SABnzbd.exe$\" först"
 
-  LangString MsgOldQueue    ${LANG_ENGLISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_DANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_GERMAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_FRENCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_NORWEGIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_DUTCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
-  LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
+  LangString MsgOldQueue    ${LANG_ENGLISH} "                  >>>> WARNING <<<<\r\n\r\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_DANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_GERMAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_FRENCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_NORWEGIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_DUTCH} "               >>>> WAARSCHUWING <<<<$\r$\n$\r$\nLees eerst het vrijgave bericht of ga naar http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
   LangString MsgUninstall   ${LANG_DANISH} "Dette vil afinstallere SABnzbd fra dit system"

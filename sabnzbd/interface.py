@@ -1703,6 +1703,14 @@ class ConfigRss(object):
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
+    def clean_rss_jobs(self, *args, **kwargs):
+        """ Remove processed RSS jobs from UI """
+        msg = check_session(kwargs)
+        if msg: return msg
+        sabnzbd.rss.clear_downloaded(kwargs['feed'])
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
     def test_rss_feed(self, *args, **kwargs):
         """ Read the feed content again and show results """
         msg = check_session(kwargs)
@@ -2146,7 +2154,7 @@ class ConnectionInfo(object):
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
             w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
-            wlist.append(xml_name(w))
+            wlist.insert(0, xml_name(w))
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
@@ -2346,7 +2354,7 @@ def GetRssLog(feed):
     # Sort in the order the jobs came from the feed
     names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
 
-    done = [xml_name(jobs[job]['title']) for job in names if jobs[job]['status'][0] == 'D']
+    done = [xml_name(jobs[job]['title']) for job in names if jobs[job]['status'] == 'D']
     good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
     bad  = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
 
