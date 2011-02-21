@@ -783,6 +783,7 @@ def get_categories(cat=0):
     cats = database['categories']
     if '*' not in cats:
         ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : NORMAL_PRIORITY})
+        save_config(True)
     if not isinstance(cat, int):
         try:
             cats = cats[cat]
