@@ -36,7 +36,7 @@
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
 		                <input type="hidden" value="1" name="table">
-		                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed_item]['enable'] then "CHECKED" else "" #-->/>
+		                <input type="checkbox" class="toggleFeedCheckbox" name="enable" <!--#if $rss[$feed_item]['enable'] then "CHECKED" else "" #-->/>
 		                </form>
 		            </td>
 		            <td><strong><a class="juiButton" href="?feed=$rss[$feed_item]['link']#tabs-settings" <!--#if $active_feed == $feed_item#-->id="activeFeedLink"<!--#end if#-->>$feed_item</a></strong></td>
@@ -94,7 +94,7 @@
 
 			<table>
 
-				<tr><td></td><td><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
+				<tr><td></td><td><input type="checkbox" class="toggleFeedCheckbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
 
 				<tr><td>$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
 
@@ -249,7 +249,7 @@
 	            <input type="submit" class="juiButton" value="$T('rss-delFilter')"></form>
 	        </td>
 
-	        <td><form><select onchange="location = this.options[this.selectedIndex].value;">
+	        <td><form><select class="rssOrderSelect">
 	        <!--#for $i in xrange($rss[$feed]['filtercount'])#-->
 	            <option value="pos_rss_filter?session=$session&feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
 	        <!--#end for#-->
