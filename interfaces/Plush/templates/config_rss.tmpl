@@ -49,19 +49,18 @@
 		            </td>
 		        </tr>
 		    <!--#end for#-->
+		    <tfoot><tr><th colspan="4">
+		    	<input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').hide(); jQuery('#pane-add-feed').toggle();"/>
+		    </th></tr></tfoot>
 			</table>
 
 		<!--#else#-->
-			<p>$T('none')</p>
+			<h2><strong>$T('addFeed'):</strong></h2>
 		<!--#end if#-->
 
-		<p>
-			<br/>
-	        <input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').hide(); jQuery('#pane-add-feed').toggle();"/>
-	        <input type="submit" class="juiButton" value="RSS Details" onclick="jQuery('#pane-add-feed').hide(); jQuery('#pane-rss-details').toggle();"/>
-	    </p>
+		<br/>
 
-		<div id="pane-add-feed" style="display:none">
+		<div id="pane-add-feed" <!--#if $feeds#-->style="display:none"<!--#end if#-->>
 		    <form action="add_rss_feed" method="post">
 		    	<table>
 		        	<tr><td>$T('name')</td><td><input type="text" size="10" name="feed" value="$feed"/></td></tr>
@@ -70,18 +69,17 @@
 		    	</table>
 		        <input type="hidden" name="session" value="$session">
 		    </form>
+		    <br/><hr/>&nbsp;
 		</div>
 
-		<div id="pane-rss-details" style="display:none">
-		    <p>$T('explain-RSS')</p>
-			<form action="save_rss_rate" method="post">
-				<strong>$T('opt-rss_rate'):</strong><br/>
-				<small>$T('explain-rss_rate')</small><br/>
-				<input type="text" name="rss_rate" value="$rss_rate" size=8 />
-		        <input type="hidden" name="session" value="$session"/>
-		        <input type="submit" class="juiButton" value="$T('button-save')"/>
-			</form>
-		</div>
+	    <p>$T('explain-RSS')</p>
+		<form action="save_rss_rate" method="post">
+			<strong>$T('opt-rss_rate'):</strong><br/>
+			<small>$T('explain-rss_rate')</small><br/>
+			<input type="text" name="rss_rate" value="$rss_rate" size=8 />
+	        <input type="hidden" name="session" value="$session"/>
+	        <input type="submit" class="juiButton" value="$T('button-save')"/>
+		</form>
 
     </div>
 
