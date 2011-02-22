@@ -50,6 +50,10 @@ $T('explain-web_dir2')<br>
 $T('explain-apikey')<br />
 <input type="text" style="width:250px;border:none;" onclick="this.select()" id="apikey" value="$session">
 <a href="generateAPIKey?session=$session">$T('button-apikey')</a>
+<br /><br /><strong>$T('opt-nzbkey'):</strong><br />
+$T('explain-nzbkey')<br />
+<input type="text" style="width:250px;border:none;" onclick="this.select()" id="nzbkey" value="$nzb_key">
+<a href="generateNzbKey?session=$session">$T('button-apikey')</a>
 <br /><br />
 <label><input type="checkbox" name="disable_api_key" value="1" <!--#if $disable_api_key > 0 then "checked=1" else ""#--> /> <strong>$T('opt-disableApikey')</strong></label><br>
 $T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a>

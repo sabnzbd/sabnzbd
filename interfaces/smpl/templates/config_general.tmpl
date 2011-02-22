@@ -62,6 +62,13 @@
         <input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" onclick="javascript:generateAPIKey()">
         <br class="clear" />
 
+        <label class="label">$T('opt-nzbkey'):</label> <input type="text" style="width:250px;border:none;" onclick="this.select()" id="nzbkey" value="$nzb_key">
+        <span class="tips">$T('explain-nzbkey')</span>
+        <br class="clear" />
+        <label class="label">&nbsp;</label>
+        <input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" onclick="javascript:generateNZBKey()">
+        <br class="clear" />
+
 	    <label class="label">$T('opt-disableApikey'):</label>
 	    <input class="radio" type="checkbox" name="disable_api_key" value="1" <!--#if $disable_api_key > 0 then "checked=1" else ""#--> />
 	    <span class="tips">$T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a></span></label>

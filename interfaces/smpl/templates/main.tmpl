@@ -947,6 +947,20 @@ function generateAPIKey()
     })
 }
 
+function generateNZBKey()
+{
+    session = document.getElementById('apikey').value;
+    url = "tapi?mode=config&name=set_nzbkey&session="+session;
+    var res = doSimpleXMLHttpRequest(url);
+    res.addCallback(function (res)
+    {
+        session = res.responseText;
+        document.getElementById('nzbkey').value = res.responseText;
+        document.getElementById('addNewSession1').value = res.responseText;
+        document.getElementById('addNewSession2').value = res.responseText;
+    })
+}
+
 //loads up the json for the queue page and changes the values in the document
 function loadingJSON(){
 	if (RefreshTime>0) {

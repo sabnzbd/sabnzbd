@@ -171,7 +171,9 @@ def check_session(kwargs):
 
 #------------------------------------------------------------------------------
 def check_apikey(kwargs, nokey=False):
-    """ Check api key """
+    """ Check api key or nzbkey
+        Return None when OK, otherwise an error message
+    """
     output = kwargs.get('output')
     mode = kwargs.get('mode', '')
 
@@ -180,6 +182,9 @@ def check_apikey(kwargs, nokey=False):
     # The cfg item can suppress all visible warnings
     special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
 
+    # For NZB upload calls, a separate key can be used
+    nzbkey = kwargs.get('mode', '') in ('addid', 'addurl', 'addfile', 'addlocalfile')
+
     # First check APIKEY, if OK that's sufficient
     if not (cfg.disable_key() or nokey):
         key = kwargs.get('apikey')
@@ -187,11 +192,13 @@ def check_apikey(kwargs, nokey=False):
             if not special:
                 logging.warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required')
-        elif key != cfg.api_key():
+        elif nzbkey and key == cfg.nzb_key():
+            return None
+        elif key == cfg.api_key():
+            return None
+        else:
             logging.warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect')
-        else:
-            return None
 
     # No active APIKEY, check web credentials instead
     if cfg.username() and cfg.password():
@@ -1269,6 +1276,7 @@ class ConfigGeneral(object):
         conf['refresh_rate'] = cfg.refresh_rate()
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
+        conf['nzb_key'] = cfg.nzb_key()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1335,6 +1343,16 @@ class ConfigGeneral(object):
 
         logging.debug('API Key Changed')
         cfg.api_key.set(config.create_api_key())
+        config.save_config()
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def generateNzbKey(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        logging.debug('NZB Key Changed')
+        cfg.nzb_key.set(config.create_api_key())
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 

@@ -511,6 +511,11 @@ def _api_auth(name, output, kwargs):
         auth = 'login'
     if not cfg.disable_key():
         auth = 'apikey'
+        key = kwargs.get('key', '')
+        if key == cfg.nzb_key():
+            auth = 'nzbkey'
+        if key == cfg.api_key():
+            auth = 'apikey'
     return report(output, keyword='auth', data=auth)
 
 
@@ -627,6 +632,12 @@ def _api_config_set_apikey(output, kwargs):
     config.save_config()
     return report(output, keyword='apikey', data=cfg.api_key())
 
+def _api_config_set_nzbkey(output, kwargs):
+    """ API: accepts output """
+    cfg.nzb_key.set(config.create_api_key())
+    config.save_config()
+    return report(output, keyword='nzbkey', data=cfg.nzb_key())
+
 
 def _api_config_test_server(output, kwargs):
     """ API: accepts output, server-parms """
@@ -701,6 +712,7 @@ _api_config_table = {
     'set_colorscheme'  : _api_config_set_colorscheme,
     'set_pause'        : _api_config_set_pause,
     'set_apikey'       : _api_config_set_apikey,
+    'set_nzbkey'       : _api_config_set_nzbkey,
     'test_server'      : _api_config_test_server
 }
 

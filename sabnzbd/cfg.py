@@ -206,6 +206,7 @@ no_penalties = OptionBool('misc', 'no_penalties', False)
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
 api_key = OptionStr('misc', 'api_key', create_api_key())
+nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False)
 api_warnings = OptionBool('misc', 'api_warnings', True)
 

@@ -17,7 +17,7 @@ jQuery(document).ready(function($){
 	$("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
 		innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
 	});
-	
+
 	// jqueryui tabs/buttons
 	$('.juiButton').button();
 	$( ".tabs" ).tabs({
@@ -27,20 +27,20 @@ jQuery(document).ready(function($){
 	});
 	$(".vertical-tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
 	$(".vertical-tabs li").removeClass('ui-corner-top').addClass('ui-corner-left');
-		
+
 	// kludge for jqueryui tabs, using cookie option above for some reason does not select the default 1st tab
 	$('.tabs').each(function(index) {
 	    if (!$(this).children('ul.ui-tabs-nav').children('li.ui-tabs-selected').length)
 	    	$(this).tabs('select',0);
 	});
-    
+
 	// kludge for jqueryui tabs, clicking for an existing tab doesnt switch to it
 	$('#activeFeedLink').click(function(){
 		// tab-feed focus
 		$( ".tabs" ).tabs("select",1)
 		return false;
 	});
-	
+
     switch(config_pane) {
 
 		// not a config page, rather queued nzb file listing page
@@ -92,33 +92,33 @@ jQuery(document).ready(function($){
 	        // click filenames to select
 	        $('#config_content .nzoTable .nzf_row').click(function(event) {
 	            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked')).trigger('change');
-	            
+
 	            // range event interaction -- see further above
 	            if (last1) last2 = last1;
 	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 	        });
 
-			// 
+			//
 			$('#config_content .nzoTable .nzf_row input').change(function(e){
 				if ($(e.target).attr('checked'))
 					$(e.target).parent().parent().addClass("nzo_highlight");
 				else
 					$(e.target).parent().parent().removeClass("nzo_highlight");
 			});
-	        
+
 	        // set highlighted property for checked rows upon reload
 			$('#config_content .nzoTable .nzf_row input:checked').parent().parent().addClass("nzo_highlight");
 
 	        return; // skip the rest of the config methods
 			break;
-        
-        
+
+
         case 'Connections':
         	$('#logging_level').change(function(event){
 				window.location = './change_loglevel?loglevel='+$(event.target).val()+'&session='+apikey;
 			});
 			break;
-        
+
         case 'General':
 			$('#apikey').click(function(){ $('#apikey').select() });
 			$('#generate_new_apikey').click(function(){
@@ -129,6 +129,19 @@ jQuery(document).ready(function($){
 						data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
 						success: function(msg){
 							$('#apikey,#session').val(msg);
+							window.location.reload();
+						}
+					});
+				}
+			});
+			$('#generate_new_nzbkey').click(function(){
+				if (confirm($(this).attr('rel'))) {
+					$.ajax({
+						type: "POST",
+						url: "../../tapi",
+						data: {mode:'config', name:'set_nzbkey', apikey: $('#apikey').val()},
+						success: function(msg){
+							$('#nzbkey,#session').val(msg);
 							window.location.reload();
 						}
 					});
@@ -215,7 +228,7 @@ jQuery(document).ready(function($){
 				return confirm($('#test_email').attr('rel'));
 		    });
 		    break;
-        	
+
         case 'Index Sites':
         	$('#getBookmarks').click(function(){ window.location='getBookmarks?session='+apikey; });
         	$('#hideBookmarks').click(function(){ window.location='hideBookmarks?session='+apikey; });
@@ -227,7 +240,7 @@ jQuery(document).ready(function($){
             break;
 
     };
-    
+
     // page's save button for those pages that use it
     $('#save').click(function(){
 		window.onbeforeunload = null;
