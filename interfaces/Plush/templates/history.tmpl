@@ -9,7 +9,7 @@
         <!--#if $loadavg#-->
         $.plush.SetLoadavg("$loadavg");
         <!--#end if#-->
-        $.plush.SetHistoryStats("<!--#if $day_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$day_size</strong>&nbsp;$T('today')<!--#end if #--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('total')<!--#end if #-->");
+        $.plush.SetHistoryStats("<!--#if $day_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$day_size</strong>&nbsp;$T('today')<!--#end if #--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('thisMonth')<!--#end if #--><!--#if $total_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('total')<!--#end if #-->");
 	});
 
 </script>
@@ -38,7 +38,7 @@
 			        <td>$compl</td>
 			        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
 			        <td>$line.size</td><td>$Tx('post-'+$line.status)</td>
-			
+
 			        </tr>
 			</table>
 			<br/><br/>
