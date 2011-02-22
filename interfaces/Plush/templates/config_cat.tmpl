@@ -24,8 +24,8 @@
 			<!--#if $cur == 1#-->
 			    <tr>
 			        <th align="center">$T('category')</th>
-			        <th align="center">$T('mode')</th>
 			        <th align="center">$T('priority')</th>
+			        <th align="center">$T('mode')</th>
 			        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
 			        <th align="center">$T('catFolderPath')</th>
 			        <th align="center">$T('catTags')</th>
@@ -47,18 +47,6 @@
 		        </td>
 
 		        <td>
-		            <select name="pp">
-						<!--#if $slot.name != '*'#-->
-			                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
-						<!--#end if#-->
-		                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
-		                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
-		                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
-		                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
-		            </select>
-		        </td>
-
-		        <td>
 		            <select name="priority">
 						<!--#if $slot.name != '*'#-->
 			                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
@@ -70,13 +58,23 @@
 		            </select>
 		        </td>
 
+		        <td>
+		            <select name="pp">
+						<!--#if $slot.name != '*'#-->
+			                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+						<!--#end if#-->
+		                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
+		                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
+		                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
+		                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
+		            </select>
+		        </td>
+
 		        <!--#if $script_list#-->
 		        <td>
 		            <select name="script">
 		            <!--#for $sc in $script_list#-->
-		                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
-			                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-				        <!--#end if#-->
+		                <option value="$sc" <!--#if $cur == 1 and $sc.lower() != "none"#-->disabled<!--#else if $cur == 1 or $slot.script.lower() == $sc.lower()#-->selected<!--#end if#-->>$sc</option>
 		            <!--#end for#-->
 		            </select>
 		        </td>
