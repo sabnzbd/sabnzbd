@@ -38,14 +38,6 @@
 				<tr class="odd"><td><strong>$T('status')</strong></td><td>$Tx('post-'+$line.status)</td></tr>
 
 	            <!--#set $oddLine = not False#-->
-	            <!--#for $stage in $line.stage_log#-->
-	                <!--#set $oddLine = not $oddLine#-->
-	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$Tx('stage-'+$stage.name.title.lower())</b></td><td>
-	                <!--#for $action in $stage.actions#-->
-	                	$action<br/>
-                    <!--#end for#-->
-					</td></tr>
-	            <!--#end for#-->
 	            <!--#if $line.category#-->
 	                <!--#set $oddLine = not $oddLine#-->
 	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$T('category')</b></td><td>$line.category</td></tr>
@@ -54,6 +46,14 @@
 	                <!--#set $oddLine = not $oddLine#-->
 	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$T('msg-path')</b></td><td>$line.storage</td></tr>
 	            <!--#end if#-->
+	            <!--#for $stage in $line.stage_log#-->
+	                <!--#set $oddLine = not $oddLine#-->
+	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$Tx('stage-'+$stage.name.title.lower())</b></td><td>
+	                <!--#for $action in $stage.actions#-->
+	                	$action<br/>
+                    <!--#end for#-->
+					</td></tr>
+	            <!--#end for#-->
 			</table>
 		</div>
 		</div>

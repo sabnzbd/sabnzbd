@@ -938,7 +938,7 @@ jQuery(function($){
 				$("#historyTable .modal-detail").colorbox({ inline:true,
 					href: function(){return "#details-"+$(this).parent().parent().attr('id');},
 					title:function(){return $(this).text();},
-					innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+					innerWidth:"80%", innerHeight:"300px", initialWidth:"80%", initialHeight:"300px", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
 				if ($.plush.histPerPage=="1") // disabled history
