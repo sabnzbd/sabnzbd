@@ -108,6 +108,7 @@ class URLGrabber(Thread):
                 opener.addheader('Accept-encoding','gzip')
                 filename = None
                 category = None
+                length = 0
                 nzo_info = {}
                 try:
                     fn, header = opener.retrieve(url)
@@ -129,6 +130,8 @@ class URLGrabber(Thread):
                             filename = value
                             if not filename.endswith('.nzb'):
                                 filename += '.nzb'
+                        elif item in ('content-length',):
+                            length = misc.int_conv(value)
 
                         if not filename:
                             for item in tup:
@@ -178,8 +181,8 @@ class URLGrabber(Thread):
                         NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     elif res == -2:
                         self.add(url, future_nzo)
-                    elif matrix_id:
-                        # Keep retrying NzbMatrix forever
+                    elif matrix_id and length > 0:
+                        # Keep retrying NzbMatrix forever (if file not empty)
                         self.add(url, future_nzo)
                     else:
                         misc.bad_fetch(future_nzo, url, retry=True, content=True)
