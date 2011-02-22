@@ -701,10 +701,7 @@ class NzbObject(TryList):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
 
         # Pause job when above size limit
-        if accept > 1:
-            limit = 1
-        else:
-            limit = cfg.SIZE_LIMIT.get_int()
+        limit = cfg.SIZE_LIMIT.get_int()
         if not reuse and limit and self.bytes > limit:
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
@@ -718,8 +715,8 @@ class NzbObject(TryList):
             self.priority = NORMAL_PRIORITY
 
         if self.priority == PAUSED_PRIORITY:
-            self.priority = NORMAL_PRIORITY
             self.pause()
+            self.priority = NORMAL_PRIORITY
 
         if reuse:
             self.check_existing_files(wdir)

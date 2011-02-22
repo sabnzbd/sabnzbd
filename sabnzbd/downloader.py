@@ -551,9 +551,9 @@ class Downloader(Thread):
                         nw.lines = None
 
                         logging.info('Thread %s@%s:%s: Article ' + \
-                                        '%s missing',
+                                        '%s missing (error=%s)',
                                         nw.thrdnum, nw.server.host,
-                                        nw.server.port, article.article)
+                                        nw.server.port, article.article, code)
 
                     elif code == '480':
                         if server.active:
