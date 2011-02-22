@@ -75,7 +75,7 @@
             <div class="icon_history_verbose main_sprite_container sprite_hv_star hvFaded">&nbsp;</div>
         <!--#end if#-->
 	    <!--#if $line.size or $line.category or $line.path or $line.storage#-->
-	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<br><br><!--#end if#--><!--#if $line.category#-->$T('category'): $line.category<br><br><!--#end if#--><!--#if $line.path#-->$T('Plush-path'):<br><!--#echo $line.path.replace("'","&rsquo;") #--><br><br><!--#end if#--><!--#if $line.storage#-->$T('Plush-storage'):<br><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
+	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<!--#end if#--><!--#if $line.category#--><br>$T('category'): $line.category<!--#end if#-->'>&nbsp;</div>
 	    <!--#else#-->
 	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats hvFaded">&nbsp;</div>
 	    <!--#end if#-->
