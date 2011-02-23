@@ -989,10 +989,14 @@ def main():
                 cherrypy.process.servers.check_port(cherryhost, https_port)
             except IOError, error:
                 Bail_Out(browserhost, cherryport)
+            except:
+                Bail_Out(browserhost, cherryport, '49')
         try:
             cherrypy.process.servers.check_port(cherryhost, cherryport)
         except IOError, error:
             Bail_Out(browserhost, cherryport)
+        except:
+            Bail_Out(browserhost, cherryport, '49')
 
     # Windows instance is reachable through registry
     url = None
@@ -1024,6 +1028,9 @@ def main():
                             https_port = newport
                         else:
                             http_port = newport
+        except:
+            Bail_Out(browserhost, cherryport, '49')
+
     ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
@@ -1038,6 +1045,8 @@ def main():
                 if port > 0:
                     sabnzbd.cfg.cherryport.set(port)
                     cherryport = port
+    except:
+        Bail_Out(browserhost, cherryport, '49')
 
 
     if cherrypylogging is None:
