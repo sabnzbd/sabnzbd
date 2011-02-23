@@ -336,7 +336,7 @@ class RSSQueue(object):
                             myScript = reScripts[n]
                         elif not (notdefault(reCats[n]) or category):
                             myScript = catScript
-                        if rePrios[n] != str(DEFAULT_PRIORITY):
+                        if rePrios[n] not in (str(DEFAULT_PRIORITY), ''):
                             myPrio = rePrios[n]
                         elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
