@@ -288,7 +288,6 @@ data_files = [
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
          'ISSUES.txt',
-         'nzbmatrix.txt',
          'nzb.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
