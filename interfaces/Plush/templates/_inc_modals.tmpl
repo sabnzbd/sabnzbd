@@ -14,7 +14,6 @@
 			<p><small>$T('yourRights')</small></p>
 		</div>
 
-	#if $pane=="Main"#
 		<div id="plush_options_modal">
 
 			<p><a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
@@ -51,10 +50,12 @@
            	<span id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</span>
 		</div>
 
+#if $pane=="Main"#
+
 		<div id="add_nzb_modal">
 			<input type="text" id="addID_input" size="31" />
 			<input type="submit" id="addID" value="$T('Plush-fetch')" class="juiButton" />
-			<br/><br/>
+			<div id="add_nzb_hr"><hr></div>
 		    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 			    <input type="hidden" name="apikey" value="$session" />
    				<input type="hidden" name="mode" value="addfile" />
@@ -62,9 +63,9 @@
 				<input type="submit" value="Upload" class="juiButton" />
 				<span id="uploadingSpinner" class="loading" style="display:none">&nbsp;</span>
 				<br/><i>$T('Plush-uploadTip')</i>
-				<br/><br/>
+  			<div id="add_nzb_hr"><hr></div>
 				<i>$T('pp'):</i>
-				<table>
+				<table id="add_nzb_pp">
 					#if $cat_list#
 					<tr><td style="text-align:right">$T('category'):</td>
 						<td><select id="addID_cat" name="cat">
@@ -102,8 +103,7 @@
 					</td></tr>
 					#end if#
             	</table>
-
-				<br/>
+        <div id="add_nzb_hr"><hr></div>
 				<i>$T('Plush-addnzb-filename'):</i><br/>
 			    <input type="text" name="nzbname" id="addID_nzbname" size="38" />
 
@@ -142,7 +142,7 @@
 			<input type="submit" id="delete_nzb_modal_remove_files" value="$T('removeNZB-Files')" class="juiButton" />
 		</div>
 
-	#end if#
+#end if#
 
 	</div>
 

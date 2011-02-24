@@ -1,4 +1,9 @@
-#if $pane!="Main"#
+#if $pane=="Main"#
+<!-- start Main footer-->
+#else if $pane=="Nzo"
+<!-- start Nzo footer -->
+#else#
+<!-- start other footer -->
 		#if $pane!="Connections" and $pane !="RSS"#</div>#end if#
 			</div>
 			<div class="clearfix"></div>
@@ -8,5 +13,6 @@
 
 #include $webdir + "/_inc_modals.tmpl"#
 
+</div> <!-- close for the master-width div -->
 </body>
 </html>

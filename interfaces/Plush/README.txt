@@ -1,5 +1,5 @@
 
-Plush for SABnzbd+ 0.6.x | Dec 22 2010
+Plush for SABnzbd+ 0.6.x | Feb. 21 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 http://forums.sabnzbd.org contributions welcome
 

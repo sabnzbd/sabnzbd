@@ -179,48 +179,17 @@ jQuery(document).ready(function($){
         	break;
 
         case 'RSS':
-			/*
-        	$(':checkbox').click(function(event){ // toggle feed
-				$(event.target).parents('form:first').attr('action','toggle_rss_feed').submit();
-				return false;
-			});
-        	$('#config_content .EntryFieldSet .preview_feed').click(function(event){
-				$.fn.colorbox({
-					href:'test_rss_feed?'+$(event.target).parents('form:first').serialize(),
-					innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7
-				});
-				return false;
-			});
-			$(document).bind('cbox_complete', function(){
-				$('#cboxTitle').text( $('#cboxLoadedContent h3').text() );
-				$('#cboxLoadedContent input, #cboxLoadedContent h3').hide(); // hide back button, title
-				$('#cboxLoadedContent a').click(function(event){
-					if( $(event.target).attr('target') != '_blank' ) {
-						$.ajax({ url: $(event.target).attr('href') }); // ajax downloads
-						$(event.target).replaceWith('Download');
-						return false;
-					}
-				});
-			});
-        	$('#config_content .EntryFieldSet .download_feed').click(function(event){
-				if(confirm($(event.target).attr('rel'))) {
-					$.fn.colorbox({
-						href:'download_rss_feed?'+$(event.target).parents('form:first').serialize(),
-						innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7
-					});
-				}
-				return false;
-			});
-        	$('#config_content .EntryFieldSet .delete_feed').click(function(event){
-				if(confirm($(event.target).attr('rel')))
-					$(event.target).parents('form:first').attr('action','del_rss_feed').submit();
-				return false;
-			});
-        	$('#config_content .EntryFieldSet .filter_order').change(function(event){ // update filter order
-        		window.onbeforeunload = null;
-				window.location = $(event.target).val()+'&session='+apikey;
-			});
-			*/
+        
+        	$('.toggleFeedCheckbox').click(function(){	// enable/disable feed
+        		window.onbeforeunload = null; // lose data?
+        		this.form.action='toggle_rss_feed?session=$session';
+        		this.form.submit();
+        		return false;
+        	});
+        	$('.rssOrderSelect').change(function(){		// change filter order
+        		window.onbeforeunload = null; // lose data?
+        		location = this.options[this.selectedIndex].value;
+        	});
 			break;
 
         case 'Email':

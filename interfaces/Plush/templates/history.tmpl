@@ -29,39 +29,32 @@
 
 		<div style="display:none">
 			<div id="details-$line.nzo_id">
-			<table width="100%">
-			    <tr><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th></tr>
-			<%
-			compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S'))
-			%>
-			        <tr>
-			        <td>$compl</td>
-			        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
-			        <td>$line.size</td><td>$Tx('post-'+$line.status)</td>
 
-			        </tr>
+			<table width="100%" class="rssTable">
+				<% compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S')) %>
+				<tr><td><strong>$T('completed')</strong></td><td>$compl</td></tr>
+				<tr class="odd"><td><strong>$T('name')</strong></td><td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td></tr>
+				<tr><td><strong>$T('size')</strong></td><td>$line.size</td></tr>
+				<tr class="odd"><td><strong>$T('status')</strong></td><td>$Tx('post-'+$line.status)</td></tr>
+
+	            <!--#set $oddLine = not False#-->
+	            <!--#if $line.category#-->
+	                <!--#set $oddLine = not $oddLine#-->
+	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$T('category')</b></td><td>$line.category</td></tr>
+	            <!--#end if#-->
+	            <!--#if $line.storage#-->
+	                <!--#set $oddLine = not $oddLine#-->
+	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$T('msg-path')</b></td><td>$line.storage</td></tr>
+	            <!--#end if#-->
+	            <!--#for $stage in $line.stage_log#-->
+	                <!--#set $oddLine = not $oddLine#-->
+	                <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$Tx('stage-'+$stage.name.title.lower())</b></td><td>
+	                <!--#for $action in $stage.actions#-->
+	                	$action<br/>
+                    <!--#end for#-->
+					</td></tr>
+	            <!--#end for#-->
 			</table>
-			<br/><br/>
-
-            <!--#set $oddLine = not False#-->
-            <!--#for $stage in $line.stage_log#-->
-                <!--#set $oddLine = not $oddLine#-->
-                <dt><b>$Tx('stage-'+$stage.name.title.lower())</b></dt>
-                <!--#for $action in $stage.actions#-->
-                     <dd>$action</dd>
-                            <!--#end for#-->
-                     <br />
-            <!--#end for#-->
-            <!--#if $line.category#-->
-                <dt><b>$T('category')</b></dt>
-                <dd>$line.category</dd>
-                <br />
-            <!--#end if#-->
-            <!--#if $line.storage#-->
-                <dt><b>$T('msg-path')</b></dt>
-                <dd>$line.storage</dd>
-                <br />
-            <!--#end if#-->
 		</div>
 		</div>
 
@@ -82,7 +75,7 @@
             <div class="icon_history_verbose main_sprite_container sprite_hv_star hvFaded">&nbsp;</div>
         <!--#end if#-->
 	    <!--#if $line.size or $line.category or $line.path or $line.storage#-->
-	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<br><br><!--#end if#--><!--#if $line.category#-->$T('category'): $line.category<br><br><!--#end if#--><!--#if $line.path#-->$T('Plush-path'):<br><!--#echo $line.path.replace("'","&rsquo;") #--><br><br><!--#end if#--><!--#if $line.storage#-->$T('Plush-storage'):<br><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
+	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<!--#end if#--><!--#if $line.category#--><br>$T('category'): $line.category<!--#end if#-->'>&nbsp;</div>
 	    <!--#else#-->
 	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats hvFaded">&nbsp;</div>
 	    <!--#end if#-->

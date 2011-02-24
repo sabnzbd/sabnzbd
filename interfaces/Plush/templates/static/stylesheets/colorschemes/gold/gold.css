@@ -219,8 +219,24 @@ body {
 	width:190px;
 }
 
+#add_nzb_pp td{
+  padding: 5px;
+}
 
+#add_nzb_hr {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
 
+#add_nzb_hr hr {
+  height: 1px;
+  border: 0;
+  color: #B1B1B1;
+  background-color: #B1B1B1;
+  width: 95%;
+  text-align: left;
+  margin: 0 auto 0 0;
+}
 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -249,11 +265,11 @@ body {
     height: 30px;  
 }
 .navigation ul#navigation_menu_left {  
-    margin-left:110px;
+    margin-left:108px; 
     float:left;
 }
 .navigation ul#navigation_menu_right {  
-    margin-right:110px;
+    margin-right:108px;
     float:right;
 }
     
@@ -488,10 +504,16 @@ body {
  
 #page-wrap {
 	clear:both;
+	margin-left: 98px;
+	margin-right: 98px;
+}
+
+#master-width {
+	clear:both;
 	margin: 0px auto;
 	width: 90%; 
 }
- 
+
 .box_banner_hr {
 	background-repeat: repeat-x;
 	height: 4px;
