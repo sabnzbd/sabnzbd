@@ -1766,6 +1766,16 @@ class ConfigRss(object):
         raise rssRaiser(self.__root, kwargs)
 
 
+    @cherrypy.expose
+    def rss_now(self, *args, **kwargs):
+        """ Run an automatic RSS run now """
+        msg = check_session(kwargs)
+        if msg: return msg
+        scheduler.force_rss()
+        raise rssRaiser(self.__root, kwargs)
+
+
+
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
                   'pause_post', 'resume_post', 'scan_folder', 'rss_scan')

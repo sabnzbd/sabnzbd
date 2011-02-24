@@ -385,6 +385,12 @@ def plan_server(action, parms, interval):
     """
     __SCHED.add_single_task(action, '', interval*60, kronos.method.sequential, parms, None)
 
+#------------------------------------------------------------------------------
+def force_rss():
+    """ Add a one-time RSS scan, one second from now
+    """
+    __SCHED.add_single_task(rss.run_method, 'RSS', 1, kronos.method.sequential, None, None)
+
 
 #------------------------------------------------------------------------------
 # Scheduler Guarding system

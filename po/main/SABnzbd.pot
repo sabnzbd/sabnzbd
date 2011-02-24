@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-02-22 21:33+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-02-24 21:40+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -44,11 +44,11 @@ msgstr ""
 msgid "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"
 msgstr ""
 
-#: SABnzbd.py:1244 [Warning message]
+#: SABnzbd.py:1256 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr ""
 
-#: SABnzbd.py:1454 # SABnzbdDelegate.py:732
+#: SABnzbd.py:1470 # SABnzbdDelegate.py:732
 msgid "SABnzbd shutdown finished"
 msgstr ""
 
@@ -246,11 +246,11 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: sabnzbd/api.py:1407 # sabnzbd/interface.py:2174
+#: sabnzbd/api.py:1407 # sabnzbd/interface.py:2184
 msgid "WARNING:"
 msgstr ""
 
-#: sabnzbd/api.py:1407 # sabnzbd/interface.py:2174 # sabnzbd/interface.py:2281
+#: sabnzbd/api.py:1407 # sabnzbd/interface.py:2184 # sabnzbd/interface.py:2291
 msgid "ERROR:"
 msgstr ""
 
@@ -512,77 +512,77 @@ msgstr ""
 msgid "Feed"
 msgstr ""
 
-#: sabnzbd/interface.py:1783 # sabnzbd/skintext.py:78
+#: sabnzbd/interface.py:1793 # sabnzbd/skintext.py:78
 msgid "Daily"
 msgstr ""
 
-#: sabnzbd/interface.py:1784 # sabnzbd/skintext.py:79
+#: sabnzbd/interface.py:1794 # sabnzbd/skintext.py:79
 msgid "Monday"
 msgstr ""
 
-#: sabnzbd/interface.py:1785 # sabnzbd/skintext.py:80
+#: sabnzbd/interface.py:1795 # sabnzbd/skintext.py:80
 msgid "Tuesday"
 msgstr ""
 
-#: sabnzbd/interface.py:1786 # sabnzbd/skintext.py:81
+#: sabnzbd/interface.py:1796 # sabnzbd/skintext.py:81
 msgid "Wednesday"
 msgstr ""
 
-#: sabnzbd/interface.py:1787 # sabnzbd/skintext.py:82
+#: sabnzbd/interface.py:1797 # sabnzbd/skintext.py:82
 msgid "Thursday"
 msgstr ""
 
-#: sabnzbd/interface.py:1788 # sabnzbd/skintext.py:83
+#: sabnzbd/interface.py:1798 # sabnzbd/skintext.py:83
 msgid "Friday"
 msgstr ""
 
-#: sabnzbd/interface.py:1789 # sabnzbd/skintext.py:84
+#: sabnzbd/interface.py:1799 # sabnzbd/skintext.py:84
 msgid "Saturday"
 msgstr ""
 
-#: sabnzbd/interface.py:1790 # sabnzbd/skintext.py:85
+#: sabnzbd/interface.py:1800 # sabnzbd/skintext.py:85
 msgid "Sunday"
 msgstr ""
 
-#: sabnzbd/interface.py:2166
+#: sabnzbd/interface.py:2176
 msgid "&nbsp;Resolving address"
 msgstr ""
 
-#: sabnzbd/interface.py:2281
+#: sabnzbd/interface.py:2291
 msgid "Incorrect parameter"
 msgstr ""
 
-#: sabnzbd/interface.py:2281 # sabnzbd/interface.py:2307
-#: sabnzbd/interface.py:2331 # sabnzbd/interface.py:2348
-#: sabnzbd/interface.py:2433 # sabnzbd/interface.py:2452 # sabnzbd/skintext.py:96 [Generic "Back" button]
+#: sabnzbd/interface.py:2291 # sabnzbd/interface.py:2317
+#: sabnzbd/interface.py:2341 # sabnzbd/interface.py:2358
+#: sabnzbd/interface.py:2443 # sabnzbd/interface.py:2462 # sabnzbd/skintext.py:96 [Generic "Back" button]
 msgid "Back"
 msgstr ""
 
-#: sabnzbd/interface.py:2348
+#: sabnzbd/interface.py:2358
 msgid "Job \"%s\" was re-added to the queue"
 msgstr ""
 
-#: sabnzbd/interface.py:2433
+#: sabnzbd/interface.py:2443
 msgid "Jobs marked with a '*' will not be automatically downloaded."
 msgstr ""
 
-#: sabnzbd/interface.py:2433 # sabnzbd/skintext.py:469 [Config->RSS section header]
+#: sabnzbd/interface.py:2443 # sabnzbd/skintext.py:469 [Config->RSS section header]
 msgid "Matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2434
+#: sabnzbd/interface.py:2444
 msgid "Not matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2434 # sabnzbd/skintext.py:471 [Config->RSS section header]
+#: sabnzbd/interface.py:2444 # sabnzbd/skintext.py:471 [Config->RSS section header]
 msgid "Downloaded"
 msgstr ""
 
-#: sabnzbd/interface.py:2452
+#: sabnzbd/interface.py:2462
 msgid "Downloaded so far"
 msgstr ""
 
-#: sabnzbd/interface.py:2494
+#: sabnzbd/interface.py:2504
 msgid "Incorrect value for %s: %s"
 msgstr ""
 
@@ -1037,35 +1037,35 @@ msgstr ""
 msgid "Empty NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:715 [Warning message]
+#: sabnzbd/nzbstuff.py:712 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:892 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:889 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:894 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:891 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:896 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:893 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:948
+#: sabnzbd/nzbstuff.py:945
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:952
+#: sabnzbd/nzbstuff.py:949
 msgid "%s articles were malformed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:956
+#: sabnzbd/nzbstuff.py:953
 msgid "%s articles were missing"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:985 [Error message]
+#: sabnzbd/nzbstuff.py:982 [Error message]
 msgid "Error importing %s"
 msgstr ""
 
@@ -2611,7 +2611,7 @@ msgid "Settings"
 msgstr ""
 
 #: sabnzbd/skintext.py:475 [Config->RSS button]
-msgid "RSS Details"
+msgid "Read now"
 msgstr ""
 
 #: sabnzbd/skintext.py:478
@@ -3623,11 +3623,11 @@ msgstr ""
 msgid "Failed to rename similar file: %s to %s"
 msgstr ""
 
-#: sabnzbd/urlgrabber.py:257
+#: sabnzbd/urlgrabber.py:260
 msgid "Problem accessing nzbmatrix server (%s)"
 msgstr ""
 
-#: sabnzbd/urlgrabber.py:268
+#: sabnzbd/urlgrabber.py:271
 msgid "Invalid nzbmatrix report number %s"
 msgstr ""
 
