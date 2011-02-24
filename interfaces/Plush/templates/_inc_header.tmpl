@@ -26,36 +26,60 @@
 
 #if $pane=="Main"#
     <script type="text/javascript" src="${path}static/javascripts/plush.js?$version"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
 	    jQuery(function($){
         	$.plush.apikey = "$session";
         	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
         	$.plush.Tnext = "$T('Plush-next')";
         	$.plush.Tconfirmation = "$T('Plush-confirm')";
         	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
-			$.plush.Init();		// Initialize Plush UI
-			$.plush.Refresh();	// Initiate Plush refresh cycle
-		});
+          $.plush.Init();		// Initialize Plush UI
+          $.plush.Refresh();	// Initiate Plush refresh cycle
+      });
     </script>
 #else if $pane=="Nzo"#
     <script type="text/javascript" src="${path}static/javascripts/config.js?$version"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
         var config_pane = "NZO"; // re-uses config's js/css
-		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+		    var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+    </script>
+    <script type="text/javascript" src="${path}static/javascripts/plush.js?$version"></script>
+    <script type="text/javascript">
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
+        	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
+          $.plush.Init();		// Initialize Plush UI
+          $.plush.Refresh();	// Initiate Plush refresh cycle
+      });
     </script>
 #else#
     <script type="text/javascript" src="${path}static/javascripts/config.js?$version"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";
         var apikey = "$session";
-		var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+        var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+    </script>
+    <script type="text/javascript" src="${path}static/javascripts/plush.js?$version"></script>
+    <script type="text/javascript">
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
+        	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
+          $.plush.Init();		// Initialize Plush UI
+          $.plush.Refresh();	// Initiate Plush refresh cycle
+      });
     </script>
 #end if#
 
 </head>
 <body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
-
+<div id="master-width">
 	<div class="wrapper">
 		<div class="navigation">
 			<ul class="menu" id="navigation_menu_right">

@@ -489,9 +489,14 @@ body {
 #page-wrap {
 	clear:both;
 	margin: 0px auto;
+}
+
+#master-width {
+	clear:both;
+	margin: 0px auto;
 	width: 90%; 
 }
- 
+
 .box_banner_hr {
 	background-repeat: repeat-x;
 	height: 4px;

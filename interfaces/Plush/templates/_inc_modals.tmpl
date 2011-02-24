@@ -14,7 +14,6 @@
 			<p><small>$T('yourRights')</small></p>
 		</div>
 
-	#if $pane=="Main"#
 		<div id="plush_options_modal">
 
 			<p><a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
@@ -50,6 +49,8 @@
            	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/><br/> -->
            	<span id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</span>
 		</div>
+
+#if $pane=="Main"#
 
 		<div id="add_nzb_modal">
 			<input type="text" id="addID_input" size="31" />
@@ -142,7 +143,7 @@
 			<input type="submit" id="delete_nzb_modal_remove_files" value="$T('removeNZB-Files')" class="juiButton" />
 		</div>
 
-	#end if#
+#end if#
 
 	</div>
 

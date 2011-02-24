@@ -9,7 +9,7 @@ jQuery(function($){
 		//	Plush defaults
 		
 		refreshRate:   			$.cookie('refreshRate')     ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
-		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // refresh rate in seconds
+		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // width of all elements on page
 		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 5,	// pagination - nzbs per page
 		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 5,	// pagination - nzbs per page
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
@@ -148,33 +148,33 @@ jQuery(function($){
 			// Refresh rate
 			$("#refreshRate-option").val($.plush.refreshRate).change( function() {
 				$.plush.refreshRate = $("#refreshRate-option").val();
-				$.cookie('refreshRate', $.plush.refreshRate, { expires: 365 });
+				$.cookie('refreshRate', $.plush.refreshRate, { expires: 365, path: '/'  });
 				$.plush.Refresh();
 			});
 			
-			// Refresh rate
+			// Container width
 			$("#containerWidth-option").val($.plush.containerWidth).change( function() {
 				$.plush.containerWidth = $("#containerWidth-option").val();
-				$.cookie('containerWidth', $.plush.containerWidth, { expires: 365 });
-				$('#page-wrap').css('width',$.plush.containerWidth);
+				$.cookie('containerWidth', $.plush.containerWidth, { expires: 365, path: '/' });
+				$('#master-width').css('width',$.plush.containerWidth);
 			}).trigger('change');
 			
 			// Confirm Queue Deletions toggle
 			$("#confirmDeleteQueue").attr('checked', $.plush.confirmDeleteQueue ).change( function() {
 				$.plush.confirmDeleteQueue = $("#confirmDeleteQueue").attr('checked');
-				$.cookie('confirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365 });
+				$.cookie('confirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365, path: '/'  });
 			});
 			
 			// Confirm History Deletions toggle
 			$("#confirmDeleteHistory").attr('checked', $.plush.confirmDeleteHistory ).change( function() {
 				$.plush.confirmDeleteHistory = $("#confirmDeleteHistory").attr('checked');
-				$.cookie('confirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365 });
+				$.cookie('confirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365, path: '/'  });
 			});
 			
 			// Block Refreshes on Hover toggle
 			$("#blockRefresh").attr('checked', $.plush.blockRefresh ).change( function() {
 				$.plush.blockRefresh = $("#blockRefresh").attr('checked');
-				$.cookie('blockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
+				$.cookie('blockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365, path: '/'  });
 			});
 			
 			// Sabnzbd restart
@@ -272,7 +272,7 @@ jQuery(function($){
 					$.plush.multiOpsChecks = new Array();
 					$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
 				}
-				$.cookie('multiOps', $.plush.multiOps ? 1 : 0, { expires: 365 });
+				$.cookie('multiOps', $.plush.multiOps ? 1 : 0, { expires: 365, path: '/'  });
 			});
 			if ($.plush.multiOps)
 				$('#multiops_toggle').trigger('click');
@@ -426,7 +426,7 @@ jQuery(function($){
 			$("#queue-pagination-perpage").change(function(event){
 				$.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
 				$.plush.queuePerPage = $(event.target).val();
-				$.cookie('queuePerPage', $.plush.queuePerPage, { expires: 365 });
+				$.cookie('queuePerPage', $.plush.queuePerPage, { expires: 365, path: '/'  });
 				$.plush.queueforcerepagination = true;
 				$.plush.RefreshQueue();
 			});
@@ -842,7 +842,7 @@ jQuery(function($){
 			$("#history-pagination-perpage").change(function(event){
 				$.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
 				$.plush.histPerPage = $(event.target).val();
-				$.cookie('histPerPage', $.plush.histPerPage, { expires: 365 });
+				$.cookie('histPerPage', $.plush.histPerPage, { expires: 365, path: '/'  });
 				$.plush.histforcerepagination = true;
 				if ($.plush.histPerPage=="1")
 					$("#history-pagination").html(''); // pagination rebuild not triggered on blank history (disabled)
@@ -926,7 +926,7 @@ jQuery(function($){
 			// show all / show failed
 			$('#failed_only').change(function(){
 				$.plush.failedOnly = $("#failed_only").val();
-				$.cookie('failedOnly', $.plush.failedOnly, { expires: 365 });
+				$.cookie('failedOnly', $.plush.failedOnly, { expires: 365, path: '/'  });
 				$.plush.RefreshHistory();
 			}).val($.plush.failedOnly);
 
