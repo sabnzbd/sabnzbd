@@ -265,11 +265,11 @@ body {
     height: 30px;  
 }
 .navigation ul#navigation_menu_left {  
-    margin-left:110px;
+    margin-left:108px; 
     float:left;
 }
 .navigation ul#navigation_menu_right {  
-    margin-right:110px;
+    margin-right:108px;
     float:right;
 }
     
@@ -504,7 +504,8 @@ body {
  
 #page-wrap {
 	clear:both;
-	margin: 0px auto;
+	margin-left: 98px;
+	margin-right: 98px;
 }
 
 #master-width {
