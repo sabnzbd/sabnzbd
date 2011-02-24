@@ -757,7 +757,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all',
+                                    'log-all', 'no-login',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -825,6 +825,7 @@ def main():
     force_web = False
     repair = 0
     api_url = None
+    no_login = False
     re_argv = [sys.argv[0]]
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
@@ -898,6 +899,8 @@ def main():
             pause = True
         elif opt in ('--log-all',):
             sabnzbd.LOG_ALL = True
+        elif opt in ('--no-login',):
+            no_login = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1265,6 +1268,10 @@ def main():
                 cherryport = https_port
             cherrypy.config.update({'server.ssl_certificate' : https_cert,
                                     'server.ssl_private_key' : https_key })
+
+    if no_login:
+        sabnzbd.cfg.username.set('')
+        sabnzbd.cfg.password.set('')
 
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
