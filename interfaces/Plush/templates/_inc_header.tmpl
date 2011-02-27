@@ -63,18 +63,6 @@
         var apikey = "$session";
         var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
     </script>
-    <script type="text/javascript" src="${path}static/javascripts/plush.js?$version"></script>
-    <script type="text/javascript">
-	    jQuery(function($){
-        	$.plush.apikey = "$session";
-        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
-        	$.plush.Tnext = "$T('Plush-next')";
-        	$.plush.Tconfirmation = "$T('Plush-confirm')";
-        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
-          $.plush.Init();		// Initialize Plush UI
-          $.plush.Refresh();	// Initiate Plush refresh cycle
-      });
-    </script>
 #end if#
 
 </head>
