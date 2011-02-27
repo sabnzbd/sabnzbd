@@ -242,9 +242,10 @@ SKIN_TEXT = {
     'confgFile' : TT('Config File'),
     'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'button-restart' : TT('Restart'),
-    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br/>You can choose to delete them (including files) or send them back to the queue.'),
+    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
+    'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
@@ -656,7 +657,7 @@ SKIN_TEXT = {
     'Plush-enableJavascript' : TT('You must enable JavaScript for Plush to function!'),
     'Plush-addnzb' : TT('Add NZB'),
     'Plush-button-refresh' : TT('Refresh'),
-    'Plush-options' : TT('Options'),
+    'Plush-options' : TT('Skin Preferences'),
     'Plush-plushoptions' : TT('Plush Options'),
     'Plush-updateAvailable' : TT('Update Available!'),
     'Plush-pause5m' : TT('Pause for 5 minutes'),
@@ -702,7 +703,7 @@ SKIN_TEXT = {
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
-    
+    'Plush-button-repair' : TT('Service Control'),
     'Plush-rss-delete' : TT('Delete'),
     'Plush-rss-actions' : TT('Actions'),
     'Plush-rss-deletebutton' : TT('Delete'),
@@ -712,6 +713,7 @@ SKIN_TEXT = {
     'Plush-explain-rssActions' : TT('<strong>Test Filters</strong> will refresh the feed and preview how your filter set will be applied. No new NZBs will be downloaded. Save your changes before testing.<br /> <strong>Force Filters</strong> will apply the filter set to all items in the feed, including items that existed before the feed was added.  NZBs that match the current filter set will be downloaded if they had not matched previously.'),
     'Plush-button-rssUpdate' : TT('Check All Feeds Now'),
     'Plush-button-rssAddFeedToggle' : TT('Add A New Feed'),
+    
 
 
 #smpl skin

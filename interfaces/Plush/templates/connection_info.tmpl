@@ -6,7 +6,7 @@
 	<ul>
 		<li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
 		<li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
-		<li><a href="#tabs-repair">$T('button-repair')</a></li>
+		<li><a href="#tabs-repair">$T('Plush-button-repair')</a></li>
 		<!--#if $lastmail#-->
 			<li><a href="#tabs-lastmail">$T('emailResult')</a></li>
 		<!--#end if#-->
@@ -54,6 +54,9 @@
 					<input type="submit" class="juiButton" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
 				</form>
 				</td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
+      <tr><td>
+        <a href="shutdown?session=$session" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a>
+        </td><td style="padding-left:20px;"><p>$T('explain-Shutdown')</p></td></tr>
 		</table>
 
 		<!--#if $folders#-->
@@ -125,6 +128,7 @@
 	<!--#else#-->
 		<p>$T('none')</p>
 	<!--#end if#-->
+  <a href="connections/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
 	</div>
 
 </div>
