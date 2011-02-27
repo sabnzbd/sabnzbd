@@ -117,6 +117,8 @@
                     <span class="component-title">&nbsp;</span>
 					<span class="component-desc">$T('explain-apikey')</span>
                 </label>
+            </div>
+            <div class="field-pair">
                 <label class="nocheck clearfix" for="nzbkey">
                     <span class="component-title">$T('opt-nzbkey')</span>
 					<input type="text" id="nzbkey" value="$nzb_key" class="apikey">
@@ -127,7 +129,7 @@
 					<span class="component-desc">$T('explain-nzbkey')</span>
                 </label>
             </div>
-            <div class="field-pair">
+            <div class="field-pair alt">
                 <label class="clearfix" for="disable_api_key">
 				    <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if $disable_api_key > 0 then 'checked="1"' else ""#--> />
                     <span class="component-title">$T('opt-disableApikey')</span>
