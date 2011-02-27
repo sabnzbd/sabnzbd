@@ -451,7 +451,7 @@ SKIN_TEXT = {
 # Config->RSS
     'configRSS' : TT('RSS Configuration'),
     'newFeedURI' : TT('New Feed URL'),
-    'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />The checking frequency is in the General page of the configuration.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
+    'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
     'addFeed' : TT('Add Feed'), #: Config->RSS button
     'button-delFeed' : TT('Delete Feed'),#: Config->RSS button
@@ -472,7 +472,9 @@ SKIN_TEXT = {
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
-    'button-rssNow' : TT('Read now'), #: Config->RSS button
+    'button-rssNow' : TT('Update Now'), #: Config->RSS button
+    'rss-delete' : TT('Delete'), #: Config->RSS button
+    'rss-actions' : TT('Actions'), #: Config->RSS table column header
 
 # Config->Email
     'configEmail' : TT('Email Notification'),

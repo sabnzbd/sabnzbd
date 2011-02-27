@@ -1521,6 +1521,7 @@ fieldset.EntryFieldSet {
   	background-color:#ddd;
   }
 
+.rssLeftColumn {text-align: right;}
 
 /* Vertical Tabs - adapted from http://jquery-ui.googlecode.com/svn/trunk/demos/tabs/vertical.html
 ----------------------------------
