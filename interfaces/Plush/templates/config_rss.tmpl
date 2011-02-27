@@ -411,12 +411,6 @@
 
 	<div id="tabs-downloaded">
 	    <!--#if $downloaded#-->
-			<form action="none" method="post">
-				<input type="button" class="juiButton" onclick="this.form.action='clean_rss_jobs?session=$session&'; this.form.submit(); return false;" value="$T('button-clear')"/>
-				<input type="hidden" name="feed" value="$feed"/>
-				<input type="hidden" name="session" value="$session">
-			</form>
-			<br/>
 		    <table class="rssTable">
 		        <tr>
 		            <th>$T('sort-title')</th>
@@ -428,6 +422,13 @@
 		        <td>$job</td>
 		        </tr>
 		    <!--#end for#-->
+        <tr><th>
+        <form style="display: inline" action="none" method="post">
+				<input type="button" class="juiButton" onclick="this.form.action='clean_rss_jobs?session=$session&'; this.form.submit(); return false;" value="$T('button-clear')"/>
+				<input type="hidden" name="feed" value="$feed"/>
+				<input type="hidden" name="session" value="$session">
+  			</form>
+        </th></tr>
 		    </table>
 	    <!--#else#-->
 	    	$T('none')
