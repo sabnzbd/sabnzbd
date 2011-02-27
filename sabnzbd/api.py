@@ -1383,9 +1383,7 @@ def build_header(prim):
         color = sabnzbd.WEB_COLOR
     else:
         color = sabnzbd.WEB_COLOR2
-    if color:
-        color = color + '.css'
-    else:
+    if not color:
         color = ''
 
     header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__, 'paused': Downloader.do.paused,
