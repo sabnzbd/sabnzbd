@@ -451,7 +451,7 @@ SKIN_TEXT = {
 # Config->RSS
     'configRSS' : TT('RSS Configuration'),
     'newFeedURI' : TT('New Feed URL'),
-    'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
+    'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />The checking frequency is in the General page of the configuration.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
     'addFeed' : TT('Add Feed'), #: Config->RSS button
     'button-delFeed' : TT('Delete Feed'),#: Config->RSS button
@@ -471,10 +471,8 @@ SKIN_TEXT = {
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
+    'button-rssNow' : TT('Read Now'), #: Config->RSS button
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
-    'button-rssNow' : TT('Update Now'), #: Config->RSS button
-    'rss-delete' : TT('Delete'), #: Config->RSS button
-    'rss-actions' : TT('Actions'), #: Config->RSS table column header
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
@@ -704,6 +702,17 @@ SKIN_TEXT = {
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
+    
+    'Plush-rss-delete' : TT('Delete'),
+    'Plush-rss-actions' : TT('Actions'),
+    'Plush-rss-deletebutton' : TT('Delete'),
+    'Plush-button-rssTest' : TT('Test Filters'),
+    'Plush-button-rssForce' : TT('Force Filters'),
+    'Plush-explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up future items added to the feed and ignore the current contents. View the feed\'s filters for more options.'),
+    'Plush-explain-rssActions' : TT('<strong>Test Filters</strong> will refresh the feed and preview how your filter set will be applied. No new NZBs will be downloaded. Save your changes before testing.<br /> <strong>Force Filters</strong> will apply the filter set to all items in the feed, including items that existed before the feed was added.  NZBs that match the current filter set will be downloaded if they had not matched previously.'),
+    'Plush-button-rssUpdate' : TT('Check All Feeds Now'),
+    'Plush-button-rssAddFeedToggle' : TT('Add A New Feed'),
+
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),
