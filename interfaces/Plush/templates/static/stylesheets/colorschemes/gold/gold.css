@@ -539,13 +539,13 @@ body {
 }
 
 #historySearchBox {
-	color:white;
+	color:black;
 	width:120px;
 	border:0px;
 	margin: 7px 9px 1px 1px;
 	padding-right:20px;
 	border:1px solid #444;
-	/*background-color: black;*/
+  background-color: #e5e5e5
 	/*background: url('images/sprite-main.png') no-repeat top right;
 	background-position: 0 -671px;*/
 }
