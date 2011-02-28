@@ -7,7 +7,7 @@
     <title>SABnzbd+</title>
     <link rel="stylesheet" type="text/css" href="static/stylesheets/smpl.css?smpl$version"/>
     <!--#if $color_scheme#-->
-        <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?smpl$version"/>
+        <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/${color_scheme}.css?smpl$version"/>
     <!--#else#-->
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/white.css?smpl$version"/>
     <!--#end if#-->
@@ -1042,7 +1042,7 @@ function loadingJSON(){
 
    function initDynamicTable() {
        //dataTable = data;
-       <!--#if $color_scheme  == 'black.css'#-->
+       <!--#if $color_scheme  == 'black'#-->
        options = PlotKit.Base.officeBlack();
        <!--#else #-->
        options = PlotKit.Base.officeBlue();
@@ -1055,7 +1055,7 @@ function loadingJSON(){
    function chartReload(data) {
 
 
-       <!--#if $color_scheme  == 'black.css'#-->
+       <!--#if $color_scheme  == 'black'#-->
        var colorScheme = "Black";
        <!--#else #-->
        var colorScheme = "Blue";

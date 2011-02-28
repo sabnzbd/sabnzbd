@@ -343,6 +343,8 @@ def CheckColor(color, web_dir):
     """ Check existence of color-scheme """
     if color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color+'.css')):
         return color
+    elif color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color)):
+        return color
     else:
         return ''
 
