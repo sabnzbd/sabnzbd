@@ -45,7 +45,7 @@
                     <form style="display:inline" action="del_rss_feed" method="get">
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
-                    <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('Plush-rss-deletebutton')"/>
+                    <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('Plush-rss-delete')"/>
 		                </form>
                 </td>
 		        </tr>
@@ -53,9 +53,9 @@
 		    <tfoot><tr><th colspan="4">
             <form style="display: inline" action="rss_now" method="post">
             <input type="hidden" name="session" value="$session">
-            <input class="juiButton" type="submit" value="$T('Plush-button-rssUpdate')"/>
+            <input class="juiButton" type="submit" value="$T('button-rssNow')"/>
             </form>
-  		    	<input type="submit" class="juiButton" value="$T('Plush-button-rssAddFeedToggle')" onclick="jQuery('#pane-rss-details').toggle(); jQuery('#pane-add-feed').toggle();"/>
+  		    	<input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').toggle(); jQuery('#pane-add-feed').toggle();"/>
 		    </th></tr></tfoot>
 			</table>
 		<!--#else#-->
@@ -77,7 +77,7 @@
 
 	  <div id="pane-rss-details">
     <p>
-    $T('Plush-explain-RSS')
+    $T('explain-RSS')
     </p>
 		<form action="save_rss_rate" method="post">
 			<strong>$T('opt-rss_rate'):</strong><br/>
@@ -251,7 +251,7 @@
 	            <input type="hidden" value="$fnum" name="index">
 	            <input type="hidden" value="$feed" name="feed">
 	            <input type="hidden" name="session" value="$session">
-	            <input type="submit" class="juiButton" value="$T('Plush-rss-deletebutton')"></form>
+	            <input type="submit" class="juiButton" value="$T('Plush-rss-delete')"></form>
 	        </td>
 
 	        <td><form><select class="rssOrderSelect">
@@ -323,8 +323,8 @@
 
       <tr><th colspan="100%">
             <form action="none" method="post">
-            <input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('Plush-button-rssTest')"/>
-            <input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('Plush-button-rssForce')"/>
+            <input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
+            <input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
             <input type="hidden" name="feed" value="$feed"/>
             <input type="hidden" name="session" value="$session">
             </form>
