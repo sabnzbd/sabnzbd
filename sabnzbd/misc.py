@@ -103,20 +103,18 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         pp = my_cat.pp()
         if pp == '':
             pp = def_cat.pp()
-        logging.debug('Job gets options %s', pp)
 
     if not script:
         script = my_cat.script()
         if safe_lower(script) in ('', 'default'):
             script = def_cat.script()
-        logging.debug('Job gets script %s', script)
 
     if priority is None or priority == DEFAULT_PRIORITY:
         priority = my_cat.priority()
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
-        logging.debug('Job gets priority %s', priority)
 
+    #logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
     return cat, pp, script, priority
 
 
