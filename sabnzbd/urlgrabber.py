@@ -151,7 +151,7 @@ class URLGrabber(Thread):
                     if retry_count > 0 and retry:
                         logging.info('Retry URL %s', url)
                         self.queue.put((url, future_nzo, retry_count))
-                    else:
+                    elif not del_bookmark:
                         misc.bad_fetch(future_nzo, url, msg, retry=True)
                     continue
 
