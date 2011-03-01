@@ -35,6 +35,7 @@ def test_nntp_server_dict(kwargs):
         return False, T('The hostname is not set.')
     username = kwargs.get('username', '').strip()
     password = kwargs.get('password', '').strip()
+    server = kwargs.get('server', '').strip()
     connections = int_conv(kwargs.get('connections', 0))
     if not connections:
         return False, T('There are no connections set. Please set at least one connection.')
@@ -47,20 +48,26 @@ def test_nntp_server_dict(kwargs):
             port = 119
 
 
-    return test_nntp_server(host, port, username=username, \
+    return test_nntp_server(host, port, server, username=username, \
                         password=password, ssl=ssl)
 
 
-def test_nntp_server(host, port, username=None, password=None, ssl=None):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
     timeout = 4.0
     if '*' in password and not password.strip('*'):
         # If the password is masked, try retrieving it from the config
-        servers = get_servers()
-        got_pass = False
-        for server in servers:
-            if host in server:
-                srv = servers[server]
+        if not server:
+            servers = get_servers()
+            got_pass = False
+            for server in servers:
+                if host in server:
+                    srv = servers[server]
+                    password = srv.password()
+                    got_pass = True
+        else:
+            srv = get_servers().get(server)
+            if srv:
                 password = srv.password()
                 got_pass = True
         if not got_pass:
