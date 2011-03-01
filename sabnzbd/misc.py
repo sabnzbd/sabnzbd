@@ -1041,6 +1041,8 @@ def get_filepath(path, nzo, filename):
                 break
             except:
                 pass
+        nzo.work_name = dName
+        nzo.created = True
 
     fPath = os.path.join(os.path.join(path, dName), filename)
     n = 0
