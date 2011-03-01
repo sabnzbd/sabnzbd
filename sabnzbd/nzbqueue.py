@@ -37,7 +37,7 @@ from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, J
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
-from sabnzbd.assembler import Assembler
+from sabnzbd.assembler import Assembler, file_has_articles
 from sabnzbd.utils import osx
 from sabnzbd.encoding import latin1, platform_encode
 
@@ -681,7 +681,8 @@ class NzbQueue(TryList):
                 Assembler.do.process((nzo, nzf))
 
             else:
-                logging.warning(Ta('%s -> Unknown encoding'), filename)
+                if file_has_articles(nzf):
+                    logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
             self.remove(nzo.nzo_id, add_to_history=False, cleanup=False)

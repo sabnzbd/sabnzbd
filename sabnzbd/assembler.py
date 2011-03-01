@@ -175,6 +175,21 @@ def _assemble(nzf, path, dupe):
     return path
 
 
+def file_has_articles(nzf):
+    """ Do a quick check to see if any articles are present for this file.
+        Destructive: only to be used to differentiate between unknown encoding and no articles.
+    """
+    has = False
+    decodetable = nzf.decodetable
+    for articlenum in decodetable:
+        sleep(0.01)
+        article = decodetable[articlenum]
+        data = ArticleCache.do.load_article(article)
+        if data:
+            has = True
+    return has
+
+
 # For a full description of the par2 specification, visit:
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
