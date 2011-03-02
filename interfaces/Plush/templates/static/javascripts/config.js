@@ -3,6 +3,10 @@
 
 jQuery(document).ready(function($){
 
+	// Container width
+	var containerWidth = $.cookie('containerWidth')  ? $.cookie('containerWidth')  : '100%';
+	$('#master-width').css('width',containerWidth);
+
 	// Confirm user exits without saving changes first
 	if (config_pane != 'NZO') {
 	    $(':input','form').change(function(){

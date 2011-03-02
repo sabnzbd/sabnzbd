@@ -9,7 +9,7 @@ jQuery(function($){
 		//	Plush defaults
 
 		refreshRate:   			$.cookie('refreshRate')     ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
-		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // width of all elements on page
+		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '100%',   // width of all elements on page
 		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 5,	// pagination - nzbs per page
 		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 5,	// pagination - nzbs per page
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal

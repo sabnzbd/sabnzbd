@@ -242,9 +242,10 @@ SKIN_TEXT = {
     'confgFile' : TT('Config File'),
     'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'button-restart' : TT('Restart'),
-    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br/>You can choose to delete them (including files) or send them back to the queue.'),
+    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
+    #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
@@ -471,8 +472,9 @@ SKIN_TEXT = {
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
+    'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
-    'button-rssNow' : TT('Read now'), #: Config->RSS button
+    'explain-rssActions' : TT('<strong>Test Filters</strong> will refresh the feed and preview how your filter set will be applied. No new NZBs will be downloaded. Save your changes before testing.<br /> <strong>Force Filters</strong> will apply the filter set to all items in the feed, including items that existed before the feed was added.  NZBs that match the current filter set will be downloaded if they had not matched previously.'),
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
@@ -702,6 +704,11 @@ SKIN_TEXT = {
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
+    'Plush-tab-repair' : TT('Queue repair'),
+    'Plush-rss-delete' : TT('Delete'),
+    'Plush-rss-actions' : TT('Actions'),
+    'Plush-explain-rssActions' : TT('<strong>Read Feed</strong> will get the current feed content. <strong>Force Download</strong> will download all matching NZBs now.'),
+
 
 #smpl skin
     'smpl-hourmin' : TT('Hour:Min'),

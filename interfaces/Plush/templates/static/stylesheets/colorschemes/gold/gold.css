@@ -97,16 +97,13 @@ textarea{
 }
 
 a:link,a:visited{
-	color:#fff;
+	color:#599FCF;
 	text-decoration:none;
 }
 a:hover,a:active{
   text-decoration:underline;
 }
 
-#main_menu ul{
-	color:#fff;
-}
 .box_fatbottom,
 .queueTable .eta,
 .currentDownload, 
@@ -290,6 +287,7 @@ body {
     }  
   
 .navigation ul li a {  
+	color:#fff;
 	font-weight:bold;
     display: block;  
     padding: 0 8px 0 0;  
@@ -541,13 +539,13 @@ body {
 }
 
 #historySearchBox {
-	color:white;
+	color:black;
 	width:120px;
 	border:0px;
 	margin: 7px 9px 1px 1px;
 	padding-right:20px;
 	border:1px solid #444;
-	/*background-color: black;*/
+  background-color: #e5e5e5
 	/*background: url('images/sprite-main.png') no-repeat top right;
 	background-position: 0 -671px;*/
 }
@@ -1298,7 +1296,7 @@ tr:hover .history_added { color: black; }
     #cboxBottomCenter{height:21px; background:url(images/colorbox-border.png) 0 -29px repeat-x;}
     #cboxContent{background:#fff;}
         #cboxLoadedContent{margin-top:28px;}
-        #cboxLoadedContent a{color:blue;}
+        #cboxLoadedContent a{font-weight:bold;}
         #cboxTitle{position:absolute; top:4px; left:0; text-align:center; width:100%; color:#949494; font-weight:bold;}
         #cboxCurrent{position:absolute; top:4px; left:58px; color:#fff;}
         #cboxSlideshow{position:absolute; top:4px; right:30px; color:#0092ef;}
@@ -1523,6 +1521,7 @@ fieldset.EntryFieldSet {
   	background-color:#ddd;
   }
 
+.rssLeftColumn {text-align: right;}
 
 /* Vertical Tabs - adapted from http://jquery-ui.googlecode.com/svn/trunk/demos/tabs/vertical.html
 ----------------------------------

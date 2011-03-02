@@ -6,7 +6,7 @@
 	<ul>
 		<li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
 		<li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
-		<li><a href="#tabs-repair">$T('button-repair')</a></li>
+		<li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
 		<!--#if $lastmail#-->
 			<li><a href="#tabs-lastmail">$T('emailResult')</a></li>
 		<!--#end if#-->
@@ -125,6 +125,7 @@
 	<!--#else#-->
 		<p>$T('none')</p>
 	<!--#end if#-->
+  <a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
 	</div>
 
 </div>

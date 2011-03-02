@@ -26,7 +26,7 @@
 		            <th>$T('enabled').capitalize()</th>
 		            <th>$T('feed')</th>
 		            <th>URL</th>
-		            <th></th>
+		            <th>$T('Plush-rss-delete')</th>
 		        </tr>
 		    <!--#set $odd = False#-->
 		    <!--#for $feed_item in $feeds#-->
@@ -41,38 +41,44 @@
 		            </td>
 		            <td><strong><a class="juiButton" href="?feed=$rss[$feed_item]['link']#tabs-settings" <!--#if $active_feed == $feed_item#-->id="activeFeedLink"<!--#end if#-->>$feed_item</a></strong></td>
 		            <td>$rss[$feed_item]['uri']</td>
-		            <td><form action="del_rss_feed" method="get">
+		            <td>
+                    <form style="display:inline" action="del_rss_feed" method="get">
 		                <input type="hidden" name="session" value="$session">
 		                <input type="hidden" value="$feed_item" name="feed">
-                                <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-x')"/>
+                    <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('Plush-rss-delete')"/>
 		                </form>
-		            </td>
+                </td>
 		        </tr>
 		    <!--#end for#-->
 		    <tfoot><tr><th colspan="4">
-		    	<input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').hide(); jQuery('#pane-add-feed').toggle();"/>
+            <form style="display: inline" action="rss_now" method="post">
+            <input type="hidden" name="session" value="$session">
+            <input class="juiButton" type="submit" value="$T('button-rssNow')"/>
+            </form>
+  		    	<input type="submit" class="juiButton" value="$T('addFeed')" onclick="jQuery('#pane-rss-details').toggle(); jQuery('#pane-add-feed').toggle();"/>
 		    </th></tr></tfoot>
 			</table>
-
 		<!--#else#-->
-			<h2><strong>$T('addFeed'):</strong></h2>
 		<!--#end if#-->
 
 		<br/>
-
 		<div id="pane-add-feed" <!--#if $feeds#-->style="display:none"<!--#end if#-->>
 		    <form action="add_rss_feed" method="post">
-		    	<table>
-		        	<tr><td>$T('name')</td><td><input type="text" size="10" name="feed" value="$feed"/></td></tr>
+		    	<table class="rssTable">
+		        	<tr><th colspan="2">$T('addFeed')</th></tr>
+              <tr><td>$T('name')</td><td><input type="text" size="10" name="feed" value="$feed"/></td></tr>
 		        	<tr><td>$T('newFeedURI')</td><td><input type="text" size="80" name="uri"/></td></tr>
-		        	<tr><td></td><td><input type="submit" class="juiButton" value="$T('addFeed')"/></td></tr>
+		        	<tr><th colspan="2"><input type="submit" class="juiButton" value="$T('addFeed')"/></th></tr>
 		    	</table>
 		        <input type="hidden" name="session" value="$session">
 		    </form>
 		    <br/><hr/>&nbsp;
 		</div>
 
-	    <p>$T('explain-RSS')</p>
+	  <div id="pane-rss-details">
+    <p>
+    $T('explain-RSS')
+    </p>
 		<form action="save_rss_rate" method="post">
 			<strong>$T('opt-rss_rate'):</strong><br/>
 			<small>$T('explain-rss_rate')</small><br/>
@@ -80,6 +86,7 @@
 	        <input type="hidden" name="session" value="$session"/>
 	        <input type="submit" class="juiButton" value="$T('button-save')"/>
 		</form>
+    </div>
 
     </div>
 
@@ -90,14 +97,16 @@
 	    <!--#set $feed = $active_feed#-->
 	    <form action="upd_rss_feed" method="post">
 
-			<table>
+			<table class="rssTable">
 
-				<tr><td></td><td><input type="checkbox" class="toggleFeedCheckbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()</td></tr>
+        <tr><th colspan="2">$T('feedSettings')</th></tr>
 
-				<tr><td>$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
+				<tr><td class="rssLeftColumn">$T('enabled').capitalize()</td><td><input type="checkbox" class="toggleFeedCheckbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/></td></tr>
+
+				<tr><td class="rssLeftColumn" style="vertical-align: top">$T('feed')</td><td><textarea rows="3" cols="80" name="uri">$rss[$feed]['uri']</textarea></td></tr>
 
 	            <!--#if $rss[$feed]['pick_cat']#-->
-            	<tr><td>$T('category')</td><td>
+            	<tr><td class="rssLeftColumn">$T('category')</td><td>
 	                <select name="cat">
 	                    <optgroup label="$T('category')">
 	                        <!--#for $ct in $cat_list#-->
@@ -108,7 +117,7 @@
                 </td></tr>
 	            <!--#end if#-->
 
-            	<tr><td>$T('pp')</td><td>
+            	<tr><td class="rssLeftColumn">$T('pp')</td><td>
 		            <select name="pp">
 		                <optgroup label="$T('pp')">
 		                    <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>$T('default')</option>
@@ -121,7 +130,7 @@
                 </td></tr>
 
 	            <!--#if $rss[$feed]['pick_script']#-->
-            	<tr><td>$T('script')</td><td>
+            	<tr><td class="rssLeftColumn">$T('script')</td><td>
 	                <select name="script">
 	                    <optgroup label="$T('script')">
 	                        <!--#for $sc in $script_list#-->
@@ -132,7 +141,7 @@
                 </td></tr>
 	            <!--#end if#-->
 
-            	<tr><td>$T('priority')</td><td>
+            	<tr><td class="rssLeftColumn">$T('priority')</td><td>
 		            <select name="priority">
 		                <optgroup label="$T('priority')">
 		                    <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
@@ -145,11 +154,9 @@
 		            </select>
                 </td></tr>
 
-				<tr><td></td><td>
-					<br/>
-		            <input type="submit" class="juiButton" value="$T('button-save') Settings"/>
-		        	<input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/>
-		        </td></tr>
+				      <tr><th colspan="2"><input type="submit" class="juiButton" value="$T('button-save') Settings"/>
+                  <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/>
+          		    </th></tr>
 
 	        </table>
 
@@ -166,15 +173,15 @@
 
 	    <table class="rssTable">
 	        <tr>
-	            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+	            <th>$T('Plush-rss-delete')</th>
 	            <th>$T('rss-order')</th>
 	            <th>$T('rss-type')</th>
 	            <th>$T('rss-filter')</th>
 	            <!--#if $rss[$feed]['pick_cat']#--><th>$T('category')</th><!--#end if#-->
-				<th>$T('priority')</th>
+				      <th>$T('priority')</th>
 	            <th>Mode</th>
 	            <!--#if $rss[$feed]['pick_script']#--><th>$T('script')</th><!--#end if#-->
-	            <th></th>
+	            <th>$T('Plush-rss-actions')</th>
 	        </tr>
 
 	        <form action="upd_rss_filter" method="get">
@@ -244,7 +251,7 @@
 	            <input type="hidden" value="$fnum" name="index">
 	            <input type="hidden" value="$feed" name="feed">
 	            <input type="hidden" name="session" value="$session">
-	            <input type="submit" class="juiButton" value="$T('rss-delFilter')"></form>
+	            <input type="submit" class="juiButton" value="$T('Plush-rss-delete')"></form>
 	        </td>
 
 	        <td><form><select class="rssOrderSelect">
@@ -314,29 +321,35 @@
 	        <!--#set $fnum = $fnum+1#-->
 	    <!--#end for#-->
 
-	    </table>
-
-		<br/>
-	    <form action="none" method="post">
-        	<input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
-        	<input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
+      <tr><th colspan="100%">
+            <form action="none" method="post">
+            <input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
+            <input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
             <input type="hidden" name="feed" value="$feed"/>
             <input type="hidden" name="session" value="$session">
-		</form>
-		<br/><br/>
+            </form>
+          </th>
+        </tr>
+	    </table>
+
+    <p>
+    $T('Plush-explain-rssActions')
+    </p>
+
 
 		<!--#if $error#-->
-			<b>$error</b><br/><br/>
+			<br /><b>$error</b><br/><br/>
 		<!--#end if#-->
+
 
 		<h1>$T('rss-matched') (<!--#echo len($matched)#-->)</h1>
 
 	    <!--#if $matched#-->
 		    <table class="rssTable">
 		        <tr>
-		            <th>&nbsp;</th>
-		            <th>&nbsp;$T('rss-skip')&nbsp;</th>
-		            <th>&nbsp;$T('rss-filter')&nbsp;</th>
+		            <th>$T('link-download')</th>
+		            <th>$T('rss-skip')</th>
+		            <th>$T('rss-filter')</th>
 		            <th>$T('sort-title')</th>
 		        </tr>
 		    <!--#set $odd = False#-->
@@ -398,12 +411,6 @@
 
 	<div id="tabs-downloaded">
 	    <!--#if $downloaded#-->
-			<form action="none" method="post">
-				<input type="button" class="juiButton" onclick="this.form.action='clean_rss_jobs?session=$session&'; this.form.submit(); return false;" value="$T('button-clear')"/>
-				<input type="hidden" name="feed" value="$feed"/>
-				<input type="hidden" name="session" value="$session">
-			</form>
-			<br/>
 		    <table class="rssTable">
 		        <tr>
 		            <th>$T('sort-title')</th>
@@ -415,6 +422,13 @@
 		        <td>$job</td>
 		        </tr>
 		    <!--#end for#-->
+        <tr><th>
+        <form style="display: inline" action="none" method="post">
+				<input type="button" class="juiButton" onclick="this.form.action='clean_rss_jobs?session=$session&'; this.form.submit(); return false;" value="$T('button-clear')"/>
+				<input type="hidden" name="feed" value="$feed"/>
+				<input type="hidden" name="session" value="$session">
+  			</form>
+        </th></tr>
 		    </table>
 	    <!--#else#-->
 	    	$T('none')
