@@ -708,6 +708,10 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
+        if duplicate and cfg.no_dupes() == 1:
+            logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
+            raise TypeError
+
         if duplicate or self.priority == DUP_PRIORITY:
             logging.warning(Ta('Pausing duplicate NZB "%s"'), filename)
             self.duplicate = True

@@ -56,9 +56,11 @@
 		    <span class="tips">$T('explain-pause_on_pwrar')</span></label>
 		<br class="clear" />
 
-		    <label><span class="label">$T('opt-no_dupes'):</span>
-		    <input class="radio" type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then 'checked="1"' else ""#--> />
-		    <span class="tips">$T('explain-no_dupes')</span></label>
+			<span class="label">$T('opt-no_dupes'):</span>
+		    <input class="radio" type="radio" name="no_dupes" value="0" <!--#if $no_dupes == 0 then 'checked="1"' else ""#--> /> $T('nodupes-off')
+		    <input class="radio" type="radio" name="no_dupes" value="1" <!--#if $no_dupes == 1 then 'checked="1"' else ""#--> /> $T('nodupes-ignore')
+		    <input class="radio" type="radio" name="no_dupes" value="2" <!--#if $no_dupes == 2 then 'checked="1"' else ""#--> /> $T('nodupes-pause')
+            <span class="tips">$T('explain-no_dupes')</span>
 		<br class="clear" />
 
 		    <label><span class="label">$T('opt-sfv_check'):</span>

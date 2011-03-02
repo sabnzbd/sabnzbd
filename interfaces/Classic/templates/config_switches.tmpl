@@ -41,9 +41,12 @@
     <label><input type="checkbox" name="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> /> <strong>$T('opt-pause_on_pwrar')</strong></label><br>
     $T('explain-pause_on_pwrar')<br>
     <br>
-    <label><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /> <strong>$T('opt-no_dupes')</strong></label><br>
+    <strong>$T('opt-no_dupes'):</strong><br>
     $T('explain-no_dupes')<br>
-    <br>
+    <input class="radio" type="radio" name="no_dupes" value="0" <!--#if $no_dupes == 0 then 'checked="1"' else ""#--> /> $T('nodupes-off')
+    <input class="radio" type="radio" name="no_dupes" value="1" <!--#if $no_dupes == 1 then 'checked="1"' else ""#--> /> $T('nodupes-ignore')
+    <input class="radio" type="radio" name="no_dupes" value="2" <!--#if $no_dupes == 2 then 'checked="1"' else ""#--> /> $T('nodupes-pause')
+    <br/><br/>
     <label><input type="checkbox" name="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> /> <strong>$T('opt-sfv_check')</strong></label><br>
     $T('explain-sfv_check')<br>
     <br>

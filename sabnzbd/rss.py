@@ -342,7 +342,11 @@ class RSSQueue(object):
                             myPrio = catPrio
 
                         if cfg.no_dupes() and dup_title(title):
-                            priority = DUP_PRIORITY
+                            if cfg.no_dupes() == 1:
+                                logging.info("Ignoring duplicate job %s", atitle)
+                                continue
+                            else:
+                                priority = DUP_PRIORITY
 
                         if category and reTypes[n] == 'C':
                             found = re.search(regexes[n], category)

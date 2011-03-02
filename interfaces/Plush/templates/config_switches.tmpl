@@ -80,9 +80,16 @@
         </div>
         <fieldset class="component-group-list">
             <div class="field-pair">
-	            <input type="checkbox" name="no_dupes" id="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> />
-                <label class="clearfix" for="no_dupes">
+                <label class="nocheck clearfix" for="no_dupes">
                     <span class="component-title">$T('opt-no_dupes')</span>
+			        <select name="no_dupes" id="no_dupes">
+			            <option value="0" <!--#if $no_dupes == 0 then "selected" else ""#--> >$T('nodupes-off')</option>
+			            <option value="1" <!--#if $no_dupes == 1 then "selected" else ""#--> >$T('nodupes-ignore')</option>
+			            <option value="2" <!--#if $no_dupes == 2 then "selected" else ""#--> >$T('nodupes-pause')</option>
+			        </select>
+                </label>
+                <label class="nocheck clearfix">
+                    <span class="component-title">&nbsp;</span>
                     <span class="component-desc">$T('explain-no_dupes')</span>
                 </label>
             </div>

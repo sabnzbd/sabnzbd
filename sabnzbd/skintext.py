@@ -356,8 +356,11 @@ SKIN_TEXT = {
     'explain-safe_postproc' : TT('Only perform post-processing on jobs that passed all PAR2 checks.'),
     'opt-pause_on_pwrar' : TT('Pause job when encrypted RAR is downloaded'),
     'explain-pause_on_pwrar' : TT('You\'ll need to set a password and resume the job.'),
-    'opt-no_dupes' : TT('Prevent Duplicate Downloads'),
-    'explain-no_dupes' : TT('Skip a job if a backed-up .nzb with the same name exists.'),
+    'opt-no_dupes' : TT('Detect Duplicate Downloads'),
+    'explain-no_dupes' : TT('Detect identically named NZB files and duplicate titles across RSS feeds.'),
+    'nodupes-off' : TT('Off'), #: Three way switch for duplicates
+    'nodupes-ignore' : TT('Ignore'), #: Three way switch for duplicates
+    'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
     'opt-sfv_check' : TT('Enable SFV-based checks'),
     'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
     'opt-folder_rename' : TT('Enable folder rename'),
