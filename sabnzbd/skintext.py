@@ -477,7 +477,6 @@ SKIN_TEXT = {
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
-    'explain-rssActions' : TT('<strong>Test Filters</strong> will refresh the feed and preview how your filter set will be applied. No new NZBs will be downloaded. Save your changes before testing.<br /> <strong>Force Filters</strong> will apply the filter set to all items in the feed, including items that existed before the feed was added.  NZBs that match the current filter set will be downloaded if they had not matched previously.'),
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
