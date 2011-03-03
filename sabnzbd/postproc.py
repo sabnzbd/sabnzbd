@@ -257,8 +257,8 @@ def process_job(nzo):
             complete_dir = file_sorter.detect(dirname, complete_dir)
 
             workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
-            if not os.path.exists(workdir_complete):
-                crash_msg = T('Cannot create final folder %s') % unicoder(workdir_complete)
+            if not workdir_complete or not os.path.exists(workdir_complete):
+                crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
                 raise IOError
 
             if cfg.folder_rename():

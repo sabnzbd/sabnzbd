@@ -974,7 +974,6 @@ def create_dirs(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
             logging.error(Ta('Failed making (%s)'), dirpath)
-            logging.info("Traceback: ", exc_info = True)
             return None
     return dirpath
 
