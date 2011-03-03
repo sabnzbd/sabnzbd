@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-03-02 23:37+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2011-03-03 23:34+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -739,39 +739,39 @@ msgstr ""
 msgid "Failed making (%s)"
 msgstr ""
 
-#: sabnzbd/misc.py:1001 [Error message]
+#: sabnzbd/misc.py:1000 [Error message]
 msgid "Failed moving %s to %s"
 msgstr ""
 
-#: sabnzbd/misc.py:1117
+#: sabnzbd/misc.py:1116
 msgid "Unusable NZB file"
 msgstr ""
 
-#: sabnzbd/misc.py:1128
+#: sabnzbd/misc.py:1127
 msgid "Try again"
 msgstr ""
 
-#: sabnzbd/misc.py:1128
+#: sabnzbd/misc.py:1127
 msgid "URL Fetching failed; %s"
 msgstr ""
 
-#: sabnzbd/misc.py:1279 [Warning message]
+#: sabnzbd/misc.py:1278 [Warning message]
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
-#: sabnzbd/misc.py:1297 [Error message]
+#: sabnzbd/misc.py:1296 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr ""
 
-#: sabnzbd/misc.py:1369 [Error message]
+#: sabnzbd/misc.py:1368 [Error message]
 msgid "Failed to hibernate system"
 msgstr ""
 
-#: sabnzbd/misc.py:1380 [Error message] # sabnzbd/misc.py:1423 [Error message]
+#: sabnzbd/misc.py:1379 [Error message] # sabnzbd/misc.py:1422 [Error message]
 msgid "Failed to standby system"
 msgstr ""
 
-#: sabnzbd/misc.py:1411 [Error message]
+#: sabnzbd/misc.py:1410 [Error message]
 msgid "Error while shutting down system"
 msgstr ""
 
@@ -1037,39 +1037,39 @@ msgstr ""
 msgid "Empty NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:712 [Warning message]
+#: sabnzbd/nzbstuff.py:711 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:716 [Warning message]
+#: sabnzbd/nzbstuff.py:715 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:893 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:892 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:895 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:894 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:897 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:896 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:949
+#: sabnzbd/nzbstuff.py:948
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:953
+#: sabnzbd/nzbstuff.py:952
 msgid "%s articles were malformed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:957
+#: sabnzbd/nzbstuff.py:956
 msgid "%s articles were missing"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:986 [Error message]
+#: sabnzbd/nzbstuff.py:985 [Error message]
 msgid "Error importing %s"
 msgstr ""
 
@@ -1081,83 +1081,83 @@ msgstr ""
 msgid "Failed to remove nzo from postproc queue (id)"
 msgstr ""
 
-#: sabnzbd/postproc.py:217
+#: sabnzbd/postproc.py:220
 msgid "Download failed - Out of your server's retention?"
 msgstr ""
 
-#: sabnzbd/postproc.py:261
+#: sabnzbd/postproc.py:264
 msgid "Cannot create final folder %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:283
+#: sabnzbd/postproc.py:286
 msgid "No post-processing because of failed verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:291
+#: sabnzbd/postproc.py:294
 msgid "Moving"
 msgstr ""
 
-#: sabnzbd/postproc.py:311
+#: sabnzbd/postproc.py:314
 msgid "Sent %s to queue"
 msgstr ""
 
-#: sabnzbd/postproc.py:331 [Error message]
+#: sabnzbd/postproc.py:334 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr ""
 
-#: sabnzbd/postproc.py:350
+#: sabnzbd/postproc.py:353
 msgid "Running script"
 msgstr ""
 
-#: sabnzbd/postproc.py:351
+#: sabnzbd/postproc.py:354
 msgid "Running user script %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:360
+#: sabnzbd/postproc.py:363
 msgid "Ran %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:381
+#: sabnzbd/postproc.py:384
 msgid "More"
 msgstr ""
 
-#: sabnzbd/postproc.py:385
+#: sabnzbd/postproc.py:388
 msgid "View script output"
 msgstr ""
 
-#: sabnzbd/postproc.py:405 [Error message]
+#: sabnzbd/postproc.py:408 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:408
+#: sabnzbd/postproc.py:411
 msgid "see logfile"
 msgstr ""
 
-#: sabnzbd/postproc.py:409
+#: sabnzbd/postproc.py:412
 msgid "PostProcessing was aborted (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:437 [Error message]
+#: sabnzbd/postproc.py:440 [Error message]
 msgid "Cleanup of %s failed."
 msgstr ""
 
-#: sabnzbd/postproc.py:448 [Error message]
+#: sabnzbd/postproc.py:451 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:500
+#: sabnzbd/postproc.py:503
 msgid "Some files failed to verify against \"%s\""
 msgstr ""
 
-#: sabnzbd/postproc.py:504
+#: sabnzbd/postproc.py:507
 msgid "[%s] No par2 sets"
 msgstr ""
 
-#: sabnzbd/postproc.py:536 [Error message] # sabnzbd/postproc.py:543 [Error message]
+#: sabnzbd/postproc.py:539 [Error message] # sabnzbd/postproc.py:546 [Error message]
 msgid "Cannot change permissions of %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:592 [Error message] # sabnzbd/postproc.py:663 [Error message]
+#: sabnzbd/postproc.py:595 [Error message] # sabnzbd/postproc.py:666 [Error message]
 msgid "Removing %s failed"
 msgstr ""
 
