@@ -194,6 +194,9 @@ def process_job(nzo):
     ## Get the job flags
     nzo.save_attribs()
     flag_repair, flag_unpack, flag_delete = nzo.repair_opts
+    # Normalize PP
+    if flag_delete: flag_unpack = True
+    if flag_unpack: flag_repair = True
 
     # Get the NZB name
     filename = nzo.final_name

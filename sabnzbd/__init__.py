@@ -883,9 +883,9 @@ def opts_to_pp(repair, unpack, delete):
     if repair is None:
         return None
     pp = 0
-    if repair: pp += 1
-    if unpack: pp += 1
-    if delete: pp += 1
+    if repair: pp = 1
+    if unpack: pp = 2
+    if delete: pp = 3
     return pp
 
 
