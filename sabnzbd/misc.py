@@ -923,7 +923,7 @@ def check_mount(path):
     if sabnzbd.DARWIN:
         m = re.search(r'^(/Volumes/[^/]+)/', path, re.I)
     elif not sabnzbd.WIN32:
-        m = re.search(r'^(/mnt/[^/]+)/', path)
+        m = re.search(r'^(/(?:mnt|media)/[^/]+)/', path)
     else:
         m = None
     return (not m) or os.path.exists(m.group(1))
