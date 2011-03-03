@@ -685,14 +685,13 @@ class NzbObject(TryList):
             pp = int_conv(pp)
             priority = int_conv(priority)
 
-            group = str(group)
             if accept < 1:
                 self.purge_data()
                 raise TypeError
             if name:
                 self.set_final_name_pw(name)
             if group:
-                self.groups = [group]
+                self.groups = [str(group)]
         else:
             accept = 1
 
