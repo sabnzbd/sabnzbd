@@ -391,7 +391,6 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
-    os.system("chmod +x dist/SABnzbd.app/Contents/Resources/update>/dev/null")
     os.system("find dist/SABnzbd.app -name .bzr | xargs rm -rf")
 
     #copy builded app to mounted sparseimage
