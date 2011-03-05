@@ -953,7 +953,7 @@ jQuery(function($){
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
 						items_per_page: $.plush.histPerPage,
-						num_display_entries: 3,
+						num_display_entries: 4,
 						num_edge_entries: 1,
 						prev_text: "&laquo; "+$.plush.Tprev, // translation
 						next_text: $.plush.Tnext+" &raquo;", // translation
