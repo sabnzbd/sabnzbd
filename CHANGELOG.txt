@@ -1,4 +1,20 @@
 -------------------------------------------------------------------------------
+ 0.6.0Beta3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed odd post-processing after upgrade
+- Fixed "Send Group" option
+- Fixed incorrect error handling for nzbmatrix unbookmarking
+- Remove "unknown decoding" message for files without any downloaded articles
+- Unstarted jobs inherited after upgrade would not download properly
+- Fix failing server test after change of server address
+- Add "Read all feeds now" button (will read and process all enabled feeds)
+- Add 'nzb_key' for "add nzb"-only API access
+- Prevent crash when incorrect host address triggers unexpected error code
+- Interpret 0-sized NZB files from nzbmatrix as "not found" (and don't retry forever)
+- Three way option for duplicate detection (off/ignore/pause)
+- Plush: lots of styling, navigation and browser compatibility fixes
+- Windows installer will now add a "Safe" entry to the Start menu
+-------------------------------------------------------------------------------
  0.6.0Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix problem in smpl skin's RSS download buttons
