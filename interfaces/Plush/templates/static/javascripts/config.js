@@ -4,7 +4,7 @@
 jQuery(document).ready(function($){
 
 	// Container width
-	var containerWidth = $.cookie('containerWidth')  ? $.cookie('containerWidth')  : '100%';
+	var containerWidth = $.cookie('plushContainerWidth')  ? $.cookie('plushContainerWidth')  : '100%';
 	$('#master-width').css('width',containerWidth);
 
 	// Confirm user exits without saving changes first
@@ -183,7 +183,7 @@ jQuery(document).ready(function($){
         	break;
 
         case 'RSS':
-        
+
         	$('.toggleFeedCheckbox').click(function(){	// enable/disable feed
         		window.onbeforeunload = null; // lose data?
         		this.form.action='toggle_rss_feed?session=$session';
