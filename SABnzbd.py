@@ -1607,7 +1607,7 @@ if __name__ == '__main__':
 
         try:
             from PyObjCTools import AppHelper
-            from SABnzbdDelegate import SABnzbdDelegate
+            from sabnzbd.osxmenu import SABnzbdDelegate
 
             class startApp(Thread):
                 def __init__(self):
