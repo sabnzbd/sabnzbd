@@ -709,6 +709,7 @@ class NzbObject(TryList):
 
         if duplicate and cfg.no_dupes() == 1:
             logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
+            self.purge_data(keep_basic=False)
             raise TypeError
 
         if duplicate or self.priority == DUP_PRIORITY:
