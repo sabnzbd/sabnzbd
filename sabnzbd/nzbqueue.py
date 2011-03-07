@@ -97,7 +97,7 @@ class NzbQueue(TryList):
                 path = get_admin_path(bool(folder), folder, True)
                 nzo = sabnzbd.load_data(_id, path)
             if nzo:
-                self.add(nzo, save=False)
+                self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
 
         # Scan for any folders in "incomplete" that are not yet in the queue
@@ -274,7 +274,7 @@ class NzbQueue(TryList):
             return None
 
     @synchronized(NZBQUEUE_LOCK)
-    def add(self, nzo, save=True):
+    def add(self, nzo, save=True, quiet=False):
         assert isinstance(nzo, NzbObject)
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
@@ -325,7 +325,7 @@ class NzbQueue(TryList):
             if save:
                 self.save(nzo)
 
-            if nzo.status not in ('Fetching',):
+            if not (quiet or nzo.status in ('Fetching',)):
                 osx.sendGrowlMsg(T('NZB added to queue'), nzo.filename, osx.NOTIFICATION['download'])
 
         if self.__auto_sort:
