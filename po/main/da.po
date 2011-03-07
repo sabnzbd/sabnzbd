@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-03 22:42+0000\n"
-"PO-Revision-Date: 2011-02-20 04:49+0000\n"
+"POT-Creation-Date: 2011-03-06 00:41+0000\n"
+"PO-Revision-Date: 2011-03-05 05:50+0000\n"
 "Last-Translator: Rene <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-04 05:25+0000\n"
+"X-Launchpad-Export-Date: 2011-03-07 05:25+0000\n"
 "X-Generator: Launchpad (build 12351)\n"
 "Language: da\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -1141,7 +1141,7 @@ msgstr "Tom NZB fil %s"
 
 #: sabnzbd/nzbstuff.py:711 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
-msgstr ""
+msgstr "Ignorerer identiske NZB \"%s\""
 
 #: sabnzbd/nzbstuff.py:715 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
@@ -1953,6 +1953,8 @@ msgid ""
 "There are orphaned jobs in the download folder.<br />You can choose to "
 "delete them (including files) or send them back to the queue."
 msgstr ""
+"Der er forældreløse jobs i download mappen. <br /> Du kan vælge at slette "
+"dem (herunder filer) eller sende dem tilbage til køen."
 
 #: sabnzbd/skintext.py:247
 msgid ""
@@ -2154,15 +2156,16 @@ msgstr "API-nøgle"
 
 #: sabnzbd/skintext.py:295
 msgid "This key will give 3rd party programs full access to SABnzbd."
-msgstr ""
+msgstr "Denne nøgle vil give 3. parts programmer fuld adgang til SABnzbd."
 
 #: sabnzbd/skintext.py:296
 msgid "NZB Key"
-msgstr ""
+msgstr "NZB nøgle"
 
 #: sabnzbd/skintext.py:297
 msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
 msgstr ""
+"Denne nøgle vil give 3. parts programmer til at tilføje NZBs til SABnzbd."
 
 #: sabnzbd/skintext.py:298
 msgid "Generate New Key"
@@ -2432,19 +2435,20 @@ msgstr "Du bliver nødt til at angive en adgangskode og genoptage jobbet."
 
 #: sabnzbd/skintext.py:359
 msgid "Detect Duplicate Downloads"
-msgstr ""
+msgstr "Find identiske downloads"
 
 #: sabnzbd/skintext.py:360
 msgid ""
 "Detect identically named NZB files and duplicate titles across RSS feeds."
 msgstr ""
+"Find identiske navngivne NZB filer og kopiere titler i hele RSS-feeds."
 
 #: sabnzbd/skintext.py:361 [Three way switch for duplicates] # sabnzbd/skintext.py:405
 msgid "Off"
 msgstr "Slået fra"
 
 #: sabnzbd/skintext.py:362 [Three way switch for duplicates]
-msgid "Ignore"
+msgid "Discard"
 msgstr ""
 
 #: sabnzbd/skintext.py:364
@@ -2804,7 +2808,7 @@ msgstr "Feeds"
 
 #: sabnzbd/skintext.py:478 [Config->RSS button]
 msgid "Read All Feeds Now"
-msgstr ""
+msgstr "Læs alle Feeds nu"
 
 #: sabnzbd/skintext.py:479 [Tab title for Config->Feeds]
 msgid "Settings"
@@ -3584,13 +3588,15 @@ msgstr "Hentede filer"
 
 #: sabnzbd/skintext.py:709
 msgid "Queue repair"
-msgstr ""
+msgstr "Kø reparation"
 
 #: sabnzbd/skintext.py:712
 msgid ""
 "<strong>Read Feed</strong> will get the current feed content. <strong>Force "
 "Download</strong> will download all matching NZBs now."
 msgstr ""
+"<strong>Læs Feed</strong>henter det nuværende feed indholdet. <strong>Tving "
+"hent</strong> vil hente alle matchende NZBs nu."
 
 #: sabnzbd/skintext.py:716
 msgid "Hour:Min"
@@ -4003,3 +4009,6 @@ msgstr "Ugyldigt nzbmatrix rapport nummer %s"
 
 #~ msgid "RSS Details"
 #~ msgstr "RSS detaljer"
+
+#~ msgid "Ignore"
+#~ msgstr "Ignorer"
