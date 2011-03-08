@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-06 00:41+0000\n"
-"PO-Revision-Date: 2011-03-06 06:18+0000\n"
-"Last-Translator: Fox Ace <Unknown>\n"
+"POT-Creation-Date: 2011-03-07 15:12+0000\n"
+"PO-Revision-Date: 2011-03-07 15:41+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-07 05:25+0000\n"
+"X-Launchpad-Export-Date: 2011-03-08 05:23+0000\n"
 "X-Generator: Launchpad (build 12351)\n"
 "Language: fr\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -57,111 +57,9 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS désactivé car le certificat et la clé n'ont pas été trouvés"
 
-#: SABnzbd.py:1472 # SABnzbdDelegate.py:732
+#: SABnzbd.py:1472 # sabnzbd/osxmenu.py:735
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd arrêt terminé"
-
-#: SABnzbdDelegate.py:119 # SABnzbdDelegate.py:402 # SABnzbdDelegate.py:410
-#: sabnzbd/skintext.py:237 [Footer: indicator of warnings] # sabnzbd/skintext.py:616 # sabnzbd/skintext.py:742
-msgid "Warnings"
-msgstr "Avertissements"
-
-#: SABnzbdDelegate.py:130 # SABnzbdDelegate.py:444 # sabnzbd/skintext.py:733
-msgid "Idle"
-msgstr "Inactif"
-
-#: SABnzbdDelegate.py:137 # sabnzbd/skintext.py:241
-msgid "Configuration"
-msgstr "Configuration"
-
-#: SABnzbdDelegate.py:146 # sabnzbd/skintext.py:103 [Main menu item] # sabnzbd/skintext.py:414
-msgid "Queue"
-msgstr "File D'Attente"
-
-#: SABnzbdDelegate.py:153 # sabnzbd/skintext.py:188 [Queue page button] # sabnzbd/skintext.py:627
-msgid "Purge Queue"
-msgstr "Vider File d'attente"
-
-#: SABnzbdDelegate.py:162 # sabnzbd/skintext.py:104 [Main menu item]
-msgid "History"
-msgstr "Historique"
-
-#: SABnzbdDelegate.py:169 # sabnzbd/skintext.py:197 [History page button] # sabnzbd/skintext.py:646
-msgid "Purge History"
-msgstr "Vider l'Historique"
-
-#: SABnzbdDelegate.py:181
-msgid "Limit Speed"
-msgstr "Vitesse Limite"
-
-#: SABnzbdDelegate.py:185 # sabnzbd/api.py:1347 # sabnzbd/skintext.py:64 [No value, used in dropdown menus]
-#: sabnzbd/skintext.py:604 [Job details page, select no files]
-msgid "None"
-msgstr "Aucun"
-
-#: SABnzbdDelegate.py:201 # sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:137
-#: sabnzbd/skintext.py:184 [Queue page button] # sabnzbd/skintext.py:363 [Three way switch for duplicates] # sabnzbd/skintext.py:451
-msgid "Pause"
-msgstr "Pause"
-
-#: SABnzbdDelegate.py:207
-msgid "min."
-msgstr "min."
-
-#: SABnzbdDelegate.py:217 # sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:138
-#: sabnzbd/skintext.py:183 [Queue page button] # sabnzbd/skintext.py:450
-msgid "Resume"
-msgstr "Reprendre"
-
-#: SABnzbdDelegate.py:227
-msgid "Get Newzbin Bookmarks"
-msgstr "Récupérer Favoris Newzbin"
-
-#: SABnzbdDelegate.py:240 # SABnzbdDelegate.py:575
-msgid "Complete Folder"
-msgstr "Dossier Complet"
-
-#: SABnzbdDelegate.py:245 # SABnzbdDelegate.py:576
-msgid "Incomplete Folder"
-msgstr "Dossier Incomplet"
-
-#: SABnzbdDelegate.py:258
-msgid "Quit"
-msgstr "Quitter"
-
-#: SABnzbdDelegate.py:264 # sabnzbd/skintext.py:54 [#: Config->Scheduler] # sabnzbd/skintext.py:244
-#: sabnzbd/skintext.py:453
-msgid "Restart"
-msgstr "Redémarrer"
-
-#: SABnzbdDelegate.py:321
-msgid "Queue First 10 Items"
-msgstr "File d'attente les 10 premiers articles"
-
-#: SABnzbdDelegate.py:345 # SABnzbdDelegate.py:386
-msgid "Empty"
-msgstr "Vide"
-
-#: SABnzbdDelegate.py:362
-msgid "History Last 10 Items"
-msgstr "Historique les 10 derniers articles"
-
-#: SABnzbdDelegate.py:423 # sabnzbd/downloader.py:199 # sabnzbd/skintext.py:35 [PP status]
-#: sabnzbd/skintext.py:159 # sabnzbd/skintext.py:731
-msgid "Paused"
-msgstr "En pause"
-
-#: SABnzbdDelegate.py:505
-msgid "New release available"
-msgstr "Nouvelle version disponible"
-
-#: SABnzbdDelegate.py:529
-msgid "Go to wizard"
-msgstr "Aller à l'assistant"
-
-#: SABnzbdDelegate.py:697 # SABnzbdDelegate.py:700 # SABnzbdDelegate.py:725
-msgid "Stopping..."
-msgstr "Arrêt en cours..."
 
 #: sabnzbd/utils/servertests.py:35
 msgid "The hostname is not set."
@@ -257,6 +155,11 @@ msgstr "Enregistrement %s echoué"
 #: sabnzbd/__init__.py:798 [Error message] # sabnzbd/__init__.py:863 [Error message]
 msgid "Loading %s failed"
 msgstr "Chargement %s echoué"
+
+#: sabnzbd/api.py:1347 # sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:64 [No value, used in dropdown menus]
+#: sabnzbd/skintext.py:604 [Job details page, select no files]
+msgid "None"
+msgstr "Aucun"
 
 #: sabnzbd/api.py:1349 # sabnzbd/interface.py:90 # sabnzbd/skintext.py:63 [Default value, used in dropdown menus]
 msgid "Default"
@@ -383,6 +286,11 @@ msgstr "Ne peut lire %s"
 #: sabnzbd/dirscanner.py:284 [Error message] # sabnzbd/dirscanner.py:367 [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Ne peut lire le Dossier à scanner %s"
+
+#: sabnzbd/downloader.py:199 # sabnzbd/osxmenu.py:426 # sabnzbd/skintext.py:35 [PP status]
+#: sabnzbd/skintext.py:159 # sabnzbd/skintext.py:731
+msgid "Paused"
+msgstr "En pause"
 
 #: sabnzbd/downloader.py:266 # sabnzbd/downloader.py:267 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
@@ -1167,37 +1075,129 @@ msgstr "Vider le fichier NZB %s"
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorer NZB dupliquer"
 
-#: sabnzbd/nzbstuff.py:715 [Warning message]
+#: sabnzbd/nzbstuff.py:716 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause de \"%s\" en raison de NZB dupliqué"
 
-#: sabnzbd/nzbstuff.py:892 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:893 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr "DUPLIQUÉE"
 
-#: sabnzbd/nzbstuff.py:894 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:895 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr "Crypté"
 
-#: sabnzbd/nzbstuff.py:896 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:897 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr "TROP GRANDE"
 
-#: sabnzbd/nzbstuff.py:948
+#: sabnzbd/nzbstuff.py:949
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Téléchargé en %s à %sB/s en moyenne"
 
-#: sabnzbd/nzbstuff.py:952
+#: sabnzbd/nzbstuff.py:953
 msgid "%s articles were malformed"
 msgstr "%s articles ont été mal formés"
 
-#: sabnzbd/nzbstuff.py:956
+#: sabnzbd/nzbstuff.py:957
 msgid "%s articles were missing"
 msgstr "%s articles sont manquants"
 
-#: sabnzbd/nzbstuff.py:985 [Error message]
+#: sabnzbd/nzbstuff.py:986 [Error message]
 msgid "Error importing %s"
 msgstr "Erreur lors de l'importation de %s"
+
+#: sabnzbd/osxmenu.py:122 # sabnzbd/osxmenu.py:405 # sabnzbd/osxmenu.py:413
+#: sabnzbd/skintext.py:237 [Footer: indicator of warnings] # sabnzbd/skintext.py:616 # sabnzbd/skintext.py:742
+msgid "Warnings"
+msgstr "Avertissements"
+
+#: sabnzbd/osxmenu.py:133 # sabnzbd/osxmenu.py:447 # sabnzbd/skintext.py:733
+msgid "Idle"
+msgstr "Inactif"
+
+#: sabnzbd/osxmenu.py:140 # sabnzbd/skintext.py:241
+msgid "Configuration"
+msgstr "Configuration"
+
+#: sabnzbd/osxmenu.py:149 # sabnzbd/skintext.py:103 [Main menu item] # sabnzbd/skintext.py:414
+msgid "Queue"
+msgstr "File D'Attente"
+
+#: sabnzbd/osxmenu.py:156 # sabnzbd/skintext.py:188 [Queue page button] # sabnzbd/skintext.py:627
+msgid "Purge Queue"
+msgstr "Vider File d'attente"
+
+#: sabnzbd/osxmenu.py:165 # sabnzbd/skintext.py:104 [Main menu item]
+msgid "History"
+msgstr "Historique"
+
+#: sabnzbd/osxmenu.py:172 # sabnzbd/skintext.py:197 [History page button] # sabnzbd/skintext.py:646
+msgid "Purge History"
+msgstr "Vider l'Historique"
+
+#: sabnzbd/osxmenu.py:184
+msgid "Limit Speed"
+msgstr "Vitesse Limite"
+
+#: sabnzbd/osxmenu.py:204 # sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:137
+#: sabnzbd/skintext.py:184 [Queue page button] # sabnzbd/skintext.py:363 [Three way switch for duplicates] # sabnzbd/skintext.py:451
+msgid "Pause"
+msgstr "Pause"
+
+#: sabnzbd/osxmenu.py:210
+msgid "min."
+msgstr "min."
+
+#: sabnzbd/osxmenu.py:220 # sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:138
+#: sabnzbd/skintext.py:183 [Queue page button] # sabnzbd/skintext.py:450
+msgid "Resume"
+msgstr "Reprendre"
+
+#: sabnzbd/osxmenu.py:230
+msgid "Get Newzbin Bookmarks"
+msgstr "Récupérer Favoris Newzbin"
+
+#: sabnzbd/osxmenu.py:243 # sabnzbd/osxmenu.py:578
+msgid "Complete Folder"
+msgstr "Dossier Complet"
+
+#: sabnzbd/osxmenu.py:248 # sabnzbd/osxmenu.py:579
+msgid "Incomplete Folder"
+msgstr "Dossier Incomplet"
+
+#: sabnzbd/osxmenu.py:261
+msgid "Quit"
+msgstr "Quitter"
+
+#: sabnzbd/osxmenu.py:267 # sabnzbd/skintext.py:54 [#: Config->Scheduler] # sabnzbd/skintext.py:244
+#: sabnzbd/skintext.py:453
+msgid "Restart"
+msgstr "Redémarrer"
+
+#: sabnzbd/osxmenu.py:324
+msgid "Queue First 10 Items"
+msgstr "File d'attente les 10 premiers articles"
+
+#: sabnzbd/osxmenu.py:348 # sabnzbd/osxmenu.py:389
+msgid "Empty"
+msgstr "Vide"
+
+#: sabnzbd/osxmenu.py:365
+msgid "History Last 10 Items"
+msgstr "Historique les 10 derniers articles"
+
+#: sabnzbd/osxmenu.py:508
+msgid "New release available"
+msgstr "Nouvelle version disponible"
+
+#: sabnzbd/osxmenu.py:532
+msgid "Go to wizard"
+msgstr "Aller à l'assistant"
+
+#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:728
+msgid "Stopping..."
+msgstr "Arrêt en cours..."
 
 #: sabnzbd/postproc.py:94 [Warning message]
 msgid ""
@@ -2792,17 +2792,15 @@ msgstr "URL Nouveau Flux"
 #: sabnzbd/skintext.py:458
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
-"enabled and be automatically checked for new items.<br />The checking "
-"frequency is in the General page of the configuration.<br />When a feed is "
+"enabled and be automatically checked for new items.<br />When a feed is "
 "added, it will only pick up new items and not anything already in the RSS "
 "feed unless you press \"Force Download\"."
 msgstr ""
 "La case à cocher à coté du nom du flux devrait être cochée pour que le flux "
 "soit activé et qu'il soit pris en compte dans la vérification pour de "
-"nouveaux téléchargements.<br />La fréquence de vérification est réglable "
-"dans la page de configuration générale.<br />Quant un flux est ajouté, seuls "
-"les nouveaux téléchargements seront pris en compte à moins de cliquer sur "
-"\"Forcer téléchargements\"."
+"nouveaux téléchargements.<br />Quant un flux est ajouté, seuls les nouveaux "
+"téléchargements seront pris en compte à moins de cliquer sur \"Forcer "
+"téléchargements\"."
 
 #: sabnzbd/skintext.py:460 [Config->RSS button]
 msgid "Add Feed"
@@ -3997,6 +3995,20 @@ msgstr "Numéro de rapport nzbmatrix invalide %s"
 
 #~ msgid "Prevent Duplicate Downloads"
 #~ msgstr "Eviter les duplications de téléchargement"
+
+#~ msgid ""
+#~ "The checkbox next to the feed name should be ticked for the feed to be "
+#~ "enabled and be automatically checked for new items.<br />The checking "
+#~ "frequency is in the General page of the configuration.<br />When a feed is "
+#~ "added, it will only pick up new items and not anything already in the RSS "
+#~ "feed unless you press \"Force Download\"."
+#~ msgstr ""
+#~ "La case à cocher à coté du nom du flux devrait être cochée pour que le flux "
+#~ "soit activé et qu'il soit pris en compte dans la vérification pour de "
+#~ "nouveaux téléchargements.<br />La fréquence de vérification est réglable "
+#~ "dans la page de configuration générale.<br />Quant un flux est ajouté, seuls "
+#~ "les nouveaux téléchargements seront pris en compte à moins de cliquer sur "
+#~ "\"Forcer téléchargements\"."
 
 #~ msgid "Preview"
 #~ msgstr "Prévisualiser"

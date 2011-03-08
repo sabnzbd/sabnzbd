@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-06 00:41+0000\n"
-"PO-Revision-Date: 2011-03-06 10:18+0000\n"
+"POT-Creation-Date: 2011-03-07 15:12+0000\n"
+"PO-Revision-Date: 2011-03-07 15:40+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-07 05:25+0000\n"
+"X-Launchpad-Export-Date: 2011-03-08 05:22+0000\n"
 "X-Generator: Launchpad (build 12351)\n"
 "Language: nl\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -55,111 +55,9 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT en KEY bestanden."
 
-#: SABnzbd.py:1472 # SABnzbdDelegate.py:732
+#: SABnzbd.py:1472 # sabnzbd/osxmenu.py:735
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd is afgesloten"
-
-#: SABnzbdDelegate.py:119 # SABnzbdDelegate.py:402 # SABnzbdDelegate.py:410
-#: sabnzbd/skintext.py:237 [Footer: indicator of warnings] # sabnzbd/skintext.py:616 # sabnzbd/skintext.py:742
-msgid "Warnings"
-msgstr "Meldingen"
-
-#: SABnzbdDelegate.py:130 # SABnzbdDelegate.py:444 # sabnzbd/skintext.py:733
-msgid "Idle"
-msgstr "Rust"
-
-#: SABnzbdDelegate.py:137 # sabnzbd/skintext.py:241
-msgid "Configuration"
-msgstr "Instellen"
-
-#: SABnzbdDelegate.py:146 # sabnzbd/skintext.py:103 [Main menu item] # sabnzbd/skintext.py:414
-msgid "Queue"
-msgstr "Wachtrij"
-
-#: SABnzbdDelegate.py:153 # sabnzbd/skintext.py:188 [Queue page button] # sabnzbd/skintext.py:627
-msgid "Purge Queue"
-msgstr "Wis wachtrij"
-
-#: SABnzbdDelegate.py:162 # sabnzbd/skintext.py:104 [Main menu item]
-msgid "History"
-msgstr "Geschiedenis"
-
-#: SABnzbdDelegate.py:169 # sabnzbd/skintext.py:197 [History page button] # sabnzbd/skintext.py:646
-msgid "Purge History"
-msgstr "Wis de volledige geschiedenis"
-
-#: SABnzbdDelegate.py:181
-msgid "Limit Speed"
-msgstr "Beperk snelheid"
-
-#: SABnzbdDelegate.py:185 # sabnzbd/api.py:1347 # sabnzbd/skintext.py:64 [No value, used in dropdown menus]
-#: sabnzbd/skintext.py:604 [Job details page, select no files]
-msgid "None"
-msgstr "Geen"
-
-#: SABnzbdDelegate.py:201 # sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:137
-#: sabnzbd/skintext.py:184 [Queue page button] # sabnzbd/skintext.py:363 [Three way switch for duplicates] # sabnzbd/skintext.py:451
-msgid "Pause"
-msgstr "Pauze"
-
-#: SABnzbdDelegate.py:207
-msgid "min."
-msgstr "min."
-
-#: SABnzbdDelegate.py:217 # sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:138
-#: sabnzbd/skintext.py:183 [Queue page button] # sabnzbd/skintext.py:450
-msgid "Resume"
-msgstr "Doorgaan"
-
-#: SABnzbdDelegate.py:227
-msgid "Get Newzbin Bookmarks"
-msgstr "Haal Newzbin Bookmarks op"
-
-#: SABnzbdDelegate.py:240 # SABnzbdDelegate.py:575
-msgid "Complete Folder"
-msgstr "Map voltooid"
-
-#: SABnzbdDelegate.py:245 # SABnzbdDelegate.py:576
-msgid "Incomplete Folder"
-msgstr "Map download"
-
-#: SABnzbdDelegate.py:258
-msgid "Quit"
-msgstr "Verlaten"
-
-#: SABnzbdDelegate.py:264 # sabnzbd/skintext.py:54 [#: Config->Scheduler] # sabnzbd/skintext.py:244
-#: sabnzbd/skintext.py:453
-msgid "Restart"
-msgstr "Herstarten"
-
-#: SABnzbdDelegate.py:321
-msgid "Queue First 10 Items"
-msgstr "Wachtrij Eersto 10 Items"
-
-#: SABnzbdDelegate.py:345 # SABnzbdDelegate.py:386
-msgid "Empty"
-msgstr "Leeg"
-
-#: SABnzbdDelegate.py:362
-msgid "History Last 10 Items"
-msgstr "Geschiedenis Laaste 10 Items"
-
-#: SABnzbdDelegate.py:423 # sabnzbd/downloader.py:199 # sabnzbd/skintext.py:35 [PP status]
-#: sabnzbd/skintext.py:159 # sabnzbd/skintext.py:731
-msgid "Paused"
-msgstr "Pauze"
-
-#: SABnzbdDelegate.py:505
-msgid "New release available"
-msgstr "Nieuwe versie beschikbaar"
-
-#: SABnzbdDelegate.py:529
-msgid "Go to wizard"
-msgstr "Ga naar Wizard"
-
-#: SABnzbdDelegate.py:697 # SABnzbdDelegate.py:700 # SABnzbdDelegate.py:725
-msgid "Stopping..."
-msgstr "Afsluiten..."
 
 #: sabnzbd/utils/servertests.py:35
 msgid "The hostname is not set."
@@ -255,6 +153,11 @@ msgstr "Opslaan van %s lukt niet"
 #: sabnzbd/__init__.py:798 [Error message] # sabnzbd/__init__.py:863 [Error message]
 msgid "Loading %s failed"
 msgstr "Inlezen van %s lukt niet"
+
+#: sabnzbd/api.py:1347 # sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:64 [No value, used in dropdown menus]
+#: sabnzbd/skintext.py:604 [Job details page, select no files]
+msgid "None"
+msgstr "Geen"
 
 #: sabnzbd/api.py:1349 # sabnzbd/interface.py:90 # sabnzbd/skintext.py:63 [Default value, used in dropdown menus]
 msgid "Default"
@@ -379,6 +282,11 @@ msgstr "Kan %s niet lezen"
 #: sabnzbd/dirscanner.py:284 [Error message] # sabnzbd/dirscanner.py:367 [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Kan Bewaakte Map %s niet lezen"
+
+#: sabnzbd/downloader.py:199 # sabnzbd/osxmenu.py:426 # sabnzbd/skintext.py:35 [PP status]
+#: sabnzbd/skintext.py:159 # sabnzbd/skintext.py:731
+msgid "Paused"
+msgstr "Pauze"
 
 #: sabnzbd/downloader.py:266 # sabnzbd/downloader.py:267 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
@@ -1149,37 +1057,129 @@ msgstr "NZB bestand %s is leeg"
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Dubbele NZB \"%s\" overgeslagen"
 
-#: sabnzbd/nzbstuff.py:715 [Warning message]
+#: sabnzbd/nzbstuff.py:716 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pauzeer dubbele NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:892 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:893 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr "DUBBEL"
 
-#: sabnzbd/nzbstuff.py:894 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:895 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr "VERSLEUTELD"
 
-#: sabnzbd/nzbstuff.py:896 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:897 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr "TE GROOT"
 
-#: sabnzbd/nzbstuff.py:948
+#: sabnzbd/nzbstuff.py:949
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Gedownload in %s met een gemiddelde van %sB/sec"
 
-#: sabnzbd/nzbstuff.py:952
+#: sabnzbd/nzbstuff.py:953
 msgid "%s articles were malformed"
 msgstr "%s artikelen zijn misvormd"
 
-#: sabnzbd/nzbstuff.py:956
+#: sabnzbd/nzbstuff.py:957
 msgid "%s articles were missing"
 msgstr "%s artikelen ontbreken"
 
-#: sabnzbd/nzbstuff.py:985 [Error message]
+#: sabnzbd/nzbstuff.py:986 [Error message]
 msgid "Error importing %s"
 msgstr "Fout bij importeren van %s"
+
+#: sabnzbd/osxmenu.py:122 # sabnzbd/osxmenu.py:405 # sabnzbd/osxmenu.py:413
+#: sabnzbd/skintext.py:237 [Footer: indicator of warnings] # sabnzbd/skintext.py:616 # sabnzbd/skintext.py:742
+msgid "Warnings"
+msgstr "Meldingen"
+
+#: sabnzbd/osxmenu.py:133 # sabnzbd/osxmenu.py:447 # sabnzbd/skintext.py:733
+msgid "Idle"
+msgstr "Rust"
+
+#: sabnzbd/osxmenu.py:140 # sabnzbd/skintext.py:241
+msgid "Configuration"
+msgstr "Instellen"
+
+#: sabnzbd/osxmenu.py:149 # sabnzbd/skintext.py:103 [Main menu item] # sabnzbd/skintext.py:414
+msgid "Queue"
+msgstr "Wachtrij"
+
+#: sabnzbd/osxmenu.py:156 # sabnzbd/skintext.py:188 [Queue page button] # sabnzbd/skintext.py:627
+msgid "Purge Queue"
+msgstr "Wis wachtrij"
+
+#: sabnzbd/osxmenu.py:165 # sabnzbd/skintext.py:104 [Main menu item]
+msgid "History"
+msgstr "Geschiedenis"
+
+#: sabnzbd/osxmenu.py:172 # sabnzbd/skintext.py:197 [History page button] # sabnzbd/skintext.py:646
+msgid "Purge History"
+msgstr "Wis de volledige geschiedenis"
+
+#: sabnzbd/osxmenu.py:184
+msgid "Limit Speed"
+msgstr "Beperk snelheid"
+
+#: sabnzbd/osxmenu.py:204 # sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:137
+#: sabnzbd/skintext.py:184 [Queue page button] # sabnzbd/skintext.py:363 [Three way switch for duplicates] # sabnzbd/skintext.py:451
+msgid "Pause"
+msgstr "Pauze"
+
+#: sabnzbd/osxmenu.py:210
+msgid "min."
+msgstr "min."
+
+#: sabnzbd/osxmenu.py:220 # sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:138
+#: sabnzbd/skintext.py:183 [Queue page button] # sabnzbd/skintext.py:450
+msgid "Resume"
+msgstr "Doorgaan"
+
+#: sabnzbd/osxmenu.py:230
+msgid "Get Newzbin Bookmarks"
+msgstr "Haal Newzbin Bookmarks op"
+
+#: sabnzbd/osxmenu.py:243 # sabnzbd/osxmenu.py:578
+msgid "Complete Folder"
+msgstr "Map voltooid"
+
+#: sabnzbd/osxmenu.py:248 # sabnzbd/osxmenu.py:579
+msgid "Incomplete Folder"
+msgstr "Map download"
+
+#: sabnzbd/osxmenu.py:261
+msgid "Quit"
+msgstr "Verlaten"
+
+#: sabnzbd/osxmenu.py:267 # sabnzbd/skintext.py:54 [#: Config->Scheduler] # sabnzbd/skintext.py:244
+#: sabnzbd/skintext.py:453
+msgid "Restart"
+msgstr "Herstarten"
+
+#: sabnzbd/osxmenu.py:324
+msgid "Queue First 10 Items"
+msgstr "Wachtrij Eersto 10 Items"
+
+#: sabnzbd/osxmenu.py:348 # sabnzbd/osxmenu.py:389
+msgid "Empty"
+msgstr "Leeg"
+
+#: sabnzbd/osxmenu.py:365
+msgid "History Last 10 Items"
+msgstr "Geschiedenis Laaste 10 Items"
+
+#: sabnzbd/osxmenu.py:508
+msgid "New release available"
+msgstr "Nieuwe versie beschikbaar"
+
+#: sabnzbd/osxmenu.py:532
+msgid "Go to wizard"
+msgstr "Ga naar Wizard"
+
+#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:728
+msgid "Stopping..."
+msgstr "Afsluiten..."
 
 #: sabnzbd/postproc.py:94 [Warning message]
 msgid ""
@@ -2750,16 +2750,14 @@ msgstr "Nieuwe Stroom"
 #: sabnzbd/skintext.py:458
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
-"enabled and be automatically checked for new items.<br />The checking "
-"frequency is in the General page of the configuration.<br />When a feed is "
+"enabled and be automatically checked for new items.<br />When a feed is "
 "added, it will only pick up new items and not anything already in the RSS "
 "feed unless you press \"Force Download\"."
 msgstr ""
 "Om de RSS stroom automatisch te verwerken, vink het selectievlakje bij de "
-"definitie naam aan.<br />De lees-frequentie is in te stellen op de "
-"\"Algemene instellingen\" pagina.<br />Wanneer een nieuwe stroom wordt "
-"gedefinieerd, zullen alleen nieuwe items gevonden worden en geen bestaande, "
-"behalve wanneer je de op \"Forceer download\" klikt."
+"definitie naam aan.<br />Wanneer een nieuwe stroom wordt gedefinieerd, "
+"zullen alleen nieuwe items gevonden worden en geen bestaande, behalve "
+"wanneer je de op \"Forceer download\" klikt."
 
 #: sabnzbd/skintext.py:460 [Config->RSS button]
 msgid "Add Feed"
@@ -3948,6 +3946,19 @@ msgstr "Ongeldig nzbmatrix rapport nummer %s"
 #~ msgid "Skip a job if a backed-up .nzb with the same name exists."
 #~ msgstr ""
 #~ "Sla een opdracht over wanneer de NZB al als reserve bestand is opgeslagen."
+
+#~ msgid ""
+#~ "The checkbox next to the feed name should be ticked for the feed to be "
+#~ "enabled and be automatically checked for new items.<br />The checking "
+#~ "frequency is in the General page of the configuration.<br />When a feed is "
+#~ "added, it will only pick up new items and not anything already in the RSS "
+#~ "feed unless you press \"Force Download\"."
+#~ msgstr ""
+#~ "Om de RSS stroom automatisch te verwerken, vink het selectievlakje bij de "
+#~ "definitie naam aan.<br />De lees-frequentie is in te stellen op de "
+#~ "\"Algemene instellingen\" pagina.<br />Wanneer een nieuwe stroom wordt "
+#~ "gedefinieerd, zullen alleen nieuwe items gevonden worden en geen bestaande, "
+#~ "behalve wanneer je de op \"Forceer download\" klikt."
 
 #~ msgid "Preview"
 #~ msgstr "Voorbeeld"
