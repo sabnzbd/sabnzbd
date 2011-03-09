@@ -39,12 +39,12 @@ import sabnzbd.cfg as cfg
 #
 #
 ################################################################################
-def send(message):
+def send(message, recipient):
     """ Send message if message non-empty and email-parms are set """
     if not message.strip('\n\r\t '):
         return "Skipped empty message"
 
-    if cfg.email_server() and cfg.email_to() and cfg.email_from():
+    if cfg.email_server() and recipient and cfg.email_from():
 
         message = _prepare_message(message)
 
@@ -125,7 +125,6 @@ from Cheetah.Template import Template
 def send_with_template(prefix, parm):
     """ Send an email using template """
 
-    parm['to'] = cfg.email_to.get_string()
     parm['from'] = cfg.email_from()
     parm['date'] = time.strftime(time_format('%a, %d %b %Y %H:%M:%S +0000'), time.gmtime())
 
@@ -149,13 +148,15 @@ def send_with_template(prefix, parm):
         if os.access(temp, os.R_OK):
             source = _decode_file(temp)
             if source:
-                message = Template(source=source,
-                                    searchList=[parm],
-                                    filter=EmailFilter,
-                                    compilerSettings={'directiveStartToken': '<!--#',
-                                                      'directiveEndToken': '#-->'})
-                ret = send(message.respond())
-                del message
+                for recipient in cfg.email_to():
+                    parm['to'] = recipient
+                    message = Template(source=source,
+                                        searchList=[parm],
+                                        filter=EmailFilter,
+                                        compilerSettings={'directiveStartToken': '<!--#',
+                                                          'directiveEndToken': '#-->'})
+                    ret = send(message.respond(), recipient)
+                    del message
             else:
                 ret = T('Invalid encoding of email template %s') % temp
     return ret
@@ -210,7 +211,7 @@ Hi,
 SABnzbd has stopped downloading, because the disk is almost full.
 Please make room and resume SABnzbd manually.
 
-''') % (cfg.email_to.get_string(), cfg.email_from()))
+''') % (cfg.email_to.get_string(), cfg.email_from()), cfg.email_to())
     else:
         return ""
 
