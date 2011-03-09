@@ -74,7 +74,9 @@
 		        <td>
 		            <select name="script">
 		            <!--#for $sc in $script_list#-->
-		                <option value="$sc" <!--#if $cur == 1 and $sc.lower() != "none"#-->disabled<!--#else if $cur == 1 or $slot.script.lower() == $sc.lower()#-->selected<!--#end if#-->>$sc</option>
+                                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
+                                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
+                                <!--#end if#-->
 		            <!--#end for#-->
 		            </select>
 		        </td>
