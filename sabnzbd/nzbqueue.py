@@ -40,6 +40,7 @@ import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 from sabnzbd.utils import osx
 from sabnzbd.encoding import latin1, platform_encode
+from sabnzbd.bpsmeter import BPSMeter
 
 #-------------------------------------------------------------------------------
 
@@ -669,6 +670,7 @@ class NzbQueue(TryList):
         if file_done:
             if nzo.next_save is None or time.time() > nzo.next_save:
                 sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                BPSMeter.do.save()
                 if nzo.save_timeout is None:
                     nzo.next_save = None
                 else:
