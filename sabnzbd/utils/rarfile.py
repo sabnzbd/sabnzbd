@@ -283,7 +283,7 @@ class RarFile:
         h = RarInfo()
         h.header_offset = fd.tell()
         buf = fd.read(HDRLEN)
-        if not buf:
+        if not buf or len(buf) < HDRLEN:
             return None
 
         t = unpack("<HBHH", buf)
