@@ -268,12 +268,16 @@ def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
     if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
-        zf = RarFile(filepath)
-        encrypted = zf.encrypted
-        if encrypted and int(nzo.encrypted) < 2:
-            nzo.encrypted = 1
-        else:
-            encrypted = False
-        zf.close()
-        del zf
+        try:
+            zf = RarFile(filepath)
+            encrypted = zf.encrypted
+            if encrypted and int(nzo.encrypted) < 2:
+                nzo.encrypted = 1
+            else:
+                encrypted = False
+            zf.close()
+            del zf
+        except:
+            logging.debug('RAR file %s cannot be inspected', filepath)
     return encrypted
+

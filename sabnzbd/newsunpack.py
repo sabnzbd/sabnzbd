@@ -481,11 +481,10 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
     try:
         zf = RarFile(rarfile)
         expected_files = zf.unamelist()
+        zf.close()
     except:
         logging.info('Archive %s probably has full encryption', rarfile)
         expected_files = []
-    finally:
-        zf.close()
 
     if password:
         password = '-p%s' % password
