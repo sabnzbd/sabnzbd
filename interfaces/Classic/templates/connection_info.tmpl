@@ -7,7 +7,6 @@
 <span class="SubMenu">
 <!--#set $msg=$T('askTestEmail')#-->
 <a href="./disconnect?session=$session">$T('link-forceDisc')</a> |
-<a href="./testmail?session=$session" onclick="javascript:return confirm('$msg')">$T('link-testEmail')</a> |
 <a href="./showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):
 <select onChange="location = './change_loglevel?session=$session&loglevel='+this.options[this.selectedIndex].value">
@@ -35,10 +34,6 @@ $T('logging'):
         </li>
     <!--#end for#-->
     </ul>
-<!--#end if#-->
-<!--#if $lastmail#-->
-    <h2>$T('emailResult')</h2>
-    $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
     <h2>$T('lastWarnings') (<a href="./clearwarnings?session=$session">$T('clearWarnings')</a>)</h2>

@@ -732,7 +732,7 @@ function loadtitle() {
 
 	function testemail()
 	{
-		d = doSimpleXMLHttpRequest('connections/testmail?session='+session);
+		d = doSimpleXMLHttpRequest('config/email/testmail?session='+session);
 		d.addCallback(function (d)
         {
             alert("$T('smpl-emailsent')");

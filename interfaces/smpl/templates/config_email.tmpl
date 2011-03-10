@@ -74,4 +74,9 @@
 </p>
 <br class="clear" />
 <a class="config" onClick="testemail();">Test E-Mail</a>
+<!--#if $lastmail#-->
+	&nbsp;&nbsp;&nbsp;&nbsp;$T('emailResult') = <b>$lastmail</b>
+<!--#end if#-->
+</form>
+
 </form>

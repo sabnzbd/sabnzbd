@@ -55,7 +55,12 @@ $T('explain-email_pwd')<br>
 <input type="hidden" name="session" value="$session">
 </fieldset>
 </div>
-<p><input type="submit" value="$T('button-saveChanges')"></p>
+<p><input type="submit" value="$T('button-saveChanges')">&nbsp;&nbsp;
+<input type="button" onclick="if (confirm('$T('askTestEmail').replace("'","`") ')) { this.form.action='testmail?session=$session&';  this.form.submit(); return false;}" value="$T('link-testEmail')"/>
+</p>
 </form>
+<!--#if $lastmail#-->
+	$T('emailResult') = <b>$lastmail</b>
+<!--#end if#-->
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

@@ -30,7 +30,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
-from sabnzbd.encoding import EmailFilter
+from sabnzbd.encoding import EmailFilter, latin1
 import sabnzbd.cfg as cfg
 
 
@@ -41,6 +41,10 @@ import sabnzbd.cfg as cfg
 ################################################################################
 def send(message, recipient):
     """ Send message if message non-empty and email-parms are set """
+    def errormsg(msg):
+        logging.error(latin1(msg))
+        return msg
+
     if not message.strip('\n\r\t '):
         return "Skipped empty message"
 
@@ -48,7 +52,6 @@ def send(message, recipient):
 
         message = _prepare_message(message)
 
-        failure = T('Failed to send e-mail')
         server, port = split_host(cfg.email_server())
         if not port:
             port = 25
@@ -72,11 +75,9 @@ def send(message, recipient):
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.error(Ta('Failed to connect to mail server'))
-                    return failure
+                    return errormsg(T('Failed to connect to mail server'))
             else:
-                logging.error(Ta('Failed to connect to mail server'))
-                return failure
+                return errormsg(T('Failed to connect to mail server'))
 
         # TLS support
         if mailconn.ehlo_resp:
@@ -88,30 +89,39 @@ def send(message, recipient):
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.error(Ta('Failed to initiate TLS connection'))
-                    return failure
+                    return errormsg(T('Failed to initiate TLS connection'))
 
         # Authentication
         if (cfg.email_account() != "") and (cfg.email_pwd() != ""):
             try:
                 mailconn.login(cfg.email_account(), cfg.email_pwd())
             except:
-                logging.error(Ta('Failed to authenticate to mail server'))
-                return failure
+                return errormsg(T('Failed to authenticate to mail server'))
 
         try:
             mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
+            msg = None
+        except smtplib.SMTPHeloError:
+            msg = errormsg('The server didn\'t reply properly to the helo greeting.')
+        except smtplib.SMTPRecipientsRefused:
+            msg = errormsg('The server rejected ALL recipients (no mail was sent).')
+        except smtplib.SMTPSenderRefused:
+            msg = errormsg('The server didn\'t accept the from_addr.')
+        except smtplib.SMTPDataError:
+            msg = errormsg('The server replied with an unexpected error code (other than a refusal of a recipient).')
         except:
-            logging.error(Ta('Failed to send e-mail'))
-            return failure
+            msg = errormsg(T('Failed to send e-mail'))
 
         try:
             mailconn.close()
         except:
-            logging.warning(Ta('Failed to close mail connection'))
+            errormsg(T('Failed to close mail connection'))
 
-        logging.info("Notification e-mail succesfully sent")
-        return T('Email succeeded')
+        if msg:
+            return msg
+        else:
+            logging.info("Notification e-mail succesfully sent")
+            return T('Email succeeded')
 
 
 

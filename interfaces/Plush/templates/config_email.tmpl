@@ -12,7 +12,7 @@
 <input type="hidden" name="session" id="session" value="$session">
 
 <div id="config-components">
-    
+
     <div id="core-component-group1" class="component-group clearfix">
         <div class="component-group-desc">
             <h3>$T('emailOptions')</h3>
@@ -52,7 +52,7 @@
             </div>
         </fieldset>
 	</div><!-- /component-group1 -->
-    
+
     <div id="core-component-group2" class="component-group clearfix">
         <div class="component-group-desc">
             <h3>$T('emailAccount')</h3>
@@ -118,9 +118,12 @@
         <fieldset class="component-group-list">
 	        <div class="left_links">
 	            <a id="save"><span class="config_sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
-	            <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">
+	            <a id="test_email" href="testmail?session=$session" rel="$T('askTestEmail')">
 	            	<span class="config_sprite_container sprite_config_email_test">&nbsp;</span> $T('link-testEmail')</a>
 	        </div>
+			<!--#if $lastmail#-->
+				&nbsp;&nbsp;&nbsp;&nbsp;$T('emailResult') = <b>$lastmail</b>
+			<!--#end if#-->
         </fieldset>
 	</div><!-- /component-group -->
 

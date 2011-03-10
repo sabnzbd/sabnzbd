@@ -2120,7 +2120,6 @@ class ConnectionInfo(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        self.__lastmail = None
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2130,7 +2129,7 @@ class ConnectionInfo(object):
         header['weblogfile'] = sabnzbd.WEBLOGFILE
         header['loglevel'] = str(cfg.log_level())
 
-        header['lastmail'] = self.__lastmail
+        header['lastmail'] = None # Obsolete, keep for compatibility
 
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
@@ -2194,20 +2193,6 @@ class ConnectionInfo(object):
         msg = check_session(kwargs)
         if msg: return msg
         Downloader.do.disconnect()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def testmail(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        logging.info("Sending testmail")
-        pack = {}
-        pack['download'] = ['action 1', 'action 2']
-        pack['unpack'] = ['action 1', 'action 2']
-
-        self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2475,6 +2460,7 @@ class ConfigEmail(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
+        self.__lastmail = None
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2485,6 +2471,8 @@ class ConfigEmail(object):
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
+        conf['lastmail'] = self.__lastmail
+
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
@@ -2504,6 +2492,22 @@ class ConfigEmail(object):
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
 
         config.save_config()
+        self.__lastmail = None
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def testmail(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        self.__lastmail = None
+        logging.info("Sending testmail")
+        pack = {}
+        pack['download'] = ['action 1', 'action 2']
+        pack['unpack'] = ['action 1', 'action 2']
+
+        self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
+                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
 
