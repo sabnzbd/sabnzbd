@@ -390,10 +390,10 @@ class RSSQueue(object):
         if new_downloads and cfg.email_rss() and not force:
             emailer.rss_mail(feed, new_downloads)
 
-        # If links are in table for more than 4 weeks, remove
+        # If links are in table for more than 1 week, remove
         # Flag old D/B links as obsolete, so that they don't show up in Preview
         now = time.time()
-        limit =  now - 4*7*24*3600
+        limit =  now - 1*7*24*3600
         olds  = jobs.keys()
         for old in olds:
             if old not in newlinks:
