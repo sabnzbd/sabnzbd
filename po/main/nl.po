@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-07 15:12+0000\n"
-"PO-Revision-Date: 2011-03-07 15:40+0000\n"
+"PO-Revision-Date: 2011-03-11 08:45+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-08 05:22+0000\n"
-"X-Generator: Launchpad (build 12351)\n"
+"X-Launchpad-Export-Date: 2011-03-11 08:48+0000\n"
+"X-Generator: Launchpad (build 12568)\n"
 "Language: nl\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -25,7 +25,9 @@ msgstr "Kan web interface niet starten"
 
 #: SABnzbd.py:328 [Warning message]
 msgid "Cannot find web template: %s, trying standard template"
-msgstr "Kan skin bestanden niet vinden: %s, \"Default\" skin wordt gebruikt."
+msgstr ""
+"Kan bedieningsstijl bestanden niet vinden: %s, De standaard stijl wordt "
+"gebruikt."
 
 #: SABnzbd.py:451 [Error message]
 msgid "_yenc module... NOT found!"
@@ -1011,7 +1013,7 @@ msgstr "Newzbin server geeft geen informatie over %s"
 
 #: sabnzbd/newzbin.py:340 [Warning message]
 msgid "Could not delete newzbin bookmark %s"
-msgstr "Verwijderen van newzbin bookmark %s mislukt"
+msgstr "Verwijderen van newzbin bladwijzer %s mislukt"
 
 #: sabnzbd/newzbin.py:352 [Error message]
 msgid "Newzbin gives undocumented error code (%s)"
@@ -1138,7 +1140,7 @@ msgstr "Doorgaan"
 
 #: sabnzbd/osxmenu.py:230
 msgid "Get Newzbin Bookmarks"
-msgstr "Haal Newzbin Bookmarks op"
+msgstr "Haal Newzbin Bladwijzers op"
 
 #: sabnzbd/osxmenu.py:243 # sabnzbd/osxmenu.py:578
 msgid "Complete Folder"
@@ -2020,7 +2022,7 @@ msgstr "Gebruikersinterface"
 
 #: sabnzbd/skintext.py:262
 msgid "Choose a skin."
-msgstr "Kies een skin (<i>herstart nodig</i>)."
+msgstr "Kies een bedieningsstijl (<i>herstart nodig</i>)."
 
 #: sabnzbd/skintext.py:263
 msgid "Secondary Web Interface"
@@ -2028,7 +2030,7 @@ msgstr "Secundair Gebruikersinterface"
 
 #: sabnzbd/skintext.py:264
 msgid "Activate an alternative skin."
-msgstr "Aktiveer secundaire skin (<i>herstart nodig</i>)."
+msgstr "Aktiveer een tweede bedieningsstijl (<i>herstart nodig</i>)."
 
 #: sabnzbd/skintext.py:265
 msgid "Web server authentication"
@@ -2141,8 +2143,8 @@ msgid ""
 "List of file extensions that should be deleted after download.<br />For "
 "example: <b>.nfo</b> or <b>.nfo, .sfv</b>"
 msgstr ""
-"Lijst van bestand extensies die verwijderd worden<br />Voorbeeld:  "
-"<b>.nfo</b> or <b>.nfo, .sfv</b>"
+"Lijst van bestand extensies die verwijderd worden<br />Voorbeeld: "
+"<b>.nfo</b> of <b>.nfo, .sfv</b>"
 
 #: sabnzbd/skintext.py:291
 msgid "Save Changes"
@@ -2353,7 +2355,7 @@ msgstr "Snelle controle toestaan"
 
 #: sabnzbd/skintext.py:340
 msgid "Skip par2 checking when files are 100% valid."
-msgstr "Geen uitgebreide PAR2 controle als files 100% in orde zijn."
+msgstr "Geen uitgebreide PAR2 controle als de bestanden 100% in orde zijn."
 
 #: sabnzbd/skintext.py:341
 msgid "Enable Unrar"
@@ -2512,7 +2514,7 @@ msgstr "MultiCore Par2 toestaan"
 #: sabnzbd/skintext.py:377 # sabnzbd/skintext.py:379 # sabnzbd/skintext.py:381
 #: sabnzbd/skintext.py:383
 msgid "Read the Wiki Help on this!"
-msgstr "Lees hier voor de Wiki pagina!"
+msgstr "Lees de Wiki pagina over dit onderwerp"
 
 #: sabnzbd/skintext.py:378
 msgid "Extra PAR2 Parameters"
@@ -2569,15 +2571,15 @@ msgstr "Vervang spaties in map namen"
 
 #: sabnzbd/skintext.py:394
 msgid "Replace spaces with underscores in folder names."
-msgstr "Vervang spaties door onderliggende streepjes in map namen."
+msgstr "Vervang spaties door onderliggende streepjes in namen van mappen."
 
 #: sabnzbd/skintext.py:395
 msgid "Replace dots in Foldername"
-msgstr "Vervang punten in bestandsnamen"
+msgstr "Vervang punten in map namen"
 
 #: sabnzbd/skintext.py:396
 msgid "Replace dots with spaces in folder names."
-msgstr "Verbang punten in bestandsnamen door spaties"
+msgstr "Vervang punten door spaties in namen van mappen."
 
 #: sabnzbd/skintext.py:397
 msgid "Replace Illegal Characters in Folder Names"
@@ -2855,7 +2857,8 @@ msgstr "Zend email voor RSS"
 #: sabnzbd/skintext.py:491
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr ""
-"Zend email wanneer een RSS bron opdrachten<br />aan de queue toevoegd."
+"Zend email wanneer een RSS bron opdrachten<br />aan de wachtrij heeft "
+"toevoegd."
 
 #: sabnzbd/skintext.py:492
 msgid "Email Account Settings"
@@ -2931,19 +2934,19 @@ msgstr "Vul hier je wachtwoord in."
 
 #: sabnzbd/skintext.py:511
 msgid "Bookmark Processing"
-msgstr "Automatische bookmark verwerking"
+msgstr "Automatische bladwijzer verwerking"
 
 #: sabnzbd/skintext.py:512
 msgid "Auto-Fetch Bookmarks"
-msgstr "Bookmarks verwerken"
+msgstr "Bladwijzers ophalen"
 
 #: sabnzbd/skintext.py:513
 msgid "Automatically retrieve jobs from your bookmarks."
-msgstr "Download alle rapporten die gebookmarked zijn?"
+msgstr "Automatisch NZB bestanden van bladwijzers ophalen."
 
 #: sabnzbd/skintext.py:514
 msgid "Get Bookmarks Now"
-msgstr "Download nu alle bookmarks"
+msgstr "Nu ophalen"
 
 #: sabnzbd/skintext.py:515
 msgid "Hide Bookmarks"
@@ -2955,11 +2958,11 @@ msgstr "Bladwijzers tonen"
 
 #: sabnzbd/skintext.py:517
 msgid "Un-Bookmark If Download Complete"
-msgstr "Automatisch bookmark verwijderen"
+msgstr "Bladwijzers achteraf verwijderen"
 
 #: sabnzbd/skintext.py:518
 msgid "Remove from bookmark list when download is complete."
-msgstr "Verwijder bookmark status na voltooide download."
+msgstr "Bladwijzer automatisch verwijderen na succesvolle download."
 
 #: sabnzbd/skintext.py:519
 msgid "Checking Interval"
