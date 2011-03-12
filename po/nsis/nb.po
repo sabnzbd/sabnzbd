@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-18 22:39+0000\n"
+"POT-Creation-Date: 2011-03-10 16:12+0000\n"
 "PO-Revision-Date: 2010-10-06 21:37+0000\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-19 06:06+0000\n"
-"X-Generator: Launchpad (build 12351)\n"
+"X-Launchpad-Export-Date: 2011-03-11 05:05+0000\n"
+"X-Generator: Launchpad (build 12559)\n"
 "Language: no\n"
 
 #: NSIS_Installer.nsi:338
@@ -36,10 +36,8 @@ msgstr ""
 
 #: NSIS_Installer.nsi:370
 msgid ""
-"                  >>>> WARNING <<<<\r\n"
-"\r\n"
-"Please, first check the release notes or go to "
-"http://wiki.sabnzbd.org/introducing-0-6-0 !"
+"                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
 
 #: NSIS_Installer.nsi:378
