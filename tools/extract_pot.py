@@ -187,10 +187,12 @@ dst.write('\n')
 count = 0
 for line in src:
     count += 1
+    if 'Please, first check' in line:
+        pass
     m = RE_NSIS.search(line)
     if m:
         dst.write('#: %s:%s\n' % (NSIS, count))
-        text = m.group(1).replace('$\\"', '\\"').replace('$\\', '\\')
+        text = m.group(1).replace('$\\"', '\\"').replace('$\\', '\\\\')
         dst.write('msgid %s\n' % text)
         dst.write('msgstr ""\n\n')
 dst.close()
