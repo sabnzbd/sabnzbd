@@ -1391,7 +1391,9 @@ def list2cmdline(lst):
     """ convert list to a cmd.exe-compatible command string """
     nlst = []
     for arg in lst:
-        if (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg):
+        if not arg:
+            nlst.append('""')
+        elif (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg):
             nlst.append('"%s"' % arg)
         else:
             nlst.append(arg)

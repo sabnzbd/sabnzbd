@@ -692,12 +692,13 @@ class NzbObject(TryList):
                 self.set_final_name_pw(name)
             if group:
                 self.groups = [str(group)]
+
+            # Re-evaluate results from pre-queue script
+            self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
+            self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
         else:
             accept = 1
 
-        # Re-evaluate results from pre-queue script
-        self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
-        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
 
         # Pause job when above size limit
         limit = cfg.SIZE_LIMIT.get_int()
