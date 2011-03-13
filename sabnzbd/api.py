@@ -77,6 +77,8 @@ def api_handler(kwargs):
     name = kwargs.get('name', '')
     callback = kwargs.get('callback', '')
 
+    if isinstance(mode, list): mode = mode[0]
+    if isinstance(output, list): output = output[0]
     response = _api_table.get(mode, _api_undefined)(name, output, kwargs)
     if output == 'json' and callback:
         response = '%s(%s)' % (callback, response)
