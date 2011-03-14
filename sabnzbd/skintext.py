@@ -201,7 +201,7 @@ SKIN_TEXT = {
     'hideDetails' : TT('Hide details'), #: Button/link hiding History job details
     'showDetails' : TT('Show details'), #: Button/link showing History job details
     'sizeHist' : TT('History Size'), #: History: amount of downloaded data
-    'showFailedHis' : TT('Show Failed'), #: Button or link showing only failed History jobs
+    'showFailedHis' : TT('Show Failed'), #: Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
     'showAllHis' : TT('Show All'), #: Button or link showing all History jobs
     'completed' : TT('Completed'), #: History: job status
     'size' : TT('Size'), #: History table header
@@ -683,7 +683,7 @@ SKIN_TEXT = {
     'Plush-confirmPurgeQ' : TT('Purge the Queue?'),
     'Plush-purge' : TT('Purge'),
     'Plush-left' : TT('left'),
-    'Plush-maxSpeed' : TT('Max Speed'),
+    'Plush-maxSpeed' : TT('Max Speed'), #: Used in speed menu. Split in two lines if too long.
     'Plush-nzo-range' : TT('Range'),
     'Plush-reset' : TT('Reset'),
     'Plush-applySelected' : TT('Apply to Selected'),
