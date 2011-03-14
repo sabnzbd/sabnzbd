@@ -1859,7 +1859,7 @@ msgstr "Grösse des Verlaufs"
 
 #: sabnzbd/skintext.py:204 [Button or link showing only failed History jobs]
 msgid "Show Failed"
-msgstr "Fehlgeschlagene anzeigen"
+msgstr "Nur Fehlgeschlagene"
 
 #: sabnzbd/skintext.py:205 [Button or link showing all History jobs]
 msgid "Show All"
@@ -3556,7 +3556,7 @@ msgstr "rest"
 
 #: sabnzbd/skintext.py:686
 msgid "Max Speed"
-msgstr "Maximale Geschwindigkeit"
+msgstr "Maximale<br/>Geschwindigkeit"
 
 #: sabnzbd/skintext.py:687
 msgid "Range"
