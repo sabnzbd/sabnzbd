@@ -408,7 +408,9 @@ def _api_history(name, output, kwargs):
             return report(output, _MSG_NO_VALUE)
     elif not name:
         history, pnfo_list, bytespersec = build_header(True)
-        history['total_size'], history['month_size'], history['week_size'] = get_history_size()
+        grand, month, week, day = BPSMeter.do.get_sums()
+        history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
+               to_units(grand), to_units(month), to_units(week), to_units(day)
         history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search, failed_only=failed_only)
         return report(output, keyword='history', data=remove_callable(history))
     else:

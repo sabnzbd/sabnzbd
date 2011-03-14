@@ -55,7 +55,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
-     retry_job, build_header, get_history_size, build_history, \
+     retry_job, build_header, build_history, \
      format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
 
 #------------------------------------------------------------------------------
