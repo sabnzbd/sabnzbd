@@ -1868,7 +1868,7 @@ class ConfigScheduling(object):
                 pass
             elif action in _SCHED_ACTIONS:
                 arguments = ''
-            elif action.find(':') > 0:
+            elif action in config.get_servers():
                 if arguments == '1':
                     arguments = action
                     action = 'enable_server'
