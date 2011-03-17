@@ -167,7 +167,7 @@ class NNTP(object):
         try:
             # Windows must do the connection in a seperate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
-            if sabnzbd.WIN32 and not block:
+            if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
