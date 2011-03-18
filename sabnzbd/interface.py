@@ -576,12 +576,7 @@ class NzoPage(object):
         if priority != None and nzo and nzo.priority != int(priority):
             NzbQueue.do.set_priority(nzo_id, priority)
 
-        args = [arg for arg in args if arg != 'save']
-        extra = '/'.join(args)
-        url = cherrypy._urljoin(self.__root, extra)
-        if url and not url.endswith('/'):
-            url += '/'
-        raise dcRaiser(url, {})
+        raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
 
     def bulk_operation(self, nzo_id, kwargs):
         self.__cached_selection = kwargs
