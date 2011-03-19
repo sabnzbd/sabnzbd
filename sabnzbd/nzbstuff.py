@@ -675,6 +675,7 @@ class NzbObject(TryList):
 
         # Determine category and find pp/script values
         self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
+        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
 
         # Run user pre-queue script if needed
         if not reuse:
