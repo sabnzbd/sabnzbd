@@ -843,23 +843,24 @@ class NzbObject(TryList):
         """
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
+        # Looking for the longest name first, minimizes the chance on a mismatch
+        files.sort(lambda x, y: len(y) - len(x))
+
+        nzfs = self.files[:]
+        # The NZFs should be tried shortest first, to improve the chance on a proper match
+        nzfs.sort(lambda x, y: len(x.subject) - len(y.subject))
 
         # Flag files from NZB that already exist as finished
-        for nzf in self.files[:]:
-            alleged_name = nzf.filename
-            filename = alleged_name
-            subject = sanitize_filename(latin1(nzf.subject))
-            ready = alleged_name in files
-            if not ready:
-                for filename in files[:]:
-                    if filename in subject:
-                        ready = True
-                        files.remove(filename)
-                        break
-            if ready:
-                nzf.filename = filename
-                self.handle_par2(nzf, file_done=True)
-                self.remove_nzf(nzf)
+        for filename in files[:]:
+            for nzf in nzfs:
+                subject = sanitize_filename(latin1(nzf.subject))
+                if (nzf.filename == filename) or (subject == filename) or (filename in subject):
+                    nzf.filename = filename
+                    self.handle_par2(nzf, file_done=True)
+                    self.remove_nzf(nzf)
+                    nzfs.remove(nzf)
+                    files.remove(filename)
+                    break
 
         try:
             # Create an NZF for each remaining existing file
@@ -976,24 +977,27 @@ class NzbObject(TryList):
 
         for nzf in self.files:
             assert isinstance(nzf, NzbFile)
-            # Don't try to get an article if server is in try_list of nzf
-            if not nzf.server_in_try_list(server):
-                if not nzf.import_finished:
-                    # Only load NZF when it's a primary server
-                    # or when it's a backup server without active primaries
-                    if server.fillserver ^ sabnzbd.active_primaries():
-                        nzf.finish_import()
-                        # Still not finished? Something went wrong...
-                        if not nzf.import_finished:
-                            logging.error(Ta('Error importing %s'), nzf)
-                            nzf_remove_list.append(nzf)
+            if nzf.deleted:
+                logging.debug('Skipping existing file %s', nzf.filename or nzf.subject)
+            else:
+                # Don't try to get an article if server is in try_list of nzf
+                if not nzf.server_in_try_list(server):
+                    if not nzf.import_finished:
+                        # Only load NZF when it's a primary server
+                        # or when it's a backup server without active primaries
+                        if server.fillserver ^ sabnzbd.active_primaries():
+                            nzf.finish_import()
+                            # Still not finished? Something went wrong...
+                            if not nzf.import_finished:
+                                logging.error(Ta('Error importing %s'), nzf)
+                                nzf_remove_list.append(nzf)
+                                continue
+                        else:
                             continue
-                    else:
-                        continue
 
-                article = nzf.get_article(server)
-                if article:
-                    break
+                    article = nzf.get_article(server)
+                    if article:
+                        break
 
         for nzf in nzf_remove_list:
             self.files.remove(nzf)
