@@ -166,6 +166,7 @@ class RSSQueue(object):
         #           title : Title
         #           url : URL or MsgId
         #           cat : category
+        #           orgcat : category as read from feed
         #           pp : pp
         #           script : script
         #           prio : priority
@@ -295,7 +296,7 @@ class RSSQueue(object):
                 title = unicoder(atitle)
             else:
                 link = entry
-                category = jobs[link].get('cat', '')
+                category = jobs[link].get('orgcat', '')
                 if category in ('', '*'):
                     category = None
                 atitle = latin1(jobs[link].get('title', ''))
@@ -377,12 +378,12 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, 'G', category, myCat, myPP, myScript,
                                     act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, 'B', myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, 'B', category, myCat, myPP, myScript,
                                     False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
@@ -492,7 +493,7 @@ class RSSQueue(object):
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 
-def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
+def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '': script = None
@@ -500,6 +501,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
 
     jobs[link] = {}
     jobs[link]['order'] = order
+    jobs[link]['orgcat'] = orgcat
     if special_rss_site(link):
         nzbname = None
     else:
