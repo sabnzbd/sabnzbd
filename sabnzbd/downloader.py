@@ -345,8 +345,7 @@ class Downloader(Thread):
                         try:
                             logging.info("%s@%s:%s: Initiating connection",
                                               nw.thrdnum, server.host, server.port)
-                            nw.init_connect()
-                            self.write_fds[nw.nntp.sock.fileno()] = nw
+                            nw.init_connect(self.write_fds)
                         except:
                             logging.error(Ta('Failed to initialize %s@%s:%s'),
                                               nw.thrdnum, server.host,

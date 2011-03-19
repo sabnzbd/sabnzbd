@@ -103,7 +103,8 @@ def GetServerParms(host, port):
             return None
 
 
-def con(sock, host, port, sslenabled, nntp):
+def con(sock, host, port, sslenabled, write_fds, nntp):
+    assert isinstance(nntp, NNTP)
     try:
         sock.connect((host, port))
         sock.setblocking(0)
@@ -114,6 +115,12 @@ def con(sock, host, port, sslenabled, nntp):
                     break
                 except WantReadError:
                     select.select([sock], [], [], 1.0)
+
+        # Now it's safe to add the socket to the list of active sockets.
+        # 'write_fds' is an attribute of the Downloader singleton.
+        # This direct access is needed to prevent multi-threading sync problems.
+        write_fds[sock.fileno()] = nntp.nw
+
     except socket.error, e:
         try:
             # socket.error can either return a string or a tuple
@@ -133,10 +140,11 @@ def con(sock, host, port, sslenabled, nntp):
         nntp.error(e)
 
 class NNTP(object):
-    def __init__(self, host, port, info, sslenabled, nntp, user=None, password=None, block=False):
+    def __init__(self, host, port, info, sslenabled, nw, user=None, password=None, block=False, write_fds=None):
+        assert isinstance(nw, NewsWrapper)
         self.host = host
         self.port = port
-        self.nntp = nntp
+        self.nw = nw
         self.blocking = block
         self.error_msg = None
         if not info:
@@ -168,7 +176,7 @@ class NNTP(object):
             # Windows must do the connection in a seperate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
             if not block:
-                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
+                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
                 if block:
@@ -206,13 +214,13 @@ class NNTP(object):
         if 'SSL23_GET_SERVER_HELLO' in str(error):
             error = 'This server does not allow SSL on this port'
         msg = "Failed to connect: %s" % (str(error))
-        msg = "%s %s@%s:%s" % (msg, self.nntp.thrdnum, self.host, self.port)
+        msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
         if self.blocking:
             raise socket.error(errno.ECONNREFUSED, msg)
         else:
             logging.info(msg)
-            self.nntp.server.warning = msg
+            self.nw.server.warning = msg
 
 class NewsWrapper(object):
     def __init__(self, server, thrdnum, block=False):
@@ -239,9 +247,9 @@ class NewsWrapper(object):
         self.pass_ok = False
         self.force_login = False
 
-    def init_connect(self):
+    def init_connect(self, write_fds):
         self.nntp = NNTP(self.server.host, self.server.port, self.server.info, self.server.ssl, self,
-                         self.server.username, self.server.password, self.blocking)
+                         self.server.username, self.server.password, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
         self.timeout = time.time() + self.server.timeout
