@@ -243,7 +243,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $matched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form action="config/rss/download">
+        <td><form action="config/rss/download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" name="feed" value="$feed"/>
@@ -271,7 +271,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $unmatched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form id="config/rss/download">
+        <td><form action="config/rss/download" method="get">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" name="nzbname" value="$job[4]"/>
                 <input type="hidden" value="$feed" name="feed"/>
