@@ -329,7 +329,6 @@ def process_job(nzo):
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                 try:
                     collapse_folder(tmp_workdir_complete, workdir_complete)
-                    nzo.final_name = os.path.basename(workdir_complete)
                 except:
                     logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
                     logging.info("Traceback: ", exc_info = True)
