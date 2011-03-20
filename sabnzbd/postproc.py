@@ -175,6 +175,7 @@ class PostProcessor(Thread):
 #------------------------------------------------------------------------------
 def process_job(nzo):
     """ Process one job """
+    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
     start = time.time()
 
     # keep track of whether we can continue
@@ -309,7 +310,7 @@ def process_job(nzo):
                 cleanup_list(tmp_workdir_complete, True)
 
                 ## Check if this is an NZB-only download, if so redirect to queue
-                nzb_list = nzb_redirect(tmp_workdir_complete, nzo.pp, script, cat, priority=nzo.priority)
+                nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, cat, priority=nzo.priority)
                 if nzb_list:
                     nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
                     try:
@@ -603,7 +604,7 @@ def prefix(path, pre):
     return os.path.join(p, pre + d)
 
 
-def nzb_redirect(wdir, pp, script, cat, priority):
+def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     """ Check if this job contains only NZB files,
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
@@ -619,11 +620,15 @@ def nzb_redirect(wdir, pp, script, cat, priority):
         if os.path.splitext(file_)[1].lower() != '.nzb':
             return lst
 
+    # For a single NZB, use the current job name
+    if len(files) != 1:
+        nzbname = None
+
     # Process all NZB files
     for file_ in files:
         if file_.lower().endswith('.nzb'):
             dirscanner.ProcessSingleFile(file_, os.path.join(wdir, file_), pp, script, cat,
-                                         priority=priority, keep=False, dup_check=False)
+                                         priority=priority, keep=False, dup_check=False, nzbname=nzbname)
             lst.append(file_)
 
     return lst
