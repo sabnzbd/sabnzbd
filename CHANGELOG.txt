@@ -1,4 +1,24 @@
 -------------------------------------------------------------------------------
+ 0.6.0Beta4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Unix/OSX: fixed download hangup when having non-responding servers
+- Fixed paging problem in Plush
+- Plush now uses full window width
+- New server could be not added in "disabled" mode
+- Prevent a discarded duplicate job from showing up as an orphan
+- Fixed disabled default script in Plush
+- Emails to multiple recipients are now sent per recipient
+  allowing more flexibility in email templates.
+- Moved "email test" button to Config->Email
+- Plush cookies renamed to prevent interference by older versions
+- Stop "growl"-ing all queued jobs at startup (OSX)
+- Unix/OSX: prevent queue lockup when server connect times out
+- Fix problem with setting a scheduled server action
+- The API should give the same byte totals as the UI
+- Move email test to Config->Email
+- Fix loss of PP settings when retrying
+- When re-evaluating RSS entries, use original RSS categories
+-------------------------------------------------------------------------------
  0.6.0Beta3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed odd post-processing after upgrade
