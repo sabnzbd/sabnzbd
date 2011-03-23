@@ -1114,7 +1114,7 @@ msgstr "%s Artikel hatten ein ungültiges Format"
 
 #: sabnzbd/nzbstuff.py:957
 msgid "%s articles were missing"
-msgstr "% Artikel fehlten"
+msgstr "%s Artikel fehlten"
 
 #: sabnzbd/nzbstuff.py:986 [Error message]
 msgid "Error importing %s"
