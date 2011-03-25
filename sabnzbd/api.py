@@ -1349,7 +1349,7 @@ def Tspec(txt):
     """ Translate special terms """
     if txt == 'None':
         return T('None')
-    elif txt == 'Default':
+    elif txt in ('Default', '*'):
         return T('Default')
     else:
         return txt

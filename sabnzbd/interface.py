@@ -2072,8 +2072,7 @@ class ConfigSorting(object):
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw)()
-        conf['cat_list'] = list_cats(True)
-        #tvSortList = []
+        conf['cat_list'] = list_cats(False)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
