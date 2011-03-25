@@ -119,7 +119,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         # Now it's safe to add the socket to the list of active sockets.
         # 'write_fds' is an attribute of the Downloader singleton.
         # This direct access is needed to prevent multi-threading sync problems.
-        if write_fds:
+        if write_fds is not None:
             write_fds[sock.fileno()] = nntp.nw
 
     except socket.error, e:
