@@ -446,17 +446,21 @@ def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
     else:
         passwords = []
         pw_file = cfg.password_file.get_path()
-        try:
-            pwf = open(pw_file, 'r')
-            passwords = pwf.read().split('\n')
-            # Remove empty lines and space-only passwords and remove surrounding spaces
-            passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
-            pwf.close()
-            logging.info('Read the passwords file %s', pw_file)
-        except IOError:
-            pass
+        if pw_file:
+            try:
+                pwf = open(pw_file, 'r')
+                passwords = pwf.read().split('\n')
+                # Remove empty lines and space-only passwords and remove surrounding spaces
+                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+                pwf.close()
+                logging.info('Read the passwords file %s', pw_file)
+            except IOError:
+                logging.info('Failed to read the passwords file %s', pw_file)
 
-    if not passwords or not nzo.encrypted:
+    if nzo.password:
+        # If an explicit password was set, add a retry without password, just in case.
+        passwords.append('')
+    elif not passwords or not nzo.encrypted:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, '')
