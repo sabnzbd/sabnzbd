@@ -17,6 +17,7 @@ jQuery(function($){
 		blockRefresh:			$.cookie('plushBlockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
 		failedOnly:				$.cookie('plushFailedOnly') 		 == 1 ? 1 : 0,		// prevent refreshing when hovering queue
 		multiOps:               $.cookie('plushMultiOps') 		 == 1 ? true : false, // is multi-operations menu visible in queue
+		noTopMenu:              $.cookie('plushNoTopMenu') 		 == 1 ? false : true, // is top menu visible
 		multiOpsChecks:         null,
 
 		// ***************************************************************
@@ -276,6 +277,19 @@ jQuery(function($){
 			});
 			if ($.plush.multiOps)
 				$('#multiops_toggle').trigger('click');
+
+			$('#topmenu_toggle').click(function(){
+				if( $('#topmenu_bar').is(':visible') ) { // hide
+					$('#topmenu_bar').hide();
+					$.plush.noTopMenu = true;
+				} else { // show
+					$('#topmenu_bar').show();
+					$.plush.noTopMenu = false;
+				}
+				$.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365, path: '/'  });
+			});
+			if ($.plush.noTopMenu)
+				$('#topmenu_toggle').trigger('click');
 
 			// Manual refresh
 			$('#manual_refresh_wrapper').click(function(e){

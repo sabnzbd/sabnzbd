@@ -69,6 +69,7 @@
 <body#if $pane=="Nzo"# class="nzo"#else if $pane!="Main"# class="config_body"#end if#>
 <div id="master-width">
 	<div class="wrapper">
+	  <div id="topmenu_bar" style="display:none">
 		<div class="navigation">
 			<ul class="menu" id="navigation_menu_right">
 			#if $pane=="Main"#
@@ -99,6 +100,7 @@
 			    #if $warning#&sdot; <a id="warning_message">asdfasdf$warning.replace(' ','&nbsp;')</a>#end if#
 			#end if#
 		</div>
+	  </div>
 	</div>
 
 	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>

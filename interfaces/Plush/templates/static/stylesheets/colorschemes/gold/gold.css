@@ -919,6 +919,8 @@ tr:hover .nzb_status_grippie {
 
 .sprite_ql_cross_on { cursor: pointer; }
 
+#topmenu_bar {
+}
 
 #multiops_bar {
 	height:51px;

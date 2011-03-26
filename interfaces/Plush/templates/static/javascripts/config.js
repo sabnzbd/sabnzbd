@@ -3,6 +3,10 @@
 
 jQuery(document).ready(function($){
 
+	// Top Menu
+	var noTopMenu = $.cookie('plushNoTopMenu')  ? $.cookie('plushNoTopMenu')  : 0;
+	$('#topmenu_bar').show();
+
 	// Container width
 	var containerWidth = $.cookie('plushContainerWidth')  ? $.cookie('plushContainerWidth')  : '100%';
 	$('#master-width').css('width',containerWidth);

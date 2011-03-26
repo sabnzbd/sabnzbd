@@ -672,6 +672,7 @@ SKIN_TEXT = {
     'Plush-pauseForPrompt' : TT('Pause for how many minutes?'),
     'Plush-pauseFor' : TT('Pause for...'),
     'Plush-multiOperations' : TT('Multi-Operations'),
+    'Plush-topMenu' : TT('Top Menu'),
     'Plush-onQueueFinish' : TT('On Finish'),
     'Plush-sort' : TT('Sort'),
     'Plush-sortAgeAsc' : TT('Sort by Age <small>(Oldest&rarr;Newest)</small>'),
