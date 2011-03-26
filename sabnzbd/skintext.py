@@ -41,6 +41,7 @@ SKIN_TEXT = {
     'post-QuickCheck'    : TT('Quick Check...'), #: PP status
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
+    'post-Grabbing'      : TT('Get NZB'), #: Pseudo-PP status, in reality used for Grabbing status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
     'sch-action'         : TT('Action'), #:  #: Config->Scheduler
