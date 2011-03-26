@@ -30,9 +30,9 @@
 	// set the page title here (due to localizations)
 	<!--#if $noofslots < 1 #-->
 		<!--#if $paused#-->
-		document.title = '$T('ft-paused') | SABnzbd Plush';
+		document.title = '$T('ft-paused') | SABnzbd $version';
 		<!--#else#-->
-		document.title = '$T('Plush-idle') | SABnzbd Plush';
+		document.title = '$T('Plush-idle') | SABnzbd $version';
 		<!--#end if#-->
 	<!--#else if $paused#-->
 		document.title = '$T('ft-paused') | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') $T('Plush-left') | $noofslots NZBs';
