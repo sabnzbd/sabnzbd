@@ -293,13 +293,14 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, err=''):
     """Abort program because of CherryPy troubles
     """
-    logging.error(Ta('Failed to start web-interface'))
-    if '13' in err:
-        panic_xport(browserhost, cherryport)
-    elif '49' in err:
-        panic_host(browserhost, cherryport)
-    else:
-        panic_port(browserhost, cherryport)
+    logging.error(Ta('Failed to start web-interface') + ' : ' + str(err))
+    if not sabnzbd.DAEMON:
+        if '13' in err:
+            panic_xport(browserhost, cherryport)
+        elif '49' in err:
+            panic_host(browserhost, cherryport)
+        else:
+            panic_port(browserhost, cherryport)
     sabnzbd.halt()
     exit_sab(2)
 
@@ -1338,13 +1339,13 @@ def main():
                 sabnzbd.halt()
                 exit_sab(2)
         else:
-            logging.debug("Failed to start web-interface: ", exc_info = True)
+            logging.error("Failed to start web-interface: ", exc_info = True)
             Bail_Out(browserhost, cherryport, str(error))
     except socket.error, error:
-        logging.debug("Failed to start web-interface: ", exc_info = True)
-        Bail_Out(browserhost, cherryport, access=True)
+        logging.error("Failed to start web-interface: ", exc_info = True)
+        Bail_Out(browserhost, cherryport)
     except:
-        logging.debug("Failed to start web-interface: ", exc_info = True)
+        logging.error("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport)
 
     # Wait for server to become ready
