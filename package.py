@@ -371,7 +371,7 @@ if target == 'app':
     )
     OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
-       #'CFBundleName':'SABnzbd+',
+       #'CFBundleName':'SABnzbd',
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
        'CFBundleIdentifier':'org.sabnzbd.team',

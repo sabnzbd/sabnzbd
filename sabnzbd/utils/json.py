@@ -20,7 +20,7 @@ import types
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ##    Remark by ShyPike: removed the decoding of JSON,
-##                       because it's not used by SABnzbd+
+##                       because it's not used by SABnzbd
 ##    The full source package can be obtained from:
 ##    http://sourceforge.net/projects/json-py
 

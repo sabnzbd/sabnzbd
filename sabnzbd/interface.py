@@ -2258,7 +2258,7 @@ def badParameterResponse(msg):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-           <title>SABnzbd+ %s - %s</title>
+           <title>SABnzbd %s - %s</title>
 </head>
 <body>
 <h3>%s</h3>

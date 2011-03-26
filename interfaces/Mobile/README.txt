@@ -1,5 +1,5 @@
 
-Mobile 0.1 for SABnzbd+ 0.5 | Sept 01 2009
+Mobile 0.1 for SABnzbd 0.6 | Sept 01 2009
 assembled by pairofdimes - see LICENSE-CC.txt
 
 ==============

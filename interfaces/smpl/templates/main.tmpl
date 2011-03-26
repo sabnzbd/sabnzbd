@@ -4,14 +4,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>SABnzbd+</title>
+    <title>SABnzbd</title>
     <link rel="stylesheet" type="text/css" href="static/stylesheets/smpl.css?smpl$version"/>
     <!--#if $color_scheme#-->
         <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/${color_scheme}.css?smpl$version"/>
     <!--#else#-->
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/white.css?smpl$version"/>
     <!--#end if#-->
-	<link href="rss?mode=history&apikey=$session" rel="alternate" type="application/rss+xml" title="SABnzbd+ History" />
+	<link href="rss?mode=history&apikey=$session" rel="alternate" type="application/rss+xml" title="SABnzbd History" />
 	<link rel="shortcut icon" href="static/images/favicon.ico" />
 
 	<script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
@@ -989,7 +989,7 @@ function loadingJSON(){
             {
 			    document.getElementById("status").innerHTML = "<span class='paused'>$T('smpl-paused') ("+pause_int+")</span>";
             }
-            document.title = "SABnzbd+ | $T('smpl-paused')";
+            document.title = "SABnzbd | $T('smpl-paused')";
             document.getElementById("status2").innerHTML = "$T('link-resume')";
             status2 = 1
 						//alert("paused");
@@ -997,14 +997,14 @@ function loadingJSON(){
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>$T('smpl-downloading')</span>";
     		totalTimeRemain = info["timeleft"];
-            dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"B/s";
+            dltitle = "SABnzbd | "+totalTimeRemain+" | "+speed+"B/s";
             document.title = dltitle;
             document.getElementById("status2").innerHTML = "$T('link-pause')";
             status2 = 0
 						//alert("down");
 		} else {
 			document.getElementById("status").innerHTML = "<span class='idle'>$T('smpl-idle')</span>";
-            document.title = "SABnzbd+ | $T('smpl-idle')";
+            document.title = "SABnzbd | $T('smpl-idle')";
             document.getElementById("status2").innerHTML = "$T('link-pause')";
             status2 = 0
 						//alert("idle");
@@ -1093,7 +1093,7 @@ function loadingJSON(){
 				$T('menu-queue'): <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<div id="logo">
-			<a href=""><img id="title" src="static/sabnzbd_small4.png" alt="sabnzbd+" /></a>
+			<a href=""><img id="title" src="static/sabnzbd_small4.png" alt="sabnzbd" /></a>
 			<h2>$T('signOn')</h2>
 		</div>
             <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
