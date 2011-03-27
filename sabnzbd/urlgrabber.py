@@ -53,6 +53,7 @@ class URLGrabber(Thread):
             url, nzo = tup
             self.queue.put((url, nzo, _RETRIES))
         self.shutdown = False
+        self.matrix_wait = 0
         URLGrabber.do = self
 
     def add(self, url, future_nzo):
@@ -75,6 +76,9 @@ class URLGrabber(Thread):
         self.shutdown = False
 
         while not self.shutdown:
+            # Don't pound the website!
+            time.sleep(5.0)
+
             (url, future_nzo, retry_count) = self.queue.get()
             if not url:
                 continue
@@ -94,6 +98,11 @@ class URLGrabber(Thread):
 
                 # Add nzbmatrix credentials if needed
                 url, matrix_id = _matrix_url(url)
+
+                # When still waiting for nzbmatrix wait period, requeue
+                if matrix_id and self.matrix_wait > time.time():
+                    self.queue.put((url, future_nzo, retry_count))
+                    continue
 
                 # _grab_url cannot reside in a function, because the tempfile
                 # would not survive the end of the function
@@ -139,7 +148,12 @@ class URLGrabber(Thread):
                                     filename = item[item.index("filename=") + 9:].strip(';').strip('"')
 
                 if matrix_id:
-                    fn, msg, retry = _analyse_matrix(fn, matrix_id)
+                    fn, msg, retry, wait = _analyse_matrix(fn, matrix_id)
+                    if retry and wait > 0:
+                        self.matrix_wait = time.time() + wait
+                        logging.debug('Retry URL %s after waiting', url)
+                        self.queue.put((url, future_nzo, retry_count))
+                        continue
                     category = _MATRIX_MAP.get(category, category)
                 else:
                     msg = ''
@@ -202,9 +216,6 @@ class URLGrabber(Thread):
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
 
-            # Don't pound the website!
-            time.sleep(5.0)
-
 
 
 #-------------------------------------------------------------------------------
@@ -231,47 +242,46 @@ _RE_MATRIX_ERR = re.compile(r'please_wait[_ ]+(\d+)', re.I)
 
 def _analyse_matrix(fn, matrix_id):
     """ Analyse respons of nzbmatrix
+        returns fn|None, error-message|None, retry, wait-seconds
     """
     msg = ''
     if not fn:
         # No response, just retry
-        return (None, msg, True)
+        return (None, msg, True, 0)
     try:
         f = open(fn, 'r')
         data = f.read(40)
         f.close()
     except:
-        return (None, msg, True)
+        return (None, msg, True, 0)
 
     # Check for an error response
     if data and data.startswith('error'):
         wait = 0
         # Check for daily limit
-        if 'daily_limit' in data:
-            # Daily limit reached, just wait 2 minutes before trying again
-            wait = 120
+        if 'daily_limit' in data or 'limit is reached' in data:
+            # Daily limit reached, just wait an hour before trying again
+            wait = 3600
         else:
             # Check if we are required to wait - if so sleep the urlgrabber
             m = _RE_MATRIX_ERR.search(data)
             if m:
-                wait = int(m.group(1))
+                wait = min(int(m.group(1)), 600)
             else:
                 # Clear error message, don't retry
                 msg = Ta('Problem accessing nzbmatrix server (%s)') % data
-                return (None, msg, False)
+                return (None, msg, False, 0)
         if wait:
-            wait = min(wait, 120)
-            logging.debug('Sleeping URL grabber %s sec', wait)
-            time.sleep(wait)
+            logging.debug('Further NzbMatrix grabs after %s sec', wait)
             # Return, but tell the urlgrabber to retry
-            return (None, msg, True)
+            return (None, msg, True, wait)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably a temporary problem, keep trying
         msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
-        return (None, msg, True)
+        return (None, msg, True, 0)
 
-    return fn, msg, False
+    return fn, msg, False, 0
 
 
 #------------------------------------------------------------------------------
