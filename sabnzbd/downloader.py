@@ -195,15 +195,16 @@ class Downloader(Thread):
 
     @synchronized_CV
     def pause(self, save=True):
-        logging.info("Pausing")
-        osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
-        self.paused = True
-        if self.is_paused():
-            BPSMeter.do.reset()
-        if cfg.autodisconnect():
-            self.disconnect()
-        if save:
-            sabnzbd.save_state()
+        if not self.paused:
+            self.paused = True
+            logging.info("Pausing")
+            osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
+            if self.is_paused():
+                BPSMeter.do.reset()
+            if cfg.autodisconnect():
+                self.disconnect()
+            if save:
+                sabnzbd.save_state()
 
     @synchronized_CV
     def delay(self):

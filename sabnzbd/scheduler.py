@@ -48,10 +48,10 @@ def schedule_guard():
     SCHEDULE_GUARD_FLAG = True
 
 def pp_pause():
-    PostProcessor.do.pause = True
+    PostProcessor.do.paused = True
 
 def pp_resume():
-    PostProcessor.do.pause = False
+    PostProcessor.do.paused = False
 
 
 def init():
@@ -185,7 +185,7 @@ def restart(force=False):
             SCHEDULE_GUARD_FLAG = False
             stop()
 
-            analyse(sabnzbd.sabnzbd.downloader.Downloader.do.paused)
+            analyse(sabnzbd.downloader.Downloader.do.paused)
 
             init()
             start()
@@ -299,9 +299,9 @@ def analyse(was_paused=False):
             sabnzbd.pause_all()
         else:
             sabnzbd.unpause_all()
-        sabnzbd.downloader.Downloader.do.set_paused(paused or paused_all)
+        sabnzbd.downloader.Downloader.do.pause(paused or paused_all, save=True)
 
-    PostProcessor.do.pause = pause_post
+    PostProcessor.do.paused = pause_post
     if speedlimit:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
     for serv in servers:
