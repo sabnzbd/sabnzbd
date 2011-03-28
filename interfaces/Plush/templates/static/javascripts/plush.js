@@ -261,6 +261,36 @@ jQuery(function($){
 				});
 			});
 
+			// Get Bookmarks
+			$('#get_bookmarks_now').click(function() {
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'newzbin', name:'get_bookmarks', apikey: $.plush.apikey},
+					success: $.plush.RefreshQueue
+				});
+			});
+
+			// Get RSS
+			$('#get_rss_now').click(function() {
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'rss_now', apikey: $.plush.apikey},
+					success: $.plush.RefreshQueue
+				});
+			});
+
+			// Get Watched folder
+			$('#get_watched_now').click(function() {
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'watched_now', apikey: $.plush.apikey},
+					success: $.plush.RefreshQueue
+				});
+			});
+
 			$('#multiops_toggle').click(function(){
 				if( $('#multiops_bar').is(':visible') ) { // hide
 					$('#multiops_bar').hide();

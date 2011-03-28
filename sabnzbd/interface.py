@@ -257,6 +257,8 @@ class MainPage(object):
 
             info['cat'] = 'Default'
             info['cat_list'] = list_cats(True)
+            info['have_rss_defined'] = bool(config.get_rss())
+            info['have_watched_dir'] = bool(cfg.dirscan_dir())
 
             info['warning'] = ''
             if cfg.enable_unrar():

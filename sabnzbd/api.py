@@ -52,6 +52,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
+import sabnzbd.rss
 
 
 #------------------------------------------------------------------------------
@@ -577,6 +578,19 @@ def _api_eval_sort(name, output, kwargs):
         return report(output, keyword='result', data=path)
 
 
+def _api_watched_now(name, output, kwargs):
+    """ API: accepts output """
+    sabnzbd.dirscanner.dirscan()
+    return report(output)
+
+
+def _api_rss_now(name, output, kwargs):
+    """ API: accepts output """
+    # Run RSS scan async, because it can take a long time
+    scheduler.force_rss()
+    return report(output)
+
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -694,7 +708,9 @@ _api_table = {
     'disconnect'      : _api_disconnect,
     'osx_icon'        : _api_osx_icon,
     'rescan'          : _api_rescan,
-    'eval_sort'       : _api_eval_sort
+    'eval_sort'       : _api_eval_sort,
+    'watched_now'     : _api_watched_now,
+    'rss_now'         : _api_rss_now
 }
 
 _api_queue_table = {

@@ -25,6 +25,9 @@
           			<li class="main_sprite_container sprite_q_queue">
                         <a class="sf-with-ul">$T('menu-queue')</a>
                         <ul>
+                            <!--#if $varExists('newzbinDetails')#--><li><a id="get_bookmarks_now" class="pointer">$T('link-getBookmarks')</a></li><!--#end if#-->
+                            <!--#if $have_rss_defined#--><li><a id="get_rss_now" class="pointer">$T('button-rssNow')</a></li><!--#end if#-->
+                            <!--#if $have_watched_dir#--><li><a id="get_watched_now" class="pointer">$T('sch-scan_folder')</a></li><!--#end if#-->
                             <li><a id="topmenu_toggle" class="pointer">$T('Plush-topMenu')</a></li>
                             <li><a id="multiops_toggle" class="pointer">$T('Plush-multiOperations')</a></li>
                             <li>

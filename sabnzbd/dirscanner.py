@@ -378,5 +378,5 @@ class DirScanner(threading.Thread):
 
 def dirscan():
     """ Wrapper required for scheduler """
-    logging.info('Scheduled folder scan')
+    logging.info('Scheduled or manual watched folder scan')
     DirScanner.do.scan()

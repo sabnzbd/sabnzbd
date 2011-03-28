@@ -2950,7 +2950,7 @@ msgstr "Automatisch NZB bestanden van bladwijzers ophalen."
 
 #: sabnzbd/skintext.py:514
 msgid "Get Bookmarks Now"
-msgstr "Nu ophalen"
+msgstr "Bladwijzers nu ophalen"
 
 #: sabnzbd/skintext.py:515
 msgid "Hide Bookmarks"
