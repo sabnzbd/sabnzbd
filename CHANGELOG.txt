@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.6.0Beta5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush: added TopMenu-toggle and show warning-line only when needed
+- Plush: added "Now" menu entries for bookmarks, RSS and watched folder
+- Fix failing scheduled event "pause-postprocessing"
+- Improve handling of nzbmatrix waiting times
+- Fix sub-optimal handling of password tries on encrypted rar files
+- Allow "Default" category to be picked for all Sort functions
+- Fix server test function
+-------------------------------------------------------------------------------
  0.6.0Beta4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Unix/OSX: fixed download hangup when having non-responding servers
