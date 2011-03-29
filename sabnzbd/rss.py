@@ -98,9 +98,9 @@ def clear_downloaded(feed):
 ################################################################################
 
 def notdefault(item):
-    """ Return True if not None/"None"/"Default"/""
+    """ Return True if not 'Default'/'*'/''
     """
-    return bool(item) and isinstance(item, str) and item.lower() not in ('default', 'none', '*')
+    return bool(item) and isinstance(item, str) and item.lower() not in ('default', '*', '')
 
 
 def ListUris():
@@ -213,11 +213,17 @@ class RSSQueue(object):
 
         uri = feeds.uri()
         defCat = feeds.cat()
-        if defCat in ('', '*'):
+        if not notdefault(defCat):
             defCat = None
         defPP = feeds.pp()
+        if not notdefault(defPP):
+            defPP = None
         defScript = feeds.script()
+        if not notdefault(defScript):
+            defScript = None
         defPrio = feeds.priority()
+        if not notdefault(defPrio):
+            defPrio = None
 
         # Preparations, convert filters to regex's
         regexes = []
