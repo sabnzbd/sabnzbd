@@ -299,7 +299,7 @@ def analyse(was_paused=False):
             sabnzbd.pause_all()
         else:
             sabnzbd.unpause_all()
-        sabnzbd.downloader.Downloader.do.pause(paused or paused_all)
+        sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
     PostProcessor.do.paused = pause_post
     if speedlimit:

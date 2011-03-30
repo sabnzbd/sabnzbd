@@ -185,7 +185,8 @@ class Downloader(Thread):
         return primary
 
     @synchronized_CV
-    def set_paused(self, state):
+    def set_paused_state(self, state):
+        """ Set Downloader to specified paused state """
         self.paused = state
 
     @synchronized_CV
@@ -195,6 +196,8 @@ class Downloader(Thread):
 
     @synchronized_CV
     def pause(self, save=True):
+        """ Pause the downloader, optionally saving admin
+        """
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
