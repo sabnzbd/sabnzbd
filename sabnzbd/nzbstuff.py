@@ -776,7 +776,7 @@ class NzbObject(TryList):
             if fn:
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
                 ## Is a par2file and repair mode activated
-                if par2match and self.repair:
+                if par2match and (self.repair or cfg.allow_streaming()):
                     head = par2match.group(1)
                     nzf.set_par2(par2match.group(1),
                                 par2match.group(2),
