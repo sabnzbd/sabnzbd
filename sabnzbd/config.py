@@ -772,6 +772,14 @@ def define_categories(force=False):
         pass
 
 
+def old_def(item, default):
+    """ Get old INI setting from [misc], if missing use 'default' """
+    try:
+        return CFG['misc'][item]
+    except KeyError:
+        return default
+
+
 def get_categories(cat=0):
     """ Return link to categories section.
         This section will always contain special category '*'
@@ -782,7 +790,8 @@ def get_categories(cat=0):
         database['categories'] = {}
     cats = database['categories']
     if '*' not in cats:
-        ConfigCat('*', {'pp' : '3', 'script' : 'None', 'priority' : NORMAL_PRIORITY})
+        ConfigCat('*', {'pp' : old_def('dirscan_opts', '3'), 'script' : old_def('dirscan_script', 'None'), \
+                        'priority' : old_def('dirscan_priority', NORMAL_PRIORITY)})
         save_config(True)
     if not isinstance(cat, int):
         try:
