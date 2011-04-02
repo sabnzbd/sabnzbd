@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.0RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix hangup during scheduled restart.
+- OSX: Launch browser from menu bar with HTTPS when only HTTPS is available.
+- Fix problem that caused SABnzbd always to startup in paused state.
+-------------------------------------------------------------------------------
  0.6.0Beta5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Plush: added TopMenu-toggle and show warning-line only when needed
