@@ -1431,9 +1431,13 @@ def main():
         ### 3 sec polling tasks
         # Check for auto-restart request
         if cherrypy.engine.execv:
-            scheduler.stop()
-            sabnzbd.halt()
-            cherrypy.engine.exit()
+            if sabnzbd.SCHED_RESTART:
+                scheduler.abort()
+                sabnzbd.halt()
+            else:
+                scheduler.stop()
+                sabnzbd.halt()
+                cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
             if sabnzbd.downloader.Downloader.do.paused:
                 re_argv.append('-p')

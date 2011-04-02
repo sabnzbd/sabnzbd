@@ -124,6 +124,7 @@ RESTART_REQ = False
 OSX_ICON = 1
 PAUSED_ALL = False
 OLD_QUEUE = False
+SCHED_RESTART = False # Set when restarted through scheduler
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -643,11 +644,11 @@ def shutdown_program():
 
 def restart_program():
     """ Restart program (used by scheduler) """
-    logging.info("Performing sabnzbd restart")
-    sabnzbd.halt()
-    while __INITIALIZED__:
-        time.sleep(1.0)
-    cherrypy.engine.restart()
+    global SCHED_RESTART
+    logging.info("Scheduled restart request")
+    # Just set the stop flag, because stopping CherryPy from
+    # the scheduler is not reliable
+    cherrypy.engine.execv = SCHED_RESTART = True
 
 
 def change_queue_complete_action(action, new=True):
