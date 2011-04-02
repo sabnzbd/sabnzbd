@@ -1474,13 +1474,14 @@ def main():
     if sabnzbd.WIN32:
         del_connection_info()
     notify("SAB_Shutdown", None)
-    osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         AppHelper.stopEventLoop()
     else:
+        if sabnzbd.DARWIN:
+            osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['startup'])
         os._exit(0)
 
 
