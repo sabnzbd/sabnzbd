@@ -686,16 +686,16 @@ def launch_a_browser(url, force=False):
     if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
+    if cfg.enable_https() and not cfg.https_port.get_int():
+        # Must use https, because http is not available
+        url = url.replace('http:', 'https:')
+
     logging.info("Lauching browser with %s", url)
     try:
         webbrowser.open(url, 2, 1)
     except:
-        # Python 2.4 does not support parameter new=2
-        try:
-            webbrowser.open(url, 1, 1)
-        except:
-            logging.warning(Ta('Cannot launch the browser, probably not found'))
-            logging.info("Traceback: ", exc_info = True)
+        logging.warning(Ta('Cannot launch the browser, probably not found'))
+        logging.info("Traceback: ", exc_info = True)
 
 
 def error_page_401(status, message, traceback, version):
