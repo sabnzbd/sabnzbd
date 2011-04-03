@@ -722,7 +722,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
-    used_joinables = joinables = []
+    used_joinables = []
+    joinables = []
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
