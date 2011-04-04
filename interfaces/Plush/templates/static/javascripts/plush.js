@@ -1202,6 +1202,11 @@ jQuery(function($){
 		SetWarnings : function(have_warnings,last_warning) {
 			$('#have_warnings').html(have_warnings);		// Update warnings count/latest warning text in main menu
 			$('#last_warning').attr('title',last_warning);
+			if (have_warnings > 0) {
+			    $('#warning_box').show();
+			} else {
+			    $('#warning_box').hide();
+			}
 		},
 
 
