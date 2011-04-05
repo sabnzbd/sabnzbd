@@ -100,7 +100,7 @@ def clear_downloaded(feed):
 def notdefault(item):
     """ Return True if not 'Default'/'*'/''
     """
-    return bool(item) and isinstance(item, str) and item.lower() not in ('default', '*', '')
+    return bool(item) and str(item).lower() not in ('default', '*', '', str(DEFAULT_PRIORITY))
 
 
 def ListUris():
