@@ -1,0 +1,15 @@
+[LF]
+.bzreol
+.bzrignore
+*.py
+*.tmpl
+*.js
+*.css
+*.txt
+*.po
+*.pot
+*.sh
+[CRLF]
+*.bat
+*.cmd
+*.nsi

@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+build
+dist
+locale
+srcdist
+*.wpr
+*.keep
+*.bak
