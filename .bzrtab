@@ -1,0 +1,12 @@
+[NOTAB]
+*.py
+*.tmpl
+*.js
+*.css
+*.txt
+*.po
+*.pot
+*.sh
+*.bat
+*.cmd
+*.nsi

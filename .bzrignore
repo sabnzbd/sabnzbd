@@ -4,6 +4,7 @@ build
 dist
 locale
 srcdist
+cherrypy
 *.wpr
 *.keep
 *.bak
