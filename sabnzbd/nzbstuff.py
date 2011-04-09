@@ -299,6 +299,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
     """ Forgiving parser for NZB's """
     def __init__ (self, nzo):
         self.nzo = nzo
+        assert isinstance(self.nzo, NzbObject)
         self.in_nzb = False
         self.in_file = False
         self.in_groups = False
@@ -380,8 +381,9 @@ class NzbParser(xml.sax.handler.ContentHandler):
             segm = str(''.join(self.article_id))
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
-                    logging.error(Ta('Duplicate part %s, but different ID-s (%s // %s)'),
-                                         partnum, self.article_db[partnum][0], segm)
+                    msg = 'Duplicate part %s, but different ID-s (%s // %s)' % (partnum, self.article_db[partnum][0], segm)
+                    logging.info(msg)
+                    self.nzo.inc_log('dup_art_log', msg)
                 else:
                     logging.info("Skipping duplicate article (%s)", segm)
             else:
@@ -952,15 +954,15 @@ class NzbObject(TryList):
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps*1024, dec_limit=1))
             bad = self.nzo_info.get('bad_art_log', [])
             miss = self.nzo_info.get('missing_art_log', [])
+            dups = self.nzo_info.get('dup_art_log', [])
+            msg2 = msg3 = msg4 = ''
             if bad:
                 msg2 = ('<br/>' + T('%s articles were malformed')) % len(bad)
-            else:
-                msg2 = ''
             if miss:
                 msg3 = ('<br/>' + T('%s articles were missing')) % len(miss)
-            else:
-                msg3 = ''
-            msg = ''.join((msg1, msg2, msg3,))
+            if dups:
+                msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
+            msg = ''.join((msg1, msg2, msg3, msg4,))
             self.set_unpack_info('Download', msg, unique=True)
 
     def inc_log(self, log, txt):
