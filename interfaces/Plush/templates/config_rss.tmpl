@@ -254,15 +254,10 @@
 	            <input type="submit" class="juiButton" value="$T('Plush-rss-delete')"></form>
 	        </td>
 
-	        <td><form><select class="rssOrderSelect">
-	        <!--#for $i in xrange($rss[$feed]['filtercount'])#-->
-	            <option value="pos_rss_filter?session=$session&feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
-	        <!--#end for#-->
-	        </select>
-	        <input type="hidden" value="$feed" name="feed">
-	        </form></td>
-
 	        <form action="upd_rss_filter" method="get">
+                <td>
+                    <input type="text" size="3" name="new_index" value=$fnum>
+	        </td>
 	        <td>
 	        <select name="filter_type">
 	            <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> $T('rss-accept')</option>

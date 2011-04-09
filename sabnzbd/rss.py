@@ -319,42 +319,13 @@ class RSSQueue(object):
                     logging.debug('Trying title %s', atitle)
                     result = False
                     myCat = defCat
-                    myPP = ''
-                    myScript = ''
-                    myPrio = 0
+                    myPP = defPP
+                    myScript = defScript
+                    myPrio = defPrio
                     n = 0
 
+                    # Match against all filters until an postive or negative match
                     for n in xrange(regcount):
-                        myCat = defCat
-                        myPP = defPP
-                        myScript = defScript
-                        myPrio = defPrio
-
-                        if notdefault(reCats[n]):
-                            myCat = reCats[n]
-                        elif category and not defCat:
-                            myCat = cat_convert(category)
-                        myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
-                        if notdefault(rePPs[n]):
-                            myPP = rePPs[n]
-                        elif not (reCats[n] or category):
-                            myPP = catPP
-                        if notdefault(reScripts[n]):
-                            myScript = reScripts[n]
-                        elif not (notdefault(reCats[n]) or category):
-                            myScript = catScript
-                        if rePrios[n] not in (str(DEFAULT_PRIORITY), ''):
-                            myPrio = rePrios[n]
-                        elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
-                            myPrio = catPrio
-
-                        if cfg.no_dupes() and dup_title(title):
-                            if cfg.no_dupes() == 1:
-                                logging.info("Ignoring duplicate job %s", atitle)
-                                continue
-                            else:
-                                priority = DUP_PRIORITY
-
                         if category and reTypes[n] == 'C':
                             found = re.search(regexes[n], category)
                             if not found:
@@ -375,6 +346,32 @@ class RSSQueue(object):
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
+
+                    if len(reCats):
+                        if notdefault(reCats[n]):
+                            myCat = reCats[n]
+                        elif category and not defCat:
+                            myCat = cat_convert(category)
+                        myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
+                        if notdefault(rePPs[n]):
+                            myPP = rePPs[n]
+                        elif not (reCats[n] or category):
+                            myPP = catPP
+                        if notdefault(reScripts[n]):
+                            myScript = reScripts[n]
+                        elif not (notdefault(reCats[n]) or category):
+                            myScript = catScript
+                        if rePrios[n] not in (str(DEFAULT_PRIORITY), ''):
+                            myPrio = rePrios[n]
+                        elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
+                            myPrio = catPrio
+
+                    if cfg.no_dupes() and dup_title(title):
+                        if cfg.no_dupes() == 1:
+                            logging.info("Ignoring duplicate job %s", atitle)
+                            continue
+                        else:
+                            priority = DUP_PRIORITY
 
                     act = download and not first
                     if link in jobs:

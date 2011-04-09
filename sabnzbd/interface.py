@@ -1658,27 +1658,16 @@ class ConfigRss(object):
 
         cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
                                                          platform_encode(kwargs.get('filter_text')), prio ))
+
+        # Move filter if requested
+        index = int_conv(kwargs.get('index', ''))
+        new_index = kwargs.get('new_index', '')
+        if new_index and int_conv(new_index) != index:
+            cfg.filters.move(int(index), int_conv(new_index))
+
         config.save_config()
         raise rssRaiser(self.__root, kwargs)
 
-    @cherrypy.expose
-    def pos_rss_filter(self, **kwargs):
-        """ Change position of a filter """
-        msg = check_session(kwargs)
-        if msg: return msg
-        feed = kwargs.get('feed')
-        current = kwargs.get('current', 0)
-        new = kwargs.get('new', 0)
-
-        try:
-            cfg = config.get_rss()[feed]
-        except KeyError:
-            raise rssRaiser(self.__root, kwargs)
-
-        if current != new:
-            cfg.filters.move(int(current), int(new))
-            config.save_config()
-        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
