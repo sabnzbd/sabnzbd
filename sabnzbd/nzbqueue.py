@@ -92,7 +92,7 @@ class NzbQueue(TryList):
             folder, _id = os.path.split(nzo_id)
             # Try as normal job
             path = get_admin_path(bool(folder), folder, False)
-            nzo = sabnzbd.load_data(_id, path)
+            nzo = sabnzbd.load_data(_id, path, remove=False)
             if not nzo:
                 # Try as future job
                 path = get_admin_path(bool(folder), folder, True)
