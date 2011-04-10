@@ -550,9 +550,10 @@ class NzbObject(TryList):
         self.avg_bps_freq = 0
         self.avg_bps_total = 0
         try:
-            self.priority = int(priority)
+            priority = int(priority)
         except:
-            self.priority = DEFAULT_PRIORITY
+            priority = DEFAULT_PRIORITY
+        self.priority = priority
 
         self.dupe_table = {}
 
@@ -676,18 +677,23 @@ class NzbObject(TryList):
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
-        self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
-        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
+        self.cat, pp_tmp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
+        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
 
         # Run user pre-queue script if needed
         if not reuse:
             accept, name, pp, cat, script, priority, group = \
                     sabnzbd.proxy_pre_queue(self.final_name_pw, pp, cat, script,
-                                            self.priority, self.bytes, self.groups)
+                                            priority, self.bytes, self.groups)
             accept = int_conv(accept)
-            pp = int_conv(pp)
-            priority = int_conv(priority)
-
+            try:
+                pp = int(pp)
+            except:
+                pp = None
+            try:
+                priority = int(priority)
+            except:
+                priority = None
             if accept < 1:
                 self.purge_data()
                 raise TypeError
