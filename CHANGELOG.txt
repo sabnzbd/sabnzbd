@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.6.0RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Category returned by pre-queue script wasn't handled properly
+- Stop warning about duplicate articles in an NZB, just summarize after download
+- Speed-up the generation of RSS filter/preview page
+- "paused" priority at the RSS feed-level wasn't handled properly
+- Plush: fix some display issues
+-------------------------------------------------------------------------------
  0.6.0RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix hangup during scheduled restart.
