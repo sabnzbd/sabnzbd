@@ -1496,18 +1496,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     if not verbose_list:
         verbose_list = []
 
-    try:
-        limit = int(limit)
-    except:
-        limit = 0
-    try:
-        start = int(start)
-    except:
-        start = 0
-    try:
-        failed_only = int(failed_only)
-    except:
-        failed_only = 0
+    limit = int_conv(limit)
+    start = int_conv(start)
+    failed_only = int_conv(failed_only)
 
     def matches_search(text, search_text):
         # Replace * with .* and ' ' with .
@@ -1527,20 +1518,23 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         queue = [nzo for nzo in queue if matches_search(nzo.final_name, search)]
 
     # Multi-page support for postproc items
-    if start > len(queue):
+    full_queue_size = len(queue)
+    if start > full_queue_size:
         # On a page where we shouldn't show postproc items
         queue = []
+        h_limit = limit
     else:
         try:
-            if start:
-                if limit:
-                    queue = queue[start:start+limit]
-                else:
-                    queue = queue[start:]
+            if limit:
+                queue = queue[start:start+limit]
+            else:
+                queue = queue[start:]
         except:
             pass
-    # Remove the amount of postproc items from the db request for history items
-    limit -= len(queue)
+        # Remove the amount of postproc items from the db request for history items
+        h_limit = max(limit - len(queue), 0)
+
+    h_start = max(start - full_queue_size, 0)
 
     # Aquire the db instance
     try:
@@ -1550,7 +1544,12 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         history_db = get_history_handle()
 
     # Fetch history items
-    items, fetched_items, total_items = history_db.fetch_history(start, limit, search, failed_only)
+    if not h_limit:
+        items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only)
+        items = []
+        fetched_items = 0
+    else:
+        items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only)
 
     # Fetch which items should show details from the cookie
     k = []
@@ -1604,6 +1603,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                                  )
         if item['retry']:
             retry_folders.append(path)
+
+    total_items += full_queue_size
+    fetched_items = len(items)
 
     return (items, fetched_items, total_items)
 
