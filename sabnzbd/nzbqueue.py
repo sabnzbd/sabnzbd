@@ -259,7 +259,8 @@ class NzbQueue(TryList):
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
-                nzo.cat, nzo.pp, nzo.script, prio = cat_to_opts(cat)
+                nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
+                nzo.set_pp(pp)
                 self.set_priority(nzo_id, prio)
 
     @synchronized(NZBQUEUE_LOCK)
