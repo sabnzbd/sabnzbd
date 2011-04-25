@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.0RC3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed History paging with regards to queued jobs
+- Changing category in the queue failed to change to the PP setting.
+- Add support for categories in RSS feeds from nzb.su
+-------------------------------------------------------------------------------
  0.6.0RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Category returned by pre-queue script wasn't handled properly
