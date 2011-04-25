@@ -4,33 +4,33 @@
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>$T('emailOptions')</legend>
- <hr />
+  <hr />
 
 
-            <span class="label">$T('opt-email_endjob'):</span>
-                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == "0" then "checked=1" else ""#--> /> $T('email-never')
-                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == "1" then "checked=1" else ""#--> /> $T('email-always')
-                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
-			<span class="tips">$T('opt-email_endjob')</span>
-		<br class="clear" />
+  <span class="label">$T('opt-email_endjob'):</span>
+    <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == "0" then "checked=1" else ""#--> /> $T('email-never')
+    <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == "1" then "checked=1" else ""#--> /> $T('email-always')
+    <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
+  <span class="tips">$T('opt-email_endjob')</span>
+<br class="clear" />
 
-			<label><span class="label">$T('opt-email_full'):</span>
-			<input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full != "0" then "checked=1" else ""#--> />
-			<span class="tips">$T('explain-email_full')</span></label>
-		<br class="clear" />
-
-
-			<label><span class="label">$T('opt-email_rss'):</span>
-			<input class="radio" type="checkbox" name="email_rss" value="1" <!--#if $email_rss != "0" then "checked=1" else ""#--> />
-			<span class="tips">$T('explain-email_rss')</span></label>
-		<br class="clear" />
+  <label><span class="label">$T('opt-email_full'):</span>
+  <input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full != "0" then "checked=1" else ""#--> />
+  <span class="tips">$T('explain-email_full')</span></label>
+<br class="clear" />
 
 
-        <label class="label">$T('opt-email_dir'):</label>
+  <label><span class="label">$T('opt-email_rss'):</span>
+  <input class="radio" type="checkbox" name="email_rss" value="1" <!--#if $email_rss != "0" then "checked=1" else ""#--> />
+  <span class="tips">$T('explain-email_rss')</span></label>
+<br class="clear" />
 
-        <input type="text" size="35" name="email_dir" value="$email_dir">
-        <span class="tips">$T('explain-email_dir')</span>
-        <br class="clear" />
+
+  <label class="label">$T('opt-email_dir'):</label>
+
+  <input type="text" size="35" name="email_dir" value="$email_dir">
+  <span class="tips">$T('explain-email_dir')</span>
+  <br class="clear" />
 
 </fieldset>
 
@@ -39,43 +39,43 @@
 <hr />
 
 
-			<label class="label">$T('opt-email_server'):</label>
+  <label class="label">$T('opt-email_server'):</label>
 
-			<input type="text" size="35" name="email_server" value="$email_server">
-			<span class="tips">$T('explain-email_server')</span>
-            <br class="clear" />
+  <input type="text" size="35" name="email_server" value="$email_server">
+  <span class="tips">$T('explain-email_server')</span>
+  <br class="clear" />
 
-			<label class="label">$T('opt-email_to'):</label>
+  <label class="label">$T('opt-email_to'):</label>
 
-			<input type="text" size="35" name="email_to" value="$email_to">
-			<span class="tips">$T('explain-email_to')</span>
-            <br class="clear" />
+  <input type="text" size="35" name="email_to" value="$email_to">
+  <span class="tips">$T('explain-email_to')</span>
+  <br class="clear" />
 
-			<label class="label">$T('opt-email_from'):</label>
-			<input type="text" size="35" name="email_from" value="$email_from">
-			<span class="tips">$T('explain-email_from')</span>
-            <br class="clear" />
+  <label class="label">$T('opt-email_from'):</label>
+  <input type="text" size="35" name="email_from" value="$email_from">
+  <span class="tips">$T('explain-email_from')</span>
+  <br class="clear" />
 
-			<label class="label">$T('opt-email_account'):</label>
-			<input type="text" size="35" name="email_account" value="$email_account">
-			<span class="tips">$T('explain-email_account')</span>
-            <br class="clear" />
+  <label class="label">$T('opt-email_account'):</label>
+  <input type="text" size="35" name="email_account" value="$email_account">
+  <span class="tips">$T('explain-email_account')</span>
+  <br class="clear" />
 
-			<label class="label">$T('opt-email_pwd'):</label>
-			<input type="password" size="35" name="email_pwd" value="$email_pwd">
-			<span class="tips">$T('explain-email_pwd')</span>
-            <br class="clear" />
+  <label class="label">$T('opt-email_pwd'):</label>
+  <input type="password" size="35" name="email_pwd" value="$email_pwd">
+  <span class="tips">$T('explain-email_pwd')</span>
+  <br class="clear" />
 
 </fieldset>
 </div>
 
 <p>
-	<input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/email/saveEmail', this, 'configEmail')">
+  <input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/email/saveEmail', this, 'configEmail')">
 </p>
 <br class="clear" />
 <a class="config" onClick="testemail();">Test E-Mail</a>
 <!--#if $lastmail#-->
-	&nbsp;&nbsp;&nbsp;&nbsp;$T('emailResult') = <b>$lastmail</b>
+  &nbsp;&nbsp;&nbsp;&nbsp;$T('emailResult') = <b>$lastmail</b>
 <!--#end if#-->
 </form>
 

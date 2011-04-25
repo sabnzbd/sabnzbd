@@ -22,7 +22,7 @@ Canvas IE support - Excanvas http://sourceforge.net/projects/excanvas/
 Silk icons - http://www.famfamfam.com/lab/icons/silk/
 
 
-Changelog 
+Changelog
 ------------------------
 1.0+1.1
 -------------

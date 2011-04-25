@@ -22,39 +22,39 @@ $T('explain-Restart')<br/>
 $T('explain-orphans')<br/>
 <br/>
 
-    <table id="catTable">
-        <tr>
-            <th></th>
-            <th></th>
-            <th>$T('name')</th>
-        </tr>
-    <!--#set $odd = False#-->
-    <!--#for $folder in $folders#-->
-        <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->">
+  <table id="catTable">
+    <tr>
+      <th></th>
+      <th></th>
+      <th>$T('name')</th>
+    </tr>
+  <!--#set $odd = False#-->
+  <!--#for $folder in $folders#-->
+    <!--#set $odd = not $odd#-->
+    <tr class="<!--#if $odd then "odd" else "even"#-->">
 
-        <td>
-            <form action="delete" method="get">
-            <input type="hidden" value="$folder" name="name">
-            <input type="hidden" value="$session" name="session">
-            <input type="submit" value="$T('button-delCat')">
-            </form>
-        </td>
+  <td>
+    <form action="delete" method="get">
+    <input type="hidden" value="$folder" name="name">
+    <input type="hidden" value="$session" name="session">
+    <input type="submit" value="$T('button-delCat')">
+    </form>
+  </td>
 
-        <td>
-            <form action="add" method="get">
-            <input type="hidden" value="$folder" name="name">
-            <input type="hidden" value="$session" name="session">
-            <input type="submit" value="$T('button-add')">
-            </form>
-        </td>
+  <td>
+    <form action="add" method="get">
+    <input type="hidden" value="$folder" name="name">
+    <input type="hidden" value="$session" name="session">
+    <input type="submit" value="$T('button-add')">
+    </form>
+  </td>
 
-        <td>
-        $folder
-        </td>
+  <td>
+  $folder
+  </td>
 
-    <!--#end for#-->
-    </table>
+  <!--#end for#-->
+  </table>
 <hr/><br/>
 <!--#end if#-->
 $T('explain-Repair')<br/>

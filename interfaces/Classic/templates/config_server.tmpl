@@ -19,7 +19,7 @@
       $T('srv-connections'):<br><input type="text" size="25" name="connections"><br>
       $T('srv-retention') ($T('days')):<br><input type="text" size="25" name="retention"><br>
       <!--#if int($have_ssl) == 0#-->
-         $T('srv-ssl') $T('opt-notInstalled')
+        $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
         <input type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->>&nbsp;$T('srv-ssl')<br/>
       <!--#end if#-->
@@ -44,9 +44,9 @@
       $T('srv-connections'):<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
       $T('srv-retention'):<br><input type="text" size="25" name="retention" value="$servers[$server]['retention']"><br>
       <!--#if int($have_ssl) == 0#-->
-         $T('srv-ssl') $T('opt-notInstalled')
+        $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
-         <input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#-->/>&nbsp;$T('srv-ssl')<br/>
+        <input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#-->/>&nbsp;$T('srv-ssl')<br/>
       <!--#end if#-->
       <input type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />&nbsp;$T('srv-fillserver')<br/>
       <input type="checkbox" name="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />&nbsp;$T('srv-optional')<br/>
@@ -58,9 +58,9 @@
       <!--#if 'amounts' in $servers[$server]#-->
       <table border="1">
         <tr><td>$T('total')</td><td>$servers[$server]['amounts'][0]</td>
-            <td>$T('thisMonth')</td><td>$servers[$server]['amounts'][1]</td></tr>
+          <td>$T('thisMonth')</td><td>$servers[$server]['amounts'][1]</td></tr>
         <tr><td>$T('today')</td><td>$servers[$server]['amounts'][3]</td>
-            <td>$T('thisWeek')</td><td>$servers[$server]['amounts'][2]</td></tr>
+          <td>$T('thisWeek')</td><td>$servers[$server]['amounts'][2]</td></tr>
       </table>
       <!--#end if#-->
     </fieldset>

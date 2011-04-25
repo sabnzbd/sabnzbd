@@ -3,38 +3,38 @@
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <div id="config-components">
-    
-    <div id="core-component-group1" class="component-group clearfix">
-        <div class="component-group-desc">
-            <h3>SABnzbd Config</h3>
-        </div>
-        <fieldset class="component-group-list">
-            <div class="field-pair">
-                <label class="nocheck clearfix">
-                    <span class="component-title">SABnzbd $T('version')</span>
-                    <span class="component-desc">$version</span>
-                </label>
-            </div>
-            <div class="field-pair alt">
-                <label class="nocheck clearfix">
-                    <span class="component-title">$T('uptime')</span>
-                    <span class="component-desc">$uptime</span>
-                </label>
-            </div>
-            <div class="field-pair">
-                <label class="nocheck clearfix">
-                    <span class="component-title">$T('confgFile')</span>
-                    <span class="component-desc">$configfn</span>
-                </label>
-            </div>
-            <div class="field-pair alt">
-                <label class="nocheck clearfix">
-                    <span class="component-title">$T('cache').capitalize()</span>
-                    <span class="component-desc"><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</span>
-                </label>
-            </div>
-		</fieldset>
-	</div>
+
+  <div id="core-component-group1" class="component-group clearfix">
+    <div class="component-group-desc">
+      <h3>SABnzbd Config</h3>
+    </div>
+    <fieldset class="component-group-list">
+      <div class="field-pair">
+        <label class="nocheck clearfix">
+          <span class="component-title">SABnzbd $T('version')</span>
+          <span class="component-desc">$version</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <label class="nocheck clearfix">
+          <span class="component-title">$T('uptime')</span>
+          <span class="component-desc">$uptime</span>
+        </label>
+      </div>
+      <div class="field-pair">
+        <label class="nocheck clearfix">
+          <span class="component-title">$T('confgFile')</span>
+          <span class="component-desc">$configfn</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <label class="nocheck clearfix">
+          <span class="component-title">$T('cache').capitalize()</span>
+          <span class="component-desc"><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</span>
+        </label>
+      </div>
+    </fieldset>
+  </div>
 
 </div>
 

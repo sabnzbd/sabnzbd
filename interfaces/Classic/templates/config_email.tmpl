@@ -11,9 +11,9 @@
 <fieldset class="EntryFieldSet">
 <legend>$T('emailOptions')</legend>
 <strong>$T('opt-email_endjob')</strong><br/>
-    <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == "0" then "checked=1" else ""#--> /> $T('email-never')
-    <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == "1" then "checked=1" else ""#--> /> $T('email-always')
-    <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
+  <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == "0" then "checked=1" else ""#--> /> $T('email-never')
+  <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == "1" then "checked=1" else ""#--> /> $T('email-always')
+  <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
 <br/><br/>
 <label><input type="checkbox" name="email_full" value="1" <!--#if $email_full != "0" then "checked=1" else ""#--> /> <strong>$T('opt-email_full'):</strong></label><br>
 $T('explain-email_full')<br/>
@@ -60,7 +60,7 @@ $T('explain-email_pwd')<br>
 </p>
 </form>
 <!--#if $lastmail#-->
-	$T('emailResult') = <b>$lastmail</b>
+  $T('emailResult') = <b>$lastmail</b>
 <!--#end if#-->
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

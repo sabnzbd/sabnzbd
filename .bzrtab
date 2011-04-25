@@ -1,8 +1,5 @@
 [NOTAB]
 *.py
-*.tmpl
-*.js
-*.css
 *.txt
 *.po
 *.pot
@@ -10,3 +7,7 @@
 *.bat
 *.cmd
 *.nsi
+*.tmpl
+*.js
+*.css
+[TAB]

@@ -2,8 +2,8 @@
 <script type="text/javascript">
 function selectLang(lang)
 {
-    var elem = document.getElementById(lang);
-    elem.checked = "checked";
+  var elem = document.getElementById(lang);
+  elem.checked = "checked";
 }
 </script>
 
@@ -12,26 +12,26 @@ function selectLang(lang)
 <h3>Language</h3>
 Please choose your prefered language<br /><br />
 <div class="container">
-	<!--#for $l, $language in $languages#-->
-	<div class="language">
-		<label class="skin-select">
-			<img src="static/images/flags/${l}.png" border="0" />
-			<br />$language<br /><input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked=true' else ''#-->>
-		</label>
-	</div>
-	<!--#end for#-->
+  <!--#for $l, $language in $languages#-->
+  <div class="language">
+    <label class="skin-select">
+      <img src="static/images/flags/${l}.png" border="0" />
+      <br />$language<br /><input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked=true' else ''#-->>
+    </label>
+  </div>
+  <!--#end for#-->
 </div>
 </div>
 </div>
 <hr />
 <br/>
 <div class="full-width">
-    <table class="full-width">
-        <tr>
-            <td class="align-center"><input class="bigbutton" type="submit" value="Start Wizard" /></td>
-        </tr>
-    </table>
+  <table class="full-width">
+    <tr>
+      <td class="align-center"><input class="bigbutton" type="submit" value="Start Wizard" /></td>
+    </tr>
+  </table>
 </div>
 </form>
-			
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

@@ -14,8 +14,8 @@ $tip3:<br/><br/>
 <div class="quoteBlock">
 <!--#set $i = 0#-->
 <!--#for $url in $urls#-->
-    <!--#set $i = $i+1#-->
-    <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
+  <!--#set $i = $i+1#-->
+  <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
 <!--#end for#-->
 </div><br/>
 $T('wizard-tip4')
@@ -26,9 +26,9 @@ $T('wizard-tip-wiki') <a href="$helpuri">wiki</a>
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
-    <tr class="align-center">
-        <td><input type="hidden" name="session" id="apikey" value="$session"><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="$T('wizard-goto')" disabled="disabled"/></td>
-    </tr>
+  <tr class="align-center">
+    <td><input type="hidden" name="session" id="apikey" value="$session"><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="$T('wizard-goto')" disabled="disabled"/></td>
+  </tr>
 </table>
 </div>
 

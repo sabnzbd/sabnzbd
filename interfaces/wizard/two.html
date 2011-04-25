@@ -5,24 +5,24 @@
 <div class="indented bigger">
 <h3>$T('wizard-access')</h3>
 <!--#if $host in ('localhost','0.0.0.0')#-->
-        <input type="radio" name="access" id="all" value="0.0.0.0" <!--#if $host == '0.0.0.0' then 'checked="checked"' else ''#-->> <label for="all">$T('wizard-access-anypc')</label><br />
-        <input type="radio" name="access" id="local" value="localhost" <!--#if $host == 'localhost' then 'checked="checked"' else ''#-->> <label for="local">$T('wizard-access-mypc')</label><br />
-        <br />
+  <input type="radio" name="access" id="all" value="0.0.0.0" <!--#if $host == '0.0.0.0' then 'checked="checked"' else ''#-->> <label for="all">$T('wizard-access-anypc')</label><br />
+  <input type="radio" name="access" id="local" value="localhost" <!--#if $host == 'localhost' then 'checked="checked"' else ''#-->> <label for="local">$T('wizard-access-mypc')</label><br />
+  <br />
 <!--#end if#-->
-        <input type="checkbox" name="enable_webpass" id="enable_webpass" value="1" <!--#if $web_user then 'checked="checked"' else ''#--> <label for="enable_webpass">$T('wizard-access-pass')</label><br />
-        <br class="clear" />
-        <div id="serverDetails">
-            <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$web_user" name="web_user" id="web_user">
-            <br class="clear" />
-            <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$web_pass" name="web_pass" id="web_pass">
-        </div>
-        <br class="clear" />
+  <input type="checkbox" name="enable_webpass" id="enable_webpass" value="1" <!--#if $web_user then 'checked="checked"' else ''#--> <label for="enable_webpass">$T('wizard-access-pass')</label><br />
+  <br class="clear" />
+  <div id="serverDetails">
+    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$web_user" name="web_user" id="web_user">
+    <br class="clear" />
+    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$web_pass" name="web_pass" id="web_pass">
+  </div>
+  <br class="clear" />
 
-        <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#--></label><br />
+  <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#--></label><br />
 <br />
 <h3>$T('wizard-misc')</h3>
-    <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">$T('wizard-misc-browser')</label><br />
-    <!--<input type="checkbox" name="autostart" id="autostart" value="1"> <label for="autostart">Launch SABnzbd when windows starts.</label><br />-->
+  <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">$T('wizard-misc-browser')</label><br />
+  <!--<input type="checkbox" name="autostart" id="autostart" value="1"> <label for="autostart">Launch SABnzbd when windows starts.</label><br />-->
 </div>
 <input type="hidden" name="dummyval" value="1" />
 
@@ -31,18 +31,18 @@
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
-    <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./one'" value="&lsaquo; $T('wizard-previous')" /></td>
-        <td>
-            <div class="align-center">
-                <!--#for $step in xrange($steps)#-->
-                   <!--#set $step = $step + 1#-->
-                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
-                <!--#end for#-->
-            </div>
-        </td>
-        <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
-    </tr>
+  <tr>
+    <td><input class="bigbutton" type="button" onclick="document.location ='./one'" value="&lsaquo; $T('wizard-previous')" /></td>
+    <td>
+      <div class="align-center">
+        <!--#for $step in xrange($steps)#-->
+          <!--#set $step = $step + 1#-->
+            <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
+        <!--#end for#-->
+      </div>
+    </td>
+    <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+  </tr>
 </table>
 </div>
 </form>

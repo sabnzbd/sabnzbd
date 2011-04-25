@@ -8,7 +8,7 @@
 
 <h2>$T('folderConfig')</h2>
 <p><strong>
-    $T('explain-folderConfig')<br />
+  $T('explain-folderConfig')<br />
 </strong></p>
 <form action="saveDirectories" method="post">
 <div class="EntryBlock">
@@ -29,11 +29,11 @@
     $T('explain-complete_dir')<br>
     <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
     <!--#if not $nt#-->
-        <br>
-        <br>
-        <strong>$T('opt-permissions'):</strong><br>
-        $T('explain-permissions')<br>
-        <input type="text" size="10" name="permissions" value="$permissions">
+      <br>
+      <br>
+      <strong>$T('opt-permissions'):</strong><br>
+      $T('explain-permissions')<br>
+      <input type="text" size="10" name="permissions" value="$permissions">
     <!--#end if#-->
     <br>
     <br>
@@ -83,7 +83,7 @@
 </div><br>
 <input type="submit" size="40" value="$T('button-saveChanges')">
 <!--#if $restart_req#-->
-    <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="$T('button-restart')"/>
+  <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="$T('button-restart')"/>
 <!--#end if#-->
 </form>
 

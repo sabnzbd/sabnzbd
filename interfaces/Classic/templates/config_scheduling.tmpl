@@ -11,13 +11,13 @@
 <form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
 <legend>$T('addSchedule')</legend>
- <%import time
+  <%import time
 t = time.localtime()
 hour = t[3]
 if hour != 23:
-    hour += 1
+  hour += 1
 else:
-    hour = 0 %>
+  hour = 0 %>
 $T('hour'):<br>
 <select name="hour">
 <!--#for $i in range(24)#-->
@@ -44,7 +44,7 @@ $T('hour'):<br>
 <br>$T('sch-action'):<br>
 <select name="action">
 <!--#for $action in $actions#-->
-    <option value="$action">$actions_lng[$action]
+  <option value="$action">$actions_lng[$action]
 <!--#end for#-->
 </select>
 <br>$T('sch-arguments'):<br>

@@ -1,18 +1,18 @@
 /*!
- * jQuery JavaScript Library v1.4
- * http://jquery.com/
- *
- * Copyright 2010, John Resig
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://docs.jquery.com/License
- *
- * Includes Sizzle.js
- * http://sizzlejs.com/
- * Copyright 2010, The Dojo Foundation
- * Released under the MIT, BSD, and GPL Licenses.
- *
- * Date: Wed Jan 13 15:23:05 2010 -0500
- */
+  * jQuery JavaScript Library v1.4
+  * http://jquery.com/
+  *
+  * Copyright 2010, John Resig
+  * Dual licensed under the MIT or GPL Version 2 licenses.
+  * http://docs.jquery.com/License
+  *
+  * Includes Sizzle.js
+  * http://sizzlejs.com/
+  * Copyright 2010, The Dojo Foundation
+  * Released under the MIT, BSD, and GPL Licenses.
+  *
+  * Date: Wed Jan 13 15:23:05 2010 -0500
+  */
 (function(A,w){function oa(){if(!c.isReady){try{s.documentElement.doScroll("left")}catch(a){setTimeout(oa,1);return}c.ready()}}function La(a,b){b.src?c.ajax({url:b.src,async:false,dataType:"script"}):c.globalEval(b.text||b.textContent||b.innerHTML||"");b.parentNode&&b.parentNode.removeChild(b)}function $(a,b,d,f,e,i){var j=a.length;if(typeof b==="object"){for(var o in b)$(a,o,b[o],f,e,d);return a}if(d!==w){f=!i&&f&&c.isFunction(d);for(o=0;o<j;o++)e(a[o],b,f?d.call(a[o],o,e(a[o],b)):d,i);return a}return j?
 e(a[0],b):null}function K(){return(new Date).getTime()}function aa(){return false}function ba(){return true}function pa(a,b,d){d[0].type=a;return c.event.handle.apply(b,d)}function qa(a){var b=true,d=[],f=[],e=arguments,i,j,o,p,n,t=c.extend({},c.data(this,"events").live);for(p in t){j=t[p];if(j.live===a.type||j.altLive&&c.inArray(a.type,j.altLive)>-1){i=j.data;i.beforeFilter&&i.beforeFilter[a.type]&&!i.beforeFilter[a.type](a)||f.push(j.selector)}else delete t[p]}i=c(a.target).closest(f,a.currentTarget);
 n=0;for(l=i.length;n<l;n++)for(p in t){j=t[p];o=i[n].elem;f=null;if(i[n].selector===j.selector){if(j.live==="mouseenter"||j.live==="mouseleave")f=c(a.relatedTarget).closest(j.selector)[0];if(!f||f!==o)d.push({elem:o,fn:j})}}n=0;for(l=d.length;n<l;n++){i=d[n];a.currentTarget=i.elem;a.data=i.fn.data;if(i.fn.apply(i.elem,e)===false){b=false;break}}return b}function ra(a,b){return["live",a,b.replace(/\./g,"`").replace(/ /g,"&")].join(".")}function sa(a){return!a||!a.parentNode||a.parentNode.nodeType===
@@ -152,30 +152,30 @@ b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b
 
 
 /*
-	jQTouch jQuery plugin -- beta 2 r109
-    (c) 2009 by jQTouch project members.
-    see LICENSE-MIT.txt
+  jQTouch jQuery plugin -- beta 2 r109
+  (c) 2009 by jQTouch project members.
+  see LICENSE-MIT.txt
 */
-(function($){$.jQTouch=function(_2){$.support.WebKitCSSMatrix=(typeof WebKitCSSMatrix=="object");$.support.touch=(typeof Touch=="object");$.support.WebKitAnimationEvent=(typeof WebKitTransitionEvent=="object");var _3,$head=$("head"),hist=[],newPageCount=0,jQTSettings={},hashCheck,currentPage,orientation,isMobileWebKit=RegExp(" Mobile/").test(navigator.userAgent),tapReady=true,lastAnimationTime=0,touchSelectors=[],publicObj={},extensions=$.jQTouch.prototype.extensions,defaultAnimations=["slide","flip","slideup","swap","cube","pop","dissolve","fade","back"],animations=[],hairextensions="";init(_2);function init(_4){var _5={addGlossToIcon:true,backSelector:".back, .cancel, .goback",cacheGetRequests:true,cubeSelector:".cube",dissolveSelector:".dissolve",fadeSelector:".fade",fixedViewport:true,flipSelector:".flip",formSelector:"form",fullScreen:true,fullScreenClass:"fullscreen",icon:null,touchSelector:"a, .touch",popSelector:".pop",preloadImages:false,slideSelector:"body > * > ul li a",slideupSelector:".slideup",startupScreen:null,statusBar:"default",submitSelector:".submit",swapSelector:".swap",useAnimations:true,useFastTouch:true};jQTSettings=$.extend({},_5,_4);if(jQTSettings.preloadImages){for(var i=jQTSettings.preloadImages.length-1;i>=0;i--){(new Image()).src=jQTSettings.preloadImages[i];}}if(jQTSettings.icon){var _7=(jQTSettings.addGlossToIcon)?"":"-precomposed";hairextensions+="<link rel=\"apple-touch-icon"+_7+"\" href=\""+jQTSettings.icon+"\" />";}if(jQTSettings.startupScreen){hairextensions+="<link rel=\"apple-touch-startup-image\" href=\""+jQTSettings.startupScreen+"\" />";}if(jQTSettings.fixedViewport){hairextensions+="<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;\"/>";}if(jQTSettings.fullScreen){hairextensions+="<meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />";if(jQTSettings.statusBar){hairextensions+="<meta name=\"apple-mobile-web-app-status-bar-style\" content=\""+jQTSettings.statusBar+"\" />";}}if(hairextensions){$head.append(hairextensions);}$(document).ready(function(){for(var i in extensions){var fn=extensions[i];if($.isFunction(fn)){$.extend(publicObj,fn(publicObj));}}for(var i in defaultAnimations){var _a=defaultAnimations[i];var _b=jQTSettings[_a+"Selector"];if(typeof (_b)=="string"){addAnimation({name:_a,selector:_b});}}touchSelectors.push("input");touchSelectors.push(jQTSettings.touchSelector);touchSelectors.push(jQTSettings.backSelector);touchSelectors.push(jQTSettings.submitSelector);$(touchSelectors.join(", ")).css("-webkit-touch-callout","none");$(jQTSettings.backSelector).tap(liveTap);$(jQTSettings.submitSelector).tap(submitParentForm);_3=$("body");if(jQTSettings.fullScreenClass&&window.navigator.standalone==true){_3.addClass(jQTSettings.fullScreenClass+" "+jQTSettings.statusBar);}_3.bind("touchstart",handleTouch).bind("orientationchange",updateOrientation).trigger("orientationchange").submit(submitForm);if(jQTSettings.useFastTouch&&$.support.touch){_3.click(function(e){var _d=$(e.target);if(_d.attr("target")=="_blank"||_d.attr("rel")=="external"||_d.is("input[type=\"checkbox\"]")){return true;}else{return false;}});_3.mousedown(function(e){var _f=(new Date()).getTime()-lastAnimationTime;if(_f<200){return false;}});}if($("body > .current").length==0){currentPage=$("body > *:first");}else{currentPage=$("body > .current:first");$("body > .current").removeClass("current");}$(currentPage).addClass("current");location.hash=$(currentPage).attr("id");addPageToHistory(currentPage);scrollTo(0,0);dumbLoopStart();});}function goBack(to){if(hist.length>1){var _11=Math.min(parseInt(to||1,10),hist.length-1);if(isNaN(_11)&&typeof (to)==="string"&&to!="#"){for(var i=1,length=hist.length;i<length;i++){if("#"+hist[i].id===to){_11=i;break;}}}if(isNaN(_11)||_11<1){_11=1;}var _13=hist[0].animation;var _14=hist[0].page;hist.splice(0,_11);var _15=hist[0].page;animatePages(_14,_15,_13,true);return publicObj;}else{console.error("No pages in history.");return false;}}function goTo(_16,_17){var _18=hist[0].page;if(typeof (_16)==="string"){_16=$(_16);}if(typeof (_17)==="string"){for(var i=animations.length-1;i>=0;i--){if(animations[i].name===_17){_17=animations[i];break;}}}if(animatePages(_18,_16,_17)){addPageToHistory(_16,_17);return publicObj;}else{console.error("Could not animate pages.");return false;}}function getOrientation(){return orientation;}function liveTap(e){var $el=$(e.target);if($el.attr("nodeName")!=="A"){$el=$el.parent("a");}var _1c=$el.attr("target"),hash=$el.attr("hash"),animation=null;if(tapReady==false||!$el.length){console.warn("Not able to tap element.");return false;}if($el.attr("target")=="_blank"||$el.attr("rel")=="external"){return true;}for(var i=animations.length-1;i>=0;i--){if($el.is(animations[i].selector)){animation=animations[i];break;}}if(_1c=="_webapp"){window.location=$el.attr("href");}else{if($el.is(jQTSettings.backSelector)){goBack(hash);}else{if(hash&&hash!="#"){$el.addClass("active");goTo($(hash).data("referrer",$el),animation);}else{$el.addClass("loading active");showPageByHref($el.attr("href"),{animation:animation,callback:function(){$el.removeClass("loading");setTimeout($.fn.unselect,250,$el);},$referrer:$el});}}}return false;}function addPageToHistory(_1e,_1f){var _20=_1e.attr("id");hist.unshift({page:_1e,animation:_1f,id:_20});}function animatePages(_21,_22,_23,_24){if(_22.length===0){$.fn.unselect();console.error("Target element is missing.");return false;}$(":focus").blur();scrollTo(0,0);var _25=function(_26){if(_23){_22.removeClass("in reverse "+_23.name);_21.removeClass("current out reverse "+_23.name);}else{_21.removeClass("current");}_22.trigger("pageAnimationEnd",{direction:"in"});_21.trigger("pageAnimationEnd",{direction:"out"});clearInterval(dumbLoop);currentPage=_22;location.hash=currentPage.attr("id");dumbLoopStart();var _27=_22.data("referrer");if(_27){_27.unselect();}lastAnimationTime=(new Date()).getTime();tapReady=true;};_21.trigger("pageAnimationStart",{direction:"out"});_22.trigger("pageAnimationStart",{direction:"in"});if($.support.WebKitAnimationEvent&&_23&&jQTSettings.useAnimations){_22.one("webkitAnimationEnd",_25);tapReady=false;_22.addClass(_23.name+" in current "+(_24?" reverse":""));_21.addClass(_23.name+" out"+(_24?" reverse":""));}else{_22.addClass("current");_25();}return true;}function dumbLoopStart(){dumbLoop=setInterval(function(){var _28=currentPage.attr("id");if(location.hash==""){location.hash="#"+_28;}else{if(location.hash!="#"+_28){try{goBack(location.hash);}catch(e){console.error("Unknown hash change.");}}}},100);}function insertPages(_29,_2a){var _2b=null;$(_29).each(function(_2c,_2d){var _2e=$(this);if(!_2e.attr("id")){_2e.attr("id","page-"+(++newPageCount));}_2e.appendTo(_3);if(_2e.hasClass("current")||!_2b){_2b=_2e;}});if(_2b!==null){goTo(_2b,_2a);return _2b;}else{return false;}}function showPageByHref(_2f,_30){var _31={data:null,method:"GET",animation:null,callback:null,$referrer:null};var _32=$.extend({},_31,_30);if(_2f!="#"){$.ajax({url:_2f,data:_32.data,type:_32.method,success:function(_33,_34){var _35=insertPages(_33,_32.animation);if(_35){if(_32.method=="GET"&&jQTSettings.cacheGetRequests&&_32.$referrer){_32.$referrer.attr("href","#"+_35.attr("id"));}if(_32.callback){_32.callback(true);}}},error:function(_36){if(_32.$referrer){_32.$referrer.unselect();}if(_32.callback){_32.callback(false);}}});}else{if($referrer){$referrer.unselect();}}}function submitForm(e,_38){var _39=(typeof (e)==="string")?$(e):$(e.target);if(_39.length&&_39.is(jQTSettings.formSelector)&&_39.attr("action")){showPageByHref(_39.attr("action"),{data:_39.serialize(),method:_39.attr("method")||"POST",animation:animations[0]||null,callback:_38});return false;}return true;}function submitParentForm(e){var _3b=$(this).closest("form");if(_3b.length){evt=jQuery.Event("submit");evt.preventDefault();_3b.trigger(evt);return false;}return true;}function addAnimation(_3c){if(typeof (_3c.selector)=="string"&&typeof (_3c.name)=="string"){animations.push(_3c);$(_3c.selector).tap(liveTap);touchSelectors.push(_3c.selector);}}function updateOrientation(){orientation=window.innerWidth<window.innerHeight?"profile":"landscape";_3.removeClass("profile landscape").addClass(orientation).trigger("turn",{orientation:orientation});}function handleTouch(e){var $el=$(e.target);if(!$(e.target).is(touchSelectors.join(", "))){var _3f=$(e.target).closest("a");if(_3f.length){$el=_3f;}else{return;}}if(event){var _40=null,startX=event.changedTouches[0].clientX,startY=event.changedTouches[0].clientY,startTime=(new Date).getTime(),deltaX=0,deltaY=0,deltaT=0;$el.bind("touchmove",touchmove).bind("touchend",touchend);_40=setTimeout(function(){$el.makeActive();},100);}function touchmove(e){updateChanges();var _42=Math.abs(deltaX);var _43=Math.abs(deltaY);if(_42>_43&&(_42>35)&&deltaT<1000){$el.trigger("swipe",{direction:(deltaX<0)?"left":"right"}).unbind("touchmove touchend");}else{if(_43>1){$el.removeClass("active");}}clearTimeout(_40);}function touchend(){updateChanges();if(deltaY===0&&deltaX===0){$el.makeActive();$el.trigger("tap");}else{$el.removeClass("active");}$el.unbind("touchmove touchend");clearTimeout(_40);}function updateChanges(){var _44=event.changedTouches[0]||null;deltaX=_44.pageX-startX;deltaY=_44.pageY-startY;deltaT=(new Date).getTime()-startTime;}}$.fn.unselect=function(obj){if(obj){obj.removeClass("active");}else{$(".active").removeClass("active");}};$.fn.makeActive=function(){return $(this).addClass("active");};$.fn.swipe=function(fn){if($.isFunction(fn)){return this.each(function(i,el){$(el).bind("swipe",fn);});}};$.fn.tap=function(fn){if($.isFunction(fn)){var _4a=(jQTSettings.useFastTouch&&$.support.touch)?"tap":"click";return $(this).live(_4a,fn);}else{$(this).trigger("tap");}};publicObj={getOrientation:getOrientation,goBack:goBack,goTo:goTo,addAnimation:addAnimation,submitForm:submitForm};return publicObj;};$.jQTouch.prototype.extensions=[];$.jQTouch.addExtension=function(_4b){$.jQTouch.prototype.extensions.push(_4b);};})(jQuery);
+(function($){$.jQTouch=function(_2){$.support.WebKitCSSMatrix=(typeof WebKitCSSMatrix=="object");$.support.touch=(typeof Touch=="object");$.support.WebKitAnimationEvent=(typeof WebKitTransitionEvent=="object");var _3,$head=$("head"),hist=[],newPageCount=0,jQTSettings={},hashCheck,currentPage,orientation,isMobileWebKit=RegExp(" Mobile/").test(navigator.userAgent),tapReady=true,lastAnimationTime=0,touchSelectors=[],publicObj={},extensions=$.jQTouch.prototype.extensions,defaultAnimations=["slide","flip","slideup","swap","cube","pop","dissolve","fade","back"],animations=[],hairextensions="";init(_2);function init(_4){var _5={addGlossToIcon:true,backSelector:".back, .cancel, .goback",cacheGetRequests:true,cubeSelector:".cube",dissolveSelector:".dissolve",fadeSelector:".fade",fixedViewport:true,flipSelector:".flip",formSelector:"form",fullScreen:true,fullScreenClass:"fullscreen",icon:null,touchSelector:"a, .touch",popSelector:".pop",preloadImages:false,slideSelector:"body > * > ul li a",slideupSelector:".slideup",startupScreen:null,statusBar:"default",submitSelector:".submit",swapSelector:".swap",useAnimations:true,useFastTouch:true};jQTSettings=$.extend({},_5,_4);if(jQTSettings.preloadImages){for(var i=jQTSettings.preloadImages.length-1;i>=0;i--){(new Image()).src=jQTSettings.preloadImages[i];}}if(jQTSettings.icon){var _7=(jQTSettings.addGlossToIcon)?"":"-precomposed";hairextensions+="<link rel=\"apple-touch-icon"+_7+"\" href=\""+jQTSettings.icon+"\" />";}if(jQTSettings.startupScreen){hairextensions+="<link rel=\"apple-touch-startup-image\" href=\""+jQTSettings.startupScreen+"\" />";}if(jQTSettings.fixedViewport){hairextensions+="<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;\"/>";}if(jQTSettings.fullScreen){hairextensions+="<meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />";if(jQTSettings.statusBar){hairextensions+="<meta name=\"apple-mobile-web-app-status-bar-style\" content=\""+jQTSettings.statusBar+"\" />";}}if(hairextensions){$head.append(ha
 
 
 
 
 var jQT = new $.jQTouch({
-    statusBar: 'black',
-    addGlossToIcon: true,
-    icon: 'static/images/sab.png' /*,
-    startupScreen: 'jqt_startup.png',
-    preloadImages: [
-        'static/stylesheets/themes/jqt/img/chevron_white.png',
-        'static/stylesheets/themes/jqt/img/bg_row_select.gif',
-        'static/stylesheets/themes/jqt/img/back_button.png',
-        'static/stylesheets/themes/jqt/img/back_button_clicked.png',
-        'static/stylesheets/themes/jqt/img/button_clicked.png',
-        'static/stylesheets/themes/jqt/img/grayButton.png',
-        'static/stylesheets/themes/jqt/img/whiteButton.png',
-        'static/stylesheets/themes/jqt/img/loading.gif'
-        ] */ // replace with jquery preload?
+  statusBar: 'black',
+  addGlossToIcon: true,
+  icon: 'static/images/sab.png' /*,
+  startupScreen: 'jqt_startup.png',
+  preloadImages: [
+    'static/stylesheets/themes/jqt/img/chevron_white.png',
+    'static/stylesheets/themes/jqt/img/bg_row_select.gif',
+    'static/stylesheets/themes/jqt/img/back_button.png',
+    'static/stylesheets/themes/jqt/img/back_button_clicked.png',
+    'static/stylesheets/themes/jqt/img/button_clicked.png',
+    'static/stylesheets/themes/jqt/img/grayButton.png',
+    'static/stylesheets/themes/jqt/img/whiteButton.png',
+    'static/stylesheets/themes/jqt/img/loading.gif'
+    ] */ // replace with jquery preload?
 });
 
 
@@ -187,654 +187,654 @@ var jQT = new $.jQTouch({
 
 
 $(function(){
-    
-    
-    $.mobile = { 
-    
-    	qhPerPage	: 10,	// nzbs per page
-    	qPage		: 0,
-    	hPage		: 0,
 
 
-		LoadQueue : function(){
+  $.mobile = {
 
-			$.getJSON( 
-				'tapi', { mode:'queue', output:'json', start: ($.mobile.qPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
-				function(json,status){
-
-					if (status != "success") return alert(status);
-					$.mobile.queue = json.queue; json=''; // store for nzb detail pages
-					
-					// #home titlebar (speed/eta)
-					$('#main_titlebar_speed').html( $.mobile.queue.kbpersec < 1024 ? parseInt($.mobile.queue.kbpersec)+' K' : $.mobile.queue.speed );
-					$('#main_titlebar_timeleft').html( $.mobile.queue.timeleft );
-					// #home queue # slots
-					$('#queueCount').html( $.mobile.queue.noofslots );
-					// #home pause toggle
-					($.mobile.queue.paused) ? $('#pause').attr('checked',true) : $('#pause').attr('checked',false);
-					// #home pause interval
-					($.mobile.queue.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.queue.pause_int );
-
-					// #queue_options speed limit value
-					$('#speed_limit').val( $.mobile.queue.speedlimit );
-					// #queue_options "on finish" user-script selection
-					$("#queue_onFinishScript").val($.mobile.queue.finishaction);
-					
-					// #queueList nzb listing
-					$.mobile.LoadQueueList();
-
-					// #queueList pagination
-					var totalPages = Math.ceil( $.mobile.queue.noofslots / $.mobile.qhPerPage );
-					// jump to previous page if nothing's left on this page (deletion/completion)
-					if ($.mobile.queue.noofslots > 0 && $.mobile.qPage+1 > totalPages)
-						$('#queue_page_prev').trigger('click');
-					else {
-						// set "Page X of Y"
-						$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
-						$('#queue_page_total').html( totalPages );
-						// set pagination prev/next/first/last button states (active/inactive)
-						($.mobile.qPage == 0) ? $('#queue_page_prev, #queue_page_first').removeClass('grayButton') :  $('#queue_page_prev, #queue_page_first').addClass('grayButton');
-						(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next, #queue_page_last').removeClass('grayButton') :  $('#queue_page_next, #queue_page_last').addClass('grayButton');
-						// show/hide pagination buttons as needed
-						(totalPages <= 1) ? $('.queue_page_buttons').hide() : $('.queue_page_buttons').show();
-					}
-				}
-			);
-		},
-		
-
-		// called by $.mobile.LoadQueue and certain event bindings
-		LoadQueueList : function(){
-		
-			// #queueList nzb listing
-			$('#queueList').html('');
-			$.each($.mobile.queue.slots, function(i,nzb){
-				$("<li></li>").attr('class','arrow')
-					.html('<a href="#queue_nzb" id="'+nzb.nzo_id+'">'
-						+ '<small>'+ nzb.percentage +'%</small>'
-						+ (nzb.status != "Paused" && !$.mobile.queue.paused ? '<small class="landscape_stats" style="display:none">'+ nzb.timeleft.substr(0,nzb.timeleft.length-3) +'</small>&zwj;' : '')
-						+ (nzb.status=="Paused" ? '<span style="text-decoration:line-through">' : '<span>') + nzb.filename +'</span></a>')
-					.appendTo("#queueList");
-			});
-			// #queueList show extra stats in landscape orientation
-			if (window.innerWidth >= window.innerHeight) $('#queue li a .landscape_stats').show();
-
-			// #queue_nzb detail page -- update stats when viewing page
-			if ($.mobile.queue_nzo_id) // reload settings if already looking at detail page
-				$.mobile.LoadQueueDetail();
-
-		},
-		
-		
-		// nzb detail page -- called by $.mobile.LoadQueue and certain event bindings
-		LoadQueueDetail : function(){
-
-			// rebuild switch (order) menu if # nodes is not current
-			if ($.mobile.queue.noofslots != $('#switch optgroup','#queue_nzb_content').size()) {
-				$('#switch optgroup','#queue_nzb_content').html('');
-				for (var i=0; i < $.mobile.queue.noofslots; i++)
-					$('<option></option>').val(i).html(i).appendTo('#queue_nzb_content #switch optgroup');
-			}
-
-			// load category options if # nodes is not current (does not account for all changes)
-			if ($.mobile.queue.categories.length != $('#change_cat optgroup','#queue_nzb_content').size()-1) {
-				$('#change_cat optgroup','#queue_nzb_content').html('');
-				$.each($.mobile.queue.categories, function(i,category){
-					$('<option></option>').val(category).html(category).appendTo('#queue_nzb_content #change_cat optgroup');
-				});
-			}
-			// hide order option if unused
-			($.mobile.queue.noofslots < 2) ? $('#switch').parent().hide().prev().hide() : $('#switch').parent().show().prev().show();
-			// hide category option if unused
-			($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().hide().prev().hide() : $('#change_cat').parent().show().prev().show();
-			// hide script option if unused
-			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().hide().prev().hide() : $('#change_script').parent().show().prev().show();
-
-			// load category options if # nodes is not current (does not account for all changes)
-			if ($.mobile.queue.scripts.length != $('#change_script optgroup','#queue_nzb_content').size()-1) {
-				$('#change_script optgroup','#queue_nzb_content').html('');
-				$.each($.mobile.queue.scripts, function(i,script){
-					$('<option></option>').val(script).html(script).appendTo('#queue_nzb_content #change_script optgroup');
-				});
-			}
-	
-			// find which slot this is, then set this nzb's values
-			$.each($.mobile.queue.slots, function(i,nzb){
-				if (nzb.nzo_id == $.mobile.queue_nzo_id) {
-				
-					$('#slot_filename',	 '#queue_nzb_content').html(nzb.filename);
-					$('#slot_mbleft',	 '#queue_nzb_content').html(parseInt(nzb.mbleft));
-					$('#slot_mb',		 '#queue_nzb_content').html(parseInt(nzb.mb));
-					$('#slot_percentage','#queue_nzb_content').html(nzb.percentage);
-					$('#slot_avg_age',	 '#queue_nzb_content').html(nzb.avg_age);
-					$('#slot_timeleft',	 '#queue_nzb_content').html(nzb.timeleft);
-					$('#slot_eta',		 '#queue_nzb_content').html(nzb.eta);
-					$('#pause_nzb','#queue_nzb_content').attr('checked',(nzb.status == "Paused"));
-					$('#switch',		 '#queue_nzb_content').val(nzb.index);
-					$('#change_cat',	 '#queue_nzb_content').val(nzb.cat);
-					$('#change_opts',	 '#queue_nzb_content').val(nzb.unpackopts);
-					$('#change_script',  '#queue_nzb_content').val(nzb.script);
-					switch (nzb.priority) {
-						case 'Force':	$('#change_priority','#queue_nzb_content').val(2); break;
-						case 'High':	$('#change_priority','#queue_nzb_content').val(1); break;
-						case 'Normal':	$('#change_priority','#queue_nzb_content').val(0); break;
-						case 'Low':		$('#change_priority','#queue_nzb_content').val(-1); break;
-					};
-
-				}
-			});
-						
-		},
+  qhPerPage : 10, // nzbs per page
+  qPage   : 0,
+  hPage   : 0,
 
 
-		LoadHistory : function(){
+  LoadQueue : function(){
 
-			$.getJSON( 
-				'tapi', { mode:'history', output:'json', start: ($.mobile.hPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
-				function(json,status){
+  $.getJSON(
+    'tapi', { mode:'queue', output:'json', start: ($.mobile.qPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
+    function(json,status){
 
-					if (status != "success") return alert(status);
-					$.mobile.history = json.history; json=''; // store for nzb detail pages
+  if (status != "success") return alert(status);
+  $.mobile.queue = json.queue; json=''; // store for nzb detail pages
 
-					// #home history # slots
-					$('#historyCount').html( $.mobile.history.noofslots );
-					
-					// #historyList nzb listing
-					$.mobile.LoadHistoryList();
+  // #home titlebar (speed/eta)
+  $('#main_titlebar_speed').html( $.mobile.queue.kbpersec < 1024 ? parseInt($.mobile.queue.kbpersec)+' K' : $.mobile.queue.speed );
+  $('#main_titlebar_timeleft').html( $.mobile.queue.timeleft );
+  // #home queue # slots
+  $('#queueCount').html( $.mobile.queue.noofslots );
+  // #home pause toggle
+  ($.mobile.queue.paused) ? $('#pause').attr('checked',true) : $('#pause').attr('checked',false);
+  // #home pause interval
+  ($.mobile.queue.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.queue.pause_int );
 
-					// #historyList pagination
-					var totalPages = Math.ceil( $.mobile.history.noofslots / $.mobile.qhPerPage );
-					// jump to previous page if nothing's left on this page (deletion/completion)
-					if ($.mobile.history.noofslots > 0 && $.mobile.hPage+1 > totalPages)
-						$('#history_page_prev').trigger('click');
-					else {
-						// set "Page X of Y"
-						$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
-						$('#history_page_total').html( totalPages );
-						// set pagination prev/next/first/last button states (active/inactive)
-						($.mobile.hPage == 0) ? $('#history_page_prev, #history_page_first').removeClass('grayButton') :  $('#history_page_prev, #history_page_first').addClass('grayButton');
-						(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next, #history_page_last').removeClass('grayButton') :  $('#history_page_next, #history_page_last').addClass('grayButton');
-						// show/hide pagination buttons as needed
-						(totalPages <= 1) ? $('.history_page_buttons').hide() : $('.history_page_buttons').show();
-					}
-				}
-			);
-		},
+  // #queue_options speed limit value
+  $('#speed_limit').val( $.mobile.queue.speedlimit );
+  // #queue_options "on finish" user-script selection
+  $("#queue_onFinishScript").val($.mobile.queue.finishaction);
 
+  // #queueList nzb listing
+  $.mobile.LoadQueueList();
 
-		// called by $.mobile.LoadHistory
-		LoadHistoryList : function(){
-		
-			// #historyList nzb listing
-			$('#historyList').html('');
-			$.each($.mobile.history.slots, function(i,nzb){
-				$("<li></li>").attr('class','arrow')
-					.html('<a href="#history_nzb" id="'+nzb.nzo_id+'">'
-						+ (nzb.fail_message ? '<span style="text-decoration:line-through">' : '<span>') + nzb.name +'</span></a>')
-					.appendTo("#historyList");
-			});
-
-			// #history_nzb detail page -- update stats when viewing page
-			if ($.mobile.history_nzo_id) // reload settings if already looking at detail page
-				$.mobile.LoadHistoryDetail();
-
-		},
+  // #queueList pagination
+  var totalPages = Math.ceil( $.mobile.queue.noofslots / $.mobile.qhPerPage );
+  // jump to previous page if nothing's left on this page (deletion/completion)
+  if ($.mobile.queue.noofslots > 0 && $.mobile.qPage+1 > totalPages)
+    $('#queue_page_prev').trigger('click');
+  else {
+    // set "Page X of Y"
+    $('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
+    $('#queue_page_total').html( totalPages );
+    // set pagination prev/next/first/last button states (active/inactive)
+    ($.mobile.qPage == 0) ? $('#queue_page_prev, #queue_page_first').removeClass('grayButton') :  $('#queue_page_prev, #queue_page_first').addClass('grayButton');
+    (totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next, #queue_page_last').removeClass('grayButton') :  $('#queue_page_next, #queue_page_last').addClass('grayButton');
+    // show/hide pagination buttons as needed
+    (totalPages <= 1) ? $('.queue_page_buttons').hide() : $('.queue_page_buttons').show();
+  }
+}
+);
+},
 
 
-		// nzb detail page -- called by $.mobile.LoadHistory
-		LoadHistoryDetail : function(){
+  // called by $.mobile.LoadQueue and certain event bindings
+  LoadQueueList : function(){
 
-			// find which slot this is, then set this nzb's values
-			var d = new Date();
-			$.each($.mobile.history.slots, function(i,nzb){
-				if (nzb.nzo_id == $.mobile.history_nzo_id) {
+  // #queueList nzb listing
+  $('#queueList').html('');
+  $.each($.mobile.queue.slots, function(i,nzb){
+    $("<li></li>").attr('class','arrow')
+      .html('<a href="#queue_nzb" id="'+nzb.nzo_id+'">'
+        + '<small>'+ nzb.percentage +'%</small>'
+        + (nzb.status != "Paused" && !$.mobile.queue.paused ? '<small class="landscape_stats" style="display:none">'+ nzb.timeleft.substr(0,nzb.timeleft.length-3) +'</small>&zwj;' : '')
+        + (nzb.status=="Paused" ? '<span style="text-decoration:line-through">' : '<span>') + nzb.filename +'</span></a>')
+      .appendTo("#queueList");
+  });
+  // #queueList show extra stats in landscape orientation
+  if (window.innerWidth >= window.innerHeight) $('#queue li a .landscape_stats').show();
 
-					// nzb name + statuses
-					$('#line_name',  '#history_nzb_content').html(nzb.name);
-					(nzb.action_line) ? $('#line_action_line','#history_nzb_content').html(nzb.action_line).show() : $('#line_action_line','#history_nzb_content').hide();
-					(nzb.fail_message) ? $('#line_fail_message','#history_nzb_content').html(nzb.fail_message).show() : $('#line_fail_message','#history_nzb_content').hide();
+  // #queue_nzb detail page -- update stats when viewing page
+  if ($.mobile.queue_nzo_id) // reload settings if already looking at detail page
+    $.mobile.LoadQueueDetail();
 
-					// nzb status/stats/info
-					$('#line_status','#history_nzb_content').html(nzb.status);
-					(nzb.size) ? $('#line_size','#history_nzb_content').html(nzb.size).parent().show() : $('#line_size','#history_nzb_content').parent().hide();
-					d.setTime(nzb.completed*1000);
-					$('#line_completed',  '#history_nzb_content').html(d.toDateString());
-					(nzb.category) ? $('#line_category','#history_nzb_content').html(nzb.category).parent().show() : $('#line_category','#history_nzb_content').parent().hide();
-					
-					// connections (links)
-					if (nzb.url || nzb.url_info) {
-						$('#connections_wrapper .forward','#history_nzb_content').remove();
-						$('#connections_wrapper','#history_nzb_content').show();
-						if (nzb.url)
-							$('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
-						if (nzb.url_info)
-							$('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
-					} else
-						$('#connections_wrapper','#history_nzb_content').hide();
+  },
 
-					// verbosity (par/unrar/etc)
-					$('#slot_info','#history_nzb_content').html('');
-					$.each(nzb.stage_log, function(i,stage){
-						$('<li class="sep">'+Tstages[stage.name.toLowerCase()]+'</li>').appendTo('#slot_info','#history_nzb_content');
 
-						$.each(stage.actions, function(i,action){
-							if (stage.name == "script")
-								$('<li>'+nzb.script_line+'</li>'
-								 +'<li><a class="slideup view_script_log" href="#history_nzb_script">View Script Log</a></li>').appendTo('#slot_info','#history_nzb_content');
-							else
-								$('<li>'+action+'</li>').appendTo('#slot_info','#history_nzb_content');
-						});
-					});
-					
-					// storage path
-					(nzb.storage) ? $('#line_nzb_storage','#history_nzb_content').html(nzb.storage).parent().show() : $('#line_nzb_storage','#history_nzb_content').parent().hide();
+  // nzb detail page -- called by $.mobile.LoadQueue and certain event bindings
+  LoadQueueDetail : function(){
 
-				}
-			});
-		},
+  // rebuild switch (order) menu if # nodes is not current
+  if ($.mobile.queue.noofslots != $('#switch optgroup','#queue_nzb_content').size()) {
+    $('#switch optgroup','#queue_nzb_content').html('');
+    for (var i=0; i < $.mobile.queue.noofslots; i++)
+      $('<option></option>').val(i).html(i).appendTo('#queue_nzb_content #switch optgroup');
+  }
 
-		
-		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
-		
-			if (confirm( TconfirmDelete +":\n"+ $('#'+nzo_id+' span').html() )){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode: mode, name:'delete', value: nzo_id, apikey: $.mobile.apikey },
-					success: function(){
-						(mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
-					}
-				});
-				return true;
-			} else
-				return false;
-		},
-		
-		
-		LoadWarnings : function(){
-			$.getJSON(
-				'tapi', { mode:'warnings', output:'json', apikey: $.mobile.apikey },
-        		function(data){
-        			if (!data.warnings.length)
-        				return $('#button-warnings').hide();
-        			$('#warnings ul').html('');
-        			data.warnings.reverse();
-        			$.each(data.warnings, function(i,warning){
-						$('#warnings_shell').clone().html(warning.substr(0,19)+'<br/><strong>'+warning.substr(24)+'</strong>').show().appendTo('#warnings_list');
-					});
-					$('#warningsCount').html( data.warnings.length );
-					$('#button-warnings').show();
-				}
-			);
-		},
-		
-		
-		Init : function(){
-		
-			$.mobile.apikey = apikey;
+  // load category options if # nodes is not current (does not account for all changes)
+  if ($.mobile.queue.categories.length != $('#change_cat optgroup','#queue_nzb_content').size()-1) {
+    $('#change_cat optgroup','#queue_nzb_content').html('');
+    $.each($.mobile.queue.categories, function(i,category){
+      $('<option></option>').val(category).html(category).appendTo('#queue_nzb_content #change_cat optgroup');
+    });
+  }
+  // hide order option if unused
+  ($.mobile.queue.noofslots < 2) ? $('#switch').parent().hide().prev().hide() : $('#switch').parent().show().prev().show();
+  // hide category option if unused
+  ($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().hide().prev().hide() : $('#change_cat').parent().show().prev().show();
+  // hide script option if unused
+  ($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().hide().prev().hide() : $('#change_script').parent().show().prev().show();
 
-			$('#refresh').click( function() {
-				$.mobile.LoadQueue();
-				$.mobile.LoadHistory();
-				$.mobile.LoadWarnings();
-			}).trigger('click'); // auto-load
-			
-			$('#pause').change( function() {
-				var mode = $('#pause').attr('checked') ? 'pause' : 'resume';
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode: mode, apikey: $.mobile.apikey },
-					success: function(){
-						if (mode == 'resume')
-							$('#pause_timeleft').hide().html('');
-					}
-				});
-			});
+  // load category options if # nodes is not current (does not account for all changes)
+  if ($.mobile.queue.scripts.length != $('#change_script optgroup','#queue_nzb_content').size()-1) {
+    $('#change_script optgroup','#queue_nzb_content').html('');
+    $.each($.mobile.queue.scripts, function(i,script){
+      $('<option></option>').val(script).html(script).appendTo('#queue_nzb_content #change_script optgroup');
+    });
+  }
 
-			// queue options ********************
-			$('#speed_limit').change( function() {
-				var val = $("#speed_limit").val() ? $("#speed_limit").val() : 0;
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'config', name:'set_speedlimit', value: val, apikey: $.mobile.apikey }
-				});
-			});
+  // find which slot this is, then set this nzb's values
+  $.each($.mobile.queue.slots, function(i,nzb){
+    if (nzb.nzo_id == $.mobile.queue_nzo_id) {
 
-			$('.pause_interval').click( function(e) {
-				var minutes = $(e.target).attr('rel');
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'config', name:'set_pause', value:minutes, apikey: $.mobile.apikey },
-					success: function(resp){
-						jQT.goTo('#home', 'dissolve');
-						$.mobile.LoadQueue();
-					}
-				});
-			});
-			
-			// queue sort (6-in-1)
-			$('#queue_options_sort .queue_sort_option').click(function(event) {
-				var rel = $(event.target).attr('rel');
-				if (!rel)
-					rel = $(event.target).parent().attr('rel');
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'queue', name:'sort', sort: rel, apikey: $.mobile.apikey },
-					success: function(resp){
-						jQT.goTo('#queue', 'dissolve');
-						$.mobile.LoadQueue();
-					}
-				});
-			});
-			
-			// "On finish" user-script
-			$("#queue_onFinishScript").change( function() {
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'queue', name:'change_complete_action', value: $("#queue_onFinishScript").val(), apikey: $.mobile.apikey }
-				});
-			});
-			
-			$('#queue_purge').click(function(event) {
-				if(confirm($('#queue_purge').attr('rel'))){
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: { mode:'queue', name:'delete', value:'all', apikey: $.mobile.apikey },
-						success: function() {
-							jQT.goTo('#home', 'dissolve');
-							$.mobile.LoadQueue();
-						}
-					});
-				}
-			});
+  $('#slot_filename',  '#queue_nzb_content').html(nzb.filename);
+  $('#slot_mbleft',  '#queue_nzb_content').html(parseInt(nzb.mbleft));
+  $('#slot_mb',    '#queue_nzb_content').html(parseInt(nzb.mb));
+  $('#slot_percentage','#queue_nzb_content').html(nzb.percentage);
+  $('#slot_avg_age',   '#queue_nzb_content').html(nzb.avg_age);
+  $('#slot_timeleft',  '#queue_nzb_content').html(nzb.timeleft);
+  $('#slot_eta',     '#queue_nzb_content').html(nzb.eta);
+  $('#pause_nzb','#queue_nzb_content').attr('checked',(nzb.status == "Paused"));
+  $('#switch',     '#queue_nzb_content').val(nzb.index);
+  $('#change_cat',   '#queue_nzb_content').val(nzb.cat);
+  $('#change_opts',  '#queue_nzb_content').val(nzb.unpackopts);
+  $('#change_script',  '#queue_nzb_content').val(nzb.script);
+  switch (nzb.priority) {
+    case 'Force': $('#change_priority','#queue_nzb_content').val(2); break;
+    case 'High':  $('#change_priority','#queue_nzb_content').val(1); break;
+    case 'Normal':  $('#change_priority','#queue_nzb_content').val(0); break;
+    case 'Low':   $('#change_priority','#queue_nzb_content').val(-1); break;
+  };
 
-			// queue list event bindings ********************
-			
-			// #queue_nzb detail page -- update stats when viewing page
-            $('#queue_nzb').bind('pageAnimationStart', function(e, info){
-            	if (info.direction == 'in') {
-					$.mobile.queue_nzo_id = $(e.target).data('referrer').attr('id');
-					$.mobile.LoadQueueDetail();
-				}
-			});
+  }
+});
 
-			// #queueList "swipe delete" event binding
-            $('#queueList li a').live('swipe',function(e, data){
-                $.mobile.NZBDelete( $(this).attr('id'), 'queue' );
+  },
+
+
+  LoadHistory : function(){
+
+  $.getJSON(
+    'tapi', { mode:'history', output:'json', start: ($.mobile.hPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
+    function(json,status){
+
+  if (status != "success") return alert(status);
+  $.mobile.history = json.history; json=''; // store for nzb detail pages
+
+  // #home history # slots
+  $('#historyCount').html( $.mobile.history.noofslots );
+
+  // #historyList nzb listing
+  $.mobile.LoadHistoryList();
+
+  // #historyList pagination
+  var totalPages = Math.ceil( $.mobile.history.noofslots / $.mobile.qhPerPage );
+  // jump to previous page if nothing's left on this page (deletion/completion)
+  if ($.mobile.history.noofslots > 0 && $.mobile.hPage+1 > totalPages)
+    $('#history_page_prev').trigger('click');
+  else {
+    // set "Page X of Y"
+    $('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
+    $('#history_page_total').html( totalPages );
+    // set pagination prev/next/first/last button states (active/inactive)
+    ($.mobile.hPage == 0) ? $('#history_page_prev, #history_page_first').removeClass('grayButton') :  $('#history_page_prev, #history_page_first').addClass('grayButton');
+    (totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next, #history_page_last').removeClass('grayButton') :  $('#history_page_next, #history_page_last').addClass('grayButton');
+    // show/hide pagination buttons as needed
+    (totalPages <= 1) ? $('.history_page_buttons').hide() : $('.history_page_buttons').show();
+  }
+}
+);
+},
+
+
+  // called by $.mobile.LoadHistory
+  LoadHistoryList : function(){
+
+  // #historyList nzb listing
+  $('#historyList').html('');
+  $.each($.mobile.history.slots, function(i,nzb){
+    $("<li></li>").attr('class','arrow')
+      .html('<a href="#history_nzb" id="'+nzb.nzo_id+'">'
+        + (nzb.fail_message ? '<span style="text-decoration:line-through">' : '<span>') + nzb.name +'</span></a>')
+      .appendTo("#historyList");
+  });
+
+  // #history_nzb detail page -- update stats when viewing page
+  if ($.mobile.history_nzo_id) // reload settings if already looking at detail page
+    $.mobile.LoadHistoryDetail();
+
+  },
+
+
+  // nzb detail page -- called by $.mobile.LoadHistory
+  LoadHistoryDetail : function(){
+
+  // find which slot this is, then set this nzb's values
+  var d = new Date();
+  $.each($.mobile.history.slots, function(i,nzb){
+    if (nzb.nzo_id == $.mobile.history_nzo_id) {
+
+  // nzb name + statuses
+  $('#line_name',  '#history_nzb_content').html(nzb.name);
+  (nzb.action_line) ? $('#line_action_line','#history_nzb_content').html(nzb.action_line).show() : $('#line_action_line','#history_nzb_content').hide();
+  (nzb.fail_message) ? $('#line_fail_message','#history_nzb_content').html(nzb.fail_message).show() : $('#line_fail_message','#history_nzb_content').hide();
+
+  // nzb status/stats/info
+  $('#line_status','#history_nzb_content').html(nzb.status);
+  (nzb.size) ? $('#line_size','#history_nzb_content').html(nzb.size).parent().show() : $('#line_size','#history_nzb_content').parent().hide();
+  d.setTime(nzb.completed*1000);
+  $('#line_completed',  '#history_nzb_content').html(d.toDateString());
+  (nzb.category) ? $('#line_category','#history_nzb_content').html(nzb.category).parent().show() : $('#line_category','#history_nzb_content').parent().hide();
+
+  // connections (links)
+  if (nzb.url || nzb.url_info) {
+    $('#connections_wrapper .forward','#history_nzb_content').remove();
+    $('#connections_wrapper','#history_nzb_content').show();
+    if (nzb.url)
+      $('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
+    if (nzb.url_info)
+      $('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
+  } else
+    $('#connections_wrapper','#history_nzb_content').hide();
+
+  // verbosity (par/unrar/etc)
+  $('#slot_info','#history_nzb_content').html('');
+  $.each(nzb.stage_log, function(i,stage){
+    $('<li class="sep">'+Tstages[stage.name.toLowerCase()]+'</li>').appendTo('#slot_info','#history_nzb_content');
+
+  $.each(stage.actions, function(i,action){
+    if (stage.name == "script")
+      $('<li>'+nzb.script_line+'</li>'
+        +'<li><a class="slideup view_script_log" href="#history_nzb_script">View Script Log</a></li>').appendTo('#slot_info','#history_nzb_content');
+    else
+      $('<li>'+action+'</li>').appendTo('#slot_info','#history_nzb_content');
+  });
+});
+
+  // storage path
+  (nzb.storage) ? $('#line_nzb_storage','#history_nzb_content').html(nzb.storage).parent().show() : $('#line_nzb_storage','#history_nzb_content').parent().hide();
+
+  }
+});
+},
+
+
+  NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
+
+  if (confirm( TconfirmDelete +":\n"+ $('#'+nzo_id+' span').html() )){
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode: mode, name:'delete', value: nzo_id, apikey: $.mobile.apikey },
+      success: function(){
+        (mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
+      }
+    });
+    return true;
+  } else
+    return false;
+},
+
+
+  LoadWarnings : function(){
+    $.getJSON(
+      'tapi', { mode:'warnings', output:'json', apikey: $.mobile.apikey },
+      function(data){
+        if (!data.warnings.length)
+          return $('#button-warnings').hide();
+        $('#warnings ul').html('');
+        data.warnings.reverse();
+        $.each(data.warnings, function(i,warning){
+          $('#warnings_shell').clone().html(warning.substr(0,19)+'<br/><strong>'+warning.substr(24)+'</strong>').show().appendTo('#warnings_list');
+        });
+        $('#warningsCount').html( data.warnings.length );
+        $('#button-warnings').show();
+      }
+    );
+  },
+
+
+  Init : function(){
+
+  $.mobile.apikey = apikey;
+
+  $('#refresh').click( function() {
+    $.mobile.LoadQueue();
+    $.mobile.LoadHistory();
+    $.mobile.LoadWarnings();
+  }).trigger('click'); // auto-load
+
+  $('#pause').change( function() {
+    var mode = $('#pause').attr('checked') ? 'pause' : 'resume';
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode: mode, apikey: $.mobile.apikey },
+      success: function(){
+        if (mode == 'resume')
+          $('#pause_timeleft').hide().html('');
+      }
+    });
+  });
+
+  // queue options ********************
+  $('#speed_limit').change( function() {
+    var val = $("#speed_limit").val() ? $("#speed_limit").val() : 0;
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'config', name:'set_speedlimit', value: val, apikey: $.mobile.apikey }
+    });
+  });
+
+  $('.pause_interval').click( function(e) {
+    var minutes = $(e.target).attr('rel');
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'config', name:'set_pause', value:minutes, apikey: $.mobile.apikey },
+      success: function(resp){
+        jQT.goTo('#home', 'dissolve');
+        $.mobile.LoadQueue();
+      }
+    });
+  });
+
+  // queue sort (6-in-1)
+  $('#queue_options_sort .queue_sort_option').click(function(event) {
+    var rel = $(event.target).attr('rel');
+    if (!rel)
+      rel = $(event.target).parent().attr('rel');
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'queue', name:'sort', sort: rel, apikey: $.mobile.apikey },
+      success: function(resp){
+        jQT.goTo('#queue', 'dissolve');
+        $.mobile.LoadQueue();
+      }
+    });
+  });
+
+  // "On finish" user-script
+  $("#queue_onFinishScript").change( function() {
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'queue', name:'change_complete_action', value: $("#queue_onFinishScript").val(), apikey: $.mobile.apikey }
+    });
+  });
+
+  $('#queue_purge').click(function(event) {
+    if(confirm($('#queue_purge').attr('rel'))){
+      $.ajax({
+        type: "POST",
+        url: "tapi",
+        data: { mode:'queue', name:'delete', value:'all', apikey: $.mobile.apikey },
+        success: function() {
+          jQT.goTo('#home', 'dissolve');
+          $.mobile.LoadQueue();
+        }
+      });
+    }
+  });
+
+  // queue list event bindings ********************
+
+  // #queue_nzb detail page -- update stats when viewing page
+  $('#queue_nzb').bind('pageAnimationStart', function(e, info){
+    if (info.direction == 'in') {
+      $.mobile.queue_nzo_id = $(e.target).data('referrer').attr('id');
+      $.mobile.LoadQueueDetail();
+    }
+  });
+
+  // #queueList "swipe delete" event binding
+  $('#queueList li a').live('swipe',function(e, data){
+    $.mobile.NZBDelete( $(this).attr('id'), 'queue' );
+  });
+
+  // queue nzb detail page options ********************
+
+  // nzb rename
+  $('#nzb_rename','#queue_nzb').click(function(){
+    var name = prompt("", $('#slot_filename', '#queue_nzb_content').html());
+    if (name !== null) {
+      $.ajax({
+        type: "POST",
+        url: "tapi",
+        data: { mode:'queue', name:'rename', value: $.mobile.queue_nzo_id, value2: name, apikey: $.mobile.apikey },
+        success: function() {
+          $.each($.mobile.queue.slots, function(i,nzb){
+            if (nzb.nzo_id == $.mobile.queue_nzo_id)
+              $.mobile.queue.slots[i].filename = name;
+          });
+          $.mobile.LoadQueueList(); // account for the rename
+        }
+      });
+    }
+  });
+
+  // pause toggle for individual nzb
+  $('#pause_nzb','#queue_nzb_content').change(function(){
+    var state = $(this).attr('checked') ? 'pause' : 'resume';
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'queue', name: state, value: $.mobile.queue_nzo_id, apikey: $.mobile.apikey },
+      success: function() {
+        $.each($.mobile.queue.slots, function(i,nzb){
+          if (nzb.nzo_id == $.mobile.queue_nzo_id)
+            $.mobile.queue.slots[i].status = (state=='pause' ? 'Paused' : 'Queued'); // 'Downloading'?
+        });
+        $.mobile.LoadQueueList(); // account for strikeout/stats
+      }
+    });
+  });
+
+  // 4-in-1 change nzb [order + category + processing + script]
+  $('#switch, #change_cat, #change_opts, #change_script','#queue_nzb_content').change(function(){
+    var option_id = $(this).attr('id');
+    var option_val = $(this).val();
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode: option_id, value: $.mobile.queue_nzo_id, value2: option_val, apikey: $.mobile.apikey },
+      success: function(resp) {
+        switch (option_id) {
+          case 'switch':
+          case 'change_cat':
+            $.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's other settings
+            break;
+          case 'change_opts':
+            // account for revisiting this nzb detail page through the navigation
+            $.each($.mobile.queue.slots, function(i,nzb){
+              if (nzb.nzo_id == $.mobile.queue_nzo_id)
+                $.mobile.queue.slots[i].unpackopts = option_val;
             });
-
-			// queue nzb detail page options ********************
-
-			// nzb rename
-			$('#nzb_rename','#queue_nzb').click(function(){
-				var name = prompt("", $('#slot_filename', '#queue_nzb_content').html());
-				if (name !== null) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: { mode:'queue', name:'rename', value: $.mobile.queue_nzo_id, value2: name, apikey: $.mobile.apikey },
-						success: function() {
-							$.each($.mobile.queue.slots, function(i,nzb){
-								if (nzb.nzo_id == $.mobile.queue_nzo_id)
-									$.mobile.queue.slots[i].filename = name;
-							});
-							$.mobile.LoadQueueList(); // account for the rename
-						}
-					});
-				}
-			});
-			
-			// pause toggle for individual nzb
-			$('#pause_nzb','#queue_nzb_content').change(function(){
-				var state = $(this).attr('checked') ? 'pause' : 'resume';
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'queue', name: state, value: $.mobile.queue_nzo_id, apikey: $.mobile.apikey },
-					success: function() {
-						$.each($.mobile.queue.slots, function(i,nzb){
-							if (nzb.nzo_id == $.mobile.queue_nzo_id)
-								$.mobile.queue.slots[i].status = (state=='pause' ? 'Paused' : 'Queued'); // 'Downloading'?
-						});
-						$.mobile.LoadQueueList(); // account for strikeout/stats
-					}
-				});
-			});
-
-			// 4-in-1 change nzb [order + category + processing + script]
-			$('#switch, #change_cat, #change_opts, #change_script','#queue_nzb_content').change(function(){
-				var option_id = $(this).attr('id');
-				var option_val = $(this).val();
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode: option_id, value: $.mobile.queue_nzo_id, value2: option_val, apikey: $.mobile.apikey },
-					success: function(resp) {
-						switch (option_id) {
-							case 'switch':
-							case 'change_cat':
-								$.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's other settings
-								break;
-							case 'change_opts':
-								// account for revisiting this nzb detail page through the navigation
-								$.each($.mobile.queue.slots, function(i,nzb){
-									if (nzb.nzo_id == $.mobile.queue_nzo_id)
-										$.mobile.queue.slots[i].unpackopts = option_val;
-								});
-								break;
-							case 'change_script':
-								$.each($.mobile.queue.slots, function(i,nzb){
-									if (nzb.nzo_id == $.mobile.queue_nzo_id)
-										$.mobile.queue.slots[i].script = option_val;
-								});
-								break;
-						};
-					}
-				});
-			});
-			
-			// priority change nzb
-			$('#change_priority','#queue_nzb_content').change(function(){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'queue', name:'priority', value: $.mobile.queue_nzo_id, value2: $(this).val(), apikey: $.mobile.apikey },
-					success: function(resp) {
-						$.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's order
-					}
-				});
-			});
-			
-			// delete button
-			$('#delete_nzb','#queue_nzb_content').click(function(){
-                if ($.mobile.NZBDelete( $.mobile.queue_nzo_id, 'queue' ))
-					jQT.goTo('#queue', 'dissolve');
-			});
-
-			// history list event bindings ********************
-			
-			// #history_nzb detail page -- update stats when viewing page
-            $('#history_nzb').bind('pageAnimationStart', function(e, info){
-            	if (info.direction == 'in') {
-					$.mobile.history_nzo_id = $(e.target).data('referrer').attr('id');
-					$.mobile.LoadHistoryDetail();
-				}
-			});
-			
-			// #queueList "swipe delete" event binding
-            $('#historyList li a').live('swipe',function(e, data){
-                $.mobile.NZBDelete( $(this).attr('id'), 'history' );
+            break;
+          case 'change_script':
+            $.each($.mobile.queue.slots, function(i,nzb){
+              if (nzb.nzo_id == $.mobile.queue_nzo_id)
+                $.mobile.queue.slots[i].script = option_val;
             });
-			
-			// #history_nzb view script log
-            $('#history_nzb_script').bind('pageAnimationStart', function(e, info){
-            	if (info.direction == 'in') {
+            break;
+        };
+      }
+    });
+  });
 
-					$.ajax({
-						type: "POST",
-						url: "scriptlog",
-						data: { name: $.mobile.history_nzo_id, apikey: $.mobile.apikey },
-						success: function(resp){
-							$('#history_script_log').html( $(resp).filter('h3,code') );
-						}
-					});
-				}
-			});
+  // priority change nzb
+  $('#change_priority','#queue_nzb_content').change(function(){
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'queue', name:'priority', value: $.mobile.queue_nzo_id, value2: $(this).val(), apikey: $.mobile.apikey },
+      success: function(resp) {
+        $.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's order
+      }
+    });
+  });
 
-			// history options ********************
+  // delete button
+  $('#delete_nzb','#queue_nzb_content').click(function(){
+    if ($.mobile.NZBDelete( $.mobile.queue_nzo_id, 'queue' ))
+      jQT.goTo('#queue', 'dissolve');
+  });
 
-			$('#delete_nzb','#history_nzb_content').click(function(){
-                if ($.mobile.NZBDelete( $.mobile.history_nzo_id, 'history' ))
-					jQT.goTo('#history', 'dissolve');
-			});
+  // history list event bindings ********************
 
-			$('#history_purge').click(function(event) {
-				if (confirm($('#history_purge').attr('rel'))) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: { mode:'history', name:'delete', value:'all', apikey: $.mobile.apikey },
-						success: function() {
-							jQT.goTo('#home', 'dissolve');
-							$.mobile.LoadHistory();
-						}
-					});
-				}
-			});
-			
-			// pagination **************
-			$('#queue_page_prev').click( function(){
-				if ($.mobile.qPage > 0) {
-					$.mobile.qPage--;
-					$.mobile.LoadQueue();
-				}
-			});
-			$('#queue_page_next').click( function(){
-				if ( ($.mobile.qPage+1)*$.mobile.qhPerPage < $.mobile.queue.noofslots ) {
-					$.mobile.qPage++;
-					$.mobile.LoadQueue();
-				}
-			});
-			$('#queue_page_first').click( function(){
-				if ($.mobile.qPage != 0) {
-					$.mobile.qPage = 0;
-					$.mobile.LoadQueue();
-				}
-			});
-			$('#queue_page_last').click( function(){
-				var lastPage = parseInt( $.mobile.queue.noofslots / $.mobile.qhPerPage );
-				if ($.mobile.qPage != lastPage) {
-					$.mobile.qPage = lastPage;
-					$.mobile.LoadQueue();
-				}
-			});
-			$('#history_page_prev').click( function(){
-				if ($.mobile.hPage > 0) {
-					$.mobile.hPage--;
-					$.mobile.LoadHistory();
-				}
-			});
-			$('#history_page_next').click( function(){
-				if ( ($.mobile.hPage+1)*$.mobile.qhPerPage < $.mobile.history.noofslots ) {
-					$.mobile.hPage++;
-					$.mobile.LoadHistory();
-				}
-			});
-			$('#history_page_first').click( function(){
-				if ($.mobile.hPage != 0) {
-					$.mobile.hPage = 0;
-					$.mobile.LoadHistory();
-				}
-			});
-			$('#history_page_last').click( function(){
-				var lastPage = parseInt( $.mobile.history.noofslots / $.mobile.qhPerPage );
-				if ($.mobile.hPage != lastPage) {
-					$.mobile.hPage = lastPage;
-					$.mobile.LoadHistory();
-				}
-			});
-			
-			// orientation change event
-			$('body').bind('turn', function(event, info){
+  // #history_nzb detail page -- update stats when viewing page
+  $('#history_nzb').bind('pageAnimationStart', function(e, info){
+    if (info.direction == 'in') {
+      $.mobile.history_nzo_id = $(e.target).data('referrer').attr('id');
+      $.mobile.LoadHistoryDetail();
+    }
+  });
 
-				if (info.orientation == "landscape") {
+  // #queueList "swipe delete" event binding
+  $('#historyList li a').live('swipe',function(e, data){
+    $.mobile.NZBDelete( $(this).attr('id'), 'history' );
+  });
 
-					// queue listing -- show more stats in landscape
-					$.mobile.landscape = true;
-					$('#queue li a .landscape_stats').show();
+  // #history_nzb view script log
+  $('#history_nzb_script').bind('pageAnimationStart', function(e, info){
+    if (info.direction == 'in') {
 
-				} else {
+  $.ajax({
+    type: "POST",
+    url: "scriptlog",
+    data: { name: $.mobile.history_nzo_id, apikey: $.mobile.apikey },
+    success: function(resp){
+      $('#history_script_log').html( $(resp).filter('h3,code') );
+    }
+  });
+}
+});
 
-					// queue listing -- show less stats in profile
-				 	$('#queue li a .landscape_stats').hide();
-				 }
-			});
-		
-			// add nzb ***************
-			$('#addnzb_enqueue').click( function(){
-				if ( $('#addnzb_url').val() ) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
-						success: function(resp){
-							$('#addnzb_response').clone().addClass('addnzb_response_clone')
-								.children('.addnzb_response_text').html(resp).append('<br/>'+$('#addnzb_url').val())
-								.parent().insertAfter('#addnzb_response').fadeIn('slow');
-							$('#addnzb_url').val('');
-							$.mobile.LoadQueue();
-						}
-					});
-				}
-			});
-			
-			$('#addnzb_clear').click( function(){
-				$('#addnzb_url').val('');
-				$('.addnzb_response_clone').remove();
-			});
-			
-			$('#fetch_newzbin_bookmarks').click(function(){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'newzbin', name:'get_bookmarks', apikey: $.mobile.apikey },
-					success: function(resp){
-						$('#addnzb_response').clone().addClass('addnzb_response_clone')
-							.children('.addnzb_response_text').html(resp)
-							.parent().insertAfter('#addnzb_response').fadeIn('slow');
-						$.mobile.LoadQueue();
-					}
-				});
-			});
-			
-			// clear warnings
-			$('#warnings_clear').click(function(){
-				if (confirm( $(this).attr('rel') )){
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: { mode:'warnings', name:'clear', session: $.mobile.apikey },
-						success: function(){
-							$('#warnings_list').html('');
-							$('#button-warnings').hide();
-							jQT.goTo('#home','dissolve');
-						}
-					});
-				}
-			});
-	
-		
-		} // end Init()
-		
-	}; // end $.mobile
-	
-	
-	$.mobile.Init();
+  // history options ********************
+
+  $('#delete_nzb','#history_nzb_content').click(function(){
+    if ($.mobile.NZBDelete( $.mobile.history_nzo_id, 'history' ))
+      jQT.goTo('#history', 'dissolve');
+  });
+
+  $('#history_purge').click(function(event) {
+    if (confirm($('#history_purge').attr('rel'))) {
+      $.ajax({
+        type: "POST",
+        url: "tapi",
+        data: { mode:'history', name:'delete', value:'all', apikey: $.mobile.apikey },
+        success: function() {
+          jQT.goTo('#home', 'dissolve');
+          $.mobile.LoadHistory();
+        }
+      });
+    }
+  });
+
+  // pagination **************
+  $('#queue_page_prev').click( function(){
+    if ($.mobile.qPage > 0) {
+      $.mobile.qPage--;
+      $.mobile.LoadQueue();
+    }
+  });
+  $('#queue_page_next').click( function(){
+    if ( ($.mobile.qPage+1)*$.mobile.qhPerPage < $.mobile.queue.noofslots ) {
+      $.mobile.qPage++;
+      $.mobile.LoadQueue();
+    }
+  });
+  $('#queue_page_first').click( function(){
+    if ($.mobile.qPage != 0) {
+      $.mobile.qPage = 0;
+      $.mobile.LoadQueue();
+    }
+  });
+  $('#queue_page_last').click( function(){
+    var lastPage = parseInt( $.mobile.queue.noofslots / $.mobile.qhPerPage );
+    if ($.mobile.qPage != lastPage) {
+      $.mobile.qPage = lastPage;
+      $.mobile.LoadQueue();
+    }
+  });
+  $('#history_page_prev').click( function(){
+    if ($.mobile.hPage > 0) {
+      $.mobile.hPage--;
+      $.mobile.LoadHistory();
+    }
+  });
+  $('#history_page_next').click( function(){
+    if ( ($.mobile.hPage+1)*$.mobile.qhPerPage < $.mobile.history.noofslots ) {
+      $.mobile.hPage++;
+      $.mobile.LoadHistory();
+    }
+  });
+  $('#history_page_first').click( function(){
+    if ($.mobile.hPage != 0) {
+      $.mobile.hPage = 0;
+      $.mobile.LoadHistory();
+    }
+  });
+  $('#history_page_last').click( function(){
+    var lastPage = parseInt( $.mobile.history.noofslots / $.mobile.qhPerPage );
+    if ($.mobile.hPage != lastPage) {
+      $.mobile.hPage = lastPage;
+      $.mobile.LoadHistory();
+    }
+  });
+
+  // orientation change event
+  $('body').bind('turn', function(event, info){
+
+  if (info.orientation == "landscape") {
+
+  // queue listing -- show more stats in landscape
+  $.mobile.landscape = true;
+  $('#queue li a .landscape_stats').show();
+
+  } else {
+
+  // queue listing -- show less stats in profile
+    $('#queue li a .landscape_stats').hide();
+}
+});
+
+  // add nzb ***************
+  $('#addnzb_enqueue').click( function(){
+    if ( $('#addnzb_url').val() ) {
+      $.ajax({
+        type: "POST",
+        url: "tapi",
+        data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
+        success: function(resp){
+          $('#addnzb_response').clone().addClass('addnzb_response_clone')
+            .children('.addnzb_response_text').html(resp).append('<br/>'+$('#addnzb_url').val())
+            .parent().insertAfter('#addnzb_response').fadeIn('slow');
+          $('#addnzb_url').val('');
+          $.mobile.LoadQueue();
+        }
+      });
+    }
+  });
+
+  $('#addnzb_clear').click( function(){
+    $('#addnzb_url').val('');
+    $('.addnzb_response_clone').remove();
+  });
+
+  $('#fetch_newzbin_bookmarks').click(function(){
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: { mode:'newzbin', name:'get_bookmarks', apikey: $.mobile.apikey },
+      success: function(resp){
+        $('#addnzb_response').clone().addClass('addnzb_response_clone')
+          .children('.addnzb_response_text').html(resp)
+          .parent().insertAfter('#addnzb_response').fadeIn('slow');
+        $.mobile.LoadQueue();
+      }
+    });
+  });
+
+  // clear warnings
+  $('#warnings_clear').click(function(){
+    if (confirm( $(this).attr('rel') )){
+      $.ajax({
+        type: "POST",
+        url: "tapi",
+        data: { mode:'warnings', name:'clear', session: $.mobile.apikey },
+        success: function(){
+          $('#warnings_list').html('');
+          $('#button-warnings').hide();
+          jQT.goTo('#home','dissolve');
+        }
+      });
+    }
+  });
+
+
+  } // end Init()
+
+  }; // end $.mobile
+
+
+  $.mobile.Init();
 
 });

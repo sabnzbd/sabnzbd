@@ -1,6 +1,6 @@
 <script type="text/javascript">
 window.onload = function() {
-    location = "../#/connections"
+  location = "../#/connections"
 };
 </script>
 <h3>$T('connections')</h3>
@@ -9,39 +9,39 @@ window.onload = function() {
 <a class="config" href="connections/showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):
 <select onChange="javascript:lr('connections/change_loglevel','loglevel='+this.options[this.selectedIndex].value)">
-    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
-    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
-    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
+  <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
+  <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
+  <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
 </select>
 <!--#if $servers#-->
-    <ul>
-    <!--#for $server in $servers#-->
-        <li>
-            $server[0]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
-            <!--#if not $server[5]#-->
-                <a class="config" href="./connections/unblock_server?server=$server[0]&session=$session">
-                ($T('server-blocked'))</a>
-                &nbsp;&nbsp;$server[6]
-            <!--#end if#-->
+  <ul>
+  <!--#for $server in $servers#-->
+    <li>
+      $server[0]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
+      <!--#if not $server[5]#-->
+        <a class="config" href="./connections/unblock_server?server=$server[0]&session=$session">
+        ($T('server-blocked'))</a>
+        &nbsp;&nbsp;$server[6]
+      <!--#end if#-->
 
-            <ul>
-            <!--#for $thrd in $server[3]#-->
-                <li>Thread #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>
-            <!--#end for#-->
-            </ul>
-        </li>
-    <!--#end for#-->
-    </ul>
+  <ul>
+  <!--#for $thrd in $server[3]#-->
+    <li>Thread #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>
+  <!--#end for#-->
+  </ul>
+</li>
+<!--#end for#-->
+</ul>
 <!--#end if#-->
 <!--#if $lastmail#-->
-    <h2>$T('emailResult')</h2>
-    $lastmail
+  <h2>$T('emailResult')</h2>
+  $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-    <h2>$T('lastWarnings') (<a class="config" onClick="lr('connections/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
-    <!--#for $warn in $warnings#-->
-        $warn<br/>
-    <!--#end for#-->
+  <h2>$T('lastWarnings') (<a class="config" onClick="lr('connections/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
+  <!--#for $warn in $warnings#-->
+    $warn<br/>
+  <!--#end for#-->
 <!--#end if#-->
 
 <!--#if $folders#-->
@@ -49,39 +49,39 @@ $T('logging'):
 $T('explain-orphans')<br/>
 <br/>
 
-    <table id="catTable">
-        <tr>
-            <th></th>
-            <th></th>
-            <th>$T('name')</th>
-        </tr>
-    <!--#set $odd = False#-->
-    <!--#for $folder in $folders#-->
-        <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->">
+  <table id="catTable">
+    <tr>
+      <th></th>
+      <th></th>
+      <th>$T('name')</th>
+    </tr>
+  <!--#set $odd = False#-->
+  <!--#for $folder in $folders#-->
+    <!--#set $odd = not $odd#-->
+    <tr class="<!--#if $odd then "odd" else "even"#-->">
 
-        <td>
-            <form action="delete" method="get">
-            <input type="hidden" value="$folder" name="name">
-            <input type="hidden" value="$session" name="session">
-            <input type="submit" onclick="this.form.action='connections/delete?session=$session'; this.form.submit(); return false;" value="$T('button-delCat')"/>
-            </form>
-        </td>
+  <td>
+    <form action="delete" method="get">
+    <input type="hidden" value="$folder" name="name">
+    <input type="hidden" value="$session" name="session">
+    <input type="submit" onclick="this.form.action='connections/delete?session=$session'; this.form.submit(); return false;" value="$T('button-delCat')"/>
+    </form>
+  </td>
 
-        <td>
-            <form action="add" method="get">
-            <input type="hidden" value="$folder" name="name">
-            <input type="hidden" value="$session" name="session">
-            <input type="submit" onclick="this.form.action='connections/add?session=$session'; this.form.submit(); return false;" value="$T('button-add')"/>
-            </form>
-        </td>
+  <td>
+    <form action="add" method="get">
+    <input type="hidden" value="$folder" name="name">
+    <input type="hidden" value="$session" name="session">
+    <input type="submit" onclick="this.form.action='connections/add?session=$session'; this.form.submit(); return false;" value="$T('button-add')"/>
+    </form>
+  </td>
 
-        <td>
-        $folder
-        </td>
+  <td>
+  $folder
+  </td>
 
-    <!--#end for#-->
-    </table>
+  <!--#end for#-->
+  </table>
 <br/><hr/><br/>
 <!--#end if#-->
 $T('explain-Repair')<br/>

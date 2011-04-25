@@ -26,25 +26,25 @@ $T('explain-port')<br>
 <strong>$T('opt-web_dir'):</strong><br>
 $T('explain-web_dir')<br>
 <select name="web_dir">
-    <!--#for $webline in $web_list#-->
-        <!--#if $webline.lower() == $web_dir.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
+  <!--#for $webline in $web_list#-->
+    <!--#if $webline.lower() == $web_dir.lower()#-->
+      <option value="$webline" selected>$webline</option>
+    <!--#else#-->
+      <option value="$webline">$webline</option>
+    <!--#end if#-->
+  <!--#end for#-->
 </select>
 <br/><br/>
 <strong>$T('opt-web_dir2'):</strong><br>
 $T('explain-web_dir2')<br>
 <select name="web_dir2">
-    <!--#for $webline in $web_list2#-->
-        <!--#if $webline.lower() == $web_dir2.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
+  <!--#for $webline in $web_list2#-->
+    <!--#if $webline.lower() == $web_dir2.lower()#-->
+      <option value="$webline" selected>$webline</option>
+    <!--#else#-->
+      <option value="$webline">$webline</option>
+    <!--#end if#-->
+  <!--#end for#-->
 </select>
 <br /><br /><strong>$T('opt-apikey'):</strong><br />
 $T('explain-apikey')<br />
@@ -62,13 +62,13 @@ $T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target
 <strong>$T('opt-language'):</strong><br/>
 $T('explain-language')<br/>
 <select name="language">
-    <!--#for $webline in $lang_list#-->
-        <!--#if $webline[0].lower() == $language.lower()#-->
-            <option value="$webline[0]" selected>$webline[1]</option>
-        <!--#else#-->
-            <option value="$webline[0]">$webline[1]</option>
-        <!--#end if#-->
-    <!--#end for#-->
+  <!--#for $webline in $lang_list#-->
+    <!--#if $webline[0].lower() == $language.lower()#-->
+      <option value="$webline[0]" selected>$webline[1]</option>
+    <!--#else#-->
+      <option value="$webline[0]">$webline[1]</option>
+    <!--#end if#-->
+  <!--#end for#-->
 </select>
 <!--#end if#-->
 </fieldset>
@@ -136,7 +136,7 @@ $T('explain-cleanup_list')<br><br>
 <p>
 <input type="submit" value="$T('button-saveChanges')">
 <!--#if $restart_req#-->
-    <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="$T('button-restart')"/>
+  <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="$T('button-restart')"/>
 <!--#end if#-->
 </p>
 </form>

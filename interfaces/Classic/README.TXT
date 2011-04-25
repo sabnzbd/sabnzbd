@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 #
-# This is the Default web interface for SABnzbd
+# This is the "Classic" web interface for SABnzbd
 # Simple, but compatible with all popular browsers.
+# We recommend use of the more advanced versions.
 #

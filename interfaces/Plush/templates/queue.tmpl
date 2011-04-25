@@ -2,43 +2,43 @@
 <% locale.setlocale(locale.LC_ALL, "") %>
 
 <script type="text/javascript">
-	if (typeof( jQuery ) == 'undefined')
-		window.location = "../"; // redirect to main on direct template hit
+  if (typeof( jQuery ) == 'undefined')
+    window.location = "../"; // redirect to main on direct template hit
 
-    jQuery(function($) {
-        $.plush.queuenoofslots = $noofslots;
-        $.plush.SetQueueSpeedLimit('$speedlimit');
-        $.plush.SetQueueFinishAction('$finishaction');
-        $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'") #-->");
-		$.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');
-        $.plush.SetQueueETAStats("<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->",<!--#echo "%.0f" % float($kbpersec)#-->,'$timeleft','$T('eta'): $eta');
+  jQuery(function($) {
+    $.plush.queuenoofslots = $noofslots;
+    $.plush.SetQueueSpeedLimit('$speedlimit');
+    $.plush.SetQueueFinishAction('$finishaction');
+    $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'") #-->");
+    $.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');
+    $.plush.SetQueueETAStats("<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->",<!--#echo "%.0f" % float($kbpersec)#-->,'$timeleft','$T('eta'): $eta');
 
-		// set lower-right queue stats
-		var stats = '';
-        <!--#if $noofslots > 0#-->
-        stats += '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
-        <!--#end if#-->
-        <!--#if $diskspace1 == $diskspace2#-->
-        stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
-        <!--#else#-->
-        stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
-        		+'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
-		<!--#end if#-->
-		$.plush.SetQueueStats(stats);
-    });
+  // set lower-right queue stats
+  var stats = '';
+  <!--#if $noofslots > 0#-->
+  stats += '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
+  <!--#end if#-->
+  <!--#if $diskspace1 == $diskspace2#-->
+  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
+  <!--#else#-->
+  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
+    +'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
+  <!--#end if#-->
+  $.plush.SetQueueStats(stats);
+});
 
-	// set the page title here (due to localizations)
-	<!--#if $noofslots < 1 #-->
-		<!--#if $paused#-->
-		document.title = '$T('ft-paused') | SABnzbd $version';
-		<!--#else#-->
-		document.title = '$T('Plush-idle') | SABnzbd $version';
-		<!--#end if#-->
-	<!--#else if $paused#-->
-		document.title = '$T('ft-paused') | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') $T('Plush-left') | $noofslots NZBs';
-	<!--#else#-->
-		document.title = '<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') | $timeleft $T('Plush-left')';
-	<!--#end if#-->
+  // set the page title here (due to localizations)
+  <!--#if $noofslots < 1 #-->
+    <!--#if $paused#-->
+    document.title = '$T('ft-paused') | SABnzbd $version';
+    <!--#else#-->
+    document.title = '$T('Plush-idle') | SABnzbd $version';
+    <!--#end if#-->
+  <!--#else if $paused#-->
+    document.title = '$T('ft-paused') | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') $T('Plush-left') | $noofslots NZBs';
+  <!--#else#-->
+    document.title = '<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') | $timeleft $T('Plush-left')';
+  <!--#end if#-->
 
 </script>
 
@@ -46,66 +46,66 @@
 <table class="queueTable" id="queueTable" cellspacing="0">
 <!--#set $cur = 0#-->
 <!--#for $slot in $slots#-->
-    <!--#set $cur = $cur + 1#-->
-    <tr id="$slot.nzo_id"<!--#if $cur%2#--> class="alt"<!--#end if#-->>
+  <!--#set $cur = $cur + 1#-->
+  <tr id="$slot.nzo_id"<!--#if $cur%2#--> class="alt"<!--#end if#-->>
 
-	<td class="nzb_status_col nowrap">
-		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_pause<!--#else#-->main_sprite_container sprite_ql_grip_resume<!--#end if#-->">&nbsp;
-		</div>
-		<% # <!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active %>
-	</td>
+  <td class="nzb_status_col nowrap">
+    &nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_pause<!--#else#-->main_sprite_container sprite_ql_grip_resume<!--#end if#-->">&nbsp;
+    </div>
+    <% # <!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active %>
+  </td>
 
-    <td class="download-title">
-        <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age">$slot.filename</a>
-    </td>
+  <td class="download-title">
+    <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age">$slot.filename</a>
+  </td>
 
-    <td>
-    	<div class="main_sprite_container sprite_progressbar_bg">
-	        <div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -401px">
-	            <div class="totalDownload"><!--#echo locale.format('%d', int(float($slot.mb)), True)#-->&nbsp;<small>$T('MB')</small></div>
-	            <div class="currentDownload"><!--#if $slot.mb!=$slot.mbleft#--><!--#echo locale.format('%d', int(float($slot.mb)-float($slot.mbleft)), True)#-->&nbsp;<small>$T('MB')&nbsp;$T('AofB')</small><!--#end if#--></div>
-	        </div>
-        </div>
-    </td>
+  <td>
+    <div class="main_sprite_container sprite_progressbar_bg">
+      <div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -401px">
+        <div class="totalDownload"><!--#echo locale.format('%d', int(float($slot.mb)), True)#-->&nbsp;<small>$T('MB')</small></div>
+        <div class="currentDownload"><!--#if $slot.mb!=$slot.mbleft#--><!--#echo locale.format('%d', int(float($slot.mb)-float($slot.mbleft)), True)#-->&nbsp;<small>$T('MB')&nbsp;$T('AofB')</small><!--#end if#--></div>
+      </div>
+    </div>
+  </td>
 
-    <td class="eta nowrap">
-        <!--#if not $paused and $slot.status != "Paused"#-->
-        <span title="$slot.eta">$slot.timeleft&nbsp;$T('Plush-left')</span>
-        <!--#else#-->
-        $T('post-'+$slot.status)
-        <!--#end if#-->
-    </td>
+  <td class="eta nowrap">
+    <!--#if not $paused and $slot.status != "Paused"#-->
+    <span title="$slot.eta">$slot.timeleft&nbsp;$T('Plush-left')</span>
+    <!--#else#-->
+    $T('post-'+$slot.status)
+    <!--#end if#-->
+  </td>
 
-    <td class="options nowrap">
-        <!--#if $cat_list#-->
-        <select class="change_cat"><optgroup label="$T('category')">
-            <!--#for $ct in $cat_list#-->
-            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
-            <!--#end for#-->
-        </optgroup></select>
-        <!--#end if#-->
-        <select class="proc_priority"><optgroup label="$T('priority')">
-            <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
-            <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
-            <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
-            <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
-        </optgroup></select>
-        <select class="change_opts"><optgroup label="$T('pp')">
-            <option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>$T('pp-none')</option>
-            <option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->>$T('pp-repair')</option>
-            <option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->>$T('pp-unpack')</option>
-            <option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->>$T('pp-delete')</option>
-        </optgroup></select>
-        <!--#if $script_list#-->
-        <select class="change_script"><optgroup label="$T('script')">
-            <!--#for $sc in $script_list#-->
-            <option value="$sc"  <!--#if $slot.script == $sc then "selected" else ""#-->>$Tspec($sc)</option>
-            <!--#end for#-->
-        </optgroup></select>
-        <!--#end if#-->
-        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
-    </td>
+  <td class="options nowrap">
+    <!--#if $cat_list#-->
+    <select class="change_cat"><optgroup label="$T('category')">
+      <!--#for $ct in $cat_list#-->
+      <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
+      <!--#end for#-->
+    </optgroup></select>
+    <!--#end if#-->
+    <select class="proc_priority"><optgroup label="$T('priority')">
+      <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
+      <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
+      <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
+      <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
+    </optgroup></select>
+    <select class="change_opts"><optgroup label="$T('pp')">
+      <option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>$T('pp-none')</option>
+      <option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->>$T('pp-repair')</option>
+      <option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->>$T('pp-unpack')</option>
+      <option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->>$T('pp-delete')</option>
+    </optgroup></select>
+    <!--#if $script_list#-->
+    <select class="change_script"><optgroup label="$T('script')">
+      <!--#for $sc in $script_list#-->
+      <option value="$sc"  <!--#if $slot.script == $sc then "selected" else ""#-->>$Tspec($sc)</option>
+      <!--#end for#-->
+    </optgroup></select>
+    <!--#end if#-->
+    <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
+  </td>
 
-    </tr>
+  </tr>
 <!--#end for#-->
 </table>

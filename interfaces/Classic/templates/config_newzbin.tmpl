@@ -31,9 +31,9 @@ $T('explain-newzbin_bookmarks')<br>
 <a href="getBookmarks?session=$session">$T('link-getBookmarks')</a>
 <br>
 <!--#if $bookmarks_list#-->
-    <a href="hideBookmarks?session=$session">$T('link-HideBM')</a>
+  <a href="hideBookmarks?session=$session">$T('link-HideBM')</a>
 <!--#else#-->
-    <a href="showBookmarks?session=$session">$T('link-ShowBM')</a>
+  <a href="showBookmarks?session=$session">$T('link-ShowBM')</a>
 <!--#end if#-->
 <br/>
 <br/>
@@ -46,12 +46,12 @@ $T('explain-bookmark_rate')<br>
 </fieldset>
 </div>
 <!--#if $bookmarks_list#-->
-    <fieldset class="EntryFieldSet">
-    <legend>$T('processedBM')</legend>
-    <!--#for $msgid in $bookmarks_list#-->
-        <a href="https://www.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
-    <!--#end for#-->
-    </fieldset>
+  <fieldset class="EntryFieldSet">
+  <legend>$T('processedBM')</legend>
+  <!--#for $msgid in $bookmarks_list#-->
+    <a href="https://www.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
+  <!--#end for#-->
+  </fieldset>
 <!--#end if#-->
 <input type="hidden" name="session" value="$session">
 <p><input type="submit" value="$T('button-saveChanges')"></p>
