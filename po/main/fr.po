@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-09 17:49+0000\n"
-"PO-Revision-Date: 2011-03-29 18:19+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2011-04-11 16:07+0000\n"
+"Last-Translator: Fox Ace <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-10 05:04+0000\n"
+"X-Launchpad-Export-Date: 2011-04-12 05:11+0000\n"
 "X-Generator: Launchpad (build 12735)\n"
 "Language: fr\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -1101,7 +1101,7 @@ msgstr "%s articles sont manquants"
 
 #: sabnzbd/nzbstuff.py:967
 msgid "%s articles had non-matching duplicates"
-msgstr ""
+msgstr "%s articles ne correspondaient pas a des doublons"
 
 #: sabnzbd/nzbstuff.py:999 [Error message]
 msgid "Error importing %s"
@@ -2616,7 +2616,7 @@ msgstr "Remplacer les espaces dans les noms de dossier"
 #: sabnzbd/skintext.py:395
 msgid "Replace spaces with underscores in folder names."
 msgstr ""
-"Remplace les espaces par des underscores* dans les noms de dossiers. *  _"
+"Remplace les espaces par des underscores* dans les noms de dossiers. (* _)"
 
 #: sabnzbd/skintext.py:396
 msgid "Replace dots in Foldername"
@@ -3888,7 +3888,7 @@ msgid ""
 "After SABnzbd has finished restarting you will be able to access it at the "
 "following location: %s"
 msgstr ""
-"Après que SABnzbd a fini de redémarrer, vous serez en mesure d'accéder à "
+"Après que SABnzbd a terminer de redémarrer, vous serez en mesure d'accéder à "
 "l'adresse suivante: %s"
 
 #: sabnzbd/skintext.py:789 [Wizard tip]
