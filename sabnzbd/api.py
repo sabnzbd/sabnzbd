@@ -1497,6 +1497,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         verbose_list = []
 
     limit = int_conv(limit)
+    if not limit: limit = 1000000
     start = int_conv(start)
     failed_only = int_conv(failed_only)
 
