@@ -1152,7 +1152,7 @@ msgstr "Map download"
 
 #: sabnzbd/osxmenu.py:261
 msgid "Quit"
-msgstr "Verlaten"
+msgstr "Afsluiten"
 
 #: sabnzbd/osxmenu.py:267 # sabnzbd/skintext.py:55 [#: Config->Scheduler] # sabnzbd/skintext.py:245
 #: sabnzbd/skintext.py:454
