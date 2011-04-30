@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-09 17:49+0000\n"
-"PO-Revision-Date: 2011-04-13 03:34+0000\n"
-"Last-Translator: Rene <Unknown>\n"
+"POT-Creation-Date: 2011-04-30 12:21+0000\n"
+"PO-Revision-Date: 2011-04-30 12:34+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-15 05:46+0000\n"
-"X-Generator: Launchpad (build 12735)\n"
+"X-Launchpad-Export-Date: 2011-04-30 12:40+0000\n"
+"X-Generator: Launchpad (build 12915)\n"
 "Language: da\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -1076,8 +1076,8 @@ msgid "%s articles were missing"
 msgstr "%s artikler mangled"
 
 #: sabnzbd/nzbstuff.py:967
-msgid "%s articles had non-matching duplicates"
-msgstr "%s artikler havde ikke-matchende dubletter"
+msgid "%s file segments had multiple articles"
+msgstr "%s fil segmenter havde flere artikler"
 
 #: sabnzbd/nzbstuff.py:999 [Error message]
 msgid "Error importing %s"
@@ -4039,3 +4039,6 @@ msgstr "Ugyldigt nzbmatrix rapport nummer %s"
 
 #~ msgid "Ignore"
 #~ msgstr "Ignorer"
+
+#~ msgid "%s articles had non-matching duplicates"
+#~ msgstr "%s artikler havde ikke-matchende dubletter"
