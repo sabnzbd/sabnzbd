@@ -974,7 +974,7 @@ msgid "%s articles were missing"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py:967
-msgid "%s articles had non-matching duplicates"
+msgid "%s file segments had multiple articles"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py:999 [Error message]
