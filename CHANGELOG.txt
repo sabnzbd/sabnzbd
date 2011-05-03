@@ -3,6 +3,8 @@
 -------------------------------------------------------------------------------
 - Fix handling of semicolon in parameters for user scripts.
 - Fix attribute handling of 'addlocalfile' API.
+- Fixed broken Mobile skin
+- Prevent loss of sabnzbd.ini when disk is full
 -------------------------------------------------------------------------------
  0.6.0RC4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
