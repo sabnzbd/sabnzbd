@@ -687,6 +687,7 @@ def read_config(path):
 def save_config(force=False):
     """ Update Setup file with current option values """
     global CFG, database, modified
+    assert isinstance(CFG, configobj.ConfigObj)
 
     if not (modified or force):
         return True
@@ -724,19 +725,33 @@ def save_config(force=False):
                 else:
                     CFG[sec][kw] = value
 
+    filename = CFG.filename
     try:
-        CFG.write()
+        # Read current content
         f = open(CFG.filename)
-        x = f.read()
+        data = f.read()
         f.close()
-        f = open(CFG.filename, "w")
-        f.write(x)
-        f.flush()
+
+        # Write to temp file
+        CFG.filename = filename + '.tmp'
+        f = open(CFG.filename, 'w')
+        f.write(data)
         f.close()
+
+        # Update temp file content
+        CFG.write()
+
+        # Rename temp file, overwriting old one
+        os.remove(filename)
+        os.rename(CFG.filename, filename)
+
         modified = False
-        return True
-    except IOError:
-        return False
+        res = True
+    except:
+        logging.error(Ta('Cannot create temp file for %s'), CFG.filename)
+        res = False
+    CFG.filename = filename
+    return res
 
 
 
