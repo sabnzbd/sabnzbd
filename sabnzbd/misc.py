@@ -672,8 +672,8 @@ def panic_sqlite(name):
     launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
 
 def panic_old_queue():
-    msg = MSG_OLD_QUEUE
-    return MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
+    msg = MSG_OLD_QUEUE()
+    return MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 def panic(reason, remedy=""):
     print "\n%s:\n  %s\n%s" % (Ta('Fatal error'), reason, remedy)
