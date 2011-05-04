@@ -358,7 +358,7 @@ SKIN_TEXT = {
     'opt-pause_on_pwrar' : TT('Pause job when encrypted RAR is downloaded'),
     'explain-pause_on_pwrar' : TT('You\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Detect Duplicate Downloads'),
-    'explain-no_dupes' : TT('Detect identically named NZB files and duplicate titles across RSS feeds.'),
+    'explain-no_dupes' : TT('Detect identically named NZB files (requires NZB backup option) and duplicate titles across RSS feeds.'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
