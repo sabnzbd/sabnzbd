@@ -527,8 +527,8 @@ elif target in ('binary', 'installer'):
     ############################
     if target == 'installer':
 
-        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-                  (prod, fileIns))
+        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+                  (prod, release, fileIns))
 
 
     DeleteFiles(fileBin)
