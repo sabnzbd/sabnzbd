@@ -1382,7 +1382,7 @@ def main():
                 mail = None
         else:
             # Write URL directly to registry
-            set_connection_info(url)
+            set_connection_info(api_url)
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0

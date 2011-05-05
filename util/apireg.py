@@ -68,6 +68,10 @@ def set_connection_info(url, user=True):
     section, keypath = reg_info(user)
     try:
         hive = _winreg.ConnectRegistry(None, section)
+        try:
+            key = _winreg.CreateKey(hive, keypath)
+        except:
+            pass
         key = _winreg.OpenKey(hive, keypath)
         mykey = _winreg.CreateKey(key, 'api')
         _winreg.SetValueEx(mykey, 'url', None, _winreg.REG_SZ, url)
