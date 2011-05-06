@@ -98,6 +98,7 @@ DIR_LCLDATA = None
 DIR_PROG = None
 DIR_INTERFACES = None
 DIR_LANGUAGE = None
+DIR_PID = None
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -160,6 +161,8 @@ def sig_handler(signum = None, frame = None):
         if sabnzbd.WIN32:
             from util.apireg import del_connection_info
             del_connection_info()
+        else:
+            pid_file()
         SABSTOP = True
         os._exit(0)
 
@@ -961,6 +964,26 @@ def check_all_tasks():
     sabnzbd.scheduler.pause_check()
 
     return True
+
+
+def pid_file(pid_path=None, port=0):
+    """ Create or remove pid file
+    """
+    global DIR_PID
+    if not sabnzbd.WIN32 and pid_path and pid_path.startswith('/'):
+        DIR_PID = os.path.join(pid_path, 'sabnzbd-%s.pid' % port)
+
+    if DIR_PID:
+        try:
+            if port:
+                f = open(DIR_PID, 'w')
+                f.write('%d\n' % os.getpid())
+                f.close()
+            else:
+                os.remove(DIR_PID)
+        except:
+            logging.warning('Cannot access PID file %s', DIR_PID)
+
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py

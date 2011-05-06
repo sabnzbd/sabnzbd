@@ -237,6 +237,7 @@ def print_help():
         print "  -d  --daemon             Use when run as a service"
     else:
         print "  -d  --daemon             Fork daemon process"
+        print "      --pid <path>         Create a PID file in the listed folder (full path)"
     print
     print "      --force              Discard web-port timeout (see Wiki!)"
     print "  -h  --help               Print this message"
@@ -760,7 +761,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login',
+                                    'log-all', 'no-login', 'pid=',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -830,6 +831,7 @@ def main():
     api_url = None
     no_login = False
     re_argv = [sys.argv[0]]
+    pid_path = None
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -904,6 +906,10 @@ def main():
             sabnzbd.LOG_ALL = True
         elif opt in ('--no-login',):
             no_login = True
+        elif opt in ('--pid',):
+            pid_path = arg
+            re_argv.append(opt)
+            re_argv.append(arg)
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1384,6 +1390,9 @@ def main():
             # Write URL directly to registry
             set_connection_info(api_url)
 
+    if pid_path:
+        sabnzbd.pid_file(pid_path, cherryport)
+
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
@@ -1477,6 +1486,7 @@ def main():
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()
+    sabnzbd.pid_file()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         AppHelper.stopEventLoop()
     else:
