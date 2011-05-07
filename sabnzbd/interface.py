@@ -40,7 +40,8 @@ from sabnzbd.misc import real_path, to_units, \
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode, latin1
+from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
+                             platform_encode, latin1, encode_for_xml
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
@@ -2166,7 +2167,7 @@ class ConnectionInfo(object):
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
             w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
-            wlist.insert(0, xml_name(w))
+            wlist.insert(0, encode_for_xml(w))
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
