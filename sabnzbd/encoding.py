@@ -88,6 +88,8 @@ def special_fixer(p):
             try:
                 # First see if it isn't just UTF-8
                 p.decode('utf-8')
+                if sabnzbd.DARWIN and '&#' in p:
+                    p = fixup_ff4(p)
                 return p
             except:
                 # Now assume it's latin-1
@@ -257,3 +259,34 @@ def UNTRANS(p):
         return p.translate(gTABLE_LATIN_850)
     else:
         return p
+
+
+def fixup_ff4(p):
+    """ Fix incompatibility between CherryPy and Firefox-4 on OSX,
+        where a filename contains &#xx; encodings
+    """
+    name = []
+    start = amp = False
+    for ch in p:
+        if start:
+            if ch.isdigit():
+                num += ch
+            elif ch == ';':
+                name.append(unichr(int(num)).encode('utf8'))
+                start = False
+            else:
+                name.append('&#%s%s' % (num, ch))
+                start = False
+        elif ch == '&':
+            amp = True
+        elif amp:
+            amp = False
+            if ch == '#':
+                start = True
+                num = ''
+            else:
+                name.append('&' + ch)
+        else:
+            name.append(ch)
+    return ''.join(name)
+
