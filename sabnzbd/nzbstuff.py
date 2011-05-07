@@ -42,7 +42,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
                          sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.encoding import unicoder, platform_encode, latin1
+from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
@@ -907,9 +907,9 @@ class NzbObject(TryList):
         if self.oversized and self.status == 'Paused':
             prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
         if self.password:
-            return '%s%s / %s' % (prefix, self.final_name, self.password)
+            return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
         else:
-            return '%s%s' % (prefix, self.final_name)
+            return '%s%s' % (name_fixer(prefix), self.final_name)
 
     @property
     def final_name_pw_clean(self):
