@@ -698,7 +698,8 @@ SKIN_TEXT = {
     'Plush-confirmDeleteHistory' : TT('Confirm History Deletions'),
     'Plush-explain-blockRefresh' : TT('This will prevent refreshing content when your mouse cursor is hovering over the queue.'),
     'Plush-blockRefresh' : TT('Block Refreshes on Hover'),
-    'Plush-fetch' : TT('Fetch'),
+    'Plush-fetch' : TT('Fetch'), #: Fetch from URL button in "Add NZB" dialog box
+    'Plush-upload' : TT('Upload'), #: Upload button in "Add NZB" dialog box
     'Plush-uploadTip' : TT('Upload: .nzb .rar .zip .gz'),
     'Plush-addnzb-filename' : TT('Optionally specify a filename'),
     'Plush-progress' : TT('Progress'),
