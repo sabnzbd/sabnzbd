@@ -5,7 +5,7 @@
   <div id="page-wrap" class="tiley_sprite_container sprite_tile_queue_wrap">
 
   <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
-    <div class="logo main_sprite_container sprite_topleft_queue"><h1><!--#if $active_lang=='de' then $T('menu-queue') else $T('menu-queue').upper()#--></h1></div>
+    <div class="logo main_sprite_container sprite_topleft_queue"><h1><!--#if $active_lang in ('de', 'fr') then $T('menu-queue') else $T('menu-queue').upper()#--></h1></div>
     <div class="queue-buttons queue-buttons-pause lang-$active_lang main_sprite_container sprite_topright_queue">
       <ul>
         <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
@@ -182,7 +182,7 @@
 
   <!-- History Menu/Banner -->
   <div id="hdr-history" class="box_banner_history tilex_sprite_container sprite_tile_qhistory">
-    <h1><!--#if $active_lang=='de' then $T('menu-history') else $T('menu-history').upper()#--> </h1>
+    <h1><!--#if $active_lang in ('de', 'fr') then $T('menu-history') else $T('menu-history').upper()#--> </h1>
     <div class="box_banner_r">
       <ul class="box_banner_menu">
         <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')"></li>
