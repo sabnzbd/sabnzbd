@@ -581,7 +581,10 @@ def _get_link(uri, entry):
                 try: # nzb.su
                     category = entry.tags[0]['term']
                 except:
-                    category = ''
+                    try: # nzbmatrix.com
+                        category = entry.description
+                    except:
+                        category = ''
         return link, category
     else:
         logging.warning(Ta('Empty RSS entry found (%s)'), link)
