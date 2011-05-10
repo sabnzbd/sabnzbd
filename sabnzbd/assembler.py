@@ -87,9 +87,9 @@ class Assembler(Thread):
                         # 28 == disk full => pause downloader
                         if errno == 28:
                             logging.error(Ta('Disk full! Forcing Pause'))
-                            sabnzbd.downloader.pause_downloader()
                         else:
                             logging.error(Ta('Disk error on creating file %s'), filepath)
+                        sabnzbd.downloader.pause_downloader()
                     except:
                         logging.error('Fatal error in Assembler', exc_info = True)
                         break
