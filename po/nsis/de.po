@@ -7,34 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-10 16:12+0000\n"
+"POT-Creation-Date: 2011-05-08 19:32+0000\n"
 "PO-Revision-Date: 2011-03-12 09:03+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-13 05:09+0000\n"
-"X-Generator: Launchpad (build 12559)\n"
+"X-Launchpad-Export-Date: 2011-05-09 04:50+0000\n"
+"X-Generator: Launchpad (build 12959)\n"
 "Language: de\n"
 
-#: NSIS_Installer.nsi:338
+#: NSIS_Installer.nsi:347
 msgid "Start SABnzbd (hidden)"
 msgstr "SABnzbd starten (unsichtbar)"
 
-#: NSIS_Installer.nsi:346
+#: NSIS_Installer.nsi:355
 msgid "Show Release Notes"
 msgstr "Versionshinweise anzeigen"
 
-#: NSIS_Installer.nsi:354
+#: NSIS_Installer.nsi:363
 msgid "Support the project, Donate!"
 msgstr "Bitte unterstützen Sie das Projekt durch eine Spende!"
 
-#: NSIS_Installer.nsi:362
+#: NSIS_Installer.nsi:371
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Schliessen Sie bitte zuerst \"SABnzbd.exe\"."
 
-#: NSIS_Installer.nsi:370
+#: NSIS_Installer.nsi:379
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
@@ -43,35 +43,35 @@ msgstr ""
 "Versionsanmerkungen lesen oder \"http://wiki.sabnzbd.org/introducing-0-6-0 "
 "besuchen!\""
 
-#: NSIS_Installer.nsi:378
+#: NSIS_Installer.nsi:387
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Dies entfernt SABnzbd von Ihrem System"
 
-#: NSIS_Installer.nsi:386
+#: NSIS_Installer.nsi:395
 msgid "Run at startup"
 msgstr "Beim Systemstart ausführen"
 
-#: NSIS_Installer.nsi:394
+#: NSIS_Installer.nsi:403
 msgid "Desktop Icon"
 msgstr "Desktop-Symbol"
 
-#: NSIS_Installer.nsi:402
+#: NSIS_Installer.nsi:411
 msgid "NZB File association"
 msgstr "Mit NZB-Dateien verknüpfen"
 
-#: NSIS_Installer.nsi:410
+#: NSIS_Installer.nsi:419
 msgid "Delete Program"
 msgstr "Programm löschen"
 
-#: NSIS_Installer.nsi:418
+#: NSIS_Installer.nsi:427
 msgid "Delete Settings"
 msgstr "Einstellungen löschen"
 
-#: NSIS_Installer.nsi:426
+#: NSIS_Installer.nsi:435
 msgid "Delete Logs"
 msgstr "Protokoll löschen"
 
-#: NSIS_Installer.nsi:434
+#: NSIS_Installer.nsi:443
 msgid "Delete Cache"
 msgstr "Cache löschen"
 
