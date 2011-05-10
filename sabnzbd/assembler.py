@@ -40,6 +40,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
+from sabnzbd.encoding import latin1
 
 
 #------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ class Assembler(Thread):
                         if errno == 28:
                             logging.error(Ta('Disk full! Forcing Pause'))
                         else:
-                            logging.error(Ta('Disk error on creating file %s'), filepath)
+                            logging.error(Ta('Disk error on creating file %s'), latin1(filepath))
                         sabnzbd.downloader.pause_downloader()
                     except:
                         logging.error('Fatal error in Assembler', exc_info = True)
@@ -102,7 +103,7 @@ class Assembler(Thread):
                             logging.debug('Got md5pack for set %s', setname)
 
                     if check_encrypted_rar(nzo, filepath):
-                        logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), nzo.final_name)
+                        logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
                         nzo.pause()
             else:
                 PostProcessor.do.process(nzo)

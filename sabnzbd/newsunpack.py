@@ -28,7 +28,7 @@ from time import time
 import binascii
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, reliable_unpack_names, unicoder
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, reliable_unpack_names, unicoder, latin1
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path
 from sabnzbd.tvsort import SeriesSorter
@@ -161,7 +161,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
-        logging.warning('Unpack nesting too deep [%s]', nzo.final_name)
+        logging.warning('Unpack nesting too deep [%s]', latin1(nzo.final_name))
         return False, []
     depth += 1
 
@@ -290,7 +290,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     msg = T('Expected size did not equal actual size')
                     nzo.fail_msg = T('File join of %s failed') % msg
                     nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-                    logging.error(Ta('Error "%s" while running file_join on %s'), msg, nzo.final_name)
+                    logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
                 else:
                     joinable_sets[joinable_set].sort()
                     filename = joinable_set
@@ -347,7 +347,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 msg = sys.exc_info()[1]
                 nzo.fail_msg = T('File join of %s failed') % msg
                 nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-                logging.error(Ta('Error "%s" while running file_join on %s'), msg, nzo.final_name)
+                logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
                 return True, []
 
         return False, newfiles
@@ -355,7 +355,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('File join of %s failed') % msg
         nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-        logging.error(Ta('Error "%s" while running file_join on %s'), msg, nzo.final_name)
+        logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
         return True, []
 
 
@@ -405,7 +405,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
             setname = nzo.final_name
             nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
-            logging.error(Ta('Error "%s" while running rar_unpack on %s'), msg, setname)
+            logging.error(Ta('Error "%s" while running rar_unpack on %s'), msg, latin1(setname))
             logging.debug("Traceback: ", exc_info = True)
 
         if success:
@@ -420,7 +420,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                 try:
                     os.remove(rar)
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), rar)
+                    logging.warning(Ta('Deleting %s failed!'), latin1(rar))
 
                 brokenrar = '%s.1' % (rar)
 
@@ -429,7 +429,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                     try:
                         os.remove(brokenrar)
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), brokenrar)
+                        logging.warning(Ta('Deleting %s failed!'), latin1(brokenrar))
 
     return not success, extracted_files
 
@@ -549,17 +549,17 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
         elif line.startswith('Cannot find volume'):
             filename = os.path.basename(TRANS(line[19:]))
             nzo.fail_msg = T('Unpacking failed, unable to find %s') % unicoder(filename)
-            msg = ('[%s] '+Ta('Unpacking failed, unable to find %s')) % (setname, filename)
+            msg = ('[%s] '+Ta('Unpacking failed, unable to find %s')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: unable to find "%s"'), filename)
+            logging.warning(Ta('ERROR: unable to find "%s"'), latin1(filename))
             fail = 1
 
         elif line.endswith('- CRC failed'):
             filename = TRANS(line[:-12].strip())
             nzo.fail_msg = T('Unpacking failed, CRC error')
-            msg = ('[%s] '+Ta('ERROR: CRC failed in "%s"')) % (setname, filename)
+            msg = ('[%s] '+Ta('ERROR: CRC failed in "%s"')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: CRC failed in "%s"'), setname)
+            logging.warning(Ta('ERROR: CRC failed in "%s"'), latin1(setname))
             fail = 1
 
         elif line.startswith('Write error'):
@@ -572,16 +572,16 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
         elif line.startswith('ERROR: '):
             nzo.fail_msg = T('Unpacking failed, see log')
             logging.warning(Ta('ERROR: %s'), (line[7:]))
-            msg = ('[%s] '+Ta('ERROR: %s')) % (setname, line[7:])
+            msg = ('[%s] '+Ta('ERROR: %s')) % (latin1(setname), line[7:])
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
         elif line.startswith('Encrypted file:  CRC failed'):
             filename = TRANS(line[31:-23].strip())
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
-            msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, filename)
+            msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), filename)
+            logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(filename))
             fail = 2
 
         else:
@@ -608,14 +608,14 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
             for path in expected_files:
                 path = unicode2local(path)
                 fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existance of %s", fullpath)
+                logging.debug("Checking existance of %s", latin1(fullpath))
                 if path.endswith('/'):
                     # Folder
                     continue
                 if not os.path.exists(fullpath):
                     # There was a missing file, show a warning
                     missing.append(path)
-                    logging.info(Ta('Missing expected file: %s => unrar error?'), path)
+                    logging.info(Ta('Missing expected file: %s => unrar error?'), latin1(path))
 
             if missing:
                 nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
@@ -674,7 +674,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
                     os.remove(_zip)
                     i += 1
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), _zip)
+                    logging.warning(Ta('Deleting %s failed!'), latin1(_zip))
 
                 brokenzip = '%s.1' % (_zip)
 
@@ -684,13 +684,13 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
                         os.remove(brokenzip)
                         i += 1
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), brokenzip)
+                        logging.warning(Ta('Deleting %s failed!'), latin1(brokenzip))
 
         return unzip_failed
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Unpacking failed, %s') % msg
-        logging.error(Ta('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
+        logging.error(Ta('Error "%s" while running unzip() on %s'), msg, latin1(nzo.final_name))
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -766,7 +766,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         except:
             msg = sys.exc_info()[1]
             nzo.fail_msg = T('Repairing failed, %s') % msg
-            logging.error(Ta('Error %s while running par2_repair on set %s'), msg, setname)
+            logging.error(Ta('Error %s while running par2_repair on set %s'), msg, latin1(setname))
             logging.info("Traceback: ", exc_info = True)
             return readd, result
 
@@ -782,7 +782,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                         logging.info("Deleting %s", path)
                         os.remove(path)
                     except:
-                        logging.warning(Ta('Deleting %s failed!'), path)
+                        logging.warning(Ta('Deleting %s failed!'), latin1(path))
 
             path = os.path.join(workdir, setname + '.par2')
             path2 = os.path.join(workdir, setname + '.PAR2')
@@ -792,21 +792,21 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     logging.info("Deleting %s", path)
                     os.remove(path)
                 except:
-                    logging.warning(Ta('Deleting %s failed!'), path)
+                    logging.warning(Ta('Deleting %s failed!'), latin1(path))
 
             if os.path.exists(path2):
                 try:
                     logging.info("Deleting %s", path2)
                     os.remove(path2)
                 except:
-                    logging.warning(Ta('Deleting %s failed!'), path2)
+                    logging.warning(Ta('Deleting %s failed!'), latin1(path2))
 
             if os.path.exists(parfile):
                 try:
                     logging.info("Deleting %s", parfile)
                     os.remove(parfile)
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), parfile)
+                    logging.warning(Ta('Deleting %s failed!'), latin1(parfile))
 
             deletables = []
             for f in pars:
@@ -821,11 +821,11 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     try:
                         os.remove(filepath)
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), filepath)
+                        logging.warning(Ta('Deleting %s failed!'), latin1(filepath))
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
-        logging.error(Ta('Error "%s" while running par2_repair on set %s'), msg, setname)
+        logging.error(Ta('Error "%s" while running par2_repair on set %s'), msg, latin1(setname))
 
     return readd, result
 
@@ -1307,10 +1307,10 @@ def sfv_check(sfv_path):
                 if crc_check(path, checksum):
                     logging.debug('File %s passed SFV check', path)
                 else:
-                    logging.warning('File %s did not pass SFV check', path)
+                    logging.warning('File %s did not pass SFV check', latin1(path))
                     status = False
             else:
-                logging.warning('File %s mssing in SFV check', path)
+                logging.warning('File %s mssing in SFV check', latin1(path))
     fp.close()
     return status
 
