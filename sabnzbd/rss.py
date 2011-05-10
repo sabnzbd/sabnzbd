@@ -352,7 +352,10 @@ class RSSQueue(object):
                             myCat = reCats[n]
                         elif category and not defCat:
                             myCat = cat_convert(category)
-                        myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
+                        if myCat:
+                            myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
+                        else:
+                            myCat = catPP = catScript = catPrio = None
                         if notdefault(rePPs[n]):
                             myPP = rePPs[n]
                         elif not (reCats[n] or category):
