@@ -1,4 +1,4 @@
-                                SABnzbd 0.6.0
+                                SABnzbd 0.6.1
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -47,11 +47,12 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 You need to have Python installed and some modules.
 
 Unix/Linux/OSX
-    Python-2.5 or 2.6       http://www.python.org
+    Python-2.5, 2.6 or 2.7  http://www.python.org
 
 Windows
     Python-2.5.latest       http://www.activestate.com
     Python-2.6.latest
+    Python-2.7.latest
 
 Essential modules
     cheetah-2.0.1+          http://www.cheetahtemplate.org/
@@ -70,7 +71,7 @@ Optional modules Windows
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
-    pyopenssl >= 0.7        http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
     openssl => v0.9.8g+     http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
 

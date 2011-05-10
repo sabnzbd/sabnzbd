@@ -1,4 +1,18 @@
 -------------------------------------------------------------------------------
+ 0.6.1RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed association of NZB files with SABnzbd
+  (resulted in multiple running copies of SABnzbd instead of an NZB upload)
+- Fixed display of warning when upgrading from 0.4.x
+- Fixed problem when entering NZB files with names containing accented characters
+  (happened only on OSX with Firefox 4)
+- Fixed several textual issues
+- Add PID file support for OSX/Unix (--pid <path>)
+- Fix attribute error caused by missing category field in nzbmatrix RSS feeds
+- Fix nzbmatrix category support by just reading the whole "Description" field.
+- Pause downloader when downloaded file cannot be written to disk.
+- Fix "~/" (home-dir) support for Unix/OSX and disable for Windows
+-------------------------------------------------------------------------------
  0.6.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix handling of semicolon in parameters for user scripts.

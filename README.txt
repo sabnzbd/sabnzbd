@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 0.6.0               ***
+*** This is SABnzbd 0.6.1RC1            ***
 *******************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -17,6 +17,14 @@ http://wiki.sabnzbd.org/introducing-0-6-0
 
 
 Please also read the file "ISSUES.txt"
+
+*******************************************
+*** Upgrading from 0.6.x                ***
+*******************************************
+Stop SABnzbd.
+Install new version
+Start SABnzbd.
+
 
 *******************************************
 *** Upgrading from 0.5.x                ***
