@@ -166,29 +166,71 @@ def make_templates():
         os.makedirs('email')
     for path in glob.glob(os.path.join(MO_DIR, '*')):
         lng = os.path.split(path)[1]
-        print 'Create email template for %s' % lng
-        trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
-        # The unicode flag will make _() return Unicode
-        trans.install(unicode=True, names=['lgettext'])
+        if lng != 'en':
+            print 'Create email template for %s' % lng
+            trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
+            # The unicode flag will make _() return Unicode
+            trans.install(unicode=True, names=['lgettext'])
 
-        src = open(EMAIL_DIR + '/email-en.tmpl', 'r')
-        data = src.read().decode('utf-8')
-        src.close()
-        data = _(data).encode('utf-8')
-        fp = open('email/email-%s.tmpl' % lng, 'wb')
-        fp.write(data)
-        fp.close()
+            src = open(EMAIL_DIR + '/email-en.tmpl', 'r')
+            data = src.read().decode('utf-8')
+            src.close()
+            data = _(data).encode('utf-8')
+            fp = open('email/email-%s.tmpl' % lng, 'wb')
+            if not (-1 < data.find('UTF-8') < 30):
+                fp.write('#encoding UTF-8\n')
+            fp.write(data)
+            fp.close()
 
-        src = open(EMAIL_DIR + '/rss-en.tmpl', 'r')
-        data = src.read().decode('utf-8')
-        src.close()
-        data = _(data).encode('utf-8')
-        fp = open('email/rss-%s.tmpl' % lng, 'wb')
-        fp.write(data)
-        fp.close()
-        mo_path = os.path.normpath('%s/%s%s/%s.mo' % (MO_DIR, path, MO_LOCALE, DOMAIN_E))
-        if os.path.exists(mo_path):
-            os.remove(mo_path)
+            src = open(EMAIL_DIR + '/rss-en.tmpl', 'r')
+            data = src.read().decode('utf-8')
+            src.close()
+            data = _(data).encode('utf-8')
+            fp = open('email/rss-%s.tmpl' % lng, 'wb')
+            if not (-1 < data.find('UTF-8') < 30):
+                fp.write('#encoding UTF-8\n')
+            fp.write(data)
+            fp.close()
+            mo_path = os.path.normpath('%s/%s%s/%s.mo' % (MO_DIR, path, MO_LOCALE, DOMAIN_E))
+            if os.path.exists(mo_path):
+                os.remove(mo_path)
+
+
+# Convert Romanian PX files to Latin1 PO files
+table = {
+u"\u015f" : u"s", # ș
+u"\u015e" : u"S", # Ș
+u"\u0163" : u"t", # ț
+u"\u0162" : u"T", # Ț
+u"\u0103" : u"ã", # ă
+u"\u0102" : u"Ã", # Ă
+u'\u021b' : u"t", # ț
+u'\u0218' : u"s", # Ș
+u'\u0219' : u"s"  # ș
+}
+
+def fix_ro():
+    """ Convert ro.px files to ro.po files with only Latin1
+    """
+    for section in ('main', 'email', 'nsis'):
+        f = open('po/%s/ro.px' % section, 'rb')
+        data = f.read().decode('utf-8')
+        data = unicodedata.normalize('NFC', data)
+        f.close()
+
+        for ch in table:
+            data = data.replace(ch, table[ch])
+
+        f = open('po/%s/ro.po' % section, 'wb')
+        f.write(data.encode('utf-8'))
+        f.close()
+        try:
+            for line in data.split('\n'):
+                line.encode('latin-1')
+        except:
+            print line.encode('utf-8')
+            print 'WARNING: file po/%s/ro.po is not Latin-1' % section
+            exit(1)
 
 
 def patch_nsis():
@@ -238,6 +280,9 @@ path, py = os.path.split(sys.argv[0])
 tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
 if os.path.exists(tl):
     TOOL = tl
+
+# Fix up Romanian texts
+fix_ro()
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'
