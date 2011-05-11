@@ -398,10 +398,10 @@ def process_job(nzo):
 
         ## Show final status in history
         if all_ok:
-            osx.sendGrowlMsg("Download Completed", filename, osx.NOTIFICATION['complete'])
+            osx.sendGrowlMsg(T('Download Completed'), filename, osx.NOTIFICATION['complete'])
             nzo.status = 'Completed'
         else:
-            osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
+            osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
             nzo.status = 'Failed'
 
     except:
@@ -410,7 +410,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
+        osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
         par_error = True
         all_ok = False
@@ -460,7 +460,7 @@ def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add)
     """
     filename = nzo.final_name
-    osx.sendGrowlMsg("Post-processing", nzo.final_name, osx.NOTIFICATION['pp'])
+    osx.sendGrowlMsg(T('Post-processing'), nzo.final_name, osx.NOTIFICATION['pp'])
     logging.info('Par2 check starting on %s', filename)
 
     ## Collect the par files
