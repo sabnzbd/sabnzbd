@@ -215,7 +215,6 @@ def fix_ro():
     for section in ('main', 'email', 'nsis'):
         f = open('po/%s/ro.px' % section, 'rb')
         data = f.read().decode('utf-8')
-        data = unicodedata.normalize('NFC', data)
         f.close()
 
         for ch in table:
