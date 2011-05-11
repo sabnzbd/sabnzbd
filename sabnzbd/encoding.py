@@ -22,6 +22,7 @@ sabnzbd.encoding - Unicoded filename support
 import locale
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
+#import unicodedata
 
 import sabnzbd
 
@@ -142,9 +143,12 @@ def xml_name(p, keep_escape=False, encoding=None):
 
 
 def latin1(txt):
-    """ When Unicode, convert to Latin-1 """
+    """ When Unicode or UTF-8, convert to Latin-1 """
     if isinstance(txt, unicode):
         return txt.encode('latin-1', 'replace').replace('?', '_')
+    elif txt and gUTF:
+        #return unicodedata.normalize('NFC', txt.decode('utf-8')).encode('latin-1', 'replace').replace('?', '_')
+        return txt.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
     else:
         return txt
 
