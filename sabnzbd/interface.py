@@ -2167,7 +2167,7 @@ class ConnectionInfo(object):
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
             w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
-            wlist.insert(0, encode_for_xml(w))
+            wlist.insert(0, unicoder(w))
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
