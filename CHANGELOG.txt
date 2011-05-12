@@ -12,6 +12,7 @@
 - Fix nzbmatrix category support by just reading the whole "Description" field.
 - Pause downloader when downloaded file cannot be written to disk.
 - Fix "~/" (home-dir) support for Unix/OSX and disable for Windows
+- Add Romanian translation
 -------------------------------------------------------------------------------
  0.6.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
