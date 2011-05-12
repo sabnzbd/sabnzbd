@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-08 19:31+0000\n"
-"PO-Revision-Date: 2011-05-09 04:29+0000\n"
-"Last-Translator: Rene <Unknown>\n"
+"POT-Creation-Date: 2011-05-11 18:01+0000\n"
+"PO-Revision-Date: 2011-05-11 21:10+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-10 05:44+0000\n"
+"X-Launchpad-Export-Date: 2011-05-12 05:09+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 "Language: da\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -189,7 +189,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/assembler.py:89 [Error message]
+#: sabnzbd/assembler.py:90 [Error message]
 msgid "Disk full! Forcing Pause"
 msgstr "Disken er fuld! Pauser..."
 
@@ -197,11 +197,11 @@ msgstr "Disken er fuld! Pauser..."
 msgid "Disk error on creating file %s"
 msgstr "Diskfejl ved oprettelse af fil %s"
 
-#: sabnzbd/assembler.py:105 [Warning message]
+#: sabnzbd/assembler.py:106 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file"
 
-#: sabnzbd/assembler.py:136
+#: sabnzbd/assembler.py:137
 msgid "%s missing"
 msgstr "%s mangler"
 
@@ -1229,6 +1229,14 @@ msgstr "Mere"
 msgid "View script output"
 msgstr "Vis script udlæsning"
 
+#: sabnzbd/postproc.py:401
+msgid "Download Completed"
+msgstr "Overførsel fuldført"
+
+#: sabnzbd/postproc.py:404 # sabnzbd/postproc.py:413
+msgid "Download Failed"
+msgstr "Download mislykkedes"
+
 #: sabnzbd/postproc.py:408 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling mislykkedes for %s (%s)"
@@ -1248,6 +1256,10 @@ msgstr "Fjernelse af %s mislykkedes."
 #: sabnzbd/postproc.py:451 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Det lykkedes ikke at fjerne arbejdsmappen (%s)"
+
+#: sabnzbd/postproc.py:463
+msgid "Post-processing"
+msgstr "Efterbehandling"
 
 #: sabnzbd/postproc.py:503
 msgid "Some files failed to verify against \"%s\""
@@ -1281,7 +1293,7 @@ msgstr "Mislykkedes at hente RSS fra %s: %s"
 msgid "RSS Feed %s was empty"
 msgstr "RSS Feed %s er tom"
 
-#: sabnzbd/rss.py:584 [Warning message]
+#: sabnzbd/rss.py:590 [Warning message]
 msgid "Empty RSS entry found (%s)"
 msgstr "Tom RSS post blev fundet (%s)"
 
