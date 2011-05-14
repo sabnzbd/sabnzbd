@@ -651,7 +651,8 @@ def check_for_sabnzbd(url, upload_nzbs):
                 upload_file(url, f)
         else:
             # Launch the web browser and quit since sabnzbd is already running
-            launch_a_browser(url.replace('api?', ''), force=True)
+            url = url[:url.rfind('/')+1]
+            launch_a_browser(url, force=True)
         exit_sab(0)
         return True
     return False

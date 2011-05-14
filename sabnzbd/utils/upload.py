@@ -37,7 +37,7 @@ def upload_file(url, fp):
         apikey = cfg.api_key()
         if apikey and 'apikey' not in url:
             url = '%s&apikey=%s' % (url, apikey)
-        else:
+        if 'apikey' not in url:
             # Use alternative login method
             username = cfg.username()
             password = cfg.password()
