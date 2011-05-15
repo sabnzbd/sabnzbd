@@ -54,9 +54,9 @@ def add_local(f):
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
-            if get_ext(fn) in ('.zip', '.rar', '.gz'):
+            if get_ext(fn) in ('.zip', '.rar'):
                 ProcessArchiveFile(fn, f, keep=True)
-            elif get_ext(fn) in ('.nzb'):
+            elif get_ext(fn) in ('.nzb', '.gz'):
                 ProcessSingleFile(fn, f, keep=True)
         else:
             logging.error("Filename not found: %s", f)

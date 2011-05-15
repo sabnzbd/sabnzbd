@@ -309,10 +309,10 @@ def _api_addlocalfile(name, output, kwargs):
                 priority = kwargs.get('priority')
                 nzbname = kwargs.get('nzbname')
 
-                if get_ext(name) in ('.zip', '.rar', '.gz'):
+                if get_ext(name) in ('.zip', '.rar'):
                     sabnzbd.dirscanner.ProcessArchiveFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
-                elif get_ext(name) in ('.nzb'):
+                elif get_ext(name) in ('.nzb', '.gz'):
                     sabnzbd.dirscanner.ProcessSingleFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
