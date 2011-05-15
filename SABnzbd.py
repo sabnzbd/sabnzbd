@@ -618,7 +618,7 @@ def is_sabnzbd_running(url):
         url = '%s&mode=version' % (url)
         s = urllib2.urlopen(url)
         ver = s.read()
-        if ver and ver.strip() == sabnzbd.__version__:
+        if ver and ver.strip(' \n\r\t') == sabnzbd.__version__:
             return True
         else:
             return False
