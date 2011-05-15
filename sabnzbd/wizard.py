@@ -63,6 +63,15 @@ class Wizard(object):
             return template.respond()
 
     @cherrypy.expose
+    def exit(self, **kwargs):
+        """ Stop SABnzbd """
+        yield "Initiating shutdown..."
+        sabnzbd.halt()
+        yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
+        cherrypy.engine.exit()
+        sabnzbd.SABSTOP = True
+
+    @cherrypy.expose
     def one(self, **kwargs):
         """ Accept language and show server page """
         language = kwargs.get('lang')
