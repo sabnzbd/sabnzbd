@@ -20,7 +20,7 @@ $T('wizard-explain-server')
   <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
   <br class="clear" />
   <label class="label">$T('srv-port')</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
-  <div id="port-tip" class="tips">E.g. 119 or 563 for SSL</div>
+  <div id="port-tip" class="tips">$T('wizard-port-eg')</div>
   <div id="port-error" class="error-text hidden">$T('wizard-server-number')</div>
   <br class="clear" /><br class="clear" />
   <label class="label">$T('srv-username')</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
@@ -28,7 +28,7 @@ $T('wizard-explain-server')
   <label class="label">$T('srv-password')</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
   <br class="clear" /><br class="clear" />
   <label class="label">$T('srv-connections')<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
-  <div id="connections-tip" class="tips">$T('wizard-server-con-explain') E.g. 8 or 20</div>
+  <div id="connections-tip" class="tips">$T('wizard-server-con-explain') $T('wizard-server-con-eg')</div>
   <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
   <br class="clear" />
   <label><span class="label">$T('srv-ssl')</span>

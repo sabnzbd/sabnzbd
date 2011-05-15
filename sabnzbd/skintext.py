@@ -241,6 +241,7 @@ SKIN_TEXT = {
 # Configuration
     'configuration' : TT('Configuration'),
     'confgFile' : TT('Config File'),
+    'cache' : TT('Used cache'), #: Main config page, how much cache is in use
     'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'button-restart' : TT('Restart'),
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
@@ -773,6 +774,7 @@ SKIN_TEXT = {
     'wizard-server-help1' :  TT('In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.'),
     'wizard-server-help2' :  TT('Don\'t have a usenet provider? We recommend trying %s.'),
     'wizard-server-con-explain' :  TT('The number of connections allowed by your provider'),
+    'wizard-server-con-eg' : TT('E.g. 8 or 20'), #: Wizard: examples of amount of connections
     'wizard-server-ssl-explain' :  TT('Select only if your provider allows SSL connections.'),
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-server-required' :  TT('This field is required.'),
@@ -795,6 +797,7 @@ SKIN_TEXT = {
     'wizard-step-three' :  TT('Step Three'), #: Wizard step
     'wizard-step-four' :  TT('Step Four'), #: Wizard step
     'wizard-step-five' :  TT('Step Five'), #: Wizard step
+    'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
 
 #Special
     'yourRights' : TT('''
