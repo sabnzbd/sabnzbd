@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.6.1Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed association of NZB files with SABnzbd (for real this time).
+  (resulted in multiple running copies of SABnzbd instead of an NZB upload)
+-------------------------------------------------------------------------------
  0.6.1RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed association of NZB files with SABnzbd
