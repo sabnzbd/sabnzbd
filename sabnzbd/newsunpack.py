@@ -69,6 +69,8 @@ NICE_COMMAND = None
 ZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
+CURL_COMMAND = None
+
 
 def find_programs(curdir):
     """Find external programs
@@ -103,6 +105,7 @@ def find_programs(curdir):
             sabnzbd.newsunpack.RAR_COMMAND =   check(curdir, 'win/unrar/UnRAR.exe')
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
         sabnzbd.newsunpack.ZIP_COMMAND =   check(curdir, 'win/unzip/unzip.exe')
+        sabnzbd.newsunpack.CURL_COMMAND = check(curdir, 'lib/curl.exe')
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
             sabnzbd.newsunpack.PAR2_COMMAND = find_on_path('par2')
@@ -1403,3 +1406,23 @@ def list2cmdline(lst):
         else:
             nlst.append(arg)
     return ' '.join(nlst)
+
+
+#------------------------------------------------------------------------------
+# Work-around for the failure of Python2.5 on Windows to support IPV6 with HTTPS
+
+def get_from_url(url):
+    if sabnzbd.WIN32 and ' 2.5.' in sys.version and sabnzbd.newsunpack.CURL_COMMAND:
+        command = [sabnzbd.newsunpack.CURL_COMMAND, "-k", url]
+        stup, need_shell, command, creationflags = build_command(command)
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             startupinfo=stup, creationflags=creationflags)
+
+        output = p.stdout.read()
+        p.wait()
+    else:
+        import urllib2
+        s = urllib2.urlopen(url)
+        output = s.read()
+    return output

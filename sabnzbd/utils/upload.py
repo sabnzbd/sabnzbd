@@ -25,6 +25,7 @@ import logging
 import os
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename
+import sabnzbd.newsunpack
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 
@@ -43,7 +44,7 @@ def upload_file(url, fp):
             password = cfg.password()
             if username and password:
                 url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
-        urllib2.urlopen(url)
+        sabnzbd.newsunpack.get_from_url(url)
     except:
         logging.error("Failed to upload file: %s", fp)
         logging.info("Traceback: ", exc_info = True)

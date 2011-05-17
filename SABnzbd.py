@@ -613,11 +613,9 @@ def get_webhost(cherryhost, cherryport, https_port):
 def is_sabnzbd_running(url):
     """ Return True when there's already a SABnzbd instance running.
     """
-    import urllib2
     try:
         url = '%s&mode=version' % (url)
-        s = urllib2.urlopen(url)
-        ver = s.read()
+        ver = sabnzbd.newsunpack.get_from_url(url)
         if ver and ver.strip(' \n\r\t') == sabnzbd.__version__:
             return True
         else:
@@ -1011,6 +1009,9 @@ def main():
         except:
             Bail_Out(browserhost, cherryport, '49')
 
+    # Find external programs
+    sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
+
     # Windows instance is reachable through registry
     url = None
     if sabnzbd.WIN32:
@@ -1186,9 +1187,6 @@ def main():
     else:
         autobrowser = sabnzbd.cfg.autobrowser()
 
-    # Find external programs
-    sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
-
     if not sabnzbd.WIN_SERVICE and not getattr(sys, 'frozen', None) == 'macosx_app':
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
         signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
@@ -1296,7 +1294,7 @@ def main():
                             'request.show_tracebacks': True,
                             'checker.check_localhost' : bool(consoleLogging),
                             'error_page.401': sabnzbd.misc.error_page_401
-                           })
+                            })
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
@@ -1399,7 +1397,7 @@ def main():
     while not sabnzbd.SABSTOP:
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
-                 sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
+                                                    sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
             if rc == win32event.WAIT_OBJECT_0:
                 if mail:
                     mail.send('stop')
@@ -1510,9 +1508,9 @@ if sabnzbd.WIN32:
         _svc_display_name_ = 'SABnzbd Binary Newsreader'
         _svc_deps_ = ["EventLog", "Tcpip", "SABHelper"]
         _svc_description_ = 'Automated downloading from Usenet. ' \
-                            'Set to "automatic" to start the service at system startup. ' \
-                            'You may need to login with a real user account when you need ' \
-                            'access to network shares.'
+                          'Set to "automatic" to start the service at system startup. ' \
+                          'You may need to login with a real user account when you need ' \
+                          'access to network shares.'
 
         def __init__(self, args):
             win32serviceutil.ServiceFramework.__init__(self, args)
@@ -1650,4 +1648,3 @@ if __name__ == '__main__':
 
     else:
         main()
-

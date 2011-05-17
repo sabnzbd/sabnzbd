@@ -523,6 +523,10 @@ elif target in ('binary', 'installer'):
     setup(**options)
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)
 
+    ############################
+    # Copy curl files
+    shutil.copy2(r'win\curl\curl.exe', r'dist\lib')
+    shutil.copy2(r'win\curl\libssh2.dll', r'dist\lib')
 
     ############################
     if target == 'installer':
