@@ -479,6 +479,7 @@ SKIN_TEXT = {
     'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
+    'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
 # Config->Email
     'configEmail' : TT('Email Notification'),
