@@ -633,7 +633,7 @@ class NzbObject(TryList):
 
         if nzb and '<nzb' in nzb:
             if 'A&A)' in nzb:
-                # Fix needed to compensate for the idiocy at newzbin.com
+                # Fix needed to compensate for some dumb NZB posters
                 nzb = nzb.replace('A&A)', 'A&amp;A)')
             handler = NzbParser(self)
             parser = xml.sax.make_parser()
