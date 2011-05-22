@@ -124,6 +124,13 @@ def send(message, recipient):
             return T('Email succeeded')
 
 
+def get_email_date():
+    """ Return un-localized date string for the Date: field
+    """
+    # Get locale indepedant date/time string: "Sun May 22 20:15:12 2011"
+    day, month, dayno, hms, year = time.asctime(time.gmtime()).split()
+    return '%s, %s %s %s %s +0000' % (day, dayno, month, year, hms)
+
 
 ################################################################################
 # email_endjob
@@ -136,7 +143,7 @@ def send_with_template(prefix, parm):
     """ Send an email using template """
 
     parm['from'] = cfg.email_from()
-    parm['date'] = time.strftime(time_format('%a, %d %b %Y %H:%M:%S +0000'), time.gmtime())
+    parm['date'] = get_email_date()
 
     lst = []
     path = cfg.email_dir.get_path()
