@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-05-17 23:04+West-Europa (zomertijd)\n"
+"POT-Creation-Date: 2011-05-22 23:15+West-Europa (zomertijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -335,23 +335,24 @@ msgstr ""
 msgid "Email succeeded"
 msgstr ""
 
-#: sabnzbd/emailer.py:147 [Error message]
+#: sabnzbd/emailer.py:154 [Error message]
 msgid "Cannot find email templates in %s"
 msgstr ""
 
-#: sabnzbd/emailer.py:156
+#: sabnzbd/emailer.py:163
 msgid "No email templates found"
 msgstr ""
 
-#: sabnzbd/emailer.py:171
+#: sabnzbd/emailer.py:178
 msgid "Invalid encoding of email template %s"
 msgstr ""
 
-#: sabnzbd/emailer.py:215
+#: sabnzbd/emailer.py:222
 msgid ""
-"to: %s\n"
-"from: %s\n"
-"subject: SABnzbd reports Disk Full\n"
+"To: %s\n"
+"From: %s\n"
+"Date: %s\n"
+"Subject: SABnzbd reports Disk Full\n"
 "\n"
 "Hi,\n"
 "\n"
