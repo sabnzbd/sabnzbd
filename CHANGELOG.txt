@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.2Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed association of NZB files with SABnzbd, when using HTTPS-only on Windows Vista/7
+  (resulted in multiple running copies of SABnzbd instead of an NZB upload)
+- Fixed incorrect email date header when using other language than English
+-------------------------------------------------------------------------------
  0.6.1Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed association of NZB files with SABnzbd (for real this time).
