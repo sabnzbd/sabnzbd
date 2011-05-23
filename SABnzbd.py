@@ -778,7 +778,7 @@ def commandline_handler(frozen=True):
         # Get and remove any NZB file names
         for entry in args:
             if get_ext(entry) in ('.nzb', '.zip','.rar', '.gz'):
-                upload_nzbs.append(entry)
+                upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
         if opt in ('password','username','startup','perfmonini', 'perfmondll', 'interactive', 'wait'):
