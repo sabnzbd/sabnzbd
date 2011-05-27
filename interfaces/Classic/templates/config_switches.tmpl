@@ -41,6 +41,9 @@
     <label><input type="checkbox" name="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> /> <strong>$T('opt-pause_on_pwrar')</strong></label><br>
     $T('explain-pause_on_pwrar')<br>
     <br>
+    <label><input type="checkbox" name="unpack_check" value="1" <!--#if $unpack_check > 0 then "checked=1" else ""#--> /> <strong>$T('opt-unpack_check')</strong></label><br>
+    $T('explain-unpack_check')<br>
+    <br>
     <strong>$T('opt-no_dupes'):</strong><br>
     $T('explain-no_dupes')<br>
     <input class="radio" type="radio" name="no_dupes" value="0" <!--#if $no_dupes == 0 then 'checked="1"' else ""#--> /> $T('nodupes-off')

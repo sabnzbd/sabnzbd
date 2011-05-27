@@ -199,7 +199,7 @@ enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
 ssl_type = OptionStr('misc', 'ssl_type', 'v23')
-unpack_check = OptionBool('misc', 'unpack_check', False)
+unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 
 # Internal options, not saved in INI file

@@ -365,6 +365,8 @@ SKIN_TEXT = {
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
     'opt-sfv_check' : TT('Enable SFV-based checks'),
     'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
+    'opt-unpack_check' : TT('Check result of unpacking'),
+    'explain-unpack_check' : TT('Check result of unpacking (needs to be off for some file systems).'),
     'opt-folder_rename' : TT('Enable folder rename'),
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-dirscan_opts' : TT('Default Post-Processing'),
