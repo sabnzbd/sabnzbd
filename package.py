@@ -341,9 +341,6 @@ if target == 'app':
     volume = 'SABnzbd-' + str(my_version)
     os.system('disktool -n %s %s' % (m.group(1), volume))
 
-    # Unpack cherrypy
-    os.system("unzip -o cherrypy.zip")
-
     options['description'] = 'SABnzbd ' + str(my_version)
 
     #remove prototype and iphone interfaces
@@ -402,7 +399,6 @@ if target == 'app':
     #os.system("find ./ -name *.pyc | xargs rm")
     #os.system("rm -rf NSIS_Installer.nsi")
     #os.system("rm -rf win/")
-    #os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
     os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
@@ -447,9 +443,6 @@ elif target in ('binary', 'installer'):
         print "Sorry, only works on Windows!"
         os.system(BzrRevert)
         exit(1)
-
-    # Unpack cherrypy
-    os.system("unzip -o cherrypy.zip")
 
     # Create MO files
     os.system('tools\\make_mo.py all')
@@ -564,7 +557,7 @@ else:
         os.mkdir(root)
 
     # Set data files
-    data_files.extend(['po/'])
+    data_files.extend(['po/', 'cherrypy/'])
     options['data_files'] = PairList(data_files)
     options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 
@@ -602,9 +595,7 @@ else:
                 shutil.copy2(file, dest)
                 Dos2Unix(fullname)
 
-    # Install CherryPy
     os.chdir(root)
-    os.system("unzip -o ../cherrypy.zip")
     os.chdir('..')
 
     # Prepare the TAR.GZ pacakge
