@@ -1356,12 +1356,14 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    if not autorestarted:
-        if enable_https:
-            launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, cherryport))
-        else:
-            launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
+    if enable_https:
+        browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
+        cherrypy.wsgiserver.REDIRECT_URL = browser_url
+    else:
+        browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
 
+    if not autorestarted:
+        launch_a_browser(browser_url)
         notify("SAB_Launched", None)
         osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
         # Now's the time to check for a new version
