@@ -249,23 +249,33 @@ def process_job(nzo):
         dirname = nzo.final_name
 
         if all_ok:
+            one_folder = False
             ## Determine class directory
             if cfg.create_group_folders():
                 complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo.dirprefix)
                 complete_dir = create_dirs(complete_dir)
             else:
-                complete_dir = real_path(cfg.complete_dir.get_path(), config.get_categories(cat).dir())
+                catdir = config.get_categories(cat).dir()
+                if catdir.endswith('*'):
+                    catdir = catdir.strip('*')
+                    one_folder = True
+                complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
             file_sorter = Sorter(cat)
             complete_dir = file_sorter.detect(dirname, complete_dir)
+            if file_sorter.is_sortfile():
+                one_folder = False
 
-            workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+            if one_folder:
+                workdir_complete = create_dirs(complete_dir)
+            else:
+                workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
             if not workdir_complete or not os.path.exists(workdir_complete):
                 crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
                 raise IOError
 
-            if cfg.folder_rename():
+            if cfg.folder_rename() and not one_folder:
                 tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
                 try:
                     renamer(workdir_complete, tmp_workdir_complete)
@@ -324,7 +334,7 @@ def process_job(nzo):
         script_ret = 0
         if not nzb_list:
             ## Give destination its final name
-            if cfg.folder_rename() and tmp_workdir_complete:
+            if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
                 if not all_ok:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)

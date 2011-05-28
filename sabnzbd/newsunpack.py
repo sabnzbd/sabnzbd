@@ -168,7 +168,11 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
         return False, []
     depth += 1
 
-    xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
+    if depth == 1:
+        # First time, ignore anything in workdir_complete
+        xjoinables, xzips, xrars, xts = build_filelists(workdir, None)
+    else:
+        xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
 
     rerun = False
     newfiles = []
