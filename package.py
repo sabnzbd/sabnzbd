@@ -225,6 +225,28 @@ def rename_file(folder, old, new):
         print "Cannot create %s" % newpath
         exit(1)
 
+def check_runtimes():
+    """ Return location of MS DLL files for Python 2.6 and higher
+        This assumes that the stand-alone version of Bazaar has been
+        installed, since this will be used as the source for the DLLs
+        and Manifest files.
+    """
+    path = None
+    if sys.version_info >= (2, 6):
+        path = os.environ.get('ProgramFiles(x86)')
+        if not path:
+            path = os.environ.get('ProgramFiles')
+        if path:
+            path = os.path.join(path, 'Bazaar')
+            if not os.path.exists(path):
+                path = None
+        if not path:
+            print 'Cannot find runtime libraries, have you installed Bazaar'
+            print 'in %s ?' % path
+            exit(1)
+    return path
+
+
 
 print sys.argv[0]
 
@@ -444,6 +466,8 @@ elif target in ('binary', 'installer'):
         os.system(BzrRevert)
         exit(1)
 
+    run_times = check_runtimes()
+
     # Create MO files
     os.system('tools\\make_mo.py all')
 
@@ -520,6 +544,15 @@ elif target in ('binary', 'installer'):
     # Copy curl files
     shutil.copy2(r'win\curl\curl.exe', r'dist\lib')
     shutil.copy2(r'win\curl\libssh2.dll', r'dist\lib')
+
+    ############################
+    # Copy MS runtime files, if needed
+    if run_times:
+        shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
+        shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
+        shutil.copy2(os.path.join(run_times, r'msvcr90.dll'), r'dist')
+        shutil.copy2(os.path.join(run_times, r'lib\Microsoft.VC90.CRT.manifest'), r'dist\lib')
+
 
     ############################
     if target == 'installer':
