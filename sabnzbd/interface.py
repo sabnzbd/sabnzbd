@@ -2025,7 +2025,7 @@ class ConfigCats(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        name = kwargs.get('name')
+        name = kwargs.get('name', '*')
         if name == '*':
             newname = name
         else:
