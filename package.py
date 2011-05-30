@@ -540,18 +540,18 @@ elif target in ('binary', 'installer'):
     setup(**options)
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)
 
-    ############################
-    # Copy curl files
-    shutil.copy2(r'win\curl\curl.exe', r'dist\lib')
-    shutil.copy2(r'win\curl\libssh2.dll', r'dist\lib')
 
     ############################
-    # Copy MS runtime files, if needed
+    # Copy MS runtime files or Curl
     if run_times:
+        # MS Runtimes for Python 2.6+
         shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
         shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
         shutil.copy2(os.path.join(run_times, r'msvcr90.dll'), r'dist')
         shutil.copy2(os.path.join(run_times, r'lib\Microsoft.VC90.CRT.manifest'), r'dist\lib')
+    else:
+        # Curl for Python 2.5
+        os.system(r'unzip -o win\curl\curl.zip -d dist\lib')
 
 
     ############################

@@ -1416,7 +1416,7 @@ def list2cmdline(lst):
 # Work-around for the failure of Python2.5 on Windows to support IPV6 with HTTPS
 
 def get_from_url(url):
-    if sabnzbd.WIN32 and ' 2.5.' in sys.version and sabnzbd.newsunpack.CURL_COMMAND:
+    if sabnzbd.WIN32 and '2.5.' in sys.version and sabnzbd.newsunpack.CURL_COMMAND:
         command = [sabnzbd.newsunpack.CURL_COMMAND, "-k", url]
         stup, need_shell, command, creationflags = build_command(command)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
