@@ -1,19 +1,18 @@
-The CURL binaries have been downloaded from:
-http://www.paehl.com/open_source/?CURL_7.21.6
+The CURL tool is open source.
+We include the binaries (curl.exe and a number of DLLs) from RedHat's Cygwin distribution.
 
-License info:
-
-=================================================================================
+License for the CURL sourcecode
+=========================================================================================
 COPYRIGHT AND PERMISSION NOTICE
-
+ 
 Copyright (c) 1996 - 2011, Daniel Stenberg, <daniel@haxx.se>.
-
+ 
 All rights reserved.
-
+ 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
 notice and this permission notice appear in all copies.
-
+ 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN
@@ -21,57 +20,81 @@ NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
-
+ 
 Except as contained in this notice, the name of a copyright holder shall not
 be used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization of the copyright holder.
-=================================================================================
-                                  _   _ ____  _
-                              ___| | | |  _ \| |
-                             / __| | | | |_) | |
-                            | (__| |_| |  _ <| |___
-                             \___|\___/|_| \_\_____|
 
-README
+=========================================================================================
 
-  Curl is a command line tool for transferring data specified with URL
-  syntax. Find out how to use curl by reading the curl.1 man page or the
-  MANUAL document. Find out how to install Curl by reading the INSTALL
-  document.
 
-  libcurl is the library curl is using to do its job. It is readily
-  available to be used by your software. Read the libcurl.3 man page to
-  learn how!
 
-  You find answers to the most frequent questions we get in the FAQ document.
+The Cygwin license
+=========================================================================================
+Red Hat, Inc. licenses Cygwin to you under the terms of the GNU
+General Public License version 2 (GPLv2), as published by the Free
+Software Foundation, along with the additional permissions given
+below.
 
-  Study the COPYING file for distribution terms and similar. If you distribute
-  curl binaries or other binaries that involve libcurl, you might enjoy the
-  LICENSE-MIXING document.
+There is NO WARRANTY for this software, express or implied, including
+the implied warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. 
 
-CONTACT
+You should have received a copy of GPLv2 along with this program; if
+not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt .
 
-  If you have problems, questions, ideas or suggestions, please contact us
-  by posting to a suitable mailing list. See http://curl.haxx.se/mail/
 
-  All contributors to the project are listed in the THANKS document.
+Additional Permissions:
 
-WEB SITE
 
-  Visit the curl web site for the latest news and downloads:
+1. Linking Exception.
 
-        http://curl.haxx.se/
+As a special exception to GPLv2, Red Hat grants you permission to link
+software whose sources are distributed under a license that satisfies
+the Open Source Definition with libcygwin.a, without libcygwin.a
+itself causing the resulting program to be covered by GPLv2.
 
-GIT
+This means that you can port an open source application to Cygwin, and
+distribute that executable as if it didn't include a copy of
+libcygwin.a linked into it.  Note that this does not apply to the
+Cygwin DLL itself.  If you distribute a (possibly modified) version of
+the DLL you must adhere to the terms of GPLv2, including the
+requirement to provide sources for the Cygwin DLL.
 
-  To download the very latest source off the GIT server do this:
+See http://www.opensource.org/docs/osd/ for the precise Open Source
+Definition referenced above.
 
-    git clone git://github.com/bagder/curl.git
 
-  (you'll get a directory named curl created, filled with the source code)
+2.  Files Excluded from GPL Coverage.
 
-NOTICE
+Red Hat grants you permission to distribute Cygwin with the following
+files, which are not considered part of Cygwin and are not governed by
+GPLv2, in source or binary form.
 
-  Curl contains pieces of source code that is Copyright (c) 1998, 1999
-  Kungliga Tekniska Högskolan. This notice is included here to comply with the
-  distribution terms.
+winsup\testsuite\winsup.api\msgtest.c
+winsup\testsuite\winsup.api\semtest.c
+winsup\testsuite\winsup.api\shmtest.c
+
+Red Hat grants you permission to link or combine code in Cygwin with
+code in or corresponding to the following files, which are not
+considered part of Cygwin and are not governed by GPLv2, and to
+distribute such combinations under terms of your choice, provided that
+such terms are otherwise consistent with the application of GPLv2 to
+Cygwin itself.  You must comply with GPLv2 with respect to all
+portions of such combinations other than those that correspond to or
+are derived from such non-Cygwin code but which do not correspond to
+or are not derived from Cygwin itself.
+
+winsup\cygserver\sysv_shm.cc
+
+
+3.  Alternative License. 
+
+Red Hat sells a special Cygwin License for customers who are unable to
+provide their application in open source code form.  For more
+information, please see: http://www.redhat.com/software/cygwin/, or call
++1-866-2REDHAT ext. 45300 (toll-free in the US).
+
+Outside the US call your regional Red Hat office, see
+http://www.redhat.com/about/contact/ww/ 
+=========================================================================================
