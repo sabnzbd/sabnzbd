@@ -160,7 +160,7 @@ def SimpleRarExtract(rarfile, name):
     return ret, output
 
 #------------------------------------------------------------------------------
-def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts, depth=0):
+def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, ts, depth=0):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
@@ -194,7 +194,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
         if new_rars:
             rerun = True
             logging.info('Unrar starting on %s', workdir)
-            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, new_rars)
+            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, one_folder, new_rars)
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
@@ -205,7 +205,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
         if new_zips:
             rerun = True
             logging.info('Unzip starting on %s', workdir)
-            if unzip(nzo, workdir, workdir_complete, dele, new_zips):
+            if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
                 error = True
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line()
@@ -223,8 +223,8 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
 
 
     if rerun:
-        z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
-                            xzips, xrars, xts, depth)
+        z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
+                            xjoinables, xzips, xrars, xts, depth)
         if z:
             error = z
         if y:
@@ -370,9 +370,10 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 # (Un)Rar Functions
 #------------------------------------------------------------------------------
 
-def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
+def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
     """ Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
-        When 'delete' is ste, originals will be deleted.
+        When 'delete' is set, originals will be deleted.
+        When 'one_folder' is set, all files will be in a single folder
     """
     extracted_files = []
 
@@ -403,7 +404,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
         try:
             fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
-                                         nzo, rar_set, extraction_path)
+                                         one_folder, nzo, rar_set, extraction_path)
             success = not fail
         except:
             success = False
@@ -441,7 +442,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
     return not success, extracted_files
 
 
-def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
+def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     """ Unpack single rar set 'rarfile' to 'extraction_path',
         with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
@@ -474,13 +475,13 @@ def rar_extract(rarfile, numrars, nzo, setname, extraction_path):
 
     for password in passwords:
         if password: logging.debug('Trying unrar with password "%s"', password)
-        fail, new_files, rars = rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password)
+        fail, new_files, rars = rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password)
         if fail != 2:
             break
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
+def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
@@ -504,17 +505,21 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
 
     ############################################################################
 
+    if one_folder:
+        action = 'e'
+    else:
+        action = 'x'
     if sabnzbd.WIN32:
         # Use all flags
-        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', '-ai', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', '-ai', password,
                    '%s' % rarfile, '%s/' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
-        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', password,
                    '%s' % rarfile, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
-        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', password,
                    '%s' % rarfile, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
@@ -613,9 +618,14 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
             missing = []
             # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
+                if one_folder:
+                    path = os.path.split(path)[1]
                 path = unicode2local(path)
+                if '?' in path:
+                    logging.info('Skipping check of file %s', path)
+                    continue
                 fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existance of %s", latin1(fullpath))
+                logging.debug("Checking existence of %s", latin1(fullpath))
                 if path.endswith('/'):
                     # Folder
                     continue
@@ -644,7 +654,7 @@ def rar_extract_core(rarfile, numrars, nzo, setname, extraction_path, password):
 # (Un)Zip Functions
 #------------------------------------------------------------------------------
 
-def unzip(nzo, workdir, workdir_complete, delete, zips):
+def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
     """ Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
         When 'delete' is ste, originals will be deleted.
     """
@@ -663,7 +673,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
             else:
                 extraction_path = os.path.split(_zip)[0]
 
-            if ZIP_Extract(_zip, extraction_path):
+            if ZIP_Extract(_zip, extraction_path, one_folder):
                 unzip_failed = True
             else:
                 i += 1
@@ -700,10 +710,14 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
         logging.error(Ta('Error "%s" while running unzip() on %s'), msg, latin1(nzo.final_name))
         return True
 
-def ZIP_Extract(zipfile, extraction_path):
+def ZIP_Extract(zipfile, extraction_path, one_folder):
     """ Unzip single zip set 'zipfile' to 'extraction_path'
     """
-    command = ['%s' % ZIP_COMMAND, '-o', '-qq', '-Pnone', '%s' % zipfile,
+    if one_folder:
+        option = '-j'  # Unpack without folders
+    else:
+        option = '-qq' # Dummy option
+    command = ['%s' % ZIP_COMMAND, '-o', '-qq', option, '-Pnone', '%s' % zipfile,
                '-d%s' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)

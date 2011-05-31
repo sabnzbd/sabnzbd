@@ -114,11 +114,12 @@ def unicoder(p):
 
 def unicode2local(p):
     """ Convert Unicode filename to appropriate local encoding
+        Leave ? characters for uncovertible characters
     """
     if sabnzbd.WIN32:
-        return p.encode('Latin-1', 'replace').replace('?', '_')
+        return p.encode('Latin-1', 'replace')
     else:
-        return p.encode('utf-8', 'replace').replace('?', '_')
+        return p.encode('utf-8', 'replace')
 
 
 def xml_name(p, keep_escape=False, encoding=None):
