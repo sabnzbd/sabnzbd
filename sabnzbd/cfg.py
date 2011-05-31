@@ -123,6 +123,7 @@ pause_on_pwrar = OptionBool('misc', 'pause_on_pwrar', True)
 safe_postproc = OptionBool('misc', 'safe_postproc', True)
 pause_on_post_processing = OptionBool('misc', 'pause_on_post_processing', False)
 ampm = OptionBool('misc', 'ampm', False)
+rss_filenames = OptionBool('misc', 'rss_filenames', False)
 
 schedules = OptionList('misc', 'schedlines')
 

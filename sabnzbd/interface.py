@@ -1737,13 +1737,13 @@ class ConfigRss(object):
         if msg: return msg
         feed = kwargs.get('feed')
         url = kwargs.get('url')
+        nzbname = kwargs.get('nzbname')
         att = sabnzbd.rss.lookup_url(feed, url)
         if att:
             pp = att.get('pp')
             cat = att.get('cat')
             script = att.get('script')
             prio = att.get('prio')
-            nzbname = att.get('nzbname')
 
             if url and url.isdigit():
                 sabnzbd.add_msgid(url, pp, script, cat, prio, nzbname)
@@ -2339,10 +2339,10 @@ def GetRssLog(feed):
             title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
         else:
             title = xml_name(title)
-        if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
+        if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
-            nzbname = xml_name(title)
+            nzbname = sanitize_foldername(xml_name(title))
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \

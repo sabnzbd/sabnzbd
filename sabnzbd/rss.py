@@ -624,4 +624,4 @@ def _get_link(uri, entry):
 def special_rss_site(url):
     """ Return True if url describes an RSS site with odd titles
     """
-    return 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url
+    return cfg.rss_filenames() or 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url
