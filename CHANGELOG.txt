@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
+ 0.6.3RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Move option "Check unpack results" to Config->Switches
+  You may want to set this on because the default was off.
+- Automatic redirection when addressing the HTTPS port using the HTTP url.
+- Option to store the files of all jobs in a single category folder
+  (enable this by appending a '*' to the storage path)
+- The smpl skin failed to save the attributes of the default category
+- Replace double quote characters in job folder names (to avoid Samba issues)
+- When using the download buttun in an RSS overview, the title wasn't used as job name
+- Another attempt to fix the NZB-association problem on Windows 7 with HTTPS
+-------------------------------------------------------------------------------
  0.6.2Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed association of NZB files with SABnzbd, when using HTTPS-only on Windows Vista/7
