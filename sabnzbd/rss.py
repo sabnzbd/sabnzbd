@@ -129,6 +129,15 @@ def convert_filter(text):
 LOCK = threading.RLock()
 class RSSQueue(object):
     def __init__(self):
+        def check_str(p):
+            return p is None or p == '' or isinstance(p, str)
+        def check_int(p):
+            try:
+                int(p)
+                return True
+            except:
+                return False
+
         self.jobs = {}
         try:
             feeds = sabnzbd.load_admin(RSS_FILE_NAME)
@@ -154,9 +163,30 @@ class RSSQueue(object):
                             except IndexError:
                                 del new
                         else:
-                            self.jobs[feed][link] = feeds[feed][link]
+                            # Consistency check on data
+                            try:
+                                item = feeds[feed][link]
+                                if isinstance(item, dict) and \
+                                   item['status'][0] in ('D', 'G', 'B', 'X') and \
+                                   isinstance(item['title'], unicode) and \
+                                   isinstance(item.get('url'), unicode) and \
+                                   check_str(item['cat']) and \
+                                   check_str(item.get('orgcat', '')) and \
+                                   check_str(item['pp']) and \
+                                   check_str(item['script']) and \
+                                   check_str(item['prio']) and \
+                                   check_int(item.get('rule', 0)) and \
+                                   isinstance(item['time'], float) and \
+                                   check_int(item.get('order', 0)):
+                                    self.jobs[feed][link] = item
+                                else:
+                                    raise IndexError
+                            except (KeyError, IndexError):
+                                logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
+
         except IOError:
-            pass
+            logging.debug('Cannot read file %s', RSS_FILE_NAME)
+
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
         #        Each element is another dictionary:
