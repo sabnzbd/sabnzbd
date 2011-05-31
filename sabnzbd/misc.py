@@ -226,8 +226,8 @@ def sanitize_filename(name):
         ext = lowext
     return name + ext
 
-FL_ILLEGAL = CH_ILLEGAL + ':\x92'
-FL_LEGAL   = CH_LEGAL + ";'"
+FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
+FL_LEGAL   = CH_LEGAL + ";''"
 uFL_ILLEGAL = FL_ILLEGAL.decode('latin-1')
 uFL_LEGAL   = FL_LEGAL.decode('latin-1')
 
