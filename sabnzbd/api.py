@@ -738,7 +738,7 @@ _api_config_table = {
 
 
 #------------------------------------------------------------------------------
-def report(output, error=None, keyword='value', data=None):
+def report(output, error=None, keyword='value', data=None, callback=None):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
         If no error and no data, only a status report is made.
@@ -756,6 +756,9 @@ def report(output, error=None, keyword='value', data=None):
             else:
                 info = {keyword:data}
         response = JsonWriter().write(info)
+        if callback:
+            response = '%s(%s)' % (callback, response)
+
 
     elif output == 'xml':
         content = "text/xml"
