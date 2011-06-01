@@ -424,7 +424,7 @@ if target == 'app':
 
     #Create src tar.gz
     os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
-              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "cherrypy*.zip" '
+              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win"'
               './ >/dev/null' % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
