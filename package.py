@@ -250,10 +250,6 @@ def check_runtimes():
 
 print sys.argv[0]
 
-#OSX if bzrversion not installed install SCPlugin and execute these commands
-#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/lib/lib* /usr/lib
-#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/bin/bzrversion /usr/bin
-
 Bazaar = CheckPath('bzr')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
@@ -333,7 +329,6 @@ options = dict(
       url = 'http://sourceforge.net/projects/sabnzbdplus',
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
-      #description = 'SABnzbd ' + str(my_version),
       scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils', 'util'],
       platforms = ['posix'],
@@ -365,11 +360,6 @@ if target == 'app':
 
     options['description'] = 'SABnzbd ' + str(my_version)
 
-    #remove prototype and iphone interfaces
-    #os.system("rm -rf interfaces/prototype>/dev/null")
-    #os.system("rm -rf interfaces/Concept>/dev/null")
-    #os.system("rm -rf interfaces/iphone>/dev/null")
-
     #Create MO files
     os.system('python ./tools/make_mo.py all')
 
@@ -390,7 +380,6 @@ if target == 'app':
     )
     OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
-       #'CFBundleName':'SABnzbd',
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
        'CFBundleIdentifier':'org.sabnzbd.team',
@@ -415,30 +404,13 @@ if target == 'app':
     #copy builded app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
-    #cleanup src dir
-    #os.system("rm -rf dist/>/dev/null")
-    #os.system("rm -rf build/>/dev/null")
-    #os.system("find ./ -name *.pyc | xargs rm")
-    #os.system("rm -rf NSIS_Installer.nsi")
-    #os.system("rm -rf win/")
-
     #Create src tar.gz
     os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
               '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win"'
               './ >/dev/null' % (fileOSr) )
 
-    #Copy src tar.gz to mounted sparseimage
-    #os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
-
     # Copy README.txt
     os.system("cp README.rtf /Volumes/%s/" % volume)
-
-    #Hide dock icon for the app
-    #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
-
-    #Wait for enter from user
-    #For manually arrange icon position in mounted Volume...
-    #wait = raw_input ("Arrange Icons in DMG and then press Enter to Finalize")
 
     #Unmount sparseimage
     os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
