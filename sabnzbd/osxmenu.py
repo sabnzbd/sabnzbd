@@ -652,8 +652,7 @@ class SABnzbdDelegate(NSObject):
             link = sender.representedObject()
         else:
             link = ""
-        #logging.info("[osx] opening http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST(), sabnzbd.cfg.CHERRYPORT(),link))
-        launch_a_browser("http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.cherryhost(), sabnzbd.cfg.cherryport(),link),True)
+        launch_a_browser(sabnzbd.BROWSER_URL, True)
 
     def speedlimitAction_(self, sender):
         #logging.info("[osx] speed limit to %s" % (sender.representedObject()))

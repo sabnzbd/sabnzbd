@@ -1362,6 +1362,7 @@ def main():
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
 
+    sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
         launch_a_browser(browser_url)
         notify("SAB_Launched", None)
