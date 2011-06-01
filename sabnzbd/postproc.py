@@ -230,8 +230,8 @@ def process_job(nzo):
         cat = nzo.cat
 
         logging.info('Starting PostProcessing on %s' + \
-                     ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
-                     filename, flag_repair, flag_unpack, flag_delete, script)
+                     ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s',
+                     filename, flag_repair, flag_unpack, flag_delete, script, cat)
 
         ## Par processing, if enabled
         if flag_repair:
