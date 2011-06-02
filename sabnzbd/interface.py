@@ -1469,9 +1469,10 @@ def handle_server(kwargs, root=None, new_svr=False):
     if kwargs.get('connections', '').strip() == '':
         kwargs['connections'] = '1'
 
-    msg = check_server(host, port)
-    if msg:
-        return msg
+    if kwargs.get('enable') == '1':
+        msg = check_server(host, port)
+        if msg:
+            return msg
 
     # Default server name is just the host name
     server = host
