@@ -137,9 +137,10 @@ class Sorter(object):
                 workdir_complete = move_to_parent_folder(workdir_complete)
         else:
             workdir_complete = move_to_parent_folder(workdir_complete)
-        if workdir_complete.endswith('%fn') and self.sorter.fname:
+        path, part = os.path.split(workdir_complete)
+        if '%fn' in part and self.sorter.fname:
             old = workdir_complete
-            workdir_complete = workdir_complete.replace('%fn', self.sorter.fname)
+            workdir_complete = os.path.join(path, part.replace('%fn', self.sorter.fname))
             workdir_complete = get_unique_path(workdir_complete, create_dir=False)
             try:
                 renamer(old, workdir_complete)
