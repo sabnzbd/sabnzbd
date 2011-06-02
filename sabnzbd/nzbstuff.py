@@ -926,6 +926,8 @@ class NzbObject(TryList):
 
     def pause(self):
         self.status = 'Paused'
+        # Prevent loss of paused state when terminated
+        sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
         self.status = 'Queued'
