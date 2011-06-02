@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.6.3RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- On OSX, the top menu sometimes uses the wrong URL to start the browser
+- API: jsonp-callback now also supported in error responses
+- When a job is individually pause, save admin immediately
+- Sorting: support %fn parameter in folder names
+- Allow a server definition with a non-resolving name to be disabled.
+-------------------------------------------------------------------------------
  0.6.3RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Move option "Check unpack results" to Config->Switches
