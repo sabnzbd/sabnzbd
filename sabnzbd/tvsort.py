@@ -27,7 +27,7 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.misc import move_to_path, cleanup_empty_directories, \
+from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
                          get_unique_filename, get_ext, renamer, remove_dir
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
@@ -135,9 +135,18 @@ class Sorter(object):
                 move_to_parent = not check_for_folder(workdir_complete)
             if move_to_parent:
                 workdir_complete = move_to_parent_folder(workdir_complete)
-            return workdir_complete
         else:
-            return move_to_parent_folder(workdir_complete)
+            workdir_complete = move_to_parent_folder(workdir_complete)
+        if workdir_complete.endswith('%fn') and self.sorter.fname:
+            old = workdir_complete
+            workdir_complete = workdir_complete.replace('%fn', self.sorter.fname)
+            workdir_complete = get_unique_path(workdir_complete, create_dir=False)
+            try:
+                renamer(old, workdir_complete)
+            except:
+                logging.error(Ta('Cannot create directory %s'), workdir_complete)
+                workdir_complete = old
+        return workdir_complete
 
     def is_sortfile(self):
         return self.sort_file
@@ -152,6 +161,7 @@ class SeriesSorter(object):
         self.sort_string = cfg.tv_sort_string()
         self.cats = cfg.tv_categories()
         self.filename_set = ''
+        self.fname = '' # Value for %fn substitution in folders
 
         self.match_obj = None
         self.extras = None
@@ -377,6 +387,7 @@ class SeriesSorter(object):
         # >20MB
         if filepath and size > 20971520:
             tmp, ext = os.path.splitext(file)
+            self.fname = tmp
             newname = "%s%s" % (self.filename_set,ext)
             # Replace %fn with the original filename
             newname = newname.replace('%fn',tmp)
@@ -470,6 +481,7 @@ class GenericSorter(object):
         self.cats = cfg.movie_categories()
         self.cat = cat
         self.filename_set = ''
+        self.fname = '' # Value for %fn substitution in folders
 
         self.match_obj = None
 
@@ -611,6 +623,7 @@ class GenericSorter(object):
                 filepath = os.path.join(current_path, file)
             if os.path.exists(filepath):
                 tmp, ext = os.path.splitext(file)
+                self.fname = tmp
                 newname = "%s%s" % (self.filename_set,ext)
                 newname = newname.replace('%fn',tmp)
                 newpath = os.path.join(current_path, newname)
@@ -632,6 +645,7 @@ class GenericSorter(object):
                 for index, file in matched_files.iteritems():
                     filepath = os.path.join(current_path, file)
                     tmp, ext = os.path.splitext(file)
+                    self.fname = tmp
                     name = '%s%s' % (self.filename_set, self.extra)
                     name = name.replace('%1', str(index)).replace('%fn',tmp)
                     name = name + ext
@@ -657,6 +671,7 @@ class DateSorter(object):
         self.cats = cfg.date_categories()
         self.cat = cat
         self.filename_set = ''
+        self.fname = '' # Value for %fn substitution in folders
 
         self.match_obj = None
 
@@ -811,6 +826,7 @@ class DateSorter(object):
                 if size > 130000000:
                     if 'sample' not in file:
                         tmp, ext = os.path.splitext(file)
+                        self.fname = tmp
                         newname = "%s%s" % (self.filename_set,ext)
                         newname = newname.replace('%fn',tmp)
                         newpath = os.path.join(current_path, newname)
