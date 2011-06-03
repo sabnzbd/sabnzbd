@@ -166,21 +166,19 @@ class RSSQueue(object):
                             # Consistency check on data
                             try:
                                 item = feeds[feed][link]
-                                if isinstance(item, dict) and \
-                                   item['status'][0] in ('D', 'G', 'B', 'X') and \
-                                   isinstance(item['title'], unicode) and \
-                                   isinstance(item.get('url'), unicode) and \
-                                   check_str(item['cat']) and \
-                                   check_str(item.get('orgcat', '')) and \
-                                   check_str(item['pp']) and \
-                                   check_str(item['script']) and \
-                                   check_str(item['prio']) and \
-                                   check_int(item.get('rule', 0)) and \
-                                   isinstance(item['time'], float) and \
-                                   check_int(item.get('order', 0)):
-                                    self.jobs[feed][link] = item
-                                else:
+                                if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
                                     raise IndexError
+                                if not item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'): item['status'] = 'X'
+                                if not isinstance(item.get('url'), unicode): item['url'] = ''
+                                if not check_str(item.get('cat')): item['cat'] = ''
+                                if not check_str(item.get('orgcat')): item['orgcat'] = ''
+                                if not check_str(item.get('pp')): item['pp'] = '3'
+                                if not check_str(item.get('script')): item['script'] = 'None'
+                                if not check_str(item.get('prio')): item['prio'] = '-100'
+                                if not check_int(item.get('rule', 0)): item['rule'] = 0
+                                if not isinstance(item.get('time'), float): item['time'] = time.time()
+                                if not check_int(item.get('order', 0)): item.get['order'] = 0
+                                self.jobs[feed][link] = item
                             except (KeyError, IndexError):
                                 logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
 
