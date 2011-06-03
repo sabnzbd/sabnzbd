@@ -405,9 +405,9 @@ if target == 'app':
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     #Create src tar.gz
-    os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
-              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win"'
-              './ >/dev/null' % (fileOSr) )
+    #os.system('tar -czf %s --exclude ".bzr" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+    #          '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win"'
+    #          './ >/dev/null' % (fileOSr) )
 
     # Copy README.txt
     os.system("cp README.rtf /Volumes/%s/" % volume)
