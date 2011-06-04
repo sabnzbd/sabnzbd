@@ -43,6 +43,7 @@ from sabnzbd.skintext import SKIN_TEXT
 
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
+from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, time_format
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
@@ -597,6 +598,19 @@ def _api_undefined(name, output, kwargs):
 
 
 #------------------------------------------------------------------------------
+def _api_browse(name, output, kwargs):
+    """ Return tree of local path """
+    compact = kwargs.get('compact')
+    if compact and compact == '1':
+        limit = int_conv(kwargs.get('limit', 30))
+        paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
+        paths = '\n'.join(paths[0:limit])
+    else:
+        paths = folders_at_path(name, True)
+    return report(output, keyword='paths', data=paths)
+
+
+#------------------------------------------------------------------------------
 def _api_config(name, output, kwargs):
     """ API: Dispather for "config" """
     return _api_config_table.get(name, _api_config_undefined)(output, kwargs)
@@ -710,7 +724,8 @@ _api_table = {
     'rescan'          : _api_rescan,
     'eval_sort'       : _api_eval_sort,
     'watched_now'     : _api_watched_now,
-    'rss_now'         : _api_rss_now
+    'rss_now'         : _api_rss_now,
+    'browse'          : _api_browse
 }
 
 _api_queue_table = {
