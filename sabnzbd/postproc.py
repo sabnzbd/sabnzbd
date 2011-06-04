@@ -95,7 +95,8 @@ class PostProcessor(Thread):
             if isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
-            pass
+            logging.info('Corrupt %s file, discarding', POSTPROC_QUEUE_FILE_NAME)
+            logging.info("Traceback: ", exc_info = True)
 
     def delete(self, nzo_id, del_files=False):
         """ Remove a job from the post processor queue """
