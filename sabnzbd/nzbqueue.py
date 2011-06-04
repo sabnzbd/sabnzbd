@@ -688,8 +688,6 @@ class NzbQueue(TryList):
                     logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
-            self.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
-
             if not self.__nzo_list:
                 # Close server connections
                 if cfg.autodisconnect():

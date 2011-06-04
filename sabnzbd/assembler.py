@@ -63,6 +63,7 @@ class Assembler(Thread):
         self.queue.put(nzf)
 
     def run(self):
+        import sabnzbd.nzbqueue
         while 1:
             nzo_nzf_tuple = self.queue.get()
             if not nzo_nzf_tuple:
@@ -106,6 +107,7 @@ class Assembler(Thread):
                         logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
                         nzo.pause()
             else:
+                sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
 
