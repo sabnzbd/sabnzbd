@@ -1180,7 +1180,9 @@ class NzbObject(TryList):
                 self.nzo_id, self.final_name_pw, {},
                 self.msgid, self.cat, self.url,
                 bytes_left_all, self.bytes, avg_date,
-                finished_files, active_files, queued_files, self.status, self.priority)
+                finished_files, active_files, queued_files, self.status, self.priority,
+                len(self.nzo_info.get('missing_art_log', []))
+                )
 
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.files_table:

@@ -193,6 +193,7 @@ SKIN_TEXT = {
     'removeNZB' : TT('Remove NZB'), #: Queue page button
     'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
     'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
+    'missingArt': TT('Missing articles'), #: Caption for missing articles in Queue
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button

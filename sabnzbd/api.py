@@ -1001,6 +1001,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
         priority = pnfo[PNFO_PRIORITY_FIELD]
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
+        missing = pnfo[PNFO_MISSING_FIELD]
         if verbose or verbose_list:
             finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
             active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
@@ -1040,6 +1041,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
             slot['percentage'] = "0"
         else:
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
+        slot['missing'] = missing
 
         if status == 'Paused':
             slot['timeleft'] = '0:00:00'
