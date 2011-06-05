@@ -32,7 +32,7 @@ $T('wizard-explain-server')
   <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
   <br class="clear" />
   <label><span class="label">$T('srv-ssl')</span>
-  <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
+  <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $have_ssl then '' else 'disabled'#--><!--#if $ssl == 1 then 'checked' else ''#-->></label>
   <div class="tips">$T('wizard-server-ssl-explain')</div>
   <br class="clear" />
 </div>
