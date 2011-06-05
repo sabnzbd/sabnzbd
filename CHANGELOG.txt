@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.3RC3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Regression error: paused duplicates did not end in the queue
+- Better support for standby and hibernate on Linux
+- Remove the delay when items do from the download queue to History
+-------------------------------------------------------------------------------
  0.6.3RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - On OSX, the top menu sometimes uses the wrong URL to start the browser
