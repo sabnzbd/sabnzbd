@@ -249,6 +249,7 @@ def print_help():
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
     print "      --log-all            Log all article handling (for developers)"
+    print "      --new                Run a new instance of SABnzbd"
 
 def print_version():
     print """
@@ -760,7 +761,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=',
+                                    'log-all', 'no-login', 'pid=', 'new',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -831,6 +832,7 @@ def main():
     no_login = False
     re_argv = [sys.argv[0]]
     pid_path = None
+    new_instance = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -909,6 +911,8 @@ def main():
             pid_path = arg
             re_argv.append(opt)
             re_argv.append(arg)
+        elif opt in ('--new',):
+            new_instance = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1014,7 +1018,7 @@ def main():
 
     # Windows instance is reachable through registry
     url = None
-    if sabnzbd.WIN32:
+    if sabnzbd.WIN32 and not new_instance:
         url = get_connection_info()
         if url and check_for_sabnzbd(url, upload_nzbs):
             exit_sab(0)
@@ -1034,7 +1038,7 @@ def main():
             else:
                 if not url:
                     url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
-                if not check_for_sabnzbd(url, upload_nzbs):
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs):
                     newport = find_free_port(browserhost, port)
                     if newport > 0:
                         sabnzbd.cfg.https_port.set(newport)
@@ -1054,7 +1058,7 @@ def main():
         else:
             if not url:
                 url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
-            if not check_for_sabnzbd(url, upload_nzbs):
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs):
                 port = find_free_port(browserhost, cherryport)
                 if port > 0:
                     sabnzbd.cfg.cherryport.set(port)
