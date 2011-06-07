@@ -351,10 +351,14 @@ class Bookmarks(object):
         else:
             logging.error(Ta('Newzbin gives undocumented error code (%s)'), rcode)
 
+        self._save()
         self.__busy = False
 
     @synchronized(BOOK_LOCK)
     def save(self):
+        self._save()
+
+    def _save(self):
         sabnzbd.save_admin(self.bookmarks, BOOKMARK_FILE_NAME)
 
     def bookmarksList(self):
