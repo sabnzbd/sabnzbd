@@ -1,9 +1,15 @@
 -------------------------------------------------------------------------------
+ 0.6.3Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Save bookmark memory file right after reading newzbin's bookmarks
+- Add new command line option --new to force new SABnzbd instance
+- Plush: add "missing articles" to queue entry hover-over popup
+-------------------------------------------------------------------------------
  0.6.3RC3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Regression error: paused duplicates did not end in the queue
 - Better support for standby and hibernate on Linux
-- Remove the delay when items do from the download queue to History
+- Remove the delay when items go from the download queue to History
 -------------------------------------------------------------------------------
  0.6.3RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
@@ -22,7 +28,7 @@
   (enable this by appending a '*' to the storage path)
 - The smpl skin failed to save the attributes of the default category
 - Replace double quote characters in job folder names (to avoid Samba issues)
-- When using the download buttun in an RSS overview, the title wasn't used as job name
+- When using the download button in an RSS overview, the title wasn't used as job name
 - Another attempt to fix the NZB-association problem on Windows 7 with HTTPS
 -------------------------------------------------------------------------------
  0.6.2Final by The SABnzbd-Team
