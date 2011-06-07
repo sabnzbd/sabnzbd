@@ -88,6 +88,7 @@ class Wizard(object):
         info['session'] = cfg.api_key()
         info['language'] = cfg.language()
         info['T'] = Ttemplate
+        info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
 
         servers = config.get_servers()
         if not servers:
@@ -106,7 +107,6 @@ class Wizard(object):
                 info['username'] = s.username()
                 info['password'] = s.password.get_stars()
                 info['connections'] = s.connections()
-                info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
 
                 info['ssl'] = s.ssl()
                 if s.enable():
