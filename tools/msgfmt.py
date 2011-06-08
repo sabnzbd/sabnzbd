@@ -49,7 +49,12 @@ def add(id, str, fuzzy):
     "Add a non-fuzzy translation to the dictionary."
     global MESSAGES
     if not fuzzy and str:
-        MESSAGES[id] = str
+        if id.count('%s') == str.count('%s'):
+            MESSAGES[id] = str
+        else:
+            print 'WARNING: %s mismatch, skipping!'
+            print '    %s' % id
+            print '    %s' % str
 
 
 
