@@ -3946,7 +3946,7 @@ msgid ""
 "following location: %s"
 msgstr ""
 "Nach dem Neustart von SAbnzbd können Sie über folgende Adresse darauf "
-"zugreifen:"
+"zugreifen: %s"
 
 #: sabnzbd/skintext.py:797 [Wizard tip]
 msgid ""
