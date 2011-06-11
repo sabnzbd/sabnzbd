@@ -524,12 +524,13 @@ class GenericSorter(object):
         """ Collect and construct all the values needed for path replacement """
 
         ## - Get Year
+        dirname = self.original_dirname.replace('_', ' ')
         RE_YEAR = re.compile(year_match, re.I)
-        year_m = RE_YEAR.search(self.original_dirname)
+        year_m = RE_YEAR.search(dirname)
         if year_m:
             # Find the last matched date
             # Keep year_m to use in getTitles
-            year = RE_YEAR.findall(self.original_dirname)[-1][0]
+            year = RE_YEAR.findall(dirname)[-1][0]
             self.movie_info['year'] = year
         else:
             self.movie_info['year'] = ''
