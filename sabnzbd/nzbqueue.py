@@ -688,8 +688,8 @@ class NzbQueue(TryList):
                     logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
-            if not self.__nzo_list:
-                # Close server connections
+            if len(self.__nzo_list) < 2:
+                # This was the last job, close server connections
                 if cfg.autodisconnect():
                     sabnzbd.downloader.Downloader.do.disconnect()
 
