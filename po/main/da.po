@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-05 18:12+0000\n"
-"PO-Revision-Date: 2011-06-08 17:50+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"POT-Creation-Date: 2011-06-12 08:42+0000\n"
+"PO-Revision-Date: 2011-06-11 04:15+0000\n"
+"Last-Translator: Rene <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-09 04:48+0000\n"
+"X-Launchpad-Export-Date: 2011-06-13 04:50+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 "Language: da\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -2408,9 +2408,7 @@ msgstr "Aktiver Fil Sammenføjning (Filejoin)"
 
 #: sabnzbd/skintext.py:349
 msgid "Join files ending in .001, .002 etc. into one file."
-msgstr ""
-"Sammenføjer filer, der ender med .001, ,002 osv. i én fil.001, .002 osv. til "
-"en fil."
+msgstr "Sammenføjer filer, der ender med .001, .002 osv. til en fil."
 
 #: sabnzbd/skintext.py:350
 msgid "Enable TS Joining"
@@ -2418,7 +2416,7 @@ msgstr "Aktivere TS Sammenføjning (TS Joining)"
 
 #: sabnzbd/skintext.py:351
 msgid "Join files ending in .001.ts, .002.ts etc. into one file."
-msgstr "Sammenføjer filer, der ender med, 001.ts, .002.ts etc. til en fil."
+msgstr "Sammenføjer filer, der ender med, 001.ts, .002.ts osv. til en fil."
 
 #: sabnzbd/skintext.py:352
 msgid "Enable Par Cleanup"
@@ -2535,7 +2533,7 @@ msgstr "Før kø bruger script"
 
 #: sabnzbd/skintext.py:378
 msgid "Used before an NZB enters the queue."
-msgstr "Brugt før en NZB kommer ind i køen."
+msgstr "Brugt før, en NZB kommer ind i køen."
 
 #: sabnzbd/skintext.py:379
 msgid "Default Priority"
@@ -2576,7 +2574,7 @@ msgstr "Afbryd når køen er tom"
 
 #: sabnzbd/skintext.py:391
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
-msgstr "Afbryd fra usenet serverne når køn er tom eller pauset."
+msgstr "Afbryd fra usenet-serverne når køen er tom eller sat på pause."
 
 #: sabnzbd/skintext.py:392
 msgid "Send Group"
