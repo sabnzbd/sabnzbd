@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.5Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Since 0.6.3, all end-of-queue actions failed.
+- Generic sort: failed to recognize years surounded by underscores.
+- When running the Wizard in German, the last page crashed.
+-------------------------------------------------------------------------------
  0.6.4Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix silly error in the Wizard
