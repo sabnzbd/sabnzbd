@@ -22,6 +22,19 @@
 #NOTIFICATION = {'startup':'grwl-notif-startup','download':'grwl-notif-dl','pp':'grwl-notif-pp','other':'grwl-notif-other'}
 NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','complete':'4. On download terminated','other':'5. Other Messages'}
 
+# For a future release, make texts translatable.
+if 0:
+    #------------------------------------------------------------------------------
+    # Define translatable message table
+    TT = lambda x:x
+    _NOTIFICATION = {
+        'startup'  : TT('1. On Startup/Shutdown'),
+        'download' : TT('2. On adding NZB'),
+        'pp'       : TT('3. On post-processing'),
+        'complete' : TT('4. On download terminated'),
+        'other'    : TT('5. Other Messages')
+    }
+
 try:
     import Growl
     import os.path
