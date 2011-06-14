@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-06-14 23:18+West-Europa (zomertijd)\n"
+"POT-Creation-Date: 2011-06-14 23:46+West-Europa (zomertijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -52,23 +52,23 @@ msgstr ""
 msgid "SABnzbd shutdown finished"
 msgstr ""
 
-#: sabnzbd/utils/osx.py:31
+#: sabnzbd/utils/osx.py:31 [Message class for Growl server]
 msgid "1. On Startup/Shutdown"
 msgstr ""
 
-#: sabnzbd/utils/osx.py:32
+#: sabnzbd/utils/osx.py:32 [Message class for Growl server]
 msgid "2. On adding NZB"
 msgstr ""
 
-#: sabnzbd/utils/osx.py:33
+#: sabnzbd/utils/osx.py:33 [Message class for Growl server]
 msgid "3. On post-processing"
 msgstr ""
 
-#: sabnzbd/utils/osx.py:34
+#: sabnzbd/utils/osx.py:34 [Message class for Growl server]
 msgid "4. On download terminated"
 msgstr ""
 
-#: sabnzbd/utils/osx.py:35
+#: sabnzbd/utils/osx.py:35 [Message class for Growl server]
 msgid "5. Other Messages"
 msgstr ""
 
@@ -2771,35 +2771,35 @@ msgstr ""
 msgid "Notifications"
 msgstr ""
 
-#: sabnzbd/skintext.py:510
+#: sabnzbd/skintext.py:510 [Don't translate "Growl"]
 msgid "Enable Growl"
 msgstr ""
 
-#: sabnzbd/skintext.py:511
+#: sabnzbd/skintext.py:511 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr ""
 
-#: sabnzbd/skintext.py:512
+#: sabnzbd/skintext.py:512 [Address of Growl server]
 msgid "Server address"
 msgstr ""
 
-#: sabnzbd/skintext.py:513
+#: sabnzbd/skintext.py:513 [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr ""
 
-#: sabnzbd/skintext.py:514
+#: sabnzbd/skintext.py:514 [Growl server password]
 msgid "Server password"
 msgstr ""
 
-#: sabnzbd/skintext.py:515
+#: sabnzbd/skintext.py:515 [Don't translate "Growl"]
 msgid "Optional password for Growl server"
 msgstr ""
 
-#: sabnzbd/skintext.py:516
+#: sabnzbd/skintext.py:516 [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr ""
 
-#: sabnzbd/skintext.py:517
+#: sabnzbd/skintext.py:517 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
 msgstr ""
 
