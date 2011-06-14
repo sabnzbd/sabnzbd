@@ -507,14 +507,14 @@ SKIN_TEXT = {
     'opt-email_pwd' : TT('OPTIONAL Account Password'),
     'explain-email_pwd' : TT('For authenticated email, password.'),
     'growlSettings' : TT('Notifications'), #: Section header
-    'opt-growl_enable' : TT('Enable Growl'),
-    'explain-growl_enable' : TT('Send notifications to Growl'),
-    'opt-growl_server' : TT('Server address'),
-    'explain-growl_server' : TT('Only use for remote Growl server (host:port)'),
-    'opt-growl_password' : TT('Server password'),
-    'explain-growl_password' : TT('Optional password for Growl server'),
-    'opt-ntfosd_enable' : TT('Enable NotifyOSD'),
-    'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'),
+    'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
+    'explain-growl_enable' : TT('Send notifications to Growl'), #: Don't translate "Growl"
+    'opt-growl_server' : TT('Server address'), #: Address of Growl server
+    'explain-growl_server' : TT('Only use for remote Growl server (host:port)'), #: Don't translate "Growl"
+    'opt-growl_password' : TT('Server password'), #: Growl server password
+    'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
+    'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
+    'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
 
 # Config->Newzbin
     'explain-newzbin' : TT('If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
