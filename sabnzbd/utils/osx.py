@@ -28,11 +28,11 @@ if 0:
     # Define translatable message table
     TT = lambda x:x
     _NOTIFICATION = {
-        'startup'  : TT('1. On Startup/Shutdown'),    #: Message class for Growl server
-        'download' : TT('2. On adding NZB'),          #: Message class for Growl server
-        'pp'       : TT('3. On post-processing'),     #: Message class for Growl server
-        'complete' : TT('4. On download terminated'), #: Message class for Growl server
-        'other'    : TT('5. Other Messages')          #: Message class for Growl server
+        'startup'  : TT('Startup/Shutdown'),    #: Message class for Growl server
+        'download' : TT('Adding NZB'),          #: Message class for Growl server
+        'pp'       : TT('Post-processing'),     #: Message class for Growl server
+        'complete' : TT('Download terminated'), #: Message class for Growl server
+        'other'    : TT('Other Messages')       #: Message class for Growl server
     }
 
 try:
