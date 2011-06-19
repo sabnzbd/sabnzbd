@@ -115,6 +115,7 @@ SKIN_TEXT = {
     'cmenu-servers' : TT('Servers'), #: Main menu item
     'cmenu-scheduling' : TT('Scheduling'), #: Main menu item
     'cmenu-rss' : TT('RSS'), #: Main menu item
+    'cmenu-emailN' : TT('Notifications'), #: Main menu item
     'cmenu-email' : TT('Email'), #: Main menu item
     'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
@@ -485,12 +486,12 @@ SKIN_TEXT = {
     'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
 # Config->Email
-    'configEmail' : TT('Email Notification'),
-    'emailOptions' : TT('Email Options'),
+    'configEmail' : TT('Email Notifications'), #: Main Config page
+    'emailOptions' : TT('Email Options'), #: Section header
     'opt-email_endjob' : TT('Email Notification On Job Completion'),
-    'email-never' : TT('Never'),
-    'email-always' : TT('Always'),
-    'email-errorOnly' : TT('Error-only'),
+    'email-never' : TT('Never'), #: When to send email
+    'email-always' : TT('Always'),  #: When to send email
+    'email-errorOnly' : TT('Error-only'),  #: When to send email
     'opt-email_full' : TT('Disk Full Notifications'),
     'explain-email_full' : TT('Send email when disk is full and SABnzbd is paused.'),
     'opt-email_rss' : TT('Send RSS notifications'),
@@ -515,6 +516,7 @@ SKIN_TEXT = {
     'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
     'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
+    'testNotify' : TT('Test Notification'),
 
 # Config->Newzbin
     'explain-newzbin' : TT('If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
@@ -750,6 +752,7 @@ SKIN_TEXT = {
     'smpl-downloading' : TT('Downloading'),
     'smpl-idle' : TT('Idle'),
     'smpl-emailsent' : TT('Email Sent!'),
+    'smpl-notesent' : TT('Notification Sent!'),
     'smpl-saving' : TT('Saving..'),
     'smpl-saved' : TT('Saved'),
     'smpl-failed' : TT('Failed'),
