@@ -38,7 +38,8 @@ import sabnzbd
 import sabnzbd.cfg
 
 from sabnzbd.constants import *
-from sabnzbd.misc import launch_a_browser,get_filename,get_ext,diskfree
+from sabnzbd.misc import get_filename, get_ext, diskfree
+from sabnzbd.panic import launch_a_browser
 from sabnzbd.utils import osx
 
 from sabnzbd.nzbqueue import NzbQueue
@@ -736,4 +737,14 @@ class SABnzbdDelegate(NSObject):
         sys.stderr.flush()
         sys.stdout.flush()
         return NSTerminateNow
+
+
+#------------------------------------------------------------------------------
+def notify(notificationName, message):
+    """ Send a notification to the OS (OSX-only) """
+    if sabnzbd.FOUNDATION:
+        pool = Foundation.NSAutoreleasePool.alloc().init()
+        nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
+        nc.postNotificationName_object_(notificationName, message)
+        del pool
 

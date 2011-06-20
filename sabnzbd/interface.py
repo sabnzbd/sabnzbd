@@ -36,7 +36,8 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, panic_old_queue, globber, clean_folder
+     cat_to_opts, int_conv, globber, clean_folder
+from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter

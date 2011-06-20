@@ -67,10 +67,12 @@ import sabnzbd
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
-     check_latest_version, panic_tmpl, panic_port, panic_host, panic_fwall, panic_sqlite, panic, exit_sab, \
-     panic_xport, notify, split_host, get_ext, create_https_certificates, \
+from sabnzbd.misc import get_user_shellfolders, real_path, \
+     check_latest_version, exit_sab, \
+     split_host, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
+from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic_fwall, \
+     panic_sqlite, panic, launch_a_browser, panic_xport
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -1297,7 +1299,7 @@ def main():
                             'tools.sessions.on' : True,
                             'request.show_tracebacks': True,
                             'checker.check_localhost' : bool(consoleLogging),
-                            'error_page.401': sabnzbd.misc.error_page_401
+                            'error_page.401': sabnzbd.panic.error_page_401
                             })
 
 
@@ -1369,7 +1371,7 @@ def main():
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
         launch_a_browser(browser_url)
-        notify("SAB_Launched", None)
+        if sabnzbd.FOUNDATION: sabnzbd.osxmenu.notify("SAB_Launched", None)
         osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
         # Now's the time to check for a new version
         check_latest_version()
@@ -1488,7 +1490,7 @@ def main():
         mail.send('stop')
     if sabnzbd.WIN32:
         del_connection_info()
-    notify("SAB_Shutdown", None)
+    if sabnzbd.FOUNDATION: sabnzbd.osxmenu.notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()

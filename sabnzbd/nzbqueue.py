@@ -27,8 +27,9 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import panic_queue, exit_sab, cat_to_opts, \
+from sabnzbd.misc import exit_sab, cat_to_opts, \
                          get_admin_path, remove_all, globber
+from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \

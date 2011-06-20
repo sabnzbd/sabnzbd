@@ -68,6 +68,7 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 import sabnzbd.misc as misc
+import sabnzbd.powersup as powersup
 from sabnzbd.dirscanner import DirScanner,  ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.urlgrabber import URLGrabber
 import sabnzbd.scheduler as scheduler
@@ -85,7 +86,7 @@ import sabnzbd.api
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
-LINUX_POWER = misc.HAVE_DBUS
+LINUX_POWER = powersup.HAVE_DBUS
 
 START = datetime.datetime.now()
 
@@ -249,12 +250,12 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
         pause_downloader = True
     else:
         # Check crash detection file
-        if load_admin(TERM_FLAG_FILE, remove=True):
+        #if load_admin(TERM_FLAG_FILE, remove=True):
             # Repair mode 2 is a bit over an over-reaction!
-            pass # repair = 2
+        pass # repair = 2
 
     # Set crash detection file
-    save_admin(1, TERM_FLAG_FILE)
+    #save_admin(1, TERM_FLAG_FILE)
 
     ###
     ### Initialize threads
@@ -453,9 +454,9 @@ def save_state(flag=False):
     Bookmarks.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
-    if flag:
-        # Remove crash detector
-        load_admin(TERM_FLAG_FILE, remove=True)
+    #if flag:
+    #    # Remove crash detector
+    #    load_admin(TERM_FLAG_FILE, remove=True)
 
 def pause_all():
     """ Pause all activities than cause disk access
@@ -608,33 +609,33 @@ def system_shutdown():
         time.sleep(1.0)
 
     if sabnzbd.WIN32:
-        misc.win_shutdown()
+        powersup.win_shutdown()
     elif DARWIN:
-        misc.osx_shutdown()
+        powersup.osx_shutdown()
     else:
-        misc.linux_shutdown()
+        powersup.linux_shutdown()
 
 
 def system_hibernate():
     """ Hibernate system """
     logging.info("Performing system hybernation")
     if sabnzbd.WIN32:
-        misc.win_hibernate()
+        powersup.win_hibernate()
     elif DARWIN:
-        misc.osx_hibernate()
+        powersup.osx_hibernate()
     else:
-        misc.linux_hibernate()
+        powersup.linux_hibernate()
 
 
 def system_standby():
     """ Standby system """
     logging.info("Performing system standby")
     if sabnzbd.WIN32:
-        misc.win_standby()
+        powersup.win_standby()
     elif DARWIN:
-        misc.osx_standby()
+        powersup.osx_standby()
     else:
-        misc.linux_standby()
+        powersup.linux_standby()
 
 
 def shutdown_program():
