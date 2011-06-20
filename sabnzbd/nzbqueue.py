@@ -279,8 +279,6 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True, quiet=False):
         assert isinstance(nzo, NzbObject)
-        sabnzbd.QUEUECOMPLETEACTION_GO = False
-
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
 
@@ -315,9 +313,9 @@ class NzbQueue(TryList):
                     for position in self.__nzo_list:
                         if position.priority < priority:
                             self.__nzo_list.insert(pos, nzo)
-                            added=True
+                            added = True
                             break
-                        pos+=1
+                        pos += 1
                     if not added:
                         #if there are no other items classed as a lower priority
                         #then it will be added to the bottom of the queue
@@ -689,18 +687,26 @@ class NzbQueue(TryList):
                     logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
-            if len(self.__nzo_list) < 2:
+            if self.actives(grabs=False) < 2 and cfg.autodisconnect():
                 # This was the last job, close server connections
-                if cfg.autodisconnect():
-                    sabnzbd.downloader.Downloader.do.disconnect()
-
-                # Sets the end-of-queue back on if disabled
-                # adding an nzb and re-adding for more blocks disables it
-                if sabnzbd.QUEUECOMPLETEACTION:
-                    sabnzbd.QUEUECOMPLETEACTION_GO = True
+                sabnzbd.downloader.Downloader.do.disconnect()
 
             # Notify assembler to call postprocessor
             Assembler.do.process((nzo, None))
+
+
+    @synchronized(NZBQUEUE_LOCK)
+    def actives(self, grabs=True):
+        """ Return amount of non-paused jobs, optionally with 'grabbing' items
+        """
+        n = 0
+        for nzo in self.__nzo_list:
+            # Ignore any items that are paused
+            if grabs and nzo.status == 'Grabbing':
+                n += 1
+            elif nzo.status not in ('Paused', 'Grabbing'):
+                n += 1
+        return n
 
 
     @synchronized(NZBQUEUE_LOCK)

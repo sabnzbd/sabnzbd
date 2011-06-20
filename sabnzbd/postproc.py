@@ -497,7 +497,6 @@ def parring(nzo, workdir):
 
         if re_add:
             logging.info('Readded %s to queue', filename)
-            sabnzbd.QUEUECOMPLETEACTION_GO = False
             nzo.priority = TOP_PRIORITY
             sabnzbd.nzbqueue.add_nzo(nzo)
             sabnzbd.downloader.Downloader.do.resume_from_postproc()
@@ -575,7 +574,7 @@ def addPrefixes(path, dirprefix):
 
 def handle_empty_queue():
     """ Check if empty queue calls for action """
-    if sabnzbd.QUEUECOMPLETEACTION_GO:
+    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
         logging.info("Queue has finished, launching: %s (%s)", \
             sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
@@ -584,7 +583,6 @@ def handle_empty_queue():
         else:
             Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
 
-        sabnzbd.QUEUECOMPLETEACTION_GO = False
         sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
 

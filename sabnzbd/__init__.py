@@ -104,7 +104,6 @@ DIR_PID = None
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
 QUEUECOMPLETEARG = None #stores an extra arguments that need to be passed
-QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not at the queue end.
 
 DAEMON = None
 
