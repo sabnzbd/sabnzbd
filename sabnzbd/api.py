@@ -1031,6 +1031,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
             slot['status'] = "%s" % (status)
         if priority == TOP_PRIORITY:
             slot['priority'] = 'Force'
+        elif priority == REPAIR_PRIORITY:
+            slot['priority'] = 'Repair'
         elif priority == HIGH_PRIORITY:
             slot['priority'] = 'High'
         elif priority == LOW_PRIORITY:

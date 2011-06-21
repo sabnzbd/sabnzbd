@@ -155,6 +155,7 @@ SKIN_TEXT = {
     'pp-u' : TT('U'),
     'pp-d' : TT('D'),
     'pr-force' : TT('Force'),
+    'pr-repair' : TT('Repair'),
     'pr-normal' : TT('Normal'),
     'pr-high' : TT('High'),
     'pr-low' : TT('Low'),

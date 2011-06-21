@@ -296,9 +296,8 @@ class NzbQueue(TryList):
             nzo.deleted = False
             priority = nzo.priority
             self.__nzo_table[nzo.nzo_id] = nzo
-            if priority == TOP_PRIORITY:
-                #A top priority item (usually a completed download fetching pars)
-                #is added to the top of the queue
+            if priority > HIGH_PRIORITY:
+                #Top and repair priority items are added to the top of the queue
                 self.__nzo_list.insert(0, nzo)
             elif priority == LOW_PRIORITY:
                 self.__nzo_list.append(nzo)
