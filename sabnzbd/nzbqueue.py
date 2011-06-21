@@ -34,7 +34,7 @@ import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
-                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
+                              REPAIR_PRIORITY, PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -58,7 +58,6 @@ class NzbQueue(TryList):
         self.__nzo_list = []
         self.__nzo_table = {}
 
-        self.__auto_sort = cfg.auto_sort()
         NzbQueue.do = self
 
     def read_queue(self, repair):
@@ -231,7 +230,7 @@ class NzbQueue(TryList):
                     future.priority = None
                 self.set_priority(future.nzo_id, priority)
 
-                if self.__auto_sort:
+                if cfg.auto_sort():
                     self.sort_by_avg_age()
 
                 self.reset_try_list()
@@ -328,7 +327,7 @@ class NzbQueue(TryList):
             if not (quiet or nzo.status in ('Fetching',)):
                 osx.sendGrowlMsg(T('NZB added to queue'), nzo.filename, osx.NOTIFICATION['download'])
 
-        if self.__auto_sort:
+        if cfg.auto_sort():
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
@@ -784,17 +783,20 @@ def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.bytes, nzo2.bytes)
 
 def sort_queue_function(nzo_list, method, reverse):
+    ultra_high_priority = [nzo for nzo in nzo_list if nzo.priority == REPAIR_PRIORITY]
     super_high_priority = [nzo for nzo in nzo_list if nzo.priority == TOP_PRIORITY]
     high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]
     normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
     low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]
 
+    ultra_high_priority.sort(cmp=method, reverse=reverse)
     super_high_priority.sort(cmp=method, reverse=reverse)
     high_priority.sort(cmp=method, reverse=reverse)
     normal_priority.sort(cmp=method, reverse=reverse)
     low_priority.sort(cmp=method, reverse=reverse)
 
-    new_list = super_high_priority
+    new_list = ultra_high_priority
+    new_list.extend(super_high_priority)
     new_list.extend(high_priority)
     new_list.extend(normal_priority)
     new_list.extend(low_priority)
