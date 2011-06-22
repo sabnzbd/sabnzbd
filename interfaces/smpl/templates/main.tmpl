@@ -1015,10 +1015,6 @@ function loadingJSON(){
   document.getElementById("mbtotal").innerHTML = info["mb"].toFixed(2);
   document.getElementById("ds1").innerHTML = info["diskspace1"].toFixed(2);
   document.getElementById("ds2").innerHTML = info["diskspace2"].toFixed(2);
-  //var perc1 = 1 - (info["jobs"][0]["mbleft"].toFixed(2) / info["jobs"][0]["mb"].toFixed(2))
-  //alert(info["jobs"][0]);
-    if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "$T('smpl-downloading'): "+info["jobs"][0]["filename"];
-  else document.getElementById("downloadinfo").innerHTML = "";
   document.getElementById("have_warnings").innerHTML = info["have_warnings"];
   load = document.getElementById("loadavg")
   if (load) load.innerHTML = info["loadavg"];
@@ -1252,7 +1248,6 @@ function loadingJSON(){
 </div>
 <div id="Footer">
   <div id="divchart"><canvas id="graph" height="100" width="700"></canvas></div>
-  <span id="downloadinfo"></span><br /><br />
   <p id="versions">$T("smpl-refreshr"): <select id="refreshrate" onchange="javascript:applyrefresh(this.options[this.selectedIndex].value)">
     <option value="2" >2 $T("seconds")</option>
     <option value="3" >3 $T("seconds")</option>
