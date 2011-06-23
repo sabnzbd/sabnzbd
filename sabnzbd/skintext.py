@@ -196,6 +196,7 @@ SKIN_TEXT = {
     'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
     'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
     'missingArt': TT('Missing articles'), #: Caption for missing articles in Queue
+    'quotum-left' : TT('Quotum left'), #: Remaining quotum (displayed in Queue)
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button
@@ -421,6 +422,13 @@ SKIN_TEXT = {
     'swtag-queue' : TT('Queue'),
     'swtag-pp' : TT('Post processing'),
     'swtag-naming' : TT('Naming'),
+    'swtag-quotum' : TT('Quotum'),
+    'opt-quotum_size' : TT('Size'), #: Size of the download quotum
+    'explain-quotum_size' : TT('How much can be downloaded this month (K/M/G)'),
+    'opt-quotum_day' : TT('Reset day'), #: Reset day of the download quotum
+    'explain-quotum_day' : TT('On which day of the month does your ISP reset the quotum? (Optionally with hh:mm)'),
+    'opt-quotum_resume' : TT('Auto resume'), #: Auto-resume download on the reset day
+    'explain-quotum_resume' : TT('Should downloading resume after the quotum is reset?'),
 
 
 # Config->Server
