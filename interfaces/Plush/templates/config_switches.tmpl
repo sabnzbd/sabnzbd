@@ -311,6 +311,41 @@
         </label>
       </div>
     </fieldset>
+
+  </div><!-- /component-group6 -->
+  <div id="core-component-group6" class="component-group clearfix">
+    <div class="component-group-desc">
+      <h3>$T('swtag-quotum')</h3>
+    </div>
+    <fieldset class="component-group-list">
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="quotum_size">
+          <span class="component-title">$T('opt-quotum_size')</span>
+          <input type="text" name="quotum_size" id="quotum_size" value="$quotum_size"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-quotum_size')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <label class="nocheck clearfix" for="quotum_day">
+          <span class="component-title">$T('opt-quotum_day')</span>
+          <input type="text" name="quotum_day" id="quotum_day" value="$quotum_day"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-quotum_day')</span>
+        </label>
+      </div>
+      <div class="field-pair">
+        <input type="checkbox" name="quotum_resume" id="quotum_resume" value="1" <!--#if $quotum_resume > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="quotum_resume">
+          <span class="component-title">$T('opt-quotum_resume')</span>
+          <span class="component-desc">$T('explain-quotum_resume')</span>
+        </label>
+      </div>
+    </fieldset>
   </div><!-- /component-group5 -->
 
   <div class="component-group-last clearfix">

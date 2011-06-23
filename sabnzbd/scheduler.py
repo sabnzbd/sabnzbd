@@ -158,6 +158,13 @@ def init():
         __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
 
 
+    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quotum()
+    if action:
+        logging.info('Setting schedule for quotum check daily at %s:%s', hour, minute)
+        __SCHED.add_daytime_task(action, 'quotum_reset', range(1, 8), None, (hour, minute),
+                                 kronos.method.sequential, [], None)
+
+
     # Subscribe to special schedule changes
     cfg.newzbin_bookmarks.callback(schedule_guard)
     cfg.bookmark_rate.callback(schedule_guard)

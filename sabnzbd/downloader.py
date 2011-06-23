@@ -277,6 +277,9 @@ class Downloader(Thread):
         from sabnzbd.nzbqueue import NzbQueue
         self.decoder.start()
 
+        # Kick BPS-Meter to check quotum
+        BPSMeter.do.update()
+
         while 1:
             for server in self.servers:
                 assert isinstance(server, Server)

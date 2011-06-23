@@ -193,6 +193,27 @@
 
   </fieldset>
 
+<fieldset class="EntryFieldSet">
+  <legend>$T('swtag-quotum')</legend>
+<hr />
+
+  <span class="label">$T('opt-quotum_size'):</span>
+  <input type="text" name="quotum_size" value="$quotum_size"/>
+  <span class="tips">$T('explain-quotum_size')</span></label>
+<br class="clear" />
+
+  <span class="label">$T('opt-quotum_day'):</span>
+  <input type="text" name="quotum_day" value="$quotum_day"/>
+  <span class="tips">$T('explain-quotum_day')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-quotum_resume'):</span>
+  <input class="radio" type="checkbox" name="quotum_resume" value="1" <!--#if $quotum_resume > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-quotum_resume')</span></label>
+<br class="clear" />
+
+  </fieldset>
+
 
 <p>
   <input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/switches/saveSwitches', this, 'configSwitches')">

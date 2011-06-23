@@ -146,6 +146,23 @@
     </select>
     <br/>
   </fieldset>
+
+  <fieldset class="EntryFieldSet">
+    <strong>$T('opt-quotum_size'):</strong><br/>
+    $T('explain-quotum_size')<br/>
+    <input type="text" name="quotum_size" value="$quotum_size"/>
+    <br>
+    <br>
+    <strong>$T('opt-quotum_day'):</strong><br/>
+    $T('explain-quotum_day')<br/>
+    <input type="text" name="quotum_day" value="$quotum_day"/>
+    <br>
+    <br>
+    <legend>$T('swtag-quotum')</legend>
+    <label><input type="checkbox" name="quotum_resume" value="1" <!--#if $quotum_resume > 0 then "checked=1" else ""#--> /> <strong>$T('opt-quotum_resume')</strong></label><br>
+    $T('explain-quotum_resume')<br>
+    <br/>
+  </fieldset>
 </div>
 <p><input type="submit" value="$T('button-saveChanges')"></p>
 </form>

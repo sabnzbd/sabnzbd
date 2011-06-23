@@ -965,7 +965,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
     info['script_list'] = list_scripts()
     info['cat_list'] = list_cats(output is None)
 
-
     n = 0
     found_active = False
     running_bytes = 0
@@ -1493,6 +1492,9 @@ def build_header(prim):
     header['mb']       = "%.2f" % (bytes / MEBI)
     header['sizeleft']   = format_bytes(bytesleft)
     header['size']       = format_bytes(bytes)
+    header['quotum'] = to_units(BPSMeter.do.quotum)
+    header['have_quotum'] = bool(BPSMeter.do.quotum > 0.0)
+    header['left_quotum'] = to_units(max(0, BPSMeter.do.left))
 
     status = ''
     if Downloader.do.paused:

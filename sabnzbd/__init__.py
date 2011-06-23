@@ -227,6 +227,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.bandwidth_limit.callback(guard_speedlimit)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
+    cfg.quotum_size.callback(guard_quotum_size)
+    cfg.quotum_day.callback(guard_quotum_day)
 
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
@@ -416,6 +418,14 @@ def guard_pause_on_pp():
              # if post-processing is active now
     else:
         Downloader.do.resume_from_postproc()
+
+def guard_quotum_size():
+    """ Callback for change of quotum_size """
+    BPSMeter.do.change_quotum()
+
+def guard_quotum_day():
+    """ Callback for change of quotum_day """
+    BPSMeter.do.change_quotum_day()
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on newzbin report number, attributes optional

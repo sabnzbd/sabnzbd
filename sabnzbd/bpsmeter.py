@@ -21,9 +21,11 @@ sabnzbd.bpsmeter - bpsmeter
 
 import time
 import logging
+import re
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME
+import sabnzbd.cfg as cfg
 
 DAY = float(24*60*60)
 WEEK = DAY * 7
@@ -59,6 +61,18 @@ def this_month(t):
     ntime = (now[0], now[1], 1, 0, 0, 0, 0, 0, now[8])
     return time.mktime(ntime)
 
+_DAYS = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+def last_month_day():
+    """ Return last day of this month """
+    year, month = time.localtime(time.time())[:2]
+    day = _DAYS[month]
+    if day == 28 and (year % 4) == 0 and (year % 400) == 0:
+        day = 29
+    return day
+
+def this_day():
+    """ Return current day of the month """
+    return time.localtime(time.time())[2]
 
 def next_month(t):
     """ Return timestamp for start of next month """
@@ -71,6 +85,10 @@ def next_month(t):
     ntime = (year, month, 1, 0, 0, 0, 0, 0, now[8])
     return time.mktime(ntime)
 
+def reset_quotum(day):
+    """ Reset quotum if turn-over day is reached
+    """
+    BPSMeter.do.reset_quotum(day)
 
 class BPSMeter(object):
     do = None
@@ -91,6 +109,8 @@ class BPSMeter(object):
         self.end_of_day = tomorrow(t)     # Time that current day will end
         self.end_of_week = next_week(t)   # Time that current day will end
         self.end_of_month = next_month(t) # Time that current month will end
+        self.last_month_day = last_month_day()
+        self.quotum = self.left = 0.0
         BPSMeter.do = self
 
 
@@ -99,20 +119,27 @@ class BPSMeter(object):
         if self.grand_total or self.day_total or self.week_total or self.month_total:
             data = (self.last_update, self.grand_total,
                     self.day_total, self.week_total, self.month_total,
-                    self.end_of_day, self.end_of_week, self.end_of_month,
+                    self.end_of_day, self.end_of_week, self.end_of_month, self.quotum, self.left
                    )
             sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
 
     def read(self):
         """ Read admin from disk """
+        quotum = self.left = cfg.quotum_size.get_float() # Quotum for this month
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
         try:
             self.last_update, self.grand_total, \
             self.day_total, self.week_total, self.month_total, \
-            self.end_of_day, self.end_of_week, self.end_of_month = data
+            self.end_of_day, self.end_of_week, self.end_of_month = data[:8]
+            if len(data) == 10:
+                self.quotum, self.left = data[8:]
+                logging.debug('Read quotum q=%s l=%s', self.quotum, self.left)
+                if abs(quotum - self.quotum) > 0.5:
+                    self.change_quotum()
         except:
             # Get the latest data from the database and assign to a fake server
+            logging.debug('Setting default BPS meter values')
             grand, month, week  = sabnzbd.proxy_get_history_size()
             if grand: self.grand_total['x'] = grand
             if month: self.month_total['x'] = month
@@ -157,6 +184,16 @@ class BPSMeter(object):
             if server not in self.grand_total:
                 self.grand_total[server] = 0L
             self.grand_total[server] += amount
+
+        if self.quotum > 0.0:
+            if self.left > 0.0:
+                self.left -= amount
+            if self.left <= 0.0:
+                self.left = -1.0
+                from sabnzbd.downloader import Downloader
+                if Downloader.do and not Downloader.do.paused:
+                    Downloader.do.pause()
+                    logging.warning(Ta('Quotum spent, pausing downloading'))
 
         # Speedometer
         try:
@@ -204,6 +241,55 @@ class BPSMeter(object):
 
     def get_bps(self):
         return self.bps
+
+    def reset_quotum(self):
+        last_day = last_month_day()
+        if self.day > last_day:
+            self.day = last_day
+        if self.day == this_day():
+            self.quotum = self.left = cfg.quotum_size.get_float()
+            logging.info('Quotum was reset to %s', self.quotum)
+            if cfg.quotum_resume():
+                logging.info('Auto-resume due to quotum reset')
+                sabnzbd.downloader.Downloader.do.resume()
+
+    def change_quotum(self):
+        quotum = cfg.quotum_size.get_float()
+        self.left = quotum - (self.quotum - self.left)
+        self.quotum = quotum
+        self.update(0)
+        if self.left > 0.5:
+            from sabnzbd.downloader import Downloader
+            if cfg.quotum_resume() and Downloader.do and Downloader.do.paused:
+                Downloader.do.resume()
+
+    __re_day = re.compile('(\d+) +(\d+):(\d+)')
+    def get_quotum(self):
+        """ If quotum active, return check-function, hour, minute
+        """
+        if self.quotum > 0.0:
+            self.day = 1
+            self.hour = self.minute = 0
+            txt = cfg.quotum_day().strip()
+            if txt.isdigit():
+                self.day = int(txt)
+            else:
+                m = self.__re_day.search(txt)
+                if m:
+                    self.day = int(m.group(1))
+                    self.hour = int(m.group(2))
+                    self.minute = int(m.group(3))
+            return quotum_handler, self.hour, self.minute
+        else:
+            return None, 0, 0
+
+    def change_quotum_day(self):
+        sabnzbd.scheduler.restart(force=True)
+
+
+def quotum_handler():
+    logging.debug('Checking quotum')
+    BPSMeter.do.reset_quotum()
 
 
 BPSMeter()
