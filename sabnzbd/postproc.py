@@ -88,6 +88,8 @@ class PostProcessor(Thread):
         self.history_queue = []
         logging.info("Loading postproc queue")
         data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
+        if data is None:
+            return
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
