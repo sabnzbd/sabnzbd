@@ -596,15 +596,18 @@ def cleanup_list(wdir, skip_nzb):
             files = os.listdir(wdir)
         except:
             files = ()
-        for file_ in files:
-            if on_cleanup_list(file_, skip_nzb):
-                path = os.path.join(wdir, file_)
-                try:
-                    logging.info("Removing unwanted file %s", path)
-                    os.remove(path)
-                except:
-                    logging.error(Ta('Removing %s failed'), path)
-                    logging.info("Traceback: ", exc_info = True)
+        for file in files:
+            path = os.path.join(wdir, file)
+            if os.path.isdir(path):
+                cleanup_list(path, skip_nzb)
+            else:
+                if on_cleanup_list(file, skip_nzb):
+                    try:
+                        logging.info("Removing unwanted file %s", path)
+                        os.remove(path)
+                    except:
+                        logging.error(Ta('Removing %s failed'), path)
+                        logging.info("Traceback: ", exc_info = True)
 
 
 def prefix(path, pre):
