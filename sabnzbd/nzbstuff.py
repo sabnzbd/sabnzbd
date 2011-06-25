@@ -215,10 +215,12 @@ class NzbFile(TryList):
             self.initial_article = self.decodetable[self.lowest_partnum]
             self.import_finished = True
 
-    def remove_article(self, article):
+    def remove_article(self, article, found):
         """ Handle completed article, possibly end of file """
-        self.articles.remove(article)
-        self.bytes_left -= article.bytes
+        if article in self.articles:
+            self.articles.remove(article)
+            if found:
+                self.bytes_left -= article.bytes
 
         reset = False
         if article.partnum == self.lowest_partnum and self.articles:
@@ -489,7 +491,8 @@ NzbObjectMapper = (
     ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
     ('duplicate',                    'duplicate'),     # Was detected as a duplicate
     ('oversized',                    'oversized'),     # Was detected as oversized
-    ('create_group_folder',          'create_group_folder')
+    ('create_group_folder',          'create_group_folder'),
+    ('precheck',                     'precheck')
 )
 
 class NzbObject(TryList):
@@ -574,6 +577,12 @@ class NzbObject(TryList):
         self.parsed = False
         self.duplicate = False
         self.oversized = False
+        if reuse:
+            self.precheck = False
+        elif self.status == 'Queued':
+            self.precheck = cfg.pre_check()
+            if self.precheck:
+                self.status = 'Checking'
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -832,9 +841,9 @@ class NzbObject(TryList):
                 nzf.filename = nzf.subject
 
 
-    def remove_article(self, article):
+    def remove_article(self, article, found):
         nzf = article.nzf
-        file_done, reset = nzf.remove_article(article)
+        file_done, reset = nzf.remove_article(article, found)
 
         if file_done:
             self.remove_nzf(nzf)
@@ -953,6 +962,29 @@ class NzbObject(TryList):
 
     def remove_parset(self, setname):
         self.partable.pop(setname)
+
+    __re_quick_par2_check = re.compile('\.par2\W*', re.I)
+    def check_quality(self):
+        """ Determine amount of articles present on servers
+            and return (gross available, nett) bytes
+        """
+        need = 0L
+        pars = 0L
+        short = 0L
+        for nzf_id in self.files_table:
+            nzf = self.files_table[nzf_id]
+            assert isinstance(nzf, NzbFile)
+            short += nzf.bytes_left
+            if self.__re_quick_par2_check.search(nzf.subject):
+                pars += nzf.bytes
+            else:
+                need += nzf.bytes
+        have = need + pars - short
+        enough = have >= need
+        ratio = float(have) / float(need)
+        logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
+        return enough, ratio
+
 
     def set_download_report(self):
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:

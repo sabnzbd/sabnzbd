@@ -1033,7 +1033,10 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
-            slot['status'] = "Downloading"
+            if status == 'Checking':
+                slot['status'] = "Checking"
+            else:
+                slot['status'] = "Downloading"
             found_active = True
         else:
             slot['status'] = "%s" % (status)

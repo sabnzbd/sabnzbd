@@ -542,6 +542,11 @@ class Downloader(Thread):
                                          nw.server.port)
                             self.__request_article(nw)
 
+                    elif code == '223':
+                        done = True
+                        logging.debug('Article <%s> is present', article.article)
+                        self.decoder.decode(article, nw.lines)
+
                     elif code == '211':
                         done = False
 
@@ -639,8 +644,9 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            if cfg.send_group() and nw.article.nzf.nzo.group != nw.group:
-                group = nw.article.nzf.nzo.group
+            nzo = nw.article.nzf.nzo
+            if cfg.send_group() and nzo.group != nw.group:
+                group = nzo.group
                 if sabnzbd.LOG_ALL:
                     logging.debug('Thread %s@%s:%s: GROUP <%s>', nw.thrdnum, nw.server.host,
                                    nw.server.port, group)
@@ -649,7 +655,7 @@ class Downloader(Thread):
                 if sabnzbd.LOG_ALL:
                     logging.debug('Thread %s@%s:%s: BODY %s', nw.thrdnum, nw.server.host,
                                   nw.server.port, nw.article.article)
-                nw.body()
+                nw.body(nzo.precheck)
 
             fileno = nw.nntp.sock.fileno()
             if fileno not in self.read_fds:

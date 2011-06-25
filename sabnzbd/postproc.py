@@ -225,6 +225,19 @@ def process_job(nzo):
     filename = nzo.final_name
     msgid = nzo.msgid
 
+    if nzo.precheck:
+        # Check result
+        enough, ratio = nzo.check_quality()
+        if enough:
+            # Enough data present, do real download
+            workdir = nzo.downpath
+            sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=True)
+            sabnzbd.nzbqueue.NzbQueue.do.repair_job(workdir)
+            return True
+        else:
+            # Not enough data, flag as failed
+            nzo.save_attribs()
+
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
         nzo.set_pp(3)
@@ -240,7 +253,11 @@ def process_job(nzo):
 
         # if no files are present (except __admin__), fail the job
         if len(globber(workdir)) < 2:
-            emsg = T('Download failed - Out of your server\'s retention?')
+            if nzo.precheck:
+                emsg = '%.1f%%' % (ratio * 100.0)
+                emsg = T('Download would not be successful, only %s available') % emsg
+            else:
+                emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
             nzo.status = 'Failed'
             # do not run unpacking or parity verification
@@ -727,3 +744,4 @@ def collapse_folder(oldpath, newpath):
         remove_dir(orgpath)
     except:
         pass
+

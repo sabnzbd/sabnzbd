@@ -307,9 +307,12 @@ class NewsWrapper(object):
 
         self.timeout = time.time() + self.server.timeout
 
-    def body(self):
+    def body(self, precheck):
         self.timeout = time.time() + self.server.timeout
-        command = 'BODY <%s>\r\n' % (self.article.article)
+        if precheck:
+            command = 'STAT <%s>\r\n' % (self.article.article)
+        else:
+            command = 'BODY <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
 
     def send_group(self, group):

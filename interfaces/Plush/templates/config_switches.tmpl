@@ -79,6 +79,13 @@
       <h3>$T('swtag-queue')</h3>
     </div>
     <fieldset class="component-group-list">
+      <div class="field-pair alt">
+        <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if $pre_check > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="pre_check">
+          <span class="component-title">$T('opt-pre_check')</span>
+          <span class="component-desc">$T('explain-pre_check')</span>
+        </label>
+      </div>
       <div class="field-pair">
         <label class="nocheck clearfix" for="no_dupes">
           <span class="component-title">$T('opt-no_dupes')</span>
