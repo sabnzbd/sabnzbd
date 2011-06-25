@@ -181,7 +181,7 @@ print 'Creating the NSIS POT file'
 if not os.path.exists(PON_DIR):
     os.makedirs(PON_DIR)
 src = open(NSIS, 'r')
-dst = open(os.path.join(PON_DIR, DOMAIN_NSIS+'.pot'), 'w')
+dst = open(os.path.join(PON_DIR, DOMAIN_NSIS+'.pot'), 'wb')
 dst.write(HEADER.replace('__TYPE__', 'NSIS'))
 dst.write('\n')
 count = 0
