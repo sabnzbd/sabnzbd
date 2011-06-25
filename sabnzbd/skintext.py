@@ -42,6 +42,7 @@ SKIN_TEXT = {
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
     'post-Grabbing'      : TT('Get NZB'), #: Pseudo-PP status, in reality used for Grabbing status
+    'post-Checking'      : TT('Checking'), #: PP status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
     'sch-action'         : TT('Action'), #:  #: Config->Scheduler
@@ -431,6 +432,8 @@ SKIN_TEXT = {
     'explain-quotum_resume' : TT('Should downloading resume after the quotum is reset?'),
     'opt-quotum_period' : TT('Quotum period'), #: Does the quotum get reset every day, week or month?
     'explain-quotum_period' : TT('Does the quotum get reset each day, week or month?'),
+    'opt-pre_check' : TT('Check before download'),
+    'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
 
 
 # Config->Server
