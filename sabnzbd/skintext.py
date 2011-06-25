@@ -426,9 +426,11 @@ SKIN_TEXT = {
     'opt-quotum_size' : TT('Size'), #: Size of the download quotum
     'explain-quotum_size' : TT('How much can be downloaded this month (K/M/G)'),
     'opt-quotum_day' : TT('Reset day'), #: Reset day of the download quotum
-    'explain-quotum_day' : TT('On which day of the month does your ISP reset the quotum? (Optionally with hh:mm)'),
+    'explain-quotum_day' : TT('On which day of the month or week (1=Monday) does your ISP reset the quotum? (Optionally with hh:mm)'),
     'opt-quotum_resume' : TT('Auto resume'), #: Auto-resume download on the reset day
     'explain-quotum_resume' : TT('Should downloading resume after the quotum is reset?'),
+    'opt-quotum_period' : TT('Quotum period'), #: Does the quotum get reset every day, week or month?
+    'explain-quotum_period' : TT('Does the quotum get reset each day, week or month?'),
 
 
 # Config->Server
