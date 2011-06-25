@@ -61,6 +61,7 @@ def this_month(t):
     ntime = (now[0], now[1], 1, 0, 0, 0, 0, 0, now[8])
     return time.mktime(ntime)
 
+
 _DAYS = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 def last_month_day():
     """ Return last day of this month """
@@ -70,9 +71,16 @@ def last_month_day():
         day = 29
     return day
 
-def this_day():
-    """ Return current day of the month """
-    return time.localtime(time.time())[2]
+
+def this_month_day():
+    """ Return current day of the week, month 1..31 """
+    return time.localtime(time.time()).tm_mday
+
+
+def this_week_day():
+    """ Return current day of the week 1..7 """
+    return time.localtime(time.time()).tm_wday + 1
+
 
 def next_month(t):
     """ Return timestamp for start of next month """
@@ -89,6 +97,7 @@ def reset_quotum(day):
     """ Reset quotum if turn-over day is reached
     """
     BPSMeter.do.reset_quotum(day)
+
 
 class BPSMeter(object):
     do = None
@@ -109,7 +118,8 @@ class BPSMeter(object):
         self.end_of_day = tomorrow(t)     # Time that current day will end
         self.end_of_week = next_week(t)   # Time that current day will end
         self.end_of_month = next_month(t) # Time that current month will end
-        self.last_month_day = last_month_day()
+        self.q_day = 1                    # Day of quotum reset
+        self.q_period = 'm'               # Daily/Weekly/Monthly quotum = d/w/m
         self.quotum = self.left = 0.0
         BPSMeter.do = self
 
@@ -126,7 +136,7 @@ class BPSMeter(object):
 
     def read(self):
         """ Read admin from disk """
-        quotum = self.left = cfg.quotum_size.get_float() # Quotum for this month
+        quotum = self.left = cfg.quotum_size.get_float() # Quotum for this period
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
         try:
             self.last_update, self.grand_total, \
@@ -243,10 +253,21 @@ class BPSMeter(object):
         return self.bps
 
     def reset_quotum(self):
-        last_day = last_month_day()
-        if self.day > last_day:
-            self.day = last_day
-        if self.day == this_day():
+        """ Check if it's time to reset the quotum, optionally resuming
+        """
+        match = False
+        if self.q_period == 'd':
+            match = True
+        elif self.q_period == 'w' and self.q_day == this_week_day():
+            match = True
+        else:
+            last_day = last_month_day()
+            if self.q_day > last_day:
+                match = True
+            else:
+                match = self.q_day == this_month_day()
+
+        if match:
             self.quotum = self.left = cfg.quotum_size.get_float()
             logging.info('Quotum was reset to %s', self.quotum)
             if cfg.quotum_resume():
@@ -254,6 +275,8 @@ class BPSMeter(object):
                 sabnzbd.downloader.Downloader.do.resume()
 
     def change_quotum(self):
+        """ Update quotum, potentially pausing downloader
+        """
         quotum = cfg.quotum_size.get_float()
         self.left = quotum - (self.quotum - self.left)
         self.quotum = quotum
@@ -263,31 +286,32 @@ class BPSMeter(object):
             if cfg.quotum_resume() and Downloader.do and Downloader.do.paused:
                 Downloader.do.resume()
 
-    __re_day = re.compile('(\d+) +(\d+):(\d+)')
+    # Pattern = <day#> <hh:mm>
+    # The <day> and <hh:mm> part can both be optional
+    __re_day = re.compile('^\s*(\d+)[^:]*')
+    __re_hm = re.compile('(\d+):(\d+)\s*$')
     def get_quotum(self):
         """ If quotum active, return check-function, hour, minute
         """
         if self.quotum > 0.0:
-            self.day = 1
+            self.q_period = cfg.quotum_period()[0].lower()
+            self.q_day = 1
             self.hour = self.minute = 0
-            txt = cfg.quotum_day().strip()
-            if txt.isdigit():
-                self.day = int(txt)
-            else:
-                m = self.__re_day.search(txt)
-                if m:
-                    self.day = int(m.group(1))
-                    self.hour = int(m.group(2))
-                    self.minute = int(m.group(3))
+            txt = cfg.quotum_day().lower()
+            m = self.__re_day.search(txt)
+            if m:
+                self.q_day = int(m.group(1))
+            m = self.__re_hm.search(txt)
+            if m:
+                self.hour = int(m.group(1))
+                self.minute = int(m.group(2))
             return quotum_handler, self.hour, self.minute
         else:
             return None, 0, 0
 
-    def change_quotum_day(self):
-        sabnzbd.scheduler.restart(force=True)
-
 
 def quotum_handler():
+    """ To be called from scheduler """
     logging.debug('Checking quotum')
     BPSMeter.do.reset_quotum()
 

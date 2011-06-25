@@ -329,6 +329,20 @@
         </label>
       </div>
       <div class="field-pair alt">
+      <label class="nocheck clearfix" for="quotum_period">
+        <span class="component-title">$T('opt-quotum_period')</span>
+        <select name="quotum_period" id="quotum_period">
+          <option value="m" <!--#if $quotum_period == "m" then 'selected' else ''#--> >$T('month')</option>
+          <option value="w"  <!--#if $quotum_period == "w"  then 'selected' else ''#--> >$T('week')</option>
+          <option value="d"  <!--#if $quotum_period == "d"  then 'selected' else ''#--> >$T('day')</option>
+        </select>
+      </label>
+      <label class="nocheck clearfix">
+        <span class="component-title">&nbsp;</span>
+        <span class="component-desc">$T('explain-quotum_period')</span>
+      </label>
+      </div>
+      <div class="field-pair">
         <label class="nocheck clearfix" for="quotum_day">
           <span class="component-title">$T('opt-quotum_day')</span>
           <input type="text" name="quotum_day" id="quotum_day" value="$quotum_day"/>
@@ -338,7 +352,7 @@
           <span class="component-desc">$T('explain-quotum_day')</span>
         </label>
       </div>
-      <div class="field-pair">
+      <div class="field-pair alt">
         <input type="checkbox" name="quotum_resume" id="quotum_resume" value="1" <!--#if $quotum_resume > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="quotum_resume">
           <span class="component-title">$T('opt-quotum_resume')</span>

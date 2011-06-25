@@ -202,6 +202,16 @@
   <span class="tips">$T('explain-quotum_size')</span></label>
 <br class="clear" />
 
+  <span class="label">$T('opt-quotum_period'):</span>
+  <select name="quotum_period" id="quotum_period" class="select">
+    <option value="m" <!--#if $quotum_period == "m" then 'selected' else ''#--> >$T('month')</option>
+    <option value="w" <!--#if $quotum_period == "w" then 'selected' else ''#--> >$T('week')</option>
+    <option value="d" <!--#if $quotum_period == "d" then 'selected' else ''#--> >$T('day')</option>
+  </select>
+    <span class="tips">$T('explain-quotum_period')</span>
+<br class="clear" />
+
+
   <span class="label">$T('opt-quotum_day'):</span>
   <input type="text" name="quotum_day" value="$quotum_day"/>
   <span class="tips">$T('explain-quotum_day')</span></label>

@@ -214,6 +214,7 @@ api_warnings = OptionBool('misc', 'api_warnings', True)
 quotum_size = OptionStr('misc', 'quotum_size')
 quotum_day = OptionStr('misc', 'quotum_day')
 quotum_resume = OptionBool('misc', 'quotum_resume', False)
+quotum_period = OptionStr('misc', 'quotum_period', 'm')
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

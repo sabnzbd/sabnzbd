@@ -153,6 +153,14 @@
     <input type="text" name="quotum_size" value="$quotum_size"/>
     <br>
     <br>
+    <strong>$T('opt-quotum_period'):</strong><br>
+    $T('explain-quotum_period')<br>
+    <select name="ssl_type">
+        <option value="m" <!--#if $quotum_period == 'm' then 'selected' else ''#--> >$T('month')</option>
+        <option value="w" <!--#if $quotum_period == 'w' then 'selected' else ''#--> >$T('week')</option>
+        <option value="d" <!--#if $quotum_period == 'd' then 'selected' else ''#--> >$T('day')</option>
+    </select>
+    <br/><br/>
     <strong>$T('opt-quotum_day'):</strong><br/>
     $T('explain-quotum_day')<br/>
     <input type="text" name="quotum_day" value="$quotum_day"/>
