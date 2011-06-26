@@ -499,8 +499,7 @@ SKIN_TEXT = {
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
     'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
-# Config->Email
-    'configEmail' : TT('Email Notifications'), #: Main Config page
+    'configEmail' : TT('Notifications'), #: Main Config page
     'emailOptions' : TT('Email Options'), #: Section header
     'opt-email_endjob' : TT('Email Notification On Job Completion'),
     'email-never' : TT('Never'), #: When to send email

@@ -39,7 +39,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 from sabnzbd.encoding import latin1, platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
@@ -325,7 +325,7 @@ class NzbQueue(TryList):
                 self.save(nzo)
 
             if not (quiet or nzo.status in ('Fetching',)):
-                osx.sendGrowlMsg(T('NZB added to queue'), nzo.filename, osx.NOTIFICATION['download'])
+                growler.send_notification(T('NZB added to queue'), nzo.filename, 'download')
 
         if cfg.auto_sort():
             self.sort_by_avg_age()

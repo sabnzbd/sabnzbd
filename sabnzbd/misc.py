@@ -661,6 +661,17 @@ def split_host(srv):
 
 
 #------------------------------------------------------------------------------
+def hostname():
+    """ Return host's pretty name """
+    if sabnzbd.WIN32:
+        return os.environ.get('computername', 'unknown')
+    try:
+        return os.uname()[1]
+    except:
+        return 'unknown'
+
+
+#------------------------------------------------------------------------------
 def check_mount(path):
     """ Return False if volume isn't mounted on Linux or OSX
     """

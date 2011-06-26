@@ -40,7 +40,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import *
 from sabnzbd.misc import get_filename, get_ext, diskfree
 from sabnzbd.panic import launch_a_browser
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.config as config
@@ -506,7 +506,7 @@ class SABnzbdDelegate(NSObject):
             if sabnzbd.NEW_VERSION and self.version_notify:
                 #logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
                 new_release, new_rel_url = sabnzbd.NEW_VERSION.split(';')
-                osx.sendGrowlMsg("SABnzbd","%s : %s" % (T('New release available'),new_release),osx.NOTIFICATION['other'])
+                growler.send_notification("SABnzbd","%s : %s" % (T('New release available'), new_release), 'other')
                 self.version_notify = 0
         except :
             logging.info("[osx] versionUpdate Exception %s" % (sys.exc_info()[0]))
@@ -728,7 +728,7 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
-        osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['other'])
+        growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), growler.NOTIFICATION['other'])
         logging.info('Leaving SABnzbd')
         sys.stderr.flush()
         sys.stdout.flush()

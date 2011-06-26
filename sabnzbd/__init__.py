@@ -227,6 +227,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.bandwidth_limit.callback(guard_speedlimit)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
+    cfg.growl_server.callback(sabnzbd.growler.change_value)
+    cfg.growl_password.callback(sabnzbd.growler.change_value)
     cfg.quotum_size.callback(guard_quotum_size)
     cfg.quotum_day.callback(guard_quotum_dp)
     cfg.quotum_period.callback(guard_quotum_dp)

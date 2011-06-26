@@ -30,7 +30,7 @@ import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -201,7 +201,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
+            growler.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
@@ -747,7 +747,7 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        osx.sendGrowlMsg("SABnzbd",T('Shutting down'),osx.NOTIFICATION['startup'])
+        growler.send_notification("SABnzbd",T('Shutting down'), 'startup')
 
 
 def stop():

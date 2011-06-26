@@ -41,7 +41,7 @@ from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_conver
 from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.cfg as cfg
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 
 ################################################################################
@@ -135,7 +135,7 @@ class MSGIDGrabber(Thread):
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
                     msgid = None
 
-            osx.sendGrowlMsg(T('NZB added to queue'),filename,osx.NOTIFICATION['download'])
+            growler.send_notification(T('NZB added to queue'), filename, 'download')
 
             # Keep some distance between the grabs
             sleeper(5)

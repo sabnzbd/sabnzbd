@@ -740,6 +740,16 @@ function lrb(url, extra, refresh)
     d.addErrback(handleServerError);
   }
 
+  function testnotification()
+  {
+    d = doSimpleXMLHttpRequest('config/email/testnotification?session='+session);
+    d.addCallback(function (d)
+    {
+      alert("$T('smpl-notesent')");
+    });
+    d.addErrback(handleServerError);
+  }
+
   function unblock_server(host, port)
   {
     d = doSimpleXMLHttpRequest('connections/unblock_server?server='+host+':'+port+'&session='+session);

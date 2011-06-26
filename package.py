@@ -307,6 +307,7 @@ data_files = [
          'COPYRIGHT.txt',
          'ISSUES.txt',
          'nzb.ico',
+         'sabnzbd.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
          'PKG-INFO',

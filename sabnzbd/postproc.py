@@ -45,7 +45,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 
 #------------------------------------------------------------------------------
@@ -451,10 +451,10 @@ def process_job(nzo):
 
         ## Show final status in history
         if all_ok:
-            osx.sendGrowlMsg(T('Download Completed'), filename, osx.NOTIFICATION['complete'])
+            growler.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = 'Completed'
         else:
-            osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
+            growler.send_notification(T('Download Failed'), filename, 'complete')
             nzo.status = 'Failed'
 
     except:
@@ -463,7 +463,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
+        growler.send_notification(T('Download Failed'), filename, 'complete')
         nzo.status = 'Failed'
         par_error = True
         all_ok = False
@@ -513,7 +513,7 @@ def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add)
     """
     filename = nzo.final_name
-    osx.sendGrowlMsg(T('Post-processing'), nzo.final_name, osx.NOTIFICATION['pp'])
+    growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
 
     ## Collect the par files

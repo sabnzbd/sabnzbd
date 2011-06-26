@@ -51,6 +51,7 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
+from sabnzbd.growler import send_notification
 
 from sabnzbd.constants import *
 from sabnzbd.lang import list_languages, set_language
@@ -2451,6 +2452,7 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable')
 
 class ConfigEmail(object):
     def __init__(self, web_dir, root, prim):
@@ -2469,10 +2471,13 @@ class ConfigEmail(object):
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         conf['lastmail'] = self.__lastmail
-
+        conf['have_growl'] = sabnzbd.growler.have_growl()
+        conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
+        for kw in LIST_GROWL:
+            conf[kw] = config.get_config('growl', kw).get_string()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2485,6 +2490,10 @@ class ConfigEmail(object):
 
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+        for kw in LIST_GROWL:
+            msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
 
@@ -2505,6 +2514,14 @@ class ConfigEmail(object):
         self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
                                          os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
                                          str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def testnotification(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        logging.info("Sending test notification")
+        send_notification('SABNzbd', T('Test Notification'), 'other')
         raise dcRaiser(self.__root, kwargs)
 
 
