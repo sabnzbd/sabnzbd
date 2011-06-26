@@ -116,7 +116,7 @@ SKIN_TEXT = {
     'cmenu-servers' : TT('Servers'), #: Main menu item
     'cmenu-scheduling' : TT('Scheduling'), #: Main menu item
     'cmenu-rss' : TT('RSS'), #: Main menu item
-    'cmenu-emailN' : TT('Notifications'), #: Main menu item
+    'cmenu-notif' : TT('Notifications'), #: Main menu item
     'cmenu-email' : TT('Email'), #: Main menu item
     'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
