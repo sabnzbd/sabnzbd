@@ -759,7 +759,7 @@ def clues_login(text):
     """ Check for any "failed login" clues in the response code
     """
     text = text.lower()
-    for clue in ('username', 'password', 'invalid', 'authen'):
+    for clue in ('username', 'password', 'invalid', 'authen', 'access denied'):
         if clue in text:
             return True
     return False

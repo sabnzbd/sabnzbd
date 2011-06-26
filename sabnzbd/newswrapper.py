@@ -280,6 +280,12 @@ class NewsWrapper(object):
         elif not self.user_ok:
             if code == '381':
                 self.user_ok = True
+            elif code == '281':
+                # No login required
+                self.user_ok = True
+                self.pass_sent = True
+                self.pass_ok = True
+                self.connected = True
 
         if self.user_ok and not self.pass_sent:
             command = 'authinfo pass %s\r\n' % (self.server.password)
