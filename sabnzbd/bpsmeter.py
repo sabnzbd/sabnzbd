@@ -121,6 +121,7 @@ class BPSMeter(object):
         self.q_day = 1                    # Day of quotum reset
         self.q_period = 'm'               # Daily/Weekly/Monthly quotum = d/w/m
         self.quotum = self.left = 0.0
+        self.have_quotum = False
         BPSMeter.do = self
 
 
@@ -147,6 +148,9 @@ class BPSMeter(object):
                 logging.debug('Read quotum q=%s l=%s', self.quotum, self.left)
                 if abs(quotum - self.quotum) > 0.5:
                     self.change_quotum()
+            else:
+                self.quotum = self.left = cfg.quotum_size.get_float()
+            self.have_quotum = bool(cfg.quotum_size())
         except:
             # Get the latest data from the database and assign to a fake server
             logging.debug('Setting default BPS meter values')
@@ -195,15 +199,14 @@ class BPSMeter(object):
                 self.grand_total[server] = 0L
             self.grand_total[server] += amount
 
-        if self.quotum > 0.0:
-            if self.left > 0.0:
+            # Quotum check
+            if self.have_quotum:
                 self.left -= amount
-            if self.left <= 0.0:
-                self.left = -1.0
-                from sabnzbd.downloader import Downloader
-                if Downloader.do and not Downloader.do.paused:
-                    Downloader.do.pause()
-                    logging.warning(Ta('Quotum spent, pausing downloading'))
+                if self.left <= 0.0:
+                    from sabnzbd.downloader import Downloader
+                    if Downloader.do and not Downloader.do.paused:
+                        Downloader.do.pause()
+                        logging.warning(Ta('Quotum spent, pausing downloading'))
 
         # Speedometer
         try:
@@ -277,6 +280,7 @@ class BPSMeter(object):
     def change_quotum(self):
         """ Update quotum, potentially pausing downloader
         """
+        self.have_quotum = bool(cfg.quotum_size())
         quotum = cfg.quotum_size.get_float()
         self.left = quotum - (self.quotum - self.left)
         self.quotum = quotum

@@ -594,9 +594,12 @@ def to_units(val, spaces=0, dec_limit=2):
         dig_limit==2 show single decimal for G and higher
     """
     decimals = 0
-    val = str(val).strip()
-    if val == "-1":
-        return val
+    if val < 0:
+        sign = '-'
+    else:
+        sign = ''
+    val = str(abs(val)).strip()
+
     n = 0
     try:
         val = float(val)
@@ -613,8 +616,8 @@ def to_units(val, spaces=0, dec_limit=2):
     else:
         decimals = 0
 
-    format = '%%.%sf %%s' % decimals
-    return format % (val, unit)
+    format = '%%s%%.%sf %%s' % decimals
+    return format % (sign, val, unit)
 
 #------------------------------------------------------------------------------
 def same_file(a, b):

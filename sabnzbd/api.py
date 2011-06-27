@@ -1497,7 +1497,7 @@ def build_header(prim):
     header['size']       = format_bytes(bytes)
     header['quotum'] = to_units(BPSMeter.do.quotum)
     header['have_quotum'] = bool(BPSMeter.do.quotum > 0.0)
-    header['left_quotum'] = to_units(max(0, BPSMeter.do.left))
+    header['left_quotum'] = to_units(BPSMeter.do.left)
 
     status = ''
     if Downloader.do.paused:
