@@ -2187,6 +2187,13 @@ class ConnectionInfo(object):
         return template.respond()
 
     @cherrypy.expose
+    def reset_quotum(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        BPSMeter.do.reset_quotum(force=True)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
     def disconnect(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg

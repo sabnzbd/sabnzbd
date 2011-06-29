@@ -6,6 +6,9 @@
 
 <span class="SubMenu">
 <!--#set $msg=$T('askTestEmail')#-->
+<!--#if $have_quotum#-->
+  <a href="./reset_quotum?session=$session">$T('link-resetQuotum')</a> |
+<!--#end if#-->
 <a href="./disconnect?session=$session">$T('link-forceDisc')</a> |
 <a href="./showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):

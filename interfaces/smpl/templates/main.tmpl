@@ -760,6 +760,11 @@ function lrb(url, extra, refresh)
     d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
   }
 
+  function resetQuotum()
+  {
+    d = doSimpleXMLHttpRequest('tapi?mode=reset_quotum&session='+session);
+  }
+
   function changequeueoptions(page)
   {
     d = doSimpleXMLHttpRequest('queue/'+page);
@@ -1144,6 +1149,9 @@ function loadingJSON(){
   </ul>
   <!--#if $varExists('newzbinDetails')#-->
   <li><a onClick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
+  <!--#end if#-->
+  <!--#if $have_quotum#-->
+  <li><a onClick="resetQuotum()">$T('link-resetQuotum')</a></li>
   <!--#end if#-->
   <br />
   <li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('smpl-restartOK?')')){restart()}">$T('button-restart')</a></li>

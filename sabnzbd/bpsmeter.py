@@ -261,11 +261,12 @@ class BPSMeter(object):
     def get_bps(self):
         return self.bps
 
-    def reset_quotum(self):
+
+    def reset_quotum(self, force=False):
         """ Check if it's time to reset the quotum, optionally resuming
             Return True, when still paused
         """
-        if self.have_quotum and time.time() > (self.reset_q_time - 50):
+        if force or (self.have_quotum and time.time() > (self.reset_q_time - 50)):
             self.quotum = self.left = cfg.quotum_size.get_float()
             logging.info('Quotum was reset to %s', self.quotum)
             if cfg.quotum_resume():
@@ -294,11 +295,12 @@ class BPSMeter(object):
             dif = abs(self.q_day - tm.tm_wday - 1)
             t = time.mktime(tm) + dif * 24 * 3600
             tm = time.localtime(t)
-        else: # 'm'
+        elif self.q_period ==  'm':
             if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour + tm.tm_min * 60) >= (self.hour + self.minute * 60)):
                 tm = time.localtime(next_month(t))
             tm = (tm[0], tm[1], self.q_day, self.hour, self.minute, 0, 0, 0, tm[8])
-
+        else:
+            return
         tm = (tm[0], tm[1], tm[2], self.hour, self.minute, 0, 0, 0, tm[8])
         self.reset_q_time = time.mktime(tm)
         logging.debug('Will reset quotum at %s', tm)
@@ -315,7 +317,7 @@ class BPSMeter(object):
                 self.left = sums[3]
             elif per == 'w':
                 self.left = sums[2]
-            else:
+            elif per == 'm':
                 self.left = sums[1]
 
         self.have_quotum = bool(cfg.quotum_size())

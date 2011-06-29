@@ -198,6 +198,8 @@ SKIN_TEXT = {
     'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
     'missingArt': TT('Missing articles'), #: Caption for missing articles in Queue
     'quotum-left' : TT('Quotum left'), #: Remaining quotum (displayed in Queue)
+    'manual' : TT('manual'), #: Manual reset of quotum
+    'link-resetQuotum' : TT('Reset Quotum now'),
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button

@@ -600,6 +600,9 @@ def _api_rss_now(name, output, kwargs):
     scheduler.force_rss()
     return report(output)
 
+def _api_reset_quotum(name, output, kwargs):
+    """ Reset quotum left """
+    BPSMeter.do.reset_quotum(force=True)
 
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
@@ -734,7 +737,8 @@ _api_table = {
     'eval_sort'       : _api_eval_sort,
     'watched_now'     : _api_watched_now,
     'rss_now'         : _api_rss_now,
-    'browse'          : _api_browse
+    'browse'          : _api_browse,
+    'reset_quotum'    : _api_reset_quotum
 }
 
 _api_queue_table = {

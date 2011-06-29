@@ -271,6 +271,16 @@ jQuery(function($){
     });
   });
 
+  // Reset Quotum
+  $('#reset_quotum_now').click(function() {
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: {mode:'reset_quotum', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
   // Get RSS
   $('#get_rss_now').click(function() {
     $.ajax({
