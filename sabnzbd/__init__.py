@@ -269,7 +269,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     Bookmarks()
     rss.init()
 
-    BPSMeter.do.read()
+    paused = BPSMeter.do.read()
 
     PostProcessor()
 
@@ -278,7 +278,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     Assembler()
 
-    Downloader(pause_downloader)
+    Downloader(pause_downloader or paused)
 
     DirScanner()
 
