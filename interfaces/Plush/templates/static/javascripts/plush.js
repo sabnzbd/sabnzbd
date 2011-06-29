@@ -271,12 +271,12 @@ jQuery(function($){
     });
   });
 
-  // Reset Quotum
-  $('#reset_quotum_now').click(function() {
+  // Reset Quota
+  $('#reset_quota_now').click(function() {
     $.ajax({
       type: "POST",
       url: "tapi",
-      data: {mode:'reset_quotum', apikey: $.plush.apikey},
+      data: {mode:'reset_quota', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
   });

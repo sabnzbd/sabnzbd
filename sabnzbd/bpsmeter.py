@@ -102,7 +102,6 @@ class BPSMeter(object):
 
     def __init__(self):
         t = time.time()
-
         self.start_time = t
         self.log_time = t
         self.last_update = t
@@ -116,13 +115,13 @@ class BPSMeter(object):
         self.end_of_day = tomorrow(t)     # Time that current day will end
         self.end_of_week = next_week(t)   # Time that current day will end
         self.end_of_month = next_month(t) # Time that current month will end
-        self.q_day = 1                    # Day of quotum reset
-        self.q_period = 'm'               # Daily/Weekly/Monthly quotum = d/w/m
-        self.quotum = self.left = 0.0     # Quotum and remaining quotum
-        self.have_quotum = False          # Flag for quotum active
-        self.reset_q_time = 0L            # Next reset time for quotum
-        self.hour = 0                     # Quotum reset hour
-        self.minute = 0                   # Quotum reset minute
+        self.q_day = 1                    # Day of quota reset
+        self.q_period = 'm'               # Daily/Weekly/Monthly quota = d/w/m
+        self.quota = self.left = 0.0      # Quota and remaining quota
+        self.have_quota = False           # Flag for quota active
+        self.q_time = 0L            # Next reset time for quota
+        self.q_hour = 0                   # Quota reset hour
+        self.q_minute = 0                 # Quota reset minute
         BPSMeter.do = self
 
 
@@ -132,29 +131,29 @@ class BPSMeter(object):
             data = (self.last_update, self.grand_total,
                     self.day_total, self.week_total, self.month_total,
                     self.end_of_day, self.end_of_week, self.end_of_month,
-                    self.quotum, self.left, self.reset_q_time
+                    self.quota, self.left, self.q_time
                    )
             sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
 
     def read(self):
         """ Read admin from disk """
-        quotum = self.left = cfg.quotum_size.get_float() # Quotum for this period
+        quota = self.left = cfg.quota_size.get_float() # Quota for this period
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
         try:
             self.last_update, self.grand_total, \
             self.day_total, self.week_total, self.month_total, \
             self.end_of_day, self.end_of_week, self.end_of_month = data[:8]
             if len(data) == 11:
-                self.quotum, self.left, self.reset_q_time = data[8:]
-                logging.debug('Read quotum q=%s l=%s reset=%s',
-                              self.quotum, self.left, self.reset_q_time)
-                if abs(quotum - self.quotum) > 0.5:
-                    self.change_quotum()
+                self.quota, self.left, self.q_time = data[8:]
+                logging.debug('Read quota q=%s l=%s reset=%s',
+                              self.quota, self.left, self.q_time)
+                if abs(quota - self.quota) > 0.5:
+                    self.change_quota()
             else:
-                self.quotum = self.left = cfg.quotum_size.get_float()
-            self.have_quotum = bool(cfg.quotum_size())
-            res = self.reset_quotum()
+                self.quota = self.left = cfg.quota_size.get_float()
+            self.have_quota = bool(cfg.quota_size())
+            res = self.reset_quota()
         except:
             # Get the latest data from the database and assign to a fake server
             logging.debug('Setting default BPS meter values')
@@ -205,14 +204,14 @@ class BPSMeter(object):
                 self.grand_total[server] = 0L
             self.grand_total[server] += amount
 
-            # Quotum check
-            if self.have_quotum:
+            # Quota check
+            if self.have_quota:
                 self.left -= amount
                 if self.left <= 0.0:
                     from sabnzbd.downloader import Downloader
                     if Downloader.do and not Downloader.do.paused:
                         Downloader.do.pause()
-                        logging.warning(Ta('Quotum spent, pausing downloading'))
+                        logging.warning(Ta('Quota spent, pausing downloading'))
 
         # Speedometer
         try:
@@ -262,15 +261,15 @@ class BPSMeter(object):
         return self.bps
 
 
-    def reset_quotum(self, force=False):
-        """ Check if it's time to reset the quotum, optionally resuming
+    def reset_quota(self, force=False):
+        """ Check if it's time to reset the quota, optionally resuming
             Return True, when still paused
         """
-        if force or (self.have_quotum and time.time() > (self.reset_q_time - 50)):
-            self.quotum = self.left = cfg.quotum_size.get_float()
-            logging.info('Quotum was reset to %s', self.quotum)
-            if cfg.quotum_resume():
-                logging.info('Auto-resume due to quotum reset')
+        if force or (self.have_quota and time.time() > (self.q_time - 50)):
+            self.quota = self.left = cfg.quota_size.get_float()
+            logging.info('Quota was reset to %s', self.quota)
+            if cfg.quota_resume():
+                logging.info('Auto-resume due to quota reset')
                 if sabnzbd.downloader.Downloader.do:
                     sabnzbd.downloader.Downloader.do.resume()
             self.next_reset()
@@ -284,34 +283,34 @@ class BPSMeter(object):
         t = t or time.time()
         tm = time.localtime(t)
         if self.q_period == 'd':
-            nx = (tm[0], tm[1], tm[2], self.hour, self.minute, 0, 0, 0, tm[8])
-            if (tm.tm_hour + tm.tm_min * 60) >= (self.hour + self.minute * 60):
+            nx = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
+            if (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60):
                 # If today's moment has passed, it will happen tomorrow
                 t = time.mktime(nx) + 24 * 3600
                 tm = time.localtime(t)
         elif self.q_period == 'w':
-            if self.q_day < tm.tm_wday+1 or (self.q_day == tm.tm_wday+1 and (tm.tm_hour + tm.tm_min * 60) >= (self.hour + self.minute * 60)):
+            if self.q_day < tm.tm_wday+1 or (self.q_day == tm.tm_wday+1 and (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60)):
                 tm = time.localtime(next_week(t))
             dif = abs(self.q_day - tm.tm_wday - 1)
             t = time.mktime(tm) + dif * 24 * 3600
             tm = time.localtime(t)
         elif self.q_period ==  'm':
-            if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour + tm.tm_min * 60) >= (self.hour + self.minute * 60)):
+            if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60)):
                 tm = time.localtime(next_month(t))
-            tm = (tm[0], tm[1], self.q_day, self.hour, self.minute, 0, 0, 0, tm[8])
+            tm = (tm[0], tm[1], self.q_day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
         else:
             return
-        tm = (tm[0], tm[1], tm[2], self.hour, self.minute, 0, 0, 0, tm[8])
-        self.reset_q_time = time.mktime(tm)
-        logging.debug('Will reset quotum at %s', tm)
+        tm = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
+        self.q_time = time.mktime(tm)
+        logging.debug('Will reset quota at %s', tm)
 
 
-    def change_quotum(self):
-        """ Update quotum, potentially pausing downloader
+    def change_quota(self):
+        """ Update quota, potentially pausing downloader
         """
-        if not self.have_quotum and self.quotum < 0.5:
+        if not self.have_quota and self.quota < 0.5:
             # Never set, use last period's size
-            per = cfg.quotum_period()
+            per = cfg.quota_period()
             sums = self.get_sums()
             if per == 'd':
                 self.left = sums[3]
@@ -320,51 +319,51 @@ class BPSMeter(object):
             elif per == 'm':
                 self.left = sums[1]
 
-        self.have_quotum = bool(cfg.quotum_size())
-        if self.have_quotum:
-            quotum = cfg.quotum_size.get_float()
-            self.left = quotum - (self.quotum - self.left)
-            self.quotum = quotum
+        self.have_quota = bool(cfg.quota_size())
+        if self.have_quota:
+            quota = cfg.quota_size.get_float()
+            self.left = quota - (self.quota - self.left)
+            self.quota = quota
         else:
-            self.quotum = self.left = 0L
+            self.quota = self.left = 0L
         self.update(0)
         self.next_reset()
         if self.left > 0.5:
             from sabnzbd.downloader import Downloader
-            if cfg.quotum_resume() and Downloader.do and Downloader.do.paused:
+            if cfg.quota_resume() and Downloader.do and Downloader.do.paused:
                 Downloader.do.resume()
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
     __re_day = re.compile('^\s*(\d+)[^:]*')
     __re_hm = re.compile('(\d+):(\d+)\s*$')
-    def get_quotum(self):
-        """ If quotum active, return check-function, hour, minute
+    def get_quota(self):
+        """ If quota active, return check-function, hour, minute
         """
-        if self.have_quotum:
-            self.q_period = cfg.quotum_period()[0].lower()
+        if self.have_quota:
+            self.q_period = cfg.quota_period()[0].lower()
             self.q_day = 1
-            self.hour = self.minute = 0
-            txt = cfg.quotum_day().lower()
+            self.q_hour = self.q_minute = 0
+            txt = cfg.quota_day().lower()
             m = self.__re_day.search(txt)
             if m:
                 self.q_day = int(m.group(1))
             m = self.__re_hm.search(txt)
             if m:
-                self.hour = int(m.group(1))
-                self.minute = int(m.group(2))
+                self.q_hour = int(m.group(1))
+                self.q_minute = int(m.group(2))
             self.q_day = max(1, self.q_day)
             self.q_day = min(7, self.q_day)
-            self.change_quotum()
-            return quotum_handler, self.hour, self.minute
+            self.change_quota()
+            return quota_handler, self.q_hour, self.q_minute
         else:
             return None, 0, 0
 
 
-def quotum_handler():
+def quota_handler():
     """ To be called from scheduler """
-    logging.debug('Checking quotum')
-    BPSMeter.do.reset_quotum()
+    logging.debug('Checking quota')
+    BPSMeter.do.reset_quota()
 
 
 BPSMeter()

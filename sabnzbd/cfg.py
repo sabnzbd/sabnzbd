@@ -217,10 +217,10 @@ growl_password = OptionPassword('growl', 'growl_password')
 growl_enable = OptionBool('growl', 'growl_enable', True)
 ntfosd_enable = OptionBool('growl', 'ntfosd_enable', True)
 
-quotum_size = OptionStr('misc', 'quotum_size')
-quotum_day = OptionStr('misc', 'quotum_day')
-quotum_resume = OptionBool('misc', 'quotum_resume', False)
-quotum_period = OptionStr('misc', 'quotum_period', 'm')
+quota_size = OptionStr('misc', 'quota_size')
+quota_day = OptionStr('misc', 'quota_day')
+quota_resume = OptionBool('misc', 'quota_resume', False)
+quota_period = OptionStr('misc', 'quota_period', 'm')
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

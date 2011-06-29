@@ -322,49 +322,49 @@
   </div><!-- /component-group6 -->
   <div id="core-component-group6" class="component-group clearfix">
     <div class="component-group-desc">
-      <h3>$T('swtag-quotum')</h3>
+      <h3>$T('swtag-quota')</h3>
     </div>
     <fieldset class="component-group-list">
       <div class="field-pair">
-        <label class="nocheck clearfix" for="quotum_size">
-          <span class="component-title">$T('opt-quotum_size')</span>
-          <input type="text" name="quotum_size" id="quotum_size" value="$quotum_size"/>
+        <label class="nocheck clearfix" for="quota_size">
+          <span class="component-title">$T('opt-quota_size')</span>
+          <input type="text" name="quota_size" id="quota_size" value="$quota_size"/>
         </label>
         <label class="nocheck clearfix">
           <span class="component-title">&nbsp;</span>
-          <span class="component-desc">$T('explain-quotum_size')</span>
+          <span class="component-desc">$T('explain-quota_size')</span>
         </label>
       </div>
       <div class="field-pair alt">
-      <label class="nocheck clearfix" for="quotum_period">
-        <span class="component-title">$T('opt-quotum_period')</span>
-        <select name="quotum_period" id="quotum_period">
-          <option value="m" <!--#if $quotum_period == "m" then 'selected' else ''#--> >$T('month')</option>
-          <option value="w"  <!--#if $quotum_period == "w"  then 'selected' else ''#--> >$T('week')</option>
-          <option value="d"  <!--#if $quotum_period == "d"  then 'selected' else ''#--> >$T('day')</option>
-          <option value="x"  <!--#if $quotum_period == "x"  then 'selected' else ''#--> >$T('manual')</option>
+      <label class="nocheck clearfix" for="quota_period">
+        <span class="component-title">$T('opt-quota_period')</span>
+        <select name="quota_period" id="quota_period">
+          <option value="m" <!--#if $quota_period == "m" then 'selected' else ''#--> >$T('month')</option>
+          <option value="w"  <!--#if $quota_period == "w"  then 'selected' else ''#--> >$T('week')</option>
+          <option value="d"  <!--#if $quota_period == "d"  then 'selected' else ''#--> >$T('day')</option>
+          <option value="x"  <!--#if $quota_period == "x"  then 'selected' else ''#--> >$T('manual')</option>
         </select>
       </label>
       <label class="nocheck clearfix">
         <span class="component-title">&nbsp;</span>
-        <span class="component-desc">$T('explain-quotum_period')</span>
+        <span class="component-desc">$T('explain-quota_period')</span>
       </label>
       </div>
       <div class="field-pair">
-        <label class="nocheck clearfix" for="quotum_day">
-          <span class="component-title">$T('opt-quotum_day')</span>
-          <input type="text" name="quotum_day" id="quotum_day" value="$quotum_day"/>
+        <label class="nocheck clearfix" for="quota_day">
+          <span class="component-title">$T('opt-quota_day')</span>
+          <input type="text" name="quota_day" id="quota_day" value="$quota_day"/>
         </label>
         <label class="nocheck clearfix">
           <span class="component-title">&nbsp;</span>
-          <span class="component-desc">$T('explain-quotum_day')</span>
+          <span class="component-desc">$T('explain-quota_day')</span>
         </label>
       </div>
       <div class="field-pair alt">
-        <input type="checkbox" name="quotum_resume" id="quotum_resume" value="1" <!--#if $quotum_resume > 0 then "checked=1" else ""#--> />
-        <label class="clearfix" for="quotum_resume">
-          <span class="component-title">$T('opt-quotum_resume')</span>
-          <span class="component-desc">$T('explain-quotum_resume')</span>
+        <input type="checkbox" name="quota_resume" id="quota_resume" value="1" <!--#if $quota_resume > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="quota_resume">
+          <span class="component-title">$T('opt-quota_resume')</span>
+          <span class="component-desc">$T('explain-quota_resume')</span>
         </label>
       </div>
     </fieldset>

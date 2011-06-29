@@ -277,7 +277,7 @@ class Downloader(Thread):
         from sabnzbd.nzbqueue import NzbQueue
         self.decoder.start()
 
-        # Kick BPS-Meter to check quotum
+        # Kick BPS-Meter to check quota
         BPSMeter.do.update()
 
         while 1:

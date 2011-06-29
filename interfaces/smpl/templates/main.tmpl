@@ -760,9 +760,9 @@ function lrb(url, extra, refresh)
     d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
   }
 
-  function resetQuotum()
+  function resetQuota()
   {
-    d = doSimpleXMLHttpRequest('tapi?mode=reset_quotum&session='+session);
+    d = doSimpleXMLHttpRequest('tapi?mode=reset_quota&session='+session);
   }
 
   function changequeueoptions(page)
@@ -1150,8 +1150,8 @@ function loadingJSON(){
   <!--#if $varExists('newzbinDetails')#-->
   <li><a onClick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
   <!--#end if#-->
-  <!--#if $have_quotum#-->
-  <li><a onClick="resetQuotum()">$T('link-resetQuotum')</a></li>
+  <!--#if $have_quota#-->
+  <li><a onClick="resetQuota()">$T('link-resetQuota')</a></li>
   <!--#end if#-->
   <br />
   <li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('smpl-restartOK?')')){restart()}">$T('button-restart')</a></li>

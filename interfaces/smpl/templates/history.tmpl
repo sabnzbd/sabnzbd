@@ -99,8 +99,8 @@ t = time.strftime(time_format("%H:%M:%S on %A %d %B %Y"), completed)
 <!--#end if#-->
 </table>
 <div class="centerLinks">
-  <!--#if $have_quotum#-->
-    $T('quotum-left'):&nbsp;<strong>$left_quotum&nbsp;&frasl;&nbsp;$quotum</strong>&nbsp;|
+  <!--#if $have_quota#-->
+    $T('quota-left'):&nbsp;<strong>$left_quota&nbsp;&frasl;&nbsp;$quota</strong>&nbsp;|
   <!--#end if#-->
   $T('smpl-size'): <span class="bold">$total_size</span> |  $T('thisMonth'): <span class="bold">$month_size</span> | $T('thisWeek'): <span class="bold">$week_size</span> | $T('today'): <span class="bold">$day_size</span>
 </div>

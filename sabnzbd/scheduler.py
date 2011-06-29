@@ -158,10 +158,10 @@ def init():
         __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
 
 
-    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quotum()
+    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
-        logging.info('Setting schedule for quotum check daily at %s:%s', hour, minute)
-        __SCHED.add_daytime_task(action, 'quotum_reset', range(1, 8), None, (hour, minute),
+        logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
+        __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
                                  kronos.method.sequential, [], None)
 
 

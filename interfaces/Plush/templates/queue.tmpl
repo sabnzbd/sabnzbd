@@ -15,8 +15,8 @@
 
   // set lower-right queue stats
   var stats = '';
-  <!--#if $have_quotum#-->
-  stats += '<strong>$left_quotum&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$quotum</strong>&nbsp;$T('quotum-left')&nbsp;&nbsp;';
+  <!--#if $have_quota#-->
+  stats += '<strong>$left_quota&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$quota</strong>&nbsp;$T('quota-left')&nbsp;&nbsp;';
   <!--#end if#-->
   <!--#if $noofslots > 0#-->
   stats += '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';

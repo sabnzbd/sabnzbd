@@ -229,9 +229,9 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
     cfg.growl_server.callback(sabnzbd.growler.change_value)
     cfg.growl_password.callback(sabnzbd.growler.change_value)
-    cfg.quotum_size.callback(guard_quotum_size)
-    cfg.quotum_day.callback(guard_quotum_dp)
-    cfg.quotum_period.callback(guard_quotum_dp)
+    cfg.quota_size.callback(guard_quota_size)
+    cfg.quota_day.callback(guard_quota_dp)
+    cfg.quota_period.callback(guard_quota_dp)
 
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
@@ -422,12 +422,12 @@ def guard_pause_on_pp():
     else:
         Downloader.do.resume_from_postproc()
 
-def guard_quotum_size():
-    """ Callback for change of quotum_size """
-    BPSMeter.do.change_quotum()
+def guard_quota_size():
+    """ Callback for change of quota_size """
+    BPSMeter.do.change_quota()
 
-def guard_quotum_dp():
-    """ Callback for change of quotum_day or quotum_period """
+def guard_quota_dp():
+    """ Callback for change of quota_day or quota_period """
     scheduler.restart(force=True)
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):

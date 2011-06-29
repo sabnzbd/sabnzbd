@@ -1130,7 +1130,7 @@ SWITCH_LIST = \
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'pre_check',
-             'quotum_size', 'quotum_day', 'quotum_resume', 'quotum_period'
+             'quota_size', 'quota_day', 'quota_resume', 'quota_period'
              )
 
 #------------------------------------------------------------------------------
@@ -2187,10 +2187,10 @@ class ConnectionInfo(object):
         return template.respond()
 
     @cherrypy.expose
-    def reset_quotum(self, **kwargs):
+    def reset_quota(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        BPSMeter.do.reset_quotum(force=True)
+        BPSMeter.do.reset_quota(force=True)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose

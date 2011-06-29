@@ -600,9 +600,9 @@ def _api_rss_now(name, output, kwargs):
     scheduler.force_rss()
     return report(output)
 
-def _api_reset_quotum(name, output, kwargs):
-    """ Reset quotum left """
-    BPSMeter.do.reset_quotum(force=True)
+def _api_reset_quota(name, output, kwargs):
+    """ Reset quota left """
+    BPSMeter.do.reset_quota(force=True)
 
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
@@ -738,7 +738,7 @@ _api_table = {
     'watched_now'     : _api_watched_now,
     'rss_now'         : _api_rss_now,
     'browse'          : _api_browse,
-    'reset_quotum'    : _api_reset_quotum
+    'reset_quota'    : _api_reset_quota
 }
 
 _api_queue_table = {
@@ -1499,9 +1499,9 @@ def build_header(prim):
     header['mb']       = "%.2f" % (bytes / MEBI)
     header['sizeleft']   = format_bytes(bytesleft)
     header['size']       = format_bytes(bytes)
-    header['quotum'] = to_units(BPSMeter.do.quotum)
-    header['have_quotum'] = bool(BPSMeter.do.quotum > 0.0)
-    header['left_quotum'] = to_units(BPSMeter.do.left)
+    header['quota'] = to_units(BPSMeter.do.quota)
+    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
+    header['left_quota'] = to_units(BPSMeter.do.left)
 
     status = ''
     if Downloader.do.paused:

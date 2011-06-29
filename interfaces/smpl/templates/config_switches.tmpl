@@ -199,33 +199,33 @@
   </fieldset>
 
 <fieldset class="EntryFieldSet">
-  <legend>$T('swtag-quotum')</legend>
+  <legend>$T('swtag-quota')</legend>
 <hr />
 
-  <span class="label">$T('opt-quotum_size'):</span>
-  <input type="text" name="quotum_size" value="$quotum_size"/>
-  <span class="tips">$T('explain-quotum_size')</span></label>
+  <span class="label">$T('opt-quota_size'):</span>
+  <input type="text" name="quota_size" value="$quota_size"/>
+  <span class="tips">$T('explain-quota_size')</span></label>
 <br class="clear" />
 
-  <span class="label">$T('opt-quotum_period'):</span>
-  <select name="quotum_period" id="quotum_period" class="select">
-    <option value="m" <!--#if $quotum_period == "m" then 'selected' else ''#--> >$T('month')</option>
-    <option value="w" <!--#if $quotum_period == "w" then 'selected' else ''#--> >$T('week')</option>
-    <option value="d" <!--#if $quotum_period == "d" then 'selected' else ''#--> >$T('day')</option>
-    <option value="x" <!--#if $quotum_period == "x" then 'selected' else ''#--> >$T('manual')</option>
+  <span class="label">$T('opt-quota_period'):</span>
+  <select name="quota_period" id="quota_period" class="select">
+    <option value="m" <!--#if $quota_period == "m" then 'selected' else ''#--> >$T('month')</option>
+    <option value="w" <!--#if $quota_period == "w" then 'selected' else ''#--> >$T('week')</option>
+    <option value="d" <!--#if $quota_period == "d" then 'selected' else ''#--> >$T('day')</option>
+    <option value="x" <!--#if $quota_period == "x" then 'selected' else ''#--> >$T('manual')</option>
   </select>
-    <span class="tips">$T('explain-quotum_period')</span>
+    <span class="tips">$T('explain-quota_period')</span>
 <br class="clear" />
 
 
-  <span class="label">$T('opt-quotum_day'):</span>
-  <input type="text" name="quotum_day" value="$quotum_day"/>
-  <span class="tips">$T('explain-quotum_day')</span></label>
+  <span class="label">$T('opt-quota_day'):</span>
+  <input type="text" name="quota_day" value="$quota_day"/>
+  <span class="tips">$T('explain-quota_day')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-quotum_resume'):</span>
-  <input class="radio" type="checkbox" name="quotum_resume" value="1" <!--#if $quotum_resume > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-quotum_resume')</span></label>
+  <label><span class="label">$T('opt-quota_resume'):</span>
+  <input class="radio" type="checkbox" name="quota_resume" value="1" <!--#if $quota_resume > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-quota_resume')</span></label>
 <br class="clear" />
 
   </fieldset>
