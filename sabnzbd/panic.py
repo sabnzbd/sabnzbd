@@ -263,3 +263,20 @@ def error_page_401(status, message, traceback, version):
     </body>
 </html>
 ''' % (title, body)
+
+
+def error_page_404(status, message, traceback, version):
+    """ Custom handler for 404 error, redirect to main page """
+    import cherrypy
+    return r'''
+<html>
+    <head>
+      <script type="text/javascript">
+      <!--
+      location.href = "%s"
+      //-->
+      </script>
+    </head>
+    <body><br/></body>
+</html>
+''' % cherrypy.wsgiserver.REDIRECT_URL

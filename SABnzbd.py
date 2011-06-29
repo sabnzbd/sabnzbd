@@ -1312,7 +1312,8 @@ def main():
                             'tools.sessions.timeout' : 60,
                             'request.show_tracebacks': True,
                             'checker.check_localhost' : bool(consoleLogging),
-                            'error_page.401': sabnzbd.panic.error_page_401
+                            'error_page.401': sabnzbd.panic.error_page_401,
+                            'error_page.404': sabnzbd.panic.error_page_404
                             })
 
 
@@ -1377,9 +1378,9 @@ def main():
 
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
-        cherrypy.wsgiserver.REDIRECT_URL = browser_url
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
+    cherrypy.wsgiserver.REDIRECT_URL = browser_url
 
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
