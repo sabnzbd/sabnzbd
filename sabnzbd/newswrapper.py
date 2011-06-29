@@ -271,7 +271,7 @@ class NewsWrapper(object):
             self.pass_sent = False
             self.pass_ok = False
 
-        if code == '400':
+        if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % (self.server.username)

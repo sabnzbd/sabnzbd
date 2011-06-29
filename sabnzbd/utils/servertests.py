@@ -109,7 +109,11 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             return False, xml_name(str(sys.exc_info()[1]))
 
     # Could do with making a function for return codes to be used by downloader
-    code = nw.lines[0][:3]
+    try:
+        code = nw.lines[0][:3]
+    except IndexError:
+        code = ''
+        nw.lines.append('')
 
     if code == '480':
         return False, T('Server requires username and password.')
