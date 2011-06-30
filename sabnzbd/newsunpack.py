@@ -949,7 +949,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
                 extrapars = parfile_nzf.extrapars
 
-                logging.info("%s", extrapars)
+                logging.info("Extra pars = %s", extrapars)
 
                 ## Look for the smallest par2file
                 block_table = {}
@@ -964,6 +964,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     nzo.add_parfile(nzf)
                     ## mark for readd
                     readd = True
+                else:
+                    msg = T('Invalid par2 files, cannot verify or repair')
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg, set=setname)
+                    nzo.status = 'Failed'
+
 
             elif line.startswith('You need'):
                 chunks = line.split()
