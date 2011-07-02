@@ -305,7 +305,7 @@ class BPSMeter(object):
         logging.debug('Will reset quota at %s', tm)
 
 
-    def change_quota(self):
+    def change_quota(self, allow_resume=True):
         """ Update quota, potentially pausing downloader
         """
         if not self.have_quota and self.quota < 0.5:
@@ -330,7 +330,7 @@ class BPSMeter(object):
         self.next_reset()
         if self.left > 0.5:
             from sabnzbd.downloader import Downloader
-            if cfg.quota_resume() and Downloader.do and Downloader.do.paused:
+            if allow_resume and cfg.quota_resume() and Downloader.do and Downloader.do.paused:
                 Downloader.do.resume()
 
     # Pattern = <day#> <hh:mm>
@@ -354,7 +354,7 @@ class BPSMeter(object):
                 self.q_minute = int(m.group(2))
             self.q_day = max(1, self.q_day)
             self.q_day = min(7, self.q_day)
-            self.change_quota()
+            self.change_quota(allow_resume=False)
             return quota_handler, self.q_hour, self.q_minute
         else:
             return None, 0, 0
