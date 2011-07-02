@@ -34,7 +34,8 @@ import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
-                              REPAIR_PRIORITY, PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
+                              REPAIR_PRIORITY, STOP_PRIORITY, \
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -530,6 +531,11 @@ class NzbQueue(TryList):
             nzo_id_pos1 = -1
             pos = -1
 
+            # If priority == STOP_PRIORITY, then send to queue
+            if priority == STOP_PRIORITY:
+                self.end_job(nzo)
+                return
+
             # Get the current position in the queue
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
@@ -685,14 +691,19 @@ class NzbQueue(TryList):
                 else:
                     if file_has_articles(nzf):
                         logging.warning(Ta('%s -> Unknown encoding'), filename)
-
         if post_done:
-            if self.actives(grabs=False) < 2 and cfg.autodisconnect():
-                # This was the last job, close server connections
-                sabnzbd.downloader.Downloader.do.disconnect()
+            self.end_job(nzo)
 
-            # Notify assembler to call postprocessor
-            Assembler.do.process((nzo, None))
+
+    def end_job(self, nzo):
+        """ Send NZO to the post-processing queue
+        """
+        if self.actives(grabs=False) < 2 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
+
+        # Notify assembler to call postprocessor
+        Assembler.do.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)

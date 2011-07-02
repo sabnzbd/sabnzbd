@@ -92,6 +92,7 @@
       <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
       <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
       <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
+      <option value="-4" <!--#if $slot.priority == "Stop" then "selected" else ""#-->>$T('pr-stop')</option>
     </optgroup></select>
     <select class="change_opts"><optgroup label="$T('pp')">
       <option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>$T('pp-none')</option>

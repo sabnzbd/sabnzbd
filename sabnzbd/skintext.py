@@ -162,6 +162,7 @@ SKIN_TEXT = {
     'pr-high' : TT('High'),
     'pr-low' : TT('Low'),
     'pr-paused' : TT('Paused'),
+    'pr-stop' : TT('Stop'),
     'enterURL' : TT('Enter URL'),
     'enterID' : TT('&nbsp;or Report ID'),
 

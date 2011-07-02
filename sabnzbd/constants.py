@@ -112,6 +112,7 @@ LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
+STOP_PRIORITY = -4
 
 #(MATCHER, [EXTRA,MATCHERS])
 series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
