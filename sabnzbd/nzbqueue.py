@@ -541,6 +541,7 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
+            nzo.save_attribs()
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]

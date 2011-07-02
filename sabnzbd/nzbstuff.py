@@ -690,7 +690,7 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, self.priority, name = get_attrib_file(self.workpath, 5)
+            cat, pp, script, priority, name = get_attrib_file(self.workpath, 5)
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -981,7 +981,7 @@ class NzbObject(TryList):
                 need += nzf.bytes
         have = need + pars - short
         enough = have >= need
-        ratio = float(have) / float(need)
+        ratio = float(have) / float(max(1, need))
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
         return enough, ratio
 
@@ -1262,11 +1262,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        if self.priority == TOP_PRIORITY:
-            prio = HIGH_PRIORITY
-        else:
-            prio = self.priority
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, prio, self.final_name_pw))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
