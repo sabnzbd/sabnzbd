@@ -75,6 +75,7 @@ SKIN_TEXT = {
     'seconds' : TT('seconds'), #: Multiple seconds
     'day' : TT('day'),
     'days' : TT('days'),
+    'week' : TT('week'),
     'month' : TT('Month'),
     'year' : TT('Year'),
     'daily' : TT('Daily'),
