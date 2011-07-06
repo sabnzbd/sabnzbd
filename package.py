@@ -382,7 +382,7 @@ if target == 'app':
             LSTypeIsPackage = 0,
             NSPersistentStoreTypeKey = 'Binary',
     )
-    OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
+    OPTIONS = {'argv_emulation': False, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
