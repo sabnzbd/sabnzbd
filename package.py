@@ -366,6 +366,10 @@ if target == 'app':
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
 
+    # Due to ApplePython bug
+    sys.argv.append('-p');
+    sys.argv.append('email');
+
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
 

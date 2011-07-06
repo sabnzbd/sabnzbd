@@ -62,8 +62,8 @@ except:
         else:
             SQLITE_DLL = False
 
-import sabnzbd.lang
 import sabnzbd
+import sabnzbd.lang
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
@@ -810,6 +810,7 @@ def get_f_option(opts):
 #------------------------------------------------------------------------------
 def main():
     global LOG_FLAG
+    import sabnzbd  # Due to ApplePython bug
 
     autobrowser = None
     autorestarted = False
@@ -1371,7 +1372,9 @@ def main():
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
         launch_a_browser(browser_url)
-        if sabnzbd.FOUNDATION: sabnzbd.osxmenu.notify("SAB_Launched", None)
+        if sabnzbd.FOUNDATION:
+            import sabnzbd.osxmenu
+            sabnzbd.osxmenu.notify("SAB_Launched", None)
         osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
         # Now's the time to check for a new version
         check_latest_version()
