@@ -263,6 +263,13 @@ class NewsWrapper(object):
             self.pass_sent = True
             self.pass_ok = True
 
+        if code == '501' and self.user_sent:
+            # Server asked for username, we sent empty one,
+            # but it doesn't accept
+            code = '481'
+            self.user_ok = True
+            self.pass_sent = True
+
         if code == '480':
             self.force_login = True
             self.connected = False
