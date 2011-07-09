@@ -744,6 +744,12 @@ def commandline_handler(frozen=True):
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
+    # OSX binary: get rid of the weird -psn_0_123456 parameter
+    for arg in sys.argv:
+        if arg.startswith('-psn_'):
+            sys.argv.remove(arg)
+            break
+
     # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
     # gets when it's restarted
     if len(sys.argv) > 1 and \
