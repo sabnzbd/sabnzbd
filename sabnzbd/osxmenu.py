@@ -54,7 +54,7 @@ from sabnzbd.api import check_trans
 
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
 start_time = NSDate.date()
-debug = 1
+debug = 0
 
 
 class SABnzbdDelegate(NSObject):
