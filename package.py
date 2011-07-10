@@ -258,12 +258,12 @@ if os.name == 'nt':
 else:
     NSIS = '-'
 
-BzrRevertApp =  Bazaar + ' revert '
+BzrRevertApp =  Bazaar + ' revert --no-backup '
 BzrUpdateApp = Bazaar + ' update '
-BzrRevert =  Bazaar + ' revert ' + VERSION_FILE
+BzrRevert =  Bazaar + ' revert --no-backup ' + VERSION_FILE
 BzrVersion = Bazaar + ' version-info'
 
-if not (BzrVersion and BzrRevert and ZipCmd and UnZipCmd and NSIS):
+if not (Bazaar and ZipCmd and UnZipCmd and NSIS):
     exit(1)
 
 if len(sys.argv) < 2:
