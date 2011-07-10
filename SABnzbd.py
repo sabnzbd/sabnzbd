@@ -37,7 +37,7 @@ except ValueError:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
     sys.exit(1)
 except:
-    print "The following modules need to be installed: Cheetah, cherrypy(included, unpack the zip)"
+    print "The Python module Cheetah is required"
     sys.exit(1)
 
 import cherrypy
