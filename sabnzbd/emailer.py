@@ -99,7 +99,7 @@ def send(message, recipient):
                 return errormsg(T('Failed to authenticate to mail server'))
 
         try:
-            mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
+            mailconn.sendmail(cfg.email_from(), recipient, message)
             msg = None
         except smtplib.SMTPHeloError:
             msg = errormsg('The server didn\'t reply properly to the helo greeting.')
