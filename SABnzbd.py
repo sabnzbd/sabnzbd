@@ -769,7 +769,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -842,6 +842,7 @@ def main():
     re_argv = [sys.argv[0]]
     pid_path = None
     new_instance = False
+    force_sessions = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -922,6 +923,8 @@ def main():
             re_argv.append(arg)
         elif opt in ('--new',):
             new_instance = True
+        elif opt in ('--sessions',):
+            force_sessions = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1294,6 +1297,14 @@ def main():
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
 
+    # Fix leakage in memory-based CherryPy session support by using file-based.
+    # However, we don't really need session support.
+    if force_sessions:
+        sessions = sabnzbd.misc.create_real_path('sessions', sabnzbd.cfg.admin_dir.get_path(), 'sessions')[1]
+        sabnzbd.misc.remove_all(sessions, 'session-*.lock', keep_folder=True)
+    else:
+        sessions = None
+
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
@@ -1303,7 +1314,10 @@ def main():
                             'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
                             'tools.gzip.on' : True,
-                            'tools.sessions.on' : True,
+                            'tools.sessions.on' : bool(sessions),
+                            'tools.sessions.storage_type' : 'file',
+                            'tools.sessions.storage_path' : sessions,
+                            'tools.sessions.timeout' : 60,
                             'request.show_tracebacks': True,
                             'checker.check_localhost' : bool(consoleLogging),
                             'error_page.401': sabnzbd.panic.error_page_401

@@ -1138,16 +1138,17 @@ def remove_dir(path):
         os.rmdir(path)
 
 
-def remove_all(path, pattern='*'):
+def remove_all(path, pattern='*', keep_folder=False):
     """ Remove folder and all its content
     """
     if os.path.exists(path):
         for f in globber(path, pattern):
             os.remove(f)
-        try:
-            os.rmdir(path)
-        except:
-            pass
+        if not keep_folder:
+            try:
+                os.rmdir(path)
+            except:
+                pass
 
 
 def clean_folder(path, pattern='*'):
