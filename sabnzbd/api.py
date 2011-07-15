@@ -1515,10 +1515,6 @@ def build_header(prim):
 
 
 #------------------------------------------------------------------------------
-def get_history_size():
-    history_db = cherrypy.thread_data.history_db
-    bytes, month, week = history_db.get_history_size()
-    return (format_bytes(bytes), format_bytes(month), format_bytes(week))
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0):
 
