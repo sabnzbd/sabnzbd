@@ -25,6 +25,7 @@ import logging
 from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
+import random
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
@@ -79,6 +80,18 @@ class Server(object):
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
+
+    @property
+    def hostip(self):
+        """ Return a random entry from the possible IPs
+        """
+        if len(self.info) > 1:
+            rnd = random.randint(0, len(self.info)-1)
+            ip = self.info[rnd][4][0]
+            logging.debug('For server %s, using IP %s' % (self.host, ip))
+        else:
+            ip = self.host
+        return ip
 
     def stop(self, readers, writers):
         for nw in self.idle_threads:

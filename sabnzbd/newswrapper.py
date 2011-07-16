@@ -249,7 +249,7 @@ class NewsWrapper(object):
         self.force_login = False
 
     def init_connect(self, write_fds):
-        self.nntp = NNTP(self.server.host, self.server.port, self.server.info, self.server.ssl, self,
+        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl, self,
                          self.server.username, self.server.password, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
