@@ -962,34 +962,9 @@ def int_conv(value):
 
 #------------------------------------------------------------------------------
 # Diskfree
-try:
-    os.statvfs
-    import statvfs
-    # posix diskfree
-    def diskfree(_dir):
-        """ Return amount of free diskspace in GBytes
-        """
-        try:
-            s = os.statvfs(_dir)
-            return (s[statvfs.F_BAVAIL] * s[statvfs.F_FRSIZE]) / GIGI
-        except OSError:
-            return 0.0
-    def disktotal(_dir):
-        """ Return amount of total diskspace in GBytes
-        """
-        try:
-            s = os.statvfs(_dir)
-            return (s[statvfs.F_BLOCKS] * s[statvfs.F_FRSIZE]) / GIGI
-        except OSError:
-            return 0.0
-
-except AttributeError:
-
-    try:
-        import win32api
-    except ImportError:
-        pass
+if sabnzbd.WIN32:
     # windows diskfree
+    import win32api
     def diskfree(_dir):
         """ Return amount of free diskspace in GBytes
         """
@@ -1006,6 +981,37 @@ except AttributeError:
             return disk_size / GIGI
         except:
             return 0.0
+else:
+    try:
+        os.statvfs
+        # posix diskfree
+        def diskfree(_dir):
+            """ Return amount of free diskspace in GBytes
+            """
+            try:
+                s = os.statvfs(_dir)
+                if s.f_bavail < 0:
+                    return float(sys.maxint) * float(s.f_frsize) / GIGI
+                else:
+                    return float(s.f_bavail) * float(s.f_frsize) / GIGI
+            except OSError:
+                return 0.0
+        def disktotal(_dir):
+            """ Return amount of total diskspace in GBytes
+            """
+            try:
+                s = os.statvfs(_dir)
+                if s.f_blocks < 0:
+                    return float(sys.maxint) * float(s.f_frsize) / GIGI
+                else:
+                    return float(s.f_blocks) * float(s.f_frsize) / GIGI
+            except OSError:
+                return 0.0
+    except ImportError:
+        def diskfree(_dir):
+            return 10.0
+        def disktotal(_dir):
+            return 20.0
 
 
 def create_https_certificates(ssl_cert, ssl_key):
