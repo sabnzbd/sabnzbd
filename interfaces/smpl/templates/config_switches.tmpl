@@ -128,6 +128,16 @@
 <hr />
 
 
+  <label><span class="label">$T('opt-max_art_tries'):</span>
+  <input type="text" size="5" name="max_art_tries" value="$max_art_tries" />
+  <span class="tips">$T('explain-max_art_tries')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-max_opt_only'):</span>
+  <input class="radio" type="checkbox" name="max_opt_only" value="1" <!--#if $max_opt_only > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-max_opt_only')</span></label>
+<br class="clear" />
+
   <label><span class="label">$T('opt-auto_disconnect'):</span>
   <input class="radio" type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-auto_disconnect')</span></label>

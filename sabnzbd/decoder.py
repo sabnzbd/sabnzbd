@@ -181,6 +181,7 @@ class Decoder(Thread):
 
         if new_server_found:
             article.fetcher = None
+            article.tries = 0
 
             ## Allow all servers to iterate over this nzo and nzf again ##
             NzbQueue.do.reset_try_lists(nzf, nzo)

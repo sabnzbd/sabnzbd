@@ -44,6 +44,23 @@
     </div>
     <fieldset class="component-group-list">
       <div class="field-pair">
+        <label class="nocheck clearfix" for="max_art_tries">
+          <span class="component-title">$T('opt-max_art_tries')</span>
+          <input type="text" size="10" name="max_art_tries" id="max_art_tries" value="$max_art_tries" />
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-max_art_tries')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <input type="checkbox" name="max_opt_only" id="max_opt_only" value="1" <!--#if $max_opt_only > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="max_opt_only">
+          <span class="component-title">$T('opt-max_opt_only')</span>
+          <span class="component-desc">$T('explain-max_opt_only')</span>
+        </label>
+      </div>
+      <div class="field-pair">
         <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="auto_disconnect">
           <span class="component-title">$T('opt-auto_disconnect')</span>

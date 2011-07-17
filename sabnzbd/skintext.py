@@ -438,6 +438,10 @@ SKIN_TEXT = {
     'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
+    'opt-max_art_tries' : TT('Maximum retries'),
+    'explain-max_art_tries' : TT('Maximum number of retries per server'),
+    'opt-max_opt_only' : TT('Only for optional servers'),
+    'explain-max_opt_only' : TT('Apply maximum retries only to optional servers'),
 
 # Config->Server
     'configServer' : TT('Server configuration'),

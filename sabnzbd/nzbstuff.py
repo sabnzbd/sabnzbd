@@ -79,6 +79,7 @@ class Article(TryList):
         self.art_id = None
         self.bytes = bytes
         self.partnum = partnum
+        self.tries = 0 # Try count
         self.nzf = nzf
 
     def get_article(self, server):
@@ -88,6 +89,8 @@ class Article(TryList):
 
         if not self.fetcher and not self.server_in_try_list(server):
             self.fetcher = server
+            self.tries += 1
+            if sabnzbd.LOG_ALL: logging.debug('Article-try = %s', self.tries)
             return self
         return None
 
@@ -115,6 +118,7 @@ class Article(TryList):
         TryList.__init__(self)
         self.fetcher = None
         self.allow_fill_server = False
+        self.tries = 0
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, partnum=%s, art_id=%s>" % \

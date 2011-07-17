@@ -283,6 +283,13 @@ class Downloader(Thread):
             server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
             logging.warning(Ta('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
+
+            # Remove all connections to server
+            for nw in server.idle_threads + server.busy_threads:
+                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, quit=False)
+            # Make sure server address resolution is refreshed
+            server.info = None
+
             NzbQueue.do.reset_all_try_lists()
 
 
@@ -589,6 +596,7 @@ class Downloader(Thread):
                         self.__reset_nw(nw, msg, quit=True)
 
                 if done:
+                    server.bad_cons = 0 # Succesful data, clear "bad" counter
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s:%s: %s done', nw.thrdnum, server.host,
                                        server.port, article.article)
@@ -640,15 +648,19 @@ class Downloader(Thread):
         if fileno and fileno in self.read_fds:
             self.read_fds.pop(fileno)
 
-        # Remove this server from try_list
         if article:
-            article.fetcher = None
+            if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_opt_only()):
+                # Too many tries on this server, consider article missing
+                self.decoder.decode(article, None)
+            else:
+                # Remove this server from try_list
+                article.fetcher = None
 
-            nzf = article.nzf
-            nzo = nzf.nzo
+                nzf = article.nzf
+                nzo = nzf.nzo
 
-            ## Allow all servers to iterate over each nzo/nzf again ##
-            NzbQueue.do.reset_try_lists(nzf, nzo)
+                ## Allow all servers to iterate over each nzo/nzf again ##
+                NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
             nw.terminate(quit=quit)

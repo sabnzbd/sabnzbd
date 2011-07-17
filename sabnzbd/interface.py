@@ -1129,8 +1129,8 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
-             'unpack_check', 'pre_check',
-             'quota_size', 'quota_day', 'quota_resume', 'quota_period'
+             'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
+             'pre_check', 'max_art_tries', 'max_opt_only'
              )
 
 #------------------------------------------------------------------------------
