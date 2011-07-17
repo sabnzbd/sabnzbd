@@ -96,6 +96,7 @@ class Assembler(Thread):
                         logging.error('Fatal error in Assembler', exc_info = True)
                         break
 
+                    nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
                         pack = GetMD5Hashes(filepath)

@@ -200,7 +200,7 @@ class NzbFile(TryList):
         """ Load the article objects from disk """
         logging.debug("Finishing import on %s", self.subject)
 
-        article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath)
+        article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
         if article_db:
             for partnum in article_db:
                 art_id = article_db[partnum][0]
@@ -270,6 +270,13 @@ class NzbFile(TryList):
     def lowest_partnum(self):
         """ Get lowest article number of this file """
         return min(self.decodetable)
+
+    def remove_admin(self):
+        """ Remove article database from disk (sabnzbd_nzf_<id>)"""
+        try:
+            os.remove(os.path.join(self.nzo.workpath, self.nzf_id))
+        except:
+            pass
 
     def __getstate__(self):
         """ Save to pickle file, translating attributes """
