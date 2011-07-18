@@ -843,7 +843,6 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
-    save_argv = ', '.join(['"%s"' % latin1(p) for p in sys.argv])
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -1185,7 +1184,7 @@ def main():
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
-    logging.info('Arguments = %s', save_argv)
+    logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
@@ -1646,6 +1645,8 @@ def HandleCommandLine(allow_service=True):
 # Platform specific startup code
 #
 if __name__ == '__main__':
+
+    sabnzbd.CMDLINE = ', '.join(['"%s"' % latin1(p) for p in sys.argv])
 
     if sabnzbd.WIN32:
         if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):

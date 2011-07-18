@@ -115,6 +115,7 @@ LOG_ALL = False
 AMBI_LOCALHOST = False
 WIN_SERVICE = None      # Instance of our Win32 Service Class
 BROWSER_URL = None
+CMDLINE = ''  # Rendering of original command line arguments
 
 WEB_DIR = None
 WEB_DIR2 = None
