@@ -77,7 +77,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import unicoder, latin1
 from sabnzbd.utils import osx
 
 from threading import Thread
@@ -843,6 +843,7 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
+    save_argv = ', '.join(['"%s"' % latin1(p) for p in sys.argv])
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -1184,6 +1185,7 @@ def main():
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
+    logging.info('Arguments = %s', save_argv)
 
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
