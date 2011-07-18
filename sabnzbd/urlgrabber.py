@@ -194,10 +194,12 @@ class URLGrabber(Thread):
                     if res == 0:
                         NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     elif res == -2:
-                        self.add(url, future_nzo)
-                    elif matrix_id and length > 0:
-                        # Keep retrying NzbMatrix forever (if file not empty)
-                        self.add(url, future_nzo)
+                        retry_count -= 1
+                        if retry_count > 0:
+                            logging.info('Incomplete NZB, retry %s', url)
+                            self.queue.put((url, future_nzo, retry_count))
+                        else:
+                            misc.bad_fetch(future_nzo, url, retry=True, content=True)
                     else:
                         misc.bad_fetch(future_nzo, url, retry=True, content=True)
                 # Check if a supported archive
