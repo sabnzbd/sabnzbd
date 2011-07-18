@@ -1,6 +1,12 @@
-************************  SABnzbd 0.6.6 Beta 1  ************************
+************************  SABnzbd 0.6.6 Beta 2  ************************
 
 What's new:
+Beta 2:
+- Fix sending of duplicate emails when using a list of recipients
+- Fix handle leakage on Windows
+- On OSX, SABnzbd didn't handle "Open With" of nzb.gz files properly
+- Limit the amount of retries when getting a partial NZB from an index site
+Beta 1:
 - Compatible with OSX Lion
 - End-of-queue action now ignores paused items in the queue
 - Fetching extra par2 files now obeys pause too

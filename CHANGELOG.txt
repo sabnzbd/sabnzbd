@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.6.6Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix sending of duplicate emails when using a list of recipients
+- Fix handle leakage on Windows
+- On OSX, SABnzbd didn't handle "Open With" of nzb.gz files properly
+- Limit the amount of retries when getting a partial NZB from an index site
+-------------------------------------------------------------------------------
  0.6.6Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Compatible with OSX Lion
