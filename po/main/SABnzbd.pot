@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-06-30 19:55+West-Europa (zomertijd)\n"
+"POT-Creation-Date: 2011-07-18 21:36+West-Europa (zomertijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -44,11 +44,11 @@ msgstr ""
 msgid "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"
 msgstr ""
 
-#: SABnzbd.py:1270 [Warning message]
+#: SABnzbd.py:1281 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr ""
 
-#: SABnzbd.py:1502 # sabnzbd/osxmenu.py:735
+#: SABnzbd.py:1526 # sabnzbd/osxmenu.py:731
 msgid "SABnzbd shutdown finished"
 msgstr ""
 
@@ -120,80 +120,80 @@ msgstr ""
 msgid "Could not determine connection result (%s)"
 msgstr ""
 
-#: sabnzbd/__init__.py:158 [Warning message]
+#: sabnzbd/__init__.py:159 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
 msgstr ""
 
-#: sabnzbd/__init__.py:424
+#: sabnzbd/__init__.py:425
 msgid "fetching msgid %s from www.newzbin.com"
 msgstr ""
 
-#: sabnzbd/__init__.py:430 [Error message]
+#: sabnzbd/__init__.py:431 [Error message]
 msgid "Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set"
 msgstr ""
 
-#: sabnzbd/__init__.py:442
+#: sabnzbd/__init__.py:443
 msgid "Trying to fetch NZB from %s"
 msgstr ""
 
-#: sabnzbd/__init__.py:565 [Error message] # sabnzbd/config.py:751 [Error message]
+#: sabnzbd/__init__.py:566 [Error message] # sabnzbd/config.py:751 [Error message]
 msgid "Cannot create temp file for %s"
 msgstr ""
 
-#: sabnzbd/__init__.py:583 [Warning message] # sabnzbd/__init__.py:595 [Warning message]
+#: sabnzbd/__init__.py:584 [Warning message] # sabnzbd/__init__.py:596 [Warning message]
 msgid "Trying to set status of non-existing server %s"
 msgstr ""
 
-#: sabnzbd/__init__.py:728 [Warning message]
+#: sabnzbd/__init__.py:729 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
 msgstr ""
 
-#: sabnzbd/__init__.py:754 [Error message]
+#: sabnzbd/__init__.py:755 [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr ""
 
-#: sabnzbd/__init__.py:776 [Error message] # sabnzbd/__init__.py:839 [Error message]
+#: sabnzbd/__init__.py:777 [Error message] # sabnzbd/__init__.py:840 [Error message]
 msgid "Saving %s failed"
 msgstr ""
 
-#: sabnzbd/__init__.py:803 [Error message] # sabnzbd/__init__.py:868 [Error message]
+#: sabnzbd/__init__.py:804 [Error message] # sabnzbd/__init__.py:869 [Error message]
 msgid "Loading %s failed"
 msgstr ""
 
-#: sabnzbd/api.py:1389 # sabnzbd/osxmenu.py:189 # sabnzbd/skintext.py:66 [No value, used in dropdown menus]
+#: sabnzbd/api.py:1396 # sabnzbd/osxmenu.py:189 # sabnzbd/skintext.py:66 [No value, used in dropdown menus]
 #: sabnzbd/skintext.py:636 [Job details page, select no files]
 msgid "None"
 msgstr ""
 
-#: sabnzbd/api.py:1391 # sabnzbd/interface.py:92 # sabnzbd/skintext.py:65 [Default value, used in dropdown menus]
+#: sabnzbd/api.py:1398 # sabnzbd/interface.py:92 # sabnzbd/skintext.py:65 [Default value, used in dropdown menus]
 msgid "Default"
 msgstr ""
 
-#: sabnzbd/api.py:1447 # sabnzbd/interface.py:2173
+#: sabnzbd/api.py:1454 # sabnzbd/interface.py:2173
 msgid "WARNING:"
 msgstr ""
 
-#: sabnzbd/api.py:1447 # sabnzbd/interface.py:2173 # sabnzbd/interface.py:2266
+#: sabnzbd/api.py:1454 # sabnzbd/interface.py:2173 # sabnzbd/interface.py:2266
 msgid "ERROR:"
 msgstr ""
 
-#: sabnzbd/api.py:1505
+#: sabnzbd/api.py:1512
 msgid "unknown"
 msgstr ""
 
-#: sabnzbd/api.py:1532 [Error message]
+#: sabnzbd/api.py:1535 [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr ""
 
-#: sabnzbd/api.py:1719 [Single letter abbreviation of day]
+#: sabnzbd/api.py:1722 [Single letter abbreviation of day]
 msgid "d"
 msgstr ""
 
-#: sabnzbd/api.py:1720 [Single letter abbreviation of hour]
+#: sabnzbd/api.py:1723 [Single letter abbreviation of hour]
 msgid "h"
 msgstr ""
 
-#: sabnzbd/api.py:1721 [Single letter abbreviation of minute]
+#: sabnzbd/api.py:1724 [Single letter abbreviation of minute]
 msgid "m"
 msgstr ""
 
@@ -205,11 +205,11 @@ msgstr ""
 msgid "Disk error on creating file %s"
 msgstr ""
 
-#: sabnzbd/assembler.py:107 [Warning message]
+#: sabnzbd/assembler.py:108 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr ""
 
-#: sabnzbd/assembler.py:139
+#: sabnzbd/assembler.py:140
 msgid "%s missing"
 msgstr ""
 
@@ -555,11 +555,11 @@ msgstr ""
 msgid "URL Fetching failed; %s"
 msgstr ""
 
-#: sabnzbd/misc.py:1019 [Warning message]
+#: sabnzbd/misc.py:1025 [Warning message]
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
-#: sabnzbd/misc.py:1037 [Error message]
+#: sabnzbd/misc.py:1043 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr ""
 
@@ -809,59 +809,59 @@ msgstr ""
 msgid "%s -> Unknown encoding"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:403 [Warning message]
+#: sabnzbd/nzbstuff.py:410 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:431 [Warning message]
+#: sabnzbd/nzbstuff.py:438 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:649 [Warning message] # sabnzbd/nzbstuff.py:654 [Warning message]
+#: sabnzbd/nzbstuff.py:656 [Warning message] # sabnzbd/nzbstuff.py:661 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:662 [Warning message]
+#: sabnzbd/nzbstuff.py:669 [Warning message]
 msgid "Empty NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:721 [Warning message]
+#: sabnzbd/nzbstuff.py:728 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:726 [Warning message]
+#: sabnzbd/nzbstuff.py:733 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:904 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:911 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:906 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:913 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:908 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:915 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:963
+#: sabnzbd/nzbstuff.py:970
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:969
+#: sabnzbd/nzbstuff.py:976
 msgid "%s articles were malformed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:971
+#: sabnzbd/nzbstuff.py:978
 msgid "%s articles were missing"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:973
+#: sabnzbd/nzbstuff.py:980
 msgid "%s articles had non-matching duplicates"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1003 [Error message]
+#: sabnzbd/nzbstuff.py:1010 [Error message]
 msgid "Error importing %s"
 msgstr ""
 
@@ -953,7 +953,7 @@ msgstr ""
 msgid "Go to wizard"
 msgstr ""
 
-#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:728
+#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:724
 msgid "Stopping..."
 msgstr ""
 
@@ -1206,15 +1206,19 @@ msgstr ""
 msgid "Incorrect RSS feed description \"%s\""
 msgstr ""
 
-#: sabnzbd/rss.py:297 # sabnzbd/rss.py:303
+#: sabnzbd/rss.py:297 # sabnzbd/rss.py:309
 msgid "Failed to retrieve RSS from %s: %s"
 msgstr ""
 
-#: sabnzbd/rss.py:307
+#: sabnzbd/rss.py:303
+msgid "Do not have valid authentication for feed %s"
+msgstr ""
+
+#: sabnzbd/rss.py:313
 msgid "RSS Feed %s was empty"
 msgstr ""
 
-#: sabnzbd/rss.py:618 [Warning message]
+#: sabnzbd/rss.py:624 [Warning message]
 msgid "Empty RSS entry found (%s)"
 msgstr ""
 

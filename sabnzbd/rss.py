@@ -298,6 +298,12 @@ class RSSQueue(object):
                 logging.info(msg)
                 return unicoder(msg)
 
+            status = d.get('status', 999)
+            if status in (401, 402, 403):
+                msg = Ta('Do not have valid authentication for feed %s') % feed
+                logging.info(msg)
+                return unicoder(msg)
+
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
                 msg = Ta('Failed to retrieve RSS from %s: %s') % (uri, xml_name(str(d['bozo_exception'])))
