@@ -581,9 +581,8 @@ class NzbObject(TryList):
         self.parsed = False
         self.duplicate = False
         self.oversized = False
-        if reuse:
-            self.precheck = False
-        elif self.status == 'Queued':
+        self.precheck = False
+        if self.status == 'Queued' and not reuse:
             self.precheck = cfg.pre_check()
             if self.precheck:
                 self.status = 'Checking'
