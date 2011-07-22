@@ -343,8 +343,8 @@ class RSSQueue(object):
                 title = unicoder(atitle)
 
             if link:
-                # Make sure there are no spaces in the URL
-                link = link.replace(' ','')
+                # Make sure spaces are quoted in the URL
+                link = link.replace(' ', '%20')
 
                 newlinks.append(link)
 
