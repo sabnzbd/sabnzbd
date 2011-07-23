@@ -23,6 +23,8 @@ import re
 import logging
 import time
 import threading
+import urllib
+import os
 
 import sabnzbd
 from sabnzbd.constants import *
@@ -344,7 +346,11 @@ class RSSQueue(object):
 
             if link:
                 # Make sure spaces are quoted in the URL
-                link = link.replace(' ', '%20')
+                if 'nzbclub.com' in link:
+                    link, path = os.path.split(link.strip())
+                    link = '%s/%s' % (link, urllib.quote(path))
+                else:
+                    link = link.strip().replace(' ','%20')
 
                 newlinks.append(link)
 
