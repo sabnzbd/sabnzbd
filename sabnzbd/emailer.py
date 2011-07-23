@@ -33,6 +33,9 @@ from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.encoding import EmailFilter, latin1
 import sabnzbd.cfg as cfg
 
+def errormsg(msg):
+    logging.error(latin1(msg))
+    return msg
 
 ################################################################################
 # EMAIL_SEND
@@ -41,9 +44,6 @@ import sabnzbd.cfg as cfg
 ################################################################################
 def send(message, recipient):
     """ Send message if message non-empty and email-parms are set """
-    def errormsg(msg):
-        logging.error(latin1(msg))
-        return msg
 
     if not message.strip('\n\r\t '):
         return "Skipped empty message"
@@ -160,9 +160,10 @@ def send_with_template(prefix, parm):
         else:
             lst = [os.path.join(path, '%s-en.tmpl' % prefix)]
 
-    ret = T('No email templates found')
+    sent = False
     for temp in lst:
         if os.access(temp, os.R_OK):
+            sent = True
             source = _decode_file(temp)
             if source:
                 for recipient in cfg.email_to():
@@ -176,6 +177,10 @@ def send_with_template(prefix, parm):
                     del message
             else:
                 ret = T('Invalid encoding of email template %s') % temp
+                errormsg(ret)
+    if not sent:
+        ret = T('No email templates found')
+        errormsg(ret)
     return ret
 
 
