@@ -304,7 +304,7 @@ class NzbFile(TryList):
 ################################################################################
 class NzbParser(xml.sax.handler.ContentHandler):
     """ Forgiving parser for NZB's """
-    def __init__ (self, nzo):
+    def __init__ (self, nzo, remove_samples=False):
         self.nzo = nzo
         assert isinstance(self.nzo, NzbObject)
         self.in_nzb = False
@@ -319,9 +319,10 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.skipped_files = 0
         self.nzf_list = []
         self.groups = []
+        self.filter = remove_samples
 
     def startDocument(self):
-        self.filter = cfg.ignore_samples()
+        pass
 
     def startElement(self, name, attrs):
         if name == 'segment' and self.in_nzb and self.in_file and self.in_segments:
@@ -345,7 +346,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             else:
                 self.filename = subject.strip()
 
-            if self.filter == 2 and RE_SAMPLE.search(subject):
+            if self.filter and RE_SAMPLE.search(subject):
                 logging.info('Skipping sample file %s', subject)
             else:
                 self.in_file = True
@@ -642,7 +643,7 @@ class NzbObject(TryList):
             if 'A&A)' in nzb:
                 # Fix needed to compensate for some dumb NZB posters
                 nzb = nzb.replace('A&A)', 'A&amp;A)')
-            handler = NzbParser(self)
+            handler = NzbParser(self, cfg.ignore_samples() == 2 and not reuse)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
             parser.setContentHandler(handler)
