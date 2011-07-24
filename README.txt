@@ -1,6 +1,12 @@
-************************  SABnzbd 0.6.6 Beta 2  ************************
+************************  SABnzbd 0.6.6 RC1  ************************
 
 What's new:
+RC1:
+- When "Download only" is used, do not send downloaded NZB files to the queue
+- Fix bad links coming from nzbclub.com
+- A job sometimes fails verification when the option "don't download samples" is used.
+  Now this option will be ignored when you click "Retry" in the history.
+- File an error message when the RSS-email template is missing.
 Beta 2:
 - Fix sending of duplicate emails when using a list of recipients
 - Fix handle leakage on Windows
