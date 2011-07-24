@@ -323,7 +323,11 @@ def process_job(nzo):
                 cleanup_list(tmp_workdir_complete, True)
 
                 ## Check if this is an NZB-only download, if so redirect to queue
-                nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, cat, priority=nzo.priority)
+                ## except when PP was Download-only
+                if flag_repair:
+                    nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, cat, priority=nzo.priority)
+                else:
+                    nzb_list = None
                 if nzb_list:
                     nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
                     try:
