@@ -641,7 +641,7 @@ def find_free_port(host, currentport):
     return 0
 
 
-def check_for_sabnzbd(url, upload_nzbs):
+def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     """ Check for a running instance of sabnzbd(same version) on this port
     """
     if is_sabnzbd_running(url):
@@ -653,7 +653,7 @@ def check_for_sabnzbd(url, upload_nzbs):
         else:
             # Launch the web browser and quit since sabnzbd is already running
             url = url[:url.rfind('/')+1]
-            launch_a_browser(url, force=True)
+            launch_a_browser(url, force=allow_browser)
         exit_sab(0)
         return True
     return False
@@ -1032,7 +1032,7 @@ def main():
     url = None
     if sabnzbd.WIN32 and not new_instance:
         url = get_connection_info()
-        if url and check_for_sabnzbd(url, upload_nzbs):
+        if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
 
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
@@ -1050,7 +1050,7 @@ def main():
             else:
                 if not url:
                     url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs):
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     newport = find_free_port(browserhost, port)
                     if newport > 0:
                         sabnzbd.cfg.https_port.set(newport)
@@ -1070,7 +1070,7 @@ def main():
         else:
             if not url:
                 url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
-            if new_instance or not check_for_sabnzbd(url, upload_nzbs):
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                 port = find_free_port(browserhost, cherryport)
                 if port > 0:
                     sabnzbd.cfg.cherryport.set(port)
