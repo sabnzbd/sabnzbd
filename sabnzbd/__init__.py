@@ -370,7 +370,11 @@ def halt():
             pass
 
         ## Save State ##
-        save_state(flag=True)
+        try:
+            save_state(flag=True)
+        except:
+            logging.error('Fatal error at saving state', exc_info=True)
+
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
