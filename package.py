@@ -48,7 +48,8 @@ def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
     for f in glob.glob(name):
         try:
-            os.remove(f)
+            if os.path.exists(f):
+                os.remove(f)
         except:
             print "Cannot remove file %s" % f
             exit(1)
@@ -239,14 +240,23 @@ def check_runtimes():
         if path:
             path = os.path.join(path, 'Bazaar')
             if not os.path.exists(path):
-                path = None
-        if not path:
-            print 'Cannot find runtime libraries, have you installed Bazaar'
-            print 'in %s ?' % path
-            exit(1)
+                print 'Cannot find runtime libraries, have you installed Bazaar'
+                print 'in %s ?' % path
+                exit(1)
     return path
 
+def write_dll_message(path):
+    f = open(path, 'w')
+    f.write('''
+                          **** IMPORTANT ****
 
+If you get a Windows error message, claiming that DLL files are missing,
+please install "Microsoft Visual C++ 2008 Redistributable Package (x86)".
+Download from http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=29
+Install this and *not* the SP1 package (or install both).
+
+''')
+    f.close()
 
 print sys.argv[0]
 
@@ -447,6 +457,10 @@ elif target in ('binary', 'installer'):
         os.system(BzrRevert)
         exit(1)
 
+    if target == 'installer' and sys.version_info < (2, 6):
+        print 'Windows binary installer requires Python 2.6 or 2.7'
+        exit(1)
+
     run_times = check_runtimes()
 
     # Create MO files
@@ -523,13 +537,20 @@ elif target in ('binary', 'installer'):
 
 
     ############################
+    # Remove unwanted system DLL files that Py2Exe copies when running on Win7
+    DeleteFiles(r'dist\lib\API-MS-Win-*.dll')
+    DeleteFiles(r'dist\lib\MSWSOCK.DLL')
+    DeleteFiles(r'dist\lib\POWRPROF.DLL')
+
+    ############################
     # Copy MS runtime files or Curl
     if run_times:
-        # MS Runtimes for Python 2.6+
-        shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
-        shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
-        shutil.copy2(os.path.join(run_times, r'msvcr90.dll'), r'dist')
-        shutil.copy2(os.path.join(run_times, r'lib\Microsoft.VC90.CRT.manifest'), r'dist\lib')
+        #Won't work with OpenSSL DLLs :(
+        #shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
+        #shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
+        #shutil.copy2(os.path.join(run_times, r'msvcr90.dll'), r'dist')
+        #shutil.copy2(os.path.join(run_times, r'lib\Microsoft.VC90.CRT.manifest'), r'dist\lib')
+        pass
     else:
         # Curl for Python 2.5
         os.system(r'unzip -o win\curl\curl.zip -d dist\lib')
@@ -543,8 +564,10 @@ elif target in ('binary', 'installer'):
 
 
     DeleteFiles(fileBin)
+    write_dll_message('dist/IMPORTANT_MESSAGE.txt')
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
+    DeleteFiles('dist/IMPORTANT_MESSAGE.txt')
     time.sleep(1.0)
     os.rename(prod, 'dist')
 
