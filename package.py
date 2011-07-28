@@ -344,6 +344,9 @@ if target == 'app':
         os.system(BzrRevert)
         exit(1)
 
+    # Check which Python flavour
+    apple_py = 'ActiveState' not in sys.copyright
+
     #Create sparseimage from template
     os.system("unzip sabnzbd-template.sparseimage.zip")
     os.rename('sabnzbd-template.sparseimage', fileImg)
@@ -367,8 +370,9 @@ if target == 'app':
     sys.argv[1] = 'py2app'
 
     # Due to ApplePython bug
-    sys.argv.append('-p');
-    sys.argv.append('email');
+    if apple_py:
+        sys.argv.append('-p');
+        sys.argv.append('email');
 
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
@@ -382,7 +386,7 @@ if target == 'app':
             LSTypeIsPackage = 0,
             NSPersistentStoreTypeKey = 'Binary',
     )
-    OPTIONS = {'argv_emulation': False, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
+    OPTIONS = {'argv_emulation': not apple_py, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
