@@ -1238,20 +1238,7 @@ def main():
     # Save the INI file
     config.save_config(force=True)
 
-    logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
-    try:
-        sabnzbd.start()
-    except:
-        logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
-        sabnzbd.halt()
-
     print_modules()
-
-    # Upload any nzb/zip/rar/nzb.gz files from file association
-    if upload_nzbs:
-        from sabnzbd.utils.upload import add_local
-        for f in upload_nzbs:
-            add_local(f)
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
@@ -1424,6 +1411,20 @@ def main():
 
     if pid_path:
         sabnzbd.pid_file(pid_path, cherryport)
+
+    # Start all SABnzbd tasks
+    logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
+    try:
+        sabnzbd.start()
+    except:
+        logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
+        sabnzbd.halt()
+
+    # Upload any nzb/zip/rar/nzb.gz files from file association
+    if upload_nzbs:
+        from sabnzbd.utils.upload import add_local
+        for f in upload_nzbs:
+            add_local(f)
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
