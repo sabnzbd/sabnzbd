@@ -140,6 +140,13 @@ class PostProcessor(Thread):
         """ Return list of NZOs that still need to be processed """
         return [nzo for nzo in self.history_queue if nzo.work_name]
 
+    def get_path(self, nzo_id):
+        """ Return download path for given nzo_id or None when not found """
+        for nzo in self.history_queue:
+            if nzo.nzo_id == nzo_id:
+                return nzo.downpath
+        return None
+
     def run(self):
         """ Actual processing """
         check_eoq = False

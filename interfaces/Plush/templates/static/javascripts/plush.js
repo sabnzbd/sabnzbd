@@ -908,10 +908,10 @@ $("a","#multiops_inputs").click(function(e){
     $('#delete_nzb_modal_title').text( $(this).parent().prev().prev().children('a:first').text() );
     $('#delete_nzb_modal_job').val( $(this).parent().parent().attr('id') );
     $('#delete_nzb_modal_mode').val( 'history' );
-    if ($(this).parent().parent().children('td:first').children().hasClass('sprite_hv_error'))
-      $('#delete_nzb_modal_remove_files').button('enable');
-    else
+    if ($(this).parent().parent().children('td:first').children().hasClass('sprite_hv_star'))
       $('#delete_nzb_modal_remove_files').button('disable');
+    else
+      $('#delete_nzb_modal_remove_files').button('enable');
     $.colorbox({ inline:true, href:"#delete_nzb_modal", title:$(this).text(),
       innerWidth:"600px", innerHeight:"150px", initialWidth:"600px", initialHeight:"150px", speed:0, opacity:0.7
     });

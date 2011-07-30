@@ -1380,10 +1380,15 @@ def retry_job(job, new_nzb):
 def del_hist_job(job, del_files):
     """ Remove history element """
     if job:
-        history_db = cherrypy.thread_data.history_db
-        path = history_db.get_path(job)
-        PostProcessor.do.delete(job, del_files=del_files)
-        history_db.remove_history(job)
+        path = PostProcessor.do.get_path(job)
+        if path:
+            PostProcessor.do.delete(job, del_files=del_files)
+        else:
+            history_db = cherrypy.thread_data.history_db
+            path = history_db.get_path(job)
+            PostProcessor.do.delete(job, del_files=del_files)
+            history_db.remove_history(job)
+
         if path and del_files and path.lower().startswith(cfg.download_dir.get_path().lower()):
             nzbstuff.clean_folder(os.path.join(path, JOB_ADMIN))
             nzbstuff.clean_folder(path)
@@ -1402,7 +1407,7 @@ def Tspec(txt):
 _SKIN_CACHE = {}    # Stores pre-translated acronyms
 
 # This special is to be used in interface.py for template processing
-# to be paased for the $T function: so { ..., 'T' : Ttemplate, ...}
+# to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
     """ Translation function for Skin texts
     """
