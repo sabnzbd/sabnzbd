@@ -643,7 +643,10 @@ def find_free_port(host, currentport):
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     """ Check for a running instance of sabnzbd(same version) on this port
+        allow_browser==True|None will launch the browser, False will not.
     """
+    if allow_browser is None:
+        allow_browser = True
     if is_sabnzbd_running(url):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
@@ -652,6 +655,7 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
                 upload_file(url, f)
         else:
             # Launch the web browser and quit since sabnzbd is already running
+            # Trim away everything after the final slash in the URL
             url = url[:url.rfind('/')+1]
             launch_a_browser(url, force=allow_browser)
         exit_sab(0)
