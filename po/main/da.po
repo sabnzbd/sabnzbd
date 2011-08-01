@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-25 20:01+0000\n"
-"PO-Revision-Date: 2011-06-25 04:12+0000\n"
+"POT-Creation-Date: 2011-07-18 19:42+0000\n"
+"PO-Revision-Date: 2011-06-27 06:23+0000\n"
 "Last-Translator: Rene <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-26 04:45+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-07-19 04:52+0000\n"
+"X-Generator: Launchpad (build 13405)\n"
 "Language: da\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -51,11 +51,11 @@ msgstr ""
 "Vær opmærksom på at 0.0.0.0 værtsnavn har brug for en IPv6-adresse for "
 "ekstern adgang"
 
-#: SABnzbd.py:1270 [Warning message]
+#: SABnzbd.py:1281 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS fejlede på grund af manglende CERT og KEY filer"
 
-#: SABnzbd.py:1502 # sabnzbd/osxmenu.py:735
+#: SABnzbd.py:1526 # sabnzbd/osxmenu.py:731
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd lukning udført."
 
@@ -107,36 +107,36 @@ msgstr "Timeout"
 msgid "Invalid server address."
 msgstr "Ugyldig server adresse."
 
-#: sabnzbd/utils/servertests.py:115
+#: sabnzbd/utils/servertests.py:119
 msgid "Server requires username and password."
 msgstr "Serveren kræver brugernavn og password."
 
-#: sabnzbd/utils/servertests.py:118
+#: sabnzbd/utils/servertests.py:122
 msgid "Connection Successful!"
 msgstr "Tilslutning lykkedes!"
 
-#: sabnzbd/utils/servertests.py:121
+#: sabnzbd/utils/servertests.py:125
 msgid "Authentication failed, check username/password."
 msgstr "Godkendelse mislykkedes, kontrollere brugernavn / adgangskode."
 
-#: sabnzbd/utils/servertests.py:124
+#: sabnzbd/utils/servertests.py:128
 msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Alt for mange forbindelser, pause en download eller forsøg igen senere"
 
-#: sabnzbd/utils/servertests.py:127
+#: sabnzbd/utils/servertests.py:131
 msgid "Could not determine connection result (%s)"
 msgstr "Det lykkedes ikke at tilslutte (%s)"
 
-#: sabnzbd/__init__.py:158 [Warning message]
+#: sabnzbd/__init__.py:159 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s modtaget, gemmer og lukker..."
 
-#: sabnzbd/__init__.py:424
+#: sabnzbd/__init__.py:425
 msgid "fetching msgid %s from www.newzbin.com"
 msgstr "henter msgid %s fra www.newzbin.com"
 
-#: sabnzbd/__init__.py:430 [Error message]
+#: sabnzbd/__init__.py:431 [Error message]
 msgid ""
 "Error Fetching msgid %s from www.newzbin.com - Please make sure your "
 "Username and Password are set"
@@ -144,68 +144,68 @@ msgstr ""
 "Fejl ved hentning af msgid %s fra www.newzbin.com - Sørg for at dit "
 "brugernavn og kodeord er fastsat"
 
-#: sabnzbd/__init__.py:442
+#: sabnzbd/__init__.py:443
 msgid "Trying to fetch NZB from %s"
 msgstr "Forsøger at hente NZB fra %s"
 
-#: sabnzbd/__init__.py:565 [Error message] # sabnzbd/config.py:751 [Error message]
+#: sabnzbd/__init__.py:566 [Error message] # sabnzbd/config.py:751 [Error message]
 msgid "Cannot create temp file for %s"
 msgstr "Kan ikke oprette temp fil for %s"
 
-#: sabnzbd/__init__.py:583 [Warning message] # sabnzbd/__init__.py:595 [Warning message]
+#: sabnzbd/__init__.py:584 [Warning message] # sabnzbd/__init__.py:596 [Warning message]
 msgid "Trying to set status of non-existing server %s"
 msgstr "Forsøger at sætte status på ikke eksisterende server %s"
 
-#: sabnzbd/__init__.py:728 [Warning message]
+#: sabnzbd/__init__.py:729 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
 msgstr "For lidt diskplads tvinger system i PAUSE"
 
-#: sabnzbd/__init__.py:754 [Error message]
+#: sabnzbd/__init__.py:755 [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fejl i tempfile.mkstemp"
 
-#: sabnzbd/__init__.py:776 [Error message] # sabnzbd/__init__.py:839 [Error message]
+#: sabnzbd/__init__.py:777 [Error message] # sabnzbd/__init__.py:840 [Error message]
 msgid "Saving %s failed"
 msgstr "Gemmes %s mislykkedes"
 
-#: sabnzbd/__init__.py:803 [Error message] # sabnzbd/__init__.py:868 [Error message]
+#: sabnzbd/__init__.py:804 [Error message] # sabnzbd/__init__.py:869 [Error message]
 msgid "Loading %s failed"
 msgstr "Downloadning af %s mislykkedes"
 
-#: sabnzbd/api.py:1389 # sabnzbd/osxmenu.py:189 # sabnzbd/skintext.py:66 [No value, used in dropdown menus]
+#: sabnzbd/api.py:1396 # sabnzbd/osxmenu.py:189 # sabnzbd/skintext.py:66 [No value, used in dropdown menus]
 #: sabnzbd/skintext.py:636 [Job details page, select no files]
 msgid "None"
 msgstr "Ingen"
 
-#: sabnzbd/api.py:1391 # sabnzbd/interface.py:92 # sabnzbd/skintext.py:65 [Default value, used in dropdown menus]
+#: sabnzbd/api.py:1398 # sabnzbd/interface.py:92 # sabnzbd/skintext.py:65 [Default value, used in dropdown menus]
 msgid "Default"
 msgstr "Standard"
 
-#: sabnzbd/api.py:1447 # sabnzbd/interface.py:2173
+#: sabnzbd/api.py:1454 # sabnzbd/interface.py:2173
 msgid "WARNING:"
 msgstr "ADVARSEL:"
 
-#: sabnzbd/api.py:1447 # sabnzbd/interface.py:2173 # sabnzbd/interface.py:2266
+#: sabnzbd/api.py:1454 # sabnzbd/interface.py:2173 # sabnzbd/interface.py:2266
 msgid "ERROR:"
 msgstr "FEJL:"
 
-#: sabnzbd/api.py:1505
+#: sabnzbd/api.py:1512
 msgid "unknown"
 msgstr "Ukendt"
 
-#: sabnzbd/api.py:1532 [Error message]
+#: sabnzbd/api.py:1535 [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Det lykkedes ikke at kompilere regex for søgestreng: %s"
 
-#: sabnzbd/api.py:1719 [Single letter abbreviation of day]
+#: sabnzbd/api.py:1722 [Single letter abbreviation of day]
 msgid "d"
 msgstr "d"
 
-#: sabnzbd/api.py:1720 [Single letter abbreviation of hour]
+#: sabnzbd/api.py:1723 [Single letter abbreviation of hour]
 msgid "h"
 msgstr "h"
 
-#: sabnzbd/api.py:1721 [Single letter abbreviation of minute]
+#: sabnzbd/api.py:1724 [Single letter abbreviation of minute]
 msgid "m"
 msgstr "m"
 
@@ -217,11 +217,11 @@ msgstr "Disken er fuld! Pauser..."
 msgid "Disk error on creating file %s"
 msgstr "Diskfejl ved oprettelse af fil %s"
 
-#: sabnzbd/assembler.py:107 [Warning message]
+#: sabnzbd/assembler.py:108 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file"
 
-#: sabnzbd/assembler.py:139
+#: sabnzbd/assembler.py:140
 msgid "%s missing"
 msgstr "%s mangler"
 
@@ -599,11 +599,11 @@ msgstr "Forsøg igen"
 msgid "URL Fetching failed; %s"
 msgstr "URL hentning mislykkedes; %s"
 
-#: sabnzbd/misc.py:1019 [Warning message]
+#: sabnzbd/misc.py:1025 [Warning message]
 msgid "pyopenssl module missing, please install for https access"
 msgstr "pyopenssl modul mangler, du skal installere for HTTPS-adgang"
 
-#: sabnzbd/misc.py:1037 [Error message]
+#: sabnzbd/misc.py:1043 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Fejl ved oprettelse af SSL-nøgle og certifikat."
 
@@ -768,27 +768,31 @@ msgstr "[%s] Bekræftelse i %s, kræver reparation"
 msgid "Main packet not found..."
 msgstr "Hovedarkiv mangler..."
 
-#: sabnzbd/newsunpack.py:1002 # sabnzbd/newsunpack.py:1034
+#: sabnzbd/newsunpack.py:968
+msgid "Invalid par2 files, cannot verify or repair"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:1009 # sabnzbd/newsunpack.py:1041
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Reparation mislykkedes, ikke nok reparation blokke (%s mangler)"
 
-#: sabnzbd/newsunpack.py:1029
+#: sabnzbd/newsunpack.py:1036
 msgid "Fetching %s blocks..."
 msgstr "Henter %s block..."
 
-#: sabnzbd/newsunpack.py:1031
+#: sabnzbd/newsunpack.py:1038
 msgid "Fetching"
 msgstr "Henter"
 
-#: sabnzbd/newsunpack.py:1043 # sabnzbd/newsunpack.py:1048
+#: sabnzbd/newsunpack.py:1050 # sabnzbd/newsunpack.py:1055
 msgid "Repairing"
 msgstr "Reparerer"
 
-#: sabnzbd/newsunpack.py:1052
+#: sabnzbd/newsunpack.py:1059
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Repareret i %s"
 
-#: sabnzbd/newsunpack.py:1070 # sabnzbd/newsunpack.py:1088
+#: sabnzbd/newsunpack.py:1077 # sabnzbd/newsunpack.py:1095
 msgid "Verifying"
 msgstr "Bekræfter"
 
@@ -852,59 +856,59 @@ msgstr "Det lykkedes ikke at tilføje  %s, slette"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Ukendt kodning"
 
-#: sabnzbd/nzbstuff.py:403 [Warning message]
+#: sabnzbd/nzbstuff.py:410 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Fil %s er tom, springer over"
 
-#: sabnzbd/nzbstuff.py:431 [Warning message]
+#: sabnzbd/nzbstuff.py:438 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Det lykkedes ikke at importere %s filer fra %s"
 
-#: sabnzbd/nzbstuff.py:649 [Warning message] # sabnzbd/nzbstuff.py:654 [Warning message]
+#: sabnzbd/nzbstuff.py:656 [Warning message] # sabnzbd/nzbstuff.py:661 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Ødelagt NZB fil %s, springer over (årsag=%s, linje=%s)"
 
-#: sabnzbd/nzbstuff.py:662 [Warning message]
+#: sabnzbd/nzbstuff.py:669 [Warning message]
 msgid "Empty NZB file %s"
 msgstr "Tom NZB fil %s"
 
-#: sabnzbd/nzbstuff.py:721 [Warning message]
+#: sabnzbd/nzbstuff.py:728 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorerer identiske NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:726 [Warning message]
+#: sabnzbd/nzbstuff.py:733 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pause duplikeret NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:904 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:911 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr "DUPLIKERE"
 
-#: sabnzbd/nzbstuff.py:906 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:913 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr "KRYPTEREDE"
 
-#: sabnzbd/nzbstuff.py:908 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:915 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr "FOR STOR"
 
-#: sabnzbd/nzbstuff.py:963
+#: sabnzbd/nzbstuff.py:970
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Hentede i %s med et gennemsnit på %sB/s"
 
-#: sabnzbd/nzbstuff.py:969
+#: sabnzbd/nzbstuff.py:976
 msgid "%s articles were malformed"
 msgstr "%s artikler misdanned"
 
-#: sabnzbd/nzbstuff.py:971
+#: sabnzbd/nzbstuff.py:978
 msgid "%s articles were missing"
 msgstr "%s artikler mangled"
 
-#: sabnzbd/nzbstuff.py:973
+#: sabnzbd/nzbstuff.py:980
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikler havde ikke-matchende dubletter"
 
-#: sabnzbd/nzbstuff.py:1003 [Error message]
+#: sabnzbd/nzbstuff.py:1010 [Error message]
 msgid "Error importing %s"
 msgstr "Det lykkedes ikke at importere %s"
 
@@ -996,7 +1000,7 @@ msgstr "Ny version tilgænglig"
 msgid "Go to wizard"
 msgstr "Gå til guiden"
 
-#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:728
+#: sabnzbd/osxmenu.py:700 # sabnzbd/osxmenu.py:703 # sabnzbd/osxmenu.py:724
 msgid "Stopping..."
 msgstr "Standser"
 
@@ -1307,15 +1311,19 @@ msgstr "Kunne ikke kompilere regex: %s"
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Forkert RSS-feed beskrivelse \"%s\""
 
-#: sabnzbd/rss.py:297 # sabnzbd/rss.py:303
+#: sabnzbd/rss.py:297 # sabnzbd/rss.py:309
 msgid "Failed to retrieve RSS from %s: %s"
 msgstr "Mislykkedes at hente RSS fra %s: %s"
 
-#: sabnzbd/rss.py:307
+#: sabnzbd/rss.py:303
+msgid "Do not have valid authentication for feed %s"
+msgstr ""
+
+#: sabnzbd/rss.py:313
 msgid "RSS Feed %s was empty"
 msgstr "RSS Feed %s er tom"
 
-#: sabnzbd/rss.py:618 [Warning message]
+#: sabnzbd/rss.py:624 [Warning message]
 msgid "Empty RSS entry found (%s)"
 msgstr "Tom RSS post blev fundet (%s)"
 
@@ -1397,7 +1405,7 @@ msgstr "Hent NZB"
 
 #: sabnzbd/skintext.py:45 [PP status]
 msgid "Checking"
-msgstr ""
+msgstr "Kontrollerer"
 
 #: sabnzbd/skintext.py:47 [#: Config->Scheduler] # sabnzbd/skintext.py:464
 msgid "Frequency"
@@ -2737,6 +2745,8 @@ msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quotum? "
 "(Optionally with hh:mm)"
 msgstr ""
+"På hvilken dag i måneden eller ugen (1 = mandag) nulstiller din "
+"internetudbyder kvota? (Valgfrit med tt: mm)"
 
 #: sabnzbd/skintext.py:431 [Auto-resume download on the reset day]
 msgid "Auto resume"
@@ -2748,19 +2758,20 @@ msgstr "Skal download genoptages efter kvotaen er nulstillet?"
 
 #: sabnzbd/skintext.py:433 [Does the quotum get reset every day, week or month?]
 msgid "Quotum period"
-msgstr ""
+msgstr "Kvota periode"
 
 #: sabnzbd/skintext.py:434
 msgid "Does the quotum get reset each day, week or month?"
-msgstr ""
+msgstr "Bliver kvota nulstillet hver dag, uge ​​eller måned?"
 
 #: sabnzbd/skintext.py:435
 msgid "Check before download"
-msgstr ""
+msgstr "Tjek før download"
 
 #: sabnzbd/skintext.py:436
 msgid "Try to predict successful completion before actual download (slower!)"
 msgstr ""
+"Prøv at forudsige en vellykket afslutning, før selve download (langsom!)"
 
 #: sabnzbd/skintext.py:440
 msgid "Server configuration"
