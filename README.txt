@@ -1,18 +1,10 @@
-************************  SABnzbd 0.6.6  ************************
+************************  SABnzbd 0.6.7  ************************
 
 What's new:
-- Compatible with OSX Lion
-- End-of-queue action now ignores paused items in the queue
-- Fetching extra par2 files now obeys pause too
-- Extension-based cleanup now also cleans sub-folders
-- When "Download only" is used, do not send downloaded NZB files to the queue
-- Fix bad links coming from nzbclub.com
-- A job sometimes fails verification when the option "don't download samples" is used.
-  Now this option will be ignored when you click "Retry" in the history.
-- File an error message when the RSS-email template is missing.
-- Fix sending of duplicate emails when using a list of recipients
-- Fix handle leakage on Windows
-- On OSX, SABnzbd didn't handle "Open With" of nzb.gz files properly
+- Prevent immediate exit after startup when queue is empty and
+  an end-of-queue action like "shutdown" was set
+- Fix failure to launch browser when clicking shortcut the second time
+- Allow jobs still waiting for post-processing to be deleted
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.

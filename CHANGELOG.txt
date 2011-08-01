@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.6.7Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Prevent immediate exit after startup when queue is empty and
+  an end-of-queue action like "shutdown" was set
+- Fix failure to launch browser when clicking shortcut the second time
+- Allow jobs still waiting for post-processing to be deleted
+- Delay starting of dowload task until after webserver is started.
+-------------------------------------------------------------------------------
  0.6.6Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Prevent crashes when running into disk-full situations.
