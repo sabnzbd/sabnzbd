@@ -287,7 +287,7 @@ body {
   }
 
 .navigation ul li a {
-  color:#fff;
+  color:#efefef;
   font-weight:bold;
   display: block;
   padding: 0 8px 0 0;
@@ -297,9 +297,10 @@ body {
   line-height: 25px;
   background-color:#363636;
 /*    background : -webkit-gradient(linear, right top, right bottom, from(rgb(168,168,168)), to(rgb(69,69,69)));
-  background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));  */
+  background : -moz-linear-gradient(top, rgb(168,168,168), rgb(69,69,69));
   -webkit-transition-property: background;
   -webkit-transition-duration: 700ms;
+*/
   -moz-transition-property: background;
   -moz-transition-duration: 700ms;
   }
