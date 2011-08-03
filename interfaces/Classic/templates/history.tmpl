@@ -6,6 +6,7 @@
 <span class="SubMenu">
   <a href="./purge?session=$session" onclick="return confirm('$T('purgeHistConf').replace("'","`") ');">$T('purgeHist')</a> |
   <a href="./purge_failed?session=$session" onclick="return confirm('$T('purgeHistFailedConf').replace("'","`") ');">$T('purgeHistFailed')</a> |
+  <a href="./purge_failed?session=$session&del_files=1" onclick="return confirm('$T('purgeFailed-Files').replace("'","`") ');">$T('purgeFailed-Files')</a> |
   <!--#if $isverbose#-->
     <a href="./tog_verbose?session=$session">$T('hideDetails')</a> |
   <!--#else#-->
