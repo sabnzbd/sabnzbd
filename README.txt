@@ -5,6 +5,9 @@ What's new:
   an end-of-queue action like "shutdown" was set
 - Fix failure to launch browser when clicking shortcut the second time
 - Allow jobs still waiting for post-processing to be deleted
+- Plush: button "Purge failed NZBs & delete files" will now actually delete files
+- Classic/smpl: add link "Purge failed NZBs & delete files"
+- Plush: fix flashing top menu in Safari 5.1
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
