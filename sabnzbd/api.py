@@ -400,15 +400,17 @@ def _api_history(name, output, kwargs):
 
     if name == 'delete':
         special = value.lower()
+        del_files = bool(int_conv(kwargs.get('del_files')))
         if special in ('all', 'failed', 'completed'):
             history_db = cherrypy.thread_data.history_db
-            if value in ('all', 'failed'):
+            if special in ('all', 'failed'):
+                if del_files:
+                    del_job_files(history_db.get_failed_paths())
                 history_db.remove_failed()
-            if value in ('all', 'completed'):
+            if special in ('all', 'completed'):
                 history_db.remove_completed()
             return report(output)
         elif value:
-            del_files = bool(int_conv(kwargs.get('del_files')))
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
@@ -1374,6 +1376,15 @@ def retry_job(job, new_nzb):
             history_db.remove_history(job)
             return True
     return False
+
+
+#------------------------------------------------------------------------------
+def del_job_files(job_paths):
+    """ Remove files of each path in the list """
+    for path in job_paths:
+        if path and path.lower().startswith(cfg.download_dir.get_path().lower()):
+            nzbstuff.clean_folder(os.path.join(path, JOB_ADMIN))
+            nzbstuff.clean_folder(path)
 
 
 #------------------------------------------------------------------------------

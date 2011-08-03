@@ -143,6 +143,14 @@ class HistoryDB(object):
     def remove_completed(self):
         return self.execute("""DELETE FROM history WHERE status = 'Completed'""", save=True)
 
+    def get_failed_paths(self):
+        """ Return list of all storage paths of failed jobs (may contain non-existing or empty paths) """
+        fetch_ok = self.execute("""SELECT path FROM history WHERE status = 'Failed'""")
+        if fetch_ok:
+            return [item.get('path') for item in self.c.fetchall()]
+        else:
+            return []
+
     def remove_failed(self):
         return self.execute("""DELETE FROM history WHERE status = 'Failed'""", save=True)
 

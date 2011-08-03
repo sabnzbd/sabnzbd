@@ -57,7 +57,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
-     retry_job, build_header, build_history, \
+     retry_job, build_header, build_history, del_job_files, \
      format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
 
 #------------------------------------------------------------------------------
@@ -914,7 +914,10 @@ class HistoryPage(object):
     def purge_failed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        del_files = bool(int_conv(kwargs.get('del_files')))
         history_db = cherrypy.thread_data.history_db
+        if del_files:
+            del_job_files(history_db.get_failed_paths())
         history_db.remove_failed()
         raise queueRaiser(self.__root, kwargs)
 
