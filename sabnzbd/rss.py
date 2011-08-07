@@ -127,6 +127,23 @@ def convert_filter(text):
         logging.error(Ta('Could not compile regex: %s'), text)
         return None
 
+_EXPIRE_SEC = 3*24*3600 # 3 days
+def remove_obsolete(jobs, new_jobs):
+    """ Expire G/B links that are not in new_jobs (mark them 'X')
+        Expired links older than 3 days are removed from 'jobs'
+    """
+    now = time.time()
+    limit =  now - _EXPIRE_SEC
+    olds  = jobs.keys()
+    for old in olds:
+        tm = jobs[old]['time']
+        if old not in new_jobs:
+            if jobs[old].get('status', ' ')[0] in ('G', 'B'):
+                jobs[old]['status'] = 'X'
+        if jobs[old]['status'] == 'X' and tm < limit:
+            logging.debug("Purging link %s", old)
+            del jobs[old]
+
 
 LOCK = threading.RLock()
 class RSSQueue(object):
@@ -142,9 +159,13 @@ class RSSQueue(object):
 
         self.jobs = {}
         try:
+            defined = config.get_rss().keys()
             feeds = sabnzbd.load_admin(RSS_FILE_NAME)
             if type(feeds) == type({}):
                 for feed in feeds:
+                    if feed not in defined:
+                        logging.debug('Dropping obsolete data for feed "%s"', feed)
+                        continue
                     self.jobs[feed] = {}
                     for link in feeds[feed]:
                         data = feeds[feed][link]
@@ -170,7 +191,8 @@ class RSSQueue(object):
                                 item = feeds[feed][link]
                                 if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
                                     raise IndexError
-                                if not item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'): item['status'] = 'X'
+                                if item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'):
+                                    item['status'] = 'X'
                                 if not isinstance(item.get('url'), unicode): item['url'] = ''
                                 if not check_str(item.get('cat')): item['cat'] = ''
                                 if not check_str(item.get('orgcat')): item['orgcat'] = ''
@@ -183,6 +205,8 @@ class RSSQueue(object):
                                 self.jobs[feed][link] = item
                             except (KeyError, IndexError):
                                 logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
+
+                    remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
 
         except IOError:
             logging.debug('Cannot read file %s', RSS_FILE_NAME)
@@ -354,7 +378,11 @@ class RSSQueue(object):
 
                 newlinks.append(link)
 
-                if (link not in jobs) or (jobs[link].get('status', ' ') in ('G', 'B', 'G*', 'B*')):
+                if link in jobs:
+                    jobstat = jobs[link].get('status', ' ')[0]
+                else:
+                    jobstat = 'N'
+                if jobstat in 'NGB' or (jobstat == 'X' and readout):
                     # Match this title against all filters
                     logging.debug('Trying title %s', atitle)
                     result = False
@@ -414,7 +442,7 @@ class RSSQueue(object):
                             logging.info("Ignoring duplicate job %s", atitle)
                             continue
                         else:
-                            priority = DUP_PRIORITY
+                            myPrio = DUP_PRIORITY
 
                     act = download and not first
                     if link in jobs:
@@ -437,25 +465,7 @@ class RSSQueue(object):
         if new_downloads and cfg.email_rss() and not force:
             emailer.rss_mail(feed, new_downloads)
 
-        # If links are in table for more than 1 week, remove
-        # Flag old D/B links as obsolete, so that they don't show up in Preview
-        now = time.time()
-        limit =  now - 1*7*24*3600
-        olds  = jobs.keys()
-        for old in olds:
-            if old not in newlinks:
-                if jobs[old].get('status', ' ')[0] in ('G', 'B'):
-                    jobs[old]['status'] = 'X'
-                try:
-                    tm = float(jobs[old]['time'])
-                except:
-                    # Fix missing timestamp in older RSS_DATA.SAB file
-                    jobs[old]['time'] = now
-                    tm = now
-                if tm < limit:
-                    logging.debug("Purging link %s", old)
-                    del jobs[old]
-
+        remove_obsolete(jobs, newlinks)
         return ''
 
 

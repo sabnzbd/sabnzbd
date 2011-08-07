@@ -1564,6 +1564,8 @@ class ConfigRss(object):
                 self.__refresh_ignore = False
             msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force, \
                                  ignoreFirst=self.__refresh_ignore, readout=readout)
+            if readout:
+                sabnzbd.rss.save()
             self.__refresh_readout = None
             conf['error'] = msg
 
@@ -1685,6 +1687,7 @@ class ConfigRss(object):
         kwargs['section'] = 'rss'
         kwargs['keyword'] = kwargs.get('feed')
         del_from_section(kwargs)
+        sabnzbd.rss.clear_feed(kwargs.get('feed'))
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
