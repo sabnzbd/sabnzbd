@@ -2520,7 +2520,7 @@ class ConfigEmail(object):
 
         self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
                                          os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+                                         123*MEBI, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
