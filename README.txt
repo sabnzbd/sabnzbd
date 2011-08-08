@@ -1,13 +1,7 @@
-************************  SABnzbd 0.6.7  ************************
+************************  SABnzbd 0.6.8RC1  ************************
 
 What's new:
-- Prevent immediate exit after startup when queue is empty and
-  an end-of-queue action like "shutdown" was set
-- Fix failure to launch browser when clicking shortcut the second time
-- Allow jobs still waiting for post-processing to be deleted
-- Plush: button "Purge failed NZBs & delete files" will now actually delete files
-- Classic/smpl: add link "Purge failed NZBs & delete files"
-- Plush: fix flashing top menu in Safari 5.1
+- Fix several RSS issues, due to corruption of stored RSS data
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
