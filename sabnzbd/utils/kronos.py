@@ -261,13 +261,19 @@ class Scheduler:
     if sys.version_info>=(2,6):
         # code for sched module of python 2.6+
         def _getqueuetoptime(self):
-            return self.sched._queue[0].time
+            try:
+                return self.sched._queue[0].time
+            except IndexError:
+                return 0.0
         def _clearschedqueue(self):
             self.sched._queue[:] = []
     else:
         # code for sched module of python 2.5 and older
         def _getqueuetoptime(self):
-            return self.sched.queue[0][0]
+            try:
+                return self.sched.queue[0][0]
+            except IndexError:
+                return 0.0
         def _clearschedqueue(self):
             self.sched.queue[:] = []
 
