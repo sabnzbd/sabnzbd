@@ -309,6 +309,7 @@ PatchVersion(release)
 
 # List of data elements, directories end with a '/'
 data_files = [
+         'ABOUT.txt',
          'README.txt',
          'INSTALL.txt',
          'GPL2.txt',
@@ -359,7 +360,7 @@ if target == 'app':
     apple_py = 'ActiveState' not in sys.copyright
 
     #Create sparseimage from template
-    os.system("unzip sabnzbd-template.sparseimage.zip")
+    os.system("unzip osx/image/sabnzbd-template.sparseimage.zip")
     os.rename('sabnzbd-template.sparseimage', fileImg)
 
     #mount sparseimage and modify volume label
