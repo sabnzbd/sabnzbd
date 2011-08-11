@@ -1,4 +1,4 @@
-************************  SABnzbd 0.6.8RC1  ************************
+************************  SABnzbd 0.6.8  ************************
 
 What's new:
 - Fix several RSS issues, due to corruption of stored RSS data
