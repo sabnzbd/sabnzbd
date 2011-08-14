@@ -86,6 +86,7 @@
   Delete   "${idir}\README.txt"
   Delete   "${idir}\README.rtf"
   Delete   "${idir}\ABOUT.txt"
+  Delete   "${idir}\IMPORTANT_MESSAGE.txt"
   Delete   "${idir}\SABnzbd-console.exe"
   Delete   "${idir}\SABnzbd.exe"
   Delete   "${idir}\SABnzbd-helper.exe"

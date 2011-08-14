@@ -71,26 +71,38 @@ def CheckPath(name):
 
 
 def PatchVersion(name):
-    """ Patch in the Bazaar baseline number, but only when this is
+    """ Patch in the Git commit hash, but only when this is
         an unmodified checkout
     """
     global my_version, my_baseline
 
+    commit = ''
     try:
-        pipe = subprocess.Popen(BzrVersion, shell=True, stdout=subprocess.PIPE).stdout
+        pipe = subprocess.Popen(GitVersion, shell=True, stdout=subprocess.PIPE).stdout
         for line in pipe.read().split('\n'):
-            if 'revno: ' in line:
-                bzr = line.split(' ')[1].strip()
+            if 'commit ' in line:
+                commit = line.split(' ')[1].strip()
+                break
         pipe.close()
     except:
-        pass
+        print 'Cannot run %s' % GitVersion
+        exit(1)
 
-    if not bzr:
-        print "WARNING: Cannot run %s" % BzrVersion
-        bzr = 'unknown'
+    state = ' (not committed)'
+    try:
+        pipe = subprocess.Popen(GitStatus, shell=True, stdout=subprocess.PIPE).stdout
+        for line in pipe.read().split('\n'):
+            if 'nothing to commit' in line:
+                state = ''
+                break
+        pipe.close()
+    except:
+        print 'Cannot run %s' % GitStatus
+        exit(1)
 
-    if not (bzr and bzr.isdigit()):
-        bzr = 'unknown'
+    if not commit:
+        print "WARNING: Cannot run %s" % GitVersion
+        commit = 'unknown'
 
     try:
         ver = open(VERSION_FILE, 'rb')
@@ -100,12 +112,12 @@ def PatchVersion(name):
         print "WARNING: cannot patch " + VERSION_FILE
         return
 
-    my_baseline = bzr
+    my_baseline = commit + state
     my_version = name
 
     regex = re.compile(r'__baseline__\s+=\s+"\w*"')
-    text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % bzr, text)
-    text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % name, text)
+    text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % my_baseline, text)
+    text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % my_version, text)
 
     try:
         ver = open(VERSION_FILE, 'wb')
@@ -121,14 +133,14 @@ def PairList(src):
         A dir returns for its root and each of its subdirs
             (path, <list-of-files>)
         Always return paths with Unix slashes.
-        Skip all Bazaar elements, .bak .pyc .pyo and *.~*
+        Skip all Git elements, .bak .pyc .pyo and *.~*
     """
     lst = []
     for item in src:
         if item.endswith('/'):
             for root, dirs, files in os.walk(item.rstrip('/\\')):
                 path = root.replace('\\', '/')
-                if path.find('.bzr') < 0:
+                if path.find('.git') < 0:
                     flist = []
                     for file in files:
                         if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or '~' in file):
@@ -260,7 +272,7 @@ Install this and *not* the SP1 package (or install both).
 
 print sys.argv[0]
 
-Bazaar = CheckPath('bzr')
+Git = CheckPath('git')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
 if os.name == 'nt':
@@ -268,12 +280,13 @@ if os.name == 'nt':
 else:
     NSIS = '-'
 
-BzrRevertApp =  Bazaar + ' revert --no-backup '
-BzrUpdateApp = Bazaar + ' update '
-BzrRevert =  Bazaar + ' revert --no-backup ' + VERSION_FILE
-BzrVersion = Bazaar + ' version-info'
+GitRevertApp =  Git + ' checkout -- '
+#GitUpdateApp = Git + ' update '
+GitRevertVersion =  GitRevertApp + ' ' + VERSION_FILE
+GitVersion = Git + ' log -1'
+GitStatus = Git + ' status'
 
-if not (Bazaar and ZipCmd and UnZipCmd and NSIS):
+if not (Git and ZipCmd and UnZipCmd and NSIS):
     exit(1)
 
 if len(sys.argv) < 2:
@@ -353,14 +366,14 @@ options = dict(
 if target == 'app':
     if not platform.system() == 'Darwin':
         print "Sorry, only works on Apple OSX!"
-        os.system(BzrRevert)
+        os.system(GitRevertVersion)
         exit(1)
 
     # Check which Python flavour
     apple_py = 'ActiveState' not in sys.copyright
 
     #Create sparseimage from template
-    os.system("unzip osx/image/sabnzbd-template.sparseimage.zip")
+    os.system("unzip osx/image/template.sparseimage.zip")
     os.rename('sabnzbd-template.sparseimage', fileImg)
 
     #mount sparseimage and modify volume label
@@ -419,13 +432,13 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
-    os.system("find dist/SABnzbd.app -name .bzr | xargs rm -rf")
+    os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     #copy builded app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     print 'Create src %s' % fileOSr
-    os.system('tar -czf %s --exclude ".bzr*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+    os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
               '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
               './ >/dev/null' % (fileOSr) )
 
@@ -447,22 +460,17 @@ if target == 'app':
     os.system("hdiutil internet-enable %s" % fileDmg)
 
 
-    os.system(BzrRevertApp + "NSIS_Installer.nsi")
-    os.system(BzrRevertApp + VERSION_FILEAPP)
-    os.system(BzrRevertApp + VERSION_FILE)
-    os.system(BzrUpdateApp)
+    os.system(GitRevertApp + "NSIS_Installer.nsi")
+    os.system(GitRevertApp + VERSION_FILEAPP)
+    os.system(GitRevertApp + VERSION_FILE)
 
 elif target in ('binary', 'installer'):
     if not py2exe:
         print "Sorry, only works on Windows!"
-        os.system(BzrRevert)
+        os.system(GitRevertVersion)
         exit(1)
 
-    if target == 'installer' and sys.version_info < (2, 6):
-        print 'Windows binary installer requires Python 2.6 or 2.7'
-        exit(1)
-
-    run_times = check_runtimes()
+    #run_times = check_runtimes()
 
     # Create MO files
     os.system('tools\\make_mo.py all')
@@ -545,7 +553,7 @@ elif target in ('binary', 'installer'):
 
     ############################
     # Copy MS runtime files or Curl
-    if run_times:
+    if sys.version > (2, 5):
         #Won't work with OpenSSL DLLs :(
         #shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
         #shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
@@ -568,11 +576,10 @@ elif target in ('binary', 'installer'):
     write_dll_message('dist/IMPORTANT_MESSAGE.txt')
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
-    DeleteFiles('dist/IMPORTANT_MESSAGE.txt')
     time.sleep(1.0)
     os.rename(prod, 'dist')
 
-    os.system(BzrRevert)
+    os.system(GitRevertVersion)
 
     ############################
     # Check for uncompressed sqlite3.dll
@@ -639,5 +646,5 @@ else:
     # Prepare the TAR.GZ pacakge
     CreateTar('srcdist', fileSrc, prod)
 
-    os.system(BzrRevert)
+    os.system(GitRevertVersion)
 
