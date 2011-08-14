@@ -318,6 +318,8 @@ def delete_from_database(section, keyword):
     """ Remove section/keyword from INI database """
     global database, CFG, modified
     del database[section][keyword]
+    if section == 'servers' and '[' in keyword:
+        keyword = keyword.replace('[', '{').replace(']', '}')
     try:
         del CFG[section][keyword]
     except KeyError:
