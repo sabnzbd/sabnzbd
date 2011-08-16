@@ -1,0 +1,28 @@
+#Compiled python
+*.py[co]
+
+# Working folders for Win build
+build/
+dist/
+locale/
+srcdist/
+
+# Generated email templates
+email/
+
+# Romanian ro.po is generated from ro.px, due to mapping to latin-1
+po/*/ro.po
+
+# Build results
+SABnzbd*.zip
+SABnzbd*.exe
+SABnzbd*.gz
+SABnzbd*.dmg
+
+# WingIDE project file
+*.wpr
+
+# General junk
+*.keep
+*.bak
+*.log
