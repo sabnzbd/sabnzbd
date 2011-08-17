@@ -79,27 +79,27 @@ jQuery(document).ready(function($){
 
   // selections
   $("#nzo_select_all").click(function(){
-    $("INPUT[type='checkbox']").attr('checked', true).trigger('change');
+    $("INPUT[type='checkbox']").prop('checked', true).trigger('change');
   });
   var last1, last2;
   $("#nzo_select_range").click(function(){
     if (last1 && last2 && last1 < last2)
-      $("INPUT[type='checkbox']").slice(last1,last2).attr('checked', true).trigger('change');
+      $("INPUT[type='checkbox']").slice(last1,last2).prop('checked', true).trigger('change');
     else if (last1 && last2)
-      $("INPUT[type='checkbox']").slice(last2,last1).attr('checked', true).trigger('change');
+      $("INPUT[type='checkbox']").slice(last2,last1).prop('checked', true).trigger('change');
   });
   $("#nzo_select_invert").click(function(){
     $("INPUT[type='checkbox']").each( function() {
-      $(this).attr('checked', !$(this).attr('checked')).trigger('change');
+      $(this).prop('checked', !$(this).prop('checked')).trigger('change');
     });
   });
   $("#nzo_select_none").click(function(){
-    $("INPUT[type='checkbox']").attr('checked', false).trigger('change');
+    $("INPUT[type='checkbox']").prop('checked', false).trigger('change');
   });
 
   // click filenames to select
   $('#config_content .nzoTable .nzf_row').click(function(event) {
-    $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked')).trigger('change');
+    $('#box-'+$(event.target).parent().attr('id')).prop('checked', !$('#box-'+$(event.target).parent().attr('id')).prop('checked')).trigger('change');
 
   // range event interaction -- see further above
   if (last1) last2 = last1;
@@ -108,7 +108,7 @@ jQuery(document).ready(function($){
 
   //
   $('#config_content .nzoTable .nzf_row input').change(function(e){
-    if ($(e.target).attr('checked'))
+    if ($(e.target).prop('checked'))
       $(e.target).parent().parent().addClass("nzo_highlight");
     else
       $(e.target).parent().parent().removeClass("nzo_highlight");
