@@ -19,27 +19,27 @@ msgstr ""
 
 #: NSIS_Installer.nsi:350
 msgid "Start SABnzbd (hidden)"
-msgstr "Porneşte SABnzbd (ascuns)"
+msgstr "Porneste SABnzbd (ascuns)"
 
 #: NSIS_Installer.nsi:359
 msgid "Show Release Notes"
-msgstr "Arată Notele de Publicare"
+msgstr "Aratã Notele de Publicare"
 
 #: NSIS_Installer.nsi:368
 msgid "Support the project, Donate!"
-msgstr "Susţine proiectul, Donează!"
+msgstr "Sustine proiectul, Doneazã!"
 
 #: NSIS_Installer.nsi:377
 msgid "Please close \"SABnzbd.exe\" first"
-msgstr "Închideţi mai întâi \"SABnzbd.exe\""
+msgstr "Închideti mai întâi \"SABnzbd.exe\""
 
 #: NSIS_Installer.nsi:386
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
-"                  >>>> ATENŢIE <<<<\\r\\n\\r\\nVă rugăm, verificaţi mai "
-"întâi notele de publicare sau mergeţi la http://wiki.sabnzbd.org/introducing-"
+"                  >>>> ATENTIE <<<<\\r\\n\\r\\nVã rugãm, verificati mai "
+"întâi notele de publicare sau mergeti la http://wiki.sabnzbd.org/introducing-"
 "0-6-0 !"
 
 #: NSIS_Installer.nsi:395
@@ -52,24 +52,24 @@ msgstr "Executare la pornire"
 
 #: NSIS_Installer.nsi:413
 msgid "Desktop Icon"
-msgstr "Icoană Desktop"
+msgstr "Icoanã Desktop"
 
 #: NSIS_Installer.nsi:422
 msgid "NZB File association"
-msgstr "Asociere cu Fişierele NZB"
+msgstr "Asociere cu Fisierele NZB"
 
 #: NSIS_Installer.nsi:431
 msgid "Delete Program"
-msgstr "Şterge Program"
+msgstr "Sterge Program"
 
 #: NSIS_Installer.nsi:440
 msgid "Delete Settings"
-msgstr "Ştergeţi Setări"
+msgstr "Stergeti Setãri"
 
 #: NSIS_Installer.nsi:449
 msgid "Delete Logs"
-msgstr "Ştergeţi Activitate"
+msgstr "Stergeti Activitate"
 
 #: NSIS_Installer.nsi:458
 msgid "Delete Cache"
-msgstr "Ştergeţi Cache"
+msgstr "Stergeti Cache"
