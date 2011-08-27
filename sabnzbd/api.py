@@ -969,6 +969,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
     info['script_list'] = list_scripts()
     info['cat_list'] = list_cats(output is None)
 
+
     n = 0
     found_active = False
     running_bytes = 0

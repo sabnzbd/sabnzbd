@@ -744,4 +744,3 @@ def collapse_folder(oldpath, newpath):
         remove_dir(orgpath)
     except:
         pass
-

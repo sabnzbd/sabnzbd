@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-0.6.x\n"
+"Project-Id-Version: SABnzbd-0.7.x\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,55 +13,75 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
 
-#: NSIS_Installer.nsi:350
+#: NSIS_Installer.nsi:408
 msgid "Start SABnzbd (hidden)"
 msgstr ""
 
-#: NSIS_Installer.nsi:359
+#: NSIS_Installer.nsi:417
 msgid "Show Release Notes"
 msgstr ""
 
-#: NSIS_Installer.nsi:368
+#: NSIS_Installer.nsi:426
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: NSIS_Installer.nsi:377
+#: NSIS_Installer.nsi:435
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
-#: NSIS_Installer.nsi:386
+#: NSIS_Installer.nsi:444
 msgid "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
 
-#: NSIS_Installer.nsi:395
+#: NSIS_Installer.nsi:453
 msgid "This will uninstall SABnzbd from your system"
 msgstr ""
 
-#: NSIS_Installer.nsi:404
+#: NSIS_Installer.nsi:462
 msgid "Run at startup"
 msgstr ""
 
-#: NSIS_Installer.nsi:413
+#: NSIS_Installer.nsi:471
 msgid "Desktop Icon"
 msgstr ""
 
-#: NSIS_Installer.nsi:422
+#: NSIS_Installer.nsi:480
 msgid "NZB File association"
 msgstr ""
 
-#: NSIS_Installer.nsi:431
+#: NSIS_Installer.nsi:489
 msgid "Delete Program"
 msgstr ""
 
-#: NSIS_Installer.nsi:440
+#: NSIS_Installer.nsi:498
 msgid "Delete Settings"
 msgstr ""
 
-#: NSIS_Installer.nsi:449
+#: NSIS_Installer.nsi:507
 msgid "Delete Logs"
 msgstr ""
 
-#: NSIS_Installer.nsi:458
+#: NSIS_Installer.nsi:516
 msgid "Delete Cache"
+msgstr ""
+
+#: NSIS_Installer.nsi:525
+msgid "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
+msgstr ""
+
+#: NSIS_Installer.nsi:534
+msgid "Downloading Microsoft runtime installer..."
+msgstr ""
+
+#: NSIS_Installer.nsi:543
+msgid "Download error, retry?"
+msgstr ""
+
+#: NSIS_Installer.nsi:552
+msgid "Cannot install without runtime library, retry?"
+msgstr ""
+
+#: NSIS_Installer.nsi:561
+msgid "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
 

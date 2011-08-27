@@ -443,6 +443,7 @@ SKIN_TEXT = {
     'opt-max_opt_only' : TT('Only for optional servers'),
     'explain-max_opt_only' : TT('Apply maximum retries only to optional servers'),
 
+
 # Config->Server
     'configServer' : TT('Server configuration'),
     'defServer' : TT('Server definition'),

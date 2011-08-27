@@ -163,18 +163,21 @@ def send_with_template(prefix, parm):
     sent = False
     for temp in lst:
         if os.access(temp, os.R_OK):
-            sent = True
             source = _decode_file(temp)
             if source:
-                for recipient in cfg.email_to():
-                    parm['to'] = recipient
-                    message = Template(source=source,
-                                        searchList=[parm],
-                                        filter=EmailFilter,
-                                        compilerSettings={'directiveStartToken': '<!--#',
-                                                          'directiveEndToken': '#-->'})
-                    ret = send(message.respond(), recipient)
-                    del message
+                sent = True
+                if len(cfg.email_to()):
+                    for recipient in cfg.email_to():
+                        parm['to'] = recipient
+                        message = Template(source=source,
+                                            searchList=[parm],
+                                            filter=EmailFilter,
+                                            compilerSettings={'directiveStartToken': '<!--#',
+                                                              'directiveEndToken': '#-->'})
+                        ret = send(message.respond(), recipient)
+                        del message
+                else:
+                    ret = T('No recipients given, no email sent')
             else:
                 ret = T('Invalid encoding of email template %s') % temp
                 errormsg(ret)
