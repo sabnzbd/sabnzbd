@@ -967,6 +967,8 @@ def main():
     # Detect Windows variant
     if sabnzbd.WIN32:
         vista_plus, vista64 = windows_variant()
+        sabnzbd.WIN64 = vista64
+
 
     if not SQLITE_DLL:
         panic_sqlite(sabnzbd.MY_FULLNAME)
@@ -1180,7 +1182,6 @@ def main():
             suffix = ' (=Vista+)'
         if vista64:
             suffix = ' (=Vista+ x64)'
-            sabnzbd.WIN64 = True
         try:
             logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
         except:
