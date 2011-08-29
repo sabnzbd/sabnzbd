@@ -2343,15 +2343,15 @@ def ShowOK(url):
 def GetRssLog(feed):
     def make_item(job):
         url = job.get('url', '')
-        title = job.get('title', '')
+        title = xml_name(job.get('title', ''))
         if url.isdigit():
             title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
         else:
-            title = xml_name(title)
+            title = title
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
-            nzbname = sanitize_foldername(xml_name(title))
+            nzbname = xml_name(sanitize_foldername(job.get('title', '')))
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
