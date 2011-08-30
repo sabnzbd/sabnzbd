@@ -38,7 +38,7 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, clean_folder, \
+                         get_unique_path, get_admin_path, remove_all, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
@@ -1124,12 +1124,12 @@ class NzbObject(TryList):
 
         if self.new_caching and not self.futuretype:
             if keep_basic:
-                clean_folder(wpath, 'SABnzbd_nz?_*')
-                clean_folder(wpath, 'SABnzbd_article_*')
+                remove_all(wpath, 'SABnzbd_nz?_*')
+                remove_all(wpath, 'SABnzbd_article_*')
             else:
-                clean_folder(wpath)
+                remove_all(wpath, recursive=True)
             if del_files:
-                clean_folder(self.downpath)
+                remove_all(self.downpath, recursive=True)
             else:
                 try:
                     os.rmdir(self.downpath)

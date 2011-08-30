@@ -481,8 +481,7 @@ def process_job(nzo):
         try:
             if os.path.exists(workdir):
                 logging.debug('Removing workdir %s', workdir)
-                remove_all(os.path.join(workdir, JOB_ADMIN))
-                remove_dir(workdir)
+                remove_all(workdir, recursive=True)
         except:
             logging.error(Ta('Error removing workdir (%s)'), workdir)
             logging.info("Traceback: ", exc_info = True)
