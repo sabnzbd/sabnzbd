@@ -772,11 +772,16 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
     try:
         _f = open(path, 'wb')
         if do_pickle:
-            cPickle.dump(data, _f, 2)
+            pickler = cPickle.Pickler(_f, 2)
+            pickler.dump(data)
+            _f.flush()
+            _f.close()
+            pickler.clear_memo()
+            del pickler
         else:
             _f.write(data)
-        _f.flush()
-        _f.close()
+            _f.flush()
+            _f.close()
     except:
         logging.error(Ta('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
@@ -833,13 +838,18 @@ def save_admin(data, _id, do_pickle=True):
     logging.info("Saving data for %s in %s", _id, path)
 
     try:
-        f = open(path, 'wb')
+        _f = open(path, 'wb')
         if do_pickle:
-            cPickle.dump(data, f, 2)
+            pickler = cPickle.Pickler(_f, 2)
+            pickler.dump(data)
+            _f.flush()
+            _f.close()
+            pickler.clear_memo()
+            del pickler
         else:
-            f.write(data)
-        f.flush()
-        f.close()
+            _f.write(data)
+            _f.flush()
+            _f.close()
     except:
         logging.error(Ta('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
