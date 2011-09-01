@@ -35,8 +35,8 @@ from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
 #
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
-    global email_endjob, email_full
-    if email_endjob() or email_full():
+    global email_endjob, email_full, email_rss
+    if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
         else:
@@ -49,8 +49,8 @@ def validate_email(value):
 
 def validate_server(value):
     """ Check if server non-empty"""
-    global email_endjob, email_full
-    if value == '' and (email_endjob() or email_full()):
+    global email_endjob, email_full, email_rss
+    if value == '' and (email_endjob() or email_full() or email_rss()):
         return T('Server address required'), None
     else:
         return None, value
