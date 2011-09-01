@@ -1352,32 +1352,32 @@ def split_filename(name):
 
 def format_time_string(seconds, days=0):
     """ Given seconds and days, return formatted day/hour/min/sec string
-        LACKS I18N !!
     """
+    def unit(n, single):
+        if n == 1:
+            return n, Tx(single)
+        else:
+            return n, Tx(single + 's')
     try:
         seconds = int(seconds)
-    except:
+    except ValueError:
         seconds = 0
 
     completestr = ''
     if days:
-        completestr += '%s day%s ' % (days, s_returner(days))
+        completestr += '%s %s ' % unit(days, 'day')
     if (seconds/3600) >= 1:
-        completestr += '%s hour%s ' % (seconds/3600, s_returner((seconds/3600)))
+        completestr += '%s %s ' % unit(seconds/3600, 'hour')
         seconds -= (seconds/3600)*3600
     if (seconds/60) >= 1:
-        completestr += '%s minute%s ' % (seconds/60, s_returner((seconds/60)))
+        completestr += '%s %s ' % unit(seconds/60, 'minute')
         seconds -= (seconds/60)*60
     if seconds > 0:
-        completestr += '%s second%s ' % (seconds, s_returner(seconds))
+        completestr += '%s %s ' % unit(seconds, 'second')
+    else:
+        completestr += '%s %s' % unit(0, 'second')
 
     return completestr.strip()
-
-def s_returner(value):
-    if value > 1:
-        return 's'
-    else:
-        return ''
 
 
 RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')
