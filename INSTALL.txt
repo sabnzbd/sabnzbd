@@ -1,4 +1,4 @@
-                                SABnzbd 0.6.6
+                                SABnzbd 0.6.9
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -48,6 +48,11 @@ You need to have Python installed and some modules.
 
 Unix/Linux/OSX
     Python-2.5, 2.6 or 2.7  http://www.python.org
+
+OSX Leopard/SnowLeopard
+    Python 2.6              http://www.activestate.com
+
+OSX Lion                    Apple Python 2.7 (included in OSX)
 
 Windows
     Python-2.5.latest       http://www.activestate.com

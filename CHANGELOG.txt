@@ -1,4 +1,17 @@
 -------------------------------------------------------------------------------
+ 0.6.9RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Update Plush to solve minor browser incompatibilities
+- On Windows the 64bit versions of par2 and unrar were never used
+- Updated unrar to 4.01
+- Using the "Download" button in newzbin.com RSS feeds produced malformed names.
+- For OSX make a Lion and a Leopard/SnowLeopard version and show this in DMG background image
+- When removing job folders in the "temporary download folder", remove everything.
+  This is needed because some operating systems add spurious files and folders.
+- Servers with square brackets in the name could not be removed.
+- Check email parameters also when only email_rss is set.
+- Try out work-around for potential memory leak in pickle.
+-------------------------------------------------------------------------------
  0.6.8Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix several RSS issues, due to corruption of stored RSS data

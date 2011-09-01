@@ -1,7 +1,16 @@
-************************  SABnzbd 0.6.8  ************************
+************************  SABnzbd 0.6.9RC1  ************************
 
 What's new:
-- Fix several RSS issues, due to corruption of stored RSS data
+- Update Plush to solve minor browser incompatibilities
+- On Windows the 64bit versions of par2 and unrar were never used
+- Updated unrar to 4.01
+- Using the "Download" button in newzbin.com RSS feeds produced malformed names.
+- When removing job folders in the "temporary download folder", remove everything.
+  This is needed because some operating systems add spurious files and folders.
+
+- OSX has now a Leopard/SnowLeopard DMG and a Lion-only DMG
+  You can see the difference in the DMG's background image
+
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
