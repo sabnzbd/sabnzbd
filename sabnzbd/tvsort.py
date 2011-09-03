@@ -922,6 +922,10 @@ def getTitles(match, name):
         xtitled = titler(x)
         title = replace_word(title, xtitled, x)
 
+    # Make sure the first letter of the title is always uppercase
+    if title:
+        title = titler(title[0]) + title[1:]
+
     # The title with spaces replaced by dots
     dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')
     dots = dots.replace('(', '.').replace(')','.').replace('..','.').rstrip('.')
