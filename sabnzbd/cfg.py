@@ -97,6 +97,7 @@ nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
 ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
 ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
 par2_multicore = OptionBool('misc', 'par2_multicore', True)
+allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
 
 newzbin_username = OptionStr('newzbin', 'username')
