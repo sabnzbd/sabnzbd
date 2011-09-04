@@ -186,29 +186,25 @@ class OptionDir(Option):
         """ Set new root, is assumed to be valid """
         self.__root = root
 
-    def set(self, value):
+    def set(self, value, create=False):
         """ Set new dir value, validate and create if needed
             Return None when directory is accepted
             Return error-string when not accepted, value will not be changed
+            'create' means try to create (but don't set permanent create flag)
         """
         error = None
-        if value != None and value != self.get():
+        if value != None and (create or value != self.get()):
             value = value.strip()
             if self.__validation:
                 error, value = self.__validation(self.__root, value, self._Option__default_val)
             if not error:
-                if value and self.__create:
+                if value and (self.__create or create):
                     res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
                     if not res:
-                        error = "Cannot create %s folder %s" % (self.ident()[1], path)
+                        error = Ta("Cannot create %s folder %s") % (self.ident()[1], path)
             if not error:
                 self._Option__set(value)
         return error
-
-    def set_create(self):
-        """ Enable auto-creation and create now """
-        self.__create = True
-        self.get_path()
 
 
 class OptionList(Option):

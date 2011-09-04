@@ -1107,12 +1107,14 @@ class ConfigDirectories(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        cfg.complete_dir.set_create()
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value != None:
                 value = platform_encode(value)
-                msg = config.get_config('misc', kw).set(value)
+                if kw == 'complete_dir':
+                    msg = config.get_config('misc', kw).set(value, create=True)
+                else:
+                    msg = config.get_config('misc', kw).set(value)
                 if msg:
                     return badParameterResponse(msg)
 
@@ -2044,7 +2046,10 @@ class ConfigCats(object):
             name = newname.lower()
             if kwargs.get('dir'):
                 kwargs['dir'] = platform_encode(kwargs['dir'])
-            config.ConfigCat(name, kwargs)
+            folder = config.ConfigCat(name, kwargs).dir
+            msg = folder.set(folder(), create=True)
+            if msg:
+                return badParameterResponse(msg)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

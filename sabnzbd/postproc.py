@@ -181,7 +181,6 @@ class PostProcessor(Thread):
             ## Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
-            cfg.complete_dir.set_create()
 
             self.__busy = True
             if process_job(nzo):
