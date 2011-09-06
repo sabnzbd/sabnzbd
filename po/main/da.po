@@ -166,7 +166,7 @@ msgstr "Kræver serveradresse"
 
 #: sabnzbd/config.py:204
 msgid "Cannot create %s folder %s"
-msgstr "Kan ikke oprette %mappe %s"
+msgstr "Kan ikke oprette %s mappe %s"
 
 #: sabnzbd/config.py:876 [Error message]
 msgid "Incorrectly encoded password %s"
@@ -1256,7 +1256,7 @@ msgstr "Mislykkedes at hente RSS fra %s: %s"
 
 #: sabnzbd/rss.py:329
 msgid "Do not have valid authentication for feed %s"
-msgstr "Har ikke gyldig godkendelse til feed% s"
+msgstr "Har ikke gyldig godkendelse til feed %s"
 
 #: sabnzbd/rss.py:339
 msgid "RSS Feed %s was empty"
