@@ -379,14 +379,19 @@ if target == 'app':
     #mount sparseimage and modify volume label
     os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
 
-    # Add OS version specific background image
-    # Use cat-append to preserve the special attributes of the background image file
-    if  [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
+    # Select OSX version specific background image
+    # Take care to preserve the special attributes of the background image file
+    if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
         # Lion and higher
-        os.system('cat osx/image/sabnzbd_lion.png >>/Volumes/SABnzbd/sabnzbd.png')
+        f = open('osx/image/sabnzbd_lion.png', 'rb')
+        png = f.read()
+        f.close()
+        f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
+        f.write(png)
+        f.close()
     else:
         # Snow Leopard and lower
-        os.system('cat osx/image/sabnzbd_leopard.png >>/Volumes/SABnzbd/sabnzbd.png')
+        pass
 
     # Rename the volume
     fp = open('mount.log', 'r')
