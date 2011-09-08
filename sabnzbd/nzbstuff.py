@@ -38,7 +38,7 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, clean_folder, \
+                         get_unique_path, get_admin_path, remove_all, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
@@ -1159,12 +1159,12 @@ class NzbObject(TryList):
 
         if self.new_caching and not self.futuretype:
             if keep_basic:
-                clean_folder(wpath, 'SABnzbd_nz?_*')
-                clean_folder(wpath, 'SABnzbd_article_*')
+                remove_all(wpath, 'SABnzbd_nz?_*')
+                remove_all(wpath, 'SABnzbd_article_*')
             else:
-                clean_folder(wpath)
+                remove_all(wpath, recursive=True)
             if del_files:
-                clean_folder(self.downpath)
+                remove_all(self.downpath, recursive=True)
             else:
                 try:
                     os.rmdir(self.downpath)
@@ -1383,32 +1383,32 @@ def split_filename(name):
 
 def format_time_string(seconds, days=0):
     """ Given seconds and days, return formatted day/hour/min/sec string
-        LACKS I18N !!
     """
+    def unit(n, single):
+        if n == 1:
+            return n, Tx(single)
+        else:
+            return n, Tx(single + 's')
     try:
         seconds = int(seconds)
-    except:
+    except ValueError:
         seconds = 0
 
     completestr = ''
     if days:
-        completestr += '%s day%s ' % (days, s_returner(days))
+        completestr += '%s %s ' % unit(days, 'day')
     if (seconds/3600) >= 1:
-        completestr += '%s hour%s ' % (seconds/3600, s_returner((seconds/3600)))
+        completestr += '%s %s ' % unit(seconds/3600, 'hour')
         seconds -= (seconds/3600)*3600
     if (seconds/60) >= 1:
-        completestr += '%s minute%s ' % (seconds/60, s_returner((seconds/60)))
+        completestr += '%s %s ' % unit(seconds/60, 'minute')
         seconds -= (seconds/60)*60
     if seconds > 0:
-        completestr += '%s second%s ' % (seconds, s_returner(seconds))
+        completestr += '%s %s ' % unit(seconds, 'second')
+    else:
+        completestr += '%s %s' % unit(0, 'second')
 
     return completestr.strip()
-
-def s_returner(value):
-    if value > 1:
-        return 's'
-    else:
-        return ''
 
 
 RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')

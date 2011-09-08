@@ -161,20 +161,20 @@ jQuery(function($){
   }).trigger('change');
 
   // Confirm Queue Deletions toggle
-  $("#confirmDeleteQueue").attr('checked', $.plush.confirmDeleteQueue ).change( function() {
-    $.plush.confirmDeleteQueue = $("#confirmDeleteQueue").attr('checked');
+  $("#confirmDeleteQueue").prop('checked', $.plush.confirmDeleteQueue ).change( function() {
+    $.plush.confirmDeleteQueue = $("#confirmDeleteQueue").prop('checked');
     $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365, path: '/'  });
   });
 
   // Confirm History Deletions toggle
-  $("#confirmDeleteHistory").attr('checked', $.plush.confirmDeleteHistory ).change( function() {
-    $.plush.confirmDeleteHistory = $("#confirmDeleteHistory").attr('checked');
+  $("#confirmDeleteHistory").prop('checked', $.plush.confirmDeleteHistory ).change( function() {
+    $.plush.confirmDeleteHistory = $("#confirmDeleteHistory").prop('checked');
     $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365, path: '/'  });
   });
 
   // Block Refreshes on Hover toggle
-  $("#blockRefresh").attr('checked', $.plush.blockRefresh ).change( function() {
-    $.plush.blockRefresh = $("#blockRefresh").attr('checked');
+  $("#blockRefresh").prop('checked', $.plush.blockRefresh ).change( function() {
+    $.plush.blockRefresh = $("#blockRefresh").prop('checked');
     $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365, path: '/'  });
   });
 
@@ -700,22 +700,22 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
 
   // selections
   $("#multiops_select_all").click(function(){
-    $("INPUT[type='checkbox']","#queueTable").attr('checked', true).trigger('change');
+    $("INPUT[type='checkbox']","#queueTable").prop('checked', true).trigger('change');
   });
   var last1, last2;
   $("#multiops_select_range").click(function(){
     if (last1 && last2 && last1 < last2)
-      $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).attr('checked', true).trigger('change');
+      $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).prop('checked', true).trigger('change');
     else if (last1 && last2)
-      $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).attr('checked', true).trigger('change');
+      $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).prop('checked', true).trigger('change');
   });
   $("#multiops_select_invert").click(function(){
     $("INPUT[type='checkbox']","#queueTable").each( function() {
-      $(this).attr('checked', !$(this).attr('checked')).trigger('change');
+      $(this).prop('checked', !$(this).prop('checked')).trigger('change');
     });
   });
   $("#multiops_select_none").click(function(){
-    $("INPUT[type='checkbox']","#queueTable").attr('checked', false).trigger('change');
+    $("INPUT[type='checkbox']","#queueTable").prop('checked', false).trigger('change');
   });
   $("#queue").delegate('.multiops','change',function(event) {
     // range event interaction
@@ -723,7 +723,7 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
     last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 
   // checkbox state persistence
-  if ($(this).attr('checked'))
+  if ($(this).prop('checked'))
     $.plush.multiOpsChecks[$(this).parent().parent().attr('id')] = true;
   else if ($.plush.multiOpsChecks[$(this).parent().parent().attr('id')])
     delete $.plush.multiOpsChecks[$(this).parent().parent().attr('id')];
@@ -750,7 +750,7 @@ $("a","#multiops_inputs").click(function(e){
   nzo_ids = nzo_ids.substr(1);
   if (!nzo_ids) return;
 
-  $(this).attr('disabled',true);
+  $(this).prop('disabled',true);
 
   if ($('#multi_status').val())
     $.ajax({
@@ -787,7 +787,7 @@ $("a","#multiops_inputs").click(function(e){
       data: {mode: 'change_script', value: nzo_ids, value2: $('#multi_script').val(), apikey: $.plush.apikey}
     });
 
-  $(this).attr('disabled',false);
+  $(this).prop('disabled',false);
   $.plush.RefreshQueue();
 });
 
@@ -1083,7 +1083,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
     $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
   if ($.plush.multiOpsChecks) // checkbox state persistence
     for (var nzo_id in $.plush.multiOpsChecks)
-      $('#'+nzo_id+' .multiops').attr('checked',true);
+      $('#'+nzo_id+' .multiops').prop('checked',true);
 
 
   $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination

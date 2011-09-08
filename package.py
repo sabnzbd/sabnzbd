@@ -374,10 +374,26 @@ if target == 'app':
 
     #Create sparseimage from template
     os.system("unzip osx/image/template.sparseimage.zip")
-    os.rename('sabnzbd-template.sparseimage', fileImg)
+    os.rename('template.sparseimage', fileImg)
 
     #mount sparseimage and modify volume label
     os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
+
+    # Select OSX version specific background image
+    # Take care to preserve the special attributes of the background image file
+    if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
+        # Lion and higher
+        f = open('osx/image/sabnzbd_lion.png', 'rb')
+        png = f.read()
+        f.close()
+        f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
+        f.write(png)
+        f.close()
+    else:
+        # Snow Leopard and lower
+        pass
+
+    # Rename the volume
     fp = open('mount.log', 'r')
     data = fp.read()
     fp.close()

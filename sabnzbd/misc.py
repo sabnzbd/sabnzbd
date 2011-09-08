@@ -1158,27 +1158,25 @@ def remove_dir(path):
         os.rmdir(path)
 
 
-def remove_all(path, pattern='*', keep_folder=False):
-    """ Remove folder and all its content
+def remove_all(path, pattern='*', keep_folder=False, recursive=False):
+    """ Remove folder and all its content (optionally recursive)
     """
     if os.path.exists(path):
-        for f in globber(path, pattern):
-            os.remove(f)
+        files = globber(path, pattern)
+        if pattern == '*' and not sabnzbd.WIN32:
+            files.extend(globber(path, '.*'))
+
+        for f in files:
+            if os.path.isfile(f):
+                try:
+                    os.remove(f)
+                except:
+                    logging.info('Cannot remove file %s', f)
+            elif recursive:
+                remove_all(f, pattern, False, True)
         if not keep_folder:
             try:
                 os.rmdir(path)
             except:
-                pass
+                logging.info('Cannot remove folder %s', path)
 
-
-def clean_folder(path, pattern='*'):
-    """ Remove all files in root of folder, remove folder if empty afterwards """
-    for file in globber(path, pattern):
-        try:
-            os.remove(file)
-        except:
-            pass
-    try:
-        os.rmdir(path)
-    except:
-        pass

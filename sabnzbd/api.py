@@ -45,7 +45,7 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
-                         get_filename, int_conv, globber, time_format
+                         get_filename, int_conv, globber, time_format, remove_all
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1390,8 +1390,7 @@ def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
         if path and path.lower().startswith(cfg.download_dir.get_path().lower()):
-            nzbstuff.clean_folder(os.path.join(path, JOB_ADMIN))
-            nzbstuff.clean_folder(path)
+            remove_all(path, recursive=True)
 
 
 #------------------------------------------------------------------------------
@@ -1408,8 +1407,7 @@ def del_hist_job(job, del_files):
             history_db.remove_history(job)
 
         if path and del_files and path.lower().startswith(cfg.download_dir.get_path().lower()):
-            nzbstuff.clean_folder(os.path.join(path, JOB_ADMIN))
-            nzbstuff.clean_folder(path)
+            remove_all(path, recursive=True)
     return True
 
 #------------------------------------------------------------------------------

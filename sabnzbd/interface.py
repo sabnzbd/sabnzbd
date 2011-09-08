@@ -36,7 +36,7 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, globber, clean_folder
+     cat_to_opts, int_conv, globber, remove_all
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
@@ -1061,8 +1061,7 @@ def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
         path = os.path.join(cfg.download_dir.get_path(), path)
-        clean_folder(os.path.join(path, JOB_ADMIN))
-        clean_folder(path)
+        remove_all(path, recursive=True)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
@@ -1109,12 +1108,14 @@ class ConfigDirectories(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        cfg.complete_dir.set_create()
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value != None:
                 value = platform_encode(value)
-                msg = config.get_config('misc', kw).set(value)
+                if kw == 'complete_dir':
+                    msg = config.get_config('misc', kw).set(value, create=True)
+                else:
+                    msg = config.get_config('misc', kw).set(value)
                 if msg:
                     return badParameterResponse(msg)
 
@@ -2047,7 +2048,10 @@ class ConfigCats(object):
             name = newname.lower()
             if kwargs.get('dir'):
                 kwargs['dir'] = platform_encode(kwargs['dir'])
-            config.ConfigCat(name, kwargs)
+            folder = config.ConfigCat(name, kwargs).dir
+            msg = folder.set(folder(), create=True)
+            if msg:
+                return badParameterResponse(msg)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -2352,15 +2356,15 @@ def ShowOK(url):
 def GetRssLog(feed):
     def make_item(job):
         url = job.get('url', '')
-        title = job.get('title', '')
+        title = xml_name(job.get('title', ''))
         if url.isdigit():
             title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
         else:
-            title = xml_name(title)
+            title = title
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
-            nzbname = sanitize_foldername(xml_name(title))
+            nzbname = xml_name(sanitize_foldername(job.get('title', '')))
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
