@@ -181,7 +181,6 @@ class PostProcessor(Thread):
             ## Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
-            cfg.complete_dir.set_create()
 
             self.__busy = True
             if process_job(nzo):
@@ -481,8 +480,7 @@ def process_job(nzo):
         try:
             if os.path.exists(workdir):
                 logging.debug('Removing workdir %s', workdir)
-                remove_all(os.path.join(workdir, JOB_ADMIN))
-                remove_dir(workdir)
+                remove_all(workdir, recursive=True)
         except:
             logging.error(Ta('Error removing workdir (%s)'), workdir)
             logging.info("Traceback: ", exc_info = True)

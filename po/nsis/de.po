@@ -7,34 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-21 19:21+0000\n"
+"POT-Creation-Date: 2011-08-20 14:21+0000\n"
 "PO-Revision-Date: 2011-03-12 09:03+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-22 04:57+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-08-21 04:51+0000\n"
+"X-Generator: Launchpad (build 13697)\n"
 "Language: de\n"
 
-#: NSIS_Installer.nsi:350
+#: NSIS_Installer.nsi:408
 msgid "Start SABnzbd (hidden)"
 msgstr "SABnzbd starten (unsichtbar)"
 
-#: NSIS_Installer.nsi:359
+#: NSIS_Installer.nsi:417
 msgid "Show Release Notes"
 msgstr "Versionshinweise anzeigen"
 
-#: NSIS_Installer.nsi:368
+#: NSIS_Installer.nsi:426
 msgid "Support the project, Donate!"
 msgstr "Bitte unterstützen Sie das Projekt durch eine Spende!"
 
-#: NSIS_Installer.nsi:377
+#: NSIS_Installer.nsi:435
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Schliessen Sie bitte zuerst \"SABnzbd.exe\"."
 
-#: NSIS_Installer.nsi:386
+#: NSIS_Installer.nsi:444
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
@@ -43,56 +43,34 @@ msgstr ""
 "Versionsanmerkungen lesen oder \"http://wiki.sabnzbd.org/introducing-0-6-0 "
 "besuchen!\""
 
-#: NSIS_Installer.nsi:395
+#: NSIS_Installer.nsi:453
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Dies entfernt SABnzbd von Ihrem System"
 
-#: NSIS_Installer.nsi:404
+#: NSIS_Installer.nsi:462
 msgid "Run at startup"
 msgstr "Beim Systemstart ausführen"
 
-#: NSIS_Installer.nsi:413
+#: NSIS_Installer.nsi:471
 msgid "Desktop Icon"
 msgstr "Desktop-Symbol"
 
-#: NSIS_Installer.nsi:422
+#: NSIS_Installer.nsi:480
 msgid "NZB File association"
 msgstr "Mit NZB-Dateien verknüpfen"
 
-#: NSIS_Installer.nsi:431
+#: NSIS_Installer.nsi:489
 msgid "Delete Program"
 msgstr "Programm löschen"
 
-#: NSIS_Installer.nsi:440
+#: NSIS_Installer.nsi:498
 msgid "Delete Settings"
 msgstr "Einstellungen löschen"
 
-#: NSIS_Installer.nsi:449
+#: NSIS_Installer.nsi:507
 msgid "Delete Logs"
 msgstr "Protokoll löschen"
 
-#: NSIS_Installer.nsi:458
+#: NSIS_Installer.nsi:516
 msgid "Delete Cache"
 msgstr "Cache löschen"
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\r\n"
-#~ "\r\n"
-#~ "If not empty, download your current queue with the old program.\r\n"
-#~ "The new program will ignore your current queue!"
-#~ msgstr ""
-#~ "                  >>>> ACHTUNG <<<<\r\n"
-#~ "\r\n"
-#~ "Warten Sie, bis das alte Programm alle Downloads fertiggestellt hat.\r\n"
-#~ "Das neue Programm wird die noch ausstehenden Downloads ignorieren!"
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\r\n"
-#~ "\r\n"
-#~ "Please, first check the release notes or go to "
-#~ "http://wiki.sabnzbd.org/introducing-0-6-0 !"
-#~ msgstr ""
-#~ "                  >>>> WARNUNG <<<<\r\n"
-#~ "\r\n"
-#~ "Bitte zuerst die Versionsanmerkungen lesen oder "
-#~ "http://wiki.sabnzbd.org/introducing-0-6-0 besuchen!"
