@@ -96,7 +96,7 @@ def find_programs(curdir):
         sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
 
     if sabnzbd.WIN32:
-        if sabnzbd.WIN64:
+        if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
             sabnzbd.newsunpack.PAR2_COMMAND =  check(curdir, 'win/par2/x64/par2.exe')
             sabnzbd.newsunpack.RAR_COMMAND =   check(curdir, 'win/unrar/x64/UnRAR.exe')
         if not sabnzbd.newsunpack.PAR2_COMMAND:

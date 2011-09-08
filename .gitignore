@@ -17,6 +17,7 @@ po/*/ro.po
 SABnzbd*.zip
 SABnzbd*.exe
 SABnzbd*.gz
+SABnzbd*.dmg
 
 # WingIDE project file
 *.wpr
