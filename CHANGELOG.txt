@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.6.9Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Change the OSX DMG window size (again) so that the optional "path bar"
+  doesn't obsure part of the background image.
+-------------------------------------------------------------------------------
  0.6.9RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Generic Sorter failed to uppercase first letter of title when starting with "the/a/to" etc.
