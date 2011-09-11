@@ -72,7 +72,7 @@
   </td>
 
   <td class="eta nowrap">
-    <!--#if not $paused and $slot.status != "Paused"#-->
+    <!--#if not $paused and $slot.status not in ("Paused", "Checking")#-->
     <span title="$slot.eta">$slot.timeleft&nbsp;$T('Plush-left')</span>
     <!--#else#-->
     $T('post-'+$slot.status)

@@ -1061,7 +1061,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if status == 'Paused':
+        if status in ('Paused', 'Checking'):
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
