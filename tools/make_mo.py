@@ -279,9 +279,7 @@ path, py = os.path.split(sys.argv[0])
 tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
 if os.path.exists(tl):
     if os.name == 'nt':
-        import win32api
-        # Work-around for Python bug
-        TOOL = win32api.GetShortPathName(tl)
+        TOOL = 'python "%s"' % tl
     else:
         TOOL = '"%s"' % tl
 
