@@ -145,7 +145,7 @@ def process_po_folder(domain, folder):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print 'Compile %s' % mo_file
-        ret = os.system('%s -o %s %s' % (TOOL, mo_file, fname))
+        ret = os.system('"%s" -o "%s" "%s"' % (TOOL, mo_file, fname))
         if ret != 0:
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
