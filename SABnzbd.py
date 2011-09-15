@@ -1653,7 +1653,14 @@ def HandleCommandLine(allow_service=True):
 #
 if __name__ == '__main__':
 
-    sabnzbd.CMDLINE = ', '.join(['"%s"' % latin1(p) for p in sys.argv])
+    args = []
+    for txt in sys.argv:
+        if ' ' in txt:
+            txt = '"%s"' % latin1(txt)
+        else:
+            txt = latin1(txt)
+        args.append(txt)
+    sabnzbd.CMDLINE = ' '.join(args)
 
     if sabnzbd.WIN32:
         if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):

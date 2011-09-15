@@ -1008,6 +1008,7 @@ class ConfigPage(object):
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         conf['configfn'] = config.get_filename()
+        conf['cmdline'] = sabnzbd.CMDLINE
 
         new = {}
         for svr in config.get_servers():
