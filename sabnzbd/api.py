@@ -579,9 +579,10 @@ def _api_rescan(name, output, kwargs):
 def _api_eval_sort(name, output, kwargs):
     """ API: evaluate sorting expression """
     import sabnzbd.tvsort
+    name = kwargs.get('name', '')
     value = kwargs.get('value', '')
     title = kwargs.get('title')
-    path = sabnzbd.tvsort.eval_sort(name, value, title)
+    path = sabnzbd.tvsort.eval_sort(value, title, name)
     if path is None:
         return report(output, _MSG_NOT_IMPLEMENTED)
     else:
