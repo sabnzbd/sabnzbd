@@ -28,7 +28,7 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, remove_dir
+                         get_unique_filename, get_ext, renamer, remove_dir, sanitize_foldername
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import titler
@@ -1101,6 +1101,7 @@ def eval_sort(sorttype, expression, name=None):
     """ Preview a sort expression, to be used by API """
     from sabnzbd.api import Ttemplate
     path = ''
+    name = sanitize_foldername(name)
     if sorttype == 'series':
         name = name or ('%s S01E03 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
         sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv', force=True)
