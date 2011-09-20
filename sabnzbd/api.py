@@ -53,7 +53,9 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
+import sabnzbd.growler
 import sabnzbd.rss
+import sabnzbd.emailer
 
 
 #------------------------------------------------------------------------------
@@ -605,6 +607,25 @@ def _api_reset_quota(name, output, kwargs):
     """ Reset quota left """
     BPSMeter.do.reset_quota(force=True)
 
+def _api_test_email(name, output, kwargs):
+    """ API: send a test email, return result """
+    logging.info("Sending testmail")
+    pack = {}
+    pack['download'] = ['action 1', 'action 2']
+    pack['unpack'] = ['action 1', 'action 2']
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                 123*MEBI, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+    if res == 'Email succeeded':
+        res = None
+    return report(output, error=res)
+
+def _api_test_notif(name, output, kwargs):
+    """ API: send a test notification, return result """
+    logging.info("Sending test notification")
+    res = sabnzbd.growler.send_notification('SABNzbd', T('Test Notification'), 'other')
+    return report(output, error=res)
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -739,7 +760,9 @@ _api_table = {
     'watched_now'     : _api_watched_now,
     'rss_now'         : _api_rss_now,
     'browse'          : _api_browse,
-    'reset_quota'    : _api_reset_quota
+    'reset_quota'     : _api_reset_quota,
+    'test_email'      : _api_test_email,
+    'test_notif'      : _api_test_notif,
 }
 
 _api_queue_table = {

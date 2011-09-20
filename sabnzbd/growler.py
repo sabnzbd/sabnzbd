@@ -91,17 +91,20 @@ def have_ntfosd():
 #------------------------------------------------------------------------------
 def send_notification(title , msg, gtype):
     """ Send Notification message
+        Return '' when OK, otherwise an error string
     """
     if have_growl():
-        send_growl(title, msg, gtype)
+        return send_growl(title, msg, gtype)
     if have_ntfosd():
-        send_notify_osd(title, msg)
+        return send_notify_osd(title, msg)
+    return 'not active'
 
 
 #------------------------------------------------------------------------------
 def register_growl():
     """ Register this app with Growl
     """
+    error = None
     host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
 
     if host:
@@ -128,14 +131,16 @@ def register_growl():
             logging.info('Registered with Growl')
             ret = growler
         else:
-            logging.debug('Cannot register with Growl %s', ret)
+            error = 'Cannot register with Growl %s' % ret
+            logging.debug(error)
             del growler
             ret = None
     except socket.error, err:
-        logging.debug('Cannot register with Growl %s', err)
+        error = 'Cannot register with Growl %s' % err
+        logging.debug(error)
         del growler
         ret = None
-    return ret
+    return ret, error
 
 
 #------------------------------------------------------------------------------
@@ -144,15 +149,16 @@ def send_growl(title , msg, gtype):
     """
     global _GROWL, _GROWL_REG
     if not sabnzbd.cfg.growl_enable():
-        return
+        return 'not enabled'
 
     if _HAVE_OSX_GROWL and not sabnzbd.cfg.growl_server():
-        send_local_growl(title, msg, gtype)
-        return
+        res = send_local_growl(title, msg, gtype)
+        return res
 
     for n in (0, 1):
         if not _GROWL_REG: _GROWL = None
-        _GROWL = _GROWL or register_growl()
+        if not _GROWL:
+            _GROWL, error = register_growl()
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
@@ -167,24 +173,24 @@ def send_growl(title , msg, gtype):
                     #priority = options.priority
                 )
                 if ret is None or isinstance(ret, bool):
-                    return
+                    return None
                 elif ret[0] == '401':
                     _GROWL = False
                 else:
                     logging.debug('Growl error %s', ret)
-                    return
+                    return 'Growl error %s', ret
             except socket.error, err:
                 logging.debug('Growl error %s', err)
-                return
+                return 'Growl error %s', err
         else:
-            return
-
+            return error
+    return None
 
 #------------------------------------------------------------------------------
 # Local OSX Growl support
 #
 if _HAVE_OSX_GROWL:
-
+    _local_growl = None
     if os.path.isfile('sabnzbdplus.icns'):
         _OSX_ICON = Growl.Image.imageFromPath('sabnzbdplus.icns')
     elif os.path.isfile('osx/resources/sabnzbdplus.icns'):
@@ -194,15 +200,18 @@ if _HAVE_OSX_GROWL:
 
     def send_local_growl(title , msg, gtype):
         """ Send to local Growl server, OSX-only """
-        notes = [Tx(_NOTIFICATION[key]) for key in _KEYS]
-        growler = Growl.GrowlNotifier(
-            applicationName = 'SABnzbd',
-            applicationIcon = _OSX_ICON,
-            notifications = notes,
-            defaultNotifications = notes
-            )
-        growler.register()
-        growler.notify(Tx(_NOTIFICATION.get(gtype, 'other')), title, msg)
+        global _local_growl
+        if not _local_growl:
+            notes = [Tx(_NOTIFICATION[key]) for key in _KEYS]
+            _local_growl = Growl.GrowlNotifier(
+                applicationName = 'SABnzbd',
+                applicationIcon = _OSX_ICON,
+                notifications = notes,
+                defaultNotifications = notes
+                )
+            _local_growl.register()
+        _local_growl.notify(Tx(_NOTIFICATION.get(gtype, 'other')), title, msg)
+        return None
 
 
 #------------------------------------------------------------------------------
@@ -221,3 +230,8 @@ if _HAVE_NTFOSD:
                 logging.info('Send to NotifyOSD: %s / %s', latin1(title), latin1(message))
                 note = pynotify.Notification(title, message, icon)
                 note.show()
+                return None
+            else:
+                return 'NotifyOSD not working'
+        else:
+            return 'Not enabled'

@@ -33,7 +33,6 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
      cat_to_opts, int_conv, globber, remove_all
@@ -51,7 +50,6 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.growler import send_notification
 
 from sabnzbd.constants import *
 from sabnzbd.lang import list_languages, set_language
@@ -59,7 +57,8 @@ from sabnzbd.lang import list_languages, set_language
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
      retry_job, build_header, build_history, del_job_files, \
-     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
+     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
+     _api_test_email, _api_test_notif
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -2517,23 +2516,14 @@ class ConfigEmail(object):
     def testmail(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        self.__lastmail = None
-        logging.info("Sending testmail")
-        pack = {}
-        pack['download'] = ['action 1', 'action 2']
-        pack['unpack'] = ['action 1', 'action 2']
-
-        self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                         123*MEBI, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+        self.__lastmail = _api_test_email(name=None, output=None, kwargs=None)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def testnotification(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        logging.info("Sending test notification")
-        send_notification('SABNzbd', T('Test Notification'), 'other')
+        _api_test_notif(name=None, output=None, kwargs=None)
         raise dcRaiser(self.__root, kwargs)
 
 
