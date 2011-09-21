@@ -153,7 +153,7 @@ class Sorter(object):
         return self.sort_file
 
 class SeriesSorter(object):
-    def __init__(self, dirname, path, cat, force=False):
+    def __init__(self, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
@@ -173,7 +173,7 @@ class SeriesSorter(object):
         self.show_info = {}
 
         #Check if it is a TV show on init()
-        self.match(force)
+        self.match()
 
 
     def match(self, force=False):
@@ -494,11 +494,11 @@ class GenericSorter(object):
         self.match()
 
 
-    def match(self):
+    def match(self, force=False):
         ''' Checks the category for a match, if so set self.match to true '''
-        if cfg.enable_movie_sorting() and self.sort_string:
+        if force or (cfg.enable_movie_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
-            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+            if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname)
                 self.matched = True
 
@@ -687,11 +687,11 @@ class DateSorter(object):
         self.match()
 
 
-    def match(self):
+    def match(self, force=False):
         ''' Checks the category for a match, if so set self.matched to true '''
-        if cfg.enable_date_sorting() and self.sort_string:
+        if force or (cfg.enable_date_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
-            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+            if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
                 if self.match_obj:
                     logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname)
@@ -1097,14 +1097,14 @@ def is_full_path(file):
     return False
 
 
-def eval_sort(sorttype, expression, name=None):
+def eval_sort(sorttype, expression, name=None, multipart=None):
     """ Preview a sort expression, to be used by API """
     from sabnzbd.api import Ttemplate
     path = ''
     name = sanitize_foldername(name)
     if sorttype == 'series':
-        name = name or ('%s S01E03 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
-        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv', force=True)
+        name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
+        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv')
     elif sorttype == 'generic':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
         sorter = sabnzbd.tvsort.GenericSorter(name, path, 'tv')
@@ -1114,14 +1114,19 @@ def eval_sort(sorttype, expression, name=None):
     else:
         return None
     sorter.sort_string = expression
-    sorter.matched = True
+    sorter.match(force=True)
     path = sorter.get_final_path()
     path = os.path.normpath(os.path.join(path, sorter.filename_set))
-    if sorter.rename_or_not:
-        path += '.avi'
+    if '%fn' in path:
+        path = path.replace('%fn', Ttemplate('orgFilename') + '.avi')
     else:
-        if sabnzbd.WIN32:
-            path += '\\'
+        if sorter.rename_or_not:
+            path += '.avi'
         else:
-            path += '/'
+            if sabnzbd.WIN32:
+                path += '\\'
+            else:
+                path += '/'
+    if sorttype == 'generic' and multipart and '%1' in path:
+        path = path.replace('%1', multipart.replace('%1', '1'))
     return path
