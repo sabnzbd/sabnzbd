@@ -269,13 +269,22 @@ def ParseFilePacket(f, header):
     return nothing
 
 
+def is_cloaked(names):
+    """ Return True if this is likely to be a cloaked encrypted post """
+    for name in names:
+        name = name.lower()
+        if name.endswith('.rar') or 'password' in name:
+            return len(names) < 3
+    return False
+
+
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
     if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
             zf = RarFile(filepath)
-            encrypted = zf.encrypted
+            encrypted = zf.encrypted or is_cloaked(zf.namelist())
             if encrypted and int(nzo.encrypted) < 2:
                 nzo.encrypted = 1
             else:
