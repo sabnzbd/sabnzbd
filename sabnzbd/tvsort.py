@@ -96,6 +96,7 @@ class Sorter(object):
         self.type = None
         self.sort_file = False
         self.cat = cat
+        self.ext = ''
 
     def detect(self, dirname, complete_dir):
         self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
@@ -125,6 +126,16 @@ class Sorter(object):
     def rename(self, newfiles, workdir_complete):
         if self.sorter.should_rename():
             self.sorter.rename(newfiles, workdir_complete)
+
+    def rename_with_ext(self, workdir_complete):
+        """ Special renamer for %ext """
+        if self.sorter.should_rename() and '%ext' in workdir_complete and self.ext:
+            # Replace %ext with extension
+            newpath = workdir_complete.replace('%ext', self.ext)
+            renamer(workdir_complete, newpath)
+            return newpath
+        else:
+            return workdir_complete
 
     def move(self, workdir_complete):
         if self.type == 'movie':
@@ -387,12 +398,14 @@ class SeriesSorter(object):
         file, filepath, size = largest
         # >20MB
         if filepath and size > 20971520:
-            tmp, ext = os.path.splitext(file)
+            tmp, self.ext = os.path.splitext(file)
             self.fname = tmp
-            newname = "%s%s" % (self.filename_set,ext)
+            newname = "%s%s" % (self.filename_set, self.ext)
             # Replace %fn with the original filename
             newname = newname.replace('%fn',tmp)
             newpath = os.path.join(current_path, newname)
+            # Replace %ext with extension
+            newpath = newpath.replace('%ext', self.ext)
             if not os.path.exists(newpath):
                 try:
                     logging.debug("Rename: %s to %s", filepath,newpath)
@@ -849,6 +862,7 @@ def path_subst(path, mapping):
         path = the sort string
         mapping = array of tuples that maps all elements to their values
     """
+    # Added ugly hack to prevent %ext from being masked by %e
     newpath = []
     plen = len(path)
     n = 0
@@ -856,7 +870,7 @@ def path_subst(path, mapping):
         result = path[n]
         if result == '%':
             for key, value in mapping:
-                if path.startswith(key, n):
+                if path.startswith(key, n) and not path.startswith('%ext', n):
                     n += len(key)-1
                     result = value
                     break

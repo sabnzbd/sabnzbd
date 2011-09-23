@@ -392,10 +392,12 @@ def process_job(nzo):
                 remove_samples(workdir_complete)
 
             ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-            if all_ok:
-                if newfiles and file_sorter.is_sortfile():
+            if all_ok and file_sorter.is_sortfile():
+                if newfiles:
                     file_sorter.rename(newfiles, workdir_complete)
                     workdir_complete = file_sorter.move(workdir_complete)
+                else:
+                    workdir_complete = file_sorter.rename_with_ext(workdir_complete)
 
             ## Run the user script
             script_path = make_script_path(script)
