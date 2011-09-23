@@ -1117,16 +1117,19 @@ def eval_sort(sorttype, expression, name=None, multipart=None):
     sorter.match(force=True)
     path = sorter.get_final_path()
     path = os.path.normpath(os.path.join(path, sorter.filename_set))
+    fname = Ttemplate('orgFilename')
+    fpath = path
+    if sorttype == 'generic' and '%1' in multipart:
+        fname = fname + multipart.replace('%1', '1')
+        fpath = fpath + multipart.replace('%1', '1')
     if '%fn' in path:
-        path = path.replace('%fn', Ttemplate('orgFilename') + '.avi')
+        path = path.replace('%fn', fname + '.avi')
     else:
         if sorter.rename_or_not:
-            path += '.avi'
+            path = fpath + '.avi'
         else:
             if sabnzbd.WIN32:
                 path += '\\'
             else:
                 path += '/'
-    if sorttype == 'generic' and multipart and '%1' in path:
-        path = path.replace('%1', multipart.replace('%1', '1'))
     return path
