@@ -164,6 +164,7 @@ dirscan_dir = OptionDir('misc', 'dirscan_dir', create=True)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 SIZE_LIMIT = OptionStr('misc', 'size_limit')
 password_file = OptionDir('misc', 'password_file', '', create=False)
+fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:

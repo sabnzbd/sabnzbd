@@ -26,14 +26,27 @@ from Cheetah.Filters import Filter
 
 import sabnzbd
 
-try:
-    if sabnzbd.DARWIN:
-        gUTF = True
-    else:
-        gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
-except:
-    # Incorrect locale implementation, assume the worst
-    gUTF = False
+gUTF = False
+def auto_fsys():
+    global gUTF
+    try:
+        if sabnzbd.DARWIN:
+            gUTF = True
+        else:
+            gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
+    except:
+        # Incorrect locale implementation, assume the worst
+        gUTF = False
+
+def change_fsys(value):
+    global gUTF
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        if value == 1:
+            gUTF = False
+        elif value == 2:
+            gUTF = True
+        else:
+            auto_fsys()
 
 def reliable_unpack_names():
     """ See if it is safe to rely on unrar names """
@@ -295,3 +308,5 @@ def fixup_ff4(p):
             name.append(ch)
     return ''.join(name)
 
+
+auto_fsys()

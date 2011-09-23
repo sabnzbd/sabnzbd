@@ -232,6 +232,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.quota_size.callback(guard_quota_size)
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
+    cfg.fsys_type.callback(guard_fsys_type)
+
+    ### Set Posix filesystem encoding
+    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
@@ -429,6 +433,10 @@ def guard_quota_size():
 def guard_quota_dp():
     """ Callback for change of quota_day or quota_period """
     scheduler.restart(force=True)
+
+def guard_fsys_type():
+    """ Callback for change of file system naming type """
+    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on newzbin report number, attributes optional
