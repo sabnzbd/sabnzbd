@@ -91,7 +91,7 @@ Embedded modules (only use the included version)
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
-If fou want multiple languages, you need to compile the translations.
+If you want multiple languages, you need to compile the translations.
 Start this from a shell terminal (or command prompt):
     python tools/make_mo.py
 
@@ -131,6 +131,6 @@ Visit the WIKI site:
 7) CREDITS
 -------------------------------------------------------------------------------
 
-Serveral parts of SABnzbd were built by other people, illustrating the
+Several parts of SABnzbd were built by other people, illustrating the
 wonderful world of Free Open Source Software.
 See the licences folder of the main program and of the skin folders.
