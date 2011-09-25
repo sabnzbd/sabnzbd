@@ -1596,7 +1596,9 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
-        """ Update Feed level attributes """
+        """ Update Feed level attributes,
+            legacy version: ignores 'enable' parameter
+        """
         msg = check_session(kwargs)
         if msg: return msg
         if kwargs.get('enable') is not None:
@@ -1605,6 +1607,23 @@ class ConfigRss(object):
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
+        if cfg and Strip(kwargs.get('uri')):
+            cfg.set_dict(kwargs)
+            config.save_config()
+
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def save_rss_feed(self, **kwargs):
+        """ Update Feed level attributes """
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            cfg = config.get_rss()[kwargs.get('feed')]
+        except KeyError:
+            cfg = None
+        if 'enable' not in kwargs:
+            kwargs['enable'] = 0
         if cfg and Strip(kwargs.get('uri')):
             cfg.set_dict(kwargs)
             config.save_config()
