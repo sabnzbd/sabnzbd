@@ -1,14 +1,14 @@
 <script type="text/javascript">
 window.onload = function() {
-  location = "../#/connections"
+  location = "../#/status"
 };
 </script>
 <h3>$T('connections')</h3>
-<a class="config" onClick="lr('connections/disconnect', '', '-1', this.parentNode.id);">$T('link-forceDisc')</a> |
+<a class="config" onClick="lr('status/disconnect', '', '-1', this.parentNode.id);">$T('link-forceDisc')</a> |
 <a class="config" onClick="testemail();">$T('link-testEmail')</a> |
-<a class="config" href="connections/showlog?session=$session">$T('link-showLog')</a>
+<a class="config" href="status/showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):
-<select onChange="javascript:lr('connections/change_loglevel','loglevel='+this.options[this.selectedIndex].value)">
+<select onChange="javascript:lr('status/change_loglevel','loglevel='+this.options[this.selectedIndex].value)">
   <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
   <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
   <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
@@ -19,7 +19,7 @@ $T('logging'):
     <li>
       $server[0]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
       <!--#if not $server[5]#-->
-        <a class="config" href="./connections/unblock_server?server=$server[0]&session=$session">
+        <a class="config" href="./status/unblock_server?server=$server[0]&session=$session">
         ($T('server-blocked'))</a>
         &nbsp;&nbsp;$server[6]
       <!--#end if#-->
@@ -38,7 +38,7 @@ $T('logging'):
   $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-  <h2>$T('lastWarnings') (<a class="config" onClick="lr('connections/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
+  <h2>$T('lastWarnings') (<a class="config" onClick="lr('status/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
   <!--#for $warn in $warnings#-->
     $warn<br/>
   <!--#end for#-->
@@ -64,7 +64,7 @@ $T('explain-orphans')<br/>
     <form action="delete" method="get">
     <input type="hidden" value="$folder" name="name">
     <input type="hidden" value="$session" name="session">
-    <input type="submit" onclick="this.form.action='connections/delete?session=$session'; this.form.submit(); return false;" value="$T('button-delCat')"/>
+    <input type="submit" onclick="this.form.action='status/delete?session=$session'; this.form.submit(); return false;" value="$T('button-delCat')"/>
     </form>
   </td>
 
@@ -72,7 +72,7 @@ $T('explain-orphans')<br/>
     <form action="add" method="get">
     <input type="hidden" value="$folder" name="name">
     <input type="hidden" value="$session" name="session">
-    <input type="submit" onclick="this.form.action='connections/add?session=$session'; this.form.submit(); return false;" value="$T('button-add')"/>
+    <input type="submit" onclick="this.form.action='status/add?session=$session'; this.form.submit(); return false;" value="$T('button-add')"/>
     </form>
   </td>
 

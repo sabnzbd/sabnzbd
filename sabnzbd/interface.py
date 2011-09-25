@@ -236,7 +236,7 @@ class MainPage(object):
             self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', prim=True, first=1)
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
-        self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
+        self.status = Status(web_dir, root+'status/', prim)
         self.config = ConfigPage(web_dir, root+'config/', prim)
         self.nzb = NzoPage(web_dir, root+'nzb/', prim)
         self.wizard = sabnzbd.wizard.Wizard(web_dir, root+'wizard/', prim)
@@ -990,10 +990,10 @@ class ConfigPage(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        self.directories = ConfigDirectories(web_dir, root+'directories/', prim)
-        self.email = ConfigEmail(web_dir, root+'email/', prim)
+        self.folders = ConfigFolders(web_dir, root+'folders/', prim)
+        self.notify = ConfigNotify(web_dir, root+'notify/', prim)
         self.general = ConfigGeneral(web_dir, root+'general/', prim)
-        self.newzbin = ConfigNewzbin(web_dir, root+'newzbin/', prim)
+        self.indexers = ConfigIndexers(web_dir, root+'indexers/', prim)
         self.rss = ConfigRss(web_dir, root+'rss/', prim)
         self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
         self.server = ConfigServer(web_dir, root+'server/', prim)
@@ -1077,7 +1077,7 @@ LIST_DIRPAGE = ( \
     'email_dir', 'permissions', 'log_dir', 'password_file'
 )
 
-class ConfigDirectories(object):
+class ConfigFolders(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1099,7 +1099,7 @@ class ConfigDirectories(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_folders.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1903,7 +1903,7 @@ class ConfigScheduling(object):
         raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
-class ConfigNewzbin(object):
+class ConfigIndexers(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1929,7 +1929,7 @@ class ConfigNewzbin(object):
         conf['matrix_apikey'] = cfg.matrix_apikey()
         conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_indexers.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2117,7 +2117,7 @@ class ConfigSorting(object):
 
 #------------------------------------------------------------------------------
 
-class ConnectionInfo(object):
+class Status(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2186,7 +2186,7 @@ class ConnectionInfo(object):
             wlist.insert(0, unicoder(w))
         header['warnings'] = wlist
 
-        template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'status.tmpl'),
                             filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2465,7 +2465,7 @@ LIST_EMAIL = (
 )
 LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable')
 
-class ConfigEmail(object):
+class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2490,7 +2490,7 @@ class ConfigEmail(object):
         for kw in LIST_GROWL:
             conf[kw] = config.get_config('growl', kw).get_string()
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 

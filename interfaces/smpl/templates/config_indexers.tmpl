@@ -1,4 +1,4 @@
-<a href="${helpuri}Configure+Index+Sites" id="help" target="_blank">$T('menu-help')</a><h3>Newzbin</h3>
+<a href="${helpuri}Configure+Indexers-0-7" id="help" target="_blank">$T('menu-help')</a><h3>Newzbin</h3>
 <form id="configNewzbin" class="cmxform" autocomplete="off">
 
 $T('explain-newzbin')<br/>
@@ -44,9 +44,9 @@ $T('explain-newzbin')<br/>
 
 <a class="config" onClick="getBookmarks();">$T('link-getBookmarks')</a>
 <!--#if $bookmarks_list#-->
-  <a class="config" onClick="lr('config/newzbin/hideBookmarks');">$T('link-HideBM')</a>
+  <a class="config" onClick="lr('config/indexers/hideBookmarks');">$T('link-HideBM')</a>
 <!--#else#-->
-  <a class="config" onClick="lr('config/newzbin/showBookmarks');">$T('link-ShowBM')</a>
+  <a class="config" onClick="lr('config/indexers/showBookmarks');">$T('link-ShowBM')</a>
 <!--#end if#-->
 
 <!--#if $bookmarks_list#-->
@@ -93,6 +93,6 @@ $T('explain-nzbmatrix')<br/>
 </fieldset>
 
 <p>
-  <input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', this, 'configNewzbin')">
+  <input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/indexers/saveNewzbin', this, 'configNewzbin')">
 </p>
 </form>
