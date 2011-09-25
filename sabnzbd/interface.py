@@ -1000,6 +1000,7 @@ class ConfigPage(object):
         self.switches = ConfigSwitches(web_dir, root+'switches/', prim)
         self.categories = ConfigCats(web_dir, root+'categories/', prim)
         self.sorting = ConfigSorting(web_dir, root+'sorting/', prim)
+        self.special = ConfigSpecial(web_dir, root+'special/', prim)
 
 
     @cherrypy.expose
@@ -1170,6 +1171,56 @@ class ConfigSwitches(object):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
             value = platform_encode(kwargs.get(kw))
+            msg = item.set(value)
+            if msg:
+                return badParameterResponse(msg)
+
+        config.save_config()
+        raise dcRaiser(self.__root, kwargs)
+
+
+
+#------------------------------------------------------------------------------
+SPECIAL_BOOL_LIST = \
+            ( 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
+              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
+              'osx_menu', 'osx_speed',
+            )
+SPECIAL_VALUE_LIST = \
+            ( 'size_limit', 'folder_max_length', 'fsys_type'
+            )
+
+class ConfigSpecial(object):
+    def __init__(self, web_dir, root, prim):
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__prim = prim
+
+    @cherrypy.expose
+    def index(self, **kwargs):
+        if cfg.configlock():
+            return Protected()
+
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
+
+        conf['nt'] = sabnzbd.WIN32
+
+        conf['switches'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_BOOL_LIST]
+        conf['entries'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
+
+        template = Template(file=os.path.join(self.__web_dir, 'config_special.tmpl'),
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+        return template.respond()
+
+    @cherrypy.expose
+    def saveSpecial(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST:
+            item = config.get_config('misc', kw)
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)

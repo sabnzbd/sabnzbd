@@ -91,6 +91,8 @@ SKIN_TEXT = {
     'thisMonth' : TT('This month'),
     'today' : TT('Today'),
     'total' : TT('Total'),
+    'on' : TT('on'),
+    'off' : TT('off'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -122,6 +124,7 @@ SKIN_TEXT = {
     'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
+    'cmenu-special' : TT('Special'), #: Main menu item
 
 # Footer
     'ft-download' : TT('Download Dir'), # Used in Footer
@@ -630,6 +633,13 @@ SKIN_TEXT = {
     'button-ShowNameF' : TT('Show Name folder'),
     'button-YMF' : TT('Year-Month Folders'),
     'button-DailyF' : TT('Daily Folders'),
+
+# Config->Special
+    'explain-special' : TT('Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>'
+                           'Don\'t change these without checking the Wiki first, as some have serious side-effects.<br>'
+                           'The default values are between brackets.'),
+    'sptag-boolean' : TT('Switches'),
+    'sptag-entries' : TT('Values'),
 
 # NZO
     'nzoDetails' : TT('Edit NZB Details'), #: Job details page

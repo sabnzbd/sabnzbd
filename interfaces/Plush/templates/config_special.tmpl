@@ -1,0 +1,66 @@
+<!--#set global $pane="Specials"#-->
+<!--#set global $help_uri="Configure+Special-0-7"#-->
+<!--#include $webdir + "/_inc_header.tmpl"#-->
+
+<form action="saveSpecial" method="post" name="fullform" id="fullform">
+<input type="hidden" name="session" id="session" value="$session">
+
+<div id="config-components">
+
+<p><br>
+&nbsp;&nbsp;$T('explain-special')
+</p>
+
+<div id="core-component-group1" class="component-group clearfix">
+  <div class="component-group-desc">
+    <h3>$T('sptag-boolean')</h3>
+  </div>
+<fieldset class="component-group-list">
+
+<!--#for $option in $switches#-->
+  <div class="field-pair">
+    <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if $option[1] > 0 then "checked=1" else ""#--> />
+    <label class="clearfix" for="$option[0]">
+      <span class="component-title">$option[0] (<!--#if $option[2] then $T('on') else $T('off')#-->)</span>
+    </label>
+  </div>
+<!--#end for#-->
+
+</fieldset>
+</div><!-- /component-group1 -->
+
+<div id="core-component-group2" class="component-group clearfix">
+  <div class="component-group-desc">
+    <h3>$T('sptag-entries')</h3>
+  </div>
+<fieldset class="component-group-list">
+
+<!--#for $option in $entries#-->
+  <div class="field-pair">
+    <label class="nocheck clearfix" for="$option[0]">
+      <span class="component-title">$option[0] ($option[2])</span>
+      <input type="text" name="$option[0]" id="$option[0]" value="$option[1]"/>
+    </label>
+  </div>
+<!--#end for#-->
+
+</fieldset>
+</div><!-- /component-group1 -->
+
+
+<div class="component-group-last clearfix">
+  <div class="component-group-desc">
+    <h3>&nbsp;</h3>
+  </div>
+  <fieldset class="component-group-list">
+    <div class="left_links">
+      <a id="save"><span class="config_sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
+    </div>
+  </fieldset>
+</div><!-- /component-group -->
+
+</div><!-- /config-components -->
+
+</form>
+
+<!--#include $webdir + "/_inc_footer.tmpl"#-->

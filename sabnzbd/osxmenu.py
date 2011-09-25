@@ -279,10 +279,7 @@ class SABnzbdDelegate(NSObject):
 
     def updateAction_(self, notification):
         try:
-            if os.path.exists("%s/notDisplayMenu" % (sabnzbd.DIR_APPDATA)):
-                sabnzbd.OSX_ICON = 0
-            else:
-                sabnzbd.OSX_ICON = 1
+            sabnzbd.OSX_ICON = int(sabnzbd.cfg.osx_menu())
 
             if sabnzbd.OSX_ICON:
                 if self.status_removed == 1:
@@ -440,7 +437,7 @@ class SABnzbdDelegate(NSObject):
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
 
-                if os.path.exists("%s/notDisplaySpeed" % (sabnzbd.DIR_APPDATA)):
+                if not sabnzbd.cfg.osx_speed():
                     statusbarText = ""
 
                 self.setMenuTitle(statusbarText)

@@ -226,6 +226,9 @@ quota_day = OptionStr('misc', 'quota_day')
 quota_resume = OptionBool('misc', 'quota_resume', False)
 quota_period = OptionStr('misc', 'quota_period', 'm')
 
+osx_menu = OptionBool('misc', 'osx_menu', True)
+osx_speed = OptionBool('misc', 'osx_speed', True)
+
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #

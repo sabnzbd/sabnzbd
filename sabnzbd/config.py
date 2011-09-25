@@ -107,6 +107,9 @@ class Option(object):
     def set(self, value):
         return self.__set(value)
 
+    def default(self):
+        return self.__default_val
+
     def callback(self, callback):
         """ Set callback function """
         self.__callback = callback
