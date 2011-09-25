@@ -1635,21 +1635,24 @@ class ConfigRss(object):
         if msg: return msg
         feed= Strip(kwargs.get('feed')).strip('[]')
         uri = Strip(kwargs.get('uri'))
-        try:
-            cfg = config.get_rss()[feed]
-        except KeyError:
-            cfg = None
-        if (not cfg) and uri:
-            config.ConfigRSS(feed, kwargs)
-            # Clear out any existing reference to this feed name
-            # Otherwise first-run detection can fail
-            sabnzbd.rss.clear_feed(feed)
-            config.save_config()
-            self.__refresh_readout = feed
-            self.__refresh_download = False
-            self.__refresh_force = False
-            self.__refresh_ignore = True
-            raise rssRaiser(self.__root, kwargs)
+        if feed and uri:
+            try:
+                cfg = config.get_rss()[feed]
+            except KeyError:
+                cfg = None
+            if (not cfg) and uri:
+                config.ConfigRSS(feed, kwargs)
+                # Clear out any existing reference to this feed name
+                # Otherwise first-run detection can fail
+                sabnzbd.rss.clear_feed(feed)
+                config.save_config()
+                self.__refresh_readout = feed
+                self.__refresh_download = False
+                self.__refresh_force = False
+                self.__refresh_ignore = True
+                raise rssRaiser(self.__root, kwargs)
+            else:
+                raise dcRaiser(self.__root, kwargs)
         else:
             raise dcRaiser(self.__root, kwargs)
 
