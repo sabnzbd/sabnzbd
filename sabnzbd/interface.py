@@ -1741,17 +1741,19 @@ class ConfigRss(object):
         script = ConvertSpecials(kwargs.get('script'))
         cat = ConvertSpecials(kwargs.get('cat'))
         prio = ConvertSpecials(kwargs.get('priority'))
+        filt = kwargs.get('filter_text')
 
-        cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                                                         platform_encode(kwargs.get('filter_text')), prio ))
+        if filt:
+            cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
+                                                             platform_encode(filt), prio ))
 
-        # Move filter if requested
-        index = int_conv(kwargs.get('index', ''))
-        new_index = kwargs.get('new_index', '')
-        if new_index and int_conv(new_index) != index:
-            cfg.filters.move(int(index), int_conv(new_index))
+            # Move filter if requested
+            index = int_conv(kwargs.get('index', ''))
+            new_index = kwargs.get('new_index', '')
+            if new_index and int_conv(new_index) != index:
+                cfg.filters.move(int(index), int_conv(new_index))
 
-        config.save_config()
+            config.save_config()
         raise rssRaiser(self.__root, kwargs)
 
 

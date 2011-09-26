@@ -637,7 +637,7 @@ SKIN_TEXT = {
 # Config->Special
     'explain-special' : TT('Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>'
                            'Don\'t change these without checking the Wiki first, as some have serious side-effects.<br>'
-                           'The default values are between brackets.'),
+                           'The default values are between parentheses.'),
     'sptag-boolean' : TT('Switches'),
     'sptag-entries' : TT('Values'),
 

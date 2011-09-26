@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2011-09-25 21:42+West-Europa (zomertijd)\n"
+"POT-Creation-Date: 2011-09-26 19:59+West-Europa (zomertijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -153,11 +153,11 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: sabnzbd/api.py:1500 # sabnzbd/interface.py:2258
+#: sabnzbd/api.py:1500 # sabnzbd/interface.py:2260
 msgid "WARNING:"
 msgstr ""
 
-#: sabnzbd/api.py:1500 # sabnzbd/interface.py:2258 # sabnzbd/interface.py:2358
+#: sabnzbd/api.py:1500 # sabnzbd/interface.py:2260 # sabnzbd/interface.py:2360
 msgid "ERROR:"
 msgstr ""
 
@@ -457,77 +457,77 @@ msgstr ""
 msgid "Feed"
 msgstr ""
 
-#: sabnzbd/interface.py:1866 # sabnzbd/skintext.py:81
+#: sabnzbd/interface.py:1868 # sabnzbd/skintext.py:81
 msgid "Daily"
 msgstr ""
 
-#: sabnzbd/interface.py:1867 # sabnzbd/skintext.py:82
+#: sabnzbd/interface.py:1869 # sabnzbd/skintext.py:82
 msgid "Monday"
 msgstr ""
 
-#: sabnzbd/interface.py:1868 # sabnzbd/skintext.py:83
+#: sabnzbd/interface.py:1870 # sabnzbd/skintext.py:83
 msgid "Tuesday"
 msgstr ""
 
-#: sabnzbd/interface.py:1869 # sabnzbd/skintext.py:84
+#: sabnzbd/interface.py:1871 # sabnzbd/skintext.py:84
 msgid "Wednesday"
 msgstr ""
 
-#: sabnzbd/interface.py:1870 # sabnzbd/skintext.py:85
+#: sabnzbd/interface.py:1872 # sabnzbd/skintext.py:85
 msgid "Thursday"
 msgstr ""
 
-#: sabnzbd/interface.py:1871 # sabnzbd/skintext.py:86
+#: sabnzbd/interface.py:1873 # sabnzbd/skintext.py:86
 msgid "Friday"
 msgstr ""
 
-#: sabnzbd/interface.py:1872 # sabnzbd/skintext.py:87
+#: sabnzbd/interface.py:1874 # sabnzbd/skintext.py:87
 msgid "Saturday"
 msgstr ""
 
-#: sabnzbd/interface.py:1873 # sabnzbd/skintext.py:88
+#: sabnzbd/interface.py:1875 # sabnzbd/skintext.py:88
 msgid "Sunday"
 msgstr ""
 
-#: sabnzbd/interface.py:2250
+#: sabnzbd/interface.py:2252
 msgid "&nbsp;Resolving address"
 msgstr ""
 
-#: sabnzbd/interface.py:2358
+#: sabnzbd/interface.py:2360
 msgid "Incorrect parameter"
 msgstr ""
 
-#: sabnzbd/interface.py:2358 # sabnzbd/interface.py:2384
-#: sabnzbd/interface.py:2408 # sabnzbd/interface.py:2425
-#: sabnzbd/interface.py:2510 # sabnzbd/interface.py:2529 # sabnzbd/skintext.py:101 [Generic "Back" button]
+#: sabnzbd/interface.py:2360 # sabnzbd/interface.py:2386
+#: sabnzbd/interface.py:2410 # sabnzbd/interface.py:2427
+#: sabnzbd/interface.py:2512 # sabnzbd/interface.py:2531 # sabnzbd/skintext.py:101 [Generic "Back" button]
 msgid "Back"
 msgstr ""
 
-#: sabnzbd/interface.py:2425
+#: sabnzbd/interface.py:2427
 msgid "Job \"%s\" was re-added to the queue"
 msgstr ""
 
-#: sabnzbd/interface.py:2510
+#: sabnzbd/interface.py:2512
 msgid "Jobs marked with a '*' will not be automatically downloaded."
 msgstr ""
 
-#: sabnzbd/interface.py:2510 # sabnzbd/skintext.py:504 [Config->RSS section header]
+#: sabnzbd/interface.py:2512 # sabnzbd/skintext.py:504 [Config->RSS section header]
 msgid "Matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2511
+#: sabnzbd/interface.py:2513
 msgid "Not matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2511 # sabnzbd/skintext.py:506 [Config->RSS section header]
+#: sabnzbd/interface.py:2513 # sabnzbd/skintext.py:506 [Config->RSS section header]
 msgid "Downloaded"
 msgstr ""
 
-#: sabnzbd/interface.py:2529
+#: sabnzbd/interface.py:2531
 msgid "Downloaded so far"
 msgstr ""
 
-#: sabnzbd/interface.py:2578 # sabnzbd/interface.py:2582
+#: sabnzbd/interface.py:2580 # sabnzbd/interface.py:2584
 msgid "Incorrect value for %s: %s"
 msgstr ""
 
@@ -3248,7 +3248,7 @@ msgid "Daily Folders"
 msgstr ""
 
 #: sabnzbd/skintext.py:638
-msgid "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>Don't change these without checking the Wiki first, as some have serious side-effects.<br>The default values are between brackets."
+msgid "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>Don't change these without checking the Wiki first, as some have serious side-effects.<br>The default values are between parentheses."
 msgstr ""
 
 #: sabnzbd/skintext.py:642
