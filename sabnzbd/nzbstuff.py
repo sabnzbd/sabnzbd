@@ -730,8 +730,8 @@ class NzbObject(TryList):
 
 
         # Pause job when above size limit
-        limit = cfg.SIZE_LIMIT.get_int()
-        if not reuse and limit and self.bytes > limit:
+        limit = cfg.size_limit.get_int()
+        if not reuse and abs(limit) > 0.5 and self.bytes > limit:
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
             self.oversized = True
