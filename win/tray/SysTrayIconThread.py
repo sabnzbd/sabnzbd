@@ -89,7 +89,7 @@ class SysTrayIconThread(Thread):
         while not self.terminate:
             win32gui.PumpWaitingMessages()
             self.doUpdates()
-            sleep(0.025)
+            sleep(0.100)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
         
     # override this
@@ -240,3 +240,4 @@ def non_string_iterable(obj):
         return False
     else:
         return not isinstance(obj, basestring)
+
