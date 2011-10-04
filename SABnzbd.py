@@ -1395,6 +1395,8 @@ def main():
         check_latest_version()
     autorestarted = False
 
+    if sabnzbd.WIN32:
+        import win.tray.sabtray
 
     mail = None
     if sabnzbd.WIN32:
