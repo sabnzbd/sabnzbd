@@ -374,7 +374,7 @@ if target == 'app':
 
     #Create sparseimage from template
     os.system("unzip osx/image/template.sparseimage.zip")
-    os.rename('template.sparseimage', fileImg)
+    os.rename('sabnzbd-template.sparseimage', fileImg)
 
     #mount sparseimage and modify volume label
     os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
