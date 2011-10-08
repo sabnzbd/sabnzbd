@@ -31,7 +31,8 @@ from gntp import GNTPRegister
 from gntp.notifier import GrowlNotifier
 try:
     import Growl
-    _HAVE_OSX_GROWL = True
+    # Detect classic Growl (older than 1.3)
+    _HAVE_OSX_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
 except ImportError:
     _HAVE_OSX_GROWL = False
 try:
