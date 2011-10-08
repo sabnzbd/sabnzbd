@@ -450,7 +450,7 @@ if target == 'app':
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
-    #copy builded app to mounted sparseimage
+    #copy app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     print 'Create src %s' % fileOSr
@@ -460,6 +460,9 @@ if target == 'app':
 
     # Copy README.txt
     os.system("cp README.rtf /Volumes/%s/" % volume)
+
+    # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
+    os.remove('/Volumes/%s/SABnzbd.app/Contents/Resources/site.py' % volume)
 
     #Unmount sparseimage
     os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
