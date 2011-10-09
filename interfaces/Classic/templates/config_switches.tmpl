@@ -129,6 +129,9 @@
         $T('explain-ampm')<br>
         <br/>
     <!--#end if#-->
+    <label><input type="checkbox" name="growl_enable" value="1" <!--#if $growl_enable > 0 then "checked=1" else ""#--> /> <strong>$T('opt-growl_enable')</strong></label><br>
+    $T('explain-growl_enable')<br>
+    <br/>
     <strong>$T('opt-ignore_samples'):</strong><br>
     $T('explain-ignore_samples')<br>
     <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')

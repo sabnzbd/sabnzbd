@@ -15,51 +15,154 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-#"""
-#TO FIX : Translations are not working with this implementation
-#         Growl Registration may only be done once per run ?
-#         Registration is made too early, the language module has not read the text file yet
-#NOTIFICATION = {'startup':'grwl-notif-startup','download':'grwl-notif-dl','pp':'grwl-notif-pp','other':'grwl-notif-other'}
-NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','complete':'4. On download terminated','other':'5. Other Messages'}
+"""
+sabnzbd.growler - Send notifications to Growl
+"""
+#------------------------------------------------------------------------------
 
-# For a future release, make texts translatable.
-if 0:
-    #------------------------------------------------------------------------------
-    # Define translatable message table
-    TT = lambda x:x
-    _NOTIFICATION = {
-        'startup'  : TT('Startup/Shutdown'),        #: Message class for Growl server
-        'download' : TT('Added NZB'),               #: Message class for Growl server
-        'pp'       : TT('Post-processing started'), #: Message class for Growl server
-        'complete' : TT('Job finished'),            #: Message class for Growl server
-        'other'    : TT('Other Messages')           #: Message class for Growl server
-    }
+import os.path
+import logging
+import socket
+
+import sabnzbd
+from sabnzbd.encoding import unicoder, latin1
+import gntp
+import gntp.notifier
 
 try:
     import Growl
-    import os.path
-    import logging
-
-    if os.path.isfile('sabnzbdplus.icns'):
-        nIcon = Growl.Image.imageFromPath('sabnzbdplus.icns')
-    elif os.path.isfile('osx/resources/sabnzbdplus.icns'):
-        nIcon = Growl.Image.imageFromPath('osx/resources/sabnzbdplus.icns')
+    import platform
+    # If running on OSX-Lion and classic Growl (older than 1.3) is absent, assume GNTP-only
+    if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
+        _HAVE_OSX_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
     else:
-        nIcon = Growl.Image.imageWithIconForApplication('Terminal')
-
-    def sendGrowlMsg(nTitle , nMsg, nType=NOTIFICATION['other']):
-        gnotifier = SABGrowlNotifier(applicationIcon=nIcon)
-        gnotifier.register()
-        #TO FIX
-        #gnotifier.notify(T(nType), nTitle, nMsg)
-        gnotifier.notify(nType, nTitle, nMsg)
-
-    class SABGrowlNotifier(Growl.GrowlNotifier):
-        applicationName = "SABnzbd"
-        #TO FIX
-        #notifications = [T(notification) for notification in NOTIFICATION.values()]
-        notifications = NOTIFICATION.values()
-
+        _HAVE_OSX_GROWL = True
 except ImportError:
-    def sendGrowlMsg(nTitle , nMsg, nType):
-        pass
+    _HAVE_OSX_GROWL = False
+
+#------------------------------------------------------------------------------
+# Define translatable message table
+NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','complete':'4. On download terminated','other':'5. Other Messages'}
+
+#------------------------------------------------------------------------------
+# Setup platform dependent Growl support
+#
+_GROWL_ICON = None  # Platform-dependant icon path
+_GROWL = None       # Instance of the Notifier after registration
+_GROWL_REG = False  # Succesful registration
+
+
+#------------------------------------------------------------------------------
+def get_icon():
+    icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    if not os.path.isfile(icon):
+        icon = None
+    return icon
+
+#------------------------------------------------------------------------------
+def register_growl():
+    """ Register this app with Growl
+    """
+    error = None
+
+    # Clean up persistent data in GNTP to make re-registration work
+    gntp.GNTPRegister.notifications = []
+    gntp.GNTPRegister.headers = {}
+
+    growler = gntp.notifier.GrowlNotifier(
+        applicationName = 'SABnzbd',
+        applicationIcon = get_icon(),
+        notifications = sorted(NOTIFICATION.values()),
+        hostname = None,
+        port = 23053,
+        password = None
+    )
+
+    try:
+        ret = growler.register()
+        if ret is None or isinstance(ret, bool):
+            logging.info('Registered with Growl')
+            ret = growler
+        else:
+            error = 'Cannot register with Growl %s' % ret
+            logging.debug(error)
+            del growler
+            ret = None
+    except socket.error, err:
+        error = 'Cannot register with Growl %s' % err
+        logging.debug(error)
+        del growler
+        ret = None
+    return ret, error
+
+
+#------------------------------------------------------------------------------
+def sendGrowlMsg(title , msg, gtype):
+    """ Send Growl message
+    """
+    global _GROWL, _GROWL_REG
+
+    if not sabnzbd.cfg.growl_enable():
+        return
+
+    if _HAVE_OSX_GROWL:
+        res = send_local_growl(title, msg, gtype)
+        return res
+
+    for n in (0, 1):
+        if not _GROWL_REG: _GROWL = None
+        if not _GROWL:
+            _GROWL, error = register_growl()
+        if _GROWL:
+            assert isinstance(_GROWL, gntp.notifier.GrowlNotifier)
+            _GROWL_REG = True
+            #logging.debug('Send to Growl: %s %s %s', gtype, latin1(title), latin1(msg))
+            try:
+                ret = _GROWL.notify(
+                    noteType = gtype,
+                    title = title,
+                    description = unicoder(msg),
+                    #icon = options.icon,
+                    #sticky = options.sticky,
+                    #priority = options.priority
+                )
+                if ret is None or isinstance(ret, bool):
+                    return None
+                elif ret[0] == '401':
+                    _GROWL = False
+                else:
+                    logging.debug('Growl error %s', ret)
+                    return 'Growl error %s', ret
+            except socket.error, err:
+                logging.debug('Growl error %s', err)
+                return 'Growl error %s', err
+        else:
+            return error
+    return None
+
+#------------------------------------------------------------------------------
+# Local OSX Growl support
+#
+if _HAVE_OSX_GROWL:
+    _local_growl = None
+    if os.path.isfile('sabnzbdplus.icns'):
+        _OSX_ICON = Growl.Image.imageFromPath('sabnzbdplus.icns')
+    elif os.path.isfile('osx/resources/sabnzbdplus.icns'):
+        _OSX_ICON = Growl.Image.imageFromPath('osx/resources/sabnzbdplus.icns')
+    else:
+        _OSX_ICON = Growl.Image.imageWithIconForApplication('Terminal')
+
+    def send_local_growl(title , msg, gtype):
+        """ Send to local Growl server, OSX-only """
+        global _local_growl
+        if not _local_growl:
+            notes = sorted(NOTIFICATION.values())
+            _local_growl = Growl.GrowlNotifier(
+                applicationName = 'SABnzbd',
+                applicationIcon = _OSX_ICON,
+                notifications = notes,
+                defaultNotifications = notes
+                )
+            _local_growl.register()
+        _local_growl.notify(gtype, title, msg)
+        return None

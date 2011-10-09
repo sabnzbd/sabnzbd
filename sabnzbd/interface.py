@@ -1129,7 +1129,7 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
-             'unpack_check'
+             'unpack_check', 'growl_enable'
              )
 
 #------------------------------------------------------------------------------
@@ -1151,7 +1151,10 @@ class ConfigSwitches(object):
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
         for kw in SWITCH_LIST:
-            conf[kw] = config.get_config('misc', kw)()
+            if kw == 'growl_enable':
+                conf[kw] = config.get_config('growl', kw)()
+            else:
+                conf[kw] = config.get_config('misc', kw)()
 
         conf['script_list'] = list_scripts() or ['None']
         conf['have_ampm'] = HAVE_AMPM
@@ -1166,7 +1169,10 @@ class ConfigSwitches(object):
         if msg: return msg
 
         for kw in SWITCH_LIST:
-            item = config.get_config('misc', kw)
+            if kw == 'growl_enable':
+                item = config.get_config('growl', kw)
+            else:
+                item = config.get_config('misc', kw)
             value = platform_encode(kwargs.get(kw))
             msg = item.set(value)
             if msg:

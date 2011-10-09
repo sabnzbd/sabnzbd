@@ -204,6 +204,8 @@ ssl_type = OptionStr('misc', 'ssl_type', 'v23')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 
+growl_enable = OptionBool('growl', 'growl_enable', True)
+
 # Internal options, not saved in INI file
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
