@@ -728,28 +728,42 @@ def save_config(force=False):
 
     filename = CFG.filename
     try:
+        # Check if file is writable
+        if not sabnzbd.misc.is_writable(filename):
+            logging.error(Ta('Cannot write to INI file %s'), filename)
+            modified = False
+            return False
+
         # Read current content
-        f = open(CFG.filename)
+        f = open(filename)
         data = f.read()
         f.close()
 
-        # Write to temp file
-        CFG.filename = filename + '.tmp'
-        f = open(CFG.filename, 'w')
+        tmpname = filename + '.tmp'
+        bakname = filename + '.bak'
+
+        # Write new file
+        f = open(tmpname, 'w')
         f.write(data)
         f.close()
 
         # Update temp file content
+        CFG.filename = tmpname
         CFG.write()
 
+        # Rename to backup
+        if os.path.isfile(bakname):
+            os.remove(bakname)
+        os.rename(filename, bakname)
+
         # Rename temp file, overwriting old one
-        os.remove(filename)
-        os.rename(CFG.filename, filename)
+        os.rename(tmpname, filename)
 
         modified = False
         res = True
     except:
-        logging.error(Ta('Cannot create temp file for %s'), CFG.filename)
+        logging.error(Ta('Cannot create backup file for %s'), filename)
+        logging.info("Traceback: ", exc_info = True)
         res = False
     CFG.filename = filename
     return res

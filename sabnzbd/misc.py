@@ -30,6 +30,7 @@ import subprocess
 import socket
 import time
 import glob
+import stat
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -1180,3 +1181,10 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
             except:
                 logging.info('Cannot remove folder %s', path)
 
+
+def is_writable(path):
+    """ Return True is file is writable (also when non-existent) """
+    if os.path.isfile(path):
+        return bool(os.stat(path).st_mode & stat.S_IWUSR)
+    else:
+        return True
