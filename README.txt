@@ -1,17 +1,14 @@
-************************  SABnzbd 0.6.9  ************************
+************************  SABnzbd 0.6.10RC1  ************************
 
 What's new:
-- Update Plush to solve minor browser incompatibilities
-- On Windows the 64bit versions of par2 and unrar were never used
-- Updated unrar to 4.01
-- Using the "Download" button in newzbin.com RSS feeds produced malformed names.
-- When removing job folders in the "temporary download folder", remove everything.
-  This is needed because some operating systems add spurious files and folders.
-- Generic Sorter failed to uppercase first letter of title when starting with "the/a/to" etc.
-- Add "hidden" option allow_64bit_tools (lost when going from 0.5.6 to 0.6.0)
-
-- OSX has now a Leopard/SnowLeopard DMG and a Lion-only DMG
-  You can see the difference in the DMG's background image
+- Allow saving of category paths ending in a *
+  This is will prevent the creation of job folders in the final folder
+- Fix incompatibility with unrar 4.01 regarding detection of encrypted files
+- Create .bak (backup) file for sabnzbd.ini before modifying it
+- OSX: Compatible with Growl 1.2.2 and 1.3
+- OSX: Prevent changes to SABnzbd.app folder which confused the OSX Firewall
+- OSX: Fix access rights of SABnzbs.app so that restricted users can run SABnzbd
+- OSX: Combined SnowLeopard/Lion DMG and separate Leopard DMG
 
 
 About:
