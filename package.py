@@ -382,16 +382,18 @@ if target == 'app':
     # Select OSX version specific background image
     # Take care to preserve the special attributes of the background image file
     if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
-        # Lion and higher
-        f = open('osx/image/sabnzbd_lion.png', 'rb')
+        # Lion and higher: generates SnowLeopard/Lion DMG
+        f = open('osx/image/sabnzbd.png', 'rb')
         png = f.read()
         f.close()
-        f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
-        f.write(png)
-        f.close()
     else:
-        # Snow Leopard and lower
-        pass
+        # Snow Leopard and lower: generates Leopard DMG
+        f = open('osx/image/sabnzbd_leopard.png', 'rb')
+        png = f.read()
+        f.close()
+    f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
+    f.write(png)
+    f.close()
 
     # Rename the volume
     fp = open('mount.log', 'r')
