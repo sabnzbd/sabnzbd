@@ -102,7 +102,7 @@ def sendGrowlMsg(title , msg, gtype):
     """
     global _GROWL, _GROWL_REG
 
-    if not sabnzbd.cfg.growl_enable():
+    if not sabnzbd.cfg.growl_enable() or not sabnzbd.DARWIN:
         return
 
     if _HAVE_OSX_GROWL:
