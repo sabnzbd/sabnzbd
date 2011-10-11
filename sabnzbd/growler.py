@@ -36,7 +36,10 @@ try:
 except ImportError:
     _HAVE_OSX_GROWL = False
 try:
-    import pynotify
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        import pynotify
     _HAVE_NTFOSD = True
 except ImportError:
     _HAVE_NTFOSD = False
