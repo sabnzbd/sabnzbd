@@ -302,7 +302,10 @@ def real_path(loc, path):
         if not sabnzbd.WIN32 and path.startswith('~/'):
             path = path.replace('~', sabnzbd.DIR_HOME, 1)
         if sabnzbd.WIN32:
-            if path[0] not in '/\\' and not (len(path) > 1 and path[0].isalpha() and path[1] == ':'):
+            if path[0].isalpha() and len(path) > 1 and path[1] == ':':
+                if len(path) == 2 or path[2] not in '\\/':
+                    path = path.replace(':', ':\\', 1)
+            else:
                 path = os.path.join(loc, path)
         elif path[0] != '/':
             path = os.path.join(loc, path)
