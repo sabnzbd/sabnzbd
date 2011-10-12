@@ -2123,10 +2123,7 @@ class ConfigCats(object):
             name = newname.lower()
             if kwargs.get('dir'):
                 kwargs['dir'] = platform_encode(kwargs['dir'])
-            folder = config.ConfigCat(name, kwargs).dir
-            msg = folder.set(folder(), create=True)
-            if msg:
-                return badParameterResponse(msg)
+            config.ConfigCat(name, kwargs)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
