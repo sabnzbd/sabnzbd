@@ -97,11 +97,12 @@ def send_notification(title , msg, gtype):
     """ Send Notification message
         Return '' when OK, otherwise an error string
     """
+    msg1 = msg2 = ""
     if have_growl():
-        return send_growl(title, msg, gtype)
+        msg1 = send_growl(title, msg, gtype)
     if have_ntfosd():
-        return send_notify_osd(title, msg)
-    return 'not active'
+        msg2 = send_notify_osd(title, msg)
+    return msg1 or msg2 or 'not active'
 
 
 #------------------------------------------------------------------------------
