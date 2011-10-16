@@ -28,7 +28,8 @@ from time import time
 import binascii
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, reliable_unpack_names, unicoder, latin1
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
+     reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path
 from sabnzbd.tvsort import SeriesSorter
@@ -1338,7 +1339,7 @@ def sfv_check(sfv_path):
             x = line.rfind(' ')
             filename = line[:x].strip()
             checksum = line[x:].strip()
-            path = os.path.join(root, filename)
+            path = os.path.join(root, platform_encode(filename))
             if os.path.exists(path):
                 if crc_check(path, checksum):
                     logging.debug('File %s passed SFV check', path)
