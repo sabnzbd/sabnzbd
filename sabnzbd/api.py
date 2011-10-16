@@ -624,7 +624,7 @@ def _api_test_email(name, output, kwargs):
 def _api_test_notif(name, output, kwargs):
     """ API: send a test notification, return result """
     logging.info("Sending test notification")
-    res = sabnzbd.growler.send_notification('SABNzbd', T('Test Notification'), 'other')
+    res = sabnzbd.growler.send_notification('SABnzbd', T('Test Notification'), 'other')
     return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
