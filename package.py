@@ -450,6 +450,7 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
+    os.system("cp sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     #copy app to mounted sparseimage
