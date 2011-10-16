@@ -2,7 +2,7 @@
 
 What's new:
 - Allow saving of category paths ending in a *
-  This is will prevent the creation of job folders in the final folder
+  This feature (*) will prevent the creation of job folders in the final folder
 - Fix incompatibility with unrar 4.01 regarding detection of encrypted files
 - Create .bak (backup) file for sabnzbd.ini before modifying it
 - Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
