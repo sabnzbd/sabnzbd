@@ -79,6 +79,7 @@ Optional modules Unix/Linux/OSX
     pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
     openssl => v0.9.8g+     http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
+    pynotify                http://home.gna.org/py-notify/
 
 Embedded modules (only use the included version)
     CherryPy-3.2 rev2138 with patches  http://www.cherrypy.org

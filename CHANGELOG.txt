@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.10Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
+- Fix file name encoding problems when verifying using SFV files
+- Add GNTP module to source distribution
+-------------------------------------------------------------------------------
  0.6.10RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Allow saving of category paths ending in a *
