@@ -497,6 +497,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     except:
         logging.info('Archive %s probably has full encryption', rarfile)
         expected_files = []
+        
     for filenames in expected_files:
             if ".rar" in filename:
                 nzo.fail_msg = T("RAR in RAR detected, stopping")
