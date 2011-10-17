@@ -7,6 +7,7 @@ What's new:
 - Create .bak (backup) file for sabnzbd.ini before modifying it
 - Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
 - Fix file name encoding problems when verifying using SFV files
+- Prevent reading newzbin bookmarks when newzbin credentials are not set
 - OSX: Compatible with Growl 1.2.2 and 1.3
 - OSX: Prevent changes to SABnzbd.app folder which confused the OSX Firewall
 - OSX: Fix access rights of SABnzbs.app so that restricted users can run SABnzbd

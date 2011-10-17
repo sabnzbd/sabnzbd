@@ -4,6 +4,7 @@
 - Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
 - Fix file name encoding problems when verifying using SFV files
 - Add GNTP module to source distribution
+- Prevent reading newzbin bookmarks when newzbin credentials are not set
 -------------------------------------------------------------------------------
  0.6.10RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
