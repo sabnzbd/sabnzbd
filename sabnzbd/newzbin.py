@@ -274,6 +274,9 @@ class Bookmarks(object):
     @synchronized(BOOK_LOCK)
     def run(self, delete=None):
 
+        if not (cfg.newzbin_bookmarks() and cfg.newzbin_username() and cfg.newzbin_password()):
+            return
+
         headers = { 'User-Agent': 'SABnzbd+/%s' % sabnzbd.__version__, }
 
         # Connect to Newzbin
