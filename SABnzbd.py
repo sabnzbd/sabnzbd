@@ -250,6 +250,7 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
+    print "      --stack ipv4|ipv6    Force the exclusive use of IPv4 or IPv6"
     print "      --log-all            Log all article handling (for developers)"
     print "      --new                Run a new instance of SABnzbd"
 
@@ -492,6 +493,13 @@ def print_modules():
 
 
 #------------------------------------------------------------------------------
+def all_localhosts():
+    """ Return all values of localhost """
+    info = socket.getaddrinfo('localhost', None)
+    return [item[4][0] for item in info]
+
+
+#------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
@@ -611,6 +619,18 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
+
+
+def attach_server(host, port, cert=None, key=None):
+    """ Define and attach server, optionally HTTPS
+    """
+    http_server = _cpwsgi_server.CPWSGIServer()
+    http_server.bind_addr = (host, port)
+    if cert and key:
+        http_server.ssl_certificate = cert
+        http_server.ssl_private_key = key
+    adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
+    adapter.subscribe()
 
 
 def is_sabnzbd_running(url):
@@ -773,7 +793,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'stack=',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -847,6 +867,7 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
+    stack = ''
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -929,6 +950,10 @@ def main():
             new_instance = True
         elif opt in ('--sessions',):
             force_sessions = True
+        elif opt in ('--stack',):
+            re_argv.append(opt)
+            re_argv.append(arg)
+            stack = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1273,18 +1298,38 @@ def main():
             logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
-        if enable_https:
-            if https_port:
-                # Prepare an extra server for the HTTP port
-                http_server = _cpwsgi_server.CPWSGIServer()
-                http_server.bind_addr = (cherryhost, cherryport)
-                #secure_server.ssl_certificate = https_cert
-                #secure_server.ssl_private_key = https_key
-                adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-                adapter.subscribe()
-                cherryport = https_port
-            cherrypy.config.update({'server.ssl_certificate' : https_cert,
-                                    'server.ssl_private_key' : https_key })
+    # Determine if this system has multiple definitions for 'localhost'
+    hosts = all_localhosts()
+    multilocal = len(hosts) > 1 and cherryhost in ('localhost', '0.0.0.0')
+
+    # For 0.0.0.0 CherryPy will always pick IPv4, so make sure the secondary localhost is IPv6
+    if multilocal and cherryhost == '0.0.0.0' and hosts[1] == '127.0.0.1':
+        hosts[1] = '::1'
+
+    # The Windows binary requires numeric localhost as primary address
+    if multilocal and cherryhost == 'localhost' and hosts[1] == '127.0.0.1':
+        cherryhost = '::1'
+
+    if enable_https:
+        if https_port:
+            # Extra HTTP port for primary localhost
+            attach_server(cherryhost, cherryport)
+            if multilocal:
+                # Extra HTTP port for secondary localhost
+                attach_server(hosts[1], cherryport)
+                # Extra HTTPS port for secondary localhost
+                attach_server(hosts[1], https_port, https_cert, https_key)
+            cherryport = https_port
+        elif multilocal:
+            # Extra HTTPS port for secondary localhost
+            attach_server(hosts[1], cherryport, https_cert, https_key)
+
+        cherrypy.config.update({'server.ssl_certificate' : https_cert,
+                                'server.ssl_private_key' : https_key })
+    elif multilocal:
+        # Extra HTTP port for secondary localhost
+        attach_server(hosts[1], cherryport)
+
 
     if no_login:
         sabnzbd.cfg.username.set('')
