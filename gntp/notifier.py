@@ -118,13 +118,21 @@ class GrowlNotifier(object):
 		'''
 		Send the GNTP Packet
 		'''
-		logger.debug('To : %s:%s <%s>\n%s',self.hostname,self.port,type,data)
+		#logger.debug('To : %s:%s <%s>\n%s',self.hostname,self.port,type,data)
+		#Less verbose please
+		logger.debug('To : %s:%s <%s>',self.hostname,self.port,type)
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+		    s.settimeout(10)
+		except:
+		    pass
 		s.connect((self.hostname,self.port))
 		s.send(data.encode('utf-8', 'replace'))
 		response = gntp.parse_gntp(s.recv(1024))
 		s.close()
 
-		logger.debug('From : %s:%s <%s>\n%s',self.hostname,self.port,response.__class__,response)
+		#logger.debug('From : %s:%s <%s>\n%s',self.hostname,self.port,response.__class__,response)
+		#Less verbose please
+		logger.debug('From : %s:%s <%s>',self.hostname,self.port,response.__class__)
 		return response

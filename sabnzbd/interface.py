@@ -2555,7 +2555,7 @@ class ConfigNotify(object):
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         conf['lastmail'] = self.__lastmail
-        conf['have_growl'] = sabnzbd.growler.have_growl()
+        conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
 
         for kw in LIST_EMAIL:

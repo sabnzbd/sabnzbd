@@ -23,6 +23,8 @@ from __future__ import with_statement
 import os.path
 import logging
 import socket
+import time
+from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
@@ -32,9 +34,9 @@ from gntp.notifier import GrowlNotifier
 try:
     import Growl
     # Detect classic Growl (older than 1.3)
-    _HAVE_OSX_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
+    _HAVE_CLASSIC_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
 except ImportError:
-    _HAVE_OSX_GROWL = False
+    _HAVE_CLASSIC_GROWL = False
 try:
     import warnings
     with warnings.catch_warnings():
@@ -81,11 +83,6 @@ def change_value():
 
 
 #------------------------------------------------------------------------------
-def have_growl():
-    """ Return if any Growl support is present
-    """
-    return True
-
 def have_ntfosd():
     """ Return if any PyNotify support is present
     """
@@ -93,13 +90,22 @@ def have_ntfosd():
 
 
 #------------------------------------------------------------------------------
-def send_notification(title , msg, gtype):
+def send_notification(title , msg, gtype, wait=False):
     """ Send Notification message
         Return '' when OK, otherwise an error string
     """
-    msg1 = msg2 = ""
-    if have_growl():
-        msg1 = send_growl(title, msg, gtype)
+    msg1 = ''
+    msg2 = ''
+    if sabnzbd.cfg.growl_enable():
+        if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
+            return send_local_growl(title, msg, gtype)
+        else:
+            if wait:
+                msg1 = send_growl(title, msg, gtype)
+            else:
+                msg1 = 'ok'
+                Thread(target=send_growl, args=(title, msg, gtype)).start()
+                time.sleep(0.5)
     if have_ntfosd():
         msg2 = send_notify_osd(title, msg)
     return msg1 or msg2 or 'not active'
@@ -153,12 +159,6 @@ def send_growl(title , msg, gtype):
     """ Send Growl message
     """
     global _GROWL, _GROWL_REG
-    if not sabnzbd.cfg.growl_enable():
-        return 'not enabled'
-
-    if _HAVE_OSX_GROWL and not sabnzbd.cfg.growl_server():
-        res = send_local_growl(title, msg, gtype)
-        return res
 
     for n in (0, 1):
         if not _GROWL_REG: _GROWL = None
@@ -194,7 +194,7 @@ def send_growl(title , msg, gtype):
 #------------------------------------------------------------------------------
 # Local OSX Growl support
 #
-if _HAVE_OSX_GROWL:
+if _HAVE_CLASSIC_GROWL:
     _local_growl = None
     if os.path.isfile('sabnzbdplus.icns'):
         _OSX_ICON = Growl.Image.imageFromPath('sabnzbdplus.icns')
