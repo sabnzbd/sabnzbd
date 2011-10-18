@@ -240,6 +240,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
+    check_incomplete_vs_complete()
+
     ### Handle language upgrade from 0.5.x to 0.6.x
     cfg.language.set(LANG_MAP.get(cfg.language(), cfg.language()))
 
@@ -1021,6 +1023,17 @@ def pid_file(pid_path=None, port=0):
         except:
             logging.warning('Cannot access PID file %s', DIR_PID)
 
+
+def check_incomplete_vs_complete():
+    """ Make sure "incomplete" and "complete" are not identical
+    """
+    complete = cfg.complete_dir.get_path()
+    if misc.same_file(cfg.download_dir.get_path(), complete):
+        if misc.real_path('X', cfg.download_dir()) == cfg.download_dir():
+            # Abs path, so set an abs path too
+            cfg.download_dir.set(os.path.join(complete, 'incomplete'))
+        else:
+            cfg.download_dir.set('incomplete')
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py

@@ -1120,6 +1120,7 @@ class ConfigFolders(object):
                 if msg:
                     return badParameterResponse(msg)
 
+        sabnzbd.check_incomplete_vs_complete()
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 

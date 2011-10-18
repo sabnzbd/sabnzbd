@@ -634,8 +634,11 @@ def same_file(a, b):
             return False
     else:
         try:
-            a = os.path.normpath(os.path.abspath(a)).lower()
-            b = os.path.normpath(os.path.abspath(b)).lower()
+            a = os.path.normpath(os.path.abspath(a))
+            b = os.path.normpath(os.path.abspath(b))
+            if sabnzbd.WIN32 or sabnzbd.DARWIN:
+                a = a.lower()
+                b = b.lower()
             return a == b
         except:
             return False
