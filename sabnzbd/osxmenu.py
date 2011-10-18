@@ -328,7 +328,7 @@ class SABnzbdDelegate(NSObject):
 
                 job_nb = 1
                 for pnfo in pnfo_list:
-                    if job_nb >= 10:
+                    if job_nb > 10:
                         break
                     filename = pnfo[PNFO_FILENAME_FIELD]
                     msgid = pnfo[PNFO_MSGID_FIELD]
