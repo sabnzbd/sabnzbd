@@ -498,13 +498,6 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         logging.info('Archive %s probably has full encryption', rarfile)
         expected_files = []
         
-    for filenames in expected_files:
-            if ".rar" in filename:
-                nzo.fail_msg = T("RAR in RAR detected, stopping")
-                msg = ('[%s][%s] '+Ta('RAR in RAR detected, stopping')) % (setname, latin1(filename))
-                nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-                logging.error('%s (%s)', Ta('RAR in RAR detected, stopping'), latin1(filename))
-                return (3, (), ())
 
     if password:
         password = '-p%s' % password
