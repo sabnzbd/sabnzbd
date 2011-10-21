@@ -1396,7 +1396,7 @@ def main():
     autorestarted = False
 
     if sabnzbd.WIN32:
-        import win.tray.sabtray
+        import sabnzbd.sabtray
 
     mail = None
     if sabnzbd.WIN32:
