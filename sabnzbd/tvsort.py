@@ -96,6 +96,8 @@ class Sorter(object):
         self.type = None
         self.sort_file = False
         self.cat = cat
+        self.ext = ''
+        self.is_fullpath = False
 
     def detect(self, dirname, complete_dir):
         self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
@@ -117,6 +119,7 @@ class Sorter(object):
             complete_dir = self.sorter.get_final_path()
             self.type = 'movie'
             self.sort_file = True
+            self.is_fullpath = True
             return complete_dir
 
         self.sort_file = False
