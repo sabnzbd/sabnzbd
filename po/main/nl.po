@@ -923,7 +923,7 @@ msgstr "Herstarten"
 
 #: sabnzbd/osxmenu.py:325
 msgid "Queue First 10 Items"
-msgstr "Wachtrij Eersto 10 Items"
+msgstr "Wachtrij Eerste 10 Items"
 
 #: sabnzbd/osxmenu.py:349 # sabnzbd/osxmenu.py:390
 msgid "Empty"
