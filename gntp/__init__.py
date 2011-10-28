@@ -216,11 +216,9 @@ class _GNTPBase(object):
 			message += u'%s: %s%s'%(k,v,EOL)
 		
 		message += EOL
-		return message.encode('utf8')
+		return message
 class GNTPRegister(_GNTPBase):
-	'''
-	GNTP Registration Message
-	'''
+	"""Represents a GNTP Registration Command"""
 	notifications = []
 	_requiredHeaders = [
 		'Application-Name',
@@ -310,9 +308,7 @@ class GNTPRegister(_GNTPBase):
 		return message
 
 class GNTPNotice(_GNTPBase):
-	'''
-	GNTP Notification Message
-	'''
+	"""Represents a GNTP Notification Command"""
 	_requiredHeaders = [
 		'Application-Name',
 		'Notification-Name',
@@ -373,9 +369,10 @@ class GNTPNotice(_GNTPBase):
 			message += u'%s: %s%s'%(k,v,EOL)
 		
 		message += EOL
-		return message.encode('utf8')
+		return message
 
 class GNTPSubscribe(_GNTPBase):
+	"""Represents a GNTP Subscribe Command"""
 	def __init__(self,data=None,password=None):
 		self.info['messagetype'] = 'SUBSCRIBE'
 		self._requiredHeaders = [
@@ -389,6 +386,7 @@ class GNTPSubscribe(_GNTPBase):
 			self.add_origin_info()
 
 class GNTPOK(_GNTPBase):
+	"""Represents a GNTP OK Response"""
 	_requiredHeaders = ['Response-Action']
 	def __init__(self,data=None,action=None):
 		'''
