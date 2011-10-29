@@ -1,17 +1,12 @@
-************************  SABnzbd 0.6.10  ************************
+************************  SABnzbd 0.6.11  ************************
 
 What's new:
-- Allow saving of category paths ending in a *
-  This feature (*) will prevent the creation of job folders in the final folder
-- Fix incompatibility with unrar 4.01 regarding detection of encrypted files
-- Create .bak (backup) file for sabnzbd.ini before modifying it
-- Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
-- Fix file name encoding problems when verifying using SFV files
-- Prevent reading newzbin bookmarks when newzbin credentials are not set
-- OSX: Compatible with Growl 1.2.2 and 1.3
-- OSX: Prevent changes to SABnzbd.app folder which confused the OSX Firewall
-- OSX: Fix access rights of SABnzbs.app so that restricted users can run SABnzbd
-- OSX: Combined SnowLeopard/Lion DMG and separate Leopard DMG
+- Improve detection of encrypted RAR files during download
+- SABnzbd will now listen on all "localhost" addresses
+  This should prevent problems on IPV6-enabled systems
+- Remove unneeded extra temporary folder level in Generic Sort
+- OSX: Fix Growl issue on French systems
+- OSX: Show the promised 10 queue entries in the OSX menu instead of 9
 
 
 About:

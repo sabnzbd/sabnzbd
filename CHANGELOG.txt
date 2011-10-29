@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.6.11RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix Growl issue on French OSX systems
+- Improve detection of encrypted RAR files during download
+- SABnzbd will now listen on all "localhost" addresses
+- Remove unneeded extra temporary folder level in Generic Sort
+- Show the promised 10 queue entries in the OSX menu instead of 9
+-------------------------------------------------------------------------------
  0.6.10Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
