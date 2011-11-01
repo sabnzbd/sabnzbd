@@ -425,7 +425,8 @@ def process_job(nzo):
                                     T('View script output')), unique=True)
 
         ## Cleanup again, including NZB files
-        cleanup_list(workdir_complete, False)
+        if all_ok:
+            cleanup_list(workdir_complete, False)
 
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
