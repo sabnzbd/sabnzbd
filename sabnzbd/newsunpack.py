@@ -890,6 +890,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             command.append(joinable)
 
     stup, need_shell, command, creationflags = build_command(command)
+    logging.debug('Starting par2: %s', command)
 
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
