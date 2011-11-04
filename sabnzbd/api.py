@@ -1812,6 +1812,7 @@ def list_scripts(default=False):
             if os.path.isfile(script):
                 if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and \
                                       not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
+                   script.endswith('.py') or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))
         lst.insert(0, 'None')
