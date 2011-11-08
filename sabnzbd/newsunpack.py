@@ -31,7 +31,7 @@ import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.misc import format_time_string, find_on_path, make_script_path
+from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 
@@ -1423,10 +1423,10 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                 if n < len(values) and line:
                     values[n] = TRANS(line)
                 n += 1
-        if values[0]:
-            logging.info('Pre-Q accepts %s', name)
-        else:
+        if int_conv(values[0]) < 1:
             logging.info('Pre-Q refuses %s', name)
+        else:
+            logging.info('Pre-Q accepts %s', name)
 
     return values
 
