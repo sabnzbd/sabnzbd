@@ -142,12 +142,12 @@ def register_growl():
             logging.info('Registered with Growl')
             ret = growler
         else:
-            error = 'Cannot register with Growl %s' % ret
+            error = 'Cannot register with Growl %s' % str(ret)
             logging.debug(error)
             del growler
             ret = None
     except socket.error, err:
-        error = 'Cannot register with Growl %s' % err
+        error = 'Cannot register with Growl %s' % str(err)
         logging.debug(error)
         del growler
         ret = None
