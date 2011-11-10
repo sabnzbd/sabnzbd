@@ -1972,7 +1972,7 @@ class ConfigNewzbin(object):
     def getBookmarks(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        Bookmarks.do.run()
+        Bookmarks.do.run(force=True)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose

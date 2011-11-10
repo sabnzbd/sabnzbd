@@ -272,9 +272,11 @@ class Bookmarks(object):
         Bookmarks.do = self
 
     @synchronized(BOOK_LOCK)
-    def run(self, delete=None):
+    def run(self, delete=None, force=False):
 
-        if not (cfg.newzbin_bookmarks() and cfg.newzbin_username() and cfg.newzbin_password()):
+        if not (cfg.newzbin_bookmarks() or force):
+            return
+        if not (cfg.newzbin_username() and cfg.newzbin_password()):
             return
 
         headers = { 'User-Agent': 'SABnzbd+/%s' % sabnzbd.__version__, }
