@@ -548,16 +548,22 @@ def parring(nzo, workdir):
 
         logging.info('Par2 check finished on %s', filename)
 
-    else:
+    if par_error or not repair_sets:
         # See if alternative SFV check is possible
-        sfv = None
         if cfg.sfv_check():
-            for sfv in globber(workdir, '*.sfv'):
-                par_error = par_error or not sfv_check(sfv)
-            if par_error:
-                nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
-
-        if not sfv:
+            sfvs = globber(workdir, '*.sfv')
+        else:
+            sfvs = None
+        if sfvs:
+            par_error = False
+            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            for sfv in sfvs:
+                if not sfv_check(sfv):
+                    nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
+                    par_error = True
+            if not par_error:
+                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
+        elif not repair_sets:
             logging.info("No par2 sets for %s", filename)
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
 
