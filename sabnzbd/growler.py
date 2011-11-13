@@ -151,6 +151,12 @@ def register_growl():
         logging.debug(error)
         del growler
         ret = None
+    except:
+        error = 'Unknown Growl registration error'
+        logging.debug(error)
+        del growler
+        ret = None
+
     return ret, error
 
 
@@ -185,8 +191,13 @@ def send_growl(title , msg, gtype):
                     logging.debug('Growl error %s', ret)
                     return 'Growl error %s', ret
             except socket.error, err:
-                logging.debug('Growl error %s', err)
-                return 'Growl error %s', err
+                error = 'Growl error %s' % err
+                logging.debug(error)
+                return error
+            except:
+                error = 'Growl error (unknown)'
+                logging.debug(error)
+                return error
         else:
             return error
     return None
