@@ -537,7 +537,7 @@ def _api_auth(name, output, kwargs):
 def _api_newzbin(name, output, kwargs):
     """ API: accepts output """
     if name == 'get_bookmarks':
-        Bookmarks.do.run()
+        Bookmarks.do.run(force=True)
         return report(output)
     return report(output, _MSG_NOT_IMPLEMENTED)
 
