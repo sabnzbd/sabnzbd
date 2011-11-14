@@ -685,13 +685,15 @@ class NzbQueue(TryList):
                     logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
-            if self.actives(grabs=False) < 2 and cfg.autodisconnect():
-                # This was the last job, close server connections
-                sabnzbd.downloader.Downloader.do.disconnect()
+            self.finish_nzo(nzo)
 
-            # Notify assembler to call postprocessor
-            Assembler.do.process((nzo, None))
+    def finish_nzo(self, nzo):
+        if self.actives(grabs=False) < 2 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
 
+        # Notify assembler to call postprocessor
+        Assembler.do.process((nzo, None))
 
     @synchronized(NZBQUEUE_LOCK)
     def actives(self, grabs=True):

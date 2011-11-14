@@ -1177,3 +1177,7 @@ def is_writable(path):
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
     else:
         return True
+
+def has_substance(path):
+    """ Return True when file exists and has some content """
+    return os.path.exists(path) and os.stat(path).st_size > 0

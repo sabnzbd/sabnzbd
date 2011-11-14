@@ -194,7 +194,9 @@ class NzbFile(TryList):
         self.valid = bool(article_db)
 
         if self.valid and self.nzf_id:
-            sabnzbd.save_data(article_db, self.nzf_id, nzo.workpath)
+            if not sabnzbd.save_data(article_db, self.nzf_id, nzo.workpath):
+                logging.info('Saving %s failed', latin1(os.path.join(nzo.workpath, self.nzf_id)))
+                raise IOError
 
     def finish_import(self):
         """ Load the article objects from disk """
@@ -489,7 +491,8 @@ NzbObjectMapper = (
     ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
     ('duplicate',                    'duplicate'),     # Was detected as a duplicate
     ('oversized',                    'oversized'),     # Was detected as oversized
-    ('create_group_folder',          'create_group_folder')
+    ('create_group_folder',          'create_group_folder'),
+    ('aborted',                      'aborted')        # Download aborted due to admin errors
 )
 
 class NzbObject(TryList):
@@ -574,6 +577,7 @@ class NzbObject(TryList):
         self.parsed = False
         self.duplicate = False
         self.oversized = False
+        self.aborted = False
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -656,6 +660,10 @@ class NzbObject(TryList):
                 self.purge_data(keep_basic=reuse)
                 logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                               filename, err.getMessage(), err.getLineNumber())
+                raise ValueError
+            except IOError:
+                self.purge_data(keep_basic=reuse)
+                logging.warning(Ta('Cannot save NZB admin files for "%s"'), latin1(self.work_name))
                 raise ValueError
             except Exception, err:
                 self.purge_data(keep_basic=reuse)
@@ -1010,7 +1018,9 @@ class NzbObject(TryList):
                             if not nzf.import_finished:
                                 logging.error(Ta('Error importing %s'), nzf)
                                 nzf_remove_list.append(nzf)
-                                continue
+                                nzf.nzo.aborted = True
+                                sabnzbd.nzbqueue.NzbQueue.do.finish_nzo(nzf.nzo)
+                                return None
                         else:
                             continue
 

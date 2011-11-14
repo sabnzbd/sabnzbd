@@ -232,6 +232,9 @@ def process_job(nzo):
         all_ok = False
 
     try:
+        if nzo.aborted:
+            crash_msg = T('Download aborted due to admin errros')
+            raise IOError
 
         # Get the folder containing the download result
         workdir = nzo.downpath

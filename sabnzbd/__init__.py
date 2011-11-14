@@ -785,6 +785,8 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
     except:
         logging.error(Ta('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
+        return False
+    return misc.has_substance(path)
 
 
 @synchronized(IO_LOCK)
