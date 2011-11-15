@@ -532,7 +532,7 @@ def parring(nzo, workdir):
 
         logging.info('Par2 check finished on %s', filename)
 
-    if par_error or not repair_sets:
+    if (par_error and not re_add) or not repair_sets:
         # See if alternative SFV check is possible
         if cfg.sfv_check():
             sfvs = globber(workdir, '*.sfv')
