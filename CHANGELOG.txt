@@ -1,11 +1,17 @@
 -------------------------------------------------------------------------------
  0.6.11RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
-- Fix Growl issue on French OSX systems
+- Fix some Growl issues (OSX)
 - Improve detection of encrypted RAR files during download
 - SABnzbd will now listen on all "localhost" addresses
 - Remove unneeded extra temporary folder level in Generic Sort
 - Show the promised 10 queue entries in the OSX menu instead of 9
+- Fix logging of pre-queue script result
+- "Get bookmarks now" for newzbin only worked when automatic readout was also enabled.
+- When par2 fails do an SFV-based check when SFV files present and feature enabled.
+  (previously SFV was only used when no par2 files were available at all)
+- Do extra checks on job administration on disk
+  (an attempt to diagnose jobs with missing admin files)
 -------------------------------------------------------------------------------
  0.6.10Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
