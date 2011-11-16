@@ -124,9 +124,11 @@ class RarInfo:
 
 class RarFile:
     '''Rar archive handling.'''
-    def __init__(self, rarfile, mode="r", charset='cp850', info_callback=None):
+    def __init__(self, rarfile, mode="r", charset='cp850', info_callback=None, all_names=False):
+        # 'all_names' = show names of 'split' files too
         self.rarfile = rarfile
         self.charset = charset
+        self.all_names = all_names
 
         self.info_list = []
         self.is_solid = 0
@@ -215,7 +217,7 @@ class RarFile:
         # RAR_BLOCK_NEWSUB has files too: CMT, RR
         if item.type == RAR_BLOCK_FILE:
             # use only first part
-            if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
+            if self.all_names or (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
                 # Always use Unix separators
                 item.filename = item.filename.replace('\\', '/')
                 item.unicode_filename = item.unicode_filename.replace(u'\\', u'/')
