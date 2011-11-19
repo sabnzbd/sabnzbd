@@ -868,6 +868,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     return readd, result
 
 
+_RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
     if cfg.never_repair():
@@ -1085,6 +1086,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     if line.find(os.path.split(jn)[1]) > 0:
                         used_joinables.append(jn)
                         break
+                # Special case of joined RAR files, the "of" and "from" must both be RAR files
+                # This prevents the joined rars files from being seen as an extra rar-set
+                m = _RE_BLOCK_FOUND.search(line)
+                if m and '.rar' in m.group(1).lower() and '.rar' in m.group(2).lower():
+                    used_joinables.append(os.path.join(workdir, m.group(1)))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
