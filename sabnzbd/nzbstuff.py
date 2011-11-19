@@ -796,19 +796,38 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
+    def postpone_pars(self, nzf, head):
+        """ Move all vol-par files matching 'head' to the extrapars table """
+        self.partable[head] = nzf
+        self.extrapars[head] = []
+        nzf.extrapars = self.extrapars[head]
+        for xnzf in self.files[:]:
+            name = xnzf.filename
+            # Move only when not current NZF and filename was extractable from subject
+            if name and nzf is not xnzf:
+                name = name.lower()
+                if head.lower() in name and '.vol' in name and name.endswith('.par2'):
+                    self.extrapars[head].append(xnzf)
+                    self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):
         ## Special treatment for first part of par2 file
         fn = nzf.filename
-        if (not nzf.is_par2) and fn and fn.strip().lower().endswith('.par2'):
-            if fn:
+        if fn:
+            fn = fn.strip().lower()
+            if (not nzf.is_par2) and fn and fn.endswith('.par2'):
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
+                if par2match:
+                    head = par2match.group(1)
+                    vol = par2match.group(2)
+                    block = par2match.group(3)
+                elif fn.endswith('.par2'):
+                    head = os.path.splitext(fn)[0]
+                    vol = block = 0
+                    par2match = True
                 ## Is a par2file and repair mode activated
                 if par2match and (self.repair or cfg.allow_streaming()):
-                    head = par2match.group(1)
-                    nzf.set_par2(par2match.group(1),
-                                par2match.group(2),
-                                par2match.group(3))
+                    nzf.set_par2(head, vol, block)
                     ## Already got a parfile for this set?
                     if head in self.partable:
                         nzf.extrapars = self.extrapars[head]
@@ -832,16 +851,14 @@ class NzbObject(TryList):
                     ## No par2file in this set yet, set this as
                     ## initialparfile
                     else:
-                        self.partable[head] = nzf
-                        self.extrapars[head] = []
-                        nzf.extrapars = self.extrapars[head]
+                        self.postpone_pars(nzf, head)
                 ## Is not a par2file or nothing todo
                 else:
                     pass
-            ## No filename in seg 1? Probably not uu or yenc encoded
-            ## Set subject as filename
-            else:
-                nzf.filename = nzf.subject
+        ## No filename in seg 1? Probably not uu or yenc encoded
+        ## Set subject as filename
+        else:
+            nzf.filename = nzf.subject
 
 
     def remove_article(self, article, found):
@@ -1335,13 +1352,21 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     name1 = nzf_get_filename(nzf1)
     name2 = nzf_get_filename(nzf2)
 
-    # vol-pars go in front
+    # Determine vol-pars
     is_par1 = '.vol' in name1 and '.par2' in name1
     is_par2 = '.vol' in name2 and '.par2' in name2
-    if is_par1 and not is_par2:
+
+    # mini-par2 in front
+    if not is_par1 and name1.endswith('.par2'):
         return -1
-    if is_par2 and not is_par1:
+    if not is_par2 and name2.endswith('.par2'):
         return 1
+
+    # vol-pars go to the back
+    if is_par1 and not is_par2:
+        return 1
+    if is_par2 and not is_par1:
+        return -1
 
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)
