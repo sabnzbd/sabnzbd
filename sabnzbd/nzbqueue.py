@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, \
+from sabnzbd.misc import exit_sab, cat_to_opts, verified_flag_file, \
                          get_admin_path, remove_all, globber
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
@@ -148,7 +148,10 @@ class NzbQueue(TryList):
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if new_nzb is None or not new_nzb.filename:
-            filename = globber(path, '*.gz')
+            if verified_flag_file(folder):
+                filename = ''
+            else:
+                filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
                 sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
@@ -158,7 +161,7 @@ class NzbQueue(TryList):
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
-            logging.debug('Repair job %s without new NZB (%s)', latin1(name), latin1(new_nzb.filename))
+            logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(new_nzb.filename))
             sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
 
 

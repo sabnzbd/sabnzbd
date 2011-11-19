@@ -34,7 +34,7 @@ import stat
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -250,6 +250,23 @@ def sanitize_foldername(name):
         name = name[:maxlen]
 
     return name
+
+
+#------------------------------------------------------------------------------
+def verified_flag_file(path, create=False):
+    """ Create verify flag file or return True if it already exists """
+    path = os.path.join(path, JOB_ADMIN)
+    path = os.path.join(path, VERIFIED_FILE)
+    if create:
+        try:
+            f = open(path, 'w')
+            f.write('ok\n')
+            f.close()
+            return True
+        except IOError:
+            return False
+    else:
+        return os.path.exists(path)
 
 
 ################################################################################

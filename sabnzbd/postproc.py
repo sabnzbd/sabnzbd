@@ -31,7 +31,7 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, make_script_path, \
+                         get_unique_filename, make_script_path, verified_flag_file, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
@@ -567,6 +567,8 @@ def parring(nzo, workdir):
             logging.info("No par2 sets for %s", filename)
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
 
+    if not par_error:
+        verified_flag_file(workdir, create=True)
     return par_error, re_add
 
 
