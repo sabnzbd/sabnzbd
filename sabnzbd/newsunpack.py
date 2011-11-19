@@ -477,10 +477,17 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords.insert(0, '')
 
     for password in passwords:
-        if password: logging.debug('Trying unrar with password "%s"', password)
+        if password:
+            logging.debug('Trying unrar with password "%s"', password)
+            msg = T('Trying unrar with password "%s"') % unicoder(password)
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg)
         fail, new_files, rars = rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password)
         if fail != 2:
             break
+
+    if fail == 2:
+        logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(os.path.split(rarfile)[1]))
     return fail, new_files, rars
 
 
@@ -604,7 +611,6 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
             msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(filename))
             fail = 2
 
         else:
