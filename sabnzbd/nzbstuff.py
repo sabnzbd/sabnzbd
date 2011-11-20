@@ -828,7 +828,7 @@ class NzbObject(TryList):
                         else:
                             if not file_done:
                                 nzf.reset_try_list()
-                                self.files.remove(nzf)
+                                if nzf in self.files: self.files.remove(nzf)
                                 self.extrapars[head].append(nzf)
                     ## No par2file in this set yet, set this as
                     ## initialparfile
