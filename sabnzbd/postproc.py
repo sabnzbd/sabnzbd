@@ -123,7 +123,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(Ta('Failed to remove nzo from postproc queue (id)'), nzo_id)
+            logging.error(Ta('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
         self.save()
 
     def stop(self):
