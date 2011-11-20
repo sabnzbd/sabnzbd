@@ -230,7 +230,7 @@ class MainPage(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        if first >= 1:
+        if first >= 1 and web_dir2:
             self.m = MainPage(web_dir2, root2, prim=False)
         if first == 2:
             self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', prim=True, first=1)
