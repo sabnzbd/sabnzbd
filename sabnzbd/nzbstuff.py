@@ -326,6 +326,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzf_list = []
         self.groups = []
         self.filter = remove_samples
+        self.now = time.time()
 
     def startDocument(self):
         pass
@@ -362,8 +363,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 try:
                     self.file_date = int(attrs.get('date'))
                 except:
-                    # NZB has non-standard timestamp, assume 1
-                    self.file_date = 1
+                    # NZB has non-standard timestamp, assume now
+                    self.file_date = self.now
                 self.article_db = {}
                 self.file_bytes = 0
 
@@ -416,7 +417,11 @@ class NzbParser(xml.sax.handler.ContentHandler):
             if not self.article_db:
                 logging.warning(Ta('File %s is empty, skipping'), self.filename)
                 return
-            tm = datetime.datetime.fromtimestamp(self.file_date)
+            try:
+                tm = datetime.datetime.fromtimestamp(self.file_date)
+            except:
+                tm = datetime.datetime.fromtimestamp(self.now)
+                self.file_date = self.now
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
             if nzf.valid and nzf.nzf_id:
                 logging.info('File %s added to queue', self.filename)
