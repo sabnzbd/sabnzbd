@@ -96,6 +96,10 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     except TypeError, e:
         return False, xml_name(T('Invalid server address.'))
 
+    except IndexError:
+        # No data was received in recv_chunk() call
+        return False, xml_name(T('Server quit during login sequence.'))
+
     except:
         return False, xml_name(str(sys.exc_info()[1]))
 
