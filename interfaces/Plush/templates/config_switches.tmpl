@@ -35,6 +35,7 @@
         </label>
       </div>
       <!--#end if#-->
+      <!--#if $darwin#-->
       <div class="field-pair">
         <input type="checkbox" name="growl_enable" id="growl_enable" value="1" <!--#if $growl_enable > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="growl_enable">
@@ -42,6 +43,7 @@
           <span class="component-desc">$T('explain-growl_enable')</span>
         </label>
       </div>
+      <!--#end if#-->
     </fieldset>
   </div><!-- /component-group1 -->
 
