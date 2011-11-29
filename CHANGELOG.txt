@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.6.11Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Better support for Yahoo pipes
+- Accept NZB files containing incorrect dates
+-------------------------------------------------------------------------------
  0.6.11RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix some Growl issues (OSX)
@@ -12,6 +17,7 @@
   (previously SFV was only used when no par2 files were available at all)
 - Do extra checks on job administration on disk
   (an attempt to diagnose jobs with missing admin files)
+- Make newzbin "Get bookmarks now" button independent of automatic readout
 -------------------------------------------------------------------------------
  0.6.10Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
