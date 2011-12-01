@@ -250,7 +250,6 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
-    print "      --stack ipv4|ipv6    Force the exclusive use of IPv4 or IPv6"
     print "      --log-all            Log all article handling (for developers)"
     print "      --new                Run a new instance of SABnzbd"
 
@@ -494,9 +493,13 @@ def print_modules():
 
 #------------------------------------------------------------------------------
 def all_localhosts():
-    """ Return all values of localhost """
-    info = socket.getaddrinfo('localhost', None)
-    return [item[4][0] for item in info]
+    """ Return all unique values of localhost """
+    ips = []
+    for item in socket.getaddrinfo('localhost', None):
+        item = item[4][0]
+        if item not in ips:
+            ips.append(item)
+    return ips
 
 
 #------------------------------------------------------------------------------
@@ -793,7 +796,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'stack=',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -867,7 +870,6 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
-    stack = ''
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -950,10 +952,6 @@ def main():
             new_instance = True
         elif opt in ('--sessions',):
             force_sessions = True
-        elif opt in ('--stack',):
-            re_argv.append(opt)
-            re_argv.append(arg)
-            stack = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
