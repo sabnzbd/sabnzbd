@@ -307,8 +307,6 @@ def process_job(nzo):
 
             if one_folder:
                 workdir_complete = create_dirs(complete_dir)
-            elif file_sorter.is_fullpath:
-                workdir_complete = get_unique_path(complete_dir, create_dir=True)
             else:
                 workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
             if not workdir_complete or not os.path.exists(workdir_complete):
