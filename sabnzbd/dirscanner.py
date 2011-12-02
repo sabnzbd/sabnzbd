@@ -81,21 +81,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         except:
             return -1
     else:
-        try:
-            # Handle sites that use an extra GZ compression layer on ZIPs
-            if path.endswith('.zip'):
-                zf = gzip.GzipFile(path, 'rb')
-                data = zf.read()
-                zf.close()
-                zf = open(path, 'wb')
-                zf.write(data)
-                zf.close()
-                del data
-                zf = zipfile.ZipFile(path)
-            else:
-                return 1
-        except:
-            return 1
+        return 1
 
     status = 1
     names = zf.namelist()
