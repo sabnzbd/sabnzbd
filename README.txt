@@ -1,6 +1,11 @@
-************************  SABnzbd 0.6.11 ************************
+************************  SABnzbd 0.6.12 ************************
 
-What's new:
+What's new (0.6.12):
+- Fix issue with new localhost handling on some IPv4-only Unixes
+- Fix job folder creation by Movie Sort when the Sort expression specifies one
+- Fix problem with retrieving ZIP files from some web sites
+
+What's new (0.6.11):
 - Improve detection of encrypted RAR files during download
 - SABnzbd will now listen on all "localhost" addresses
   This should prevent problems on IPV6-enabled systems

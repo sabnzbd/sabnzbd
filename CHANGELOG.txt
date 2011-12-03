@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.6.12Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix issue with new localhost handling on some IPv4-only Unixes
+- Fix job folder creation by Movie Sort when the Sort expression specifies one
+- Fix problem with retrieving ZIP files from some web sites
+-------------------------------------------------------------------------------
  0.6.11Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Better support for Yahoo pipes
