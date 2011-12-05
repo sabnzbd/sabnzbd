@@ -907,8 +907,8 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
-        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('Try again') + '</a>'
-        parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
+        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s&job=%s%s%s%s%s">' + T('Try again') + '</a>'
+        parms = (msg, cfg.api_key(), urllib.quote(url), nzo.nzo_id, pp, cat, script, nzbname)
         nzo.fail_msg = text % parms
     else:
         nzo.fail_msg = msg
