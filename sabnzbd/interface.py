@@ -414,21 +414,17 @@ class MainPage(object):
         """ Duplicate of retry of History, needed for some skins """
         msg = check_session(kwargs)
         if msg: return msg
-
-        url = kwargs.get('url', '')
+        job = kwargs.get('job', '')
+        url = kwargs.get('url', '').strip()
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-
-        url = url.strip()
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
-            sabnzbd.add_url(url, pp, script, cat)
-        if url:
-            return ShowOK(url)
-        else:
-            raise dcRaiser(self.__root, kwargs)
+            sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
+        del_hist_job(job, del_files=True)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def retry_pp(self, **kwargs):
@@ -971,6 +967,7 @@ class HistoryPage(object):
     def retry(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        job = kwargs.get('job', '')
         url = kwargs.get('url', '').strip()
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
@@ -979,10 +976,9 @@ class HistoryPage(object):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
-        if url:
-            return ShowOK(url)
-        else:
-            raise dcRaiser(self.__root, kwargs)
+        del_hist_job(job, del_files=True)
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 class ConfigPage(object):
