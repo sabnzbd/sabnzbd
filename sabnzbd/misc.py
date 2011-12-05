@@ -38,6 +38,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
+import sabnzbd.growler as growler
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -912,6 +913,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
+    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)
     NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)

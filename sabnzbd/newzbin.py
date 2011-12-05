@@ -135,7 +135,8 @@ class MSGIDGrabber(Thread):
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
                     msgid = None
 
-            growler.send_notification(T('NZB added to queue'), filename, 'download')
+            if msgid:
+                growler.send_notification(T('NZB added to queue'), filename, 'download')
 
             # Keep some distance between the grabs
             sleeper(5)
