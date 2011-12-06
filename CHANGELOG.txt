@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.6.13Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disable "SABnzbd will now listen on all "localhost" addresses" feature
+- When retrying an URL fetch from History, remove the History entry
+-------------------------------------------------------------------------------
  0.6.12Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix issue with new localhost handling on some IPv4-only Unixes
