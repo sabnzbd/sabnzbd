@@ -1,15 +1,10 @@
-************************  SABnzbd 0.6.12 ************************
+************************  SABnzbd 0.6.13 ************************
 
-What's new (0.6.12):
-- Fix issue with new localhost handling on some IPv4-only Unixes
+What's new:
+- When retrying an URL fetch from History, remove the History entry
 - Fix job folder creation by Movie Sort when the Sort expression specifies one
 - Fix problem with retrieving ZIP files from some web sites
-
-What's new (0.6.11):
 - Improve detection of encrypted RAR files during download
-- SABnzbd will now listen on all "localhost" addresses
-  This should prevent problems on IPV6-enabled systems
-- Remove unneeded extra temporary folder level in Generic Sort
 - When par2 fails and SFV-check enabled, verify using SFV files
 - Perform extra checks on job administration
 - Fix logging of pre-queue script result
@@ -18,6 +13,9 @@ What's new (0.6.11):
 - Make newzbin "Get bookmarks now" button independent of automatic readout
 - OSX: Fix Growl issues
 - OSX: Show the promised 10 queue entries in the OSX menu instead of 9
+
+Note: the above are the differences from 0.6.10
+Releases 0.6.11 and 0.6.12 are withdrawn.
 
 
 About:
