@@ -495,7 +495,12 @@ def print_modules():
 def all_localhosts():
     """ Return all unique values of localhost """
     ips = []
-    for item in socket.getaddrinfo('localhost', None):
+    try:
+        info = socket.getaddrinfo('localhost', None)
+    except:
+        # localhost does not resolve
+        return ['127.0.0.1']
+    for item in info:
         item = item[4][0]
         if item not in ips:
             ips.append(item)
