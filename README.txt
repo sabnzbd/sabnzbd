@@ -10,6 +10,7 @@ What's new:
 - Fix logging of pre-queue script result
 - Better support for Yahoo pipes
 - Accept NZB files containing incorrect dates
+- Make sure that paths coming from Sorting are normalized for the platform
 - Make newzbin "Get bookmarks now" button independent of automatic readout
 - OSX: Fix Growl issues
 - OSX: Show the promised 10 queue entries in the OSX menu instead of 9
