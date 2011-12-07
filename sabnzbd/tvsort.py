@@ -72,7 +72,7 @@ def move_to_parent_folder(workdir):
         If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
     """
     skipped = False # Keep track of any skipped files
-    path1 = os.path.abspath(os.path.join(workdir, '..')) #move things to the folder below
+    path1 = os.path.abspath(os.path.normpath(os.path.join(workdir, '..'))) #move things to the folder below
 
     for root, dirs, files in os.walk(workdir):
         for _file in files:
@@ -353,7 +353,7 @@ class SeriesSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -593,7 +593,7 @@ class GenericSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -809,7 +809,7 @@ class DateSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -1014,7 +1014,7 @@ def stripFolders(folders):
         x = x.strip()
         return x
 
-    return '/'.join([strip_all(x) for x in f])
+    return os.path.normpath('/'.join([strip_all(x) for x in f]))
 
 
 def rename_similar(path, file, name):
