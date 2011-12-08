@@ -4,6 +4,8 @@
 - Disable "SABnzbd will now listen on all "localhost" addresses" feature
 - When retrying an URL fetch from History, remove the History entry
 - Make sure that paths coming from Sorting are normalized
+- Prevent potential crash in RSS feed analysis
+- Add --console to force console logging for OSX app (diagnostic tool)
 -------------------------------------------------------------------------------
  0.6.12Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
