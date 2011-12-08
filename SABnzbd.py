@@ -251,6 +251,7 @@ def print_help():
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
     print "      --log-all            Log all article handling (for developers)"
+    print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
 
 def print_version():
@@ -797,7 +798,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -871,6 +872,7 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
+    osx_console = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -952,7 +954,11 @@ def main():
         elif opt in ('--new',):
             new_instance = True
         elif opt in ('--sessions',):
+            re_argv.append(opt)
             force_sessions = True
+        elif opt in ('--console',):
+            re_argv.append(opt)
+            osx_console = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -970,7 +976,7 @@ def main():
     consoleLogging = consoleLogging and not sabnzbd.DAEMON
 
     # No console logging needed for OSX app
-    noConsoleLoggingOSX = (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
+    noConsoleLoggingOSX = (not osx_console) and (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
     if noConsoleLoggingOSX:
         consoleLogging = 1
 
