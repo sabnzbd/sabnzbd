@@ -619,7 +619,10 @@ def _get_link(uri, entry):
         if not link:
             link = entry.links[0].href
         if encl_sites(uri, link):
-            link = entry.enclosures[0]['href']
+            try:
+                link = entry.enclosures[0]['href']
+            except:
+                pass
 
     if link and 'http' in link.lower():
         try:
