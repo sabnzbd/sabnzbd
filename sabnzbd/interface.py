@@ -1109,7 +1109,7 @@ class ConfigFolders(object):
             value = kwargs.get(kw)
             if value != None:
                 value = platform_encode(value)
-                if kw == 'complete_dir':
+                if kw in ('complete_dir', 'dirscan_dir'):
                     msg = config.get_config('misc', kw).set(value, create=True)
                 else:
                     msg = config.get_config('misc', kw).set(value)
