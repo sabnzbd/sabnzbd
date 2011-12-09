@@ -270,8 +270,8 @@ class DirScanner(threading.Thread):
                 time.sleep(1.0)
                 x = x - 1
 
+            self.trigger = False
             if self.dirscan_speed and not self.shutdown:
-                self.trigger = False
                 self.scan()
 
     def scan(self):
