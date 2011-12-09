@@ -1,11 +1,15 @@
 -------------------------------------------------------------------------------
+ 0.6.14Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Prevent potential crash in RSS feed analysis
+- Add --console to force console logging for OSX app (diagnostic tool)
+- Don't reset watched folder path to default when it doesn't exist at startup
+-------------------------------------------------------------------------------
  0.6.13Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Disable "SABnzbd will now listen on all "localhost" addresses" feature
 - When retrying an URL fetch from History, remove the History entry
 - Make sure that paths coming from Sorting are normalized
-- Prevent potential crash in RSS feed analysis
-- Add --console to force console logging for OSX app (diagnostic tool)
 -------------------------------------------------------------------------------
  0.6.12Final by The SABnzbd-Team
 -------------------------------------------------------------------------------

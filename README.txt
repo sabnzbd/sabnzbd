@@ -1,4 +1,4 @@
-************************  SABnzbd 0.6.13 ************************
+************************  SABnzbd 0.6.14 ************************
 
 What's new:
 - When retrying an URL fetch from History, remove the History entry
@@ -12,11 +12,12 @@ What's new:
 - Accept NZB files containing incorrect dates
 - Make sure that paths coming from Sorting are normalized for the platform
 - Make newzbin "Get bookmarks now" button independent of automatic readout
+- Don't reset watched folder path to default when it doesn't exist at startup
 - OSX: Fix Growl issues
 - OSX: Show the promised 10 queue entries in the OSX menu instead of 9
 
 Note: the above are the differences from 0.6.10
-Releases 0.6.11 and 0.6.12 are withdrawn.
+Releases 0.6.11/12/13 have been cancelled.
 
 
 About:
