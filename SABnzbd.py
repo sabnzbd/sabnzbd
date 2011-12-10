@@ -621,7 +621,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         # if the https port was specified, assume they want HTTPS enabling also
         sabnzbd.cfg.enable_https.set(True)
 
-    if cherryport == https_port:
+    if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
         #logging.error(Ta('HTTP and HTTPS ports cannot be the same'))
