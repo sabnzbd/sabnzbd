@@ -126,7 +126,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     command = [str(extern_proc), str(complete_dir), str(filename), \
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
-    if extern_proc.endswith('.py'):
+    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
