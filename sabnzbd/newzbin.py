@@ -37,7 +37,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import BOOKMARK_FILE_NAME
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert
+from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert, format_source_url
 from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.cfg as cfg
@@ -121,6 +121,7 @@ class MSGIDGrabber(Thread):
 
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
+                    nzo.url = format_source_url(str(msgid))
                 except:
                     logging.error(Ta('Failed to update newzbin job %s'), msgid)
                     logging.info("Traceback: ", exc_info = True)

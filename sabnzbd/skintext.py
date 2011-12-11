@@ -28,6 +28,7 @@ SKIN_TEXT = {
     'stage-filejoin'     : TT('Join files'), #: PP phase "filejoin"
     'stage-unpack'       : TT('Unpack'), #: PP phase "unpack"
     'stage-script'       : TT('Script'), #: PP phase "script"
+    'stage-source'       : TT('Source'), #; Source of the NZB (path or URL)
 
     'post-Completed'     : TT('Completed'), #: PP status
     'post-Failed'        : TT('Failed'), #: PP status

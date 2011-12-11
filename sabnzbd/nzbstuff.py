@@ -38,7 +38,7 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, \
+                         get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
@@ -549,7 +549,7 @@ class NzbObject(TryList):
         if futuretype:
             self.url = str(url)     # Either newzbin-id or URL queued (future-type only)
         else:
-            self.url = ''
+            self.url = filename
         self.groups = []
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
@@ -698,7 +698,7 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name = get_attrib_file(self.workpath, 5)
+            cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -1038,6 +1038,8 @@ class NzbObject(TryList):
                 msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
             msg = ''.join((msg1, msg2, msg3, msg4,))
             self.set_unpack_info('Download', msg, unique=True)
+            if self.url:
+                self.set_unpack_info('Source', format_source_url(self.url))
 
     def inc_log(self, log, txt):
         """ Append string txt to nzo_info element "log"
@@ -1287,7 +1289,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw, self.url))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1495,3 +1497,4 @@ def set_attrib_file(path, attribs):
     for item in attribs:
         f.write('%s\n' % item)
     f.close()
+

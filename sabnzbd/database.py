@@ -38,6 +38,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
+from sabnzbd.misc import format_source_url
 
 _HISTORY_DB = None        # Will contain full path to history database
 _DONE_CLEANING = False    # Ensure we only do one Vacuum per session
@@ -312,9 +313,9 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Get the url and newzbin msgid
     report = decode_factory(nzo_info.get('msgid', ''))
     if report:
-        url = 'https://newzbin.com/browse/post/%s/' % (report)
+        url = format_source_url(report)
     else:
-        url = decode_factory(nzo_info.get('url', ''))
+        url = decode_factory(nzo.url)
 
     #group = nzo.group
 

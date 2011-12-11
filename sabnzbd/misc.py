@@ -31,6 +31,11 @@ import socket
 import time
 import glob
 import stat
+try:
+    socket.ssl
+    _HAVE_SSL = True
+except:
+    _HAVE_SSL = False
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -1213,3 +1218,15 @@ def is_writable(path):
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
     else:
         return True
+
+
+def format_source_url(url):
+    """ Format URL suitable for 'Source' stage """
+    if _HAVE_SSL:
+        prot = 'https'
+    else:
+        prot = 'http:'
+    if url and url.isdigit():
+        return '%s://newzbin.com/browse/post/%s/' % (prot, url)
+    else:
+        return url
