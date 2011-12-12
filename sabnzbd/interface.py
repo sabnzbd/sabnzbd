@@ -1936,8 +1936,9 @@ class ConfigScheduling(object):
             arguments = '0'
 
         if minute and hour  and dayofweek and action:
-            if (action == 'speedlimit') and arguments.isdigit():
-                pass
+            if action == 'speedlimit':
+                if not (arguments and arguments.isdigit()):
+                    action = None
             elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action in config.get_servers():
