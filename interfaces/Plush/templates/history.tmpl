@@ -64,15 +64,11 @@
       <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
         <div class="icon_history_verbose main_sprite_container sprite_hv_report pointer" title='$T('Plush-openSourceURL')<br><br>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
       </a>
-    <!--#else if $varExists('newzbinDetails')#-->
-      <div class="icon_history_verbose main_sprite_container sprite_hv_report hvFaded">&nbsp;</div>
     <!--#end if#-->
     <!--#if $line.url_info #-->
       <a href="$line.url_info" target="_blank">
         <div class="icon_history_verbose main_sprite_container sprite_hv_star pointer" title="$T('Plush-openInfoURL')<br><br>$line.url_info">&nbsp;</div>
       </a>
-    <!--#else if $varExists('newzbinDetails')#-->
-      <div class="icon_history_verbose main_sprite_container sprite_hv_star hvFaded">&nbsp;</div>
     <!--#end if#-->
     <!--#if $line.size or $line.category or $line.path or $line.storage#-->
       <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<!--#end if#--><!--#if $line.category#--><br>$T('category'): $line.category<!--#end if#-->'>&nbsp;</div>
