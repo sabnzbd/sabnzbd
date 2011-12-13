@@ -1891,6 +1891,13 @@ class ConfigScheduling(object):
             except:
                 continue
             action = action.strip()
+            try:
+                action, value = action.split(' ', 1)
+            except:
+                value = ''
+            value = value.strip()
+            if value == '0':
+                value = T('off') #: "Off" value for speedlimit in scheduler
             if action in actions:
                 action = Ttemplate("sch-" + action)
             else:
@@ -1900,7 +1907,7 @@ class ConfigScheduling(object):
                     act = ''
                 if act in ('enable_server', 'disable_server'):
                     action = Ttemplate("sch-" + act) + ' ' + server
-            item = (snum, '%02d' % int(h), '%02d' % int(m), days.get(day, '**'), action)
+            item = (snum, '%02d' % int(h), '%02d' % int(m), days.get(day, '**'), '%s %s' % (action, value))
             conf['taskinfo'].append(item)
             snum += 1
 
@@ -1938,7 +1945,7 @@ class ConfigScheduling(object):
         if minute and hour  and dayofweek and action:
             if action == 'speedlimit':
                 if not (arguments and arguments.isdigit()):
-                    action = None
+                    action = '0'
             elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action in config.get_servers():
