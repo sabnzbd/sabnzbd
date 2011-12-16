@@ -619,7 +619,7 @@ class GenericSorter(object):
                 filepath = os.path.join(current_path, _file)
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
-                if size > 314572800 and not RE_SAMPLE.search(_file) \
+                if size >= cfg.movie_rename_limit.get_int() and not RE_SAMPLE.search(_file) \
                    and get_ext(_file) not in EXCLUDED_FILE_EXTS:
                     return True
             return False

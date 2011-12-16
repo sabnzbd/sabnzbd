@@ -1185,7 +1185,7 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed',
             )
 SPECIAL_VALUE_LIST = \
-            ( 'size_limit', 'folder_max_length', 'fsys_type'
+            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit'
             )
 
 class ConfigSpecial(object):

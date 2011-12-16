@@ -133,6 +133,7 @@ enable_tv_sorting = OptionBool('misc', 'enable_tv_sorting', False)
 tv_sort_string = OptionStr('misc', 'tv_sort_string')
 tv_sort_countries = OptionNumber('misc', 'tv_sort_countries', 1)
 tv_categories = OptionList('misc', 'tv_categories', '')
+movie_rename_limit = OptionStr('misc', 'movie_rename_limit', '100M')
 
 enable_movie_sorting = OptionBool('misc', 'enable_movie_sorting', False)
 movie_sort_string = OptionStr('misc', 'movie_sort_string')
