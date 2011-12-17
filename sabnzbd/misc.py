@@ -1226,7 +1226,7 @@ def format_source_url(url):
         prot = 'https'
     else:
         prot = 'http:'
-    if url and url.isdigit():
-        return '%s://newzbin.com/browse/post/%s/' % (prot, url)
+    if url and str(url).isdigit():
+        return '%s://newzbin.com/browse/post/%s/' % (prot, str(url))
     else:
         return url
