@@ -494,13 +494,22 @@ def print_modules():
 
 #------------------------------------------------------------------------------
 def all_localhosts():
-    """ Return all unique values of localhost """
-    ips = []
+    """ Return all unique values of localhost in order of preference """
+    ips = ['127.0.0.1']
+    try:
+        # Check whether IPv6 is available and enabled
+        info = socket.getaddrinfo('::1', None)
+        af, socktype, proto, canonname, sa = info[0]
+        s = socket.socket(af, socktype, proto)
+        s.close()
+    except socket.error:
+        return ips
     try:
         info = socket.getaddrinfo('localhost', None)
     except:
         # localhost does not resolve
-        return ['127.0.0.1']
+        return ips
+    ips = []
     for item in info:
         item = item[4][0]
         if item not in ips:
