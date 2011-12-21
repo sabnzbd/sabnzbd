@@ -1,6 +1,3 @@
-<% import locale %>
-<% locale.setlocale(locale.LC_ALL, "") %>
-
 <script type="text/javascript">
   if (typeof( jQuery ) == 'undefined')
     window.location = "../"; // redirect to main on direct template hit
@@ -62,8 +59,8 @@
   <td>
     <div class="main_sprite_container sprite_progressbar_bg">
       <div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -401px">
-        <div class="totalDownload"><!--#echo locale.format('%d', int(float($slot.mb)), True)#-->&nbsp;<small>$T('MB')</small></div>
-        <div class="currentDownload"><!--#if $slot.mb!=$slot.mbleft#--><!--#echo locale.format('%d', int(float($slot.mb)-float($slot.mbleft)), True)#-->&nbsp;<small>$T('MB')&nbsp;$T('AofB')</small><!--#end if#--></div>
+        <div class="totalDownload">$slot.mb_fmt&nbsp;<small>$T('MB')</small></div>
+        <div class="currentDownload"><!--#if $slot.mb!=$slot.mbleft#-->$slot.mbdone_fmt&nbsp;<small>$T('MB')&nbsp;$T('AofB')</small><!--#end if#--></div>
       </div>
     </div>
   </td>
