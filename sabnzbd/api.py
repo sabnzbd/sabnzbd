@@ -25,6 +25,8 @@ import re
 import datetime
 import time
 import cherrypy
+import locale
+locale.setlocale(locale.LC_ALL, "")
 try:
     import win32api, win32file
 except ImportError:
@@ -1060,6 +1062,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
+        if not output:
+            slot['mb_fmt'] = locale.format('%d', int(mb), True)
+            slot['mbdone_fmt'] = locale.format('%d', int(mb-mbleft), True)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
