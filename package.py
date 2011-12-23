@@ -34,6 +34,9 @@ except ImportError:
 try:
     import py2app
     from setuptools import setup
+    OSX_LION = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
+    OSX_SL = not OSX_LION and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 6, 0]
+    OSX_LEOPARD = not (OSX_LION or OSX_SL)
 except ImportError:
     py2app = None
 
@@ -313,6 +316,7 @@ fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
 fileSrc = prod + '-src.tar.gz'
 fileDmg = prod + '-osx.dmg'
+fileDmgLp = prod + '-osx-leopard.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
 
@@ -381,13 +385,14 @@ if target == 'app':
 
     # Select OSX version specific background image
     # Take care to preserve the special attributes of the background image file
-    if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
+    if OSX_LION:
         # Lion and higher: generates SnowLeopard/Lion DMG
         f = open('osx/image/sabnzbd.png', 'rb')
         png = f.read()
         f.close()
     else:
         # Snow Leopard and lower: generates Leopard DMG
+        fileDmg = fileDmgLp
         f = open('osx/image/sabnzbd_leopard.png', 'rb')
         png = f.read()
         f.close()
