@@ -235,10 +235,20 @@ class SABnzbdDelegate(NSObject):
             self.newzbin_menu_item.setEnabled_(NO)
         self.menu.addItem_(self.newzbin_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 14 newzbin added")
+
+        #Watched folder Item
+        self.watched_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Scan watched folder'), 'watchedFolderAction:', '')
+        if self.isLeopard:
+            self.watched_menu_item.setHidden_(YES)
+        else:
+            self.watched_menu_item.setEnabled_(NO)
+        self.menu.addItem_(self.watched_menu_item)
+
         self.separator2_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator2_menu_item)
 
-        if (debug == 1) : NSLog("[osx] menu 14 newzbin added")
+        if (debug == 1) : NSLog("[osx] menu 14 watched folder added")
 
         #Complete Folder Item
         self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Complete Folder') + '\t\t\t', 'openFolderAction:', '')
@@ -258,19 +268,28 @@ class SABnzbdDelegate(NSObject):
         #menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('About SABnzbd', 'aboutAction:', '')
         #self.menu.addItem_(menu_item)
 
+        # Set diagnostic menu
+        self.diagnostic_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Troubleshoot'), '', '')
+        self.menu_diagnostic = NSMenu.alloc().init()
+        diag_items = ((T('Restart'), 'restartAction:'),
+                      (T('Restart') + ' - 127.0.0.1:8080', 'restartSafeHost:'),
+                      (T('Restart without login'), 'restartNoLogin:')
+                     )
+        for item in diag_items:
+            menu_diag_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(item[0], item[1], '')
+            menu_diag_item.setRepresentedObject_(item[0])
+            self.menu_diagnostic.addItem_(menu_diag_item)
+
+        self.diagnostic_menu_item.setSubmenu_(self.menu_diagnostic)
+        self.menu.addItem_(self.diagnostic_menu_item)
+        
+        if (debug == 1) : NSLog("[osx] menu 16 Diagnostic added")
+
         #Quit Item
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Quit'), 'terminate:', '')
         self.menu.addItem_(menu_item)
 
         if (debug == 1) : NSLog("[osx] menu 16 quit added")
-
-        #Restart Item
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Restart'), 'restartAction:', '')
-        menu_item.setAlternate_(YES)
-        menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
-        self.menu.addItem_(menu_item)
-
-        if (debug == 1) : NSLog("[osx] menu 17 restart added")
 
         #Add menu to Status Item
         self.status_item.setMenu_(self.menu)
@@ -296,6 +315,7 @@ class SABnzbdDelegate(NSObject):
                     self.versionUpdate()
                     self.newzbinUpdate()
                     self.diskspaceUpdate()
+                    self.watchedUpdate()
             else:
                 if self.status_removed == 0:
                     status_bar = NSStatusBar.systemStatusBar()
@@ -509,9 +529,24 @@ class SABnzbdDelegate(NSObject):
             logging.info("[osx] versionUpdate Exception %s" % (sys.exc_info()[0]))
 
 
+    def watchedUpdate(self):
+        try:
+            if sabnzbd.cfg.dirscan_dir():
+                if self.isLeopard:
+                    self.watched_menu_item.setHidden_(NO)
+                else:
+                    self.watched_menu_item.setEnabled_(YES)
+            else:
+                if self.isLeopard:
+                    self.watched_menu_item.setHidden_(YES)
+                else:
+                    self.watched_menu_item.setEnabled_(NO)
+        except :
+            logging.info("[osx] watchedUpdate Exception %s" % (sys.exc_info()[0]))
+
     def newzbinUpdate(self):
         try:
-            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password() and sabnzbd.cfg.newzbin_bookmarks():
+            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password():
                 if self.isLeopard:
                     self.newzbin_menu_item.setHidden_(NO)
                 else:
@@ -540,6 +575,7 @@ class SABnzbdDelegate(NSObject):
                 self.resume_menu_item.setHidden_(hide)
                 self.pause_menu_item.setHidden_(hide)
                 self.newzbin_menu_item.setHidden_(hide)
+                self.watched_menu_item.setHidden_(hide)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setHidden_(hide)
                 self.queue_menu_item.setHidden_(hide)
@@ -555,6 +591,7 @@ class SABnzbdDelegate(NSObject):
                 self.resume_menu_item.setEnabled_(alternate)
                 self.pause_menu_item.setEnabled_(alternate)
                 self.newzbin_menu_item.setEnabled_(alternate)
+                self.watched_menu_item.setEnabled_(alternate)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setEnabled_(alternate)
                 self.queue_menu_item.setEnabled_(alternate)
@@ -680,7 +717,10 @@ class SABnzbdDelegate(NSObject):
         scheduler.plan_resume(0)
 
     def getNewzbinBookmarksAction_(self, sender):
-        Bookmarks.do.run()
+        Bookmarks.do.run(force=True)
+
+    def watchedFolderAction_(self, sender):
+        sabnzbd.dirscanner.dirscan()
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()
@@ -694,6 +734,24 @@ class SABnzbdDelegate(NSObject):
 #        app.orderFrontStandardAboutPanel_(nil)
 
     def restartAction_(self, sender):
+        self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
+        sabnzbd.halt()
+        cherrypy.engine.restart()
+        self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
+
+    def restartSafeHost_(self, sender):
+        sabnzbd.cfg.cherryhost.set('127.0.0.1')
+        sabnzbd.cfg.enable_https.set(False)
+        sabnzbd.config.save_config()
+        self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
+        sabnzbd.halt()
+        cherrypy.engine.restart()
+        self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
+
+    def restartNoLogin_(self, sender):
+        sabnzbd.cfg.username.set('')
+        sabnzbd.cfg.password.set('')
+        sabnzbd.config.save_config()
         self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
         sabnzbd.halt()
         cherrypy.engine.restart()
