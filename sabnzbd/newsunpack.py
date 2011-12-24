@@ -1348,7 +1348,8 @@ def sfv_check(sfv_path):
                     logging.warning('File %s did not pass SFV check', latin1(path))
                     status = False
             else:
-                logging.warning('File %s mssing in SFV check', latin1(path))
+                logging.warning('File %s missing in SFV check', latin1(path))
+                status = False
     fp.close()
     return status
 
