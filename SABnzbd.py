@@ -1458,6 +1458,8 @@ def main():
         check_latest_version()
     autorestarted = False
 
+    if sabnzbd.WIN32:
+        import sabnzbd.sabtray
 
     mail = None
     if sabnzbd.WIN32:
