@@ -20,8 +20,7 @@
 sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 """
 
-from systrayiconthread import SysTrayIconThread
-from threading import Thread
+import logging
 from time import sleep
 
 import sabnzbd
@@ -30,12 +29,11 @@ import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import cherrypy
-import win32gui
 
+from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 # contains the tray icon, which demands its own thread
 class SABTrayThread(SysTrayIconThread):
-    sabpaused = False
     sabicons = {
         'default': 'sabnzbd16.ico',
         'green': 'sabnzbd16green.ico',
@@ -44,12 +42,13 @@ class SABTrayThread(SysTrayIconThread):
 
 
     def __init__(self):
-
         # Wait for translated texts to be loaded
         while not api.check_trans():
             sleep(0.2)
             logging.debug('language file not loaded, waiting')
 
+        self.sabpaused = False
+        self.counter = 0
         text = "SABnzbd"
 
         menu_options = (
@@ -65,30 +64,35 @@ class SABTrayThread(SysTrayIconThread):
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
-        status = api.qstatus_data()
-        state = status.get('state', "SABnzbd");
-        self.sabpaused = status.get('paused', False);
+        """ Update menu info, once every 10 calls """
+        self.counter += 1
+        if self.counter > 10:
+            status = api.qstatus_data()
+            state = status.get('state', "SABnzbd")
+            self.sabpaused = status.get('paused', False)
 
-        if state == 'IDLE':
-            self.hover_text = 'SABnzbd idle'
-            self.icon = self.sabicons['default']
-        elif state == 'PAUSED':
-            self.hover_text = 'SABnzbd paused'
-            self.icon = self.sabicons['pause']
-        elif state == 'DOWNLOADING':
-            self.hover_text = status.get('speed', "---") + "B/s, Remaining: " + status.get('timeleft', "---") + " (" + str(int(status.get('mbleft', "0"))) + " MB)"
-            self.icon = self.sabicons['green']
-        else:
-            self.hover_text = 'UNKNOWN STATE'
-            self.icon = self.sabicons['pause']
+            if state == 'IDLE':
+                self.hover_text = 'SABnzbd idle'
+                self.icon = self.sabicons['default']
+            elif state == 'PAUSED':
+                self.hover_text = 'SABnzbd paused'
+                self.icon = self.sabicons['pause']
+            elif state == 'DOWNLOADING':
+                self.hover_text = "%sB/s %s: %s MB (%s)" % (status.get('speed', "---"), T('Remaining'), str(int(status.get('mbleft', "0"))), status.get('timeleft', "---"))
+                self.icon = self.sabicons['green']
+            else:
+                self.hover_text = 'UNKNOWN STATE'
+                self.icon = self.sabicons['pause']
 
 
-        self.refresh_icon()
+            self.refresh_icon()
+            self.counter = 0
         if sabnzbd.SABSTOP:
             self.terminate = True
 
     # menu handler
-    def browse(self, icon): launch_a_browser(sabnzbd.BROWSER_URL, True)
+    def browse(self, icon):
+        launch_a_browser(sabnzbd.BROWSER_URL, True)
 
     # menu handler
     def pauseresume(self, icon):
