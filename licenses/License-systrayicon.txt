@@ -1,0 +1,8 @@
+On http://www.brunningonline.net/simon/blog/archives/001835.html,
+the author licensed SysTrayIcon.py under a variant of the WTFPL:
+
+> Any road up, help yourself. Consider SysTrayIcon.py to be under an
+> "Aleister Crowley" style license - "Do what thou wilt shall be the
+> only law".
+> 
+> Err, but don't sue me if it doesn't work. ;-)
