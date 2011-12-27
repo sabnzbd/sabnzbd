@@ -334,8 +334,6 @@ data_files = [
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
          'ISSUES.txt',
-         'nzb.ico',
-         'sabnzbd.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
          'PKG-INFO',
@@ -349,7 +347,8 @@ data_files = [
          'interfaces/wizard/',
          'win/par2/',
          'win/unzip/',
-         'win/unrar/'
+         'win/unrar/',
+         'icons/'
        ]
 
 options = dict(
@@ -455,7 +454,7 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
-    os.system("cp sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
+    os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     #copy app to mounted sparseimage
@@ -506,7 +505,7 @@ elif target in ('binary', 'installer'):
     options['description'] = 'SABnzbd ' + str(my_version)
 
     sys.argv[1] = 'py2exe'
-    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
+    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "icons/sabnzbd.ico")] } ]
     options['options'] = {"py2exe":
                               {
                                 "bundle_files": 3,

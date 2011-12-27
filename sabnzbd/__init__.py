@@ -128,6 +128,7 @@ OSX_ICON = 1
 PAUSED_ALL = False
 OLD_QUEUE = False
 SCHED_RESTART = False # Set when restarted through scheduler
+WINTRAY = None # Thread for the Windows SysTray icon
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -151,7 +152,7 @@ LANG_MAP = {
 # Signal Handler                                                               #
 ################################################################################
 def sig_handler(signum = None, frame = None):
-    global SABSTOP
+    global SABSTOP, WINTRAY
     if sabnzbd.WIN32 and type(signum) != type(None) and DAEMON and signum==5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
@@ -163,6 +164,9 @@ def sig_handler(signum = None, frame = None):
         if sabnzbd.WIN32:
             from util.apireg import del_connection_info
             del_connection_info()
+            if sabnzbd.WINTRAY:
+                sabnzbd.WINTRAY.terminate = True
+                time.sleep(0.5)
         else:
             pid_file()
         SABSTOP = True

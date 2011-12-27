@@ -35,9 +35,9 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 # contains the tray icon, which demands its own thread
 class SABTrayThread(SysTrayIconThread):
     sabicons = {
-        'default': 'sabnzbd16.ico',
-        'green': 'sabnzbd16green.ico',
-        'pause': 'sabnzbd16paused.ico'
+        'default': 'icons/sabnzbd16.ico',
+        'green': 'icons/sabnzbd16green.ico',
+        'pause': 'icons/sabnzbd16paused.ico'
     }
 
 
