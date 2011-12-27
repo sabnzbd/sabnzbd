@@ -1458,8 +1458,11 @@ def main():
         check_latest_version()
     autorestarted = False
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WIN32 and sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
         import sabnzbd.sabtray
+        win_tray = sabnzbd.sabtray.SABTrayThread()
+    else:
+        win_tray = None
 
     mail = None
     if sabnzbd.WIN32:
@@ -1582,6 +1585,9 @@ def main():
                 cherrypy.engine._do_execv()
 
     config.save_config()
+
+    if win_tray:
+        win_tray.terminate = True
 
     if sabnzbd.WIN_SERVICE and mail:
         mail.send('stop')

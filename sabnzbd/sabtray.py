@@ -39,30 +39,36 @@ class SABTrayThread(SysTrayIconThread):
     sabicons = {
         'default': 'sabnzbd16.ico',
         'green': 'sabnzbd16green.ico',
-        'pause': 'sabnzbd16paused.ico'    
+        'pause': 'sabnzbd16paused.ico'
     }
-    
-    
+
+
     def __init__(self):
 
+        # Wait for translated texts to be loaded
+        while not api.check_trans():
+            sleep(0.2)
+            logging.debug('language file not loaded, waiting')
 
         text = "SABnzbd"
-        
+
         menu_options = (
-            ('Show interface', None, self.browse),
-            ('Pause/Resume', None, self.pauseresume),
-            ('Shutdown', None, self.shutdown),
+            (T('Show interface'), None, self.browse),
+            (T('Restart without login'), None, self.nologin),
+            (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost),
+            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
+            (T('Shutdown'), None, self.shutdown),
         )
-        
+
         SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
-    
-    
-    # called every few ms by SysTrayIconThread 
+
+
+    # called every few ms by SysTrayIconThread
     def doUpdates(self):
         status = api.qstatus_data()
         state = status.get('state', "SABnzbd");
         self.sabpaused = status.get('paused', False);
-        
+
         if state == 'IDLE':
             self.hover_text = 'SABnzbd idle'
             self.icon = self.sabicons['default']
@@ -70,29 +76,48 @@ class SABTrayThread(SysTrayIconThread):
             self.hover_text = 'SABnzbd paused'
             self.icon = self.sabicons['pause']
         elif state == 'DOWNLOADING':
-            self.hover_text = status.get('speed', "---") + "B/s, Remaining: " + status.get('timeleft', "---") + " (" + str(int(status.get('mbleft', "0"))) + " MB)"  
+            self.hover_text = status.get('speed', "---") + "B/s, Remaining: " + status.get('timeleft', "---") + " (" + str(int(status.get('mbleft', "0"))) + " MB)"
             self.icon = self.sabicons['green']
         else:
             self.hover_text = 'UNKNOWN STATE'
             self.icon = self.sabicons['pause']
-            
-                
+
+
         self.refresh_icon()
         if sabnzbd.SABSTOP:
             self.terminate = True
-    
-    # menu handler 
+
+    # menu handler
     def browse(self, icon): launch_a_browser(sabnzbd.BROWSER_URL, True)
-  
-    # menu handler 
+
+    # menu handler
     def pauseresume(self, icon):
         if self.sabpaused:
             self.resume()
         else:
             self.pause()
-  
+
+    # menu handler
+    def nologin(self, icon):
+        sabnzbd.cfg.username.set('')
+        sabnzbd.cfg.password.set('')
+        sabnzbd.config.save_config()
+        self.hover_text = T('Restart')
+        sabnzbd.halt()
+        cherrypy.engine.restart()
+
+    # menu handler
+    def defhost(self, icon):
+        sabnzbd.cfg.cherryhost.set('127.0.0.1')
+        sabnzbd.cfg.enable_https.set(False)
+        sabnzbd.config.save_config()
+        self.hover_text = T('Restart')
+        sabnzbd.halt()
+        cherrypy.engine.restart()
+
     # menu handler - adapted from interface.py
     def shutdown(self, icon):
+        self.hover_text = T('Shutdown')
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
@@ -106,9 +131,4 @@ class SABTrayThread(SysTrayIconThread):
     def resume(self):
         scheduler.plan_resume(0)
         sabnzbd.unpause_all()
-    
 
-
-
-# start the tray
-SABTrayThread()
