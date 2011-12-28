@@ -114,7 +114,8 @@ class URLGrabber(Thread):
                 opener.prompt_user_passwd = None
                 opener.addheaders = []
                 opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                opener.addheader('Accept-encoding','gzip')
+                if '.zip' not in url:
+                    opener.addheader('Accept-encoding','gzip')
                 filename = None
                 category = None
                 length = 0

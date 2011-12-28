@@ -27,19 +27,20 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, \
+from sabnzbd.misc import exit_sab, cat_to_opts, verified_flag_file, \
                          get_admin_path, remove_all, globber
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
-                              REPAIR_PRIORITY, PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
+                              REPAIR_PRIORITY, STOP_PRIORITY, \
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 from sabnzbd.encoding import latin1, platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
@@ -147,7 +148,10 @@ class NzbQueue(TryList):
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if new_nzb is None or not new_nzb.filename:
-            filename = globber(path, '*.gz')
+            if verified_flag_file(folder):
+                filename = ''
+            else:
+                filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
                 sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
@@ -157,7 +161,7 @@ class NzbQueue(TryList):
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
-            logging.debug('Repair job %s without new NZB (%s)', latin1(name), latin1(new_nzb.filename))
+            logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(new_nzb.filename))
             sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
 
 
@@ -325,7 +329,7 @@ class NzbQueue(TryList):
                 self.save(nzo)
 
             if not (quiet or nzo.status in ('Fetching',)):
-                osx.sendGrowlMsg(T('NZB added to queue'), nzo.filename, osx.NOTIFICATION['download'])
+                growler.send_notification(T('NZB added to queue'), nzo.filename, 'download')
 
         if cfg.auto_sort():
             self.sort_by_avg_age()
@@ -530,6 +534,11 @@ class NzbQueue(TryList):
             nzo_id_pos1 = -1
             pos = -1
 
+            # If priority == STOP_PRIORITY, then send to queue
+            if priority == STOP_PRIORITY:
+                self.end_job(nzo)
+                return
+
             # Get the current position in the queue
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
@@ -541,6 +550,7 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
+            nzo.save_attribs()
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
@@ -650,7 +660,7 @@ class NzbQueue(TryList):
             self.add_to_try_list(server)
 
     @synchronized(NZBQUEUE_LOCK)
-    def register_article(self, article):
+    def register_article(self, article, found=True):
         nzf = article.nzf
         nzo = nzf.nzo
 
@@ -658,7 +668,7 @@ class NzbQueue(TryList):
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
-        file_done, post_done, reset = nzo.remove_article(article)
+        file_done, post_done, reset = nzo.remove_article(article, found)
 
         filename = nzf.filename
 
@@ -674,23 +684,29 @@ class NzbQueue(TryList):
                 else:
                     nzo.next_save = time.time() + nzo.save_timeout
 
-            _type = nzf.type
+            if not nzo.precheck:
+                _type = nzf.type
 
-            # Only start decoding if we have a filename and type
-            if filename and _type:
-                Assembler.do.process((nzo, nzf))
+                # Only start decoding if we have a filename and type
+                if filename and _type:
+                    Assembler.do.process((nzo, nzf))
 
-            else:
-                if file_has_articles(nzf):
-                    logging.warning(Ta('%s -> Unknown encoding'), filename)
-
+                else:
+                    if file_has_articles(nzf):
+                        logging.warning(Ta('%s -> Unknown encoding'), filename)
         if post_done:
-            if self.actives(grabs=False) < 2 and cfg.autodisconnect():
-                # This was the last job, close server connections
-                sabnzbd.downloader.Downloader.do.disconnect()
+            self.end_job(nzo)
 
-            # Notify assembler to call postprocessor
-            Assembler.do.process((nzo, None))
+
+    def end_job(self, nzo):
+        """ Send NZO to the post-processing queue
+        """
+        if self.actives(grabs=False) < 2 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
+
+        # Notify assembler to call postprocessor
+        Assembler.do.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)

@@ -271,6 +271,16 @@ jQuery(function($){
     });
   });
 
+  // Reset Quota
+  $('#reset_quota_now').click(function() {
+    $.ajax({
+      type: "POST",
+      url: "tapi",
+      data: {mode:'reset_quota', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
   // Get RSS
   $('#get_rss_now').click(function() {
     $.ajax({

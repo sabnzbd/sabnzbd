@@ -2,7 +2,7 @@
 ***          Known issues               ***
 *******************************************
 
-- To prevent unexpectedly large NZBs from eating your quotum you can set
+- To prevent unexpectedly large NZBs from eating your download quota you can set
   the option 'size_limit' in the INI file.
   Any NZB larger than this size will be set to paused and get a low priority.
 

@@ -424,7 +424,7 @@ function loadtitle() {
     case 'queue':
       lr('queue/','limit=15',1);
       break;
-    case 'connections':
+    case 'status':
       lr(url,'',1)
     default:
       lr(url)
@@ -732,7 +732,7 @@ function lrb(url, extra, refresh)
 
   function testemail()
   {
-    d = doSimpleXMLHttpRequest('config/email/testmail?session='+session);
+    d = doSimpleXMLHttpRequest('config/notify/testmail?session='+session);
     d.addCallback(function (d)
     {
       alert("$T('smpl-emailsent')");
@@ -740,14 +740,29 @@ function lrb(url, extra, refresh)
     d.addErrback(handleServerError);
   }
 
+  function testnotification()
+  {
+    d = doSimpleXMLHttpRequest('config/notify/testnotification?session='+session);
+    d.addCallback(function (d)
+    {
+      alert("$T('smpl-notesent')");
+    });
+    d.addErrback(handleServerError);
+  }
+
   function unblock_server(host, port)
   {
-    d = doSimpleXMLHttpRequest('connections/unblock_server?server='+host+':'+port+'&session='+session);
+    d = doSimpleXMLHttpRequest('status/unblock_server?server='+host+':'+port+'&session='+session);
   }
 
   function getBookmarks()
   {
     d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
+  }
+
+  function resetQuota()
+  {
+    d = doSimpleXMLHttpRequest('tapi?mode=reset_quota&session='+session);
   }
 
   function changequeueoptions(page)
@@ -1096,48 +1111,56 @@ function loadingJSON(){
       <br />
 <div class="centerLinks header-margin light-grey"><a onclick="javascript:toggle('addNew','',{duration:0.2})">[$T('smpl-toggleadd')]</a></div>
   </div>
+<!--#if $uniconfig#-->
+  <!--#set prefix="."#-->
+<!--#else#-->
+  <!--#set prefix="#"#-->
+<!--#end if#-->
   <div id="Content">
     <div id="Left">
       <ul id="menu">
         <li><a class="current" href="./">$T('menu-home')</a></li>
-        <li><a href="#/queue/" onClick="lr('queue/', 'limit=15', 1, 0);">$T('menu-queue')</a></li>
-        <li><a href="#/history/" onClick="lr('history/','limit=15', 1, 0);">$T('menu-history')</a></li>
-        <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">$T('smpl-dualView1')</a></li>
-        <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">$T('smpl-dualView2')</a></li>
-        <li><a href="#/config/" onClick="toggle('hiddenNav','blind',{duration:0.2})">$T('menu-config')</a></li>
+        <li><a href="#/queue/" onclick="lr('queue/', 'limit=15', 1, 0);">$T('menu-queue')</a></li>
+        <li><a href="#/history/" onclick="lr('history/','limit=15', 1, 0);">$T('menu-history')</a></li>
+        <li><a href="#/dv1/" onclick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">$T('smpl-dualView1')</a></li>
+        <li><a href="#/dv2/" onclick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">$T('smpl-dualView2')</a></li>
+        <li><a href="$prefix/config/" class="bold">$T('menu-config')</a> <a onclick="toggle('hiddenNav','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
         <ul id="hiddenNav" class="secondul">
-          <li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
-          <li><a class="config" href="#/config/directories/" onClick="lr('config/directories/','', 0, 0);">$T('cmenu-folders')</a> </li>
-          <li><a class="config" href="#/config/switches/" onClick="lr('config/switches/','', 0, 0);">$T('cmenu-switches')</a> </li>
-          <li><a class="config" href="#/config/server" onClick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
-          <li><a class="config" href="#/config/scheduling/" onClick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
-          <li><a class="config" href="#/config/rss/" onClick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
-          <li><a class="config" href="#/config/email/" onClick="lr('config/email/','', 0, 0);">$T('cmenu-email')</a></li>
-          <li><a class="config" href="#/config/newzbin/" onClick="lr('config/newzbin/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
-          <li><a class="config" href="#/config/categories/" onClick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
-          <li><a class="config" href="#/config/sorting/" onClick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
+          <li><a class="config" href="$prefix/config/general/" onclick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
+          <li><a class="config" href="$prefix/config/folders/" onclick="lr('config/folders/','', 0, 0);">$T('cmenu-folders')</a> </li>
+          <li><a class="config" href="$prefix/config/switches/" onclick="lr('config/switches/','', 0, 0);">$T('cmenu-switches')</a> </li>
+          <li><a class="config" href="$prefix/config/server" onclick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
+          <li><a class="config" href="$prefix/config/scheduling/" onclick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
+          <li><a class="config" href="$prefix/config/rss/" onclick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
+          <li><a class="config" href="$prefix/config/notify/" onclick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
+          <li><a class="config" href="$prefix/config/indexers/" onclick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
+          <li><a class="config" href="$prefix/config/categories/" onclick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
+          <li><a class="config" href="$prefix/config/sorting/" onclick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
         </ul>
-        <li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">$T('menu-cons')</a></li>
-        <li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">$T('smpl-warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>
+        <li><a href="#/status/" onclick="lr('status/','', 1, 0);">$T('menu-cons')</a></li>
+        <li><a href="#/status/" onclick="lr('status/','', 1, 0);">$T('smpl-warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>
         <br />
-        <li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a> <a onClick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
+        <li><a class="bold" id="status2" onclick="toggle_paused()">$statusstr2</a> <a onclick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
         <ul id="hiddenTimedPause" class="secondul">
-          <li><a class="config" onClick="javascript:timedPause(5)">5 $T("minutes")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(15)">15 $T("minutes")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(30)">30 $T("minutes")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(60)">1 $T("hours")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(120)">2 $T("hours")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(180)">3 $T("hours")</a></li>
-          <li><a class="config" onClick="javascript:timedPause(300)">5 $T("hours")</a></li>
-          <li><a class="config" onClick="javascript:timedPause()">$T("smpl-custom")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(5)">5 $T("minutes")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(15)">15 $T("minutes")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(30)">30 $T("minutes")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(60)">1 $T("hours")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(120)">2 $T("hours")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(180)">3 $T("hours")</a></li>
+          <li><a class="config" onclick="javascript:timedPause(300)">5 $T("hours")</a></li>
+          <li><a class="config" onclick="javascript:timedPause()">$T("smpl-custom")</a></li>
 
   </ul>
   <!--#if $varExists('newzbinDetails')#-->
-  <li><a onClick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
+  <li><a onclick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
+  <!--#end if#-->
+  <!--#if $have_quota#-->
+  <li><a onclick="resetQuota()">$T('link-resetQuota')</a></li>
   <!--#end if#-->
   <br />
-  <li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('smpl-restartOK?')')){restart()}">$T('button-restart')</a></li>
-  <li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('shutdownOK?')')){shutdown()}">$T('link-shutdown')</a></li>
+  <li><a style="text-decoration:underline;cursor:pointer;" onclick="if(confirm('$T('smpl-restartOK?')')){restart()}">$T('button-restart')</a></li>
+  <li><a style="text-decoration:underline;cursor:pointer;" onclick="if(confirm('$T('shutdownOK?')')){shutdown()}">$T('link-shutdown')</a></li>
   <br/>
   <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
   <li><a href="http://forums.sabnzbd.org" target="_blank">$T('menu-forums')</a></li>
@@ -1260,7 +1283,7 @@ function loadingJSON(){
     <option value="300" >5 $T("minutes")</option>
     <option value="0" >$T("none")</option>
   </select>
-  <br />SABnzbd $T('version'): $version | smpl $T('version'): 1.3</a></p>
+  <br />SABnzbd $T('version'): $version | smpl skin</a></p>
     <!--#if $warning#-->
     <h2>$T('ft-warning')</h2>
     <b>$warning</b><br />

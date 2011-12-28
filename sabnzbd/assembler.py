@@ -40,7 +40,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1
+from sabnzbd.encoding import latin1, unicoder
 
 
 #------------------------------------------------------------------------------
@@ -269,13 +269,23 @@ def ParseFilePacket(f, header):
     return nothing
 
 
+def is_cloaked(path, names):
+    """ Return True if this is likely to be a cloaked encrypted post """
+    fname = unicoder(os.path.split(path)[1]).lower()
+    for name in names:
+        name = unicoder(name.lower())
+        if fname == name or 'password' in name:
+            return True
+    return False
+
+
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
     if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
-            zf = RarFile(filepath)
-            encrypted = zf.encrypted
+            zf = RarFile(filepath, all_names=True)
+            encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
             if encrypted and int(nzo.encrypted) < 2:
                 nzo.encrypted = 1
             else:

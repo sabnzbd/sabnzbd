@@ -145,7 +145,7 @@ def process_po_folder(domain, folder):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print 'Compile %s' % mo_file
-        ret = os.system('%s -o %s %s' % (TOOL, mo_file, fname))
+        ret = os.system('%s -o "%s" "%s"' % (TOOL, mo_file, fname))
         if ret != 0:
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
@@ -278,7 +278,10 @@ def patch_nsis():
 path, py = os.path.split(sys.argv[0])
 tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
 if os.path.exists(tl):
-    TOOL = tl
+    if os.name == 'nt':
+        TOOL = 'python "%s"' % tl
+    else:
+        TOOL = '"%s"' % tl
 
 # Fix up Romanian texts
 fix_ro()

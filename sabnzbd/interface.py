@@ -33,7 +33,6 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
      cat_to_opts, int_conv, globber, remove_all
@@ -58,7 +57,8 @@ from sabnzbd.lang import list_languages, set_language
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
      retry_job, build_header, build_history, del_job_files, \
-     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
+     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
+     _api_test_email, _api_test_notif
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -226,18 +226,23 @@ class NoPage(object):
 
 
 class MainPage(object):
-    def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
+    def __init__(self, web_dir, root, web_dir2=None, root2=None, web_dirc=None, prim=True, first=0):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        if first >= 1:
-            self.m = MainPage(web_dir2, root2, prim=False)
+        if first >= 1 and web_dir2:
+            # Setup addresses for secondary skin
+            self.m = MainPage(web_dir2, root2, web_dirc=web_dirc, prim=False)
         if first == 2:
-            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', prim=True, first=1)
+            # Setup addresses with /sabnzbd prefix for primary and secondary skin
+            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', web_dirc=web_dirc, prim=True, first=1)
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
-        self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
-        self.config = ConfigPage(web_dir, root+'config/', prim)
+        self.status = Status(web_dir, root+'status/', prim)
+        if cfg.uniconfig() and web_dirc:
+            self.config = ConfigPage(web_dirc, root+'config/', prim)
+        else:
+            self.config = ConfigPage(web_dir, root+'config/', prim)
         self.nzb = NzoPage(web_dir, root+'nzb/', prim)
         self.wizard = sabnzbd.wizard.Wizard(web_dir, root+'wizard/', prim)
 
@@ -250,7 +255,7 @@ class MainPage(object):
             return panic_old_queue()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, pnfo_list, bytespersec = build_header(self.__prim)
+            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
             if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
                 info['newzbinDetails'] = True
@@ -414,21 +419,17 @@ class MainPage(object):
         """ Duplicate of retry of History, needed for some skins """
         msg = check_session(kwargs)
         if msg: return msg
-
-        url = kwargs.get('url', '')
+        job = kwargs.get('job', '')
+        url = kwargs.get('url', '').strip()
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-
-        url = url.strip()
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
-            sabnzbd.add_url(url, pp, script, cat)
-        if url:
-            return ShowOK(url)
-        else:
-            raise dcRaiser(self.__root, kwargs)
+            sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
+        del_hist_job(job, del_files=True)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def retry_pp(self, **kwargs):
@@ -457,7 +458,7 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
 
-        info, pnfo_list, bytespersec = build_header(self.__prim)
+        info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
         nzo_id = None
 
         for a in args:
@@ -630,7 +631,7 @@ class QueuePage(object):
         dummy2 = kwargs.get('dummy2')
 
         info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
-                                                                                       self.__prim, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
+                                                                                       self.__prim, self.__web_dir, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -848,7 +849,7 @@ class HistoryPage(object):
         if failed_only is None:
             failed_only = self.__failed_only
 
-        history, pnfo_list, bytespersec = build_header(self.__prim)
+        history, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
@@ -971,6 +972,7 @@ class HistoryPage(object):
     def retry(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        job = kwargs.get('job', '')
         url = kwargs.get('url', '').strip()
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
@@ -979,10 +981,9 @@ class HistoryPage(object):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
-        if url:
-            return ShowOK(url)
-        else:
-            raise dcRaiser(self.__root, kwargs)
+        del_hist_job(job, del_files=True)
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 class ConfigPage(object):
@@ -990,23 +991,25 @@ class ConfigPage(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        self.directories = ConfigDirectories(web_dir, root+'directories/', prim)
-        self.email = ConfigEmail(web_dir, root+'email/', prim)
+        self.folders = ConfigFolders(web_dir, root+'folders/', prim)
+        self.notify = ConfigNotify(web_dir, root+'notify/', prim)
         self.general = ConfigGeneral(web_dir, root+'general/', prim)
-        self.newzbin = ConfigNewzbin(web_dir, root+'newzbin/', prim)
+        self.indexers = ConfigIndexers(web_dir, root+'indexers/', prim)
         self.rss = ConfigRss(web_dir, root+'rss/', prim)
         self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
         self.server = ConfigServer(web_dir, root+'server/', prim)
         self.switches = ConfigSwitches(web_dir, root+'switches/', prim)
         self.categories = ConfigCats(web_dir, root+'categories/', prim)
         self.sorting = ConfigSorting(web_dir, root+'sorting/', prim)
+        self.special = ConfigSpecial(web_dir, root+'special/', prim)
 
 
     @cherrypy.expose
     def index(self, **kwargs):
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
+        conf['cmdline'] = sabnzbd.CMDLINE
 
         new = {}
         for svr in config.get_servers():
@@ -1076,7 +1079,7 @@ LIST_DIRPAGE = ( \
     'email_dir', 'permissions', 'log_dir', 'password_file'
 )
 
-class ConfigDirectories(object):
+class ConfigFolders(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1087,7 +1090,7 @@ class ConfigDirectories(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
@@ -1098,7 +1101,7 @@ class ConfigDirectories(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_folders.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1111,13 +1114,14 @@ class ConfigDirectories(object):
             value = kwargs.get(kw)
             if value != None:
                 value = platform_encode(value)
-                if kw == 'complete_dir':
+                if kw in ('complete_dir', 'dirscan_dir'):
                     msg = config.get_config('misc', kw).set(value, create=True)
                 else:
                     msg = config.get_config('misc', kw).set(value)
                 if msg:
                     return badParameterResponse(msg)
 
+        sabnzbd.check_incomplete_vs_complete()
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
@@ -1129,7 +1133,8 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
-             'unpack_check'
+             'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
+             'pre_check', 'max_art_tries', 'max_opt_only'
              )
 
 #------------------------------------------------------------------------------
@@ -1144,7 +1149,7 @@ class ConfigSwitches(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
@@ -1168,6 +1173,56 @@ class ConfigSwitches(object):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
             value = platform_encode(kwargs.get(kw))
+            msg = item.set(value)
+            if msg:
+                return badParameterResponse(msg)
+
+        config.save_config()
+        raise dcRaiser(self.__root, kwargs)
+
+
+
+#------------------------------------------------------------------------------
+SPECIAL_BOOL_LIST = \
+            ( 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
+              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
+              'osx_menu', 'osx_speed', 'win_menu', 'uniconfig'
+            )
+SPECIAL_VALUE_LIST = \
+            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit'
+            )
+
+class ConfigSpecial(object):
+    def __init__(self, web_dir, root, prim):
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__prim = prim
+
+    @cherrypy.expose
+    def index(self, **kwargs):
+        if cfg.configlock():
+            return Protected()
+
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+
+        conf['nt'] = sabnzbd.WIN32
+
+        conf['switches'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_BOOL_LIST]
+        conf['entries'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
+
+        template = Template(file=os.path.join(self.__web_dir, 'config_special.tmpl'),
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+        return template.respond()
+
+    @cherrypy.expose
+    def saveSpecial(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST:
+            item = config.get_config('misc', kw)
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1217,7 +1272,7 @@ class ConfigGeneral(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
 
@@ -1392,7 +1447,7 @@ class ConfigServer(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         new = {}
         servers = config.get_servers()
@@ -1530,7 +1585,7 @@ class ConfigRss(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
@@ -1594,7 +1649,9 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
-        """ Update Feed level attributes """
+        """ Update Feed level attributes,
+            legacy version: ignores 'enable' parameter
+        """
         msg = check_session(kwargs)
         if msg: return msg
         if kwargs.get('enable') is not None:
@@ -1603,6 +1660,23 @@ class ConfigRss(object):
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
+        if cfg and Strip(kwargs.get('uri')):
+            cfg.set_dict(kwargs)
+            config.save_config()
+
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def save_rss_feed(self, **kwargs):
+        """ Update Feed level attributes """
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            cfg = config.get_rss()[kwargs.get('feed')]
+        except KeyError:
+            cfg = None
+        if 'enable' not in kwargs:
+            kwargs['enable'] = 0
         if cfg and Strip(kwargs.get('uri')):
             cfg.set_dict(kwargs)
             config.save_config()
@@ -1633,21 +1707,24 @@ class ConfigRss(object):
         if msg: return msg
         feed= Strip(kwargs.get('feed')).strip('[]')
         uri = Strip(kwargs.get('uri'))
-        try:
-            cfg = config.get_rss()[feed]
-        except KeyError:
-            cfg = None
-        if (not cfg) and uri:
-            config.ConfigRSS(feed, kwargs)
-            # Clear out any existing reference to this feed name
-            # Otherwise first-run detection can fail
-            sabnzbd.rss.clear_feed(feed)
-            config.save_config()
-            self.__refresh_readout = feed
-            self.__refresh_download = False
-            self.__refresh_force = False
-            self.__refresh_ignore = True
-            raise rssRaiser(self.__root, kwargs)
+        if feed and uri:
+            try:
+                cfg = config.get_rss()[feed]
+            except KeyError:
+                cfg = None
+            if (not cfg) and uri:
+                config.ConfigRSS(feed, kwargs)
+                # Clear out any existing reference to this feed name
+                # Otherwise first-run detection can fail
+                sabnzbd.rss.clear_feed(feed)
+                config.save_config()
+                self.__refresh_readout = feed
+                self.__refresh_download = False
+                self.__refresh_force = False
+                self.__refresh_ignore = True
+                raise rssRaiser(self.__root, kwargs)
+            else:
+                raise dcRaiser(self.__root, kwargs)
         else:
             raise dcRaiser(self.__root, kwargs)
 
@@ -1666,17 +1743,19 @@ class ConfigRss(object):
         script = ConvertSpecials(kwargs.get('script'))
         cat = ConvertSpecials(kwargs.get('cat'))
         prio = ConvertSpecials(kwargs.get('priority'))
+        filt = kwargs.get('filter_text')
 
-        cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                                                         platform_encode(kwargs.get('filter_text')), prio ))
+        if filt:
+            cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
+                                                             platform_encode(filt), prio ))
 
-        # Move filter if requested
-        index = int_conv(kwargs.get('index', ''))
-        new_index = kwargs.get('new_index', '')
-        if new_index and int_conv(new_index) != index:
-            cfg.filters.move(int(index), int_conv(new_index))
+            # Move filter if requested
+            index = int_conv(kwargs.get('index', ''))
+            new_index = kwargs.get('new_index', '')
+            if new_index and int_conv(new_index) != index:
+                cfg.filters.move(int(index), int_conv(new_index))
 
-        config.save_config()
+            config.save_config()
         raise rssRaiser(self.__root, kwargs)
 
 
@@ -1801,7 +1880,7 @@ class ConfigScheduling(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         actions = []
         actions.extend(_SCHED_ACTIONS)
@@ -1817,6 +1896,13 @@ class ConfigScheduling(object):
             except:
                 continue
             action = action.strip()
+            try:
+                action, value = action.split(' ', 1)
+            except:
+                value = ''
+            value = value.strip()
+            if value == '0':
+                value = T('off') #: "Off" value for speedlimit in scheduler
             if action in actions:
                 action = Ttemplate("sch-" + action)
             else:
@@ -1826,7 +1912,7 @@ class ConfigScheduling(object):
                     act = ''
                 if act in ('enable_server', 'disable_server'):
                     action = Ttemplate("sch-" + act) + ' ' + server
-            item = (snum, h, '%02d' % int(m), days.get(day, '**'), action)
+            item = (snum, '%02d' % int(h), '%02d' % int(m), days.get(day, '**'), '%s %s' % (action, value))
             conf['taskinfo'].append(item)
             snum += 1
 
@@ -1862,8 +1948,9 @@ class ConfigScheduling(object):
             arguments = '0'
 
         if minute and hour  and dayofweek and action:
-            if (action == 'speedlimit') and arguments.isdigit():
-                pass
+            if action == 'speedlimit':
+                if not (arguments and arguments.isdigit()):
+                    action = '0'
             elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action in config.get_servers():
@@ -1901,7 +1988,7 @@ class ConfigScheduling(object):
         raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
-class ConfigNewzbin(object):
+class ConfigIndexers(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1913,7 +2000,7 @@ class ConfigNewzbin(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['username_newzbin'] = cfg.newzbin_username()
         conf['password_newzbin'] = cfg.newzbin_password.get_stars()
@@ -1927,7 +2014,7 @@ class ConfigNewzbin(object):
         conf['matrix_apikey'] = cfg.matrix_apikey()
         conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_indexers.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1966,7 +2053,7 @@ class ConfigNewzbin(object):
     def getBookmarks(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        Bookmarks.do.run()
+        Bookmarks.do.run(force=True)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1996,7 +2083,7 @@ class ConfigCats(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         if cfg.newzbin_username() and cfg.newzbin_password():
             conf['newzbinDetails'] = True
@@ -2070,7 +2157,7 @@ class ConfigSorting(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
@@ -2112,7 +2199,7 @@ class ConfigSorting(object):
 
 #------------------------------------------------------------------------------
 
-class ConnectionInfo(object):
+class Status(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2120,7 +2207,7 @@ class ConnectionInfo(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        header, pnfo_list, bytespersec = build_header(self.__prim)
+        header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -2181,9 +2268,16 @@ class ConnectionInfo(object):
             wlist.insert(0, unicoder(w))
         header['warnings'] = wlist
 
-        template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'status.tmpl'),
                             filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
         return template.respond()
+
+    @cherrypy.expose
+    def reset_quota(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        BPSMeter.do.reset_quota(force=True)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def disconnect(self, **kwargs):
@@ -2451,8 +2545,9 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable')
 
-class ConfigEmail(object):
+class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2464,17 +2559,20 @@ class ConfigEmail(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         conf['lastmail'] = self.__lastmail
-
+        conf['have_growl'] = True
+        conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
+        for kw in LIST_GROWL:
+            conf[kw] = config.get_config('growl', kw).get_string()
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
+        template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2487,6 +2585,10 @@ class ConfigEmail(object):
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+        for kw in LIST_GROWL:
+            msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
 
         config.save_config()
         self.__lastmail = None
@@ -2496,15 +2598,14 @@ class ConfigEmail(object):
     def testmail(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        self.__lastmail = None
-        logging.info("Sending testmail")
-        pack = {}
-        pack['download'] = ['action 1', 'action 2']
-        pack['unpack'] = ['action 1', 'action 2']
+        self.__lastmail = _api_test_email(name=None, output=None, kwargs=None)
+        raise dcRaiser(self.__root, kwargs)
 
-        self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+    @cherrypy.expose
+    def testnotification(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        _api_test_notif(name=None, output=None, kwargs=None)
         raise dcRaiser(self.__root, kwargs)
 
 

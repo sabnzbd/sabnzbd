@@ -9,14 +9,17 @@
 <br>
 <!--#if int($cache_max)#-->
 <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->
-$msg<br>
+$msg&nbsp;&nbsp;
+<!--#end if#-->
+<!--#if $have_quota#-->
+  | &nbsp;&nbsp;<strong>$T('quota-left'):</strong>&nbsp;&nbsp;$left_quota&nbsp;&frasl;&nbsp;$quota</strong>&nbsp;&nbsp;&nbsp;
 <!--#end if#-->
 <!--#if $new_release#-->
   <!--#set $msg=$T('ft-newRelease@1')%($new_release)#-->
   <b>$msg <a href="$new_rel_url/" target="_blank">SF.net</a></b><br>
 <!--#end if#-->
 <!--#if $have_warnings != "0"#-->
-  <strong><a href="$statpath/connections/">$T('ft-warning')($have_warnings)!</a></strong>
+  <strong><a href="$statpath/status/">$T('ft-warning')($have_warnings)!</a></strong>
 <!--#end if#-->
 </div>
 <!--#set $mbleftrnd = str(int(float($mbleft)))#-->

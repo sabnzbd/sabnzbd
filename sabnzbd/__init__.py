@@ -119,6 +119,7 @@ CMDLINE = ''  # Rendering of original command line arguments
 
 WEB_DIR = None
 WEB_DIR2 = None
+WEB_DIRC = None
 WIZARD_DIR = None
 WEB_COLOR = None
 WEB_COLOR2 = None
@@ -128,6 +129,7 @@ OSX_ICON = 1
 PAUSED_ALL = False
 OLD_QUEUE = False
 SCHED_RESTART = False # Set when restarted through scheduler
+WINTRAY = None # Thread for the Windows SysTray icon
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -151,7 +153,7 @@ LANG_MAP = {
 # Signal Handler                                                               #
 ################################################################################
 def sig_handler(signum = None, frame = None):
-    global SABSTOP
+    global SABSTOP, WINTRAY
     if sabnzbd.WIN32 and type(signum) != type(None) and DAEMON and signum==5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
@@ -163,6 +165,9 @@ def sig_handler(signum = None, frame = None):
         if sabnzbd.WIN32:
             from util.apireg import del_connection_info
             del_connection_info()
+            if sabnzbd.WINTRAY:
+                sabnzbd.WINTRAY.terminate = True
+                time.sleep(0.5)
         else:
             pid_file()
         SABSTOP = True
@@ -227,9 +232,20 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.bandwidth_limit.callback(guard_speedlimit)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
+    cfg.growl_server.callback(sabnzbd.growler.change_value)
+    cfg.growl_password.callback(sabnzbd.growler.change_value)
+    cfg.quota_size.callback(guard_quota_size)
+    cfg.quota_day.callback(guard_quota_dp)
+    cfg.quota_period.callback(guard_quota_dp)
+    cfg.fsys_type.callback(guard_fsys_type)
+
+    ### Set Posix filesystem encoding
+    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
+
+    check_incomplete_vs_complete()
 
     ### Handle language upgrade from 0.5.x to 0.6.x
     cfg.language.set(LANG_MAP.get(cfg.language(), cfg.language()))
@@ -264,7 +280,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     Bookmarks()
     rss.init()
 
-    BPSMeter.do.read()
+    paused = BPSMeter.do.read()
 
     PostProcessor()
 
@@ -273,7 +289,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     Assembler()
 
-    Downloader(pause_downloader)
+    Downloader(pause_downloader or paused)
 
     DirScanner()
 
@@ -416,6 +432,18 @@ def guard_pause_on_pp():
              # if post-processing is active now
     else:
         Downloader.do.resume_from_postproc()
+
+def guard_quota_size():
+    """ Callback for change of quota_size """
+    BPSMeter.do.change_quota()
+
+def guard_quota_dp():
+    """ Callback for change of quota_day or quota_period """
+    scheduler.restart(force=True)
+
+def guard_fsys_type():
+    """ Callback for change of file system naming type """
+    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on newzbin report number, attributes optional
@@ -1000,6 +1028,17 @@ def pid_file(pid_path=None, port=0):
         except:
             logging.warning('Cannot access PID file %s', DIR_PID)
 
+
+def check_incomplete_vs_complete():
+    """ Make sure "incomplete" and "complete" are not identical
+    """
+    complete = cfg.complete_dir.get_path()
+    if misc.same_file(cfg.download_dir.get_path(), complete):
+        if misc.real_path('X', cfg.download_dir()) == cfg.download_dir():
+            # Abs path, so set an abs path too
+            cfg.download_dir.set(os.path.join(complete, 'incomplete'))
+        else:
+            cfg.download_dir.set('incomplete')
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py

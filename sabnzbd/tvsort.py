@@ -28,7 +28,7 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, remove_dir
+                         get_unique_filename, get_ext, renamer, remove_dir, sanitize_foldername
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import titler
@@ -72,7 +72,7 @@ def move_to_parent_folder(workdir):
         If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
     """
     skipped = False # Keep track of any skipped files
-    path1 = os.path.abspath(os.path.join(workdir, '..')) #move things to the folder below
+    path1 = os.path.abspath(os.path.normpath(os.path.join(workdir, '..'))) #move things to the folder below
 
     for root, dirs, files in os.walk(workdir):
         for _file in files:
@@ -96,6 +96,7 @@ class Sorter(object):
         self.type = None
         self.sort_file = False
         self.cat = cat
+        self.ext = ''
 
     def detect(self, dirname, complete_dir):
         self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
@@ -126,6 +127,16 @@ class Sorter(object):
         if self.sorter.should_rename():
             self.sorter.rename(newfiles, workdir_complete)
 
+    def rename_with_ext(self, workdir_complete):
+        """ Special renamer for %ext """
+        if self.sorter.should_rename() and '%ext' in workdir_complete and self.ext:
+            # Replace %ext with extension
+            newpath = workdir_complete.replace('%ext', self.ext)
+            renamer(workdir_complete, newpath)
+            return newpath
+        else:
+            return workdir_complete
+
     def move(self, workdir_complete):
         if self.type == 'movie':
             move_to_parent = True
@@ -153,7 +164,7 @@ class Sorter(object):
         return self.sort_file
 
 class SeriesSorter(object):
-    def __init__(self, dirname, path, cat, force=False):
+    def __init__(self, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
@@ -173,7 +184,7 @@ class SeriesSorter(object):
         self.show_info = {}
 
         #Check if it is a TV show on init()
-        self.match(force)
+        self.match()
 
 
     def match(self, force=False):
@@ -352,7 +363,7 @@ class SeriesSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -387,12 +398,14 @@ class SeriesSorter(object):
         file, filepath, size = largest
         # >20MB
         if filepath and size > 20971520:
-            tmp, ext = os.path.splitext(file)
+            tmp, self.ext = os.path.splitext(file)
             self.fname = tmp
-            newname = "%s%s" % (self.filename_set,ext)
+            newname = "%s%s" % (self.filename_set, self.ext)
             # Replace %fn with the original filename
             newname = newname.replace('%fn',tmp)
             newpath = os.path.join(current_path, newname)
+            # Replace %ext with extension
+            newpath = newpath.replace('%ext', self.ext)
             if not os.path.exists(newpath):
                 try:
                     logging.debug("Rename: %s to %s", filepath,newpath)
@@ -494,11 +507,11 @@ class GenericSorter(object):
         self.match()
 
 
-    def match(self):
+    def match(self, force=False):
         ''' Checks the category for a match, if so set self.match to true '''
-        if cfg.enable_movie_sorting() and self.sort_string:
+        if force or (cfg.enable_movie_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
-            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+            if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname)
                 self.matched = True
 
@@ -592,7 +605,7 @@ class GenericSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -606,7 +619,7 @@ class GenericSorter(object):
                 filepath = os.path.join(current_path, _file)
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
-                if size > 314572800 and not RE_SAMPLE.search(_file) \
+                if size >= cfg.movie_rename_limit.get_int() and not RE_SAMPLE.search(_file) \
                    and get_ext(_file) not in EXCLUDED_FILE_EXTS:
                     return True
             return False
@@ -687,11 +700,11 @@ class DateSorter(object):
         self.match()
 
 
-    def match(self):
+    def match(self, force=False):
         ''' Checks the category for a match, if so set self.matched to true '''
-        if cfg.enable_date_sorting() and self.sort_string:
+        if force or (cfg.enable_date_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
-            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+            if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
                 if self.match_obj:
                     logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname)
@@ -808,7 +821,7 @@ class DateSorter(object):
         else:
             head = path
 
-        return head
+        return os.path.normpath(head)
 
     def should_rename(self):
         return self.rename_or_not
@@ -849,6 +862,7 @@ def path_subst(path, mapping):
         path = the sort string
         mapping = array of tuples that maps all elements to their values
     """
+    # Added ugly hack to prevent %ext from being masked by %e
     newpath = []
     plen = len(path)
     n = 0
@@ -856,7 +870,7 @@ def path_subst(path, mapping):
         result = path[n]
         if result == '%':
             for key, value in mapping:
-                if path.startswith(key, n):
+                if path.startswith(key, n) and not path.startswith('%ext', n):
                     n += len(key)-1
                     result = value
                     break
@@ -1013,7 +1027,7 @@ def stripFolders(folders):
         x = x.strip()
         return x
 
-    return '/'.join([strip_all(x) for x in f])
+    return os.path.normpath('/'.join([strip_all(x) for x in f]))
 
 
 def rename_similar(path, file, name):
@@ -1097,13 +1111,14 @@ def is_full_path(file):
     return False
 
 
-def eval_sort(sorttype, expression, name=None):
+def eval_sort(sorttype, expression, name=None, multipart=None):
     """ Preview a sort expression, to be used by API """
     from sabnzbd.api import Ttemplate
     path = ''
+    name = sanitize_foldername(name)
     if sorttype == 'series':
-        name = name or ('%s S01E03 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
-        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv', force=True)
+        name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
+        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv')
     elif sorttype == 'generic':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
         sorter = sabnzbd.tvsort.GenericSorter(name, path, 'tv')
@@ -1113,14 +1128,22 @@ def eval_sort(sorttype, expression, name=None):
     else:
         return None
     sorter.sort_string = expression
-    sorter.matched = True
+    sorter.match(force=True)
     path = sorter.get_final_path()
     path = os.path.normpath(os.path.join(path, sorter.filename_set))
-    if sorter.rename_or_not:
-        path += '.avi'
+    fname = Ttemplate('orgFilename')
+    fpath = path
+    if sorttype == 'generic' and '%1' in multipart:
+        fname = fname + multipart.replace('%1', '1')
+        fpath = fpath + multipart.replace('%1', '1')
+    if '%fn' in path:
+        path = path.replace('%fn', fname + '.avi')
     else:
-        if sabnzbd.WIN32:
-            path += '\\'
+        if sorter.rename_or_not:
+            path = fpath + '.avi'
         else:
-            path += '/'
+            if sabnzbd.WIN32:
+                path += '\\'
+            else:
+                path += '/'
     return path

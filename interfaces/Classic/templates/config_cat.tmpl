@@ -1,6 +1,6 @@
 <!--#set global $topmenu="config"#-->
 <!--#set global $statpath="../.."#-->
-<!--#set global $helpsubject="configure-categories"#-->
+<!--#set global $helpsubject="configure-categories-0-7"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <!--#set global $submenu="categories"#-->
@@ -72,6 +72,7 @@ $T('explain-relFolder') $defdir<br/>
         <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
         <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
         <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+        <option value="-2" <!--#if $slot.priority == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
       </optgroup>
     </select>
   </td>

@@ -37,11 +37,11 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import BOOKMARK_FILE_NAME
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert
+from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert, format_source_url
 from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.cfg as cfg
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 
 ################################################################################
@@ -121,6 +121,7 @@ class MSGIDGrabber(Thread):
 
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
+                    nzo.url = format_source_url(str(msgid))
                 except:
                     logging.error(Ta('Failed to update newzbin job %s'), msgid)
                     logging.info("Traceback: ", exc_info = True)
@@ -135,7 +136,8 @@ class MSGIDGrabber(Thread):
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
                     msgid = None
 
-            osx.sendGrowlMsg(T('NZB added to queue'),filename,osx.NOTIFICATION['download'])
+            if msgid:
+                growler.send_notification(T('NZB added to queue'), filename, 'download')
 
             # Keep some distance between the grabs
             sleeper(5)
@@ -272,7 +274,12 @@ class Bookmarks(object):
         Bookmarks.do = self
 
     @synchronized(BOOK_LOCK)
-    def run(self, delete=None):
+    def run(self, delete=None, force=False):
+
+        if not (cfg.newzbin_bookmarks() or force):
+            return
+        if not (cfg.newzbin_username() and cfg.newzbin_password()):
+            return
 
         headers = { 'User-Agent': 'SABnzbd+/%s' % sabnzbd.__version__, }
 

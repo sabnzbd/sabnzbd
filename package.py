@@ -34,6 +34,9 @@ except ImportError:
 try:
     import py2app
     from setuptools import setup
+    OSX_LION = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
+    OSX_SL = not OSX_LION and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 6, 0]
+    OSX_LEOPARD = not (OSX_LION or OSX_SL)
 except ImportError:
     py2app = None
 
@@ -313,6 +316,7 @@ fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
 fileSrc = prod + '-src.tar.gz'
 fileDmg = prod + '-osx.dmg'
+fileDmgLp = prod + '-osx-leopard.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
 
@@ -330,8 +334,6 @@ data_files = [
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
          'ISSUES.txt',
-         'nzb.ico',
-         'sabnzbd.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
          'PKG-INFO',
@@ -345,7 +347,8 @@ data_files = [
          'interfaces/wizard/',
          'win/par2/',
          'win/unzip/',
-         'win/unrar/'
+         'win/unrar/',
+         'icons/'
        ]
 
 options = dict(
@@ -374,24 +377,27 @@ if target == 'app':
 
     #Create sparseimage from template
     os.system("unzip osx/image/template.sparseimage.zip")
-    os.rename('template.sparseimage', fileImg)
+    os.rename('sabnzbd-template.sparseimage', fileImg)
 
     #mount sparseimage and modify volume label
     os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
 
     # Select OSX version specific background image
     # Take care to preserve the special attributes of the background image file
-    if [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]:
-        # Lion and higher
-        f = open('osx/image/sabnzbd_lion.png', 'rb')
+    if OSX_LION:
+        # Lion and higher: generates SnowLeopard/Lion DMG
+        f = open('osx/image/sabnzbd.png', 'rb')
         png = f.read()
         f.close()
-        f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
-        f.write(png)
-        f.close()
     else:
-        # Snow Leopard and lower
-        pass
+        # Snow Leopard and lower: generates Leopard DMG
+        fileDmg = fileDmgLp
+        f = open('osx/image/sabnzbd_leopard.png', 'rb')
+        png = f.read()
+        f.close()
+    f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
+    f.write(png)
+    f.close()
 
     # Rename the volume
     fp = open('mount.log', 'r')
@@ -448,6 +454,7 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
+    os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     #copy app to mounted sparseimage
@@ -498,7 +505,7 @@ elif target in ('binary', 'installer'):
     options['description'] = 'SABnzbd ' + str(my_version)
 
     sys.argv[1] = 'py2exe'
-    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
+    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "icons/sabnzbd.ico")] } ]
     options['options'] = {"py2exe":
                               {
                                 "bundle_files": 3,
@@ -621,7 +628,7 @@ else:
         os.mkdir(root)
 
     # Set data files
-    data_files.extend(['po/', 'cherrypy/'])
+    data_files.extend(['po/', 'cherrypy/', 'gntp/'])
     options['data_files'] = PairList(data_files)
     options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 

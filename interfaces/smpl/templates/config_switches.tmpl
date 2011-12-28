@@ -1,5 +1,5 @@
 
-<a href="${helpuri}Configure+Switches+V3" id="help" target="_blank">$T('menu-help')</a>
+<a href="${helpuri}Configure+Switches-0-7" id="help" target="_blank">$T('menu-help')</a>
 <h3>$T('switchesConfig')</h3>
 <div class="EntryBlock">
   <form id="configSwitches" class="cmxform">
@@ -9,6 +9,11 @@
   <label><span class="label">$T('opt-quick_check'):</span>
   <input class="radio" type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then 'checked="1"' else ""#--> /></label>
   <span class="tips">$T('explain-quick_check')</span>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-pre_check'):</span>
+  <input class="radio" type="checkbox" name="pre_check" value="1" <!--#if $pre_check > 0 then 'checked="1"' else ""#--> /></label>
+  <span class="tips">$T('explain-pre_check')</span>
 <br class="clear" />
 
   <label><span class="label">$T('opt-enable_unrar'):</span>
@@ -123,6 +128,16 @@
 <hr />
 
 
+  <label><span class="label">$T('opt-max_art_tries'):</span>
+  <input type="text" size="5" name="max_art_tries" value="$max_art_tries" />
+  <span class="tips">$T('explain-max_art_tries')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-max_opt_only'):</span>
+  <input class="radio" type="checkbox" name="max_opt_only" value="1" <!--#if $max_opt_only > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-max_opt_only')</span></label>
+<br class="clear" />
+
   <label><span class="label">$T('opt-auto_disconnect'):</span>
   <input class="radio" type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-auto_disconnect')</span></label>
@@ -189,6 +204,38 @@
     <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
   </select>
     <span class="tips">$T('explain-ssl_type')</span>
+<br class="clear" />
+
+  </fieldset>
+
+<fieldset class="EntryFieldSet">
+  <legend>$T('swtag-quota')</legend>
+<hr />
+
+  <span class="label">$T('opt-quota_size'):</span>
+  <input type="text" name="quota_size" value="$quota_size"/>
+  <span class="tips">$T('explain-quota_size')</span></label>
+<br class="clear" />
+
+  <span class="label">$T('opt-quota_period'):</span>
+  <select name="quota_period" id="quota_period" class="select">
+    <option value="m" <!--#if $quota_period == "m" then 'selected' else ''#--> >$T('month')</option>
+    <option value="w" <!--#if $quota_period == "w" then 'selected' else ''#--> >$T('week')</option>
+    <option value="d" <!--#if $quota_period == "d" then 'selected' else ''#--> >$T('day')</option>
+    <option value="x" <!--#if $quota_period == "x" then 'selected' else ''#--> >$T('manual')</option>
+  </select>
+    <span class="tips">$T('explain-quota_period')</span>
+<br class="clear" />
+
+
+  <span class="label">$T('opt-quota_day'):</span>
+  <input type="text" name="quota_day" value="$quota_day"/>
+  <span class="tips">$T('explain-quota_day')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-quota_resume'):</span>
+  <input class="radio" type="checkbox" name="quota_resume" value="1" <!--#if $quota_resume > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-quota_resume')</span></label>
 <br class="clear" />
 
   </fieldset>

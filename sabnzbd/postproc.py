@@ -31,7 +31,7 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, make_script_path, \
+                         get_unique_filename, make_script_path, verified_flag_file, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
@@ -45,7 +45,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 
 #------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(Ta('Failed to remove nzo from postproc queue (id)'), nzo_id)
+            logging.error(Ta('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
         self.save()
 
     def stop(self):
@@ -224,6 +224,19 @@ def process_job(nzo):
     filename = nzo.final_name
     msgid = nzo.msgid
 
+    if nzo.precheck:
+        # Check result
+        enough, ratio = nzo.check_quality()
+        if enough:
+            # Enough data present, do real download
+            workdir = nzo.downpath
+            sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=True)
+            sabnzbd.nzbqueue.NzbQueue.do.repair_job(workdir)
+            return True
+        else:
+            # Not enough data, flag as failed
+            nzo.save_attribs()
+
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
         nzo.set_pp(3)
@@ -239,7 +252,11 @@ def process_job(nzo):
 
         # if no files are present (except __admin__), fail the job
         if len(globber(workdir)) < 2:
-            emsg = T('Download failed - Out of your server\'s retention?')
+            if nzo.precheck:
+                emsg = '%.1f%%' % (ratio * 100.0)
+                emsg = T('Download would not be successful, only %s available') % emsg
+            else:
+                emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
             nzo.status = 'Failed'
             # do not run unpacking or parity verification
@@ -375,10 +392,12 @@ def process_job(nzo):
                 remove_samples(workdir_complete)
 
             ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-            if all_ok:
-                if newfiles and file_sorter.is_sortfile():
+            if all_ok and file_sorter.is_sortfile():
+                if newfiles:
                     file_sorter.rename(newfiles, workdir_complete)
                     workdir_complete = file_sorter.move(workdir_complete)
+                else:
+                    workdir_complete = file_sorter.rename_with_ext(workdir_complete)
 
             ## Run the user script
             script_path = make_script_path(script)
@@ -423,20 +442,21 @@ def process_job(nzo):
                                     T('View script output')), unique=True)
 
         ## Cleanup again, including NZB files
-        cleanup_list(workdir_complete, False)
+        if all_ok:
+            cleanup_list(workdir_complete, False)
 
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
             Bookmarks.do.del_bookmark(msgid)
-        elif all_ok:
+        elif all_ok and isinstance(nzo.url, str):
             sabnzbd.proxy_rm_bookmark(nzo.url)
 
         ## Show final status in history
         if all_ok:
-            osx.sendGrowlMsg(T('Download Completed'), filename, osx.NOTIFICATION['complete'])
+            growler.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = 'Completed'
         else:
-            osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
+            growler.send_notification(T('Download Failed'), filename, 'complete')
             nzo.status = 'Failed'
 
     except:
@@ -445,7 +465,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        osx.sendGrowlMsg(T('Download Failed'), filename, osx.NOTIFICATION['complete'])
+        growler.send_notification(T('Download Failed'), filename, 'complete')
         nzo.status = 'Failed'
         par_error = True
         all_ok = False
@@ -494,7 +514,7 @@ def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add)
     """
     filename = nzo.final_name
-    osx.sendGrowlMsg(T('Post-processing'), nzo.final_name, osx.NOTIFICATION['pp'])
+    growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
 
     ## Collect the par files
@@ -526,19 +546,27 @@ def parring(nzo, workdir):
 
         logging.info('Par2 check finished on %s', filename)
 
-    else:
+    if (par_error and not re_add) or not repair_sets:
         # See if alternative SFV check is possible
-        sfv = None
         if cfg.sfv_check():
-            for sfv in globber(workdir, '*.sfv'):
-                par_error = par_error or not sfv_check(sfv)
-            if par_error:
-                nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
-
-        if not sfv:
+            sfvs = globber(workdir, '*.sfv')
+        else:
+            sfvs = None
+        if sfvs:
+            par_error = False
+            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            for sfv in sfvs:
+                if not sfv_check(sfv):
+                    nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
+                    par_error = True
+            if not par_error:
+                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
+        elif not repair_sets:
             logging.info("No par2 sets for %s", filename)
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
 
+    if not par_error:
+        verified_flag_file(workdir, create=True)
     return par_error, re_add
 
 

@@ -30,13 +30,20 @@ import subprocess
 import socket
 import time
 import glob
+import stat
+try:
+    socket.ssl
+    _HAVE_SSL = True
+except:
+    _HAVE_SSL = False
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
+import sabnzbd.growler as growler
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -251,6 +258,23 @@ def sanitize_foldername(name):
     return name
 
 
+#------------------------------------------------------------------------------
+def verified_flag_file(path, create=False):
+    """ Create verify flag file or return True if it already exists """
+    path = os.path.join(path, JOB_ADMIN)
+    path = os.path.join(path, VERIFIED_FILE)
+    if create:
+        try:
+            f = open(path, 'w')
+            f.write('ok\n')
+            f.close()
+            return True
+        except IOError:
+            return False
+    else:
+        return os.path.exists(path)
+
+
 ################################################################################
 # DirPermissions                                                               #
 ################################################################################
@@ -301,7 +325,10 @@ def real_path(loc, path):
         if not sabnzbd.WIN32 and path.startswith('~/'):
             path = path.replace('~', sabnzbd.DIR_HOME, 1)
         if sabnzbd.WIN32:
-            if path[0] not in '/\\' and not (len(path) > 1 and path[0].isalpha() and path[1] == ':'):
+            if path[0].isalpha() and len(path) > 1 and path[1] == ':':
+                if len(path) == 2 or path[2] not in '\\/':
+                    path = path.replace(':', ':\\', 1)
+            else:
                 path = os.path.join(loc, path)
         elif path[0] != '/':
             path = os.path.join(loc, path)
@@ -594,9 +621,12 @@ def to_units(val, spaces=0, dec_limit=2):
         dig_limit==2 show single decimal for G and higher
     """
     decimals = 0
-    val = str(val).strip()
-    if val == "-1":
-        return val
+    if val < 0:
+        sign = '-'
+    else:
+        sign = ''
+    val = str(abs(val)).strip()
+
     n = 0
     try:
         val = float(val)
@@ -613,8 +643,8 @@ def to_units(val, spaces=0, dec_limit=2):
     else:
         decimals = 0
 
-    format = '%%.%sf %%s' % decimals
-    return format % (val, unit)
+    format = '%%s%%.%sf %%s' % decimals
+    return format % (sign, val, unit)
 
 #------------------------------------------------------------------------------
 def same_file(a, b):
@@ -627,8 +657,11 @@ def same_file(a, b):
             return False
     else:
         try:
-            a = os.path.normpath(os.path.abspath(a)).lower()
-            b = os.path.normpath(os.path.abspath(b)).lower()
+            a = os.path.normpath(os.path.abspath(a))
+            b = os.path.normpath(os.path.abspath(b))
+            if sabnzbd.WIN32 or sabnzbd.DARWIN:
+                a = a.lower()
+                b = b.lower()
             return a == b
         except:
             return False
@@ -658,6 +691,17 @@ def split_host(srv):
     except:
         port = None
     return (host, port)
+
+
+#------------------------------------------------------------------------------
+def hostname():
+    """ Return host's pretty name """
+    if sabnzbd.WIN32:
+        return os.environ.get('computername', 'unknown')
+    try:
+        return os.uname()[1]
+    except:
+        return 'unknown'
 
 
 #------------------------------------------------------------------------------
@@ -868,12 +912,13 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
-        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('Try again') + '</a>'
-        parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
+        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s&job=%s%s%s%s%s">' + T('Try again') + '</a>'
+        parms = (msg, cfg.api_key(), urllib.quote(url), nzo.nzo_id, pp, cat, script, nzbname)
         nzo.fail_msg = text % parms
     else:
         nzo.fail_msg = msg
 
+    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)
     NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
@@ -1166,3 +1211,22 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
             except:
                 logging.info('Cannot remove folder %s', path)
 
+
+def is_writable(path):
+    """ Return True is file is writable (also when non-existent) """
+    if os.path.isfile(path):
+        return bool(os.stat(path).st_mode & stat.S_IWUSR)
+    else:
+        return True
+
+
+def format_source_url(url):
+    """ Format URL suitable for 'Source' stage """
+    if _HAVE_SSL:
+        prot = 'https'
+    else:
+        prot = 'http:'
+    if url and str(url).isdigit():
+        return '%s://newzbin.com/browse/post/%s/' % (prot, str(url))
+    else:
+        return url

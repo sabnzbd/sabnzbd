@@ -1,4 +1,4 @@
-#if $pane=="Connections" or $pane=="Config"#
+#if $pane=="Status" or $pane=="Config"#
   #set global $path = '../'#
 #else if $pane=="Main"#
   #set global $path = ''#
@@ -83,16 +83,16 @@
         </ul>
         <ul class="menu" id="navigation_menu_left">
           <li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('Plush-downloads').capitalize()</span></a></li>
-          <li#if $pane=="Connections"# class="active"#end if#><a href="${path}connections"><span class="icon_nav_connections">$T('menu-cons').capitalize()</span></a></li>
-          <li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
-          <li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
+          <li#if $pane=="Status"# class="active"#end if#><a href="${path}status/"><span class="icon_nav_connections">$T('menu-cons').capitalize()</span></a></li>
+          <li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss/"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
+          <li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config/"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
         </ul>
       </div>
       <div id="nav_text_right">
         #if $loadavg#$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span>#end if#
       </div>
       <div id="nav_text_left">
-        <span id="warning_box"><b><a href="${path}connections/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a></b></span>
+        <span id="warning_box"><b><a href="${path}status/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a></b></span>
         #if $pane=="Main"#
           #if $new_release#&sdot; <a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
           #if $warning#&sdot; <a id="warning_message">$warning.replace(' ','&nbsp;')</a>#end if#
@@ -105,33 +105,35 @@
 
 #if $pane=="Main"#
 #else if $pane=="Nzo"#
-#else if $pane=="Connections" or $pane =="RSS"#
+#else if $pane=="Status" or $pane =="RSS"#
   <div id="config_container" class="config_margin_status lang-$active_lang">
     <div id="config_content">
 #else#
-  #if $pane=="Connections"#
+  #if $pane=="Status"#
   #else if $pane=="RSS"#
   #else#
   <div class="config_nav">
     <ul>
-      <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="${path}config/general">
+      <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="${path}config/general/">
         <div class="config_sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
-      <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="${path}config/directories">
+      <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="${path}config/folders/">
         <div class="config_sprite_container sprite_config_nav_folders">$T('cmenu-folders')</div></a></li>
-      <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="${path}config/switches">
+      <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="${path}config/switches/">
         <div class="config_sprite_container sprite_config_nav_switches">$T('cmenu-switches')</div></a></li>
-      <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="${path}config/server">
+      <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="${path}config/server/">
         <div class="config_sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
-      <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="${path}config/scheduling">
+      <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="${path}config/scheduling/">
         <div class="config_sprite_container sprite_config_nav_scheduling">$T('Plush-cmenu-scheduling')</div></a></li>
-      <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="${path}config/email">
-        <div class="config_sprite_container sprite_config_nav_email">$T('cmenu-email')</div></a></li>
-      <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="${path}config/newzbin">
+      <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="${path}config/notify/">
+        <div class="config_sprite_container sprite_config_nav_email">$T('cmenu-notif')</div></a></li>
+      <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="${path}config/indexers/">
         <div class="config_sprite_container sprite_config_nav_indexsites">$T('cmenu-newzbin')</div></a></li>
-      <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="${path}config/categories">
+      <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="${path}config/categories/">
         <div class="config_sprite_container sprite_config_nav_categories">$T('cmenu-cat')</div></a></li>
-      <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="${path}config/sorting">
+      <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="${path}config/sorting/">
         <div class="config_sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
+      <li><a class="#if $pane=="Special"#nav_active#end if#" id="config_nav_special" href="${path}config/special/">
+        <div class="config_sprite_container sprite_config_nav_special">$T('cmenu-special')</div></a></li>
     </ul>
   </div>
   #end if#

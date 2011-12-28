@@ -78,7 +78,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, latin1
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 
 from threading import Thread
 
@@ -251,6 +251,7 @@ def print_help():
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
     print "      --log-all            Log all article handling (for developers)"
+    print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
 
 def print_version():
@@ -320,7 +321,8 @@ def Web_Template(key, defweb, wdir):
             wdir = ''
     if not wdir:
         wdir = defweb
-    key.set(wdir)
+    if key:
+        key.set(wdir)
     if not wdir:
         # No default value defined, accept empty path
         return ''
@@ -330,6 +332,10 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
+        # Temporarily fix that allows missing Config
+        if defweb == DEF_STDCONFIG:
+            return ''
+        # end temp fix
         logging.warning(Ta('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
@@ -359,12 +365,14 @@ def fix_webname(name):
         xname = name.title()
     else:
         xname = ''
-    if xname in ('Default',):
+    if xname in ('Default', ):
         return 'Classic'
     elif xname in ('Classic', 'Plush', 'Mobile'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
+    elif xname in ('Config',):
+        return 'Plush'
     else:
         return name
 
@@ -492,6 +500,31 @@ def print_modules():
 
 
 #------------------------------------------------------------------------------
+def all_localhosts():
+    """ Return all unique values of localhost in order of preference """
+    ips = ['127.0.0.1']
+    try:
+        # Check whether IPv6 is available and enabled
+        info = socket.getaddrinfo('::1', None)
+        af, socktype, proto, canonname, sa = info[0]
+        s = socket.socket(af, socktype, proto)
+        s.close()
+    except socket.error:
+        return ips
+    try:
+        info = socket.getaddrinfo('localhost', None)
+    except:
+        # localhost does not resolve
+        return ips
+    ips = []
+    for item in info:
+        item = item[4][0]
+        if item not in ips:
+            ips.append(item)
+    return ips
+
+
+#------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
@@ -604,13 +637,25 @@ def get_webhost(cherryhost, cherryport, https_port):
         # if the https port was specified, assume they want HTTPS enabling also
         sabnzbd.cfg.enable_https.set(True)
 
-    if cherryport == https_port:
+    if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
         #logging.error(Ta('HTTP and HTTPS ports cannot be the same'))
         logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
+
+
+def attach_server(host, port, cert=None, key=None):
+    """ Define and attach server, optionally HTTPS
+    """
+    http_server = _cpwsgi_server.CPWSGIServer()
+    http_server.bind_addr = (host, port)
+    if cert and key:
+        http_server.ssl_certificate = cert
+        http_server.ssl_private_key = key
+    adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
+    adapter.subscribe()
 
 
 def is_sabnzbd_running(url):
@@ -773,7 +818,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -847,6 +892,7 @@ def main():
     pid_path = None
     new_instance = False
     force_sessions = False
+    osx_console = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -928,7 +974,11 @@ def main():
         elif opt in ('--new',):
             new_instance = True
         elif opt in ('--sessions',):
+            re_argv.append(opt)
             force_sessions = True
+        elif opt in ('--console',):
+            re_argv.append(opt)
+            osx_console = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -946,7 +996,7 @@ def main():
     consoleLogging = consoleLogging and not sabnzbd.DAEMON
 
     # No console logging needed for OSX app
-    noConsoleLoggingOSX = (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
+    noConsoleLoggingOSX = (not osx_console) and (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
     if noConsoleLoggingOSX:
         consoleLogging = 1
 
@@ -1224,12 +1274,14 @@ def main():
 
     web_dir  = Web_Template(sabnzbd.cfg.web_dir,  DEF_STDINTF,  fix_webname(web_dir))
     web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
+    web_dirc = Web_Template(None,  DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
     #sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
+    sabnzbd.WEB_DIRC = web_dirc
     sabnzbd.WIZARD_DIR = wizard_dir
 
     sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(),  web_dir)
@@ -1242,6 +1294,10 @@ def main():
 
     # Save the INI file
     config.save_config(force=True)
+
+    if sabnzbd.WIN32 and sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
+        import sabnzbd.sabtray
+        sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
 
     print_modules()
 
@@ -1273,18 +1329,38 @@ def main():
             logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
-        if enable_https:
-            if https_port:
-                # Prepare an extra server for the HTTP port
-                http_server = _cpwsgi_server.CPWSGIServer()
-                http_server.bind_addr = (cherryhost, cherryport)
-                #secure_server.ssl_certificate = https_cert
-                #secure_server.ssl_private_key = https_key
-                adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-                adapter.subscribe()
-                cherryport = https_port
-            cherrypy.config.update({'server.ssl_certificate' : https_cert,
-                                    'server.ssl_private_key' : https_key })
+    # Determine if this system has multiple definitions for 'localhost'
+    hosts = all_localhosts()
+    multilocal = len(hosts) > 1 and cherryhost in ('localhost', '0.0.0.0')
+
+    # For 0.0.0.0 CherryPy will always pick IPv4, so make sure the secondary localhost is IPv6
+    if multilocal and cherryhost == '0.0.0.0' and hosts[1] == '127.0.0.1':
+        hosts[1] = '::1'
+
+    # The Windows binary requires numeric localhost as primary address
+    if multilocal and cherryhost == 'localhost' and hosts[1] == '127.0.0.1':
+        cherryhost = '::1'
+
+    if enable_https:
+        if https_port:
+            # Extra HTTP port for primary localhost
+            attach_server(cherryhost, cherryport)
+            if multilocal:
+                # Extra HTTP port for secondary localhost
+                attach_server(hosts[1], cherryport)
+                # Extra HTTPS port for secondary localhost
+                attach_server(hosts[1], https_port, https_cert, https_key)
+            cherryport = https_port
+        elif multilocal:
+            # Extra HTTPS port for secondary localhost
+            attach_server(hosts[1], cherryport, https_cert, https_key)
+
+        cherrypy.config.update({'server.ssl_certificate' : https_cert,
+                                'server.ssl_private_key' : https_key })
+    elif multilocal:
+        # Extra HTTP port for secondary localhost
+        attach_server(hosts[1], cherryport)
+
 
     if no_login:
         sabnzbd.cfg.username.set('')
@@ -1313,11 +1389,14 @@ def main():
                             'tools.sessions.timeout' : 60,
                             'request.show_tracebacks': True,
                             'checker.check_localhost' : bool(consoleLogging),
-                            'error_page.401': sabnzbd.panic.error_page_401
+                            'error_page.401': sabnzbd.panic.error_page_401,
+                            'error_page.404': sabnzbd.panic.error_page_404
                             })
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
+    if web_dirc:
+        staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
 
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
@@ -1332,6 +1411,9 @@ def main():
                  '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static
                  }
+    if web_dirc:
+        appconfig['/sabnzbd/staticcfg'] = staticcfg
+        appconfig['/staticcfg'] = staticcfg
 
     if web_dir2:
         static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
@@ -1342,8 +1424,11 @@ def main():
         appconfig['/m/static'] = static2
         appconfig['/sabnzbd/m/wizard/static'] = wizard_static
         appconfig['/m/wizard/static'] = wizard_static
+        if web_dirc:
+            appconfig['/sabnzbd/m/staticcfg'] = staticcfg
+            appconfig['/m/staticcfg'] = staticcfg
 
-    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', first=2)
+    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', web_dirc, first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     # Set authentication for CherryPy
@@ -1378,9 +1463,9 @@ def main():
 
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
-        cherrypy.wsgiserver.REDIRECT_URL = browser_url
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
+    cherrypy.wsgiserver.REDIRECT_URL = browser_url
 
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
@@ -1388,11 +1473,11 @@ def main():
         if sabnzbd.FOUNDATION:
             import sabnzbd.osxmenu
             sabnzbd.osxmenu.notify("SAB_Launched", None)
-        osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
+        growler.send_notification('SABnzbd %s' % (sabnzbd.__version__),
+                             "http://%s:%s/sabnzbd" % (browserhost, cherryport), 'startup')
         # Now's the time to check for a new version
         check_latest_version()
     autorestarted = False
-
 
     mail = None
     if sabnzbd.WIN32:
@@ -1516,6 +1601,9 @@ def main():
 
     config.save_config()
 
+    if sabnzbd.WINTRAY:
+        sabnzbd.WINTRAY.terminate = True
+
     if sabnzbd.WIN_SERVICE and mail:
         mail.send('stop')
     if sabnzbd.WIN32:
@@ -1528,8 +1616,7 @@ def main():
     if getattr(sys, 'frozen', None) == 'macosx_app':
         AppHelper.stopEventLoop()
     else:
-        if sabnzbd.DARWIN:
-            osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['startup'])
+        growler.send_notification('SABnzbd',T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
 
 
@@ -1652,7 +1739,14 @@ def HandleCommandLine(allow_service=True):
 #
 if __name__ == '__main__':
 
-    sabnzbd.CMDLINE = ', '.join(['"%s"' % latin1(p) for p in sys.argv])
+    args = []
+    for txt in sys.argv:
+        if ' ' in txt:
+            txt = '"%s"' % latin1(txt)
+        else:
+            txt = latin1(txt)
+        args.append(txt)
+    sabnzbd.CMDLINE = ' '.join(args)
 
     if sabnzbd.WIN32:
         if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):

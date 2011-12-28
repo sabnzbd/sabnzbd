@@ -103,6 +103,7 @@ $T('onQueueFinish'):
         <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
         <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
         <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
+        <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=-4" <!--#if $slot.priority == "Stop" then "selected" else ""#-->>$T('pr-stop')</option>
       </select></form>
       <!--#end if#-->
       </td>

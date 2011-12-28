@@ -99,6 +99,7 @@ ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
 par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
+pre_check = OptionBool('misc', 'pre_check', False)
 
 newzbin_username = OptionStr('newzbin', 'username')
 newzbin_password = OptionPassword('newzbin', 'password')
@@ -132,6 +133,7 @@ enable_tv_sorting = OptionBool('misc', 'enable_tv_sorting', False)
 tv_sort_string = OptionStr('misc', 'tv_sort_string')
 tv_sort_countries = OptionNumber('misc', 'tv_sort_countries', 1)
 tv_categories = OptionList('misc', 'tv_categories', '')
+movie_rename_limit = OptionStr('misc', 'movie_rename_limit', '100M')
 
 enable_movie_sorting = OptionBool('misc', 'enable_movie_sorting', False)
 movie_sort_string = OptionStr('misc', 'movie_sort_string')
@@ -159,10 +161,11 @@ nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 cache_dir = OptionDir('misc', 'cache_dir', 'cache', create=False, validation=validate_safedir)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
-dirscan_dir = OptionDir('misc', 'dirscan_dir', create=True)
+dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
-SIZE_LIMIT = OptionStr('misc', 'size_limit')
+size_limit = OptionStr('misc', 'size_limit', '0')
 password_file = OptionDir('misc', 'password_file', '', create=False)
+fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:
@@ -211,6 +214,23 @@ api_key = OptionStr('misc', 'api_key', create_api_key())
 nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False)
 api_warnings = OptionBool('misc', 'api_warnings', True)
+max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
+max_opt_only = OptionBool('misc', 'max_opt_only', True)
+
+growl_server = OptionStr('growl', 'growl_server')
+growl_password = OptionPassword('growl', 'growl_password')
+growl_enable = OptionBool('growl', 'growl_enable', True)
+ntfosd_enable = OptionBool('growl', 'ntfosd_enable', True)
+
+quota_size = OptionStr('misc', 'quota_size')
+quota_day = OptionStr('misc', 'quota_day')
+quota_resume = OptionBool('misc', 'quota_resume', False)
+quota_period = OptionStr('misc', 'quota_period', 'm')
+
+osx_menu = OptionBool('misc', 'osx_menu', True)
+osx_speed = OptionBool('misc', 'osx_speed', True)
+win_menu = OptionBool('misc', 'win_menu', True)
+uniconfig = OptionBool('misc', 'uniconfig', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="Configure+Switches+V3"#-->
+<!--#set global $help_uri="Configure+Switches-0-7"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <form action="saveSwitches" method="post" name="fullform" id="fullform">
@@ -35,7 +35,7 @@
         </label>
       </div>
       <!--#end if#-->
-    </fieldset>
+      </fieldset>
   </div><!-- /component-group1 -->
 
   <div id="core-component-group2" class="component-group clearfix">
@@ -43,6 +43,23 @@
       <h3>$T('swtag-server')</h3>
     </div>
     <fieldset class="component-group-list">
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="max_art_tries">
+          <span class="component-title">$T('opt-max_art_tries')</span>
+          <input type="text" size="10" name="max_art_tries" id="max_art_tries" value="$max_art_tries" />
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-max_art_tries')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <input type="checkbox" name="max_opt_only" id="max_opt_only" value="1" <!--#if $max_opt_only > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="max_opt_only">
+          <span class="component-title">$T('opt-max_opt_only')</span>
+          <span class="component-desc">$T('explain-max_opt_only')</span>
+        </label>
+      </div>
       <div class="field-pair">
         <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="auto_disconnect">
@@ -79,6 +96,13 @@
       <h3>$T('swtag-queue')</h3>
     </div>
     <fieldset class="component-group-list">
+      <div class="field-pair alt">
+        <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if $pre_check > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="pre_check">
+          <span class="component-title">$T('opt-pre_check')</span>
+          <span class="component-desc">$T('explain-pre_check')</span>
+        </label>
+      </div>
       <div class="field-pair">
         <label class="nocheck clearfix" for="no_dupes">
           <span class="component-title">$T('opt-no_dupes')</span>
@@ -308,6 +332,56 @@
         <label class="clearfix" for="replace_illegal">
           <span class="component-title">$T('opt-replace_illegal')</span>
           <span class="component-desc">$T('explain-replace_illegal')</span>
+        </label>
+      </div>
+    </fieldset>
+
+  </div><!-- /component-group6 -->
+  <div id="core-component-group6" class="component-group clearfix">
+    <div class="component-group-desc">
+      <h3>$T('swtag-quota')</h3>
+    </div>
+    <fieldset class="component-group-list">
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="quota_size">
+          <span class="component-title">$T('opt-quota_size')</span>
+          <input type="text" name="quota_size" id="quota_size" value="$quota_size"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-quota_size')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+      <label class="nocheck clearfix" for="quota_period">
+        <span class="component-title">$T('opt-quota_period')</span>
+        <select name="quota_period" id="quota_period">
+          <option value="m" <!--#if $quota_period == "m" then 'selected' else ''#--> >$T('month')</option>
+          <option value="w"  <!--#if $quota_period == "w"  then 'selected' else ''#--> >$T('week')</option>
+          <option value="d"  <!--#if $quota_period == "d"  then 'selected' else ''#--> >$T('day')</option>
+          <option value="x"  <!--#if $quota_period == "x"  then 'selected' else ''#--> >$T('manual')</option>
+        </select>
+      </label>
+      <label class="nocheck clearfix">
+        <span class="component-title">&nbsp;</span>
+        <span class="component-desc">$T('explain-quota_period')</span>
+      </label>
+      </div>
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="quota_day">
+          <span class="component-title">$T('opt-quota_day')</span>
+          <input type="text" name="quota_day" id="quota_day" value="$quota_day"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-quota_day')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <input type="checkbox" name="quota_resume" id="quota_resume" value="1" <!--#if $quota_resume > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="quota_resume">
+          <span class="component-title">$T('opt-quota_resume')</span>
+          <span class="component-desc">$T('explain-quota_resume')</span>
         </label>
       </div>
     </fieldset>

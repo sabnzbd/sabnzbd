@@ -28,9 +28,10 @@ from time import time
 import binascii
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, reliable_unpack_names, unicoder, latin1
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
+     reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.misc import format_time_string, find_on_path, make_script_path
+from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 
@@ -50,7 +51,7 @@ else:
             return repr(self.parameter)
 
 # Regex globals
-RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|s\d\d|r\d\d|\d\d\d)$', re.I)
+RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d)$', re.I)
 RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
 
 LOADING_RE = re.compile(r'^Loading "(.+)"')
@@ -125,6 +126,8 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     command = [str(extern_proc), str(complete_dir), str(filename), \
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
+    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
+        command.insert(0, 'python')
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
 
@@ -474,10 +477,17 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords.insert(0, '')
 
     for password in passwords:
-        if password: logging.debug('Trying unrar with password "%s"', password)
+        if password:
+            logging.debug('Trying unrar with password "%s"', password)
+            msg = T('Trying unrar with password "%s"') % unicoder(password)
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg)
         fail, new_files, rars = rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password)
         if fail != 2:
             break
+
+    if fail == 2:
+        logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(os.path.split(rarfile)[1]))
     return fail, new_files, rars
 
 
@@ -588,12 +598,19 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
-        elif line.startswith('Encrypted file:  CRC failed'):
-            filename = TRANS(line[31:-23].strip())
+        elif 'ncrypted file' in line and 'CRC failed' in line:
+            # unrar 4.x syntax
+            m = re.search('encrypted file (.+)\. Corrupt file', line)
+            if not m:
+                # unrar 3.x syntax
+                m = re.search('Encrypted file:  CRC failed in (.+) \(password', line)
+            if m:
+                filename = TRANS(m.group(1)).strip()
+            else:
+                filename = '???'
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
             msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(filename))
             fail = 2
 
         else:
@@ -851,6 +868,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     return readd, result
 
 
+_RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
     if cfg.never_repair():
@@ -881,6 +899,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             command.append(joinable)
 
     stup, need_shell, command, creationflags = build_command(command)
+    logging.debug('Starting par2: %s', command)
 
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1067,6 +1086,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     if line.find(os.path.split(jn)[1]) > 0:
                         used_joinables.append(jn)
                         break
+                # Special case of joined RAR files, the "of" and "from" must both be RAR files
+                # This prevents the joined rars files from being seen as an extra rar-set
+                m = _RE_BLOCK_FOUND.search(line)
+                if m and '.rar' in m.group(1).lower() and '.rar' in m.group(2).lower():
+                    used_joinables.append(os.path.join(workdir, m.group(1)))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
@@ -1330,7 +1354,7 @@ def sfv_check(sfv_path):
             x = line.rfind(' ')
             filename = line[:x].strip()
             checksum = line[x:].strip()
-            path = os.path.join(root, filename)
+            path = os.path.join(root, platform_encode(filename))
             if os.path.exists(path):
                 if crc_check(path, checksum):
                     logging.debug('File %s passed SFV check', path)
@@ -1364,7 +1388,7 @@ def crc_check(path, target_crc):
 
 def analyse_show(name):
     """ Do a quick SeasonSort check and return basic facts """
-    job = SeriesSorter(name, None, None, force=True)
+    job = SeriesSorter(name, None, None)
     if job.is_match():
         job.get_values()
     info = job.show_info
@@ -1411,10 +1435,10 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                 if n < len(values) and line:
                     values[n] = TRANS(line)
                 n += 1
-        if values[0]:
-            logging.info('Pre-Q accepts %s', name)
-        else:
+        if int_conv(values[0]) < 1:
             logging.info('Pre-Q refuses %s', name)
+        else:
+            logging.info('Pre-Q accepts %s', name)
 
     return values
 

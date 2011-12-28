@@ -1,11 +1,14 @@
 <!--#set global $have_refresh=5#-->
 <!--#set global $topmenu="connections"#-->
 <!--#set global $statpath=".."#-->
-<!--#set global $helpsubject="GUI+Connections"#-->
+<!--#set global $helpsubject="GUI+Status-0-7"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
 <!--#set $msg=$T('askTestEmail')#-->
+<!--#if $have_quota#-->
+  <a href="./reset_quota?session=$session">$T('link-resetQuota')</a> |
+<!--#end if#-->
 <a href="./disconnect?session=$session">$T('link-forceDisc')</a> |
 <a href="./showlog?session=$session">$T('link-showLog')</a>
 $T('logging'):

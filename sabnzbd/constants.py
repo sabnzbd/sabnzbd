@@ -62,6 +62,7 @@ SCAN_FILE_NAME    = 'watched_data.sab'
 TERM_FLAG_FILE    = 'running.sab'
 FUTURE_Q_FOLDER   = 'future'
 JOB_ADMIN = '__ADMIN__'
+VERIFIED_FILE = '__verified__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
 
@@ -81,6 +82,7 @@ DEF_LANGUAGE     = 'locale'
 DEF_INTERFACES   = 'interfaces'
 DEF_INT_LANGUAGE = 'locale'
 DEF_EMAIL_TMPL   = 'email'
+DEF_STDCONFIG    = 'Config'
 DEF_STDINTF      = 'Plush'
 DEF_SKIN_COLORS  = {'smpl':'white', 'classic':'darkblue', 'mobile':'light', 'plush' : 'gold'}
 DEF_MAIN_TMPL    = 'templates/main.tmpl'
@@ -112,6 +114,7 @@ LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
+STOP_PRIORITY = -4
 
 #(MATCHER, [EXTRA,MATCHERS])
 series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01

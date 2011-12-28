@@ -28,6 +28,7 @@ SKIN_TEXT = {
     'stage-filejoin'     : TT('Join files'), #: PP phase "filejoin"
     'stage-unpack'       : TT('Unpack'), #: PP phase "unpack"
     'stage-script'       : TT('Script'), #: PP phase "script"
+    'stage-source'       : TT('Source'), #; Source of the NZB (path or URL)
 
     'post-Completed'     : TT('Completed'), #: PP status
     'post-Failed'        : TT('Failed'), #: PP status
@@ -75,6 +76,7 @@ SKIN_TEXT = {
     'seconds' : TT('seconds'), #: Multiple seconds
     'day' : TT('day'),
     'days' : TT('days'),
+    'week' : TT('week'),
     'month' : TT('Month'),
     'year' : TT('Year'),
     'daily' : TT('Daily'),
@@ -90,6 +92,8 @@ SKIN_TEXT = {
     'thisMonth' : TT('This month'),
     'today' : TT('Today'),
     'total' : TT('Total'),
+    'on' : TT('on'),
+    'off' : TT('off'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -116,11 +120,12 @@ SKIN_TEXT = {
     'cmenu-servers' : TT('Servers'), #: Main menu item
     'cmenu-scheduling' : TT('Scheduling'), #: Main menu item
     'cmenu-rss' : TT('RSS'), #: Main menu item
-    'cmenu-emailN' : TT('Notifications'), #: Main menu item
+    'cmenu-notif' : TT('Notifications'), #: Main menu item
     'cmenu-email' : TT('Email'), #: Main menu item
     'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
+    'cmenu-special' : TT('Special'), #: Main menu item
 
 # Footer
     'ft-download' : TT('Download Dir'), # Used in Footer
@@ -161,6 +166,7 @@ SKIN_TEXT = {
     'pr-high' : TT('High'),
     'pr-low' : TT('Low'),
     'pr-paused' : TT('Paused'),
+    'pr-stop' : TT('Stop'),
     'enterURL' : TT('Enter URL'),
     'enterID' : TT('&nbsp;or Report ID'),
 
@@ -197,7 +203,9 @@ SKIN_TEXT = {
     'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
     'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
     'missingArt': TT('Missing articles'), #: Caption for missing articles in Queue
-    'quotum-left' : TT('Quotum left'), #: Remaining quotum (displayed in Queue)
+    'quota-left' : TT('Quota left'), #: Remaining quota (displayed in Queue)
+    'manual' : TT('manual'), #: Manual reset of quota
+    'link-resetQuota' : TT('Reset Quota now'),
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button
@@ -423,17 +431,21 @@ SKIN_TEXT = {
     'swtag-queue' : TT('Queue'),
     'swtag-pp' : TT('Post processing'),
     'swtag-naming' : TT('Naming'),
-    'swtag-quotum' : TT('Quotum'),
-    'opt-quotum_size' : TT('Size'), #: Size of the download quotum
-    'explain-quotum_size' : TT('How much can be downloaded this month (K/M/G)'),
-    'opt-quotum_day' : TT('Reset day'), #: Reset day of the download quotum
-    'explain-quotum_day' : TT('On which day of the month or week (1=Monday) does your ISP reset the quotum? (Optionally with hh:mm)'),
-    'opt-quotum_resume' : TT('Auto resume'), #: Auto-resume download on the reset day
-    'explain-quotum_resume' : TT('Should downloading resume after the quotum is reset?'),
-    'opt-quotum_period' : TT('Quotum period'), #: Does the quotum get reset every day, week or month?
-    'explain-quotum_period' : TT('Does the quotum get reset each day, week or month?'),
+    'swtag-quota' : TT('Quota'),
+    'opt-quota_size' : TT('Size'), #: Size of the download quota
+    'explain-quota_size' : TT('How much can be downloaded this month (K/M/G)'),
+    'opt-quota_day' : TT('Reset day'), #: Reset day of the download quota
+    'explain-quota_day' : TT('On which day of the month or week (1=Monday) does your ISP reset the quota? (Optionally with hh:mm)'),
+    'opt-quota_resume' : TT('Auto resume'), #: Auto-resume download on the reset day
+    'explain-quota_resume' : TT('Should downloading resume after the quota is reset?'),
+    'opt-quota_period' : TT('Quota period'), #: Does the quota get reset every day, week or month?
+    'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
+    'opt-max_art_tries' : TT('Maximum retries'),
+    'explain-max_art_tries' : TT('Maximum number of retries per server'),
+    'opt-max_opt_only' : TT('Only for optional servers'),
+    'explain-max_opt_only' : TT('Apply maximum retries only to optional servers'),
 
 
 # Config->Server
@@ -499,8 +511,7 @@ SKIN_TEXT = {
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
     'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
-# Config->Email
-    'configEmail' : TT('Email Notifications'), #: Main Config page
+    'configEmail' : TT('Notifications'), #: Main Config page
     'emailOptions' : TT('Email Options'), #: Section header
     'opt-email_endjob' : TT('Email Notification On Job Completion'),
     'email-never' : TT('Never'), #: When to send email
@@ -623,6 +634,13 @@ SKIN_TEXT = {
     'button-ShowNameF' : TT('Show Name folder'),
     'button-YMF' : TT('Year-Month Folders'),
     'button-DailyF' : TT('Daily Folders'),
+
+# Config->Special
+    'explain-special' : TT('Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>'
+                           'Don\'t change these without checking the Wiki first, as some have serious side-effects.<br>'
+                           'The default values are between parentheses.'),
+    'sptag-boolean' : TT('Switches'),
+    'sptag-entries' : TT('Values'),
 
 # NZO
     'nzoDetails' : TT('Edit NZB Details'), #: Job details page

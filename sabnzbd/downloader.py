@@ -25,12 +25,13 @@ import logging
 from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
+import random
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
-from sabnzbd.utils import osx
+import sabnzbd.growler as growler
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -79,6 +80,18 @@ class Server(object):
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
+
+    @property
+    def hostip(self):
+        """ Return a random entry from the possible IPs
+        """
+        if self.info and len(self.info) > 1:
+            rnd = random.randint(0, len(self.info)-1)
+            ip = self.info[rnd][4][0]
+            logging.debug('For server %s, using IP %s' % (self.host, ip))
+        else:
+            ip = self.host
+        return ip
 
     def stop(self, readers, writers):
         for nw in self.idle_threads:
@@ -201,7 +214,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
+            growler.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
@@ -270,12 +283,22 @@ class Downloader(Thread):
             server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
             logging.warning(Ta('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
+
+            # Remove all connections to server
+            for nw in server.idle_threads + server.busy_threads:
+                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, quit=False)
+            # Make sure server address resolution is refreshed
+            server.info = None
+
             NzbQueue.do.reset_all_try_lists()
 
 
     def run(self):
         from sabnzbd.nzbqueue import NzbQueue
         self.decoder.start()
+
+        # Kick BPS-Meter to check quota
+        BPSMeter.do.update()
 
         while 1:
             for server in self.servers:
@@ -539,6 +562,11 @@ class Downloader(Thread):
                                          nw.server.port)
                             self.__request_article(nw)
 
+                    elif code == '223':
+                        done = True
+                        logging.debug('Article <%s> is present', article.article)
+                        self.decoder.decode(article, nw.lines)
+
                     elif code == '211':
                         done = False
 
@@ -568,6 +596,7 @@ class Downloader(Thread):
                         self.__reset_nw(nw, msg, quit=True)
 
                 if done:
+                    server.bad_cons = 0 # Succesful data, clear "bad" counter
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s:%s: %s done', nw.thrdnum, server.host,
                                        server.port, article.article)
@@ -619,15 +648,19 @@ class Downloader(Thread):
         if fileno and fileno in self.read_fds:
             self.read_fds.pop(fileno)
 
-        # Remove this server from try_list
         if article:
-            article.fetcher = None
+            if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_opt_only()):
+                # Too many tries on this server, consider article missing
+                self.decoder.decode(article, None)
+            else:
+                # Remove this server from try_list
+                article.fetcher = None
 
-            nzf = article.nzf
-            nzo = nzf.nzo
+                nzf = article.nzf
+                nzo = nzf.nzo
 
-            ## Allow all servers to iterate over each nzo/nzf again ##
-            NzbQueue.do.reset_try_lists(nzf, nzo)
+                ## Allow all servers to iterate over each nzo/nzf again ##
+                NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
             nw.terminate(quit=quit)
@@ -636,8 +669,9 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            if cfg.send_group() and nw.article.nzf.nzo.group != nw.group:
-                group = nw.article.nzf.nzo.group
+            nzo = nw.article.nzf.nzo
+            if cfg.send_group() and nzo.group != nw.group:
+                group = nzo.group
                 if sabnzbd.LOG_ALL:
                     logging.debug('Thread %s@%s:%s: GROUP <%s>', nw.thrdnum, nw.server.host,
                                    nw.server.port, group)
@@ -646,7 +680,7 @@ class Downloader(Thread):
                 if sabnzbd.LOG_ALL:
                     logging.debug('Thread %s@%s:%s: BODY %s', nw.thrdnum, nw.server.host,
                                   nw.server.port, nw.article.article)
-                nw.body()
+                nw.body(nzo.precheck)
 
             fileno = nw.nntp.sock.fileno()
             if fileno not in self.read_fds:
@@ -738,7 +772,7 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        osx.sendGrowlMsg("SABnzbd",T('Shutting down'),osx.NOTIFICATION['startup'])
+        growler.send_notification("SABnzbd",T('Shutting down'), 'startup')
 
 
 def stop():

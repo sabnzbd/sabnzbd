@@ -1,4 +1,4 @@
-<a href="${helpuri}configure-categories" id="help" target="_blank">$T('menu-help')</a>
+<a href="${helpuri}configure-categories-0-7" id="help" target="_blank">$T('menu-help')</a>
 <h3>$T('configCat')</h3>
 <br/>
 $T('explain-configCat')<br/>
@@ -61,7 +61,8 @@ $T('explain-relFolder') $defdir<br/>
         <option value="2"    <!--#if $slot.priority == 2     then "selected" else ""#-->>$T('pr-force')</option>
         <option value="1"    <!--#if $slot.priority == 1     then "selected" else ""#-->>$T('pr-high')</option>
         <option value="0"    <!--#if $slot.priority == 0     then "selected" else ""#-->>$T('pr-normal')</option>
-        <option value="-1"   <!--#if $slot.priority == -1    then "selected" else ""#-->>$T('pr-low')</option>>
+        <option value="-1"   <!--#if $slot.priority == -1    then "selected" else ""#-->>$T('pr-low')</option>
+        <option value="-2"   <!--#if $slot.priority == -2    then "selected" else ""#-->>$T('pr-paused')</option>
       </optgroup>
     </select>
   </td>

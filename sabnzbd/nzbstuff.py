@@ -38,7 +38,7 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, \
+                         get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
@@ -79,6 +79,7 @@ class Article(TryList):
         self.art_id = None
         self.bytes = bytes
         self.partnum = partnum
+        self.tries = 0 # Try count
         self.nzf = nzf
 
     def get_article(self, server):
@@ -88,6 +89,8 @@ class Article(TryList):
 
         if not self.fetcher and not self.server_in_try_list(server):
             self.fetcher = server
+            self.tries += 1
+            if sabnzbd.LOG_ALL: logging.debug('Article-try = %s', self.tries)
             return self
         return None
 
@@ -115,6 +118,7 @@ class Article(TryList):
         TryList.__init__(self)
         self.fetcher = None
         self.allow_fill_server = False
+        self.tries = 0
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, partnum=%s, art_id=%s>" % \
@@ -215,10 +219,12 @@ class NzbFile(TryList):
             self.initial_article = self.decodetable[self.lowest_partnum]
             self.import_finished = True
 
-    def remove_article(self, article):
+    def remove_article(self, article, found):
         """ Handle completed article, possibly end of file """
-        self.articles.remove(article)
-        self.bytes_left -= article.bytes
+        if article in self.articles:
+            self.articles.remove(article)
+            if found:
+                self.bytes_left -= article.bytes
 
         reset = False
         if article.partnum == self.lowest_partnum and self.articles:
@@ -320,6 +326,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzf_list = []
         self.groups = []
         self.filter = remove_samples
+        self.now = time.time()
 
     def startDocument(self):
         pass
@@ -356,8 +363,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 try:
                     self.file_date = int(attrs.get('date'))
                 except:
-                    # NZB has non-standard timestamp, assume 1
-                    self.file_date = 1
+                    # NZB has non-standard timestamp, assume now
+                    self.file_date = self.now
                 self.article_db = {}
                 self.file_bytes = 0
 
@@ -410,7 +417,11 @@ class NzbParser(xml.sax.handler.ContentHandler):
             if not self.article_db:
                 logging.warning(Ta('File %s is empty, skipping'), self.filename)
                 return
-            tm = datetime.datetime.fromtimestamp(self.file_date)
+            try:
+                tm = datetime.datetime.fromtimestamp(self.file_date)
+            except:
+                tm = datetime.datetime.fromtimestamp(self.now)
+                self.file_date = self.now
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
             if nzf.valid and nzf.nzf_id:
                 logging.info('File %s added to queue', self.filename)
@@ -489,7 +500,8 @@ NzbObjectMapper = (
     ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
     ('duplicate',                    'duplicate'),     # Was detected as a duplicate
     ('oversized',                    'oversized'),     # Was detected as oversized
-    ('create_group_folder',          'create_group_folder')
+    ('create_group_folder',          'create_group_folder'),
+    ('precheck',                     'precheck')
 )
 
 class NzbObject(TryList):
@@ -537,7 +549,7 @@ class NzbObject(TryList):
         if futuretype:
             self.url = str(url)     # Either newzbin-id or URL queued (future-type only)
         else:
-            self.url = ''
+            self.url = filename
         self.groups = []
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
@@ -574,6 +586,11 @@ class NzbObject(TryList):
         self.parsed = False
         self.duplicate = False
         self.oversized = False
+        self.precheck = False
+        if self.status == 'Queued' and not reuse:
+            self.precheck = cfg.pre_check()
+            if self.precheck:
+                self.status = 'Checking'
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -681,7 +698,7 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, self.priority, name = get_attrib_file(self.workpath, 5)
+            cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -718,8 +735,8 @@ class NzbObject(TryList):
 
 
         # Pause job when above size limit
-        limit = cfg.SIZE_LIMIT.get_int()
-        if not reuse and limit and self.bytes > limit:
+        limit = cfg.size_limit.get_int()
+        if not reuse and abs(limit) > 0.5 and self.bytes > limit:
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
             self.oversized = True
@@ -784,19 +801,38 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
+    def postpone_pars(self, nzf, head):
+        """ Move all vol-par files matching 'head' to the extrapars table """
+        self.partable[head] = nzf
+        self.extrapars[head] = []
+        nzf.extrapars = self.extrapars[head]
+        for xnzf in self.files[:]:
+            name = xnzf.filename
+            # Move only when not current NZF and filename was extractable from subject
+            if name and nzf is not xnzf:
+                name = name.lower()
+                if head.lower() in name and '.vol' in name and name.endswith('.par2'):
+                    self.extrapars[head].append(xnzf)
+                    self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):
         ## Special treatment for first part of par2 file
         fn = nzf.filename
-        if (not nzf.is_par2) and fn and fn.strip().lower().endswith('.par2'):
-            if fn:
+        if fn:
+            fn = fn.strip().lower()
+            if (not nzf.is_par2) and fn and fn.endswith('.par2'):
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
+                if par2match:
+                    head = par2match.group(1)
+                    vol = par2match.group(2)
+                    block = par2match.group(3)
+                elif fn.endswith('.par2'):
+                    head = os.path.splitext(fn)[0]
+                    vol = block = 0
+                    par2match = True
                 ## Is a par2file and repair mode activated
                 if par2match and (self.repair or cfg.allow_streaming()):
-                    head = par2match.group(1)
-                    nzf.set_par2(par2match.group(1),
-                                par2match.group(2),
-                                par2match.group(3))
+                    nzf.set_par2(head, vol, block)
                     ## Already got a parfile for this set?
                     if head in self.partable:
                         nzf.extrapars = self.extrapars[head]
@@ -815,26 +851,24 @@ class NzbObject(TryList):
                         else:
                             if not file_done:
                                 nzf.reset_try_list()
-                                self.files.remove(nzf)
+                                if nzf in self.files: self.files.remove(nzf)
                                 self.extrapars[head].append(nzf)
                     ## No par2file in this set yet, set this as
                     ## initialparfile
                     else:
-                        self.partable[head] = nzf
-                        self.extrapars[head] = []
-                        nzf.extrapars = self.extrapars[head]
+                        self.postpone_pars(nzf, head)
                 ## Is not a par2file or nothing todo
                 else:
                     pass
-            ## No filename in seg 1? Probably not uu or yenc encoded
-            ## Set subject as filename
-            else:
-                nzf.filename = nzf.subject
+        ## No filename in seg 1? Probably not uu or yenc encoded
+        ## Set subject as filename
+        else:
+            nzf.filename = nzf.subject
 
 
-    def remove_article(self, article):
+    def remove_article(self, article, found):
         nzf = article.nzf
-        file_done, reset = nzf.remove_article(article)
+        file_done, reset = nzf.remove_article(article, found)
 
         if file_done:
             self.remove_nzf(nzf)
@@ -954,6 +988,29 @@ class NzbObject(TryList):
     def remove_parset(self, setname):
         self.partable.pop(setname)
 
+    __re_quick_par2_check = re.compile('\.par2\W*', re.I)
+    def check_quality(self):
+        """ Determine amount of articles present on servers
+            and return (gross available, nett) bytes
+        """
+        need = 0L
+        pars = 0L
+        short = 0L
+        for nzf_id in self.files_table:
+            nzf = self.files_table[nzf_id]
+            assert isinstance(nzf, NzbFile)
+            short += nzf.bytes_left
+            if self.__re_quick_par2_check.search(nzf.subject):
+                pars += nzf.bytes
+            else:
+                need += nzf.bytes
+        have = need + pars - short
+        enough = have >= need
+        ratio = float(have) / float(max(1, need))
+        logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
+        return enough, ratio
+
+
     def set_download_report(self):
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
             #get the deltatime since the download started
@@ -981,6 +1038,8 @@ class NzbObject(TryList):
                 msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
             msg = ''.join((msg1, msg2, msg3, msg4,))
             self.set_unpack_info('Download', msg, unique=True)
+            if self.url:
+                self.set_unpack_info('Source', format_source_url(self.url))
 
     def inc_log(self, log, txt):
         """ Append string txt to nzo_info element "log"
@@ -1230,11 +1289,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        if self.priority == TOP_PRIORITY:
-            prio = HIGH_PRIORITY
-        else:
-            prio = self.priority
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, prio, self.final_name_pw))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw, self.url))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1296,7 +1351,7 @@ def nzf_cmp_date(nzf1, nzf2):
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
-RE_RAR = re.compile(r'(\.rar|\.r\d\d)', re.I)
+RE_RAR = re.compile(r'(\.rar|\.r\d\d)|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d', re.I)
 
 def nzf_cmp_name(nzf1, nzf2, name=True):
     # The comparison will sort .par2 files to the top of the queue followed by .rar files,
@@ -1304,13 +1359,21 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     name1 = nzf_get_filename(nzf1)
     name2 = nzf_get_filename(nzf2)
 
-    # vol-pars go in front
+    # Determine vol-pars
     is_par1 = '.vol' in name1 and '.par2' in name1
     is_par2 = '.vol' in name2 and '.par2' in name2
-    if is_par1 and not is_par2:
+
+    # mini-par2 in front
+    if not is_par1 and name1.endswith('.par2'):
         return -1
-    if is_par2 and not is_par1:
+    if not is_par2 and name2.endswith('.par2'):
         return 1
+
+    # vol-pars go to the back
+    if is_par1 and not is_par2:
+        return 1
+    if is_par2 and not is_par1:
+        return -1
 
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)
@@ -1434,3 +1497,4 @@ def set_attrib_file(path, attribs):
     for item in attribs:
         f.write('%s\n' % item)
     f.close()
+

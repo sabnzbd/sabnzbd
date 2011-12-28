@@ -1,4 +1,4 @@
-                                SABnzbd 0.6.9
+                                SABnzbd 0.7.x
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -39,9 +39,14 @@ Start the SABnzbd.exe program.
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
 
+-------------------------------------------------------------------------------
+3) INSTALL pre-built OSX binaries
+-------------------------------------------------------------------------------
+Download teh DMG file, mount and drag the SABnzbd icon to Programs.
+Just like you do with so many apps.
 
 -------------------------------------------------------------------------------
-3) INSTALL with only sources
+4) INSTALL with only sources
 -------------------------------------------------------------------------------
 
 You need to have Python installed and some modules.
@@ -60,7 +65,7 @@ Windows
     Python-2.7.latest
 
 Essential modules
-    cheetah-2.0.1+          http://www.cheetahtemplate.org/
+    cheetah-2.0.1+          http://www.cheetahtemplate.org/ (or use "pypm install cheetah")
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
@@ -70,6 +75,7 @@ Optional modules
     unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
     gnu gettext             http://www.gnu.org/software/gettext/
+    gntp                    https://github.com/kfdm/gntp/ (or use "pypm install gntp")
 
 Optional modules Windows
     pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
@@ -79,6 +85,8 @@ Optional modules Unix/Linux/OSX
     pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
     openssl => v0.9.8g+     http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
+    pynotify                Should be part of GTK for Python support on Debian/Ubuntu
+                            If not, you cannot use the NotifyOSD feature.
 
 Embedded modules (only use the included version)
     CherryPy-3.2 rev2138 with patches  http://www.cherrypy.org
@@ -96,7 +104,7 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 
 
 -------------------------------------------------------------------------------
-4) TROUBLESHOOTING
+5) TROUBLESHOOTING
 -------------------------------------------------------------------------------
 
 Your browser may start up with just an error page.
@@ -114,7 +122,7 @@ This will show a black window where logging information will be shown. This
 may help you solve problems easier.
 
 -------------------------------------------------------------------------------
-5) MORE INFORMATION
+6) MORE INFORMATION
 -------------------------------------------------------------------------------
 
 Visit the WIKI site:
@@ -122,7 +130,7 @@ Visit the WIKI site:
 
 
 -------------------------------------------------------------------------------
-6) CREDITS
+7) CREDITS
 -------------------------------------------------------------------------------
 
 Several parts of SABnzbd were built by other people, illustrating the

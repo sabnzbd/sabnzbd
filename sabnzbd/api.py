@@ -25,6 +25,8 @@ import re
 import datetime
 import time
 import cherrypy
+import locale
+locale.setlocale(locale.LC_ALL, "")
 try:
     import win32api, win32file
 except ImportError:
@@ -53,7 +55,9 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
+import sabnzbd.growler
 import sabnzbd.rss
+import sabnzbd.emailer
 
 
 #------------------------------------------------------------------------------
@@ -537,7 +541,7 @@ def _api_auth(name, output, kwargs):
 def _api_newzbin(name, output, kwargs):
     """ API: accepts output """
     if name == 'get_bookmarks':
-        Bookmarks.do.run()
+        Bookmarks.do.run(force=True)
         return report(output)
     return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -579,9 +583,11 @@ def _api_rescan(name, output, kwargs):
 def _api_eval_sort(name, output, kwargs):
     """ API: evaluate sorting expression """
     import sabnzbd.tvsort
+    name = kwargs.get('name', '')
     value = kwargs.get('value', '')
     title = kwargs.get('title')
-    path = sabnzbd.tvsort.eval_sort(name, value, title)
+    multipart = kwargs.get('movieextra')
+    path = sabnzbd.tvsort.eval_sort(value, title, name, multipart)
     if path is None:
         return report(output, _MSG_NOT_IMPLEMENTED)
     else:
@@ -600,6 +606,28 @@ def _api_rss_now(name, output, kwargs):
     scheduler.force_rss()
     return report(output)
 
+def _api_reset_quota(name, output, kwargs):
+    """ Reset quota left """
+    BPSMeter.do.reset_quota(force=True)
+
+def _api_test_email(name, output, kwargs):
+    """ API: send a test email, return result """
+    logging.info("Sending testmail")
+    pack = {}
+    pack['download'] = ['action 1', 'action 2']
+    pack['unpack'] = ['action 1', 'action 2']
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                 123*MEBI, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+    if res == 'Email succeeded':
+        res = None
+    return report(output, error=res)
+
+def _api_test_notif(name, output, kwargs):
+    """ API: send a test notification, return result """
+    logging.info("Sending test notification")
+    res = sabnzbd.growler.send_notification('SABnzbd', T('Test Notification'), 'other', wait=True)
+    return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
@@ -734,7 +762,10 @@ _api_table = {
     'eval_sort'       : _api_eval_sort,
     'watched_now'     : _api_watched_now,
     'rss_now'         : _api_rss_now,
-    'browse'          : _api_browse
+    'browse'          : _api_browse,
+    'reset_quota'     : _api_reset_quota,
+    'test_email'      : _api_test_email,
+    'test_notif'      : _api_test_notif,
 }
 
 _api_queue_table = {
@@ -930,7 +961,7 @@ def handle_cat_api(output, kwargs):
 
 
 #------------------------------------------------------------------------------
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=None,
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None):
     if output:
         converter = unicoder
@@ -944,7 +975,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
     else:
         dictn = []
     #build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim)
+    info, pnfo_list, bytespersec = build_header(prim, webdir)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if cookie.has_key('queue_details'):
@@ -1031,10 +1062,16 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
+        if not output:
+            slot['mb_fmt'] = locale.format('%d', int(mb), True)
+            slot['mbdone_fmt'] = locale.format('%d', int(mb-mbleft), True)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
-            slot['status'] = "Downloading"
+            if status == 'Checking':
+                slot['status'] = "Checking"
+            else:
+                slot['status'] = "Downloading"
             found_active = True
         else:
             slot['status'] = "%s" % (status)
@@ -1054,7 +1091,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if status == 'Paused':
+        if status in ('Paused', 'Checking'):
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1436,7 +1473,7 @@ def check_trans():
     global _SKIN_CACHE
     return bool(_SKIN_CACHE)
 
-def build_header(prim):
+def build_header(prim, webdir=''):
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1467,10 +1504,7 @@ def build_header(prim):
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
-    if prim:
-        header['webdir'] = sabnzbd.WEB_DIR
-    else:
-        header['webdir'] = sabnzbd.WEB_DIR2
+    header['webdir'] = webdir
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
@@ -1478,6 +1512,7 @@ def build_header(prim):
     header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
 
     header['session'] = cfg.api_key()
+    header['uniconfig'] = cfg.uniconfig() and sabnzbd.WEB_DIRC
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info()
@@ -1491,6 +1526,9 @@ def build_header(prim):
     header['mb']       = "%.2f" % (bytes / MEBI)
     header['sizeleft']   = format_bytes(bytesleft)
     header['size']       = format_bytes(bytes)
+    header['quota'] = to_units(BPSMeter.do.quota)
+    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
+    header['left_quota'] = to_units(BPSMeter.do.left)
 
     status = ''
     if Downloader.do.paused:
@@ -1777,6 +1815,7 @@ def list_scripts(default=False):
             if os.path.isfile(script):
                 if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and \
                                       not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
+                   script.endswith('.py') or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))
         lst.insert(0, 'None')

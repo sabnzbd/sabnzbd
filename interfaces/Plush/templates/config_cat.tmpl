@@ -1,5 +1,5 @@
 <!--#set global $pane="Categories"#-->
-<!--#set global $help_uri="configure-categories"#-->
+<!--#set global $help_uri="configure-categories-0-7"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <div style="padding:10px; overflow:auto;">
@@ -55,6 +55,7 @@
       <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
       <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
       <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+      <option value="-2" <!--#if $slot.priority == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
     </select>
   </td>
 

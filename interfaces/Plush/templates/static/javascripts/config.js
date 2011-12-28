@@ -121,7 +121,7 @@ jQuery(document).ready(function($){
   break;
 
 
-  case 'Connections':
+  case 'Status':
     $('#logging_level').change(function(event){
       window.location = './change_loglevel?loglevel='+$(event.target).val()+'&session='+apikey;
     });

@@ -84,11 +84,15 @@ class Decoder(Thread):
 
             data = None
 
-            register = True
+            register = True  # Finish article
+            found = True     # Article found (only relevant for precheck)
 
             if lines:
                 logme = None
                 try:
+                    if nzo.precheck and '223' in lines[0]:
+                        raise IndexError
+                    register = True
                     logging.debug("Decoding %s", article)
 
                     data = decode(article, lines)
@@ -126,9 +130,15 @@ class Decoder(Thread):
                             register = False
                             logme = None
 
+                except IndexError:
+                    # Pre-check, article found, just register
+                    register = True
+
                 except:
                     logme = Ta('Unknown Error while decoding %s') % article
                     logging.info(logme)
+                    logging.info("Traceback: ", exc_info = True)
+                    pass
 
                 if logme:
                     article.nzf.nzo.inc_log('bad_art_log', logme)
@@ -137,12 +147,14 @@ class Decoder(Thread):
                 new_server_found = self.__search_new_server(article)
                 if new_server_found:
                     register = False
+                elif nzo.precheck:
+                    found = False
 
             if data:
                 ArticleCache.do.save_article(article, data)
 
             if register:
-                NzbQueue.do.register_article(article)
+                NzbQueue.do.register_article(article, found)
 
     def __search_new_server(self, article):
         from sabnzbd.nzbqueue import NzbQueue
@@ -169,6 +181,7 @@ class Decoder(Thread):
 
         if new_server_found:
             article.fetcher = None
+            article.tries = 0
 
             ## Allow all servers to iterate over this nzo and nzf again ##
             NzbQueue.do.reset_try_lists(nzf, nzo)

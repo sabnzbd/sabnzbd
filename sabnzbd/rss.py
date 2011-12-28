@@ -613,13 +613,16 @@ def _get_link(uri, entry):
         if not (link and '/post/' in link.lower()):
             # Use alternative link
             link = entry.links[0].href
-    elif 'nzbindex.nl' in uri or 'nzbindex.com' in uri or 'animeusenet.org' in uri or 'nzbclub.com' in uri:
-        link = entry.enclosures[0]['href']
-    elif not link:
+    else:
         # Try standard link first
         link = entry.link
         if not link:
             link = entry.links[0].href
+        if encl_sites(uri, link):
+            try:
+                link = entry.enclosures[0]['href']
+            except:
+                pass
 
     if link and 'http' in link.lower():
         try:
@@ -645,3 +648,13 @@ def special_rss_site(url):
     """ Return True if url describes an RSS site with odd titles
     """
     return cfg.rss_filenames() or 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url
+
+
+_ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
+def encl_sites(url, link):
+    """ Return True if url or link match sites that use enclosures
+    """
+    for site in _ENCL_SITES:
+        if site in url or (link and site in link):
+            return True
+    return False

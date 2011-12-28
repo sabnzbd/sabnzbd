@@ -107,7 +107,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 if data:
                     try:
                         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)
-                        nzo.url = url
+                        if url:
+                            nzo.url = url
                     except:
                         nzo = None
                     if nzo:
@@ -165,7 +166,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, reuse=reuse, dup_check=dup_check)
-        nzo.url = url
+        if url:
+           nzo.url = url
     except TypeError:
         # Duplicate, ignore
         nzo = None
@@ -270,8 +272,8 @@ class DirScanner(threading.Thread):
                 time.sleep(1.0)
                 x = x - 1
 
+            self.trigger = False
             if self.dirscan_speed and not self.shutdown:
-                self.trigger = False
                 self.scan()
 
     def scan(self):
@@ -330,7 +332,7 @@ class DirScanner(threading.Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext in ('.zip', '.rar') :
-                        res = ProcessArchiveFile(filename, path, catdir=catdir)
+                        res = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -340,7 +342,7 @@ class DirScanner(threading.Thread):
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        res = ProcessSingleFile(filename, path, catdir=catdir)
+                        res = ProcessSingleFile(filename, path, catdir=catdir, url=path)
                         if res < 0:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
