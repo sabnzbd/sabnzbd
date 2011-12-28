@@ -321,7 +321,8 @@ def Web_Template(key, defweb, wdir):
             wdir = ''
     if not wdir:
         wdir = defweb
-    key.set(wdir)
+    if key:
+        key.set(wdir)
     if not wdir:
         # No default value defined, accept empty path
         return ''
@@ -331,6 +332,10 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
+        # Temporarily fix that allows missing Config
+        if defweb == DEF_STDCONFIG:
+            return ''
+        # end temp fix
         logging.warning(Ta('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
@@ -360,12 +365,14 @@ def fix_webname(name):
         xname = name.title()
     else:
         xname = ''
-    if xname in ('Default',):
+    if xname in ('Default', ):
         return 'Classic'
     elif xname in ('Classic', 'Plush', 'Mobile'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
+    elif xname in ('Config',):
+        return 'Plush'
     else:
         return name
 
@@ -1267,12 +1274,14 @@ def main():
 
     web_dir  = Web_Template(sabnzbd.cfg.web_dir,  DEF_STDINTF,  fix_webname(web_dir))
     web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
+    web_dirc = Web_Template(None,  DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
     #sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
+    sabnzbd.WEB_DIRC = web_dirc
     sabnzbd.WIZARD_DIR = wizard_dir
 
     sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(),  web_dir)
@@ -1386,6 +1395,8 @@ def main():
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
+    if web_dirc:
+        staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
 
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
@@ -1400,6 +1411,9 @@ def main():
                  '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static
                  }
+    if web_dirc:
+        appconfig['/sabnzbd/staticcfg'] = staticcfg
+        appconfig['/staticcfg'] = staticcfg
 
     if web_dir2:
         static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
@@ -1410,8 +1424,11 @@ def main():
         appconfig['/m/static'] = static2
         appconfig['/sabnzbd/m/wizard/static'] = wizard_static
         appconfig['/m/wizard/static'] = wizard_static
+        if web_dirc:
+            appconfig['/sabnzbd/m/staticcfg'] = staticcfg
+            appconfig['/m/staticcfg'] = staticcfg
 
-    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', first=2)
+    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', web_dirc, first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     # Set authentication for CherryPy

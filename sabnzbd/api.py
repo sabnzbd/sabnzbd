@@ -961,7 +961,7 @@ def handle_cat_api(output, kwargs):
 
 
 #------------------------------------------------------------------------------
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=None,
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None):
     if output:
         converter = unicoder
@@ -975,7 +975,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verbose_list=
     else:
         dictn = []
     #build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim)
+    info, pnfo_list, bytespersec = build_header(prim, webdir)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if cookie.has_key('queue_details'):
@@ -1473,7 +1473,7 @@ def check_trans():
     global _SKIN_CACHE
     return bool(_SKIN_CACHE)
 
-def build_header(prim):
+def build_header(prim, webdir=''):
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1504,10 +1504,7 @@ def build_header(prim):
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
-    if prim:
-        header['webdir'] = sabnzbd.WEB_DIR
-    else:
-        header['webdir'] = sabnzbd.WEB_DIR2
+    header['webdir'] = webdir
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
@@ -1515,6 +1512,7 @@ def build_header(prim):
     header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
 
     header['session'] = cfg.api_key()
+    header['uniconfig'] = cfg.uniconfig() and sabnzbd.WEB_DIRC
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info()

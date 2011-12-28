@@ -82,6 +82,7 @@ DEF_LANGUAGE     = 'locale'
 DEF_INTERFACES   = 'interfaces'
 DEF_INT_LANGUAGE = 'locale'
 DEF_EMAIL_TMPL   = 'email'
+DEF_STDCONFIG    = 'Config'
 DEF_STDINTF      = 'Plush'
 DEF_SKIN_COLORS  = {'smpl':'white', 'classic':'darkblue', 'mobile':'light', 'plush' : 'gold'}
 DEF_MAIN_TMPL    = 'templates/main.tmpl'

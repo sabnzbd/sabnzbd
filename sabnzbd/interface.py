@@ -226,18 +226,23 @@ class NoPage(object):
 
 
 class MainPage(object):
-    def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
+    def __init__(self, web_dir, root, web_dir2=None, root2=None, web_dirc=None, prim=True, first=0):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
         if first >= 1 and web_dir2:
-            self.m = MainPage(web_dir2, root2, prim=False)
+            # Setup addresses for secondary skin
+            self.m = MainPage(web_dir2, root2, web_dirc=web_dirc, prim=False)
         if first == 2:
-            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', prim=True, first=1)
+            # Setup addresses with /sabnzbd prefix for primary and secondary skin
+            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', web_dirc=web_dirc, prim=True, first=1)
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.status = Status(web_dir, root+'status/', prim)
-        self.config = ConfigPage(web_dir, root+'config/', prim)
+        if cfg.uniconfig() and web_dirc:
+            self.config = ConfigPage(web_dirc, root+'config/', prim)
+        else:
+            self.config = ConfigPage(web_dir, root+'config/', prim)
         self.nzb = NzoPage(web_dir, root+'nzb/', prim)
         self.wizard = sabnzbd.wizard.Wizard(web_dir, root+'wizard/', prim)
 
@@ -250,7 +255,7 @@ class MainPage(object):
             return panic_old_queue()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, pnfo_list, bytespersec = build_header(self.__prim)
+            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
             if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
                 info['newzbinDetails'] = True
@@ -453,7 +458,7 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
 
-        info, pnfo_list, bytespersec = build_header(self.__prim)
+        info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
         nzo_id = None
 
         for a in args:
@@ -626,7 +631,7 @@ class QueuePage(object):
         dummy2 = kwargs.get('dummy2')
 
         info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
-                                                                                       self.__prim, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
+                                                                                       self.__prim, self.__web_dir, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -844,7 +849,7 @@ class HistoryPage(object):
         if failed_only is None:
             failed_only = self.__failed_only
 
-        history, pnfo_list, bytespersec = build_header(self.__prim)
+        history, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
@@ -1001,7 +1006,7 @@ class ConfigPage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
         conf['cmdline'] = sabnzbd.CMDLINE
@@ -1085,7 +1090,7 @@ class ConfigFolders(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
@@ -1144,7 +1149,7 @@ class ConfigSwitches(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
@@ -1182,7 +1187,7 @@ SPECIAL_BOOL_LIST = \
             ( 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
-              'osx_menu', 'osx_speed', 'win_menu',
+              'osx_menu', 'osx_speed', 'win_menu', 'uniconfig'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit'
@@ -1199,7 +1204,7 @@ class ConfigSpecial(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
 
@@ -1267,7 +1272,7 @@ class ConfigGeneral(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
 
@@ -1442,7 +1447,7 @@ class ConfigServer(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         new = {}
         servers = config.get_servers()
@@ -1580,7 +1585,7 @@ class ConfigRss(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
@@ -1875,7 +1880,7 @@ class ConfigScheduling(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         actions = []
         actions.extend(_SCHED_ACTIONS)
@@ -1995,7 +2000,7 @@ class ConfigIndexers(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['username_newzbin'] = cfg.newzbin_username()
         conf['password_newzbin'] = cfg.newzbin_password.get_stars()
@@ -2078,7 +2083,7 @@ class ConfigCats(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         if cfg.newzbin_username() and cfg.newzbin_password():
             conf['newzbinDetails'] = True
@@ -2152,7 +2157,7 @@ class ConfigSorting(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
@@ -2202,7 +2207,7 @@ class Status(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        header, pnfo_list, bytespersec = build_header(self.__prim)
+        header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -2554,7 +2559,7 @@ class ConfigNotify(object):
         if cfg.configlock():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA

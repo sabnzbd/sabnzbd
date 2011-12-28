@@ -1121,16 +1121,21 @@ function loadingJSON(){
         <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">$T('smpl-dualView2')</a></li>
         <li><a href="#/config/" onClick="toggle('hiddenNav','blind',{duration:0.2})">$T('menu-config')</a></li>
         <ul id="hiddenNav" class="secondul">
-          <li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
-          <li><a class="config" href="#/config/folders/" onClick="lr('config/folders/','', 0, 0);">$T('cmenu-folders')</a> </li>
-          <li><a class="config" href="#/config/switches/" onClick="lr('config/switches/','', 0, 0);">$T('cmenu-switches')</a> </li>
-          <li><a class="config" href="#/config/server" onClick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
-          <li><a class="config" href="#/config/scheduling/" onClick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
-          <li><a class="config" href="#/config/rss/" onClick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
-          <li><a class="config" href="#/config/notify/" onClick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
-          <li><a class="config" href="#/config/indexers/" onClick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
-          <li><a class="config" href="#/config/categories/" onClick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
-          <li><a class="config" href="#/config/sorting/" onClick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
+          <!--#if $uniconfig#-->
+              <!--#set prefix="config"#-->
+          <!--#else#-->
+              <!--#set prefix="#/config"#-->
+          <!--#end if#-->
+          <li><a class="config" href="$prefix/general/" onClick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
+          <li><a class="config" href="$prefix/folders/" onClick="lr('config/folders/','', 0, 0);">$T('cmenu-folders')</a> </li>
+          <li><a class="config" href="$prefix/switches/" onClick="lr('config/switches/','', 0, 0);">$T('cmenu-switches')</a> </li>
+          <li><a class="config" href="$prefix/server" onClick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
+          <li><a class="config" href="$prefix/scheduling/" onClick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
+          <li><a class="config" href="$prefix/rss/" onClick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
+          <li><a class="config" href="$prefix/notify/" onClick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
+          <li><a class="config" href="$prefix/indexers/" onClick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
+          <li><a class="config" href="$prefix/categories/" onClick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
+          <li><a class="config" href="$prefix/sorting/" onClick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
         </ul>
         <li><a href="#/status/" onClick="lr('status/','', 1, 0);">$T('menu-cons')</a></li>
         <li><a href="#/status/" onClick="lr('status/','', 1, 0);">$T('smpl-warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>

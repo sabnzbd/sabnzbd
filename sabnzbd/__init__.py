@@ -119,6 +119,7 @@ CMDLINE = ''  # Rendering of original command line arguments
 
 WEB_DIR = None
 WEB_DIR2 = None
+WEB_DIRC = None
 WIZARD_DIR = None
 WEB_COLOR = None
 WEB_COLOR2 = None
