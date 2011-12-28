@@ -70,6 +70,8 @@ _GROWL_REG = False  # Succesful registration
 def get_icon():
     icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
     if not os.path.isfile(icon):
+        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    if not os.path.isfile(icon):
         icon = None
     return icon
 
