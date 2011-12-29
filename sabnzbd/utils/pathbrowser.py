@@ -75,7 +75,7 @@ def folders_at_path(path, include_parent = False):
 
     file_list.insert(0, {'current_path': path})
     if include_parent and parent_path != path:
-        file_list.append({ 'name': "..", 'path': parent_path })
+        file_list.insert(1,{ 'name': "..", 'path': parent_path })
 
     return file_list
 
