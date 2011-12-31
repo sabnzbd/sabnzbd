@@ -117,8 +117,9 @@ def convert_filter(text):
         If string starts with re: it's a real regex
         else quote all regex specials, replace '*' by '.*'
     """
-    if text[:3].lower() == 're:':
-        txt = text[3:]
+    text = text.strip().lower()
+    if text.startswith('re:'):
+        txt = text[3:].strip()
     else:
         txt = wildcard_to_re(text)
     try:
