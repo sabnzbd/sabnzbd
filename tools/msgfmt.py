@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-# Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
+# Written by Martin v. Lï¿½wis <loewis@informatik.hu-berlin.de>
 
 """Generate binary message catalog from textual translation description.
 
@@ -16,6 +16,8 @@ Options:
         Specify the output file to write to.  If omitted, output will go to a
         file named filename.mo (based off the input file name).
 
+    -n Remove all newlines (\r\n) from translations
+
     -h
     --help
         Print this message and exit.
@@ -30,12 +32,15 @@ import os
 import getopt
 import struct
 import array
+import re
 
 __version__ = "1.1"
 
 MESSAGES = {}
+nonewlines = False
 
-
+# Detector for HTML elements
+RE_HTML = re.compile('<[^>]+>')
 
 def usage(code, msg=''):
     print >> sys.stderr, __doc__
@@ -47,10 +52,13 @@ def usage(code, msg=''):
 
 def add(id, str, fuzzy):
     "Add a non-fuzzy translation to the dictionary."
-    global MESSAGES
+    global MESSAGES, nonewlines, RE_HTML
     if not fuzzy and str:
         if id.count('%s') == str.count('%s'):
-            MESSAGES[id] = str
+            if nonewlines and id and ('\r' in str or '\n' in str) and RE_HTML.search(str):
+                MESSAGES[id] = str.replace('\n', '').replace('\r', '')
+            else:
+                MESSAGES[id] = str
         else:
             print 'WARNING: %s mismatch, skipping!'
             print '    %s' % id
@@ -178,8 +186,9 @@ def make(filename, outfile):
 
 
 def main():
+    global nonewlines
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hVo:',
+        opts, args = getopt.getopt(sys.argv[1:], 'nhVo:',
                                    ['help', 'version', 'output-file='])
     except getopt.error, msg:
         usage(1, msg)
@@ -194,6 +203,8 @@ def main():
             sys.exit(0)
         elif opt in ('-o', '--output-file'):
             outfile = arg
+        elif opt in ('-n', ):
+            nonewlines = True
     # do it
     if not args:
         print >> sys.stderr, 'No input file given'

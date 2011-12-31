@@ -131,7 +131,7 @@ LanguageTable = {
 # Filter for retrieving readable language from PO file
 RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
-def process_po_folder(domain, folder):
+def process_po_folder(domain, folder, extra=''):
     """ Process each PO file in folder
     """
     for fname in glob.glob(os.path.join(folder, '*.po')):
@@ -145,7 +145,7 @@ def process_po_folder(domain, folder):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print 'Compile %s' % mo_file
-        ret = os.system('%s -o "%s" "%s"' % (TOOL, mo_file, fname))
+        ret = os.system('%s %s -o "%s" "%s"' % (TOOL, extra, mo_file, fname))
         if ret != 0:
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
@@ -301,7 +301,8 @@ make_templates()
 
 
 print 'Main program MO files'
-process_po_folder(DOMAIN, PO_DIR)
+# -n option added to remove all newlines from the translations
+process_po_folder(DOMAIN, PO_DIR, '-n')
 
 print "Remove temporary templates"
 remove_mo_files()
