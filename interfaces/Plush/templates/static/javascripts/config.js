@@ -25,6 +25,7 @@ jQuery(document).ready(function($){
   $("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
     innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
   });
+  $(".show_qrcode").colorbox({ photo:true, innerHeight:"300px", innerWidth:"300px", speed:0, opacity: 0.7, scrolling:false });
 
   // jqueryui tabs/buttons
   $('.juiButton').button();
