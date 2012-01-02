@@ -314,6 +314,8 @@ SKIN_TEXT = {
     'opt-disableApikey' : TT('Disable API-key'),
     'explain-disableApikey' : TT('Do not require the API key.'),
     'explain-disableApikeyWarn' : TT('USE AT YOUR OWN RISK!'),
+    'qr-code' : TT('QR Code'), #: Button to show QR code of APIKEY
+    'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
 
 # Config->Folders
     'folderConfig' : TT('Folder configuration'),
