@@ -216,6 +216,7 @@ disable_key = OptionBool('misc', 'disable_api_key', False)
 api_warnings = OptionBool('misc', 'api_warnings', True)
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_opt_only = OptionBool('misc', 'max_opt_only', True)
+use_pickle = OptionBool('misc', 'use_pickle', False)
 
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')

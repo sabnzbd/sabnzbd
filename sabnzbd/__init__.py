@@ -23,7 +23,7 @@ import os
 import logging
 import datetime
 import tempfile
-import cPickle
+import cPickle, pickle
 import zipfile
 import glob
 import gzip
@@ -800,7 +800,10 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
     try:
         _f = open(path, 'wb')
         if do_pickle:
-            pickler = cPickle.Pickler(_f, 2)
+            if cfg.use_pickle():
+                pickler = pickle.Pickler(_f, 2)
+            else:
+                pickler = cPickle.Pickler(_f, 2)
             pickler.dump(data)
             _f.flush()
             _f.close()
@@ -830,7 +833,10 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     try:
         _f = open(path, 'rb')
         if do_pickle:
-            data = cPickle.load(_f)
+            if cfg.use_pickle():
+                data = pickle.load(_f)
+            else:
+                data = cPickle.load(_f)
         else:
             data = _f.read()
         _f.close()
