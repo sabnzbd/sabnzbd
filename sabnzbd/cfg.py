@@ -213,6 +213,7 @@ api_key = OptionStr('misc', 'api_key', create_api_key())
 nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False)
 api_warnings = OptionBool('misc', 'api_warnings', True)
+use_pickle = OptionBool('misc', 'use_pickle', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

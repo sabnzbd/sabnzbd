@@ -73,3 +73,14 @@
   make sure that the drives are mounted.
   The operating system wil simply redirect your files to alternative locations.
   You may have trouble finding the files when mounting the drive later.
+
+- On some operating systems it looks like there is a problem with one of the standard Python libraries.
+  It is possible that you get errors about saving admin files and even unexplained crashes.
+  If so, you can enable the option for the alternative library.
+  It has the same functionality, but is slower.
+  We've had reports about this issue on non-mainstream Linux platforms.
+  - OpenElec
+  - Squeeze Linux
+  There is an INI-only option that will allow you to select an alternative library.
+      use_pickle = 1
+  See: http://wiki.sabnzbd.org/configure-special
