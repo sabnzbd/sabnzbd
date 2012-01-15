@@ -354,9 +354,9 @@ class RSSQueue(object):
                 except (AttributeError, IndexError):
                     link = None
                     category = ''
-                    logging.error('Incompatible feed %s', uri)
+                    logging.info(Ta('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info = True)
-                    return 'Incompatible feed'
+                    return T('Incompatible feed')
                 category = latin1(category)
                 # Make sure only latin-1 encodable characters occur
                 atitle = latin1(entry.title)
