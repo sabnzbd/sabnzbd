@@ -1,21 +1,16 @@
-The module feedparser.py-4.1 is (c) Mark Pilgrim
+The module feedparser.py-5.1 is (c) Mark Pilgrim and Kurt McKee
 
-We use only the feedparser itself, all additional material
-was removed.
+We use only the feedparser itself, all additional material was removed.
 
 Home of the feedparser module:
-http://www.feedparser.org
+https://code.google.com/p/feedparser
 
 It is covered by the following license.
 
-
-Universal Feed Parser (feedparser.py), its testing harness (feedparsertest.py),
-and its unit tests (everything in the tests/ directory) are released under the
-following license:
-
 ----- begin license block -----
 
-Copyright (c) 2002-2005, Mark Pilgrim
+Copyright (c) 2010-2011 Kurt McKee <contactme@kurtmckee.org>
+Copyright (c) 2002-2008 Mark Pilgrim
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -37,6 +32,6 @@ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
+POSSIBILITY OF SUCH DAMAGE."""
 
 ----- end license block -----
