@@ -730,7 +730,7 @@ class NzbQueue(TryList):
     def is_empty(self):
         empty = True
         for nzo in self.__nzo_list:
-            if not nzo.futuretype:
+            if not nzo.futuretype and nzo.status != 'Paused':
                 empty = False
                 break
         return empty
