@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.newzbin - newzbin.com support functions
+sabnzbd.newzbin - newzbin2.es support functions
 """
 
 import httplib
@@ -157,9 +157,9 @@ def _grabnzb(msgid):
     # Connect to Newzbin
     try:
         if _HAVE_SSL:
-            conn = httplib.HTTPSConnection('www.newzbin.com')
+            conn = httplib.HTTPSConnection(cfg.newzbin_url())
         else:
-            conn = httplib.HTTPConnection('www.newzbin.com')
+            conn = httplib.HTTPConnection(cfg.newzbin_url())
 
         postdata = { 'username': cfg.newzbin_username(), 'password': cfg.newzbin_password(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
@@ -260,7 +260,7 @@ def _grabnzb(msgid):
 BOOK_LOCK = Lock()
 
 class Bookmarks(object):
-    """ Get list of bookmarks from www.newzbin.com
+    """ Get list of bookmarks from www.newzbin2.es
     """
     do = None # Link to instance
 
@@ -284,9 +284,9 @@ class Bookmarks(object):
         # Connect to Newzbin
         try:
             if _HAVE_SSL:
-                conn = httplib.HTTPSConnection('www.newzbin.com')
+                conn = httplib.HTTPSConnection(cfg.newzbin_url())
             else:
-                conn = httplib.HTTPConnection('www.newzbin.com')
+                conn = httplib.HTTPConnection(cfg.newzbin_url())
 
             if delete:
                 logging.debug('Trying to delete Newzbin bookmark %s', delete)

@@ -61,8 +61,8 @@
   </td>
   <td>
     <!--#if $line.report #-->
-      <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
-        <div class="icon_history_verbose main_sprite_container sprite_hv_report pointer" title='$T('Plush-openSourceURL')<br><br>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
+      <a href="https://$newzbin_url/browse/post/$line.report/" target="_blank">
+        <div class="icon_history_verbose main_sprite_container sprite_hv_report pointer" title='$T('Plush-openSourceURL')<br><br>https://$newzbin_url/browse/post/$line.report'>&nbsp;</div>
       </a>
     <!--#else if $varExists('newzbinDetails')#-->
       <div class="icon_history_verbose main_sprite_container sprite_hv_report hvFaded">&nbsp;</div>

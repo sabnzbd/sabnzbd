@@ -169,6 +169,7 @@ class Wizard(object):
         info['newzbin_user'] = cfg.newzbin_username()
         info['newzbin_pass'] = cfg.newzbin_password.get_stars()
         info['newzbin_bookmarks'] = cfg.newzbin_bookmarks()
+        info['newzbin_url'] = cfg.newzbin_url()
         info['matrix_user'] = cfg.matrix_username()
         info['matrix_apikey'] = cfg.matrix_apikey()
         info['T'] = Ttemplate

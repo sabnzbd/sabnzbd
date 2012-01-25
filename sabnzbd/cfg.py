@@ -105,6 +105,7 @@ newzbin_password = OptionPassword('newzbin', 'password')
 newzbin_bookmarks = OptionBool('newzbin', 'bookmarks', False)
 newzbin_unbookmark = OptionBool('newzbin', 'unbookmark', True)
 bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
+newzbin_url = OptionStr('newzbin', 'url', 'www.newzbin2.es')
 
 top_only = OptionBool('misc', 'top_only', False)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)

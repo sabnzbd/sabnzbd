@@ -2348,7 +2348,7 @@ def GetRssLog(feed):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
         if url.isdigit():
-            title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
+            title = '<a href="https://%s/browse/post/%s/" target="_blank">%s</a>' % (cfg.newzbin_url(), url, title)
         else:
             title = title
         if sabnzbd.rss.special_rss_site(url):
@@ -2535,7 +2535,7 @@ def rss_history(url, limit=50, search=None):
             youngest = history['completed']
 
         if history['report']:
-            item.link = "https://www.newzbin.com/browse/post/%s/" % history['report']
+            item.link = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), history['report'])
         elif history['url_info']:
             item.link = history['url_info']
         else:

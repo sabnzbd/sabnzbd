@@ -195,6 +195,7 @@ class RSSQueue(object):
                                 if item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'):
                                     item['status'] = 'X'
                                 if not isinstance(item.get('url'), unicode): item['url'] = ''
+                                item['url'] = item['url'].replace('www.newzbin.com', cfg.newzbin_url())
                                 if not check_str(item.get('cat')): item['cat'] = ''
                                 if not check_str(item.get('orgcat')): item['orgcat'] = ''
                                 if not check_str(item.get('pp')): item['pp'] = '3'
@@ -548,7 +549,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2).[\w]+/browse/post/(\d+)', re.I)
 
 def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
@@ -609,7 +610,7 @@ def _get_link(uri, entry):
     link = None
     category = ''
     uri = uri.lower()
-    if 'newzbin.com' in uri or 'newzxxx.com'in uri:
+    if 'newzbin.' in uri or 'newzxxx.'in uri or 'newzbin2.' in uri:
         link = entry.link
         if not (link and '/post/' in link.lower()):
             # Use alternative link
