@@ -549,7 +549,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2).[\w]+/browse/post/(\d+)', re.I)
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2)\.[\w]+/browse/post/(\d+)', re.I)
 
 def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
