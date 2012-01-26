@@ -1,16 +1,16 @@
 
-(c) Copyright 2007-2011 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>
 
 The SABnzbd-team is:
 
 Current team:
     ShyPike <shypike@sabnzbd.org>
-    sw1tch <switch@sabnzbd.org>
     pairofdimes <pairofdimes@sabnzbd.org>
     inpheaux <inpheaux@sabnzbd.org>
     rAf <rAf@sabnzbd.org>
-Honorary member (and original author)
+Previous members
     Gregor Kaufmann <tdian@users.sourceforge.net>
+    sw1tch <switch@sabnzbd.org>
 
 
 This program is free software; you can redistribute it and/or

@@ -1,4 +1,19 @@
 -------------------------------------------------------------------------------
+ 0.6.15RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Change newzbin URL
+- Prevent setting watched-folder speed to 0 (while having no watched-folder)
+  from triggering an inifinite loop.
+- Move "locale" construction from Plush skin to Python code.
+  Some embedded Linux platforms show unstable behavior with the original construction.
+- Extend OSX menu with troubleshooting options
+- Add trailing slashes to internal Plush paths to support reverse proxies better.
+- Ignore whitespace around regular expressions in RSS filters.
+- Prevent crash on restoring URL-fetches when using --repair-all option
+- Fix "Repair" button on smpl Connection page. Current path fails when using a reverse proxy
+- Suppress "incompatible feed" error when doing a scheduled/automatic RSS read-out.
+- Add special setting to use "pickle" library instead of cPickle.
+-------------------------------------------------------------------------------
  0.6.14Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Prevent potential crash in RSS feed analysis

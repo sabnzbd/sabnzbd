@@ -1,24 +1,13 @@
-************************  SABnzbd 0.6.14 ************************
+************************  SABnzbd 0.6.15RC1 ************************
 
 What's new:
-- When retrying an URL fetch from History, remove the History entry
-- Fix job folder creation by Movie Sort when the Sort expression specifies one
-- Fix problem with retrieving ZIP files from some web sites
-- Improve detection of encrypted RAR files during download
-- When par2 fails and SFV-check enabled, verify using SFV files
-- Perform extra checks on job administration
-- Fix logging of pre-queue script result
-- Better support for Yahoo pipes
-- Accept NZB files containing incorrect dates
-- Make sure that paths coming from Sorting are normalized for the platform
-- Make newzbin "Get bookmarks now" button independent of automatic readout
-- Don't reset watched folder path to default when it doesn't exist at startup
-- OSX: Fix Growl issues
-- OSX: Show the promised 10 queue entries in the OSX menu instead of 9
-
-Note: the above are the differences from 0.6.10
-Releases 0.6.11/12/13 have been cancelled.
-
+- Extend OSX menu with troubleshooting options
+- Change newzbin URL
+- Move "locale" construction from Plush skin to Python code.
+  Some embedded Linux platforms show unstable behavior with the original construction.
+- Add special setting to use "pickle" library instead of cPickle.
+  This is needed for some embedded Linux distros (e.g. OpenElec).
+- Minor fixes: see changelog.txt
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
@@ -27,4 +16,4 @@ About:
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2011 by "The SABnzbd-team" <team@sabnzbd.org>
+  (c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>
