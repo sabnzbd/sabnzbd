@@ -1332,7 +1332,7 @@ def rss_qstatus():
         item = Item()
         item.title = name
         if msgid:
-            item.link    = "https://%s/browse/post/%s/" % (msgid, cfg.newzbin_url())
+            item.link    = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), msgid)
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
             cfg.cherryhost(), cfg.cherryport() )

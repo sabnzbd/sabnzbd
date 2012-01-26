@@ -312,7 +312,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Get the url and newzbin msgid
     report = decode_factory(nzo_info.get('msgid', ''))
     if report:
-        url = 'https://%s/browse/post/%s/' % (report, sabnzbd.cfg.newzbin_url())
+        url = 'https://%s/browse/post/%s/' % (sabnzbd.cfg.newzbin_url(), report)
     else:
         url = decode_factory(nzo_info.get('url', ''))
 
