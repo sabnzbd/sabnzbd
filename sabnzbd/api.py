@@ -1364,7 +1364,7 @@ def rss_qstatus():
         item = Item()
         item.title = name
         if msgid:
-            item.link    = "https://newzbin.com/browse/post/%s/" % msgid
+            item.link    = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), msgid)
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
             cfg.cherryhost(), cfg.cherryport() )
@@ -1505,6 +1505,7 @@ def build_header(prim, webdir=''):
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
     header['webdir'] = webdir
+    header['newzbin_url'] = cfg.newzbin_url()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32

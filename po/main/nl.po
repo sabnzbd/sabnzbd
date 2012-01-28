@@ -66,15 +66,15 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr "Signaal %s ontvangen, opslaan en afluiten..."
 
 #: sabnzbd/__init__.py:442
-msgid "fetching msgid %s from www.newzbin.com"
-msgstr "Ophalen rapport %s van www.newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "Ophalen rapport %s van www.newzbin2.es"
 
 #: sabnzbd/__init__.py:448 [Error message]
 msgid ""
-"Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
-"Fout bij ophalen van rapport %s van www.newzbin.com - Zorg dat je "
+"Fout bij ophalen van rapport %s van www.newzbin2.es - Zorg dat je "
 "gebruikersnaam en wachtwoord goed ingevuld zijn"
 
 #: sabnzbd/__init__.py:460
@@ -3013,10 +3013,10 @@ msgstr "Test Melding"
 
 #: sabnzbd/skintext.py:543
 msgid ""
-"If you have an account at <strong>www.newzbin.com</strong>, you can enter "
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
-"Wanneer je een account bij <strong>www.newzbin.com</strong> hebt, kun je "
+"Wanneer je een account bij <strong>www.newzbin2.es</strong> hebt, kun je "
 "hier je gegevens invullen.<br />Dit maakt extra mogelijkheden beschikbaar."
 
 #: sabnzbd/skintext.py:544

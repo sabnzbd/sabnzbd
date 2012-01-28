@@ -546,7 +546,7 @@ SKIN_TEXT = {
     'testNotify' : TT('Test Notification'),
 
 # Config->Newzbin
-    'explain-newzbin' : TT('If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
+    'explain-newzbin' : TT('If you have an account at <strong>www.newzbin2.es</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
     'accountInfo' : TT('Account info'),
     'opt-username_newzbin' : TT('Newzbin Username'),
     'explain-username_newzbin' : TT('Set your account username here.'),

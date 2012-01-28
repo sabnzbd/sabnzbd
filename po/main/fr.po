@@ -66,15 +66,15 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s intercepté, enregistrement et fermeture en cours..."
 
 #: sabnzbd/__init__.py:442
-msgid "fetching msgid %s from www.newzbin.com"
-msgstr "récupération msgid %s depuis www.newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "récupération msgid %s depuis www.newzbin2.es"
 
 #: sabnzbd/__init__.py:448 [Error message]
 msgid ""
-"Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
-"Erreur Récupération msgid %s depuis www.newzbin.com - Vérifiez que vos "
+"Erreur Récupération msgid %s depuis www.newzbin2.es - Vérifiez que vos "
 "identifiant / mot de passe soient bien renseignés"
 
 #: sabnzbd/__init__.py:460
@@ -3054,10 +3054,10 @@ msgstr "Test de Notification"
 
 #: sabnzbd/skintext.py:543
 msgid ""
-"If you have an account at <strong>www.newzbin.com</strong>, you can enter "
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
-"Si vous avez un compte sur <strong>www.newzbin.com</strong>, vous pouvez "
+"Si vous avez un compte sur <strong>www.newzbin2.es</strong>, vous pouvez "
 "entrer vos informations de compte ici.<br />Cela débloquera des "
 "fonctionnalités supplémentaires."
 

@@ -62,15 +62,15 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."
 
 #: sabnzbd/__init__.py:442
-msgid "fetching msgid %s from www.newzbin.com"
-msgstr "descarc msgid %s  de la www.newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "descarc msgid %s  de la www.newzbin2.es"
 
 #: sabnzbd/__init__.py:448 [Error message]
 msgid ""
-"Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
-"Eroare Descărcare msgid %s de la www.newzbin.com  - Vă rugăm asiguraţi-vă că "
+"Eroare Descărcare msgid %s de la www.newzbin2.es  - Vă rugăm asiguraţi-vă că "
 "Numele de Utilizator şi Parola sunt stabilite"
 
 #: sabnzbd/__init__.py:460
@@ -3020,10 +3020,10 @@ msgstr "Notificări Test"
 
 #: sabnzbd/skintext.py:543
 msgid ""
-"If you have an account at <strong>www.newzbin.com</strong>, you can enter "
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
-"Dacă aveţi un cont la <strong>www.newzbin.com</strong>, puteţi introduce "
+"Dacă aveţi un cont la <strong>www.newzbin2.es</strong>, puteţi introduce "
 "informatiile contului dvs. aici.<br />Aceasta va debloca funcţionalitate "
 "extra."
 

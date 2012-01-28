@@ -66,15 +66,15 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s erkannt. Speichern und beenden..."
 
 #: sabnzbd/__init__.py:442
-msgid "fetching msgid %s from www.newzbin.com"
-msgstr "Abrufen der Download-ID %s von newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "Abrufen der Download-ID %s von newzbin2.es"
 
 #: sabnzbd/__init__.py:448 [Error message]
 msgid ""
-"Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
-"Fehler beim Abrufen der Download-ID %s von newzbin.com - Überprüfen Sie, ob "
+"Fehler beim Abrufen der Download-ID %s von newzbin2.es - Überprüfen Sie, ob "
 "der Benutzername und das Passwort korrekt eingegeben wurden."
 
 #: sabnzbd/__init__.py:460
@@ -3064,10 +3064,10 @@ msgstr "Benachrichtigungen testen"
 
 #: sabnzbd/skintext.py:543
 msgid ""
-"If you have an account at <strong>www.newzbin.com</strong>, you can enter "
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
-"Wenn Sie ein Konto bei <strong>www.newzbin.com</strong> haben, können Sie "
+"Wenn Sie ein Konto bei <strong>www.newzbin2.es</strong> haben, können Sie "
 "die entsprechenden Informationen hier eintragen.<br />Dies gibt weitere "
 "Funktionen frei."
 

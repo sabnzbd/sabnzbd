@@ -453,14 +453,14 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
     if cat and cat.lower()=='default': cat = None
 
     if cfg.newzbin_username() and cfg.newzbin_password():
-        logging.info('Fetching msgid %s from www.newzbin.com', msgid)
-        msg = T('fetching msgid %s from www.newzbin.com') % msgid
+        logging.info('Fetching msgid %s from www.newzbin2.es', msgid)
+        msg = T('fetching msgid %s from www.newzbin2.es') % msgid
 
         future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
 
         MSGIDGrabber.do.grab(msgid, future_nzo)
     else:
-        logging.error(Ta('Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set'), msgid)
+        logging.error(Ta('Error Fetching msgid %s from www.newzbin2.es - Please make sure your Username and Password are set'), msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):

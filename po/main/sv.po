@@ -63,15 +63,15 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s mottagen, sparar och stänger..."
 
 #: sabnzbd/__init__.py:442
-msgid "fetching msgid %s from www.newzbin.com"
-msgstr "hämtar msgid %s från www.newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "hämtar msgid %s från www.newzbin2.es"
 
 #: sabnzbd/__init__.py:448 [Error message]
 msgid ""
-"Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
-"Fel vid hämtning av msgid %s från www.newzbin.com - Kolla så att "
+"Fel vid hämtning av msgid %s från www.newzbin2.es - Kolla så att "
 "användarnamn och lösenord är inställt"
 
 #: sabnzbd/__init__.py:460
@@ -2921,10 +2921,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py:543
 msgid ""
-"If you have an account at <strong>www.newzbin.com</strong>, you can enter "
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
-"Om du har ett konto på <strong>www.newzbin.com</strong>, så kan du skriva in "
+"Om du har ett konto på <strong>www.newzbin2.es</strong>, så kan du skriva in "
 "din användarinformation här.<br />Detta kommer att tillgängliggöra extra "
 "funktioner."
 

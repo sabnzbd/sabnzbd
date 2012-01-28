@@ -109,11 +109,11 @@ msgid "Signal %s caught, saving and exiting..."
 msgstr ""
 
 #: sabnzbd/__init__.py:452
-msgid "fetching msgid %s from www.newzbin.com"
+msgid "fetching msgid %s from www.newzbin2.es"
 msgstr ""
 
 #: sabnzbd/__init__.py:458 [Error message]
-msgid "Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set"
+msgid "Error Fetching msgid %s from www.newzbin2.es - Please make sure your Username and Password are set"
 msgstr ""
 
 #: sabnzbd/__init__.py:470
@@ -2958,7 +2958,7 @@ msgid "Send notifications to NotifyOSD"
 msgstr ""
 
 #: sabnzbd/skintext.py:547
-msgid "If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br />This will unlock extra functionality."
+msgid "If you have an account at <strong>www.newzbin2.es</strong>, you can enter your account info here.<br />This will unlock extra functionality."
 msgstr ""
 
 #: sabnzbd/skintext.py:548
