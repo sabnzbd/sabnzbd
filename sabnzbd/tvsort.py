@@ -79,7 +79,8 @@ def move_to_parent_folder(workdir):
             path = os.path.join(root, _file)
             new_path = path.replace(workdir, path1)
             new_path = get_unique_filename(new_path)
-            move_to_path(path, new_path, False)
+            if not move_to_path(path, new_path, False):
+                return path1, False
 
     cleanup_empty_directories(workdir)
     try:
@@ -87,7 +88,7 @@ def move_to_parent_folder(workdir):
     except:
         pass
 
-    return path1
+    return path1, True
 
 
 class Sorter(object):
@@ -128,6 +129,7 @@ class Sorter(object):
             self.sorter.rename(newfiles, workdir_complete)
 
     def move(self, workdir_complete):
+        ok = True
         if self.type == 'movie':
             move_to_parent = True
             # check if we should leave the files inside an extra folder
@@ -135,9 +137,12 @@ class Sorter(object):
                 #if there is a folder in the download, leave it in an extra folder
                 move_to_parent = not check_for_folder(workdir_complete)
             if move_to_parent:
-                workdir_complete = move_to_parent_folder(workdir_complete)
+                workdir_complete, ok = move_to_parent_folder(workdir_complete)
         else:
-            workdir_complete = move_to_parent_folder(workdir_complete)
+            workdir_complete, ok = move_to_parent_folder(workdir_complete)
+        if not ok:
+            return workdir_complete, False
+
         path, part = os.path.split(workdir_complete)
         if '%fn' in part and self.sorter.fname:
             old = workdir_complete
@@ -148,7 +153,8 @@ class Sorter(object):
             except:
                 logging.error(Ta('Cannot create directory %s'), workdir_complete)
                 workdir_complete = old
-        return workdir_complete
+                ok = False
+        return workdir_complete, ok
 
     def is_sortfile(self):
         return self.sort_file

@@ -747,6 +747,7 @@ def move_to_path(path, new_path, unique=True):
             except:
                 logging.error(Ta('Failed moving %s to %s'), path, new_path)
                 logging.info("Traceback: ", exc_info = True)
+                new_path = None
     return new_path
 
 
