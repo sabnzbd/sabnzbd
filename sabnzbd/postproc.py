@@ -347,7 +347,10 @@ def process_job(nzo):
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
                             new_path = get_unique_filename(new_path)
-                            move_to_path(path, new_path, unique=False)
+                            if not move_to_path(path, new_path, unique=False):
+                                nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
+                                all_ok = False
+                                break
 
             ## Set permissions right
             if not sabnzbd.WIN32:
@@ -395,9 +398,12 @@ def process_job(nzo):
             if all_ok and file_sorter.is_sortfile():
                 if newfiles:
                     file_sorter.rename(newfiles, workdir_complete)
-                    workdir_complete = file_sorter.move(workdir_complete)
+                    workdir_complete, ok = file_sorter.move(workdir_complete)
                 else:
-                    workdir_complete = file_sorter.rename_with_ext(workdir_complete)
+                    workdir_complete, ok = file_sorter.rename_with_ext(workdir_complete)
+                if not ok:
+                    nzo.set_unpack_info('Unpack', T('Failed to move files'))
+                    all_ok = False
 
             ## Run the user script
             script_path = make_script_path(script)
