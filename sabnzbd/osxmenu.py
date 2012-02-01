@@ -282,7 +282,7 @@ class SABnzbdDelegate(NSObject):
 
         self.diagnostic_menu_item.setSubmenu_(self.menu_diagnostic)
         self.menu.addItem_(self.diagnostic_menu_item)
-        
+
         if (debug == 1) : NSLog("[osx] menu 16 Diagnostic added")
 
         #Quit Item
@@ -741,6 +741,8 @@ class SABnzbdDelegate(NSObject):
 
     def restartSafeHost_(self, sender):
         sabnzbd.cfg.cherryhost.set('127.0.0.1')
+        sabnzbd.cfg.cherryport.set('8080')
+        sabnzbd.cfg.https_port.set('8090')
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
