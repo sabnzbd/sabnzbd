@@ -1,8 +1,9 @@
-************************  SABnzbd 0.6.15RC1 ************************
+************************  SABnzbd 0.6.15 ************************
 
 What's new:
 - Extend OSX menu with troubleshooting options
 - Change newzbin URL
+- Flag post-processing as failed when files cannot be moved/copied to destination
 - Move "locale" construction from Plush skin to Python code.
   Some embedded Linux platforms show unstable behavior with the original construction.
 - Add special setting to use "pickle" library instead of cPickle.
