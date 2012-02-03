@@ -284,8 +284,13 @@ def _api_addfile(name, output, kwargs):
     # Normal upload will send the nzb in a kw arg called nzbfile
     if name is None or isinstance(name, str) or isinstance(name, unicode):
         name = kwargs.get('nzbfile')
-
-    if name is not None and name.filename and name.value:
+    if hasattr(name, 'getvalue'):
+        #Side effect of next line is that attribute .value is created
+        #which is needed to make add_nzbfile() work
+        size = name.length
+    else:
+        size = len(name.value)
+    if name is not None and name.filename and size:
         sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
                             kwargs.get('priority'), kwargs.get('nzbname'))
         return report(output)
