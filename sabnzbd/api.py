@@ -291,9 +291,9 @@ def _api_addfile(name, output, kwargs):
     else:
         size = len(name.value)
     if name is not None and name.filename and size:
-        sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
+        res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
                             kwargs.get('priority'), kwargs.get('nzbname'))
-        return report(output)
+        return report(output, keyword='', data={'status':res[0], 'nzo_ids' : res[1]})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -327,16 +327,16 @@ def _api_addlocalfile(name, output, kwargs):
                 nzbname = kwargs.get('nzbname')
 
                 if get_ext(name) in ('.zip', '.rar'):
-                    sabnzbd.dirscanner.ProcessArchiveFile(\
+                    res = sabnzbd.dirscanner.ProcessArchiveFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
                 elif get_ext(name) in ('.nzb', '.gz'):
-                    sabnzbd.dirscanner.ProcessSingleFile(\
+                    res = sabnzbd.dirscanner.ProcessSingleFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
                 return report(output, _MSG_NO_FILE)
         else:
             return report(output, _MSG_NO_PATH)
-        return report(output)
+        return report(output, keyword='', data={'status':res[0], 'nzo_ids' : res[1]})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -821,6 +821,9 @@ def report(output, error=None, keyword='value', data=None, callback=None):
 
 
     elif output == 'xml':
+        if not keyword:
+            # xml always needs an outer keyword, even when json doesn't
+            keyword = 'result'
         content = "text/xml"
         xmlmaker = xml_factory()
         if error:

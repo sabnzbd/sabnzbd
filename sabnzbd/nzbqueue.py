@@ -292,7 +292,7 @@ class NzbQueue(TryList):
         if not nzo.files and not nzo.futuretype:
             sabnzbd.remove_data(nzo.nzo_id, nzo.workpath)
             sabnzbd.proxy_postproc(nzo)
-            return
+            return ''
 
         # Reset try_lists
         nzo.reset_try_list()
@@ -336,6 +336,7 @@ class NzbQueue(TryList):
 
         if cfg.auto_sort():
             self.sort_by_avg_age()
+        return nzo.nzo_id
 
     @synchronized(NZBQUEUE_LOCK)
     def remove(self, nzo_id, add_to_history = True, save=True, cleanup=True, keep_basic=False, del_files=False):
@@ -834,7 +835,7 @@ def sort_queue_function(nzo_list, method, reverse):
 
 @synchronized_CV
 def add_nzo(nzo):
-    NzbQueue.do.add(nzo)
+    return NzbQueue.do.add(nzo)
 
 @synchronized_CV
 def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):

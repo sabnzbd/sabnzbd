@@ -62,9 +62,11 @@ def CompareStat(tup1, tup2):
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=None, url=''):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
-        returns: -1==Error/Retry, 0==OK, 1==Ignore
+        returns (status, nzo_ids)
+            status: -1==Error/Retry, 0==OK, 1==Ignore
     """
     from sabnzbd.nzbqueue import add_nzo
+    nzo_ids = []
     if catdir is None:
         catdir = cat
 
@@ -112,7 +114,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     except:
                         nzo = None
                     if nzo:
-                        add_nzo(nzo)
+                        nzo_ids.append(add_nzo(nzo))
         zf.close()
         try:
             if not keep: os.remove(path)
@@ -124,16 +126,18 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         zf.close()
         status = 1
 
-    return status
+    return status, nzo_ids
 
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url=''):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
-        returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
+        returns (status, nzo_ids)
+            status: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
     from sabnzbd.nzbqueue import add_nzo
+    nzo_ids = []
     if catdir is None:
         catdir = cat
 
@@ -155,7 +159,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     except:
         logging.warning(Ta('Cannot read %s'), path)
         logging.info("Traceback: ", exc_info = True)
-        return -2
+        return -2, nzo_ids
 
 
     if name:
@@ -174,20 +178,20 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     except:
         if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
             # Looks like an incomplete file, retry
-            return -2
+            return -2, nzo_ids
         else:
-            return -1
+            return -1, nzo_ids
 
     if nzo:
-        add_nzo(nzo)
+        nzo_ids.append(add_nzo(nzo))
     try:
         if not keep: os.remove(path)
     except:
         logging.error(Ta('Error removing %s'), path)
         logging.info("Traceback: ", exc_info = True)
-        return 1
+        return 1, nzo_ids
 
-    return 0
+    return 0, nzo_ids
 
 
 def CleanList(list, folder, files):
@@ -332,7 +336,7 @@ class DirScanner(threading.Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext in ('.zip', '.rar') :
-                        res = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
+                        res, nzo_ids = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -342,7 +346,7 @@ class DirScanner(threading.Thread):
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        res = ProcessSingleFile(filename, path, catdir=catdir, url=path)
+                        res, nzo_id = ProcessSingleFile(filename, path, catdir=catdir, url=path)
                         if res < 0:
                             self.suspected[path] = stat_tuple
                         elif res == 0:

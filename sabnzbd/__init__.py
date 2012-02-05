@@ -599,10 +599,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             logging.info("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
-        ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
+        return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, reuse=reuse)
-
+        return ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, reuse=reuse)
 
 ################################################################################
 ## Unsynchronized methods                                                     ##
