@@ -241,6 +241,7 @@ class SeriesSorter(object):
     def get_shownames(self):
         ''' Get the show name from the match object and format it '''
         # Get the formatted title and alternate title formats
+        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = getTitles(self.match_obj, self.original_dirname, True)
         self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = getTitles(self.match_obj, self.original_dirname)
 
 
@@ -324,9 +325,12 @@ class SeriesSorter(object):
 
 
         # Replace Show name
-        mapping.append(('%sn', self.show_info['show_name']))
-        mapping.append(('%s.n', self.show_info['show_name_two']))
-        mapping.append(('%s_n', self.show_info['show_name_three']))
+        mapping.append(('%sn', self.show_info['show_tname']))
+        mapping.append(('%s.n', self.show_info['show_tname_two']))
+        mapping.append(('%s_n', self.show_info['show_tname_three']))
+        mapping.append(('%sN', self.show_info['show_name']))
+        mapping.append(('%s.N', self.show_info['show_name_two']))
+        mapping.append(('%s_N', self.show_info['show_name_three']))
 
         # Replace season number
         mapping.append(('%s', self.show_info['season_num']))
@@ -561,6 +565,7 @@ class GenericSorter(object):
         self.movie_info['decade'], self.movie_info['decade_two'] = getDecades(self.movie_info['year'])
 
         ## - Get Title
+        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = getTitles(year_m, self.original_dirname, True)
         self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = getTitles(year_m, self.original_dirname)
 
         return True
@@ -586,6 +591,14 @@ class GenericSorter(object):
         mapping.append(('%t', self.movie_info['title']))
         mapping.append(('%.t', self.movie_info['title_two']))
         mapping.append(('%_t', self.movie_info['title_three']))
+
+        mapping.append(('%sn', self.movie_info['title']))
+        mapping.append(('%s.n', self.movie_info['title_two']))
+        mapping.append(('%s_n', self.movie_info['title_three']))
+
+        mapping.append(('%sN', self.movie_info['ttitle']))
+        mapping.append(('%s.N', self.movie_info['ttitle_two']))
+        mapping.append(('%s_N', self.movie_info['ttitle_three']))
 
         # Replace year
         mapping.append(('%y', self.movie_info['year']))
@@ -755,6 +768,7 @@ class DateSorter(object):
         self.date_info['decade'], self.date_info['decade_two'] = getDecades(self.date_info['year'])
 
         ## - Get Title
+        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = getTitles(self.match_obj, self.original_dirname, True)
         self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = getTitles(self.match_obj, self.original_dirname)
 
         self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = getDescriptions(self.match_obj, self.original_dirname)
@@ -782,9 +796,12 @@ class DateSorter(object):
         mapping.append(('%.t', self.date_info['title_two']))
         mapping.append(('%_t', self.date_info['title_three']))
 
-        mapping.append(('%sn', self.date_info['title']))
-        mapping.append(('%s.n', self.date_info['title_two']))
-        mapping.append(('%s_n', self.date_info['title_three']))
+        mapping.append(('%sn', self.date_info['ttitle']))
+        mapping.append(('%s.n', self.date_info['ttitle_two']))
+        mapping.append(('%s_n', self.date_info['ttitle_three']))
+        mapping.append(('%sN', self.date_info['title']))
+        mapping.append(('%s.N', self.date_info['title_two']))
+        mapping.append(('%s_N', self.date_info['title_three']))
 
         # Replace year
         mapping.append(('%year', self.date_info['year']))
@@ -888,7 +905,7 @@ def path_subst(path, mapping):
     return ''.join(newpath)
 
 
-def getTitles(match, name):
+def getTitles(match, name, titleing=False):
     '''
     The title will be the part before the match
     Clean it up and title() it
@@ -921,33 +938,34 @@ def getTitles(match, name):
     title = name.replace('.', ' ').replace('_', ' ')
     title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
-    title = titler(title) # title the show name so it is in a consistant letter case
+    if titleing:
+        title = titler(title) # title the show name so it is in a consistant letter case
 
-    #title applied uppercase to 's Python bug?
-    title = title.replace("'S", "'s")
+        #title applied uppercase to 's Python bug?
+        title = title.replace("'S", "'s")
 
-    # Replace titled country names, (Us) with (US) and so on
-    if cfg.tv_sort_countries() == 1:
-        for rep in COUNTRY_REP:
-            title = title.replace(titler(rep), rep)
-    # Remove country names, ie (Us)
-    elif cfg.tv_sort_countries() == 2:
-        for rep in COUNTRY_REP:
-            title = title.replace(titler(rep), '').strip()
+        # Replace titled country names, (Us) with (US) and so on
+        if cfg.tv_sort_countries() == 1:
+            for rep in COUNTRY_REP:
+                title = title.replace(titler(rep), rep)
+        # Remove country names, ie (Us)
+        elif cfg.tv_sort_countries() == 2:
+            for rep in COUNTRY_REP:
+                title = title.replace(titler(rep), '').strip()
 
-    # Make sure some words such as 'and' or 'of' stay lowercased.
-    for x in LOWERCASE:
-        xtitled = titler(x)
-        title = replace_word(title, xtitled, x)
+        # Make sure some words such as 'and' or 'of' stay lowercased.
+        for x in LOWERCASE:
+            xtitled = titler(x)
+            title = replace_word(title, xtitled, x)
 
-    # Make sure some words such as 'III' or 'IV' stay uppercased.
-    for x in UPPERCASE:
-        xtitled = titler(x)
-        title = replace_word(title, xtitled, x)
-
-    # Make sure the first letter of the title is always uppercase
-    if title:
-        title = titler(title[0]) + title[1:]
+        # Make sure some words such as 'III' or 'IV' stay uppercased.
+        for x in UPPERCASE:
+            xtitled = titler(x)
+            title = replace_word(title, xtitled, x)
+    
+        # Make sure the first letter of the title is always uppercase
+        if title:
+            title = titler(title[0]) + title[1:]
 
     # The title with spaces replaced by dots
     dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')
@@ -1120,7 +1138,7 @@ def is_full_path(file):
     return False
 
 
-def eval_sort(sorttype, expression, name=None, multipart=None):
+def eval_sort(sorttype, expression, name=None, multipart=''):
     """ Preview a sort expression, to be used by API """
     from sabnzbd.api import Ttemplate
     path = ''
