@@ -4,7 +4,7 @@
 0) LICENSE
 -------------------------------------------------------------------------------
 
-(c) Copyright 2007-2011 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -60,9 +60,7 @@ OSX Leopard/SnowLeopard
 OSX Lion                    Apple Python 2.7 (included in OSX)
 
 Windows
-    Python-2.5.latest       http://www.activestate.com
-    Python-2.6.latest
-    Python-2.7.latest
+    Python-2.7.latest       http://www.activestate.com
 
 Essential modules
     cheetah-2.0.1+          http://www.cheetahtemplate.org/ (or use "pypm install cheetah")

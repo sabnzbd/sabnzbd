@@ -1,18 +1,16 @@
-************************  SABnzbd 0.6.9  ************************
+************************  SABnzbd 0.7.x ************************
 
 What's new:
-- Update Plush to solve minor browser incompatibilities
-- On Windows the 64bit versions of par2 and unrar were never used
-- Updated unrar to 4.01
-- Using the "Download" button in newzbin.com RSS feeds produced malformed names.
-- When removing job folders in the "temporary download folder", remove everything.
-  This is needed because some operating systems add spurious files and folders.
-- Generic Sorter failed to uppercase first letter of title when starting with "the/a/to" etc.
-- Add "hidden" option allow_64bit_tools (lost when going from 0.5.6 to 0.6.0)
 
-- OSX has now a Leopard/SnowLeopard DMG and a Lion-only DMG
-  You can see the difference in the DMG's background image
-
+- Download quota management
+- Windows: simple system tray menu
+- Multi-platform Growl support
+- Pre-download check to estimate completeness (reliability is limited)
+- Prevent partial downloading of par2 files that are not needed yet
+- Config->Special for settings previously only available in the sabnzbd.ini file
+- For Usenet servers with multiple IP addresses, pick a random one per connection
+- Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue
+- Allow jobs still  waiting for post-processing to be deleted too
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
@@ -21,4 +19,4 @@ About:
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2011 by "The SABnzbd-team" <team@sabnzbd.org>
+  (c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>

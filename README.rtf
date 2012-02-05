@@ -4,24 +4,22 @@
 \paperw11900\paperh16840\vieww16360\viewh15680\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs48 \cf0 SABnzbd 0.6.9\
+\f0\b\fs48 \cf0 SABnzbd 0.7.x\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \b0\fs26 \cf0 \
 
 \b What's new
 \b0 \
-- Update Plush to solve minor browser incompatibilities\
-- On Windows the 64bit versions of par2 and unrar were never used\
-- Updated unrar to 4.01\
-- Using the "Download" button in newzbin.com RSS feeds produced malformed names.\
-- When removing job folders in the "temporary download folder", remove everything.\
-  This is needed because some operating systems add spurious files and folders.\
-- Generic Sorter failed to uppercase first letter of title when starting with "the/a/to" etc.\
-- Add "hidden" option allow_64bit_tools (lost when going from 0.5.6 to 0.6.0)\
-\
-- OSX has now a Leopard/SnowLeopard DMG and a Lion-only DMG\
-  You can see the difference in the DMG's background image\
+- Download quota management\
+- Windows: simple system tray menu\
+- Multi-platform Growl support\
+- Pre-download check to estimate completeness (reliability is limited)\
+- Prevent partial downloading of par2 files that are not needed yet\
+- Config->Special for settings previously only available in the sabnzbd.ini file\
+- For Usenet servers with multiple IP addresses, pick a random one per connection\
+- Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue\
+- Allow jobs still  waiting for post-processing to be deleted too\
 \
 
 \b About
@@ -33,6 +31,8 @@ built-in post-processing options that automatically verify, repair,\
 extract and clean up posts downloaded from Usenet.\
 SABnzbd also has a fully customizable user interface,\
 and offers a complete API for third-party applications to hook into.\
+\
+  (c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>\
 \
 There is an extensive Wiki on the use of SABnzbd.\
 {\field{\*\fldinst{HYPERLINK "http://wiki.sabnzbd.org/"}}{\fldrslt http://wiki.sabnzbd.org/}}\

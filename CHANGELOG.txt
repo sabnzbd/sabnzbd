@@ -1,4 +1,80 @@
 -------------------------------------------------------------------------------
+ 0.6.15Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Flag post-processing as failed when files cannot be moved/copied to destination
+- Fixed another newzbin link
+-------------------------------------------------------------------------------
+ 0.6.15RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Change newzbin URL
+- Prevent setting watched-folder speed to 0 (while having no watched-folder)
+  from triggering an inifinite loop.
+- Move "locale" construction from Plush skin to Python code.
+  Some embedded Linux platforms show unstable behavior with the original construction.
+- Extend OSX menu with troubleshooting options
+- Add trailing slashes to internal Plush paths to support reverse proxies better.
+- Ignore whitespace around regular expressions in RSS filters.
+- Prevent crash on restoring URL-fetches when using --repair-all option
+- Fix "Repair" button on smpl Connection page. Current path fails when using a reverse proxy
+- Suppress "incompatible feed" error when doing a scheduled/automatic RSS read-out.
+- Add special setting to use "pickle" library instead of cPickle.
+-------------------------------------------------------------------------------
+ 0.6.14Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Prevent potential crash in RSS feed analysis
+- Add --console to force console logging for OSX app (diagnostic tool)
+- Don't reset watched folder path to default when it doesn't exist at startup
+-------------------------------------------------------------------------------
+ 0.6.13Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disable "SABnzbd will now listen on all "localhost" addresses" feature
+- When retrying an URL fetch from History, remove the History entry
+- Make sure that paths coming from Sorting are normalized
+-------------------------------------------------------------------------------
+ 0.6.12Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix issue with new localhost handling on some IPv4-only Unixes
+- Fix job folder creation by Movie Sort when the Sort expression specifies one
+- Fix problem with retrieving ZIP files from some web sites
+-------------------------------------------------------------------------------
+ 0.6.11Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Better support for Yahoo pipes
+- Accept NZB files containing incorrect dates
+-------------------------------------------------------------------------------
+ 0.6.11RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix some Growl issues (OSX)
+- Improve detection of encrypted RAR files during download
+- SABnzbd will now listen on all "localhost" addresses
+- Remove unneeded extra temporary folder level in Generic Sort
+- Show the promised 10 queue entries in the OSX menu instead of 9
+- Fix logging of pre-queue script result
+- "Get bookmarks now" for newzbin only worked when automatic readout was also enabled.
+- When par2 fails do an SFV-based check when SFV files present and feature enabled.
+  (previously SFV was only used when no par2 files were available at all)
+- Do extra checks on job administration on disk
+  (an attempt to diagnose jobs with missing admin files)
+- Make newzbin "Get bookmarks now" button independent of automatic readout
+-------------------------------------------------------------------------------
+ 0.6.10Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Convert ambiguous Windows paths like D: and D:folder to D:\ and D:\folder
+- Fix file name encoding problems when verifying using SFV files
+- Add GNTP module to source distribution
+- Prevent reading newzbin bookmarks when newzbin credentials are not set
+-------------------------------------------------------------------------------
+ 0.6.10RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Allow saving of category paths ending in a *
+  This is will prevent the creation of job folders in the final folder
+- Fix incompatibility with unrar 4.01 regarding detection of encrypted files
+- Create .bak (backup) file for sabnzbd.ini before modifying it
+- OSX: Compatible with Growl 1.2.2 and 1.3
+- OSX: Prevent changes to SABnzbd.app folder which confused the OSX Firewall
+- OSX: Fix access rights of SABnzbs.app so that restricted users can run SABnzbd
+- OSX: Combined SnowLeopard/Lion DMG and separate Leopard DMG
+-------------------------------------------------------------------------------
  0.6.9Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Change the OSX DMG window size (again) so that the optional "path bar"
