@@ -636,6 +636,7 @@ SKIN_TEXT = {
     'button-ShowNameF' : TT('Show Name folder'),
     'button-YMF' : TT('Year-Month Folders'),
     'button-DailyF' : TT('Daily Folders'),
+    'case-adjusted' : TT('case-adjusted'), #: Note for title expression in Sorting that does case adjustment
 
 # Config->Special
     'explain-special' : TT('Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>'
