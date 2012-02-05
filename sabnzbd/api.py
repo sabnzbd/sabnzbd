@@ -1509,6 +1509,8 @@ def build_header(prim, webdir=''):
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
+    header['newzbin_url'] = cfg.newzbin_url()
+
     header['webdir'] = webdir
     header['newzbin_url'] = cfg.newzbin_url()
 
