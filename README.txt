@@ -5,6 +5,8 @@ What's new:
 - Download quota management
 - Windows: simple system tray menu
 - Multi-platform Growl support
+- NotifyOSD support for Linux distros that have it
+- Option to set maximum number of retries for servers (prevents deadlock)
 - Pre-download check to estimate completeness (reliability is limited)
 - Prevent partial downloading of par2 files that are not needed yet
 - Config->Special for settings previously only available in the sabnzbd.ini file
