@@ -574,8 +574,8 @@ def _api_disconnect(name, output, kwargs):
 
 def _api_osx_icon(name, output, kwargs):
     """ API: accepts output, value """
-    value = kwargs.get('value', '1')
-    sabnzbd.OSX_ICON = int(value != '0')
+    value = kwargs.get('value', '1').strip()
+    cfg.osx_menu.set(value != '0')
     return report(output)
 
 

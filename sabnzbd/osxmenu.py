@@ -61,6 +61,7 @@ class SABnzbdDelegate(NSObject):
 
     icons = {}
     status_bar = None
+    osx_icon = True
 
     def awakeFromNib(self):
         #Status Bar iniatilize
@@ -298,9 +299,9 @@ class SABnzbdDelegate(NSObject):
 
     def updateAction_(self, notification):
         try:
-            sabnzbd.OSX_ICON = int(sabnzbd.cfg.osx_menu())
+            self.osx_icon = sabnzbd.cfg.osx_menu()
 
-            if sabnzbd.OSX_ICON:
+            if self.osx_icon:
                 if self.status_removed == 1:
                     self.buildMenu()
 
@@ -780,7 +781,7 @@ class SABnzbdDelegate(NSObject):
         logging.info('[osx] application terminating')
         self.setMenuTitle("\n\n%s\n"% (T('Stopping...')))
         self.status_item.setHighlightMode_(NO)
-        sabnzbd.OSX_ICON = 0
+        self.osx_icon = False
         logging.info('[osx] application stopping daemon')
         sabnzbd.halt()
         cherrypy.engine.exit()

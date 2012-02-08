@@ -125,7 +125,6 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
-OSX_ICON = 1
 PAUSED_ALL = False
 OLD_QUEUE = False
 SCHED_RESTART = False # Set when restarted through scheduler
@@ -191,7 +190,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           DARWIN, RESTART_REQ, OSX_ICON, OLD_QUEUE
+           DARWIN, RESTART_REQ, OLD_QUEUE
 
     if __INITIALIZED__:
         return False
