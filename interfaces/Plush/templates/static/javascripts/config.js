@@ -179,6 +179,11 @@ jQuery(document).ready(function($){
         $(event.target).parents('form:first').attr('action','delServer').submit();
       return false;
     });
+    $('form .clrServer').click(function(event){ // clear server
+      if(confirm($(event.target).attr('rel')))
+        $(event.target).parents('form:first').attr('action','clrServer').submit();
+      return false;
+    });
     break;
 
   case 'Categories':

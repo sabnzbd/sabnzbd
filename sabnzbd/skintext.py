@@ -451,23 +451,24 @@ SKIN_TEXT = {
 
 
 # Config->Server
-    'configServer' : TT('Server configuration'),
-    'defServer' : TT('Server definition'),
-    'addServer' : TT('Add Server'),
-    'srv-host' : TT('Host'),
-    'srv-port' : TT('Port'),
-    'srv-username' : TT('Username'),
-    'srv-password' : TT('Password'),
-    'srv-timeout' : TT('Timeout'),
-    'srv-connections' : TT('Connections'),
-    'srv-retention' : TT('Retention time'),
-    'srv-ssl' : TT('SSL'),
-    'srv-fillserver' : TT('Backup server'),
-    'srv-optional' : TT('Optional'),
-    'srv-enable' : TT('Enable'),
-    'button-addServer' : TT('Add Server'),
-    'button-delServer' : TT('Remove Server'),
-    'button-testServer' : TT('Test Server'),
+    'configServer' : TT('Server configuration'), #: Caption
+    'defServer' : TT('Server definition'), # Caption
+    'addServer' : TT('Add Server'), #: Caption
+    'srv-host' : TT('Host'), #: Server hostname or IP
+    'srv-port' : TT('Port'), #: Server port
+    'srv-username' : TT('Username'), #: Server username
+    'srv-password' : TT('Password'), #: Server password
+    'srv-timeout' : TT('Timeout'), #: Server timeout
+    'srv-connections' : TT('Connections'), #: Server: amount of connections
+    'srv-retention' : TT('Retention time'), #: Server's retention time in days
+    'srv-ssl' : TT('SSL'), #: Server SSL tickbox
+    'srv-fillserver' : TT('Backup server'), #: Backup server tickbox
+    'srv-optional' : TT('Optional'), #: Server optional tickbox
+    'srv-enable' : TT('Enable'), #: Enable server tickbox
+    'button-addServer' : TT('Add Server'), #: Button: Add server
+    'button-delServer' : TT('Remove Server'), #: Button: Remove server
+    'button-testServer' : TT('Test Server'), #: Button: Test server
+    'button-clrServer' : TT('Clear Counters'), #: Button: Clear server's byte counters
     'srv-testing' : TT('Testing server details...'),
     'srv-testHint' : TT('Click below to test.'),
     'srv-bandwidth' : TT('Bandwidth'),

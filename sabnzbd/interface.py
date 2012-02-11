@@ -1491,6 +1491,15 @@ class ConfigServer(object):
         del_from_section(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def clrServer(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        server = kwargs.get('server')
+        if server:
+            BPSMeter.do.clear_server(server)
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 def unique_svr_name(server):

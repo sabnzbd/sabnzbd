@@ -257,6 +257,13 @@ class BPSMeter(object):
                self.week_total.get(server, 0L),  \
                self.day_total.get(server, 0L)
 
+    def clear_server(self, server):
+        """ Clean counters for specified server """
+        if server in self.day_total: del self.day_total[server]
+        if server in self.week_total : del self.week_total[server]
+        if server in self.month_total: del self.month_total[server]
+        if server in self.grand_total: del self.grand_total[server]
+
     def get_bps(self):
         return self.bps
 
