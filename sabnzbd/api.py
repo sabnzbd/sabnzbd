@@ -230,7 +230,7 @@ def _api_queue_priority(output, value, kwargs):
 def _api_queue_sort(output, value, kwargs):
     """ API: accepts output, sort, dir """
     sort = kwargs.get('sort')
-    direction = kwargs.get('dir')
+    direction = kwargs.get('dir', '')
     if sort:
         sort_queue(sort, direction)
         return report(output)
@@ -241,7 +241,7 @@ def _api_queue_sort(output, value, kwargs):
 def _api_queue_default(output, value, kwargs):
     """ API: accepts output, sort, dir, start, limit """
     sort = kwargs.get('sort')
-    direction = kwargs.get('dir')
+    direction = kwargs.get('dir', '')
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     trans = kwargs.get('trans')
