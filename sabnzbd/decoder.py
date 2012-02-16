@@ -218,7 +218,7 @@ def decode(article, data):
                     found = True
                     break
             if found:
-                for n in xrange(i):
+                for n in xrange(i+1):
                     data.pop(0)
             if data[-1] == 'end':
                 data.pop()
