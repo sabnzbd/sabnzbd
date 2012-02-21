@@ -26,7 +26,11 @@ import datetime
 import time
 import cherrypy
 import locale
-locale.setlocale(locale.LC_ALL, "")
+try:
+    locale.setlocale(locale.LC_ALL, "")
+except:
+    # Work-around for Python-ports with bad "locale" support
+    pass
 try:
     import win32api, win32file
 except ImportError:
