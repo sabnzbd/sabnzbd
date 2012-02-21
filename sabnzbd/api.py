@@ -524,7 +524,8 @@ def _api_get_cats(name, output, kwargs):
 
 def _api_get_scripts(name, output, kwargs):
     """ API: accepts output """
-    return report(output, keyword="scripts", data=list_scripts())
+    data = [ unicoder(val) for val in list_scripts() ]
+    return report(output, keyword="scripts", data=data)
 
 
 def _api_version(name, output, kwargs):
@@ -847,8 +848,10 @@ def report(output, error=None, keyword='value', data=None, callback=None):
         else:
             if type(data) in (list, tuple):
                 # Special handling for list/tuple (backward compatibility)
-                data = [str(val) for val in data]
-                response = '%s\n' % ' '.join(data)
+                data = [val for val in data]
+                data = ' '.join(data)
+            if isinstance(data, unicode):
+                response = u'%s\n' % data
             else:
                 response = '%s\n' % str(data)
 
