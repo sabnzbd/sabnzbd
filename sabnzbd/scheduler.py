@@ -313,7 +313,11 @@ def analyse(was_paused=False):
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
     for serv in servers:
         try:
-            config.get_config('servers', serv).enable.set(servers[serv])
+            item = config.get_config('servers', serv)
+            value = servers[serv]
+            if bool(item.enable()) != bool(value):
+                item.enable.set(value)
+                sabnzbd.downloader.Downloader.do.init_server(serv, serv)
         except:
             pass
     config.save_config()
