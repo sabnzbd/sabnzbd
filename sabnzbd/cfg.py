@@ -194,7 +194,7 @@ warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
 
 log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
 log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
-log_level = OptionNumber('logging', 'log_level', 1, 0, 2)
+log_level = OptionNumber('logging', 'log_level', 1, -1, 2)
 log_size = OptionStr('logging', 'max_log_size', '5242880')
 log_backups = OptionNumber('logging', 'log_backups', 5, 1, 1024)
 log_new = OptionBool('logging', 'log_new', False)

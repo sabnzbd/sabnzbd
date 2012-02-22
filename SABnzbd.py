@@ -231,7 +231,7 @@ def print_help():
     print "  -t  --templates <templ>  Template directory [*]"
     print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
-    print "  -l  --logging <0..2>     Set logging level (0= least, 2= most) [*]"
+    print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
     print "  -w  --weblogging <0..2>  Set cherrypy logging (0= off, 1= on, 2= file-only) [*]"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
@@ -941,8 +941,8 @@ def main():
             try:
                 logging_level = int(arg)
             except:
-                logging_level = -1
-            if logging_level < 0 or logging_level > 2:
+                logging_level = -2
+            if logging_level < -1 or logging_level > 2:
                 print_help()
                 exit_sab(1)
         elif opt in ('-v', '--version'):
@@ -1000,7 +1000,7 @@ def main():
     if noConsoleLoggingOSX:
         consoleLogging = 1
 
-    LOGLEVELS = (logging.WARNING, logging.INFO, logging.DEBUG)
+    LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
 
     # Setup primary logging to prevent default console logging
     gui_log = guiHandler(MAX_WARNINGS)
@@ -1185,7 +1185,7 @@ def main():
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
-        logger.setLevel(LOGLEVELS[logging_level])
+        logger.setLevel(LOGLEVELS[logging_level+1])
 
     except IOError:
         print "Error:"
@@ -1213,7 +1213,7 @@ def main():
             if consoleLogging:
                 console = logging.StreamHandler()
                 console.addFilter(FilterCP3())
-                console.setLevel(LOGLEVELS[logging_level])
+                console.setLevel(LOGLEVELS[logging_level+1])
                 console.setFormatter(logging.Formatter(format))
                 logger.addHandler(console)
             if noConsoleLoggingOSX:
@@ -1535,7 +1535,7 @@ def main():
         # Check for loglevel changes
         if LOG_FLAG:
             LOG_FLAG = False
-            level = LOGLEVELS[sabnzbd.cfg.log_level()]
+            level = LOGLEVELS[sabnzbd.cfg.log_level()+1]
             logger.setLevel(level)
             if consoleLogging:
                 console.setLevel(level)
