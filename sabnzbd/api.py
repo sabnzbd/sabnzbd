@@ -649,12 +649,13 @@ def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
     if compact and compact == '1':
-        limit = int_conv(kwargs.get('limit', 30))
+        paths = []
+        name = kwargs.get('term', '')
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
-        paths = '\n'.join(paths[0:limit])
+        return report(output, keyword='', data=paths)
     else:
         paths = folders_at_path(name, True)
-    return report(output, keyword='paths', data=paths)
+        return report(output, keyword='paths', data=paths)
 
 
 #------------------------------------------------------------------------------
