@@ -650,10 +650,11 @@ def _api_browse(name, output, kwargs):
     compact = kwargs.get('compact')
     if compact and compact == '1':
         paths = []
-        name = kwargs.get('term', '')
+        name = platform_encode(kwargs.get('term', ''))
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
         return report(output, keyword='', data=paths)
     else:
+        name = platform_encode(name)
         paths = folders_at_path(name, True)
         return report(output, keyword='paths', data=paths)
 
