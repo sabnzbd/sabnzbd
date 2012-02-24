@@ -134,7 +134,7 @@ class MSGIDGrabber(Thread):
                 else:
                     # Fatal error, give up on this one
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
-                    msgid = None
+                msgid = None
 
             if msgid:
                 growler.send_notification(T('NZB added to queue'), filename, 'download')
@@ -190,7 +190,7 @@ def _grabnzb(msgid):
         pass
     if not (rcode or rtext):
         logging.error(T('Newzbin server changed its protocol'))
-        return None, None, None, None
+        return retry
 
     # Official return codes:
     # 200 = OK, NZB content follows

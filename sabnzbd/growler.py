@@ -175,6 +175,7 @@ def send_growl(title , msg, gtype):
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
+            if not isinstance(msg, str): msg = str(msg)
             logging.debug('Send to Growl: %s %s %s', gtype, latin1(title), latin1(msg))
             try:
                 ret = _GROWL.notify(

@@ -875,7 +875,10 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
         retry : make retry link in histort
         content : report in history that cause is a bad NZB file
     """
-    msg = unicoder(msg)
+    if msg:
+        msg = unicoder(msg)
+    else:
+        msg = ''
 
     pp = nzo.pp
     if pp is None:
