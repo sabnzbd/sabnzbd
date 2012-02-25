@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: utf-8 -*-
-# Copyright 2010-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2010-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -158,6 +158,18 @@ def remove_mo_files():
             if not f.startswith(DOMAIN):
                 os.remove(os.path.join(root, f))
 
+def translate_tmpl(prefix, lng):
+    """ Translate template 'prefix' into language 'lng' """
+    src = open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'r')
+    data = src.read().decode('utf-8')
+    src.close()
+    data = _(data).encode('utf-8')
+    fp = open('email/%s-%s.tmpl' % (prefix, lng), 'wb')
+    if not (-1 < data.find('UTF-8') < 30):
+        fp.write('#encoding UTF-8\n')
+    fp.write(data)
+    fp.close()
+    
 
 def make_templates():
     """ Create email templates
@@ -172,25 +184,10 @@ def make_templates():
             # The unicode flag will make _() return Unicode
             trans.install(unicode=True, names=['lgettext'])
 
-            src = open(EMAIL_DIR + '/email-en.tmpl', 'r')
-            data = src.read().decode('utf-8')
-            src.close()
-            data = _(data).encode('utf-8')
-            fp = open('email/email-%s.tmpl' % lng, 'wb')
-            if not (-1 < data.find('UTF-8') < 30):
-                fp.write('#encoding UTF-8\n')
-            fp.write(data)
-            fp.close()
+            translate_tmpl('email', lng)
+            translate_tmpl('rss', lng)
+            translate_tmpl('badfetch', lng)
 
-            src = open(EMAIL_DIR + '/rss-en.tmpl', 'r')
-            data = src.read().decode('utf-8')
-            src.close()
-            data = _(data).encode('utf-8')
-            fp = open('email/rss-%s.tmpl' % lng, 'wb')
-            if not (-1 < data.find('UTF-8') < 30):
-                fp.write('#encoding UTF-8\n')
-            fp.write(data)
-            fp.close()
             mo_path = os.path.normpath('%s/%s%s/%s.mo' % (MO_DIR, path, MO_LOCALE, DOMAIN_E))
             if os.path.exists(mo_path):
                 os.remove(mo_path)

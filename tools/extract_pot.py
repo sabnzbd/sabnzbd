@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -105,6 +105,17 @@ def get_context(line):
 
     return '#: ' + ' # '.join(newlines) + '\n'
 
+def add_tmpl_to_pot(prefix, dst):
+    """ Append english template to open POT file 'dst'"""
+    src = open(EMAIL_DIR+'/%s-en.tmpl' % prefix, 'r')
+    dst.write('#: email/%s.tmpl:1\n' % prefix)
+    dst.write('msgid ""\n')
+    for line in src:
+        dst.write('"%s"\n' % line.replace('\n', '\\n').replace('"', '\\"'))
+    dst.write('msgstr ""\n\n')
+    src.close()
+
+
 if not os.path.exists(PO_DIR):
     os.makedirs(PO_DIR)
 
@@ -153,23 +164,9 @@ if not os.path.exists(POE_DIR):
     os.makedirs(POE_DIR)
 dst = open(os.path.join(POE_DIR, DOMAIN_EMAIL+'.pot'), 'wb')
 dst.write(HEADER.replace('__TYPE__', 'EMAIL'))
-
-src = open(EMAIL_DIR+'/email-en.tmpl', 'r')
-dst.write('\n#: email/email.tmpl:1\n')
-dst.write('msgid ""\n')
-for line in src:
-    dst.write('"%s"\n' % line.replace('\n', '\\n').replace('"', '\\"'))
-dst.write('msgstr ""\n\n')
-src.close()
-
-src = open(EMAIL_DIR+'/rss-en.tmpl', 'r')
-dst.write('#: email/rss.tmpl:1\n')
-dst.write('msgid ""\n')
-for line in src:
-    dst.write('"%s"\n' % line.replace('\n', '\\n').replace('"', '\\"'))
-dst.write('msgstr ""\n\n')
-src.close()
-
+add_tmpl_to_pot('email', dst)
+add_tmpl_to_pot('rss', dst)
+add_tmpl_to_pot('badfetch', dst)
 dst.close()
 
 

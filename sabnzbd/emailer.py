@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -216,6 +216,13 @@ def rss_mail(feed, jobs):
 
     parm = {'amount' : len(jobs), 'feed' : feed, 'jobs' : jobs}
     return send_with_template('rss', parm)
+
+
+def badfetch_mail(msg, url):
+    """ Send notification email about failed NZB fetch """
+
+    parm = {'url' : url, 'msg' : msg}
+    return send_with_template('badfetch', parm)
 
 
 ################################################################################

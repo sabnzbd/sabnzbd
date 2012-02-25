@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -922,7 +922,12 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
+    if isinstance(url, int) or url.isdigit():
+        url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    #import sabnzbd.emailer
+    sabnzbd.emailer.badfetch_mail(msg, url)
+    
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)
     NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
