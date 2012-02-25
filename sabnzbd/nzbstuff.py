@@ -684,7 +684,10 @@ class NzbObject(TryList):
 
         if not self.files and not reuse:
             self.purge_data(keep_basic=False)
-            logging.warning(Ta('Empty NZB file %s'), filename)
+            if self.url:
+                logging.warning(Ta('Empty NZB file %s') + ' [%s]', filename, self.url)
+            else:
+                logging.warning(Ta('Empty NZB file %s'), filename)
             raise ValueError
 
         if cat is None:
