@@ -13,7 +13,7 @@ $(document).ready(function() {
   $("#serverTest").click(function(){
     $('#serverResponse').html(txtChecking);
     $.getJSON(
-      "/tapi?mode=config&name=test_server&output=json",
+      "../tapi?mode=config&name=test_server&output=json",
       $("form").serialize(),
       function(result) {
         if (result.value.result){
