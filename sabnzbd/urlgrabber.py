@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -335,7 +335,7 @@ _MATRIX_MAP = {
 '40' : 'other.other',
 '34' : 'other.ppc/pda',
 '26' : 'other.radio',
-'6'  : 'tv.divx/xvid',
+'6'  : 'tv.sd',
 '5'  : 'tv.dvd',
 '41' : 'tv.hd',
 '8'  : 'tv.other',
