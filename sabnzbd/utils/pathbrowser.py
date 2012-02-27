@@ -19,6 +19,7 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sabnzbd
 
 # this is for the drive letter code, it only works on windows
 if os.name == 'nt':
@@ -46,6 +47,7 @@ def folders_at_path(path, include_parent = False):
     from sabnzbd.encoding import unicoder
 
     # walk up the tree until we find a valid path
+    path = sabnzbd.misc.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
             path = ''
