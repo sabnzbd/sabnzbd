@@ -501,7 +501,8 @@ NzbObjectMapper = (
     ('duplicate',                    'duplicate'),     # Was detected as a duplicate
     ('oversized',                    'oversized'),     # Was detected as oversized
     ('create_group_folder',          'create_group_folder'),
-    ('precheck',                     'precheck')
+    ('precheck',                     'precheck'),
+    ('incomplete',                   'incomplete')     # Was detected as incomplete
 )
 
 class NzbObject(TryList):
@@ -587,6 +588,7 @@ class NzbObject(TryList):
         self.duplicate = False
         self.oversized = False
         self.precheck = False
+        self.incomplete = False
         if self.status == 'Queued' and not reuse:
             self.precheck = cfg.pre_check()
             if self.precheck:
@@ -670,10 +672,15 @@ class NzbObject(TryList):
             try:
                 parser.parse(inpsrc)
             except xml.sax.SAXParseException, err:
-                self.purge_data(keep_basic=reuse)
-                logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
-                              filename, err.getMessage(), err.getLineNumber())
-                raise ValueError
+                if '</nzb>' not in nzb:
+                    logging.warning(Ta('Incomplete NZB file %s'), filename)
+                    self.incomplete = True
+                    self.pause()
+                else:
+                    self.purge_data(keep_basic=reuse)
+                    logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
+                                    filename, err.getMessage(), err.getLineNumber())
+                    raise ValueError
             except Exception, err:
                 self.purge_data(keep_basic=reuse)
                 logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
@@ -711,7 +718,7 @@ class NzbObject(TryList):
         # Run user pre-queue script if needed
         if not reuse:
             accept, name, pp, cat, script, priority, group = \
-                    sabnzbd.proxy_pre_queue(self.final_name_pw, pp, cat, script,
+                    sabnzbd.proxy_pre_queue(self.final_name_pw_clean, pp, cat, script,
                                             priority, self.bytes, self.groups)
             accept = int_conv(accept)
             try:
@@ -951,6 +958,8 @@ class NzbObject(TryList):
             prefix += Ta('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
         if self.oversized and self.status == 'Paused':
             prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
+        if self.incomplete and self.status == 'Paused':
+            prefix += Ta('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
         if self.password:
             return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
         else:
@@ -980,9 +989,10 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
-        # If user resumes after warning, reset duplicate/oversized indicator
+        # If user resumes after warning, reset duplicate/oversized/incomplete indicators
         self.duplicate = False
         self.oversized = False
+        self.incomplete = False
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
@@ -1292,7 +1302,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw, self.url))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
