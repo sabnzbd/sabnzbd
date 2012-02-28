@@ -19,6 +19,14 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+if os.name == 'nt':
+    import win32api, win32con
+    MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
+    TMASK = win32con.FILE_ATTRIBUTE_DIRECTORY
+    NT = True
+else:
+    NT = False
+
 import sabnzbd
 
 # this is for the drive letter code, it only works on windows
@@ -28,9 +36,9 @@ if os.name == 'nt':
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def get_win_drives():
     """ Return list of detected drives """
-    assert os.name == 'nt'
+    assert NT
     drives = []
-    bitmask = windll.kernel32.GetLogicalDrives() #@UndefinedVariable
+    bitmask = windll.kernel32.GetLogicalDrives()
     for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
         if bitmask & 1:
             drives.append(letter)
@@ -41,10 +49,16 @@ def folders_at_path(path, include_parent = False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
-        from sabnzbd.encoding import unicoder
-        assert os.path.isabs(path) or path == ""
     """
     from sabnzbd.encoding import unicoder
+
+    if path == "":
+        if NT:
+            entries = [{'name': letter + ':\\', 'path': letter + ':\\'} for letter in get_win_drives()]
+            entries.insert(0, {'current_path': 'Root'})
+            return entries
+        else:
+            path = '/'
 
     # walk up the tree until we find a valid path
     path = sabnzbd.misc.real_path(sabnzbd.DIR_HOME, path)
@@ -55,14 +69,6 @@ def folders_at_path(path, include_parent = False):
         else:
             path = os.path.dirname(path)
 
-    if path == "":
-        if os.name == 'nt':
-            entries = [{'name': letter + ':\\', 'path': letter + ':\\'} for letter in get_win_drives()]
-            entries.insert(0, {'current_path': 'Root'})
-            return entries
-        else:
-            path = '/'
-
     # fix up the path and find the parent
     path = os.path.abspath(os.path.normpath(path))
     parent_path = os.path.dirname(path)
@@ -71,10 +77,21 @@ def folders_at_path(path, include_parent = False):
     if path == parent_path and os.name == 'nt':
         parent_path = ""
 
-    file_list = [{ 'name': unicoder(filename), 'path': unicoder(os.path.join(path, filename)) } for filename in os.listdir(path)]
-    file_list = filter(lambda entry: os.path.isdir(entry['path']), file_list)
-    file_list = sorted(file_list, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
-
+    file_list = []
+    try:
+        for filename in os.listdir(path):
+            fpath = os.path.join(path, filename)
+            try:
+                doit = not NT or (win32api.GetFileAttributes(fpath) & MASK) == TMASK
+            except:
+                doit = False
+            if doit:
+                file_list.append({ 'name': unicoder(filename), 'path': unicoder(fpath) })
+        file_list = filter(lambda entry: os.path.isdir(entry['path']), file_list)
+        file_list = sorted(file_list, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
+    except:
+        # No access, ignore
+        pass
     file_list.insert(0, {'current_path': path})
     if include_parent and parent_path != path:
         file_list.insert(1,{ 'name': "..", 'path': parent_path })
