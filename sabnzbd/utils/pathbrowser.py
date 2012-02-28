@@ -20,9 +20,10 @@
 
 import os
 if os.name == 'nt':
-    import win32api, win32con
+    import win32api, win32con, win32file
     MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
     TMASK = win32con.FILE_ATTRIBUTE_DIRECTORY
+    DRIVES = (2, 3, 4)
     NT = True
 else:
     NT = False
@@ -40,7 +41,7 @@ def get_win_drives():
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()
     for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-        if bitmask & 1:
+        if (bitmask & 1) and win32file.GetDriveType('%s:\\' % letter) in DRIVES:
             drives.append(letter)
         bitmask >>= 1
     return drives
@@ -64,8 +65,7 @@ def folders_at_path(path, include_parent = False):
     path = sabnzbd.misc.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
-            path = ''
-            break
+            return folders_at_path('', include_parent)
         else:
             path = os.path.dirname(path)
 
@@ -82,7 +82,10 @@ def folders_at_path(path, include_parent = False):
         for filename in os.listdir(path):
             fpath = os.path.join(path, filename)
             try:
-                doit = not NT or (win32api.GetFileAttributes(fpath) & MASK) == TMASK
+                if NT:
+                    doit = (win32api.GetFileAttributes(fpath) & MASK) == TMASK and filename != 'PerfLogs'
+                else:
+                    doit = not filename.startswith('.')
             except:
                 doit = False
             if doit:
