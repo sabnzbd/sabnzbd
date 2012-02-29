@@ -93,7 +93,7 @@ class SABnzbdDelegate(NSObject):
         #cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
         # Wait for translated texts to be loaded
-        while not check_trans():
+        while not check_trans() and not sabnzbd.SABSTOP:
             time.sleep(0.5)
             if (debug == 1) : NSLog("[osx] language file not loaded, waiting")
 
@@ -786,7 +786,11 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
-        growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), growler.NOTIFICATION['other'])
+        try:
+            growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), growler.NOTIFICATION['other'])
+        except AttributeError:
+            # Fails for the OSX binary
+            pass
         logging.info('Leaving SABnzbd')
         sys.stderr.flush()
         sys.stdout.flush()
