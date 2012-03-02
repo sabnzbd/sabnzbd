@@ -1184,7 +1184,7 @@ class ConfigSwitches(object):
 
 #------------------------------------------------------------------------------
 SPECIAL_BOOL_LIST = \
-            ( 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
+            ( 'start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle',

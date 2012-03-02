@@ -200,6 +200,9 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Set global database connection for Web-UI threads
     cherrypy.engine.subscribe('start_thread', connect_db)
 
+    ### Paused?
+    pause_downloader = pause_downloader or cfg.start_paused()
+
     ### Clean-up, if requested
     if clean_up:
         # Old cache folder

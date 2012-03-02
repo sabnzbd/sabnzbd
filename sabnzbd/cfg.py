@@ -83,6 +83,7 @@ version_check = OptionBool('misc', 'check_new_rel', True)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
+start_paused = OptionBool('misc', 'start_paused', False)
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)
