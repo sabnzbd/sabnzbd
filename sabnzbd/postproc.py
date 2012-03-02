@@ -475,6 +475,12 @@ def process_job(nzo):
         nzo.status = 'Failed'
         par_error = True
         all_ok = False
+        info = nzo.unpack_info.copy()
+        info['fail'] = [nzo.fail_msg]
+        if cfg.email_endjob():
+            emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+                           info, '', '', 0)
+
 
     if all_ok:
         # If the folder only contains one file OR folder, have that as the path

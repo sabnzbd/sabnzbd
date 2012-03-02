@@ -191,9 +191,16 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     """ Send end-of-job email """
 
     # Translate the stage names
+    tr = sabnzbd.api.Ttemplate
     xstages = {}
     for stage in stages:
-        xstages[Tx('stage-'+stage.lower())] = stages[stage]
+        lines = []
+        for line in stages[stage]:
+            if '\n' in line or '<br/>' in line:
+                lines.extend(line.replace('<br/>', '\n').split('\n'))
+            else:
+                lines.append(line)
+        xstages[tr('stage-'+stage.lower())] = lines
 
     parm = {}
     parm['status'] = status
