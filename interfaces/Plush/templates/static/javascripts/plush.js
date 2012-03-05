@@ -116,6 +116,20 @@ jQuery(function($){
     function(){ $(this).removeClass('sprite_q_queuesfHover'); }
   );
 
+  // fix for touch devices -- toggle visibility
+  $('.sprite_q_menu_pausefor').bind('touchend', function(e) {
+      e.preventDefault();
+      if( $(this).hasClass('sprite_q_menu_pauseforsfHover') ) {
+        $(this).find("ul").toggle();
+      }
+  });
+  $('.sprite_q_queue').bind('touchend', function(e) {
+      e.preventDefault();
+      if( $(this).hasClass('sprite_q_queuesfHover') ) {
+        $(this).find("ul").toggle();
+      }
+  });
+
   // modals
   $("#help").colorbox({ inline:true, href:"#help_modal", title:$("#help").text(),
     innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
