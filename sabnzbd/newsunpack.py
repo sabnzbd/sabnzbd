@@ -765,14 +765,14 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
-    if cfg.quick_check():
-        nzo.status = 'QuickCheck'
-        nzo.set_action_line(T('Repair'), T('Quick Checking'))
-        result = QuickCheck(setname, nzo)
-        if result:
-            logging.info("Quick-check for %s is OK, skipping repair", setname)
-            nzo.set_unpack_info('Repair', T('[%s] Quick Check OK') % unicoder(setname), set=setname)
-            pars = setpars
+    nzo.status = 'QuickCheck'
+    nzo.set_action_line(T('Repair'), T('Quick Checking'))
+    qc_result = QuickCheck(setname, nzo)
+    if qc_result and cfg.quick_check():
+        logging.info("Quick-check for %s is OK, skipping repair", setname)
+        nzo.set_unpack_info('Repair', T('[%s] Quick Check OK') % unicoder(setname), set=setname)
+        pars = setpars
+        result = True
 
     if not result:
         nzo.status = 'Repairing'
@@ -795,7 +795,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.setname)
             else:
-                logging.info('Par verify failed on %s!', parfile)
+                if qc_result:
+                    logging.warning('Par verify failed on %s, while QuickCheck succeeded!', parfile)
+                else:
+                    logging.info('Par verify failed on %s!', parfile)
 
                 if not readd:
                     # Failed to repair -> remove this set
