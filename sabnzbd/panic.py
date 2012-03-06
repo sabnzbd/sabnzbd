@@ -242,7 +242,7 @@ def launch_a_browser(url, force=False):
 
     logging.info("Lauching browser with %s", url)
     try:
-        if not url.startswith('http'):
+        if url and not url.startswith('http'):
             url = 'file:///%s' % url
         webbrowser.open(url, 2, 1)
     except:
