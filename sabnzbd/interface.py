@@ -1289,6 +1289,10 @@ class ConfigGeneral(object):
                 interfaces.remove(k)
                 interfaces.insert(0, k)
                 break
+        for k in interfaces:
+            if k.endswith(DEF_STDCONFIG):
+                interfaces.remove(k)
+                break
         for web in interfaces:
             rweb = os.path.basename(web)
             if rweb != '.svn' and rweb != '_svn' and os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
