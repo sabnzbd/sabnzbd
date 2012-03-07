@@ -1095,9 +1095,6 @@ class ConfigFolders(object):
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
 
-        conf['my_home'] = sabnzbd.DIR_HOME
-        conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
-
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
@@ -2571,7 +2568,6 @@ class ConfigNotify(object):
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
-        conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
