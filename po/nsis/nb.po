@@ -7,67 +7,67 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-20 14:21+0000\n"
+"POT-Creation-Date: 2011-06-21 19:21+0000\n"
 "PO-Revision-Date: 2010-10-06 21:37+0000\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-21 04:51+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-06-22 04:57+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 "Language: no\n"
 
-#: NSIS_Installer.nsi:408
+#: NSIS_Installer.nsi:350
 msgid "Start SABnzbd (hidden)"
 msgstr ""
 
-#: NSIS_Installer.nsi:417
+#: NSIS_Installer.nsi:359
 msgid "Show Release Notes"
 msgstr ""
 
-#: NSIS_Installer.nsi:426
+#: NSIS_Installer.nsi:368
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: NSIS_Installer.nsi:435
+#: NSIS_Installer.nsi:377
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
-#: NSIS_Installer.nsi:444
+#: NSIS_Installer.nsi:386
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
 
-#: NSIS_Installer.nsi:453
+#: NSIS_Installer.nsi:395
 msgid "This will uninstall SABnzbd from your system"
 msgstr ""
 
-#: NSIS_Installer.nsi:462
+#: NSIS_Installer.nsi:404
 msgid "Run at startup"
 msgstr ""
 
-#: NSIS_Installer.nsi:471
+#: NSIS_Installer.nsi:413
 msgid "Desktop Icon"
 msgstr ""
 
-#: NSIS_Installer.nsi:480
+#: NSIS_Installer.nsi:422
 msgid "NZB File association"
 msgstr ""
 
-#: NSIS_Installer.nsi:489
+#: NSIS_Installer.nsi:431
 msgid "Delete Program"
 msgstr ""
 
-#: NSIS_Installer.nsi:498
+#: NSIS_Installer.nsi:440
 msgid "Delete Settings"
 msgstr ""
 
-#: NSIS_Installer.nsi:507
+#: NSIS_Installer.nsi:449
 msgid "Delete Logs"
 msgstr ""
 
-#: NSIS_Installer.nsi:516
+#: NSIS_Installer.nsi:458
 msgid "Delete Cache"
 msgstr ""
