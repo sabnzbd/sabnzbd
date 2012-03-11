@@ -1093,6 +1093,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 # This prevents the joined rars files from being seen as an extra rar-set
                 m = _RE_BLOCK_FOUND.search(line)
                 if m and '.rar' in m.group(1).lower() and '.rar' in m.group(2).lower():
+                    workdir = os.path.split(parfile)[0]
                     used_joinables.append(os.path.join(workdir, m.group(1)))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
