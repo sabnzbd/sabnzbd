@@ -1383,6 +1383,7 @@ def main():
                             'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
                             'tools.gzip.on' : True,
+                            'tools.gzip.mime_types' : ['text/html', 'text/plain', 'text/javascript', 'text/css', 'application/x-javascript'],
                             'tools.sessions.on' : bool(sessions),
                             'tools.sessions.storage_type' : 'file',
                             'tools.sessions.storage_path' : sessions,
