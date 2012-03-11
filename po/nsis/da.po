@@ -1,40 +1,39 @@
-#
-# SABnzbd Translation Template file NSIS
-# Copyright (C) 2010 by the SABnzbd Team
-#   team@sabnzbd.org
+# Danish translation for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-0.6.x\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-21 19:21+0000\n"
-"PO-Revision-Date: 2011-03-11 15:27+0000\n"
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-03-09 19:01+0000\n"
+"PO-Revision-Date: 2011-07-28 13:53+0000\n"
 "Last-Translator: Rene <Unknown>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-22 04:57+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
-"Language: da\n"
+"X-Launchpad-Export-Date: 2012-03-11 05:03+0000\n"
+"X-Generator: Launchpad (build 14914)\n"
 
-#: NSIS_Installer.nsi:350
+#: NSIS_Installer.nsi:399
 msgid "Start SABnzbd (hidden)"
 msgstr "Start SABnzbd"
 
-#: NSIS_Installer.nsi:359
+#: NSIS_Installer.nsi:408
 msgid "Show Release Notes"
 msgstr "Vis udgivelsesbemærkninger"
 
-#: NSIS_Installer.nsi:368
+#: NSIS_Installer.nsi:417
 msgid "Support the project, Donate!"
 msgstr "Støtte projektet, donere!"
 
-#: NSIS_Installer.nsi:377
+#: NSIS_Installer.nsi:426
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Luk 'SABnzbd.exe' først"
 
-#: NSIS_Installer.nsi:386
+#: NSIS_Installer.nsi:435
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
@@ -42,56 +41,60 @@ msgstr ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nVenligst, kontrollér først "
 "udgivelsesnoter eller gå til http://wiki.sabnzbd.org/introducing-0-6-0 !"
 
-#: NSIS_Installer.nsi:395
+#: NSIS_Installer.nsi:444
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Dette vil afinstallere SABnzbd fra dit system"
 
-#: NSIS_Installer.nsi:404
+#: NSIS_Installer.nsi:453
 msgid "Run at startup"
 msgstr "Kør ved opstart"
 
-#: NSIS_Installer.nsi:413
+#: NSIS_Installer.nsi:462
 msgid "Desktop Icon"
 msgstr "Skrivebords ikon"
 
-#: NSIS_Installer.nsi:422
+#: NSIS_Installer.nsi:471
 msgid "NZB File association"
 msgstr "NZB filtilknytning"
 
-#: NSIS_Installer.nsi:431
+#: NSIS_Installer.nsi:480
 msgid "Delete Program"
 msgstr "Slet program"
 
-#: NSIS_Installer.nsi:440
+#: NSIS_Installer.nsi:489
 msgid "Delete Settings"
 msgstr "Slet instillinger"
 
-#: NSIS_Installer.nsi:449
-msgid "Delete Logs"
-msgstr "Slet logs"
+#: NSIS_Installer.nsi:498
+msgid ""
+"This system requires the Microsoft runtime library VC90 to be installed "
+"first. Do you want to do that now?"
+msgstr ""
+"Dette system kræver, at Microsoft runtime biblioteket VC90, der skal "
+"installeres først. Ønsker du at gøre det nu?"
 
-#: NSIS_Installer.nsi:458
-msgid "Delete Cache"
-msgstr "Slet hukommelse"
+#: NSIS_Installer.nsi:507
+msgid "Downloading Microsoft runtime installer..."
+msgstr "Downloading Microsoft runtime installer..."
 
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\r\n"
-#~ "\r\n"
-#~ "If not empty, download your current queue with the old program.\r\n"
-#~ "The new program will ignore your current queue!"
-#~ msgstr ""
-#~ "                  >>>> ADVARSEL <<<<\r\n"
-#~ "\r\n"
-#~ "Hvis ikke tom, skal du downloade din nuværende kø med det gamle program. \r\n"
-#~ "Det nye program vil ignorere din nuværende kø!"
+#: NSIS_Installer.nsi:516
+msgid "Download error, retry?"
+msgstr "Download fejl, prøv igen?"
 
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\r\n"
-#~ "\r\n"
-#~ "Please, first check the release notes or go to "
-#~ "http://wiki.sabnzbd.org/introducing-0-6-0 !"
-#~ msgstr ""
-#~ "                  >>>> ADVARSEL <<<<\r\n"
-#~ "\r\n"
-#~ "Venligst, check først udgivelse notaer eller gå til "
-#~ "http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#: NSIS_Installer.nsi:525
+msgid "Cannot install without runtime library, retry?"
+msgstr "Kan ikke installere uden runtime bibliotek, prøv igen?"
+
+#: NSIS_Installer.nsi:534
+msgid ""
+"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
+"the previous version or `Cancel` to cancel this upgrade."
+msgstr ""
+"Du kan ikke overskrive en eksisterende installation. Klik `OK` for at fjerne "
+"den tidligere version eller `Annuller` for at annullere denne opgradering."
+
+#~ msgid "Delete Cache"
+#~ msgstr "Slet hukommelse"
+
+#~ msgid "Delete Logs"
+#~ msgstr "Slet logs"
