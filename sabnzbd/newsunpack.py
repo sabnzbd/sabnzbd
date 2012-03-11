@@ -254,119 +254,122 @@ def match_ts(file):
         set = ''
     return match, set, num
 
+
+def clean_up_joinables(names):
+    ''' Remove joinable files and their .1 backups
+    '''
+    for name in names:
+        if os.path.exists(name):
+            logging.debug("Deleting %s", name)
+            try:
+                os.remove(name)
+            except:
+                pass
+        name1 = name + ".1"
+        if os.path.exists(name1):
+            logging.debug("Deleting %s", name1)
+            try:
+                os.remove(name1)
+            except:
+                pass
+
+def get_seq_number(name):
+    ''' Return sequence number if name as an int
+    '''
+    head, tail = os.path.splitext(name)
+    if tail == '.ts':
+        match, set, num = match_ts(name)
+    else:
+        num = tail[1:]
+    assert isinstance(num, str)
+    if num.isdigit():
+        return int(num)
+    else:
+        return 0
+
 def file_join(nzo, workdir, workdir_complete, delete, joinables):
     """ Join and joinable files in 'workdir' to 'workdir_complete' and
         when succesful, delete originals
     """
     newfiles = []
+
+    # Create matching sets from the list of files
+    joinable_sets = {}
+    set = match = num = None
+    for joinable in joinables:
+        head, tail = os.path.splitext(joinable)
+        if tail == '.ts':
+            match, set, num = match_ts(joinable)
+        if not set:
+            set = head
+        if set not in joinable_sets:
+            joinable_sets[set] = []
+        joinable_sets[set].append(joinable)
+    logging.debug("joinable_sets: %s", joinable_sets)
+
     try:
-        joinable_sets = {}
-        set = match = num = None
-        for joinable in joinables:
-            head, tail = os.path.splitext(joinable)
-            if tail == '.ts':
-                match, set, num = match_ts(joinable)
-            if not set:
-                set = head
-
-            if set not in joinable_sets:
-                joinable_sets[set] = []
-            joinable_sets[set].append(joinable)
-
-        logging.debug("joinable_sets: %s", joinable_sets)
-
+        # Handle each set
         for joinable_set in joinable_sets:
-            try:
-                expected_size = 0
-                # Make sure there are no missing files in the file sequence
-                # Add 1 to the value before adding to take into account .000
-                for i in xrange(len(joinable_sets[joinable_set])+1):
-                    expected_size += i
-                logging.debug("FJN, expsize: %s", expected_size)
+            current = joinable_sets[joinable_set]
+            joinable_sets[joinable_set].sort()
 
-                # Add together the values of .001 (+1 for .000)
-                # To work out the actual size
-                real_size = 0
-                for joinable in joinable_sets[joinable_set]:
-                    head, tail = os.path.splitext(joinable)
-                    if tail == '.ts':
-                        match, set, num = match_ts(joinable)
-                        real_size += num+1
-                    else:
-                        real_size += int(tail[1:])
-                logging.debug("FJN, realsize: %s", real_size)
+            # If par2 already did the work, just remove the files
+            if os.path.exists(joinable_set):
+                logging.debug("file_join(): Skipping %s, (probably) joined by par2", joinable_set)
+                if delete:
+                    clean_up_joinables(current)
+                # done, go to next set
+                continue
 
-                if real_size != expected_size:
-                    msg = T('Expected size did not equal actual size')
-                    nzo.fail_msg = T('File join of %s failed') % msg
-                    nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-                    logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
-                else:
-                    joinable_sets[joinable_set].sort()
-                    filename = joinable_set
+            # Prepare joined file
+            filename = joinable_set
+            if workdir_complete:
+                filename = filename.replace(workdir, workdir_complete)
+            logging.debug("file_join(): Assembling %s", filename)
+            joined_file = open(filename, 'ab')
 
-                    # Check if par2 repaired this joinable set
-                    if os.path.exists(filename):
-                        logging.debug("file_join(): Skipping %s, (probably) joined by par2", filename)
-                        if delete:
-                            i = 0
-                            for joinable in joinable_sets[joinable_set]:
-                                if os.path.exists(joinable):
-                                    logging.debug("Deleting %s", joinable)
-                                    try:
-                                        os.remove(joinable)
-                                    except:
-                                        pass
-                                path1 = joinable + ".1"
-                                if os.path.exists(path1):
-                                    logging.debug("Deleting %s", path1)
-                                    try:
-                                        os.remove(path1)
-                                    except:
-                                        pass
-                                i += 1
-                        continue
+            # Join the segments
+            size = len(current)
+            n = get_seq_number(current[0])
+            seq_error = n > 1
+            for joinable in current:
+                if get_seq_number(joinable) != n:
+                    seq_error = True
+                perc = (100.0 / size) * n
+                logging.debug("Processing %s", joinable)
+                nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
+                f = open(joinable, 'rb')
+                joined_file.write(f.read())
+                f.close()
+                if delete:
+                    logging.debug("Deleting %s", joinable)
+                    os.remove(joinable)
+                n += 1
 
-                    if workdir_complete:
-                        filename = filename.replace(workdir, workdir_complete)
+            # Remove any remaining .1 files
+            clean_up_joinables(current)
 
-                    logging.debug("file_join(): Assembling %s", filename)
+            # Finish up
+            joined_file.flush()
+            joined_file.close()
+            newfiles.append(joinable_set)
 
-                    joined_file = open(filename, 'ab')
-
-                    i = 0
-                    for joinable in joinable_sets[joinable_set]:
-                        join_num = len(joinable_sets[joinable_set])
-                        perc = (100.0/join_num)*(i)
-                        logging.debug("Processing %s", joinable)
-                        nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
-                        f = open(joinable, 'rb')
-                        joined_file.write(f.read())
-                        f.close()
-                        i += 1
-                        if delete:
-                            logging.debug("Deleting %s", joinable)
-                            os.remove(joinable)
-
-                    joined_file.flush()
-                    joined_file.close()
-                    msg = T('[%s] Joined %s files') % (unicoder(joinable_set), i)
-                    nzo.set_unpack_info('Filejoin', msg, set=joinable_set)
-                    newfiles.append(joinable_set)
-            except:
-                msg = sys.exc_info()[1]
-                nzo.fail_msg = T('File join of %s failed') % msg
+            if seq_error:
+                msg = T('Incomplete sequence of joinable files')
+                nzo.fail_msg = T('File join of %s failed') % unicoder(joinable_set)
                 nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
                 logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
-                return True, []
-
-        return False, newfiles
+            else:
+                msg = T('[%s] Joined %s files') % (unicoder(joinable_set), size)
+                nzo.set_unpack_info('Filejoin', msg, set=joinable_set)
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('File join of %s failed') % msg
         nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
         logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
         return True, []
+
+    return False, newfiles
 
 
 #------------------------------------------------------------------------------
