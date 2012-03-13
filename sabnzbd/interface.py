@@ -35,7 +35,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, globber, remove_all
+     cat_to_opts, int_conv, globber, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
@@ -1616,6 +1616,7 @@ class ConfigRss(object):
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
             rss[feed]['link'] = urllib.quote_plus(feed)
+            rss[feed]['baselink'] = get_base_url(rss[feed]['uri'])
 
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed

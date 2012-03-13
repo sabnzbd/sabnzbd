@@ -931,7 +931,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     #import sabnzbd.emailer
     sabnzbd.emailer.badfetch_mail(msg, url)
-    
+
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)
     NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
@@ -1243,3 +1243,11 @@ def format_source_url(url):
         return '%s://%s/browse/post/%s/' % (cfg.newzbin_url(), prot, str(url))
     else:
         return url
+
+RE_URL = re.compile(r'://([^/]+)/')
+def get_base_url(url):
+    m = RE_URL.search(url)
+    if m:
+        return m.group(1)
+    else:
+        return ''
