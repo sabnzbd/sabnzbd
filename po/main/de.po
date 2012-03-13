@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-03-09 19:01+0000\n"
-"PO-Revision-Date: 2011-11-05 10:45+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"POT-Creation-Date: 2012-03-12 18:33+0000\n"
+"PO-Revision-Date: 2012-03-12 22:23+0000\n"
+"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-11 05:02+0000\n"
-"X-Generator: Launchpad (build 14914)\n"
+"X-Launchpad-Export-Date: 2012-03-13 05:19+0000\n"
+"X-Generator: Launchpad (build 14933)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -55,7 +55,7 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS wegen fehlenden Zertifikats- und Schlüsseldateien deaktiviert."
 
-#: SABnzbd.py:1619 # sabnzbd/osxmenu.py:790
+#: SABnzbd.py:1620 # sabnzbd/osxmenu.py:790
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd wurde beendet"
 
@@ -654,199 +654,196 @@ msgstr "pyopenssl-Modul fehlt. Bitte installieren für SSL-Unterstützung."
 msgid "Error creating SSL key and certificate"
 msgstr "Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats."
 
-#: sabnzbd/newsunpack.py:300
-msgid "Expected size did not equal actual size"
-msgstr "Die tatsächliche Grösse entsprach nicht der erwarteten Grösse."
-
-#: sabnzbd/newsunpack.py:301 # sabnzbd/newsunpack.py:358
-#: sabnzbd/newsunpack.py:366
-msgid "File join of %s failed"
-msgstr "Fehler beim Zusammenfügen von %s"
-
-#: sabnzbd/newsunpack.py:302 # sabnzbd/newsunpack.py:359
-#: sabnzbd/newsunpack.py:367
-msgid "[%s] Error \"%s\" while joining files"
-msgstr "[%s] Fehler \"%s\" beim Zusammenfügen der Dateien"
-
-#: sabnzbd/newsunpack.py:303 [Error message] # sabnzbd/newsunpack.py:360 [Error message]
-#: sabnzbd/newsunpack.py:368 [Error message]
-msgid "Error \"%s\" while running file_join on %s"
-msgstr "Fehler \"%s\" beim Ausführen von file_join auf %s"
-
-#: sabnzbd/newsunpack.py:342
+#: sabnzbd/newsunpack.py:340
 msgid "Joining"
 msgstr "Zusammenfügen"
 
-#: sabnzbd/newsunpack.py:353
+#: sabnzbd/newsunpack.py:358
+msgid "Incomplete sequence of joinable files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:359 # sabnzbd/newsunpack.py:367
+msgid "File join of %s failed"
+msgstr "Fehler beim Zusammenfügen von %s"
+
+#: sabnzbd/newsunpack.py:360 # sabnzbd/newsunpack.py:368
+msgid "[%s] Error \"%s\" while joining files"
+msgstr "[%s] Fehler \"%s\" beim Zusammenfügen der Dateien"
+
+#: sabnzbd/newsunpack.py:361 [Error message] # sabnzbd/newsunpack.py:369 [Error message]
+msgid "Error \"%s\" while running file_join on %s"
+msgstr "Fehler \"%s\" beim Ausführen von file_join auf %s"
+
+#: sabnzbd/newsunpack.py:363
 msgid "[%s] Joined %s files"
 msgstr "[%s] %s Dateien zusammengefügt"
 
-#: sabnzbd/newsunpack.py:415 # sabnzbd/newsunpack.py:726
+#: sabnzbd/newsunpack.py:418 # sabnzbd/newsunpack.py:729
 msgid "Unpacking failed, %s"
 msgstr "Entpacken fehlgeschlagen. %s"
 
-#: sabnzbd/newsunpack.py:417
+#: sabnzbd/newsunpack.py:420
 msgid "[%s] Error \"%s\" while unpacking RAR files"
 msgstr "[%s] Fehler \"%s\" beim Entpacken der RAR-Dateien"
 
-#: sabnzbd/newsunpack.py:419 [Error message]
+#: sabnzbd/newsunpack.py:422 [Error message]
 msgid "Error \"%s\" while running rar_unpack on %s"
 msgstr "Fehler \"%s\" beim Ausführen von rar_unpack auf %s"
 
-#: sabnzbd/newsunpack.py:434 [Warning message] # sabnzbd/newsunpack.py:443 [Warning message]
-#: sabnzbd/newsunpack.py:711 [Warning message] # sabnzbd/newsunpack.py:721 [Warning message]
-#: sabnzbd/newsunpack.py:826 [Warning message] # sabnzbd/newsunpack.py:836 [Warning message]
-#: sabnzbd/newsunpack.py:843 [Warning message] # sabnzbd/newsunpack.py:850 [Warning message]
-#: sabnzbd/newsunpack.py:865 [Warning message]
+#: sabnzbd/newsunpack.py:437 [Warning message] # sabnzbd/newsunpack.py:446 [Warning message]
+#: sabnzbd/newsunpack.py:714 [Warning message] # sabnzbd/newsunpack.py:724 [Warning message]
+#: sabnzbd/newsunpack.py:829 [Warning message] # sabnzbd/newsunpack.py:839 [Warning message]
+#: sabnzbd/newsunpack.py:846 [Warning message] # sabnzbd/newsunpack.py:853 [Warning message]
+#: sabnzbd/newsunpack.py:868 [Warning message]
 msgid "Deleting %s failed!"
 msgstr "Löschen von %s fehlgeschlagen!"
 
-#: sabnzbd/newsunpack.py:482
+#: sabnzbd/newsunpack.py:485
 msgid "Trying unrar with password \"%s\""
 msgstr ""
 
-#: sabnzbd/newsunpack.py:490 [Error message] # sabnzbd/newsunpack.py:611
-#: sabnzbd/newsunpack.py:612
+#: sabnzbd/newsunpack.py:493 [Error message] # sabnzbd/newsunpack.py:614
+#: sabnzbd/newsunpack.py:615
 msgid "Unpacking failed, archive requires a password"
 msgstr "Entpacken fehlgeschlagen. Archiv benötigt ein Passwort."
 
-#: sabnzbd/newsunpack.py:549 # sabnzbd/newsunpack.py:569
-#: sabnzbd/newsunpack.py:686
+#: sabnzbd/newsunpack.py:552 # sabnzbd/newsunpack.py:572
+#: sabnzbd/newsunpack.py:689
 msgid "Unpacking"
 msgstr "Entpacken"
 
-#: sabnzbd/newsunpack.py:573 # sabnzbd/newsunpack.py:574
+#: sabnzbd/newsunpack.py:576 # sabnzbd/newsunpack.py:577
 msgid "Unpacking failed, unable to find %s"
 msgstr "Entpacken fehlgeschlagen. Konnte %s nicht finden."
 
-#: sabnzbd/newsunpack.py:576 [Warning message]
+#: sabnzbd/newsunpack.py:579 [Warning message]
 msgid "ERROR: unable to find \"%s\""
 msgstr "%s konnte nicht gefunden werden."
 
-#: sabnzbd/newsunpack.py:581
+#: sabnzbd/newsunpack.py:584
 msgid "Unpacking failed, CRC error"
 msgstr "Entpacken fehlgeschlagen. CRC-Fehler"
 
-#: sabnzbd/newsunpack.py:582 # sabnzbd/newsunpack.py:584 [Warning message]
+#: sabnzbd/newsunpack.py:585 # sabnzbd/newsunpack.py:587 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "CRC-Fehler in %s."
 
-#: sabnzbd/newsunpack.py:588 # sabnzbd/newsunpack.py:589
+#: sabnzbd/newsunpack.py:591 # sabnzbd/newsunpack.py:592
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 "Entpacken fehlgeschlagen. Fehler beim Schreiben oder volle Festplatte?"
 
-#: sabnzbd/newsunpack.py:591 [Warning message]
+#: sabnzbd/newsunpack.py:594 [Warning message]
 msgid "ERROR: write error (%s)"
 msgstr "Fehler beim Schreiben: %s"
 
-#: sabnzbd/newsunpack.py:595
+#: sabnzbd/newsunpack.py:598
 msgid "Unpacking failed, see log"
 msgstr "Entpacken fehlgeschlagen. Beachten Sie das Protokoll."
 
-#: sabnzbd/newsunpack.py:596 [Warning message] # sabnzbd/newsunpack.py:597
+#: sabnzbd/newsunpack.py:599 [Warning message] # sabnzbd/newsunpack.py:600
 msgid "ERROR: %s"
 msgstr "Fehler: %s"
 
-#: sabnzbd/newsunpack.py:652
+#: sabnzbd/newsunpack.py:655
 msgid "Missing expected file: %s => unrar error?"
 msgstr "Erwartete Datei %s nicht gefunden. Unrar-Fehler?"
 
-#: sabnzbd/newsunpack.py:655
+#: sabnzbd/newsunpack.py:658
 msgid "Unpacking failed, an expected file was not unpacked"
 msgstr "Entpacken fehlgeschlagen. Eine erwartete Datei wurde nicht entpackt."
 
-#: sabnzbd/newsunpack.py:657
+#: sabnzbd/newsunpack.py:660
 msgid "Unpacking failed, these file(s) are missing:"
 msgstr "Entpacken fehlgeschlagen. Diese Dateien fehlten:"
 
-#: sabnzbd/newsunpack.py:664
+#: sabnzbd/newsunpack.py:667
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s Datei(en)/Ordner entpackt in %s"
 
-#: sabnzbd/newsunpack.py:698
+#: sabnzbd/newsunpack.py:701
 msgid "%s files in %s"
 msgstr "%s Dateien in %s"
 
-#: sabnzbd/newsunpack.py:727 [Error message]
+#: sabnzbd/newsunpack.py:730 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Fehler \"%s\" beim Ausführen von unzip auf %s"
 
-#: sabnzbd/newsunpack.py:769
+#: sabnzbd/newsunpack.py:772
 msgid "Quick Checking"
 msgstr "Schnelle Überprüfung"
 
-#: sabnzbd/newsunpack.py:769 # sabnzbd/newsunpack.py:782 # sabnzbd/skintext.py:27 [PP phase "repair"]
+#: sabnzbd/newsunpack.py:772 # sabnzbd/newsunpack.py:785 # sabnzbd/skintext.py:27 [PP phase "repair"]
 #: sabnzbd/skintext.py:165 # sabnzbd/skintext.py:262
 msgid "Repair"
 msgstr "Reparieren"
 
-#: sabnzbd/newsunpack.py:773
+#: sabnzbd/newsunpack.py:776
 msgid "[%s] Quick Check OK"
 msgstr "[%s] Schnelle Überprüfung erfolgreich"
 
-#: sabnzbd/newsunpack.py:782
+#: sabnzbd/newsunpack.py:785
 msgid "Starting Repair"
 msgstr "Beginn der Reparatur"
 
-#: sabnzbd/newsunpack.py:809 # sabnzbd/newsunpack.py:868
+#: sabnzbd/newsunpack.py:812 # sabnzbd/newsunpack.py:871
 msgid "Repairing failed, %s"
 msgstr "Reparatur fehlgeschlagen. %s"
 
-#: sabnzbd/newsunpack.py:810 [Error message]
+#: sabnzbd/newsunpack.py:813 [Error message]
 msgid "Error %s while running par2_repair on set %s"
 msgstr "Fehler \"%s\" beim Ausführen von par2_repair auf %s"
 
-#: sabnzbd/newsunpack.py:869 [Error message]
+#: sabnzbd/newsunpack.py:872 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Fehler \"%s\" beim Ausführen von par2_repair auf dem Satz %s"
 
-#: sabnzbd/newsunpack.py:949
+#: sabnzbd/newsunpack.py:952
 msgid ""
 "[%s] PAR2 received incorrect options, check your Config->Switches settings"
 msgstr ""
 "[%s] Ungültige PAR2-Optionen. Überprüfen Sie die Angaben in Einstellungen -> "
 "Schalter."
 
-#: sabnzbd/newsunpack.py:954
+#: sabnzbd/newsunpack.py:957
 msgid "[%s] Verified in %s, all files correct"
 msgstr "[%s] Überprüft in %s. Alle Dateien fehlerfrei."
 
-#: sabnzbd/newsunpack.py:961
+#: sabnzbd/newsunpack.py:964
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Überprüft in %s. Reparatur wird benötigt."
 
-#: sabnzbd/newsunpack.py:970
+#: sabnzbd/newsunpack.py:973
 msgid "Main packet not found..."
 msgstr "Hauptpaket nicht gefunden..."
 
-#: sabnzbd/newsunpack.py:990
+#: sabnzbd/newsunpack.py:993
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Ungültige PAR2-Dateien. Überprüfung oder Reparatur nicht möglich."
 
-#: sabnzbd/newsunpack.py:1031 # sabnzbd/newsunpack.py:1063
+#: sabnzbd/newsunpack.py:1034 # sabnzbd/newsunpack.py:1066
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr ""
 "Reparatur fehlgeschlagen. Nicht genug Reparatur-Blöcke vorhanden (%s zu "
 "wenig)"
 
-#: sabnzbd/newsunpack.py:1058
+#: sabnzbd/newsunpack.py:1061
 msgid "Fetching %s blocks..."
 msgstr "%s Blöcke werden abgerufen..."
 
-#: sabnzbd/newsunpack.py:1060
+#: sabnzbd/newsunpack.py:1063
 msgid "Fetching"
 msgstr "Abrufen"
 
-#: sabnzbd/newsunpack.py:1072 # sabnzbd/newsunpack.py:1077
+#: sabnzbd/newsunpack.py:1075 # sabnzbd/newsunpack.py:1080
 msgid "Repairing"
 msgstr "Reparieren"
 
-#: sabnzbd/newsunpack.py:1081
+#: sabnzbd/newsunpack.py:1084
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Repariert in %s"
 
-#: sabnzbd/newsunpack.py:1104 # sabnzbd/newsunpack.py:1122
+#: sabnzbd/newsunpack.py:1108 # sabnzbd/newsunpack.py:1126
 msgid "Verifying"
 msgstr "Überprüfen"
 
@@ -1898,7 +1895,7 @@ msgstr "Nach Alter sortieren"
 
 #: sabnzbd/skintext.py:177 [Queue page button]
 msgid "Sort by size"
-msgstr "Nach Grösse sortieren"
+msgstr "Nach Größe sortieren"
 
 #: sabnzbd/skintext.py:178 [Queue page button]
 msgid "Hide files"
@@ -1970,7 +1967,7 @@ msgstr "Aktionen"
 
 #: sabnzbd/skintext.py:198 [Queue page table, script selection menu]
 msgid "Scripts"
-msgstr "Skripts"
+msgstr "Skripte"
 
 #: sabnzbd/skintext.py:200 [Confirmation popup]
 msgid "Delete all items from the queue?"
@@ -4222,7 +4219,7 @@ msgid ""
 "following location: %s"
 msgstr ""
 "Nach dem Neustart von SAbnzbd können Sie über folgende Adresse darauf "
-"zugreifen:"
+"zugreifen: %s"
 
 #: sabnzbd/skintext.py:846 [Wizard tip]
 msgid ""
@@ -4309,6 +4306,9 @@ msgstr "Ungültige nzbmatrix.com-Bericht-ID %s."
 #~ msgstr ""
 #~ "Fehler beim Abrufen der Download-ID %s von newzbin.com - Überprüfen Sie, ob "
 #~ "der Benutzername und das Passwort korrekt eingegeben wurden."
+
+#~ msgid "Expected size did not equal actual size"
+#~ msgstr "Die tatsächliche Grösse entsprach nicht der erwarteten Grösse."
 
 #~ msgid ""
 #~ "If you have an account at <strong>www.newzbin.com</strong>, you can enter "
