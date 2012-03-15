@@ -1,0 +1,3 @@
+[submodule "interfaces/Config"]
+	path = interfaces/Config
+	url = https://github.com/thezoggy/sabnzbd-uni_Config.git
