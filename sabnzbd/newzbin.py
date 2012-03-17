@@ -130,6 +130,7 @@ class MSGIDGrabber(Thread):
                 msgid = None
             else:
                 if filename:
+                    self.queue.put((msgid, nzo))
                     sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
