@@ -266,7 +266,7 @@ def _analyse_matrix(fn, matrix_id):
         return None, msg, True, 60
     try:
         f = open(fn, 'r')
-        data = f.read(40)
+        data = f.read(40).lower()
         f.close()
     except:
         logging.debug('Problem with tempfile %s from nzbmatrix, retry after 60 sec', fn)
@@ -285,8 +285,12 @@ def _analyse_matrix(fn, matrix_id):
             else:
                 msg = (Ta('Invalid nzbmatrix credentials') + ' (%s)') % txt
             return None, msg, False, 0
+        elif 'limit_reached' in data:
+            msg = 'Too many nzbmatrix hits, waiting 10 min'
+            wait = 600
         elif misc.match_str(data, ('daily_limit', 'limit is reached')):
             # Daily limit reached, just wait an hour before trying again
+            msg = 'Daily limit nzbmatrix reached, waiting 1 hour'
             wait = 3600
         elif 'no_nzb_found' in data:
             msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
