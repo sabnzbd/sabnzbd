@@ -70,7 +70,7 @@ class URLGrabber(Thread):
     def stop(self):
         logging.info('URLGrabber shutting down')
         self.shutdown = True
-        self.queue.add(None, None)
+        self.add(None, None)
 
     def run(self):
         logging.info('URLGrabber starting up')
