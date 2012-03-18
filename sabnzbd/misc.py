@@ -1251,3 +1251,10 @@ def get_base_url(url):
         return m.group(1)
     else:
         return ''
+
+def match_str(text, matches):
+    ''' Return first matching element of list 'matches' in 'text', otherwise None '''
+    for match in matches:
+        if match in text:
+            return match
+    return None

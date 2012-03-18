@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -78,30 +78,30 @@ class MSGIDGrabber(Thread):
         self.shutdown = False
         MSGIDGrabber.do = self
 
-    def grab(self, msgid, nzo):
-        logging.debug("Adding msgid %s to the queue", msgid)
+    def grab(self, msgid, nzo, when=None):
+        ''' Add job to the waiting queue, 'when' gives delay in seconds '''
+        if when:
+            nzo.wait = time.time() + when
         self.queue.put((msgid, nzo))
 
     def stop(self):
-        # Put None on the queue to stop "run"
+        ''' Force stop of 'run' '''
         self.shutdown = True
+        # Put None on the queue to get 'run' out of the queue-wait
         self.queue.put((None, None))
 
     def run(self):
         """ Process the queue (including waits and retries) """
         from sabnzbd.nzbqueue import NzbQueue
-        def sleeper(delay):
-            for n in range(delay):
-                if not self.shutdown:
-                    time.sleep(1.05)
-
         self.shutdown = False
-        msgid = None
         while not self.shutdown:
-            if not msgid:
-                (msgid, nzo) = self.queue.get()
-                if self.shutdown or not msgid:
-                    break
+            time.sleep(5)
+            (msgid, nzo) = self.queue.get()
+            if self.shutdown or not msgid:
+                break
+            if nzo.wait and nzo.wait > time.time():
+                self.grab(msgid, nzo)
+                continue
             logging.debug("Popping msgid %s", msgid)
 
             filename, data, newzbin_cat, nzo_info = _grabnzb(msgid)
@@ -130,8 +130,7 @@ class MSGIDGrabber(Thread):
                 msgid = None
             else:
                 if filename:
-                    self.queue.put((msgid, nzo))
-                    sleeper(int(filename))
+                    self.grab(msgid, nzo, float(filename))
                 else:
                     # Fatal error, give up on this one
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
@@ -139,9 +138,6 @@ class MSGIDGrabber(Thread):
 
             if msgid:
                 growler.send_notification(T('NZB added to queue'), filename, 'download')
-
-            # Keep some distance between the grabs
-            sleeper(5)
 
         logging.debug('Stopping MSGIDGrabber')
 
@@ -237,14 +233,14 @@ def _grabnzb(msgid):
 
     if rcode != '200':
         msg = Ta('Newzbin gives undocumented error code (%s, %s)') % (rcode, rtext)
-        return None, None, None, msg
+        return 60, None, None, msg
 
     # Process data
     report_name = response.getheader('X-DNZB-Name')
     report_cat  = response.getheader('X-DNZB-Category')
     if not (report_name and report_cat):
         msg = Ta('Newzbin server fails to give info for %s') %  msgid
-        return None, None, None, msg
+        return 60, None, None, msg
 
     # sanitize report_name
     newname = sanitize_foldername(report_name)
@@ -364,12 +360,15 @@ class Bookmarks(object):
 
     @synchronized(BOOK_LOCK)
     def save(self):
+        ''' Save queued newzbin bookmarks to disk (semaphored) '''
         self._save()
 
     def _save(self):
+        ''' Save queued newzbin bookmarks to disk '''
         sabnzbd.save_admin(self.bookmarks, BOOKMARK_FILE_NAME)
 
     def bookmarksList(self):
+        ''' Return list of newzbin bookmarks '''
         return self.bookmarks
 
     def del_bookmark(self, msgid):

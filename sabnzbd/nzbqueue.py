@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -273,7 +273,12 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_final_name_pw(name)
+            nzo = self.__nzo_table[nzo_id]
+            if not nzo.futuretype:
+                nzo.set_final_name_pw(name)
+            else:
+                # Reset url fetch wait time
+                nzo.wait = None
 
     @synchronized(NZBQUEUE_LOCK)
     def get_nzo(self, nzo_id):

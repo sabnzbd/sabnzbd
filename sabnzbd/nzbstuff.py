@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -614,6 +614,7 @@ class NzbObject(TryList):
         self.save_timeout = None
         self.new_caching = True
         self.encrypted = 0
+        self.wait = None
         self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
@@ -960,6 +961,10 @@ class NzbObject(TryList):
             prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
         if self.incomplete and self.status == 'Paused':
             prefix += Ta('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
+        if isinstance(self.wait, float):
+            dif = int(self.wait - time.time() + 0.5)
+            if dif > 0:
+                prefix += Ta('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
         if self.password:
             return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
         else:
@@ -1339,6 +1344,7 @@ class NzbObject(TryList):
                 self.__dict__[tup[1]] = None
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
+        self.wait = None
         TryList.__init__(self)
 
 

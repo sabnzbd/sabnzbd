@@ -41,35 +41,36 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 
 #------------------------------------------------------------------------------
-_RETRIES = 10
 
 class URLGrabber(Thread):
     do = None  # Link to instance of the thread
 
     def __init__(self):
         Thread.__init__(self)
+        now = time.time()
         self.queue = Queue.Queue()
         for tup in NzbQueue.do.get_urls():
             url, nzo = tup
-            self.queue.put((url, nzo, _RETRIES))
+            self.queue.put((url, nzo))
         self.shutdown = False
-        self.matrix_wait = 0
         URLGrabber.do = self
 
-    def add(self, url, future_nzo):
-        """ Add an URL to the URLGrabber queue """
-        self.queue.put((url, future_nzo, _RETRIES))
+    def add(self, url, future_nzo, when=None):
+        """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
+        if when:
+            future_nzo.wait = time.time() + when
+        self.queue.put((url, future_nzo))
 
     def rm_bookmark(self, url):
         """ Add removal request for nzbmatrix bookmark """
         if 'nzbmatrix.com' in url and cfg.matrix_del_bookmark():
             url = url.replace('download.php?', 'bookmarks.php?action=remove&')
-            self.queue.put((url, None, _RETRIES))
+            self.add(url, None)
 
     def stop(self):
         logging.info('URLGrabber shutting down')
         self.shutdown = True
-        self.queue.put((None, None, 0))
+        self.queue.add(None, None)
 
     def run(self):
         logging.info('URLGrabber starting up')
@@ -79,8 +80,15 @@ class URLGrabber(Thread):
             # Don't pound the website!
             time.sleep(5.0)
 
-            (url, future_nzo, retry_count) = self.queue.get()
+            (url, future_nzo) = self.queue.get()
+
             if not url:
+                # stop signal, go test self.shutdown
+                continue
+            if future_nzo and future_nzo.wait and future_nzo.wait > time.time():
+                # Requeue when too early and still active
+
+                self.add(url, future_nzo)
                 continue
             url = url.replace(' ', '')
 
@@ -90,7 +98,7 @@ class URLGrabber(Thread):
                     # If nzo entry deleted, give up
                     try:
                         deleted = future_nzo.deleted
-                    except:
+                    except AttributeError:
                         deleted = True
                     if deleted:
                         logging.debug('Dropping URL %s, job entry missing', url)
@@ -98,11 +106,6 @@ class URLGrabber(Thread):
 
                 # Add nzbmatrix credentials if needed
                 url, matrix_id = _matrix_url(url)
-
-                # When still waiting for nzbmatrix wait period, requeue
-                if matrix_id and self.matrix_wait > time.time():
-                    self.queue.put((url, future_nzo, retry_count))
-                    continue
 
                 # _grab_url cannot reside in a function, because the tempfile
                 # would not survive the end of the function
@@ -150,10 +153,14 @@ class URLGrabber(Thread):
 
                 if matrix_id:
                     fn, msg, retry, wait = _analyse_matrix(fn, matrix_id)
-                    if retry and wait > 0:
-                        self.matrix_wait = time.time() + wait
-                        logging.debug('Retry URL %s after waiting', url)
-                        self.queue.put((url, future_nzo, retry_count))
+                    if not fn:
+                        if retry:
+                            logging.info(msg)
+                            logging.debug('Retry nzbmatrix item %s after waiting %s sec', matrix_id, wait)
+                            self.add(url, future_nzo, wait)
+                        else:
+                            logging.error(msg)
+                            misc.bad_fetch(future_nzo, clean_matrix_url(url), msg, retry=True)
                         continue
                     category = _MATRIX_MAP.get(category, category)
                 else:
@@ -162,12 +169,8 @@ class URLGrabber(Thread):
 
                 # Check if the filepath is specified, if not, check if a retry is allowed.
                 if not fn:
-                    retry_count -= 1
-                    if retry_count > 0 and retry:
-                        logging.info('Retry URL %s', url)
-                        self.queue.put((url, future_nzo, retry_count))
-                    elif not del_bookmark:
-                        misc.bad_fetch(future_nzo, url, msg, retry=True)
+                    logging.info('Retry URL %s', url)
+                    self.add(url, future_nzo, 5)
                     continue
 
                 if del_bookmark:
@@ -194,15 +197,14 @@ class URLGrabber(Thread):
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url)
                     if res == 0:
                         NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
-                    elif res == -2:
-                        retry_count -= 1
-                        if retry_count > 0:
-                            logging.info('Incomplete NZB, retry %s', url)
-                            self.queue.put((url, future_nzo, retry_count))
-                        else:
-                            misc.bad_fetch(future_nzo, url, retry=True, content=True)
                     else:
-                        misc.bad_fetch(future_nzo, url, retry=True, content=True)
+                        if res == -2:
+                            logging.info('Incomplete NZB, retry after 5 min %s', url)
+                            when = 300
+                        else:
+                            logging.info('Unknown error fetching NZB, retry after 2 min %s', url)
+                            when = 120
+                        self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
                     if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority, url=future_nzo.url)[0] == 0:
@@ -213,7 +215,8 @@ class URLGrabber(Thread):
                             os.remove(fn)
                         except:
                             pass
-                        misc.bad_fetch(future_nzo, url, retry=True, content=True)
+                        logging.info('Unknown filetype when fetching NZB, retry after 30s %s', url)
+                        self.add(url, future_nzo, 30)
             except:
                 logging.error('URLGRABBER CRASHED', exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
@@ -241,6 +244,15 @@ def _matrix_url(url):
     return url, matrix_id
 
 
+def clean_matrix_url(url):
+    ''' Return nzbmatrix url without user credentials '''
+    m = _RE_NZBMATRIX.search(url)
+    if m:
+        matrix_id = m.group(2)
+        url = '%s://api.nzbmatrix.com/v1.1/download.php?id=%s' % (_PROTOCOL, matrix_id)
+    return url
+
+
 _RE_MATRIX_ERR = re.compile(r'please_wait[_ ]+(\d+)', re.I)
 
 def _analyse_matrix(fn, matrix_id):
@@ -248,41 +260,48 @@ def _analyse_matrix(fn, matrix_id):
         returns fn|None, error-message|None, retry, wait-seconds
     """
     msg = ''
+    wait = 0
     if not fn:
-        # No response, just retry
-        return (None, msg, True, 0)
+        logging.debug('No response from nzbmatrix, retry after 60 sec')
+        return None, msg, True, 60
     try:
         f = open(fn, 'r')
         data = f.read(40)
         f.close()
     except:
-        return (None, msg, True, 0)
+        logging.debug('Problem with tempfile %s from nzbmatrix, retry after 60 sec', fn)
+        return None, msg, True, 60
 
     # Check for an error response
-    if data and data.startswith('error'):
-        wait = 0
-        # Check for daily limit
-        if 'daily_limit' in data or 'limit is reached' in data:
+    if data and '<!DOCTYPE' in data:
+        # We got HTML, probably a temporary problem, keep trying
+        msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
+        wait = 300
+    elif data and data.startswith('error'):
+        txt = misc.match_str(data, ('invalid_login', 'invalid_api', 'disabled_account', 'vip_only'))
+        if txt:
+            if 'vip' in txt:
+                msg = Ta('You need an nzbmatrix VIP account to use the API')
+            else:
+                msg = (Ta('Invalid nzbmatrix credentials') + ' (%s)') % txt
+            return None, msg, False, 0
+        elif misc.match_str(data, ('daily_limit', 'limit is reached')):
             # Daily limit reached, just wait an hour before trying again
             wait = 3600
+        elif 'no_nzb_found' in data:
+            msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
+            wait = 300
         else:
             # Check if we are required to wait - if so sleep the urlgrabber
             m = _RE_MATRIX_ERR.search(data)
             if m:
                 wait = min(int(m.group(1)), 600)
             else:
-                # Clear error message, don't retry
                 msg = Ta('Problem accessing nzbmatrix server (%s)') % data
-                return (None, msg, False, 0)
-        if wait:
-            logging.debug('Further NzbMatrix grabs after %s sec', wait)
-            # Return, but tell the urlgrabber to retry
-            return (None, msg, True, wait)
-
-    if data.startswith("<!DOCTYPE"):
-        # We got HTML, probably a temporary problem, keep trying
-        msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
-        return (None, msg, True, 0)
+                wait = 60
+    if wait:
+        # Return, but tell the urlgrabber to retry
+        return None, msg, True, wait
 
     return fn, msg, False, 0
 
@@ -341,3 +360,4 @@ _MATRIX_MAP = {
 '8'  : 'tv.other',
 '7'  : 'tv.sport/ent'
 }
+
