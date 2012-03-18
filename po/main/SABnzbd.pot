@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2012-03-15 21:58+West-Europa (standaardtijd)\n"
+"POT-Creation-Date: 2012-03-18 11:25+West-Europa (standaardtijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -790,39 +790,39 @@ msgstr ""
 msgid "Failed to update newzbin job %s"
 msgstr ""
 
-#: sabnzbd/newzbin.py:140 # sabnzbd/nzbqueue.py:335
+#: sabnzbd/newzbin.py:140 # sabnzbd/nzbqueue.py:340
 msgid "NZB added to queue"
 msgstr ""
 
-#: sabnzbd/newzbin.py:192 [Error message]
+#: sabnzbd/newzbin.py:189 [Error message]
 msgid "Newzbin server changed its protocol"
 msgstr ""
 
-#: sabnzbd/newzbin.py:226 # sabnzbd/newzbin.py:336 [Warning message]
+#: sabnzbd/newzbin.py:223 # sabnzbd/newzbin.py:333 [Warning message]
 msgid "You have no credit on your Newzbin account"
 msgstr ""
 
-#: sabnzbd/newzbin.py:230 # sabnzbd/newzbin.py:334 [Warning message]
+#: sabnzbd/newzbin.py:227 # sabnzbd/newzbin.py:331 [Warning message]
 msgid "Unauthorised, check your newzbin username/password"
 msgstr ""
 
-#: sabnzbd/newzbin.py:234
+#: sabnzbd/newzbin.py:231
 msgid "Newzbin report %s not found"
 msgstr ""
 
-#: sabnzbd/newzbin.py:238
+#: sabnzbd/newzbin.py:235
 msgid "Newzbin gives undocumented error code (%s, %s)"
 msgstr ""
 
-#: sabnzbd/newzbin.py:245
+#: sabnzbd/newzbin.py:242
 msgid "Newzbin server fails to give info for %s"
 msgstr ""
 
-#: sabnzbd/newzbin.py:347 [Warning message]
+#: sabnzbd/newzbin.py:344 [Warning message]
 msgid "Could not delete newzbin bookmark %s"
 msgstr ""
 
-#: sabnzbd/newzbin.py:359 [Error message]
+#: sabnzbd/newzbin.py:356 [Error message]
 msgid "Newzbin gives undocumented error code (%s)"
 msgstr ""
 
@@ -838,7 +838,7 @@ msgstr ""
 msgid "Error while adding %s, removing"
 msgstr ""
 
-#: sabnzbd/nzbqueue.py:700 [Warning message]
+#: sabnzbd/nzbqueue.py:705 [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr ""
 
@@ -850,59 +850,63 @@ msgstr ""
 msgid "Failed to import %s files from %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:676 [Warning message]
+#: sabnzbd/nzbstuff.py:677 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:681 [Warning message] # sabnzbd/nzbstuff.py:686 [Warning message]
+#: sabnzbd/nzbstuff.py:682 [Warning message] # sabnzbd/nzbstuff.py:687 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:695 [Warning message] # sabnzbd/nzbstuff.py:697 [Warning message]
+#: sabnzbd/nzbstuff.py:696 [Warning message] # sabnzbd/nzbstuff.py:698 [Warning message]
 msgid "Empty NZB file %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:756 [Warning message]
+#: sabnzbd/nzbstuff.py:757 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:761 [Warning message]
+#: sabnzbd/nzbstuff.py:762 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:956 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:957 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:958 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:959 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:960 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:961 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:962 [Queue indicator for incomplete NZB]
+#: sabnzbd/nzbstuff.py:963 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1041
+#: sabnzbd/nzbstuff.py:967 [Queue indicator for waiting URL fetch]
+msgid "WAIT %s sec"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:1046
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1047
+#: sabnzbd/nzbstuff.py:1052
 msgid "%s articles were malformed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1049
+#: sabnzbd/nzbstuff.py:1054
 msgid "%s articles were missing"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1051
+#: sabnzbd/nzbstuff.py:1056
 msgid "%s articles had non-matching duplicates"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1083 [Error message]
+#: sabnzbd/nzbstuff.py:1088 [Error message]
 msgid "Error importing %s"
 msgstr ""
 
@@ -3966,11 +3970,19 @@ msgstr ""
 msgid "Failed to rename similar file: %s to %s"
 msgstr ""
 
-#: sabnzbd/urlgrabber.py:275
-msgid "Problem accessing nzbmatrix server (%s)"
+#: sabnzbd/urlgrabber.py:278 # sabnzbd/urlgrabber.py:292
+msgid "Invalid nzbmatrix report number %s"
 msgstr ""
 
 #: sabnzbd/urlgrabber.py:284
-msgid "Invalid nzbmatrix report number %s"
+msgid "You need an nzbmatrix VIP account to use the API"
+msgstr ""
+
+#: sabnzbd/urlgrabber.py:286
+msgid "Invalid nzbmatrix credentials"
+msgstr ""
+
+#: sabnzbd/urlgrabber.py:300
+msgid "Problem accessing nzbmatrix server (%s)"
 msgstr ""
 
