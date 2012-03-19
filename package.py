@@ -345,6 +345,7 @@ data_files = [
          'interfaces/Plush/',
          'interfaces/Mobile/',
          'interfaces/wizard/',
+         'interfaces/Config/',
          'win/par2/',
          'win/unzip/',
          'win/unrar/',
