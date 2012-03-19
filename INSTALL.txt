@@ -1,4 +1,4 @@
-                                SABnzbd 0.7.x
+                                SABnzbd 0.7.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -80,7 +80,7 @@ Optional modules Windows
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
-    pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
     openssl => v0.9.8g+     http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu

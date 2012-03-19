@@ -3,7 +3,7 @@
 *******************************************
 
 - To prevent unexpectedly large NZBs from eating your download quota you can set
-  the option 'size_limit' in the INI file.
+  the option 'size_limit' on the Config->Special page.
   Any NZB larger than this size will be set to paused and get a low priority.
 
 - When par2 or unrar hang up, never just stop SABnzbd.
@@ -27,18 +27,19 @@
   For Windows the default is 128 and for others 256.
   A quite safe value for Windows would be 64.
   SABnzbd will take care of overlapping names.
-  See: http://wiki.sabnzbd.org/configure-special
+  See: http://wiki.sabnzbd.org/configure-special-0-7
 
 - Some Usenet servers have intermittent login (or other) problems.
   For these the server blocking method is not very favourable.
   There is an INI-only option that will limit blocks to 1 minute.
       no_penalties = 1
-  See: http://wiki.sabnzbd.org/configure-special
+  See: http://wiki.sabnzbd.org/configure-special-0-7
 
 - Some third-party utilties try to probe SABnzbd API in such a way that you will
   often see warnings about unauthenticated access.
   If you are sure these probes are harmless, you can suppress the warnings by
-  setting the option "api_warnings" to 0 in the file sabnzbd.ini
+  setting the option "api_warnings" to 0.
+  See: http://wiki.sabnzbd.org/configure-special-0-7
 
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
@@ -48,16 +49,14 @@
 - On Linux when you download files they may have the wrong character encoding.
   You will see this only when downloaded files contain accented characters.
   You need to fix it yourself by running the convmv utility (availaible for most Linux platforms).
+  Possible the file system override setting 'fsys_type' might be solve things:
+  See: http://wiki.sabnzbd.org/configure-special-0-7
 
 - The "Watched Folder" sometimes fails to delete the NZB files it has
   processed. This happens when other software still accesses these files.
   Some third-party utilities supporting SABnzbd are known to do this.
   We cannot solve this problem, because the Operating System (read Windows)
   prevents the removal.
-
-- Jobs deleted from the queue will leave downloaded files behind
-  in the "incomplete" folder.
-  You will have to remove these files manually.
 
 - Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
   memory systems (eg a SAN device) a challenge.
@@ -73,6 +72,8 @@
   make sure that the drives are mounted.
   The operating system wil simply redirect your files to alternative locations.
   You may have trouble finding the files when mounting the drive later.
+  On OSX, SABnzbd will not create new folders in /Volumes.
+  The result will be a failed job that can be retried once the volume has been mounted.
 
 - On some operating systems it looks like there is a problem with one of the standard Python libraries.
   It is possible that you get errors about saving admin files and even unexplained crashes.
@@ -81,6 +82,6 @@
   We've had reports about this issue on non-mainstream Linux platforms.
   - OpenElec
   - Squeeze Linux
-  There is an INI-only option that will allow you to select an alternative library.
+  There is a "special" option that will allow you to select an alternative library.
       use_pickle = 1
-  See: http://wiki.sabnzbd.org/configure-special
+  See: http://wiki.sabnzbd.org/configure-special-0-7
