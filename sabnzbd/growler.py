@@ -242,15 +242,21 @@ if _HAVE_NTFOSD:
         """ Send a message to NotifyOSD
         """
         global _NTFOSD
+        error = 'NotifyOSD not working'
         if sabnzbd.cfg.ntfosd_enable():
             icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
             _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
             if _NTFOSD:
                 logging.info('Send to NotifyOSD: %s / %s', latin1(title), latin1(message))
-                note = pynotify.Notification(title, message, icon)
-                note.show()
+                try:
+                    note = pynotify.Notification(title, message, icon)
+                    note.show()
+                except:
+                    # Apparently not implemented on this system
+                    logging.info(error)
+                    return error
                 return None
             else:
-                return 'NotifyOSD not working'
+                return error
         else:
             return 'Not enabled'
