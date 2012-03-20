@@ -56,6 +56,7 @@
   RMDir /r "${idir}\interfaces\smpl"
   RMDir /r "${idir}\interfaces\Mobile"
   RMDir /r "${idir}\interfaces\wizard"
+  RMDir /r "${idir}\interfaces\Config"
   RMDir    "${idir}\interfaces"
   RMDir /r "${idir}\win\par2"
   RMDir /r "${idir}\win\unrar"

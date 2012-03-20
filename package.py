@@ -165,7 +165,7 @@ def CreateTar(folder, fname, release):
     for root, dirs, files in os.walk(folder):
         for _file in files:
             uroot = root.replace('\\','/')
-            if (uroot.find('/win') < 0) and (uroot.find('licenses/Python') < 0):
+            if (uroot.find('/win') < 0) and (uroot.find('licenses/Python') < 0) and not _file.endswith('.git'):
                 path = os.path.join(root, _file)
                 fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
                 tarinfo = tar.gettarinfo(path, fpath)
@@ -577,6 +577,10 @@ elif target in ('binary', 'installer'):
     DeleteFiles(r'dist\lib\API-MS-Win-*.dll')
     DeleteFiles(r'dist\lib\MSWSOCK.DLL')
     DeleteFiles(r'dist\lib\POWRPROF.DLL')
+
+    ############################
+    # Remove .git residue
+    DeleteFiles(r'dist\interfaces\Config\.git')
 
     ############################
     # Copy MS runtime files or Curl
