@@ -318,6 +318,7 @@ class RSSQueue(object):
 
         # Read the RSS feed
         if readout:
+            uri = uri.replace(' ', '%20')
             logging.debug("Running feedparser on %s", uri)
             d = feedparser.parse(uri.replace('feed://', 'http://'))
             logging.debug("Done parsing %s", uri)
