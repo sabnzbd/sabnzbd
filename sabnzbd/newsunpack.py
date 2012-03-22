@@ -979,7 +979,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 ## Look for the smallest par2file
                 block_table = {}
                 for nzf in extrapars:
-                    block_table[int(nzf.blocks)] = nzf
+                    block_table[int_conv(nzf.blocks)] = nzf
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
@@ -1015,7 +1015,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     if nzf.completed:
                         continue
 
-                    blocks = int(nzf.blocks)
+                    blocks = int_conv(nzf.blocks)
 
                     avail_blocks += blocks
 
