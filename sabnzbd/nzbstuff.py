@@ -1057,7 +1057,7 @@ class NzbObject(TryList):
             msg = ''.join((msg1, msg2, msg3, msg4,))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
-                self.set_unpack_info('Source', format_source_url(self.url))
+                self.set_unpack_info('Source', format_source_url(self.url), unique=True)
 
     def inc_log(self, log, txt):
         """ Append string txt to nzo_info element "log"
