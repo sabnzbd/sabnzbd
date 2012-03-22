@@ -223,7 +223,7 @@ use_pickle = OptionBool('misc', 'use_pickle', False)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
 growl_enable = OptionBool('growl', 'growl_enable', True)
-ntfosd_enable = OptionBool('growl', 'ntfosd_enable', True)
+ntfosd_enable = OptionBool('growl', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
 
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')
