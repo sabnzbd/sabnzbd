@@ -604,7 +604,7 @@ elif target in ('binary', 'installer'):
 
 
     DeleteFiles(fileBin)
-    write_dll_message('dist/IMPORTANT_MESSAGE.txt')
+    #write_dll_message('dist/IMPORTANT_MESSAGE.txt')
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
     time.sleep(1.0)
