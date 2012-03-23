@@ -6,6 +6,7 @@
 - Replace real spaces in RSS-urls with %20
 - Prevent double entries in History's "Source" section
 - Prevent crash when OSDNotify doesn't work properly
+- Small improvents in Windows installer
 -------------------------------------------------------------------------------
  0.7.0Alpha1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
