@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-03-18 16:51+0000\n"
-"PO-Revision-Date: 2012-03-18 20:56+0000\n"
+"PO-Revision-Date: 2012-03-20 07:09+0000\n"
 "Last-Translator: Fox Ace <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-19 04:59+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-03-21 05:57+0000\n"
+"X-Generator: Launchpad (build 14981)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -914,7 +914,7 @@ msgstr "Echec lors de l'importation des fichiers %s depuis %s"
 
 #: sabnzbd/nzbstuff.py:677 [Warning message]
 msgid "Incomplete NZB file %s"
-msgstr "Fichier NZB incomplet"
+msgstr "Fichier NZB %s incomplet"
 
 #: sabnzbd/nzbstuff.py:682 [Warning message] # sabnzbd/nzbstuff.py:687 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -2146,7 +2146,7 @@ msgstr "Activé"
 
 #: sabnzbd/skintext.py:257
 msgid "Config File"
-msgstr "Fichier de Configuration"
+msgstr "Fichier de configuration"
 
 #: sabnzbd/skintext.py:258 [Main config page, how much cache is in use]
 msgid "Used cache"
@@ -2188,7 +2188,7 @@ msgstr "Version"
 
 #: sabnzbd/skintext.py:266
 msgid "Uptime"
-msgstr "Durée d'activité"
+msgstr "Temps de fonctionnement"
 
 #: sabnzbd/skintext.py:267 [Indicates that server is Backup server in Status page]
 msgid "Backup"
@@ -2606,7 +2606,7 @@ msgstr "Activer la fonctionnalité unzip intégrée."
 
 #: sabnzbd/skintext.py:363
 msgid "Enable Filejoin"
-msgstr "Activer Assemblage"
+msgstr "Activer assemblage"
 
 #: sabnzbd/skintext.py:364
 msgid "Join files ending in .001, .002 etc. into one file."
@@ -2614,7 +2614,7 @@ msgstr "Assemble les fichiers  .001, .002, etc. en un seul fichier."
 
 #: sabnzbd/skintext.py:365
 msgid "Enable TS Joining"
-msgstr "Activer Assemblage TS"
+msgstr "Activer assemblage TS"
 
 #: sabnzbd/skintext.py:366
 msgid "Join files ending in .001.ts, .002.ts etc. into one file."
@@ -2622,7 +2622,7 @@ msgstr "Assemble les fichiers .001.ts, .002.ts, etc. en un seul fichier."
 
 #: sabnzbd/skintext.py:367
 msgid "Enable Par Cleanup"
-msgstr "Activer Nettoyage Par2"
+msgstr "Activer nettoyage Par"
 
 #: sabnzbd/skintext.py:368
 msgid "Cleanup par files (if verifiying/repairing succeded)."
@@ -2670,7 +2670,7 @@ msgstr "Vous devrez définir un mot de passe avant de reprendre."
 
 #: sabnzbd/skintext.py:377
 msgid "Detect Duplicate Downloads"
-msgstr "Détecter les Téléchargements dupliqués"
+msgstr "Détecter les téléchargements dupliqués"
 
 #: sabnzbd/skintext.py:378
 msgid ""
@@ -2715,7 +2715,7 @@ msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
 msgstr ""
-"Utilisez des noms de répertoires temporaires au cours du post-traitement. "
+"Utilise des noms de répertoires temporaires au cours du post-traitement. "
 "Désactiver lorsque votre système ne gère pas cela correctement."
 
 #: sabnzbd/skintext.py:388
@@ -2782,7 +2782,7 @@ msgstr "Déconnexion lorsque la file d'attente est vide"
 #: sabnzbd/skintext.py:406
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr ""
-"Déconnexion du serveur(s) Usenet lorsque la file d'attente est vide ou en "
+"Déconnecte du serveur(s) Usenet lorsque la file d'attente est vide ou en "
 "pause."
 
 #: sabnzbd/skintext.py:407
@@ -2808,7 +2808,7 @@ msgstr "Vérifier la présence d'une nouvelle version"
 #: sabnzbd/skintext.py:412
 msgid "Weekly check for new SABnzbd release."
 msgstr ""
-"Vérfie hebdomadairement la disponibilité d'une nouvelle version de SABnzbd."
+"Vérifie hebdomadairement la disponibilité d'une nouvelle version de SABnzbd."
 
 #: sabnzbd/skintext.py:413
 msgid "Replace Spaces in Foldername"
@@ -2817,7 +2817,7 @@ msgstr "Remplacer les espaces dans les noms de dossier"
 #: sabnzbd/skintext.py:414
 msgid "Replace spaces with underscores in folder names."
 msgstr ""
-"Remplace les espaces par des underscores(_) dans les noms de dossiers."
+"Remplace les espaces par des underscores ( _ ) dans les noms de dossiers."
 
 #: sabnzbd/skintext.py:415
 msgid "Replace dots in Foldername"
@@ -2825,7 +2825,7 @@ msgstr "Remplacez les points dans les noms de dossier"
 
 #: sabnzbd/skintext.py:416
 msgid "Replace dots with spaces in folder names."
-msgstr "Remplacez les points par des espaces dans les noms de dossier"
+msgstr "Remplace les points par des espaces dans les noms de dossier"
 
 #: sabnzbd/skintext.py:417
 msgid "Replace Illegal Characters in Folder Names"
@@ -2859,7 +2859,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:423
 msgid "Ignore Samples"
-msgstr "Ignorer les échantillons(Samples)"
+msgstr "Gestion des échantillons (Samples)"
 
 #: sabnzbd/skintext.py:424
 msgid "Filter out sample files (e.g. video samples)."
@@ -2883,7 +2883,7 @@ msgstr "Utiliser V23 à moins que votre fournisseur exige un autre type!"
 
 #: sabnzbd/skintext.py:430
 msgid "Use 12 hour clock (AM/PM)"
-msgstr "Utilisez l'horloge 12 heures (AM/PM)"
+msgstr "Utiliser l'horloge 12 heures (AM/PM)"
 
 #: sabnzbd/skintext.py:431
 msgid "Show times in AM/PM notation (does not affect scheduler)."
@@ -2932,7 +2932,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:444 [Does the quota get reset every day, week or month?]
 msgid "Quota period"
-msgstr "Quota periode"
+msgstr "Quota période"
 
 #: sabnzbd/skintext.py:445
 msgid "Does the quota get reset each day, week or month?"
@@ -2960,7 +2960,7 @@ msgstr "Uniquement pour les serveurs optionnels"
 
 #: sabnzbd/skintext.py:451
 msgid "Apply maximum retries only to optional servers"
-msgstr "Appliquer tentatives maximums uniquement aux serveurs optionnels"
+msgstr "Applique tentatives maximums uniquement aux serveurs optionnels"
 
 #: sabnzbd/skintext.py:455 [Caption]
 msgid "Server configuration"
@@ -3036,7 +3036,7 @@ msgstr "Cliquer ci-dessous pour tester."
 
 #: sabnzbd/skintext.py:475
 msgid "Bandwidth"
-msgstr "Bande Passante"
+msgstr "Bande passante"
 
 #: sabnzbd/skintext.py:478
 msgid "Scheduling configuration"
@@ -3297,7 +3297,7 @@ msgstr "Télécharge automatiquement les favoris."
 
 #: sabnzbd/skintext.py:560
 msgid "Get Bookmarks Now"
-msgstr "Récupérer les Favoris Maintenant"
+msgstr "Récupérer les favoris maintenant"
 
 #: sabnzbd/skintext.py:561
 msgid "Hide Bookmarks"
@@ -3412,7 +3412,7 @@ msgstr "Effacer"
 
 #: sabnzbd/skintext.py:591
 msgid "Presets"
-msgstr "Prédéfinitions"
+msgstr "Prédéfinis"
 
 #: sabnzbd/skintext.py:592
 msgid "Example"
@@ -3618,7 +3618,7 @@ msgid ""
 "between parentheses."
 msgstr ""
 "Options rarement utilisé. Pour leur sens et leur explication, cliquez sur le "
-"bouton Aide pour accéder à la page Wiki..<br>Ne pas modifier celles-ci sans "
+"bouton Aide pour accéder à la page Wiki.<br>Ne pas modifier celles-ci sans "
 "vérifier en premier le wiki, certaines ont de graves effets secondaires. "
 "<br> Les valeurs par défaut sont indiquées entre parenthèses."
 
@@ -4098,7 +4098,7 @@ msgstr "SABnzbd Assistant Configuration"
 
 #: sabnzbd/skintext.py:816
 msgid "SABnzbd Version"
-msgstr "SABnzbd Version"
+msgstr "Version de SABnzbd"
 
 #: sabnzbd/skintext.py:817 [Button to go to previous Wizard page]
 msgid "Previous"

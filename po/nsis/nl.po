@@ -93,6 +93,10 @@ msgstr ""
 "U kunt geen bestaande installatie overschrijven.\\n\\nKlik op `OK` om de "
 "vorige versie te verwijderen of op `Afbreken` om te stoppen."
 
+#: NSIS_Installer.nsi:550
+msgid "Your settings and data will be preserved."
+msgstr "Je instellingen en data blijven bewaard."
+
 #~ msgid "Delete Logs"
 #~ msgstr "Verwijder logging"
 

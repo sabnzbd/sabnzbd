@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-03-18 16:51+0000\n"
-"PO-Revision-Date: 2012-03-18 12:19+0000\n"
+"PO-Revision-Date: 2012-03-19 11:46+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-19 04:59+0000\n"
+"X-Launchpad-Export-Date: 2012-03-20 05:49+0000\n"
 "X-Generator: Launchpad (build 14969)\n"
 
 #: SABnzbd.py:301 [Error message]
@@ -937,7 +937,7 @@ msgstr "ONVOLLEDIG"
 
 #: sabnzbd/nzbstuff.py:967 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
-msgstr ""
+msgstr "WACHT %s sec"
 
 #: sabnzbd/nzbstuff.py:1046
 msgid "Downloaded in %s at an average of %sB/s"
@@ -4248,10 +4248,11 @@ msgstr "Ongeldig nzbmatrix rapport nummer %s"
 #: sabnzbd/urlgrabber.py:284
 msgid "You need an nzbmatrix VIP account to use the API"
 msgstr ""
+"Je hebt een nzbmatrix VIP account nodig om de API te kunnen gebruiken"
 
 #: sabnzbd/urlgrabber.py:286
 msgid "Invalid nzbmatrix credentials"
-msgstr ""
+msgstr "Ongeldige nzbmatrix gegevens"
 
 #: sabnzbd/urlgrabber.py:300
 msgid "Problem accessing nzbmatrix server (%s)"
