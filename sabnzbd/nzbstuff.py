@@ -830,14 +830,15 @@ class NzbObject(TryList):
         ## Special treatment for first part of par2 file
         fn = nzf.filename
         if fn:
-            fn = fn.strip().lower()
-            if (not nzf.is_par2) and fn and fn.endswith('.par2'):
-                par2match = re.search(PROBABLY_PAR2_RE, fn)
+            fn = fn.strip()
+            lfn = fn.lower()
+            if (not nzf.is_par2) and fn and lfn.endswith('.par2'):
+                par2match = PROBABLY_PAR2_RE.search(fn)
                 if par2match:
                     head = par2match.group(1)
                     vol = par2match.group(2)
                     block = par2match.group(3)
-                elif fn.endswith('.par2'):
+                elif lfn.endswith('.par2'):
                     head = os.path.splitext(fn)[0]
                     vol = block = 0
                     par2match = True
