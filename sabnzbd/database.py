@@ -202,10 +202,12 @@ class HistoryDB(object):
             res = self.execute('select count(*) from History WHERE name LIKE ? AND STATUS = "Failed"', (search,))
         else:
             res = self.execute('select count(*) from History WHERE name LIKE ?', (search,))
+        total_items = -1
         if res:
-            total_items = self.c.fetchone().get('count(*)')
-        else:
-            total_items = -1
+            try:
+                total_items = self.c.fetchone().get('count(*)')
+            except AttributeError:
+                pass
 
         if not start:
             start = 0
@@ -237,31 +239,34 @@ class HistoryDB(object):
         amounts downloaded in the last month and week
         """
         # Total Size of the history
+        total = 0
         if self.execute('''SELECT sum(bytes) FROM history'''):
-            f = self.c.fetchone()
-            total = f.get('sum(bytes)')
-        else:
-            total = 0
+            try:
+                total = self.c.fetchone().get('sum(bytes)')
+            except AttributeError:
+                pass
 
         # Amount downloaded this month
         #r = time.gmtime(time.time())
         #month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
         month_timest = int(this_month(time.time()))
 
+        month = 0
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (month_timest,)):
-            f = self.c.fetchone()
-            month = f.get('sum(bytes)')
-        else:
-            month = 0
+            try:
+                month = self.c.fetchone().get('sum(bytes)')
+            except AttributeError:
+                pass
 
         # Amount downloaded this week
         week_timest = int(this_week(time.time()))
 
+        week = 0
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (week_timest,)):
-            f = self.c.fetchone()
-            week = f.get('sum(bytes)')
-        else:
-            week = 0
+            try:
+                week = self.c.fetchone().get('sum(bytes)')
+            except AttributeError:
+                pass
 
         return (total, month, week)
 
@@ -270,27 +275,32 @@ class HistoryDB(object):
         data = ''
         t = (nzo_id,)
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
-            f = self.c.fetchone()
             try:
-                data = zlib.decompress(f.get('script_log'))
+                data = zlib.decompress(self.c.fetchone().get('script_log'))
             except:
-                data = ''
+                pass
         return data
 
     def get_name(self, nzo_id):
         t = (nzo_id,)
+        name = ''
         if self.execute('SELECT name FROM history WHERE nzo_id=?', t):
-            return self.c.fetchone().get('name')
-        else:
-            return ''
+            try:
+                name = self.c.fetchone().get('name')
+            except AttributeError:
+                pass
+        return name
 
 
     def get_path(self, nzo_id):
         t = (nzo_id,)
+        path = ''
         if self.execute('SELECT path FROM history WHERE nzo_id=?', t):
-            return self.c.fetchone().get('path')
-        else:
-            return ''
+            try:
+                path = self.c.fetchone().get('path')
+            except AttributeError:
+                pass
+        return path
 
 def dict_factory(cursor, row):
     d = {}
