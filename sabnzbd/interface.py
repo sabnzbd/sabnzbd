@@ -458,15 +458,15 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
 
-        info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
         nzo_id = None
-
         for a in args:
             if a.startswith('SABnzbd_nzo'):
                 nzo_id = a
                 break
 
-        if nzo_id:
+        if nzo_id and NzbQueue.do.get_nzo(nzo_id):
+            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
                 return self.bulk_operation(nzo_id, kwargs)
@@ -482,17 +482,19 @@ class NzoPage(object):
             # /SABnzbd_nzo_xxxxx/save
             elif 'save' in args:
                 self.save_details(nzo_id, args, kwargs)
-                return
+                return # never reached
 
             # /SABnzbd_nzo_xxxxx/
             else:
                 info =  self.nzo_details(info, pnfo_list, nzo_id)
                 info =  self.nzo_files(info, pnfo_list, nzo_id)
 
-        template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
-                            filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
-        return template.respond()
-
+            template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
+                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+            return template.respond()
+        else:
+            # Job no longer exists, go to main page
+            raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
 
     def nzo_details(self, info, pnfo_list, nzo_id):
         slot = {}
