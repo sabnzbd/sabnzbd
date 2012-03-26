@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.7.0Alpha3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix failing join-by-par2
+- Prevent API crash when deleting non-existing history item
+- Prevent UI crash message when looking at NZB details page of finished job
+- Config skin: fix path complettion in Config->Folders
+- Config skin: fixes to support "hide behind proxy"
+- Keep using unrar 4.10 for OSX Leopard and older, due to PPC support
+-------------------------------------------------------------------------------
  0.7.0Alpha2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix disabled options in Config skin
