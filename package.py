@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -456,6 +456,7 @@ if target == 'app':
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
+    os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     #copy app to mounted sparseimage

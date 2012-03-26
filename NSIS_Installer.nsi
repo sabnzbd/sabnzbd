@@ -1,6 +1,6 @@
 ; -*- coding: latin-1 -*-
 ;
-; Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+; Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -549,13 +549,13 @@ SectionEnd
 
   LangString MsgRemoveOld2  ${LANG_ENGLISH} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_DANISH} "Your settings and data will be preserved."
-  LangString MsgRemoveOld2  ${LANG_GERMAN} "Your settings and data will be preserved." 
+  LangString MsgRemoveOld2  ${LANG_GERMAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_FRENCH}  "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_NORWEGIAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_DUTCH} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_ROMANIAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_SWEDISH} "Your settings and data will be preserved."
-  
+
 
 Function un.onInit
   !insertmacro MUI_UNGETLANGUAGE

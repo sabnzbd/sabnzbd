@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -962,7 +962,7 @@ def getTitles(match, name, titleing=False):
         for x in UPPERCASE:
             xtitled = titler(x)
             title = replace_word(title, xtitled, x)
-    
+
         # Make sure the first letter of the title is always uppercase
         if title:
             title = titler(title[0]) + title[1:]
