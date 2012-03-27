@@ -357,7 +357,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         <input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', this,'toggle_$feed','1' )" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
         </form>
       </td>
-      <td><a href="#/config/rss/" onClick="lr('../config/rss/','feed=$rss[$feed]['link']', 0, 0);">$feed</a></td>
+      <td><a href="#/config/rss/" onClick="lr('./config/rss/','feed=$rss[$feed]['link']', 0, 0);">$feed</a></td>
       <td>$rss[$feed]['uri']</td>
     </tr>
   <!--#end for#-->
