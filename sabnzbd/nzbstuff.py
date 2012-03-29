@@ -673,19 +673,22 @@ class NzbObject(TryList):
             try:
                 parser.parse(inpsrc)
             except xml.sax.SAXParseException, err:
+                self.incomplete = True
                 if '</nzb>' not in nzb:
                     logging.warning(Ta('Incomplete NZB file %s'), filename)
-                    self.incomplete = True
-                    self.pause()
                 else:
-                    self.purge_data(keep_basic=reuse)
                     logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                                     filename, err.getMessage(), err.getLineNumber())
-                    raise ValueError
             except Exception, err:
-                self.purge_data(keep_basic=reuse)
+                self.incomplete = True
                 logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
-                raise ValueError
+
+            if self.incomplete:
+                if cfg.allow_incomplete_nzb():
+                    self.pause()
+                else:
+                    self.purge_data()
+                    raise ValueError
 
             sabnzbd.backup_nzb(filename, nzb)
             sabnzbd.save_compressed(adir, filename, nzb)

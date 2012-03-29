@@ -234,6 +234,7 @@ osx_menu = OptionBool('misc', 'osx_menu', True)
 osx_speed = OptionBool('misc', 'osx_speed', True)
 win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
+allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
