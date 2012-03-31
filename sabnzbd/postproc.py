@@ -47,7 +47,7 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.growler as growler
 
-import status
+from status import *
 
 
 #------------------------------------------------------------------------------
