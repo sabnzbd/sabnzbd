@@ -47,6 +47,8 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.growler as growler
 
+from constants import Status
+
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -240,7 +242,7 @@ def process_job(nzo):
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
         nzo.set_pp(3)
-        nzo.status = 'Failed'
+        nzo.status = Status.FAILED
         nzo.save_attribs()
         all_ok = False
 
@@ -258,7 +260,7 @@ def process_job(nzo):
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
-            nzo.status = 'Failed'
+            nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
             par_error = unpack_error = True
@@ -327,7 +329,7 @@ def process_job(nzo):
             if flag_unpack:
                 if all_ok:
                     #set the current nzo status to "Extracting...". Used in History
-                    nzo.status = 'Extracting'
+                    nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
                     unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), ())
                     logging.info("unpack_magic finished on %s", filename)
@@ -339,7 +341,7 @@ def process_job(nzo):
 
             if all_ok:
                 ## Move any (left-over) files to destination
-                nzo.status = 'Moving'
+                nzo.status = Status.MOVING
                 nzo.set_action_line(T('Moving'), '...')
                 for root, dirs, files in os.walk(workdir):
                     if not root.endswith(JOB_ADMIN):
@@ -409,7 +411,7 @@ def process_job(nzo):
             script_path = make_script_path(script)
             if all_ok and (not nzb_list) and script_path:
                 #set the current nzo status to "Ext Script...". Used in History
-                nzo.status = 'Running'
+                nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
@@ -460,10 +462,10 @@ def process_job(nzo):
         ## Show final status in history
         if all_ok:
             growler.send_notification(T('Download Completed'), filename, 'complete')
-            nzo.status = 'Completed'
+            nzo.status = Status.COMPLETED
         else:
             growler.send_notification(T('Download Failed'), filename, 'complete')
-            nzo.status = 'Failed'
+            nzo.status = Status.FAILED
 
     except:
         logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
@@ -472,7 +474,7 @@ def process_job(nzo):
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
         growler.send_notification(T('Download Failed'), filename, 'complete')
-        nzo.status = 'Failed'
+        nzo.status = Status.FAILED
         par_error = True
         all_ok = False
         info = nzo.unpack_info.copy()

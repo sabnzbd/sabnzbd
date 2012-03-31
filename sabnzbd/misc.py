@@ -45,6 +45,8 @@ import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
 import sabnzbd.growler as growler
 
+from constants import Status
+
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
@@ -902,7 +904,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         script = ''
 
-    nzo.status = 'Failed'
+    nzo.status = Status.FAILED
 
 
     if url:

@@ -35,6 +35,8 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 
+from constants import Status
+
 if sabnzbd.WIN32:
     try:
         import win32api
@@ -768,7 +770,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
-    nzo.status = 'QuickCheck'
+    nzo.status = Status.QUICK_CHECK
     nzo.set_action_line(T('Repair'), T('Quick Checking'))
     qc_result = QuickCheck(setname, nzo)
     if qc_result and cfg.quick_check():
@@ -778,7 +780,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         result = True
 
     if not result:
-        nzo.status = 'Repairing'
+        nzo.status = Status.REPAIRING
         result = False
         readd = False
         try:
@@ -884,7 +886,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     retry_classic = False
     used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
-    nzo.status = 'Verifying'
+    nzo.status = Status.VERIFYING
     start = time()
 
     classic = classic or not cfg.par2_multicore()
@@ -951,7 +953,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
-                nzo.status = 'Failed'
+                nzo.status = Status.FAILED
 
             elif line.startswith('All files are correct'):
                 msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
@@ -994,7 +996,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = 'Failed'
+                    nzo.status = Status.FAILED
 
 
             elif line.startswith('You need'):
@@ -1035,7 +1037,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = 'Failed'
+                    nzo.status = Status.FAILED
                     needed_blocks = avail_blocks
                     force = True
 
@@ -1059,7 +1061,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
                     if not force:
                         msg = T('Fetching %s blocks...') % str(added_blocks)
-                        nzo.status = 'Fetching'
+                        nzo.status = Status.FETCHING
                         nzo.set_action_line(T('Fetching'), msg)
 
                 else:
@@ -1067,7 +1069,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = 'Failed'
+                    nzo.status = Status.FAILED
 
 
             elif line.startswith('Repair is possible'):
@@ -1078,7 +1080,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 chunks = line.split()
                 per = float(chunks[-1][:-1])
                 nzo.set_action_line(T('Repairing'), '%2d%%' % (per))
-                nzo.status = 'Repairing'
+                nzo.status = Status.REPAIRING
 
             elif line.startswith('Repair complete'):
                 msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time() - start))
@@ -1106,7 +1108,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
-                    nzo.status = 'Verifying'
+                    nzo.status = Status.VERIFYING
 
                 elif line.startswith('Scanning:'):
                     pass
@@ -1124,7 +1126,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     if verifytotal == 0 or verifynum < verifytotal:
                         verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                        nzo.status = 'Verifying'
+                        nzo.status = Status.VERIFYING
                     datafiles.append(m.group(1))
                     continue
 
