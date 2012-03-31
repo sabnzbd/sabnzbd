@@ -399,7 +399,7 @@ class SABnzbdDelegate(NSObject):
                         menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, 'openFolderAction:', '')
                     else:
                         menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
-                    if history['status'] != "Completed":
+                    if history['status'] != Status.COMPLETED:
                         jobfailed = NSAttributedString.alloc().initWithString_attributes_(job, self.failedAttributes)
                         menu_history_item.setAttributedTitle_(jobfailed)
                     menu_history_item.setRepresentedObject_("%s" % (path))

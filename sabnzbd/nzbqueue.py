@@ -35,7 +35,7 @@ from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
                               REPAIR_PRIORITY, STOP_PRIORITY, \
-                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -131,7 +131,7 @@ class NzbQueue(TryList):
         items = sabnzbd.proxy_build_history()[0]
         # Anything waiting or active or retryable is a known item
         registered.extend([platform_encode(os.path.basename(item['path'])) \
-                           for item in items if item['retry'] or item['loaded'] or item['status'] == 'Queued'])
+                           for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])
 
         # Repair unregistered folders
         for folder in globber(cfg.download_dir.get_path()):
@@ -194,7 +194,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status="Grabbing")
+        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status=Status.GRABBING)
         self.add(future_nzo)
         return future_nzo
 
@@ -633,7 +633,7 @@ class NzbQueue(TryList):
         elif self.__top_only:
             for nzo in self.__nzo_list:
                 # Ignore any items that are in a paused or grabbing state
-                if nzo.status not in ('Paused', 'Grabbing'):
+                if nzo.status not in (Status.PAUSED, Status.GRABBING):
                     return not nzo.server_in_try_list(server)
         else:
             return not self.server_in_try_list(server)
@@ -643,7 +643,7 @@ class NzbQueue(TryList):
         ''' Check if the queue contains any Forced
         Priority items to download while paused '''
         for nzo in self.__nzo_list:
-            if nzo.priority == TOP_PRIORITY and nzo.status not in ('Paused', 'Grabbing'):
+            if nzo.priority == TOP_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 return True
         return False
 
@@ -652,7 +652,7 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if nzo.status not in ('Paused', 'Grabbing'):
+                    if nzo.status not in (Status.PAUSED, Status.GRABBING):
                         article = nzo.get_article(server)
                         if article:
                             return article
@@ -660,7 +660,7 @@ class NzbQueue(TryList):
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.status not in ('Paused', 'Grabbing'):
+                if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING):
                     article = nzo.get_article(server)
                     if article:
                         return article
@@ -725,9 +725,9 @@ class NzbQueue(TryList):
         n = 0
         for nzo in self.__nzo_list:
             # Ignore any items that are paused
-            if grabs and nzo.status == 'Grabbing':
+            if grabs and nzo.status == Status.GRABBING:
                 n += 1
-            elif nzo.status not in ('Paused', 'Grabbing'):
+            elif nzo.status not in (Status.PAUSED, Status.GRABBING):
                 n += 1
         return n
 

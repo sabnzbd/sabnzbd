@@ -1085,10 +1085,10 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
-            if status == 'Checking':
-                slot['status'] = "Checking"
+            if status == Status.CHECKING:
+                slot['status'] = Status.CHECKING
             else:
-                slot['status'] = "Downloading"
+                slot['status'] = Status.DOWNLOADING
             found_active = True
         else:
             slot['status'] = "%s" % (status)
@@ -1108,7 +1108,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if status in ('Paused', 'Checking'):
+        if status in (Status.PAUSED, Status.CHECKING):
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1555,9 +1555,9 @@ def build_header(prim, webdir=''):
 
     status = ''
     if Downloader.do.paused:
-        status = 'Paused'
+        status = Status.PAUSED
     elif bytespersec > 0:
-        status = 'Downloading'
+        status = Status.DOWNLOADING
     else:
         status = 'Idle'
     header['status'] = "%s" % status

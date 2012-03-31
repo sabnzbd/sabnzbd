@@ -35,7 +35,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          on_cleanup_list, renamer, remove_dir, remove_all, globber
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
-     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN
+     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
@@ -46,8 +46,6 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.growler as growler
-
-from constants import Status
 
 
 #------------------------------------------------------------------------------

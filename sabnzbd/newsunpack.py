@@ -34,7 +34,6 @@ from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-
 from constants import Status
 
 if sabnzbd.WIN32:

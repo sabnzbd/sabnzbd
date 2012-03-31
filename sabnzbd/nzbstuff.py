@@ -36,7 +36,8 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY
+                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, \
+                              Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv
@@ -589,10 +590,10 @@ class NzbObject(TryList):
         self.oversized = False
         self.precheck = False
         self.incomplete = False
-        if self.status == 'Queued' and not reuse:
+        if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
             if self.precheck:
-                self.status = 'Checking'
+                self.status = Status.CHECKING
 
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
@@ -897,7 +898,7 @@ class NzbObject(TryList):
         if not self.files:
             post_done = True
             #set the nzo status to return "Queued"
-            self.status = 'Queued'
+            self.status = Status.QUEUED
             self.set_download_report()
 
         return (file_done, post_done, reset)
@@ -994,7 +995,7 @@ class NzbObject(TryList):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
-        self.status = 'Queued'
+        self.status = Status.QUEUED
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2

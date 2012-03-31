@@ -141,15 +141,18 @@ year_match = r'[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' 
 
 sample_match = r'((^|[\W_])sample\d*[\W_])|(-s\.)' # something-sample.avi something-s.avi
 
-class Status:
-  COMPLETED = "Completed"
-  EXTRACTING = "Extracting"
-  FAILED = "Failed"
-  FETCHING = "Fetching"
-  MOVING = "Moving"
-  PAUSED = "Paused"
-  QUEUED = "Queued"
-  QUICK_CHECK = "QuickCheck"
-  REPAIRING = "Repairing"
-  RUNNING = "Running"
-  VERIFYING = "Verifying"
+class Status():
+    COMPLETED = 'Completed'
+    CHECKING = 'Checking'
+    DOWNLOADING = 'Downloading'
+    EXTRACTING = 'Extracting'
+    FAILED = 'Failed'
+    FETCHING = 'Fetching'
+    GRABBING = 'Grabbing'
+    MOVING = 'Moving'
+    PAUSED = 'Paused'
+    QUEUED = 'Queued'
+    QUICK_CHECK = 'QuickCheck'
+    REPAIRING = 'Repairing'
+    RUNNING = 'Running'
+    VERIFYING = 'Verifying'
