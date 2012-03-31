@@ -45,7 +45,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
 import sabnzbd.growler as growler
 
-from status import *
+from constants import Status
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)

@@ -35,7 +35,7 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 
-from status import *
+from constants import Status
 
 if sabnzbd.WIN32:
     try:
