@@ -648,23 +648,25 @@ def to_units(val, spaces=0, dec_limit=2):
 
 #------------------------------------------------------------------------------
 def same_file(a, b):
-    """ Return True if both paths are identical """
+    """ Return 0 if A and B have nothing in common
+        return 1 if A and B are actually the same path
+        return 2 if B is a subfolder of A
+    """
+    a = os.path.normpath(os.path.abspath(a))
+    b = os.path.normpath(os.path.abspath(b))
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        a = a.lower()
+        b = b.lower()
 
+    if b.startswith(a):
+        return 2
     if "samefile" in os.path.__dict__:
         try:
-            return os.path.samefile(a, b)
+            return int(os.path.samefile(a, b))
         except:
-            return False
+            return 0
     else:
-        try:
-            a = os.path.normpath(os.path.abspath(a))
-            b = os.path.normpath(os.path.abspath(b))
-            if sabnzbd.WIN32 or sabnzbd.DARWIN:
-                a = a.lower()
-                b = b.lower()
-            return a == b
-        except:
-            return False
+        return int(a == b)
 
 #------------------------------------------------------------------------------
 def exit_sab(value):
