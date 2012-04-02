@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-03-23 18:31+0000\n"
-"PO-Revision-Date: 2011-07-28 13:53+0000\n"
+"PO-Revision-Date: 2012-03-26 13:01+0000\n"
 "Last-Translator: Rene <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-24 05:25+0000\n"
-"X-Generator: Launchpad (build 14981)\n"
+"X-Launchpad-Export-Date: 2012-03-27 05:33+0000\n"
+"X-Generator: Launchpad (build 15011)\n"
 
 #: NSIS_Installer.nsi:406
 msgid "Start SABnzbd (hidden)"
@@ -95,7 +95,7 @@ msgstr ""
 
 #: NSIS_Installer.nsi:550
 msgid "Your settings and data will be preserved."
-msgstr ""
+msgstr "Dine indstillinger og data vil blive opbevaret."
 
 #~ msgid "Delete Cache"
 #~ msgstr "Slet hukommelse"
