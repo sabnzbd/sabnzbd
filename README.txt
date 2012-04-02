@@ -1,4 +1,4 @@
-************************  SABnzbd 0.7.0Alpha3 ************************
+************************  SABnzbd 0.7.0Beta1 ************************
 
 What's new:
 
@@ -13,6 +13,9 @@ What's new:
 - For Usenet servers with multiple IP addresses, pick a random one per connection
 - Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue
 - Allow jobs still  waiting for post-processing to be deleted too
+- More persistent retries for unreliable indexers
+- Single Configuration skin for all others skins (there is an option for the old style)
+- Config->Special for settings that were previously only changeable in the sabnzbd.ini file
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.

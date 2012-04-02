@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Updated nzbmatrix categories
+- "Special" option allows incomplete/partial NZB files
+- Forbid "complete" being a subfolder of "incomplete"
+-------------------------------------------------------------------------------
  0.7.0Alpha3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix failing join-by-par2
