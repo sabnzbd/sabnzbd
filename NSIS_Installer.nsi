@@ -42,6 +42,7 @@
   Delete   "${idir}\email\email-nb.tmpl"
   Delete   "${idir}\email\email-ro.tmpl"
   Delete   "${idir}\email\email-sr.tmpl"
+  Delete   "${idir}\email\email-es.tmpl"
   Delete   "${idir}\email\rss-de.tmpl"
   Delete   "${idir}\email\rss-en.tmpl"
   Delete   "${idir}\email\rss-nl.tmpl"
@@ -51,6 +52,7 @@
   Delete   "${idir}\email\rss-nb.tmpl"
   Delete   "${idir}\email\rss-ro.tmpl"
   Delete   "${idir}\email\rss-sr.tmpl"
+  Delete   "${idir}\email\rss-es.tmpl"
   Delete   "${idir}\email\badfetch-da.tmpl"
   Delete   "${idir}\email\badfetch-de.tmpl"
   Delete   "${idir}\email\badfetch-en.tmpl"
@@ -61,6 +63,7 @@
   Delete   "${idir}\email\badfetch-sr.tmpl"
   Delete   "${idir}\email\badfetch-sv.tmpl"
   Delete   "${idir}\email\badfetch-sr.tmpl"
+  Delete   "${idir}\email\badfetch-es.tmpl"
   RMDir    "${idir}\email"
   RMDir /r "${idir}\locale"
   RMDir /r "${idir}\interfaces\Classic"
@@ -203,6 +206,7 @@
   !insertmacro MUI_LANGUAGE "Danish"
   !insertmacro MUI_LANGUAGE "NORWEGIAN"
   !insertmacro MUI_LANGUAGE "Romanian"
+  !insertmacro MUI_LANGUAGE "Spanish"
 
 
 ;------------------------------------------------------------------
@@ -411,6 +415,7 @@ SectionEnd
   LangString MsgStartSab    ${LANG_DUTCH} "Start SABnzbd (hidden)"
   LangString MsgStartSab    ${LANG_ROMANIAN} "Start SABnzbd (hidden)"
   LangString MsgStartSab    ${LANG_SWEDISH} "Start SABnzbd (hidden)"
+  LangString MsgStartSab    ${LANG_SPANISH} "Start SABnzbd (hidden)"
 
   LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
   LangString MsgShowRelNote ${LANG_DANISH} "Show Release Notes"
@@ -420,6 +425,7 @@ SectionEnd
   LangString MsgShowRelNote ${LANG_DUTCH} "Show Release Notes"
   LangString MsgShowRelNote ${LANG_ROMANIAN} "Show Release Notes"
   LangString MsgShowRelNote ${LANG_SWEDISH} "Show Release Notes"
+  LangString MsgShowRelNote ${LANG_SPANISH} "Show Release Notes"
 
   LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
   LangString MsgSupportUs   ${LANG_DANISH} "Support the project, Donate!"
@@ -429,6 +435,7 @@ SectionEnd
   LangString MsgSupportUs   ${LANG_DUTCH} "Support the project, Donate!"
   LangString MsgSupportUs   ${LANG_ROMANIAN} "Support the project, Donate!"
   LangString MsgSupportUs   ${LANG_SWEDISH} "Support the project, Donate!"
+  LangString MsgSupportUs   ${LANG_SPANISH} "Support the project, Donate!"
 
   LangString MsgCloseSab    ${LANG_ENGLISH} "Please close $\"SABnzbd.exe$\" first"
   LangString MsgCloseSab    ${LANG_DANISH} "Please close $\"SABnzbd.exe$\" first"
@@ -438,6 +445,7 @@ SectionEnd
   LangString MsgCloseSab    ${LANG_DUTCH} "Please close $\"SABnzbd.exe$\" first"
   LangString MsgCloseSab    ${LANG_ROMANIAN} "Please close $\"SABnzbd.exe$\" first"
   LangString MsgCloseSab    ${LANG_SWEDISH} "Please close $\"SABnzbd.exe$\" first"
+  LangString MsgCloseSab    ${LANG_SPANISH} "Please close $\"SABnzbd.exe$\" first"
 
   LangString MsgOldQueue    ${LANG_ENGLISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
   LangString MsgOldQueue    ${LANG_DANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
@@ -447,6 +455,7 @@ SectionEnd
   LangString MsgOldQueue    ${LANG_DUTCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
   LangString MsgOldQueue    ${LANG_ROMANIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
   LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+  LangString MsgOldQueue    ${LANG_SPANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
   LangString MsgUninstall   ${LANG_DANISH} "This will uninstall SABnzbd from your system"
@@ -456,6 +465,7 @@ SectionEnd
   LangString MsgUninstall   ${LANG_DUTCH} "This will uninstall SABnzbd from your system"
   LangString MsgUninstall   ${LANG_ROMANIAN} "This will uninstall SABnzbd from your system"
   LangString MsgUninstall   ${LANG_SWEDISH} "This will uninstall SABnzbd from your system"
+  LangString MsgUninstall   ${LANG_SPANISH} "This will uninstall SABnzbd from your system"
 
   LangString MsgRunAtStart  ${LANG_ENGLISH} "Run at startup"
   LangString MsgRunAtStart  ${LANG_DANISH} "Run at startup"
@@ -465,6 +475,7 @@ SectionEnd
   LangString MsgRunAtStart  ${LANG_DUTCH} "Run at startup"
   LangString MsgRunAtStart  ${LANG_ROMANIAN} "Run at startup"
   LangString MsgRunAtStart  ${LANG_SWEDISH} "Run at startup"
+  LangString MsgRunAtStart  ${LANG_SPANISH} "Run at startup"
 
   LangString MsgIcon        ${LANG_ENGLISH} "Desktop Icon"
   LangString MsgIcon        ${LANG_DANISH} "Desktop Icon"
@@ -474,6 +485,7 @@ SectionEnd
   LangString MsgIcon        ${LANG_DUTCH} "Desktop Icon"
   LangString MsgIcon        ${LANG_ROMANIAN} "Desktop Icon"
   LangString MsgIcon        ${LANG_SWEDISH} "Desktop Icon"
+  LangString MsgIcon        ${LANG_SPANISH} "Desktop Icon"
 
   LangString MsgAssoc       ${LANG_ENGLISH} "NZB File association"
   LangString MsgAssoc       ${LANG_DANISH} "NZB File association"
@@ -483,6 +495,7 @@ SectionEnd
   LangString MsgAssoc       ${LANG_DUTCH} "NZB File association"
   LangString MsgAssoc       ${LANG_ROMANIAN} "NZB File association"
   LangString MsgAssoc       ${LANG_SWEDISH} "NZB File association"
+  LangString MsgAssoc       ${LANG_SPANISH} "NZB File association"
 
   LangString MsgDelProgram  ${LANG_ENGLISH} "Delete Program"
   LangString MsgDelProgram  ${LANG_DANISH} "Delete Program"
@@ -492,6 +505,7 @@ SectionEnd
   LangString MsgDelProgram  ${LANG_DUTCH} "Delete Program"
   LangString MsgDelProgram  ${LANG_ROMANIAN} "Delete Program"
   LangString MsgDelProgram  ${LANG_SWEDISH} "Delete Program"
+  LangString MsgDelProgram  ${LANG_SPANISH} "Delete Program"
 
   LangString MsgDelSettings ${LANG_ENGLISH} "Delete Settings"
   LangString MsgDelSettings ${LANG_DANISH} "Delete Settings"
@@ -501,6 +515,7 @@ SectionEnd
   LangString MsgDelSettings ${LANG_DUTCH} "Delete Settings"
   LangString MsgDelSettings ${LANG_ROMANIAN} "Delete Settings"
   LangString MsgDelSettings ${LANG_SWEDISH} "Delete Settings"
+  LangString MsgDelSettings ${LANG_SPANISH} "Delete Settings"
 
   LangString MsgNoRuntime   ${LANG_ENGLISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
   LangString MsgNoRuntime   ${LANG_DANISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
@@ -510,6 +525,7 @@ SectionEnd
   LangString MsgNoRuntime   ${LANG_DUTCH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
   LangString MsgNoRuntime   ${LANG_ROMANIAN} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
   LangString MsgNoRuntime   ${LANG_SWEDISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
+  LangString MsgNoRuntime   ${LANG_SPANISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
 
   LangString MsgDLRuntime   ${LANG_ENGLISH} "Downloading Microsoft runtime installer..."
   LangString MsgDLRuntime   ${LANG_DANISH} "Downloading Microsoft runtime installer..."
@@ -519,6 +535,7 @@ SectionEnd
   LangString MsgDLRuntime   ${LANG_DUTCH} "Downloading Microsoft runtime installer..."
   LangString MsgDLRuntime   ${LANG_ROMANIAN} "Downloading Microsoft runtime installer..."
   LangString MsgDLRuntime   ${LANG_SWEDISH} "Downloading Microsoft runtime installer..."
+  LangString MsgDLRuntime   ${LANG_SPANISH} "Downloading Microsoft runtime installer..."
 
   LangString MsgDLError     ${LANG_ENGLISH} "Download error, retry?"
   LangString MsgDLError     ${LANG_DANISH} "Download error, retry?"
@@ -528,6 +545,7 @@ SectionEnd
   LangString MsgDLError     ${LANG_DUTCH} "Download error, retry?"
   LangString MsgDLError     ${LANG_ROMANIAN} "Download error, retry?"
   LangString MsgDLError     ${LANG_SWEDISH} "Download error, retry?"
+  LangString MsgDLError     ${LANG_SPANISH} "Download error, retry?"
 
   LangString MsgDLNeed      ${LANG_ENGLISH} "Cannot install without runtime library, retry?"
   LangString MsgDLNeed      ${LANG_DANISH} "Cannot install without runtime library, retry?"
@@ -537,6 +555,7 @@ SectionEnd
   LangString MsgDLNeed      ${LANG_DUTCH} "Cannot install without runtime library, retry?"
   LangString MsgDLNeed      ${LANG_ROMANIAN} "Cannot install without runtime library, retry?"
   LangString MsgDLNeed      ${LANG_SWEDISH} "Cannot install without runtime library, retry?"
+  LangString MsgDLNeed      ${LANG_SPANISH} "Cannot install without runtime library, retry?"
 
   LangString MsgRemoveOld   ${LANG_ENGLISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
   LangString MsgRemoveOld   ${LANG_DANISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
@@ -546,6 +565,7 @@ SectionEnd
   LangString MsgRemoveOld   ${LANG_DUTCH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
   LangString MsgRemoveOld   ${LANG_ROMANIAN} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
   LangString MsgRemoveOld   ${LANG_SWEDISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
+  LangString MsgRemoveOld   ${LANG_SPANISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
 
   LangString MsgRemoveOld2  ${LANG_ENGLISH} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_DANISH} "Your settings and data will be preserved."
@@ -555,6 +575,7 @@ SectionEnd
   LangString MsgRemoveOld2  ${LANG_DUTCH} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_ROMANIAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_SWEDISH} "Your settings and data will be preserved."
+  LangString MsgRemoveOld2  ${LANG_SPANISH} "Your settings and data will be preserved."
 
 
 Function un.onInit
