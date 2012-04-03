@@ -524,11 +524,32 @@ def all_localhosts():
     return ips
 
 
+def ipv_localhost(v):
+    """ Return True if localhost resolves to some IPV4 ('4') or IPV6 ('6') address
+    """
+    try:
+        info = socket.getaddrinfo('localhost', None)
+    except:
+        # localhost does not resolve
+        return False
+    for item in info:
+        item = item[4][0]
+        if v == '4' and ':' not in item:
+            return True
+        elif v == '6' and ':' in item:
+            return True
+    return False    
+
 #------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
     """
+    if cherryhost == '0.0.0.0' and not ipv_localhost('4'):
+        cherryhost = ''
+    elif cherryhost == '::' and not ipv_localhost('6'):
+        cherryhost = ''
+        
     if cherryhost is None:
         cherryhost = sabnzbd.cfg.cherryhost()
     else:
