@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix behavior when using host address 0.0.0.0 on a system
+  that doesn't resolve localhost properly
+- Add Spanish translation
+-------------------------------------------------------------------------------
  0.7.0Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Updated nzbmatrix categories

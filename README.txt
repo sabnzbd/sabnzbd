@@ -1,4 +1,4 @@
-************************  SABnzbd 0.7.0Beta1 ************************
+************************  SABnzbd 0.7.0Beta2 ************************
 
 What's new:
 
@@ -16,6 +16,7 @@ What's new:
 - More persistent retries for unreliable indexers
 - Single Configuration skin for all others skins (there is an option for the old style)
 - Config->Special for settings that were previously only changeable in the sabnzbd.ini file
+- Add Spanish translation
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
