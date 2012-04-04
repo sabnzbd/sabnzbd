@@ -36,7 +36,7 @@ msgstr ""
 #: NSIS_Installer.nsi:442
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 msgstr ""
 
 #: NSIS_Installer.nsi:451

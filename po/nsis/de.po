@@ -36,10 +36,10 @@ msgstr "Schliessen Sie bitte zuerst \"SABnzbd.exe\"."
 #: NSIS_Installer.nsi:442
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 msgstr ""
 "                  >>>> WARNUNG <<<<\\r\\n\\r\\nBitte zuerst die "
-"Versionsanmerkungen lesen oder \"http://wiki.sabnzbd.org/introducing-0-6-0 "
+"Versionsanmerkungen lesen oder \"http://wiki.sabnzbd.org/introducing-0-7-0 "
 "besuchen!\""
 
 #: NSIS_Installer.nsi:451

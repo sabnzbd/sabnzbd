@@ -36,11 +36,11 @@ msgstr "Închideţi mai întâi \"SABnzbd.exe\""
 #: NSIS_Installer.nsi:442
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 msgstr ""
 "                  >>>> ATENŢIE <<<<\\r\\n\\r\\nVă rugăm, verificaţi mai "
 "întâi notele de publicare sau mergeţi la http://wiki.sabnzbd.org/introducing-"
-"0-6-0 !"
+"0-7-0 !"
 
 #: NSIS_Installer.nsi:451
 msgid "This will uninstall SABnzbd from your system"
