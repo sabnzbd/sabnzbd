@@ -108,7 +108,7 @@ LanguageTable = {
     'sk' : ('Slovak', 'Slovencina'),
     'sl' : ('Slovene', 'Slovenšcina'),
     'st' : ('Southern Sotho', 'Sesotho'),
-    'es' : ('Spanish Castilian', 'Español, castellano'),
+    'es' : ('Spanish', 'Español, castellano'), # NSIS cannot handle "Spanish Castilian"
     'su' : ('Sundanese', 'Basa Sunda'),
     'sw' : ('Swahili', 'Kiswahili'),
     'ss' : ('Swati', 'SiSwati'),
@@ -169,7 +169,7 @@ def translate_tmpl(prefix, lng):
         fp.write('#encoding UTF-8\n')
     fp.write(data)
     fp.close()
-    
+
 
 def make_templates():
     """ Create email templates
