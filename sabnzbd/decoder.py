@@ -273,7 +273,7 @@ def yCheck(data):
     yend = None
 
     ## Check head
-    for i in xrange(10):
+    for i in xrange(40):
         try:
             if data[i].startswith('=ybegin '):
                 splits = 3

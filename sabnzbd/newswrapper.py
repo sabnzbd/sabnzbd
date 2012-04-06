@@ -311,6 +311,8 @@ class NewsWrapper(object):
         self.timeout = time.time() + self.server.timeout
         if precheck:
             command = 'STAT <%s>\r\n' % (self.article.article)
+        elif self.server.oddball:
+            command = 'ARTICLE <%s>\r\n' % (self.article.article)
         else:
             command = 'BODY <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)

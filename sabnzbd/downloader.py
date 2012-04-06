@@ -77,6 +77,7 @@ class Server(object):
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
         self.request = False # True if a getaddrinfo() request is pending
+        self.oddball = 'free.xsusenet.com' in host
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
