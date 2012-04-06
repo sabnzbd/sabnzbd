@@ -38,7 +38,7 @@ import sabnzbd
 import sabnzbd.cfg
 
 from sabnzbd.constants import *
-from sabnzbd.misc import get_filename, get_ext, diskfree
+from sabnzbd.misc import get_filename, get_ext, diskfree, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.growler as growler
 
@@ -450,7 +450,7 @@ class SABnzbdDelegate(NSObject):
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
 
                 self.state = ""
-                speed = self.to_units(bpsnow)
+                speed = to_units(bpsnow, dec_limit=1)
                 timeleft = (speed>1 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
 
                 statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)
@@ -660,28 +660,6 @@ class SABnzbdDelegate(NSObject):
             return '%s:%s:%s' % (hours, minutes, seconds)
         except:
             return '0:00:00'
-
-    def to_units(self, val):
-        """ Convert number to K/M/G/T/P notation
-        """
-        TAB_UNITS = ("", "K", "M", "G", "T", "P")
-        val = str(val).strip()
-        if val == "-1":
-            return val
-        n=0
-        try:
-            val = float(val)
-        except:
-            return ''
-
-        while (val > 1023.0) and (n < 5):
-            val = val / 1024.0
-            n= n+1
-        unit = TAB_UNITS[n]
-        if n>1:
-            return " %.2f %sB/s " % (val, unit)
-        else:
-            return " %d %sB/s " % (val, unit)
 
     def openBrowserAction_(self, sender):
         if sender.representedObject:
