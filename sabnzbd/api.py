@@ -297,7 +297,7 @@ def _api_addfile(name, output, kwargs):
     if name is not None and name.filename and size:
         res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
                             kwargs.get('priority'), kwargs.get('nzbname'))
-        return report(output, keyword='', data={'status':res[0], 'nzo_ids' : res[1]})
+        return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -340,7 +340,7 @@ def _api_addlocalfile(name, output, kwargs):
                 return report(output, _MSG_NO_FILE)
         else:
             return report(output, _MSG_NO_PATH)
-        return report(output, keyword='', data={'status':res[0], 'nzo_ids' : res[1]})
+        return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]})
     else:
         return report(output, _MSG_NO_VALUE)
 
