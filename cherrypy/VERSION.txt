@@ -1,1 +1,1 @@
-This CherryPy Rev 2138 patched with Rev 2272.
+This is CherryPy Official 3.2.2 release with patches.

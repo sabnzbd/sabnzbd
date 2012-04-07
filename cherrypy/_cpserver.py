@@ -4,6 +4,7 @@ import warnings
 
 import cherrypy
 from cherrypy.lib import attributes
+from cherrypy._cpcompat import basestring, py3k
 
 # We import * because we want to export check_port
 # et al as attributes of this module.
@@ -15,13 +16,14 @@ class Server(ServerAdapter):
     
     You can set attributes (like socket_host and socket_port)
     on *this* object (which is probably cherrypy.server), and call
-    quickstart. For example:
+    quickstart. For example::
     
         cherrypy.server.socket_port = 80
         cherrypy.quickstart()
     """
     
     socket_port = 8080
+    """The TCP port on which to listen for connections."""
     
     _socket_host = '127.0.0.1'
     def _get_socket_host(self):
@@ -43,33 +45,92 @@ class Server(ServerAdapter):
         not allowed.""")
     
     socket_file = None
+    """If given, the name of the UNIX socket to use instead of TCP/IP.
+    
+    When this option is not None, the `socket_host` and `socket_port` options
+    are ignored."""
+    
     socket_queue_size = 5
+    """The 'backlog' argument to socket.listen(); specifies the maximum number
+    of queued connections (default 5)."""
+    
     socket_timeout = 10
+    """The timeout in seconds for accepted connections (default 10)."""
+    
     shutdown_timeout = 5
+    """The time to wait for HTTP worker threads to clean up."""
+    
     protocol_version = 'HTTP/1.1'
-    reverse_dns = False
+    """The version string to write in the Status-Line of all HTTP responses,
+    for example, "HTTP/1.1" (the default). Depending on the HTTP server used,
+    this should also limit the supported features used in the response."""
+    
     thread_pool = 10
+    """The number of worker threads to start up in the pool."""
+    
     thread_pool_max = -1
+    """The maximum size of the worker-thread pool. Use -1 to indicate no limit."""
+    
     max_request_header_size = 500 * 1024
+    """The maximum number of bytes allowable in the request headers. If exceeded,
+    the HTTP server should return "413 Request Entity Too Large"."""
+    
     max_request_body_size = 100 * 1024 * 1024
+    """The maximum number of bytes allowable in the request body. If exceeded,
+    the HTTP server should return "413 Request Entity Too Large"."""
+    
     instance = None
+    """If not None, this should be an HTTP server instance (such as
+    CPWSGIServer) which cherrypy.server will control. Use this when you need
+    more control over object instantiation than is available in the various
+    configuration options."""
+    
     ssl_context = None
+    """When using PyOpenSSL, an instance of SSL.Context."""
+    
     ssl_certificate = None
+    """The filename of the SSL certificate to use."""
+    
     ssl_certificate_chain = None
+    """When using PyOpenSSL, the certificate chain to pass to
+    Context.load_verify_locations."""
+    
     ssl_private_key = None
+    """The filename of the private key to use with SSL."""
+    
+    if py3k:
+        ssl_module = 'builtin'
+        """The name of a registered SSL adaptation module to use with the builtin
+        WSGI server. Builtin options are: 'builtin' (to use the SSL library built
+        into recent versions of Python). You may also register your
+        own classes in the wsgiserver.ssl_adapters dict."""
+    else:
+        ssl_module = 'pyopenssl'
+        """The name of a registered SSL adaptation module to use with the builtin
+        WSGI server. Builtin options are 'builtin' (to use the SSL library built
+        into recent versions of Python) and 'pyopenssl' (to use the PyOpenSSL
+        project, which you must install separately). You may also register your
+        own classes in the wsgiserver.ssl_adapters dict."""
+    
+    statistics = False
+    """Turns statistics-gathering on or off for aware HTTP servers."""
+    
     nodelay = True
+    """If True (the default since 3.1), sets the TCP_NODELAY socket option."""
+    
+    wsgi_version = (1, 0)
+    """The WSGI version tuple to use with the builtin WSGI server.
+    The provided options are (1, 0) [which includes support for PEP 3333,
+    which declares it covers WSGI version 1.0.1 but still mandates the
+    wsgi.version (1, 0)] and ('u', 0), an experimental unicode version.
+    You may create and register your own experimental versions of the WSGI
+    protocol by adding custom classes to the wsgiserver.wsgi_gateways dict."""
     
     def __init__(self):
         self.bus = cherrypy.engine
         self.httpserver = None
         self.interrupt = None
         self.running = False
-    
-    def quickstart(self, server=None):
-        """This does nothing now and will be removed in 3.2."""
-        warnings.warn('quickstart does nothing now and will be removed in '
-                      '3.2. Call cherrypy.engine.start() instead.',
-                      DeprecationWarning)
     
     def httpserver_from_self(self, httpserver=None):
         """Return a (httpserver, bind_addr) pair based on self attributes."""
@@ -113,7 +174,8 @@ class Server(ServerAdapter):
                 raise ValueError("bind_addr must be a (host, port) tuple "
                                  "(for TCP sockets) or a string (for Unix "
                                  "domain sockets), not %r" % value)
-    bind_addr = property(_get_bind_addr, _set_bind_addr)
+    bind_addr = property(_get_bind_addr, _set_bind_addr,
+        doc='A (host, port) tuple for TCP sockets or a str for Unix domain sockets.')
     
     def base(self):
         """Return the base (scheme://host[:port] or sock file) for this server."""
