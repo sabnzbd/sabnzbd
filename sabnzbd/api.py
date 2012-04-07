@@ -536,15 +536,15 @@ def _api_version(name, output, kwargs):
 def _api_auth(name, output, kwargs):
     """ API: accepts output """
     auth = 'None'
-    if cfg.username() and cfg.password():
-        auth = 'login'
     if not cfg.disable_key():
-        auth = 'apikey'
+        auth = 'badkey'
         key = kwargs.get('key', '')
         if key == cfg.nzb_key():
             auth = 'nzbkey'
         if key == cfg.api_key():
             auth = 'apikey'
+    elif cfg.username() and cfg.password():
+        auth = 'login'
     return report(output, keyword='auth', data=auth)
 
 
