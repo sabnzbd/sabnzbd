@@ -106,8 +106,6 @@ class MSGIDGrabber(Thread):
 
             filename, data, newzbin_cat, nzo_info = _grabnzb(msgid)
             if filename and data:
-                filename = name_fixer(filename)
-
                 pp = nzo.pp
                 script = nzo.script
                 cat = nzo.cat

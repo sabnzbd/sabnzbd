@@ -358,8 +358,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 logging.info('Skipping sample file %s', subject)
             else:
                 self.in_file = True
-                if isinstance(subject, unicode):
-                    subject = subject.encode('latin-1', 'replace')
                 self.fileSubject = subject
                 try:
                     self.file_date = int(attrs.get('date'))
@@ -616,6 +614,7 @@ class NzbObject(TryList):
         self.new_caching = True
         self.encrypted = 0
         self.wait = None
+        self.utf8_names = True
         self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
@@ -713,7 +712,8 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
+            cat, pp, script, priority, name, self.url, utf8_names = get_attrib_file(self.workpath, 7)
+            self.utf8_names = utf8_names == '1'
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -971,9 +971,9 @@ class NzbObject(TryList):
             if dif > 0:
                 prefix += Ta('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
         if self.password:
-            return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
+            return '%s%s / %s' % (prefix, self.final_name, self.password)
         else:
-            return '%s%s' % (name_fixer(prefix), self.final_name)
+            return '%s%s' % (prefix, self.final_name)
 
     @property
     def final_name_pw_clean(self):
@@ -1312,7 +1312,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url, int(self.utf8_names)))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1350,6 +1350,7 @@ class NzbObject(TryList):
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
+        self.utf8_names = True
         TryList.__init__(self)
 
 

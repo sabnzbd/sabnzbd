@@ -29,7 +29,7 @@ import binascii
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
-     reliable_unpack_names, unicoder, latin1, platform_encode
+     reliable_unpack_names, unicoder, latin1, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
 from sabnzbd.tvsort import SeriesSorter
@@ -891,7 +891,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     classic = classic or not cfg.par2_multicore()
     logging.debug('Par2-classic = %s', classic)
 
-    if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
+    if (nzo.utf8_names and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
             command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
         else:
@@ -1166,6 +1166,10 @@ def fix_env():
 def build_command(command):
     """ Prepare list from running an external program
     """
+    for n in xrange(len(command)):
+        if isinstance(command[n], unicode):
+            command[n] = deunicode(command[n])
+
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
@@ -1276,13 +1280,12 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
 
     for file in md5pack:
-        file = name_fixer(file)
         if sabnzbd.misc.on_cleanup_list(file, False):
             result = True
             continue
         found = False
         for nzf in nzf_list:
-            if file == name_fixer(nzf.filename):
+            if file == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -1305,20 +1308,6 @@ def pars_of_set(wdir, setname):
         if m and m.group(1) == setname and m.group(2):
             list.append(file)
     return list
-
-
-def is_new_partype(nzo, setname):
-    """ Determine the PAR2 program type, based on the filename encoding """
-    pack = nzo.md5packs.get(setname)
-    if not pack:
-        return True
-    for name in pack.keys():
-        try:
-            name.decode('utf-8')
-        except UnicodeDecodeError:
-            # Now we know it's not pure ASCII or UTF-8
-            return False
-    return True
 
 
 def add_s(i):

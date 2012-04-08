@@ -61,7 +61,7 @@ class HistoryDB(object):
             create_table = True
         else:
             create_table = False
-        if sabnzbd.WIN32:
+        if sabnzbd.WIN32 and isinstance(db_path, str):
             self.con = sqlite3.connect(db_path.decode('latin-1').encode('utf-8'))
         else:
             self.con = sqlite3.connect(db_path)
@@ -159,7 +159,7 @@ class HistoryDB(object):
         if jobs is None:
             self.remove_completed()
         else:
-            if type(jobs) == type(''):
+            if not isinstance(jobs, list):
                 jobs = [jobs]
 
             for job in jobs:

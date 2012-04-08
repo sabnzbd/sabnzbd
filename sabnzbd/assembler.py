@@ -40,7 +40,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1, unicoder
+from sabnzbd.encoding import latin1, unicoder, name_fixer
 
 
 #------------------------------------------------------------------------------
@@ -100,10 +100,11 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack = GetMD5Hashes(filepath)
+                        pack, new_enc = GetMD5Hashes(filepath)
                         if pack:
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
+                        nzo.utf8_names &= new_enc
 
                     if check_encrypted_rar(nzo, filepath):
                         logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
@@ -202,6 +203,7 @@ def GetMD5Hashes(fname):
     """ Get the hash table from a PAR2 file
         Return as dictionary, indexed on names
     """
+    new_encoding = True
     table = {}
     try:
         f = open(fname, 'rb')
@@ -212,6 +214,8 @@ def GetMD5Hashes(fname):
         header = f.read(8)
         while header:
             name, hash = ParseFilePacket(f, header)
+            name, enc = name_fixer(name)
+            new_encoding &= enc
             if name:
                 table[name] = hash
             header = f.read(8)
@@ -225,7 +229,7 @@ def GetMD5Hashes(fname):
         table = {}
 
     f.close()
-    return table
+    return table, new_encoding
 
 
 def ParseFilePacket(f, header):

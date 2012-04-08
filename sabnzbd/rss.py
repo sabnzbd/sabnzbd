@@ -355,21 +355,17 @@ class RSSQueue(object):
                     link, category = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
-                    category = ''
+                    category = u''
                     logging.info(Ta('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info = True)
                     return T('Incompatible feed')
-                category = latin1(category)
-                # Make sure only latin-1 encodable characters occur
-                atitle = latin1(entry.title)
-                title = unicoder(atitle)
+                title = entry.title
             else:
                 link = entry
                 category = jobs[link].get('orgcat', '')
                 if category in ('', '*'):
                     category = None
-                atitle = latin1(jobs[link].get('title', ''))
-                title = unicoder(atitle)
+                title = jobs[link].get('title', '')
 
             if link:
                 # Make sure spaces are quoted in the URL
@@ -387,7 +383,7 @@ class RSSQueue(object):
                     jobstat = 'N'
                 if jobstat in 'NGB' or (jobstat == 'X' and readout):
                     # Match this title against all filters
-                    logging.debug('Trying title %s', atitle)
+                    logging.debug('Trying title %s', title)
                     result = False
                     myCat = defCat
                     myPP = defPP
@@ -442,7 +438,7 @@ class RSSQueue(object):
 
                     if cfg.no_dupes() and dup_title(title):
                         if cfg.no_dupes() == 1:
-                            logging.info("Ignoring duplicate job %s", atitle)
+                            logging.info("Ignoring duplicate job %s", title)
                             continue
                         else:
                             myPrio = DUP_PRIORITY

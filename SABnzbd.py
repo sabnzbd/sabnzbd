@@ -17,7 +17,12 @@
 
 import sys
 if sys.version_info < (2,5):
-    print "Sorry, requires Python 2.5 or higher."
+    print 'Sorry, requires Python 2.5 or higher.'
+    sys.exit(1)
+
+if sys.getdefaultencoding().lower() != 'utf-8':
+    print 'Sorry, you MUST have the SABnzbd folder in the PYTHONPATH environment variable'
+    print 'or find another way to force Python to use UTF-8 for string encoding.'
     sys.exit(1)
 
 import logging
@@ -77,7 +82,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, latin1, deunicode
 import sabnzbd.growler as growler
 
 from threading import Thread
@@ -362,6 +367,7 @@ def CheckColor(color, web_dir):
 #------------------------------------------------------------------------------
 def fix_webname(name):
     if name:
+        name = deunicode(name)
         xname = name.title()
     else:
         xname = ''
@@ -538,7 +544,7 @@ def ipv_localhost(v):
             return True
         elif v == '6' and ':' in item:
             return True
-    return False    
+    return False
 
 #------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
@@ -549,7 +555,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = ''
     elif cherryhost == '::' and not ipv_localhost('6'):
         cherryhost = ''
-        
+
     if cherryhost is None:
         cherryhost = sabnzbd.cfg.cherryhost()
     else:

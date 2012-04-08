@@ -63,9 +63,9 @@ def set_language(language=None):
     # The unicode flag will make _() return Unicode
     lng.install(unicode=True, names=['lgettext'])
     __builtin__.__dict__['T'] = __builtin__.__dict__['_']           # Unicode
-    __builtin__.__dict__['Ta'] = __builtin__.__dict__['lgettext']   # Latin-1
+    __builtin__.__dict__['Ta'] = __builtin__.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
     __builtin__.__dict__['Tx'] = __builtin__.__dict__['_']          # Dynamic translation (unicode)
-    __builtin__.__dict__['TT'] = lambda x:x                         # Use in text tables
+    __builtin__.__dict__['TT'] = lambda x:unicode(x)                # Use in text tables (Remove unicode() after patching skintext.py)
 
 
 def list_languages():

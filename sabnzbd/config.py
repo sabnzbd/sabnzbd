@@ -650,14 +650,23 @@ def read_config(path):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        CFG = configobj.ConfigObj(path)
+        CFG = configobj.ConfigObj(path, default_encoding='utf-8', encoding='utf-8')
+    except UnicodeDecodeError:
         try:
-            if int(CFG['__version__']) > int(CONFIG_VERSION):
-                return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
-        except (KeyError, ValueError):
-            CFG['__version__'] = CONFIG_VERSION
+            # INI file is still in 8bit ASCII encoding, so try Latin-1 instead
+            CFG = configobj.ConfigObj(path, default_encoding='cp1252', encoding='cp1252')
+            CFG.encoding = 'utf-8'
+        except configobj.ConfigObjError, strerror:
+            return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
     except configobj.ConfigObjError, strerror:
         return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+
+    try:
+        if int(CFG['__version__']) > int(CONFIG_VERSION):
+            return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
+    except (KeyError, ValueError):
+        CFG['__version__'] = CONFIG_VERSION
+
 
     CFG['__version__'] = CONFIG_VERSION
 
