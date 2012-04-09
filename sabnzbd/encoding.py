@@ -68,17 +68,28 @@ def platform_encode(p):
 
 def name_fixer(p):
     """ Return Unicode name of 8bit ASCII string, first try UTF-8, then latin1
-        Second return value is False when original encoding was not Unicode or UTF-8
     """
     if isinstance(p, unicode):
-        return p, True
+        return p
     elif isinstance(p, str):
         try:
-            return p.decode('utf-8'), True
+            return p.decode('utf-8')
         except:
-            return p.decode('latin1'), False
+            return p.decode('latin1')
     else:
         return p
+
+def is_utf8(p):
+    """ Return True when p is UTF-8 or plain ASCII """
+    utf8 = True
+    try:
+        p.decode('ascii')
+    except:
+        try:
+            p.decode('utf-8')
+        except:
+            utf8 = False
+    return utf8
 
 def special_fixer(p):
     """ Return string appropriate for the platform.

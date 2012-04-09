@@ -614,7 +614,6 @@ class NzbObject(TryList):
         self.new_caching = True
         self.encrypted = 0
         self.wait = None
-        self.utf8_names = True
         self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
@@ -712,8 +711,7 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name, self.url, utf8_names = get_attrib_file(self.workpath, 7)
-            self.utf8_names = utf8_names == '1'
+            cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -1312,7 +1310,7 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url, int(self.utf8_names)))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1350,7 +1348,6 @@ class NzbObject(TryList):
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
-        self.utf8_names = True
         TryList.__init__(self)
 
 

@@ -100,11 +100,10 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack, new_enc = GetMD5Hashes(filepath)
+                        pack = GetMD5Hashes(filepath)[0]
                         if pack:
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
-                        nzo.utf8_names &= new_enc
 
                     if check_encrypted_rar(nzo, filepath):
                         logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
@@ -201,9 +200,9 @@ def file_has_articles(nzf):
 
 def GetMD5Hashes(fname):
     """ Get the hash table from a PAR2 file
-        Return as dictionary, indexed on names
+        Return as dictionary, indexed on names and True for utf8-encoded names
     """
-    new_encoding = True
+    new_encoding = False
     table = {}
     try:
         f = open(fname, 'rb')
@@ -214,8 +213,8 @@ def GetMD5Hashes(fname):
         header = f.read(8)
         while header:
             name, hash = ParseFilePacket(f, header)
-            name, enc = name_fixer(name)
-            new_encoding &= enc
+            new_encoding |= is_utf8(name)
+            name = name_fixer(name)
             if name:
                 table[name] = hash
             header = f.read(8)
