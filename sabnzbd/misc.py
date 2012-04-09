@@ -1260,3 +1260,12 @@ def match_str(text, matches):
         if match in text:
             return match
     return None
+
+def starts_with_path(path, prefix):
+    ''' Return True if 'path' starts with 'prefix',
+        considering case-sensitivity of filesystem
+    '''
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        return path.lower().startswith(prefix.lower())
+    else:
+        return path.startswith(prefix)

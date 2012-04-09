@@ -51,7 +51,8 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
-                         get_filename, int_conv, globber, time_format, remove_all
+                         get_filename, int_conv, globber, time_format, remove_all, \
+                         starts_with_path
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1698,7 +1699,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         item['retry'] = int(bool(item.get('status') == 'Failed' and \
                                  path and \
                                  path not in retry_folders and \
-                                 path.startswith(cfg.download_dir.get_path()) and \
+                                 starts_with_path(path, cfg.download_dir.get_path()) and \
                                  os.path.exists(path)) and \
                                  not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
                                  )
