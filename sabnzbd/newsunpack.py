@@ -891,7 +891,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     classic = classic or not cfg.par2_multicore()
     logging.debug('Par2-classic = %s', classic)
 
-    if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
+    import sabnzbd.assembler
+    if (sabnzbd.assembler.GetMD5Hashes(parfile)[1] and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
             command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
         else:
@@ -1305,20 +1306,6 @@ def pars_of_set(wdir, setname):
         if m and m.group(1) == setname and m.group(2):
             list.append(file)
     return list
-
-
-def is_new_partype(nzo, setname):
-    """ Determine the PAR2 program type, based on the filename encoding """
-    pack = nzo.md5packs.get(setname)
-    if not pack:
-        return True
-    for name in pack.keys():
-        try:
-            name.decode('utf-8')
-        except UnicodeDecodeError:
-            # Now we know it's not pure ASCII or UTF-8
-            return False
-    return True
 
 
 def add_s(i):

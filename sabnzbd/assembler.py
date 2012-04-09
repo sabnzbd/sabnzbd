@@ -40,7 +40,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1, unicoder
+from sabnzbd.encoding import latin1, unicoder, is_utf8
 
 
 #------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack = GetMD5Hashes(filepath)
+                        pack = GetMD5Hashes(filepath)[0]
                         if pack:
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
@@ -200,8 +200,9 @@ def file_has_articles(nzf):
 
 def GetMD5Hashes(fname):
     """ Get the hash table from a PAR2 file
-        Return as dictionary, indexed on names
+        Return as dictionary, indexed on names and True for utf8-encoded names
     """
+    new_encoding = False
     table = {}
     try:
         f = open(fname, 'rb')
@@ -212,6 +213,7 @@ def GetMD5Hashes(fname):
         header = f.read(8)
         while header:
             name, hash = ParseFilePacket(f, header)
+            new_encoding |= is_utf8(name)
             if name:
                 table[name] = hash
             header = f.read(8)
@@ -225,7 +227,7 @@ def GetMD5Hashes(fname):
         table = {}
 
     f.close()
-    return table
+    return table, new_encoding
 
 
 def ParseFilePacket(f, header):

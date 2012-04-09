@@ -87,6 +87,18 @@ def name_fixer(p):
     else:
         return p
 
+def is_utf8(p):
+    """ Return True when p is UTF-8 or plain ASCII """
+    utf8 = True
+    try:
+        p.decode('ascii')
+    except:
+        try:
+            p.decode('utf-8')
+        except:
+            utf8 = False
+    return utf8
+
 def special_fixer(p):
     """ Return string appropriate for the platform.
         Also takes care of the situation where a non-Windows/UTF-8 system
