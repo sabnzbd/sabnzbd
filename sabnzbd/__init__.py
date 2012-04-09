@@ -240,6 +240,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
     cfg.fsys_type.callback(guard_fsys_type)
+    cfg.language.callback(sabnzbd.growler.reset_growl)
 
     ### Set Posix filesystem encoding
     sabnzbd.encoding.change_fsys(cfg.fsys_type())

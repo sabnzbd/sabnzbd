@@ -114,6 +114,15 @@ def send_notification(title , msg, gtype, wait=False):
 
 
 #------------------------------------------------------------------------------
+def reset_growl():
+    """ Reset Growl (after changing language)
+    """
+    global _GROWL, _GROWL_REG
+    _GROWL = None
+    _GROWL_REG = False
+
+
+#------------------------------------------------------------------------------
 def register_growl():
     """ Register this app with Growl
     """
