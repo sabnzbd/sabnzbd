@@ -39,11 +39,12 @@ except ImportError:
     _HAVE_CLASSIC_GROWL = False
 try:
     import warnings
+    # Make any warnings exceptions, so that pynotify is ignored
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         import pynotify
     _HAVE_NTFOSD = True
-except ImportError:
+except:
     _HAVE_NTFOSD = False
 
 #------------------------------------------------------------------------------
