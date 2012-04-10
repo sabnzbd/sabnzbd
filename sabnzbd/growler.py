@@ -40,16 +40,10 @@ except ImportError:
 try:
     import warnings
     # Make any warnings exceptions, so that pynotify is ignored
-
-    #Use this section when dropping Py2.5 support
-    #with warnings.catch_warnings():
-    #    warnings.simplefilter("error")
-    #    import pynotify
-
-    #Remove code below when dropping Py2.5 support
-    warnings.simplefilter("error")
-    import pynotify
-    warnings.resetwarnings()
+    # PyNotify will not work with Python 2.5 (due to next three lines)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        import pynotify
     _HAVE_NTFOSD = True
 except:
     _HAVE_NTFOSD = False
