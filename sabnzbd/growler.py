@@ -39,11 +39,19 @@ except ImportError:
     _HAVE_CLASSIC_GROWL = False
 try:
     import warnings
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        import pynotify
+    # Make any warnings exceptions, so that pynotify is ignored
+
+    #Use this section when dropping Py2.5 support
+    #with warnings.catch_warnings():
+    #    warnings.simplefilter("error")
+    #    import pynotify
+
+    #Remove code below when dropping Py2.5 support
+    warnings.simplefilter("error")
+    import pynotify
+    warnings.resetwarnings()
     _HAVE_NTFOSD = True
-except ImportError:
+except:
     _HAVE_NTFOSD = False
 
 #------------------------------------------------------------------------------
