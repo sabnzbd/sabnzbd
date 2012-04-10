@@ -321,6 +321,8 @@ def _api_retry(name, output, kwargs):
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
+    if name and isinstance(name, list):
+        name = name[0]
     if name:
         if os.path.exists(name):
             fn = get_filename(name)
@@ -450,40 +452,70 @@ def _api_get_files(name, output, kwargs):
     else:
         return report(output, _MSG_NO_VALUE)
 
-def _api_addurl(name, output, kwargs):
+def _api_addurl(names, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    if name:
-        sabnzbd.add_url(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
-                        kwargs.get('priority'), kwargs.get('nzbname'))
+    pp = kwargs.get('pp')
+    script = kwargs.get('script')
+    cat = kwargs.get('cat')
+    priority = kwargs.get('priority')
+    nzbnames = kwargs.get('nzbname')
+    if not isinstance(names, list):
+        names = [names]
+    if not isinstance(nzbnames, list):
+        nzbnames = [nzbnames]
+
+    for n in xrange(len(names)):
+        name = names[n]
+        if n < len(nzbnames):
+            nzbname = nzbnames[n]
+        else:
+            nzbname = ''
+        if name:
+            name = name.strip()
+        sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+
+    if n > 0:
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
 
 
 _RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
-def _api_addid(name, output, kwargs):
+def _api_addid(names, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     pp = kwargs.get('pp')
     script = kwargs.get('script')
     cat = kwargs.get('cat')
     priority = kwargs.get('priority')
-    nzbname = kwargs.get('nzbname')
+    nzbnames = kwargs.get('nzbname')
+    if not isinstance(names, list):
+        names = [names]
+    if not isinstance(nzbnames, list):
+        nzbnames = [nzbnames]
 
-    newzbin_url = _RE_NEWZBIN_URL.search(name.lower())
+    for n in xrange(len(names)):
+        name = names[n]
+        if n < len(nzbnames):
+            nzbname = nzbnames[n]
+        else:
+            nzbname = ''
 
-    if name:
-        name = name.strip()
-    if name and (name.isdigit() or len(name)==5):
-        sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
-        return report(output)
-    elif newzbin_url:
-        sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority, nzbname)
-        return report(output)
-    elif name:
-        sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+        newzbin_url = _RE_NEWZBIN_URL.search(name.lower())
+
+        if name:
+            name = name.strip()
+        if name and (name.isdigit() or len(name)==5):
+            sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
+        elif newzbin_url:
+            sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority, nzbname)
+        elif name:
+            sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+
+    if n > 0:
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
+
 
 def _api_pause(name, output, kwargs):
     """ API: accepts output """
