@@ -16,12 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,5):
-    print 'Sorry, requires Python 2.5 or higher.'
+if sys.version_info < (2,6):
+    print 'Sorry, requires Python 2.6 or higher.'
     sys.exit(1)
 
 if sys.getdefaultencoding().lower() != 'utf-8':
-    print 'Sorry, you MUST have the SABnzbd folder in the PYTHONPATH environment variable'
+    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
     print 'or find another way to force Python to use UTF-8 for string encoding.'
     sys.exit(1)
 
