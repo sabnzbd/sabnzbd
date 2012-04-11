@@ -397,6 +397,7 @@ class MainPage(object):
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
+        logging.debug('API-call from %s %s', cherrypy.request.remote.ip, kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
