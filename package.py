@@ -47,6 +47,12 @@ VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 my_version = 'unknown'
 my_baseline = 'unknown'
 
+if sys.getdefaultencoding().lower() != 'utf-8':
+    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
+    print 'or find another way to force Python to use UTF-8 for string encoding.'
+    sys.exit(1)
+
+
 def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
     for f in glob.glob(name):
@@ -604,8 +610,10 @@ elif target in ('binary', 'installer'):
     ############################
     if target == 'installer':
 
-        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-                  (prod, release, fileIns))
+        cmd = 'makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+                  (prod, release, fileIns)
+        print cmd
+        os.system(cmd)
 
 
     DeleteFiles(fileBin)

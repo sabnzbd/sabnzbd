@@ -104,6 +104,8 @@ LanguageTable = {
     'se' : ('Northern Sami', 'Davvisámegiella'),
     'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
     'gd' : ('Gaelic', 'Gàidhlig'),
+    'ru' : ('Russian', 'русский язык'),
+    'sr' : ('Serbian', 'српски'),
     'sn' : ('Shona', 'Chi Shona'),
     'sk' : ('Slovak', 'Slovencina'),
     'sl' : ('Slovene', 'Slovenšcina'),
@@ -209,7 +211,7 @@ u'\u0219' : u"s"  # ș
 def fix_ro():
     """ Convert ro.px files to ro.po files with only Latin1
     """
-    for section in ('main', 'email', 'nsis'):
+    for section in []:
         f = open('po/%s/ro.px' % section, 'rb')
         data = f.read().decode('utf-8')
         f.close()
@@ -255,7 +257,7 @@ def patch_nsis():
                         trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
                         # The unicode flag will make _() return Unicode
                         trans.install(unicode=True, names=['lgettext'])
-                        trans = lgettext(text)
+                        trans = _(text).encode('utf-8')
                         trans = trans.replace('\\', '$\\').replace('"', '$\\"')
                         line = '%s%s} "%s"\n' % (leader, lng, trans)
                         new.append(line)

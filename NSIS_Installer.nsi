@@ -1,4 +1,4 @@
-; -*- coding: latin-1 -*-
+; -*- coding: utf-8 -*-
 ;
 ; Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 ;
@@ -23,7 +23,8 @@
 !include "registerExtension.nsh"
 !include "LogicLib.nsh"
 !include "WinVer.nsh"
-!include "WinSxSQuery.nsh"
+!include "WinSxSQuery.nsh"       
+!include "nsProcess.nsh"
 
 ;------------------------------------------------------------------
 ;
@@ -206,7 +207,7 @@
   !insertmacro MUI_LANGUAGE "Danish"
   !insertmacro MUI_LANGUAGE "NORWEGIAN"
   !insertmacro MUI_LANGUAGE "Romanian"
-  !insertmacro MUI_LANGUAGE "Spanish"
+  !insertmacro MUI_LANGUAGE "Serbian"
 
 
 ;------------------------------------------------------------------
@@ -263,11 +264,12 @@ runtime_loop:
 ;make sure user terminates sabnzbd.exe or else abort
 ;
 loop:
-  StrCpy $0 "SABnzbd.exe"
-  KillProc::FindProcesses
-  StrCmp $0 "0" endcheck
-  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) /SD IDCANCEL IDOK loop IDCANCEL exitinstall
+  ${nsProcess::FindProcess} "SABnzbd.exe" $R0
+  StrCmp $R0 0 0 +2
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
+  goto endcheck
   exitinstall:
+    ${nsProcess::Unload}
     Abort
   endcheck:
 
@@ -344,28 +346,17 @@ UninstallText $(MsgUninstall)
 
 Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isnt running..if so shut it down
-
-  StrCpy $0 "sabnzbd.exe"
-  DetailPrint "Searching for processes called '$0'"
-  KillProc::FindProcesses
-  StrCmp $1 "-1" wooops
-  DetailPrint "-> Found $0 processes"
-
-  StrCmp $0 "0" completed
-  Sleep 1500
-
-  StrCpy $0 "sabnzbd.exe"
-  DetailPrint "Killing all processes called '$0'"
-  KillProc::KillProcesses
-  StrCmp $1 "-1" wooops
-  DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
-
-  Goto completed
-
-  wooops:
-  DetailPrint "-> Error: Something went wrong :-("
-  Abort
-
+;
+;  ${nsProcess::FindProcess} "SABnzbd.exe" $R0
+;  StrCmp $R0 0 0 +2
+;  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "notepad" before continue' IDOK loop IDCANCEL end
+;
+;  ${nsProcess::KillProcess} "SABnzbd.exe" $R0
+;  MessageBox MB_OK "nsProcess::KillProcess$\n$\n\
+;			Errorlevel: [$R0]"
+;    
+;  ${nsProcess::Unload}
+;
   completed:
   DetailPrint "Process Killed"
 
@@ -408,174 +399,191 @@ SectionEnd
 ;Language strings
 ; MsgWarnRunning 'Please close "SABnzbd.exe" first'
   LangString MsgStartSab    ${LANG_ENGLISH} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_DANISH} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_GERMAN} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_FRENCH} "Start SABnzbd (hidden)"
+  LangString MsgStartSab    ${LANG_DANISH} "Start SABnzbd"
+  LangString MsgStartSab    ${LANG_GERMAN} "SABnzbd starten (unsichtbar)"
+  LangString MsgStartSab    ${LANG_SPANISH} "Inicio SABnzbd (oculto)"
+  LangString MsgStartSab    ${LANG_FRENCH} "Démarrer SABnzbd (caché)"
   LangString MsgStartSab    ${LANG_NORWEGIAN} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_DUTCH} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_ROMANIAN} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_SWEDISH} "Start SABnzbd (hidden)"
-  LangString MsgStartSab    ${LANG_SPANISH} "Start SABnzbd (hidden)"
+  LangString MsgStartSab    ${LANG_DUTCH} "Start SABnzbd (verborgen)"
+  LangString MsgStartSab    ${LANG_ROMANIAN} "Porneste SABnzbd (ascuns)"
+  LangString MsgStartSab    ${LANG_SERBIAN} "Покрени САБнзбд (скривено)"
+  LangString MsgStartSab    ${LANG_SWEDISH} "Starta SABnzbd (dold)"
 
   LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_DANISH} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_GERMAN} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_FRENCH} "Show Release Notes"
+  LangString MsgShowRelNote ${LANG_DANISH} "Vis udgivelsesbemærkninger"
+  LangString MsgShowRelNote ${LANG_GERMAN} "Versionshinweise anzeigen"
+  LangString MsgShowRelNote ${LANG_SPANISH} "Mostrar notas de la versión"
+  LangString MsgShowRelNote ${LANG_FRENCH} "Afficher les notes de version"
   LangString MsgShowRelNote ${LANG_NORWEGIAN} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_DUTCH} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_ROMANIAN} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_SWEDISH} "Show Release Notes"
-  LangString MsgShowRelNote ${LANG_SPANISH} "Show Release Notes"
+  LangString MsgShowRelNote ${LANG_DUTCH} "Toon vrijgave bericht"
+  LangString MsgShowRelNote ${LANG_ROMANIAN} "Aratã Notele de Publicare"
+  LangString MsgShowRelNote ${LANG_SERBIAN} "Прикажи белешке о издању"
+  LangString MsgShowRelNote ${LANG_SWEDISH} "Visa release noteringar"
 
   LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_DANISH} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_GERMAN} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_FRENCH} "Support the project, Donate!"
+  LangString MsgSupportUs   ${LANG_DANISH} "Støtte projektet, donere!"
+  LangString MsgSupportUs   ${LANG_GERMAN} "Bitte unterstützen Sie das Projekt durch eine Spende!"
+  LangString MsgSupportUs   ${LANG_SPANISH} "Apoya el proyecto, haz una donación!"
+  LangString MsgSupportUs   ${LANG_FRENCH} "Supportez le projet, faites un don !"
   LangString MsgSupportUs   ${LANG_NORWEGIAN} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_DUTCH} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_ROMANIAN} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_SWEDISH} "Support the project, Donate!"
-  LangString MsgSupportUs   ${LANG_SPANISH} "Support the project, Donate!"
+  LangString MsgSupportUs   ${LANG_DUTCH} "Steun het project, Doneer!"
+  LangString MsgSupportUs   ${LANG_ROMANIAN} "Sustine proiectul, Doneazã!"
+  LangString MsgSupportUs   ${LANG_SERBIAN} "Подржите пројекат, дајте добровољан прилог!"
+  LangString MsgSupportUs   ${LANG_SWEDISH} "Donera och stöd detta projekt!"
 
   LangString MsgCloseSab    ${LANG_ENGLISH} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_DANISH} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_GERMAN} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_FRENCH} "Please close $\"SABnzbd.exe$\" first"
+  LangString MsgCloseSab    ${LANG_DANISH} "Luk 'SABnzbd.exe' først"
+  LangString MsgCloseSab    ${LANG_GERMAN} "Schliessen Sie bitte zuerst $\"SABnzbd.exe$\"."
+  LangString MsgCloseSab    ${LANG_SPANISH} "Por favor, cierra $\"SABnzbd.exe$\" primero"
+  LangString MsgCloseSab    ${LANG_FRENCH} "Quittez $\"SABnzbd.exe$\" avant l'installation, SVP"
   LangString MsgCloseSab    ${LANG_NORWEGIAN} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_DUTCH} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_ROMANIAN} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_SWEDISH} "Please close $\"SABnzbd.exe$\" first"
-  LangString MsgCloseSab    ${LANG_SPANISH} "Please close $\"SABnzbd.exe$\" first"
+  LangString MsgCloseSab    ${LANG_DUTCH} "Sluit $\"SABnzbd.exe$\" eerst af"
+  LangString MsgCloseSab    ${LANG_ROMANIAN} "Închideti mai întâi $\"SABnzbd.exe$\""
+  LangString MsgCloseSab    ${LANG_SERBIAN} "Прво затворите „SABnzbd.exe“"
+  LangString MsgCloseSab    ${LANG_SWEDISH} "Var vänlig stäng $\"SABnzbd.exe$\" först"
 
   LangString MsgOldQueue    ${LANG_ENGLISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_DANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_GERMAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_FRENCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+  LangString MsgOldQueue    ${LANG_DANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nVenligst, kontrollér først udgivelsesnoter eller gå til http://wiki.sabnzbd.org/introducing-0-7-0 !"
+  LangString MsgOldQueue    ${LANG_GERMAN} "                  >>>> WARNUNG <<<<$\r$\n$\r$\nBitte zuerst die Versionsanmerkungen lesen oder $\"http://wiki.sabnzbd.org/introducing-0-7-0 besuchen!$\""
+  LangString MsgOldQueue    ${LANG_SPANISH} "                  >>>> ADVERTENCIA <<<<$\ r $\ n $\ r $\ nPor favor, compruebe primero las notas de lanzamiento o ir a http://wiki.sabnzbd.org/introducing-0-7-0!"
+  LangString MsgOldQueue    ${LANG_FRENCH} "                  >>>> AVERTISSEMENT<<<<$\r$\n$\r$\nS'il vous plaît, vérifiez d'abord les notes de version ou visiter http://wiki.sabnzbd.org/introducing-0-7-0 !"
   LangString MsgOldQueue    ${LANG_NORWEGIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_DUTCH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_ROMANIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-  LangString MsgOldQueue    ${LANG_SPANISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+  LangString MsgOldQueue    ${LANG_DUTCH} "                  >>>> WAARSCHUWING <<<<$\r$\n$\r$\nLees eerst het vrijgave bericht of ga naar $\"http://wiki.sabnzbd.org/introducing-0-7-0 !$\""
+  LangString MsgOldQueue    ${LANG_ROMANIAN} "                  >>>> ATENTIE <<<<$\r$\n$\r$\nVã rugãm, verificati mai întâi notele de publicare sau mergeti la http://wiki.sabnzbd.org/introducing-0-7-0 !"
+  LangString MsgOldQueue    ${LANG_SERBIAN} "                  >>>> WARNING <<<<$\r$\n$\r$\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+  LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> VARNING <<<<$\r$\n$\r$\nVar vänlig och läs versions noteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-7-0 !"
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_DANISH} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_GERMAN} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_FRENCH} "This will uninstall SABnzbd from your system"
+  LangString MsgUninstall   ${LANG_DANISH} "Dette vil afinstallere SABnzbd fra dit system"
+  LangString MsgUninstall   ${LANG_GERMAN} "Dies entfernt SABnzbd von Ihrem System"
+  LangString MsgUninstall   ${LANG_SPANISH} "Esto desinstalará SABnzbd de su sistema"
+  LangString MsgUninstall   ${LANG_FRENCH} "Ceci désinstallera SABnzbd de votre système"
   LangString MsgUninstall   ${LANG_NORWEGIAN} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_DUTCH} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_ROMANIAN} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_SWEDISH} "This will uninstall SABnzbd from your system"
-  LangString MsgUninstall   ${LANG_SPANISH} "This will uninstall SABnzbd from your system"
+  LangString MsgUninstall   ${LANG_DUTCH} "Dit verwijdert SABnzbd van je systeem"
+  LangString MsgUninstall   ${LANG_ROMANIAN} "Acest lucru va dezinstala SABnzbd din sistem"
+  LangString MsgUninstall   ${LANG_SERBIAN} "Ово ће уклонити САБнзбд са вашег система"
+  LangString MsgUninstall   ${LANG_SWEDISH} "Detta kommer att avinstallera SABnzbd från systemet"
 
   LangString MsgRunAtStart  ${LANG_ENGLISH} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_DANISH} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_GERMAN} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_FRENCH} "Run at startup"
+  LangString MsgRunAtStart  ${LANG_DANISH} "Kør ved opstart"
+  LangString MsgRunAtStart  ${LANG_GERMAN} "Beim Systemstart ausführen"
+  LangString MsgRunAtStart  ${LANG_SPANISH} "Ejecutar al inicio"
+  LangString MsgRunAtStart  ${LANG_FRENCH} "Lancer au démarrage"
   LangString MsgRunAtStart  ${LANG_NORWEGIAN} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_DUTCH} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_ROMANIAN} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_SWEDISH} "Run at startup"
-  LangString MsgRunAtStart  ${LANG_SPANISH} "Run at startup"
+  LangString MsgRunAtStart  ${LANG_DUTCH} "Opstarten bij systeem start"
+  LangString MsgRunAtStart  ${LANG_ROMANIAN} "Executare la pornire"
+  LangString MsgRunAtStart  ${LANG_SERBIAN} "Покрени са системом"
+  LangString MsgRunAtStart  ${LANG_SWEDISH} "Kör vid uppstart"
 
   LangString MsgIcon        ${LANG_ENGLISH} "Desktop Icon"
-  LangString MsgIcon        ${LANG_DANISH} "Desktop Icon"
-  LangString MsgIcon        ${LANG_GERMAN} "Desktop Icon"
-  LangString MsgIcon        ${LANG_FRENCH} "Desktop Icon"
+  LangString MsgIcon        ${LANG_DANISH} "Skrivebords ikon"
+  LangString MsgIcon        ${LANG_GERMAN} "Desktop-Symbol"
+  LangString MsgIcon        ${LANG_SPANISH} "Icono del escritorio"
+  LangString MsgIcon        ${LANG_FRENCH} "Icône sur le Bureau"
   LangString MsgIcon        ${LANG_NORWEGIAN} "Desktop Icon"
-  LangString MsgIcon        ${LANG_DUTCH} "Desktop Icon"
-  LangString MsgIcon        ${LANG_ROMANIAN} "Desktop Icon"
-  LangString MsgIcon        ${LANG_SWEDISH} "Desktop Icon"
-  LangString MsgIcon        ${LANG_SPANISH} "Desktop Icon"
+  LangString MsgIcon        ${LANG_DUTCH} "Pictogram op bureaublad"
+  LangString MsgIcon        ${LANG_ROMANIAN} "Icoanã Desktop"
+  LangString MsgIcon        ${LANG_SERBIAN} "Иконица радне површи"
+  LangString MsgIcon        ${LANG_SWEDISH} "Skrivbordsikon"
 
   LangString MsgAssoc       ${LANG_ENGLISH} "NZB File association"
-  LangString MsgAssoc       ${LANG_DANISH} "NZB File association"
-  LangString MsgAssoc       ${LANG_GERMAN} "NZB File association"
-  LangString MsgAssoc       ${LANG_FRENCH} "NZB File association"
+  LangString MsgAssoc       ${LANG_DANISH} "NZB filtilknytning"
+  LangString MsgAssoc       ${LANG_GERMAN} "Mit NZB-Dateien verknüpfen"
+  LangString MsgAssoc       ${LANG_SPANISH} "Asociación de archivos NZB"
+  LangString MsgAssoc       ${LANG_FRENCH} "Association des fichiers NZB"
   LangString MsgAssoc       ${LANG_NORWEGIAN} "NZB File association"
-  LangString MsgAssoc       ${LANG_DUTCH} "NZB File association"
-  LangString MsgAssoc       ${LANG_ROMANIAN} "NZB File association"
-  LangString MsgAssoc       ${LANG_SWEDISH} "NZB File association"
-  LangString MsgAssoc       ${LANG_SPANISH} "NZB File association"
+  LangString MsgAssoc       ${LANG_DUTCH} "NZB bestanden koppelen aan SABnzbd"
+  LangString MsgAssoc       ${LANG_ROMANIAN} "Asociere cu Fisierele NZB"
+  LangString MsgAssoc       ${LANG_SERBIAN} "Придруживање НЗБ датотеке"
+  LangString MsgAssoc       ${LANG_SWEDISH} "NZB Filassosication"
 
   LangString MsgDelProgram  ${LANG_ENGLISH} "Delete Program"
-  LangString MsgDelProgram  ${LANG_DANISH} "Delete Program"
-  LangString MsgDelProgram  ${LANG_GERMAN} "Delete Program"
-  LangString MsgDelProgram  ${LANG_FRENCH} "Delete Program"
+  LangString MsgDelProgram  ${LANG_DANISH} "Slet program"
+  LangString MsgDelProgram  ${LANG_GERMAN} "Programm löschen"
+  LangString MsgDelProgram  ${LANG_SPANISH} "Eliminar programa"
+  LangString MsgDelProgram  ${LANG_FRENCH} "Supprimer le programme"
   LangString MsgDelProgram  ${LANG_NORWEGIAN} "Delete Program"
-  LangString MsgDelProgram  ${LANG_DUTCH} "Delete Program"
-  LangString MsgDelProgram  ${LANG_ROMANIAN} "Delete Program"
-  LangString MsgDelProgram  ${LANG_SWEDISH} "Delete Program"
-  LangString MsgDelProgram  ${LANG_SPANISH} "Delete Program"
+  LangString MsgDelProgram  ${LANG_DUTCH} "Verwijder programma"
+  LangString MsgDelProgram  ${LANG_ROMANIAN} "Sterge Program"
+  LangString MsgDelProgram  ${LANG_SERBIAN} "Обриши програм"
+  LangString MsgDelProgram  ${LANG_SWEDISH} "Ta bort programmet"
 
   LangString MsgDelSettings ${LANG_ENGLISH} "Delete Settings"
-  LangString MsgDelSettings ${LANG_DANISH} "Delete Settings"
-  LangString MsgDelSettings ${LANG_GERMAN} "Delete Settings"
-  LangString MsgDelSettings ${LANG_FRENCH} "Delete Settings"
+  LangString MsgDelSettings ${LANG_DANISH} "Slet instillinger"
+  LangString MsgDelSettings ${LANG_GERMAN} "Einstellungen löschen"
+  LangString MsgDelSettings ${LANG_SPANISH} "Eliminar Ajustes"
+  LangString MsgDelSettings ${LANG_FRENCH} "Supprimer les Paramètres"
   LangString MsgDelSettings ${LANG_NORWEGIAN} "Delete Settings"
-  LangString MsgDelSettings ${LANG_DUTCH} "Delete Settings"
-  LangString MsgDelSettings ${LANG_ROMANIAN} "Delete Settings"
-  LangString MsgDelSettings ${LANG_SWEDISH} "Delete Settings"
-  LangString MsgDelSettings ${LANG_SPANISH} "Delete Settings"
+  LangString MsgDelSettings ${LANG_DUTCH} "Verwijder instellingen"
+  LangString MsgDelSettings ${LANG_ROMANIAN} "Stergeti Setãri"
+  LangString MsgDelSettings ${LANG_SERBIAN} "Обриши подешавања"
+  LangString MsgDelSettings ${LANG_SWEDISH} "Ta bort inställningar"
 
   LangString MsgNoRuntime   ${LANG_ENGLISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_DANISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_GERMAN} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_FRENCH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
+  LangString MsgNoRuntime   ${LANG_DANISH} "Dette system kræver, at Microsoft runtime biblioteket VC90, der skal installeres først. Ønsker du at gøre det nu?"
+  LangString MsgNoRuntime   ${LANG_GERMAN} "Dieses System erfordert die Installation der Laufzeitbibliothek VC90 von Microsoft. Möchten Sie die Installation jetzt durchführen?"
+  LangString MsgNoRuntime   ${LANG_SPANISH} "Este sistema requiere la ejecución de la biblioteca Microsoft runtime VC90 que debe ser instalada. ¿Quieres hacerlo ahora?"
+  LangString MsgNoRuntime   ${LANG_FRENCH} "Ce système nécessite que la bibliothèque d'exécution Microsoft vc90 soit installée en premier. Voulez-vous le faire maintenant?"
   LangString MsgNoRuntime   ${LANG_NORWEGIAN} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_DUTCH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_ROMANIAN} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
+  LangString MsgNoRuntime   ${LANG_DUTCH} "Op dit systeem moeten eerst de Microsoft runtime bibliotheek VC90 geïnstalleerd worden. Wilt u dat nu doen?"
+  LangString MsgNoRuntime   ${LANG_ROMANIAN} "Acest sistem necesitã librãria Microsoft VC90 instalatã. Dortiti sã faceti asta acum ?"
+  LangString MsgNoRuntime   ${LANG_SERBIAN} "Овај систем захтева да буде прво инсталирана Мајкрософтова извршивачка библиотека VC90. Да ли желите то да урадите?"
   LangString MsgNoRuntime   ${LANG_SWEDISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-  LangString MsgNoRuntime   ${LANG_SPANISH} "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
 
   LangString MsgDLRuntime   ${LANG_ENGLISH} "Downloading Microsoft runtime installer..."
   LangString MsgDLRuntime   ${LANG_DANISH} "Downloading Microsoft runtime installer..."
-  LangString MsgDLRuntime   ${LANG_GERMAN} "Downloading Microsoft runtime installer..."
-  LangString MsgDLRuntime   ${LANG_FRENCH} "Downloading Microsoft runtime installer..."
+  LangString MsgDLRuntime   ${LANG_GERMAN} "Installationsprogramm für Microsoft-Laufzeitbibliothek wird heruntergeladen..."
+  LangString MsgDLRuntime   ${LANG_SPANISH} "Descargando el instalador de Microsoft runtime..."
+  LangString MsgDLRuntime   ${LANG_FRENCH} "Téléchargement de Microsoft runtime installateur ..."
   LangString MsgDLRuntime   ${LANG_NORWEGIAN} "Downloading Microsoft runtime installer..."
-  LangString MsgDLRuntime   ${LANG_DUTCH} "Downloading Microsoft runtime installer..."
-  LangString MsgDLRuntime   ${LANG_ROMANIAN} "Downloading Microsoft runtime installer..."
+  LangString MsgDLRuntime   ${LANG_DUTCH} "Downloaden van de Microsoft bibliotheek"
+  LangString MsgDLRuntime   ${LANG_ROMANIAN} "Descãrcare rutinã instalare Microsoft..."
+  LangString MsgDLRuntime   ${LANG_SERBIAN} "Преузимам Мајкрософтов извршивачки програм за инсталацију..."
   LangString MsgDLRuntime   ${LANG_SWEDISH} "Downloading Microsoft runtime installer..."
-  LangString MsgDLRuntime   ${LANG_SPANISH} "Downloading Microsoft runtime installer..."
 
   LangString MsgDLError     ${LANG_ENGLISH} "Download error, retry?"
-  LangString MsgDLError     ${LANG_DANISH} "Download error, retry?"
-  LangString MsgDLError     ${LANG_GERMAN} "Download error, retry?"
-  LangString MsgDLError     ${LANG_FRENCH} "Download error, retry?"
+  LangString MsgDLError     ${LANG_DANISH} "Download fejl, prøv igen?"
+  LangString MsgDLError     ${LANG_GERMAN} "Download-Fehler. Erneut versuchen?"
+  LangString MsgDLError     ${LANG_SPANISH} "Error en la descarga, ¿probamos de nuevo?"
+  LangString MsgDLError     ${LANG_FRENCH} "Erreur téléchargement, réessayer?"
   LangString MsgDLError     ${LANG_NORWEGIAN} "Download error, retry?"
-  LangString MsgDLError     ${LANG_DUTCH} "Download error, retry?"
-  LangString MsgDLError     ${LANG_ROMANIAN} "Download error, retry?"
+  LangString MsgDLError     ${LANG_DUTCH} "Download mislukt, opnieuw?"
+  LangString MsgDLError     ${LANG_ROMANIAN} "Eroare descãrcare, încerc din nou?"
+  LangString MsgDLError     ${LANG_SERBIAN} "Грешка у преузимању, да поновим?"
   LangString MsgDLError     ${LANG_SWEDISH} "Download error, retry?"
-  LangString MsgDLError     ${LANG_SPANISH} "Download error, retry?"
 
   LangString MsgDLNeed      ${LANG_ENGLISH} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_DANISH} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_GERMAN} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_FRENCH} "Cannot install without runtime library, retry?"
+  LangString MsgDLNeed      ${LANG_DANISH} "Kan ikke installere uden runtime bibliotek, prøv igen?"
+  LangString MsgDLNeed      ${LANG_GERMAN} "Installation ohne Laufzeitbibliothek nicht möglich. Erneut versuchen?"
+  LangString MsgDLNeed      ${LANG_SPANISH} "No se puede instalar sin la biblioteca runtime, ¿Lo volvemos a intentar?"
+  LangString MsgDLNeed      ${LANG_FRENCH} "Impossible d'installer sans bibliothèque d'exécution, réessayer?"
   LangString MsgDLNeed      ${LANG_NORWEGIAN} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_DUTCH} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_ROMANIAN} "Cannot install without runtime library, retry?"
+  LangString MsgDLNeed      ${LANG_DUTCH} "Installeren heeft geen zin zonder de bibliotheek, opnieuw?"
+  LangString MsgDLNeed      ${LANG_ROMANIAN} "Nu pot instala fãrã rutinã librãrie, încerc din nou?"
+  LangString MsgDLNeed      ${LANG_SERBIAN} "Не могу да инсталирам без извршивачке библиотеке, да поновим?"
   LangString MsgDLNeed      ${LANG_SWEDISH} "Cannot install without runtime library, retry?"
-  LangString MsgDLNeed      ${LANG_SPANISH} "Cannot install without runtime library, retry?"
 
   LangString MsgRemoveOld   ${LANG_ENGLISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
-  LangString MsgRemoveOld   ${LANG_DANISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_GERMAN} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_FRENCH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_NORWEGIAN} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_DUTCH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_ROMANIAN} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_SWEDISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
-  LangString MsgRemoveOld   ${LANG_SPANISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade.$\n$\nYour settings and data will be preserved."
+  LangString MsgRemoveOld   ${LANG_DANISH} "Du kan ikke overskrive en eksisterende installation. Klik `OK` for at fjerne den tidligere version eller `Annuller` for at annullere denne opgradering."
+  LangString MsgRemoveOld   ${LANG_GERMAN} "Eine vorhandene Installation kann nicht überschrieben werden. $\n$\nWählen Sie 'OK', um die vorherige Version zu entfernen oder 'Abbrechen' um die Aktualisierung abzubrechen."
+  LangString MsgRemoveOld   ${LANG_SPANISH} "No es posible sobrescribir una instalación existente. $\n$\nPresione `OK' para quitar la versión anterior o 'Cancelar' para cancelar la actualización."
+  LangString MsgRemoveOld   ${LANG_FRENCH} "Vous ne pouvez pas remplacer une installation existante. $\n$\nCliquez `OK` pour supprimer la version précédente ou `Annuler` pour annuler cette mise à niveau."
+  LangString MsgRemoveOld   ${LANG_NORWEGIAN} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
+  LangString MsgRemoveOld   ${LANG_DUTCH} "U kunt geen bestaande installatie overschrijven.$\n$\nKlik op `OK` om de vorige versie te verwijderen of op `Annuleren` om te stoppen."
+  LangString MsgRemoveOld   ${LANG_ROMANIAN} "Nu puteti suprascrie instalarea existentã. $\n$\nClick `OK` pentru a elimina versiunea anterioarã sau `Anulare` pentru a anula actualizarea."
+  LangString MsgRemoveOld   ${LANG_SERBIAN} "Не можете да препишете постојећу инсталацију. $\n$\nКликните „У реду“ да уклоните претходно издање или „Откажи“ да поништите ову надоградњу."
+  LangString MsgRemoveOld   ${LANG_SWEDISH} "You cannot overwrite an existing installation. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 
   LangString MsgRemoveOld2  ${LANG_ENGLISH} "Your settings and data will be preserved."
-  LangString MsgRemoveOld2  ${LANG_DANISH} "Your settings and data will be preserved."
+  LangString MsgRemoveOld2  ${LANG_DANISH} "Dine indstillinger og data vil blive opbevaret."
   LangString MsgRemoveOld2  ${LANG_GERMAN} "Your settings and data will be preserved."
-  LangString MsgRemoveOld2  ${LANG_FRENCH}  "Your settings and data will be preserved."
+  LangString MsgRemoveOld2  ${LANG_SPANISH} "Tus ajustes y datos se mantendrán intactos."
+  LangString MsgRemoveOld2  ${LANG_FRENCH} "Vos paramètres et les données seront conservées."
   LangString MsgRemoveOld2  ${LANG_NORWEGIAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_DUTCH} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_ROMANIAN} "Your settings and data will be preserved."
+  LangString MsgRemoveOld2  ${LANG_SERBIAN} "Your settings and data will be preserved."
   LangString MsgRemoveOld2  ${LANG_SWEDISH} "Your settings and data will be preserved."
-  LangString MsgRemoveOld2  ${LANG_SPANISH} "Your settings and data will be preserved."
 
 
 Function un.onInit

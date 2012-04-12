@@ -16,10 +16,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
+
 if sys.version_info < (2,6):
     print 'Sorry, requires Python 2.6 or higher.'
     sys.exit(1)
 
+# Make sure UTF-8 is default 8bit encoding
+if hasattr(sys,"setdefaultencoding"):
+    # This line will only work for PY2EXE
+    sys.setdefaultencoding('utf-8')
 if sys.getdefaultencoding().lower() != 'utf-8':
     print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
     print 'or find another way to force Python to use UTF-8 for string encoding.'
