@@ -447,8 +447,8 @@ SKIN_TEXT = {
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
-    'opt-max_opt_only' : TT('Only for optional servers'),
-    'explain-max_opt_only' : TT('Apply maximum retries only to optional servers'),
+    'opt-max_art_opt' : TT('Only for optional servers'),
+    'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
 
 
 # Config->Server
