@@ -569,7 +569,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    if isinstance(nzbfile, str):
+    if isinstance(nzbfile, str) or isinstance(nzbfile, unicode):
         # File coming from queue repair
         filename = nzbfile
         keep = True

@@ -595,7 +595,7 @@ elif target in ('binary', 'installer'):
 
     ############################
     # Copy MS runtime files or Curl
-    if sys.version > (2, 5):
+    if sys.version_info > (2, 5):
         #Won't work with OpenSSL DLLs :(
         #shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
         #shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
@@ -610,11 +610,14 @@ elif target in ('binary', 'installer'):
     ############################
     if target == 'installer':
 
+        DeleteFiles(fileIns)
         cmd = 'makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
                   (prod, release, fileIns)
         print cmd
         os.system(cmd)
-
+        if not os.path.exists(fileIns):
+            print 'Fatal error creating %s' % fileIns
+            exit(1)
 
     DeleteFiles(fileBin)
     #write_dll_message('dist/IMPORTANT_MESSAGE.txt')
