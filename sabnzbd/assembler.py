@@ -40,7 +40,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1, unicoder, name_fixer
+from sabnzbd.encoding import latin1, unicoder, name_fixer, is_utf8
 
 
 #------------------------------------------------------------------------------
