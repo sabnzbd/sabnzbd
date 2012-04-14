@@ -650,7 +650,7 @@ class Downloader(Thread):
             self.read_fds.pop(fileno)
 
         if article:
-            if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_opt_only()):
+            if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_art_opt()):
                 # Too many tries on this server, consider article missing
                 self.decoder.decode(article, None)
             else:
