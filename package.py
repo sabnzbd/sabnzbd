@@ -589,7 +589,7 @@ elif target in ('binary', 'installer'):
 
     ############################
     # Copy MS runtime files or Curl
-    if sys.version > (2, 5):
+    if sys.version_info > (2, 5):
         #Won't work with OpenSSL DLLs :(
         #shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
         #shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
