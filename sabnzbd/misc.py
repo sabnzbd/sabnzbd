@@ -1265,3 +1265,45 @@ def starts_with_path(path, prefix):
         return path.lower().startswith(prefix.lower())
     else:
         return path.startswith(prefix)
+
+
+def set_chmod(path, permissions, report):
+    """ Set 'permissions' on 'path', report any errors when 'report' is True
+    """
+    try:
+        os.chmod(path, permissions)
+    except:
+        if report:
+            logging.error(Ta('Cannot change permissions of %s'), path)
+            logging.info("Traceback: ", exc_info = True)
+    
+    
+def set_permissions(path, recursive=True):
+    """ Give folder tree and its files their proper permissions """
+    if not sabnzbd.WIN32:
+        umask = cfg.umask()
+        try:
+            # Make sure that user R is on
+            umask = int(umask, 8) | int('0400', 8)
+            report = True
+        except ValueError:
+            # No or no valid permissions
+            # Use the effective permissions of the session
+            # Don't report errors (because the system might not support it)
+            umask = int('0777', 8) & (sabnzbd.ORG_UMASK ^ int('0777', 8))
+            report = False
+    
+        # Remove X bits for files
+        umask_file = umask & int('7666', 8)
+    
+        if os.path.isdir(path):
+            if recursive:
+                # Parse the dir/file tree and set permissions
+                for root, dirs, files in os.walk(path):
+                    set_chmod(root, umask, report)
+                    for name in files:
+                        set_chmod(os.path.join(root, name), umask_file, report)
+            else:
+                set_chmod(path, umask, report)
+        else:
+            set_chmod(path, umask_file, report)

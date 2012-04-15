@@ -211,6 +211,9 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
         # New admin folder
         misc.remove_all(cfg.admin_dir.get_path(), '*.sab')
 
+    ### Set access rights for "incomplete" base folder
+    misc.set_permissions(cfg.download_dir.get_path(), recursive=False)
+
     ### If dirscan_dir cannot be created, set a proper value anyway.
     ### Maybe it's a network path that's temporarily missing.
     path = cfg.dirscan_dir.get_path()
