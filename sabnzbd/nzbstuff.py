@@ -40,7 +40,8 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
-                         sanitize_filename, globber, sanitize_foldername, int_conv
+                         sanitize_filename, globber, sanitize_foldername, int_conv, \
+                         set_permissions
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
@@ -649,6 +650,7 @@ class NzbObject(TryList):
             remove_all(adir, 'SABnzbd_article_*')
         else:
             wdir = get_unique_path(wdir, create_dir=True)
+            set_permissions(wdir)
             adir = os.path.join(wdir, JOB_ADMIN)
 
         if not os.path.exists(adir):

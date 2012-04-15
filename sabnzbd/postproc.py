@@ -32,7 +32,8 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, s
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          get_unique_filename, make_script_path, verified_flag_file, \
-                         on_cleanup_list, renamer, remove_dir, remove_all, globber
+                         on_cleanup_list, renamer, remove_dir, remove_all, globber, \
+                         set_permissions
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status
@@ -353,8 +354,7 @@ def process_job(nzo):
                                 break
 
             ## Set permissions right
-            if not sabnzbd.WIN32:
-                perm_script(tmp_workdir_complete, cfg.umask())
+            set_permissions(tmp_workdir_complete)
 
             if all_ok:
                 ## Remove files matching the cleanup list
@@ -584,41 +584,6 @@ def parring(nzo, workdir):
 
 
 #------------------------------------------------------------------------------
-
-def perm_script(wdir, umask):
-    """ Give folder tree and its files their proper permissions """
-    from os.path import join
-
-    try:
-        # Make sure that user R is on
-        umask = int(umask, 8) | int('0400', 8)
-        report_errors = True
-    except ValueError:
-        # No or no valid permissions
-        # Use the effective permissions of the session
-        # Don't report errors (because the system might not support it)
-        umask = int('0777', 8) & (sabnzbd.ORG_UMASK ^ int('0777', 8))
-        report_errors = False
-
-    # Remove X bits for files
-    umask_file = umask & int('7666', 8)
-
-    # Parse the dir/file tree and set permissions
-    for root, dirs, files in os.walk(wdir):
-        try:
-            os.chmod(root, umask)
-        except:
-            if report_errors:
-                logging.error(Ta('Cannot change permissions of %s'), root)
-                logging.info("Traceback: ", exc_info = True)
-        for name in files:
-            try:
-                os.chmod(join(root, name), umask_file)
-            except:
-                if report_errors:
-                    logging.error(Ta('Cannot change permissions of %s'), join(root, name))
-                    logging.info("Traceback: ", exc_info = True)
-
 
 def addPrefixes(path, dirprefix):
     """ Add list of prefixes as sub folders to path

@@ -34,7 +34,8 @@ except:
     new_md5 = md5.new
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer
+from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer, \
+                         set_permissions
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -173,6 +174,7 @@ def _assemble(nzf, path, dupe):
 
     fout.flush()
     fout.close()
+    set_permissions(path)    
     if md5:
         nzf.md5sum = md5.digest()
         del md5
