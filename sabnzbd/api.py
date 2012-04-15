@@ -884,7 +884,7 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         else:
             if type(data) in (list, tuple):
                 # Special handling for list/tuple (backward compatibility)
-                data = [val for val in data]
+                data = [str(val) for val in data]
                 data = ' '.join(data)
             if isinstance(data, unicode):
                 response = u'%s\n' % data
