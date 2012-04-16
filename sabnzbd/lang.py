@@ -162,6 +162,8 @@ LanguageTable = {
     'se' : ('Northern Sami', 'Davvisámegiella'),
     'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
     'gd' : ('Gaelic', 'Gàidhlig'),
+    'ru' : ('Russian', 'русский язык'),
+    'sr' : ('Serbian', 'српски'),
     'sn' : ('Shona', 'Chi Shona'),
     'sk' : ('Slovak', 'Slovencina'),
     'sl' : ('Slovene', 'Slovenšcina'),
