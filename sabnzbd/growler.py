@@ -69,12 +69,15 @@ _GROWL_REG = False  # Succesful registration
 
 
 #------------------------------------------------------------------------------
-def get_icon():
-    icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
-    if not os.path.isfile(icon):
-        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
-    if not os.path.isfile(icon):
-        icon = None
+def get_icon(host):
+    if host is None:
+        icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
+        if not os.path.isfile(icon):
+            icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+        if not os.path.isfile(icon):
+            icon = None
+    else:
+        icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
     return icon
 
 
@@ -144,7 +147,7 @@ def register_growl():
 
     growler = GrowlNotifier(
         applicationName = 'SABnzbd%s' % sys_name,
-        applicationIcon = get_icon(),
+        applicationIcon = get_icon(host or None),
         notifications = [Tx(_NOTIFICATION[key]) for key in _KEYS],
         hostname = host or None,
         port = port or 23053,
