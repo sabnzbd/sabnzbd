@@ -112,7 +112,9 @@ def send_notification(title , msg, gtype, wait=False):
                 time.sleep(0.5)
     if have_ntfosd():
         msg2 = send_notify_osd(title, msg)
-    return msg1 or msg2 or 'not active'
+    if msg1 and msg2:
+        return '%s / %s' % (msg1, msg2)
+    return msg1 or msg2
 
 
 #------------------------------------------------------------------------------
