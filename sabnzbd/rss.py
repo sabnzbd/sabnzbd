@@ -288,6 +288,7 @@ class RSSQueue(object):
         rePPs = []
         rePrios = []
         reScripts = []
+        reEnabled = []
         for filter in feeds.filters():
             reCat = filter[0]
             if defCat in ('', '*'):
@@ -298,6 +299,7 @@ class RSSQueue(object):
             reTypes.append(filter[3])
             regexes.append(convert_filter(filter[4]))
             rePrios.append(filter[5])
+            reEnabled.append(filter[6] != '0')
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
@@ -397,26 +399,27 @@ class RSSQueue(object):
 
                     # Match against all filters until an postive or negative match
                     for n in xrange(regcount):
-                        if category and reTypes[n] == 'C':
-                            found = re.search(regexes[n], category)
-                            if not found:
-                                logging.debug("Filter rejected on rule %d", n)
-                                result = False
-                                break
-                        else:
-                            found = re.search(regexes[n], title)
-                            if reTypes[n] == 'M' and not found:
-                                logging.debug("Filter rejected on rule %d", n)
-                                result = False
-                                break
-                            if found and reTypes[n] == 'A':
-                                logging.debug("Filter matched on rule %d", n)
-                                result = True
-                                break
-                            if found and reTypes[n] == 'R':
-                                logging.debug("Filter rejected on rule %d", n)
-                                result = False
-                                break
+                        if reEnabled[n]:
+                            if category and reTypes[n] == 'C':
+                                found = re.search(regexes[n], category)
+                                if not found:
+                                    logging.debug("Filter rejected on rule %d", n)
+                                    result = False
+                                    break
+                            else:
+                                found = re.search(regexes[n], title)
+                                if reTypes[n] == 'M' and not found:
+                                    logging.debug("Filter rejected on rule %d", n)
+                                    result = False
+                                    break
+                                if found and reTypes[n] == 'A':
+                                    logging.debug("Filter matched on rule %d", n)
+                                    result = True
+                                    break
+                                if found and reTypes[n] == 'R':
+                                    logging.debug("Filter rejected on rule %d", n)
+                                    result = False
+                                    break
 
                     if len(reCats):
                         if notdefault(reCats[n]):

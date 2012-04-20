@@ -1758,10 +1758,11 @@ class ConfigRss(object):
         cat = ConvertSpecials(kwargs.get('cat'))
         prio = ConvertSpecials(kwargs.get('priority'))
         filt = kwargs.get('filter_text')
+        enabled = kwargs.get('enabled', 1)
 
         if filt:
             cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                                                             platform_encode(filt), prio ))
+                                                             platform_encode(filt), prio, enabled ))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
