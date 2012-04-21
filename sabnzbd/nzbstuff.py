@@ -51,7 +51,7 @@ __all__ = ['Article', 'NzbFile', 'NzbObject']
 # Name potterns
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
-SUBJECT_FN_MATCHER = re.compile(r'"(.*)"')
+SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
