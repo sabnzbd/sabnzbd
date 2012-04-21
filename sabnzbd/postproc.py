@@ -255,6 +255,8 @@ def process_job(nzo):
         if len(globber(workdir)) < 2:
             if nzo.precheck:
                 emsg = '%.1f%%' % (ratio * 100.0)
+                if emsg == '100.0%%':
+                    emsg = '99.9%%'
                 emsg = T('Download would not be successful, only %s available') % emsg
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')

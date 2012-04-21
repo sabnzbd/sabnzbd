@@ -58,9 +58,9 @@
   <a onclick="javascript:submit_marked('$nzo_id', 'Bottom')">$T('nzo-bottom')</a>
   <br />
 
-  $T('nzo-selection'):<a href='#' onclick='mark_all();' target='_self'>$T('nzo-all')</a>
-    <a href='#' onclick='unmark_all();' target='_self'>$T('nzo-none')</a>
-    <a href='#' onclick='invert();' target='_self'>$T('nzo-invert')</a>
+  $T('nzo-selection'):<a href='#' onclick="javascript:mark_all(); return false;">$T('nzo-all')</a>
+    <a href='#' onclick="javascript:unmark_all(); return false;">$T('nzo-none')</a>
+    <a href='#' onclick="javascript:invert(); return false;">$T('nzo-invert')</a>
 
 
   <table id="historyTable">

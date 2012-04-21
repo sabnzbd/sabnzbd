@@ -450,8 +450,8 @@ class SABnzbdDelegate(NSObject):
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
 
                 self.state = ""
-                speed = to_units(bpsnow, dec_limit=1)
-                timeleft = (speed>1 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
+                speed = to_units(bpsnow, dec_limit=1) + 'B/s'
+                timeleft = (bpsnow>10 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
 
                 statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)
 

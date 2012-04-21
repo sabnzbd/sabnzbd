@@ -300,7 +300,12 @@ def _api_addfile(name, output, kwargs):
     else:
         size = len(name.value)
     if name is not None and name.filename and size:
-        res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), kwargs.get('cat'),
+        cat = kwargs.get('cat')
+        xcat = kwargs.get('xcat')
+        if not cat and xcat:
+            # Indexer category, so do mapping
+            cat = cat_convert(xcat)
+        res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), cat,
                             kwargs.get('priority'), kwargs.get('nzbname'))
         return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]}, compat=True)
     else:
@@ -334,6 +339,10 @@ def _api_addlocalfile(name, output, kwargs):
                 pp = kwargs.get('pp')
                 script = kwargs.get('script')
                 cat = kwargs.get('cat')
+                xcat = kwargs.get('xcat')
+                if not cat and xcat:
+                    # Indexer category, so do mapping
+                    cat = cat_convert(xcat)
                 priority = kwargs.get('priority')
                 nzbname = kwargs.get('nzbname')
 

@@ -152,7 +152,6 @@ class BPSMeter(object):
                     self.change_quota()
             else:
                 self.quota = self.left = cfg.quota_size.get_float()
-            self.have_quota = bool(cfg.quota_size())
             res = self.reset_quota()
         except:
             # Get the latest data from the database and assign to a fake server
@@ -161,7 +160,9 @@ class BPSMeter(object):
             if grand: self.grand_total['x'] = grand
             if month: self.month_total['x'] = month
             if week:  self.week_total['x'] = week
+            self.quota = self.left = cfg.quota_size.get_float()
             res = False
+        self.have_quota = bool(cfg.quota_size())
         # Force update of counters
         self.update()
         return res

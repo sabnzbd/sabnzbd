@@ -40,6 +40,8 @@ import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 
+_BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
+
 #------------------------------------------------------------------------------
 
 class URLGrabber(Thread):
@@ -117,7 +119,7 @@ class URLGrabber(Thread):
                 opener.prompt_user_passwd = None
                 opener.addheaders = []
                 opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                if '.zip' not in url and 'nzbsa.co.za' not in url:
+                if not [True for item in _BAD_GZ_HOSTS if item in url]:
                     opener.addheader('Accept-encoding','gzip')
                 filename = None
                 category = None

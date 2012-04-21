@@ -491,7 +491,7 @@ class OptionFilters(Option):
                     filters.append(val)
                 else:
                     filters.append(listquote.simplelist(val))
-                while len(filters[-1]) < 6:
+                while len(filters[-1]) < 7:
                     filters[-1].append('')
         if filters:
             self.set(filters)
@@ -510,7 +510,7 @@ class ConfigRSS(object):
         self.enable = OptionBool(name, 'enable', add=False)
         self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
         self.filters = OptionFilters(name, 'filters', add=False)
-        self.filters.set([['', '', '', 'A', '*', DEFAULT_PRIORITY]])
+        self.filters.set([['', '', '', 'A', '*', DEFAULT_PRIORITY, '1']])
 
         self.set_dict(values)
         add_to_database('rss', self.__name, self)
