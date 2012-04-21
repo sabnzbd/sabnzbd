@@ -418,7 +418,7 @@ if target == 'app':
     options['description'] = 'SABnzbd ' + str(my_version)
 
     #Create MO files
-    os.system('python ./tools/make_mo.py all')
+    os.system('python ./tools/make_mo.py')
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
@@ -427,6 +427,11 @@ if target == 'app':
     if apple_py:
         sys.argv.append('-p');
         sys.argv.append('email');
+        sys.argv.append('-p');
+        sys.argv.append('sitecustomize');
+    else:
+        print 'UNICODE for ActiveState Python not tested yet!'
+        exit(1)
 
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
