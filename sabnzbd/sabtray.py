@@ -51,12 +51,14 @@ class SABTrayThread(SysTrayIconThread):
         self.counter = 0
         text = "SABnzbd"
 
+        codepage = sabnzbd.lang.CODEPAGE
+        logging.debug('WinTray uses codepage %s', codepage)
         menu_options = (
-            (T('Show interface'), None, self.browse),
-            (T('Restart without login'), None, self.nologin),
-            (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost),
-            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
-            (T('Shutdown'), None, self.shutdown),
+            (T('Show interface').encode(codepage, 'replace'), None, self.browse),
+            (T('Restart without login').encode(codepage, 'replace'), None, self.nologin),
+            ((T('Restart') + ' - 127.0.0.1:8080').encode(codepage, 'replace'), None, self.defhost),
+            ((T('Pause') + '/' + T('Resume')).encode(codepage, 'replace'), None, self.pauseresume),
+            (T('Shutdown').encode(codepage, 'replace'), None, self.shutdown),
         )
 
         SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
@@ -78,7 +80,7 @@ class SABTrayThread(SysTrayIconThread):
                 self.hover_text = 'SABnzbd paused'
                 self.icon = self.sabicons['pause']
             elif state == 'DOWNLOADING':
-                self.hover_text = "%sB/s %s: %s MB (%s)" % (status.get('speed', "---"), T('Remaining'), str(int(status.get('mbleft', "0"))), status.get('timeleft', "---"))
+                self.hover_text = "%sB/s %s: %s MB (%s)" % (status.get('speed', "---"), T('Remaining').encode(sabnzbd.lang.CODEPAGE, 'replace'), str(int(status.get('mbleft', "0"))), status.get('timeleft', "---"))
                 self.icon = self.sabicons['green']
             else:
                 self.hover_text = 'UNKNOWN STATE'
@@ -106,7 +108,7 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
-        self.hover_text = T('Restart')
+        self.hover_text = T('Restart').encode(codepage, 'replace')
         sabnzbd.halt()
         cherrypy.engine.restart()
 
@@ -121,7 +123,7 @@ class SABTrayThread(SysTrayIconThread):
 
     # menu handler - adapted from interface.py
     def shutdown(self, icon):
-        self.hover_text = T('Shutdown')
+        self.hover_text = T('Shutdown').encode(codepage, 'replace')
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
