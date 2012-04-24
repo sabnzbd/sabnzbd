@@ -604,7 +604,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             if nzbfile.value:
                 os.write(f, nzbfile.value)
             else:
-                nzbfile.read_into_file(f)
+                os.write(f, nzbfile.file.read())
             os.close(f)
         except:
             logging.error(Ta('Cannot create temp file for %s'), filename)

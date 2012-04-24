@@ -339,10 +339,7 @@ class MainPage(object):
 
         nzbfile = kwargs.get('nzbfile')
         if nzbfile is not None and nzbfile.filename:
-            if not nzbfile.value and nzbfile.file:
-                # More CherryPy madness, sometimes content is still in the temp file.
-                nzbfile.value = nzbfile.file.read()
-            if nzbfile.value:
+            if nzbfile.value or nzbfile.file:
                 sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
                                     kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
         raise dcRaiser(self.__root, kwargs)
