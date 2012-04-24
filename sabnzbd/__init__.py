@@ -600,7 +600,11 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     else:
         try:
             f, path = tempfile.mkstemp(suffix=ext, text=False)
-            os.write(f, nzbfile.value)
+            # More CherryPy madness, sometimes content is in 'value', sometimes not.
+            if nzbfile.value:
+                os.write(f, nzbfile.value)
+            else:
+                nzbfile.read_into_file(f)
             os.close(f)
         except:
             logging.error(Ta('Cannot create temp file for %s'), filename)
