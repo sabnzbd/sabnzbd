@@ -293,9 +293,12 @@ def _api_addfile(name, output, kwargs):
         #Side effect of next line is that attribute .value is created
         #which is needed to make add_nzbfile() work
         size = name.length
-    elif hasattr(name, 'file') and hasattr(name.file, 'file'):
+    elif hasattr(name, 'file') and hasattr(name, 'filename') and name.filename:
         # CherryPy 3.2.2 object
-        name.value = name.file.file.read()
+        if hasattr(name.file, 'file'):
+            name.value = name.file.file.read()
+        else:
+            name.value = name.file.read()
         size = len(name.value)
     else:
         size = len(name.value)

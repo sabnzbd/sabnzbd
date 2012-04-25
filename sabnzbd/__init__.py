@@ -603,8 +603,12 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             # More CherryPy madness, sometimes content is in 'value', sometimes not.
             if nzbfile.value:
                 os.write(f, nzbfile.value)
-            else:
-                os.write(f, nzbfile.file.read())
+            elif hasattr(nzbfile, 'file'):
+                # CherryPy 3.2.2 object
+                if hasattr(nzbfile.file, 'file'):
+                    os.write(f, nzbfile.file.file.read())
+                else:
+                    os.write(f, nzbfile.file.read())
             os.close(f)
         except:
             logging.error(Ta('Cannot create temp file for %s'), filename)
