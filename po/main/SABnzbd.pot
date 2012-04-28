@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2012-04-28 13:52+CEST\n"
+"POT-Creation-Date: 2012-04-28 15:14+West-Europa (zomertijd)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -50,6 +50,58 @@ msgstr ""
 
 #: SABnzbd.py:1641 # sabnzbd/osxmenu.py:768
 msgid "SABnzbd shutdown finished"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:35
+msgid "The hostname is not set."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:41
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:74
+msgid "Password masked in ******, please re-enter"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:78
+msgid "Invalid server details"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:90
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:92
+msgid "Timed out"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:97
+msgid "Invalid server address."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:101
+msgid "Server quit during login sequence."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:123
+msgid "Server requires username and password."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:126
+msgid "Connection Successful!"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:129
+msgid "Authentication failed, check username/password."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:132
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:135
+msgid "Could not determine connection result (%s)"
 msgstr ""
 
 #: sabnzbd/__init__.py:160 [Warning message]
@@ -895,7 +947,7 @@ msgstr ""
 msgid "Limit Speed"
 msgstr ""
 
-#: sabnzbd/osxmenu.py:206 # sabnzbd/sabtray.py:58 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:206 # sabnzbd/sabtray.py:61 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:146 # sabnzbd/skintext.py:195 [Queue page button] # sabnzbd/skintext.py:381 [Three way switch for duplicates]
 #: sabnzbd/skintext.py:487
 msgid "Pause"
@@ -905,7 +957,7 @@ msgstr ""
 msgid "min."
 msgstr ""
 
-#: sabnzbd/osxmenu.py:222 # sabnzbd/sabtray.py:58 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:222 # sabnzbd/sabtray.py:61 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:147 # sabnzbd/skintext.py:194 [Queue page button] # sabnzbd/skintext.py:486
 msgid "Resume"
 msgstr ""
@@ -930,13 +982,13 @@ msgstr ""
 msgid "Troubleshoot"
 msgstr ""
 
-#: sabnzbd/osxmenu.py:275 # sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:57
-#: sabnzbd/sabtray.py:109 # sabnzbd/sabtray.py:118 # sabnzbd/skintext.py:58 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:275 # sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:60
+#: sabnzbd/sabtray.py:116 # sabnzbd/sabtray.py:125 # sabnzbd/skintext.py:58 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:260 # sabnzbd/skintext.py:489
 msgid "Restart"
 msgstr ""
 
-#: sabnzbd/osxmenu.py:277 # sabnzbd/sabtray.py:56
+#: sabnzbd/osxmenu.py:277 # sabnzbd/sabtray.py:59
 msgid "Restart without login"
 msgstr ""
 
@@ -1251,16 +1303,20 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr ""
 
-#: sabnzbd/sabtray.py:55
+#: sabnzbd/sabtray.py:57
 msgid "Show interface"
 msgstr ""
 
-#: sabnzbd/sabtray.py:59 # sabnzbd/sabtray.py:124 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
+#: sabnzbd/sabtray.py:58
+msgid "Open complete folder"
+msgstr ""
+
+#: sabnzbd/sabtray.py:62 # sabnzbd/sabtray.py:131 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:145 # sabnzbd/skintext.py:488
 msgid "Shutdown"
 msgstr ""
 
-#: sabnzbd/sabtray.py:81 # sabnzbd/skintext.py:761
+#: sabnzbd/sabtray.py:84 # sabnzbd/skintext.py:761
 msgid "Remaining"
 msgstr ""
 
@@ -3932,57 +3988,5 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py:306
 msgid "Problem accessing nzbmatrix server (%s)"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:35
-msgid "The hostname is not set."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:41
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:74
-msgid "Password masked in ******, please re-enter"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:78
-msgid "Invalid server details"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:90
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:92
-msgid "Timed out"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:97
-msgid "Invalid server address."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:101
-msgid "Server quit during login sequence."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:123
-msgid "Server requires username and password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:126
-msgid "Connection Successful!"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:129
-msgid "Authentication failed, check username/password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:132
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:135
-msgid "Could not determine connection result (%s)"
 msgstr ""
 
