@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-03-18 16:51+0000\n"
-"PO-Revision-Date: 2012-03-12 22:23+0000\n"
+"PO-Revision-Date: 2012-04-18 11:10+0000\n"
 "Last-Translator: Daniel Winzen <d@winzen4.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-19 04:59+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-04-19 04:57+0000\n"
+"X-Generator: Launchpad (build 15108)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -952,7 +952,7 @@ msgstr "ZU GROSS"
 
 #: sabnzbd/nzbstuff.py:963 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
-msgstr ""
+msgstr "UNVOLLSTÄNDIG"
 
 #: sabnzbd/nzbstuff.py:967 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
@@ -1446,7 +1446,7 @@ msgstr "Leerer RSS-Feed gefunden: %s"
 
 #: sabnzbd/sabtray.py:55
 msgid "Show interface"
-msgstr ""
+msgstr "Interface anzeigen"
 
 #: sabnzbd/sabtray.py:59 # sabnzbd/sabtray.py:124 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:145 # sabnzbd/skintext.py:488
@@ -1491,7 +1491,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:32 [PP Failure message]
 msgid "Failure"
-msgstr ""
+msgstr "Fehler"
 
 #: sabnzbd/skintext.py:34 [PP status] # sabnzbd/skintext.py:221 [History: job status]
 msgid "Completed"
@@ -2413,7 +2413,7 @@ msgstr "AUF EIGENE GEFAHR VERWENDEN!"
 
 #: sabnzbd/skintext.py:318 [Button to show QR code of APIKEY]
 msgid "QR Code"
-msgstr ""
+msgstr "QR-Code"
 
 #: sabnzbd/skintext.py:319 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
@@ -3565,7 +3565,7 @@ msgstr "text"
 
 #: sabnzbd/skintext.py:629
 msgid "file"
-msgstr "datei"
+msgstr "Datei"
 
 #: sabnzbd/skintext.py:630
 msgid "folder"
@@ -3630,7 +3630,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:649
 msgid "Values"
-msgstr ""
+msgstr "Werte"
 
 #: sabnzbd/skintext.py:652 [Job details page]
 msgid "Edit NZB Details"

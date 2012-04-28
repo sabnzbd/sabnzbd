@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-03-18 16:51+0000\n"
-"PO-Revision-Date: 2011-09-03 05:17+0000\n"
+"PO-Revision-Date: 2012-04-16 03:48+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-19 05:00+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-04-17 05:33+0000\n"
+"X-Generator: Launchpad (build 15099)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -90,7 +90,7 @@ msgstr "Adresă server invalidă"
 
 #: sabnzbd/utils/servertests.py:101
 msgid "Server quit during login sequence."
-msgstr ""
+msgstr "Serverul a renunţat în timpul logării."
 
 #: sabnzbd/utils/servertests.py:123
 msgid "Server requires username and password."
@@ -120,13 +120,15 @@ msgstr "Semnal %s  prins, salvez şi ies..."
 
 #: sabnzbd/__init__.py:459
 msgid "fetching msgid %s from www.newzbin2.es"
-msgstr ""
+msgstr "descarc msgid %s from www.newzbin2.es"
 
 #: sabnzbd/__init__.py:465 [Error message]
 msgid ""
 "Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
 msgstr ""
+"Eroare descărcare msgid %s de la  www.newzbin2.es - Vă rugăm asiguraţi-vă că "
+"Nume de Utilizator şi Parolă sunt setate"
 
 #: sabnzbd/__init__.py:477
 msgid "Trying to fetch NZB from %s"
@@ -232,11 +234,11 @@ msgstr "Nu pot crea %s dosar %s"
 
 #: sabnzbd/config.py:736 [Error message]
 msgid "Cannot write to INI file %s"
-msgstr ""
+msgstr "Nu pot scrie în fişierul INI %s"
 
 #: sabnzbd/config.py:768 [Error message]
 msgid "Cannot create backup file for %s"
-msgstr ""
+msgstr "Nu pot crea copie de rezervă pentru %s"
 
 #: sabnzbd/config.py:892 [Error message]
 msgid "Incorrectly encoded password %s"
@@ -549,7 +551,7 @@ msgstr "Duminică"
 
 #: sabnzbd/interface.py:1916 ["Off" value for speedlimit in scheduler] # sabnzbd/skintext.py:97
 msgid "off"
-msgstr ""
+msgstr "dezactivat"
 
 #: sabnzbd/interface.py:2270
 msgid "&nbsp;Resolving address"
@@ -647,7 +649,7 @@ msgstr "Unim"
 
 #: sabnzbd/newsunpack.py:358
 msgid "Incomplete sequence of joinable files"
-msgstr ""
+msgstr "Secvenţă incompletă de unire fişiere"
 
 #: sabnzbd/newsunpack.py:359 # sabnzbd/newsunpack.py:367
 msgid "File join of %s failed"
@@ -687,7 +689,7 @@ msgstr "Ştergere %s nereuşită!"
 
 #: sabnzbd/newsunpack.py:485
 msgid "Trying unrar with password \"%s\""
-msgstr ""
+msgstr "Încerc unrar cu parola \"%s\""
 
 #: sabnzbd/newsunpack.py:493 [Error message] # sabnzbd/newsunpack.py:614
 #: sabnzbd/newsunpack.py:615
@@ -902,7 +904,7 @@ msgstr "Importare %s a fişierelor de la %s nereuşită"
 
 #: sabnzbd/nzbstuff.py:677 [Warning message]
 msgid "Incomplete NZB file %s"
-msgstr ""
+msgstr "Fişier NZB  incomplet %s"
 
 #: sabnzbd/nzbstuff.py:682 [Warning message] # sabnzbd/nzbstuff.py:687 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -934,11 +936,11 @@ msgstr "PREA MARE"
 
 #: sabnzbd/nzbstuff.py:963 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
-msgstr ""
+msgstr "INCOMPLET"
 
 #: sabnzbd/nzbstuff.py:967 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
-msgstr ""
+msgstr "AŞTEAPTĂ %s sec"
 
 #: sabnzbd/nzbstuff.py:1046
 msgid "Downloaded in %s at an average of %sB/s"
@@ -1026,7 +1028,7 @@ msgstr "Dosar Incomplet"
 
 #: sabnzbd/osxmenu.py:273
 msgid "Troubleshoot"
-msgstr ""
+msgstr "Depanare"
 
 #: sabnzbd/osxmenu.py:275 # sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:57
 #: sabnzbd/sabtray.py:109 # sabnzbd/sabtray.py:118 # sabnzbd/skintext.py:58 [#: Config->Scheduler]
@@ -1036,7 +1038,7 @@ msgstr "Repornește"
 
 #: sabnzbd/osxmenu.py:277 # sabnzbd/sabtray.py:56
 msgid "Restart without login"
-msgstr ""
+msgstr "Reporneşte fără autorizare"
 
 #: sabnzbd/osxmenu.py:290
 msgid "Quit"
@@ -1301,7 +1303,7 @@ msgstr "Eroare redenumire \"%s\" în \"%s\""
 
 #: sabnzbd/postproc.py:405
 msgid "Failed to move files"
-msgstr ""
+msgstr "Nu am putu muta fişier"
 
 #: sabnzbd/postproc.py:413
 msgid "Running script"
@@ -1357,7 +1359,7 @@ msgstr "Post-procesare"
 
 #: sabnzbd/postproc.py:569
 msgid "Trying SFV verification"
-msgstr ""
+msgstr "Încerc verificare SFV"
 
 #: sabnzbd/postproc.py:572
 msgid "Some files failed to verify against \"%s\""
@@ -1365,7 +1367,7 @@ msgstr "Unele fişiere nu au fost verificate corect cu \"%s\""
 
 #: sabnzbd/postproc.py:575
 msgid "Verified successfully using SFV files"
-msgstr ""
+msgstr "Verificare reuşită cu fişierele SFV"
 
 #: sabnzbd/postproc.py:578
 msgid "[%s] No par2 sets"
@@ -1413,7 +1415,7 @@ msgstr "Fluxul RSS %s a fost gol"
 
 #: sabnzbd/rss.py:358 # sabnzbd/rss.py:360
 msgid "Incompatible feed"
-msgstr ""
+msgstr "Fulx RSS incompatibil"
 
 #: sabnzbd/rss.py:645 [Warning message]
 msgid "Empty RSS entry found (%s)"
@@ -1421,7 +1423,7 @@ msgstr "Valoare RSS gasită a fost goală (%s)"
 
 #: sabnzbd/sabtray.py:55
 msgid "Show interface"
-msgstr ""
+msgstr "Arată interfața"
 
 #: sabnzbd/sabtray.py:59 # sabnzbd/sabtray.py:124 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:145 # sabnzbd/skintext.py:488
@@ -1462,11 +1464,11 @@ msgstr "Script"
 
 #: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)]
 msgid "Source"
-msgstr ""
+msgstr "Sursă"
 
 #: sabnzbd/skintext.py:32 [PP Failure message]
 msgid "Failure"
-msgstr ""
+msgstr "Nereuşit"
 
 #: sabnzbd/skintext.py:34 [PP status] # sabnzbd/skintext.py:221 [History: job status]
 msgid "Completed"
@@ -1642,7 +1644,7 @@ msgstr "Total"
 
 #: sabnzbd/skintext.py:96
 msgid "on"
-msgstr ""
+msgstr "activat"
 
 #: sabnzbd/skintext.py:100 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -1742,7 +1744,7 @@ msgstr "Sortare"
 
 #: sabnzbd/skintext.py:129 [Main menu item]
 msgid "Special"
-msgstr ""
+msgstr "Special"
 
 #: sabnzbd/skintext.py:132
 msgid "Download Dir"
@@ -2384,11 +2386,11 @@ msgstr "UTILIZAŢI PE RISCUL DVS. !"
 
 #: sabnzbd/skintext.py:318 [Button to show QR code of APIKEY]
 msgid "QR Code"
-msgstr ""
+msgstr "Cod QR"
 
 #: sabnzbd/skintext.py:319 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
-msgstr ""
+msgstr "Cheie API sau Cod QR"
 
 #: sabnzbd/skintext.py:322
 msgid "Folder configuration"
@@ -2997,7 +2999,7 @@ msgstr "Test Server"
 
 #: sabnzbd/skintext.py:472 [Button: Clear server's byte counters]
 msgid "Clear Counters"
-msgstr ""
+msgstr "Resetează Statistici"
 
 #: sabnzbd/skintext.py:473
 msgid "Testing server details..."
@@ -3224,6 +3226,8 @@ msgid ""
 "If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
+"Dacă aveţi un cont la <strong>www.newzbin2.es</strong>, puteţi introduce "
+"informaţiile contului aici.<br />Aceasta va debloca funcţionalitate extra."
 
 #: sabnzbd/skintext.py:552
 msgid "Account info"
@@ -3564,11 +3568,11 @@ msgstr "Dosare Zilnice"
 
 #: sabnzbd/skintext.py:641 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
-msgstr ""
+msgstr "ajustare nume fişier"
 
 #: sabnzbd/skintext.py:642
 msgid "Processed Result"
-msgstr ""
+msgstr "Rezultat Procesat"
 
 #: sabnzbd/skintext.py:645
 msgid ""
@@ -3577,10 +3581,14 @@ msgid ""
 "Wiki first, as some have serious side-effects.<br>The default values are "
 "between parentheses."
 msgstr ""
+"Opţiuni folosite rar. Pentru explicaţiile şi semnificaţia lor, click pe "
+"meniul Ajutor şi vizitează pagina Wiki.<br> Nu modificaţi aceste setări fără "
+"a verifica mai întâi pagina Wiki , pentru că unele pot cauza probleme "
+"serioase .<br>Valorile originale sunt în paranteze ."
 
 #: sabnzbd/skintext.py:649
 msgid "Values"
-msgstr ""
+msgstr "Valori"
 
 #: sabnzbd/skintext.py:652 [Job details page]
 msgid "Edit NZB Details"
@@ -4250,11 +4258,11 @@ msgstr "Număr report invalid nzbmatrix %s"
 
 #: sabnzbd/urlgrabber.py:284
 msgid "You need an nzbmatrix VIP account to use the API"
-msgstr ""
+msgstr "Aveţi nevoie de un cont VIP la nzbmatrix pentru a utiliza API"
 
 #: sabnzbd/urlgrabber.py:286
 msgid "Invalid nzbmatrix credentials"
-msgstr ""
+msgstr "Credenţiale invalide nzbmatrix"
 
 #: sabnzbd/urlgrabber.py:300
 msgid "Problem accessing nzbmatrix server (%s)"
