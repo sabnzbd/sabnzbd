@@ -28,6 +28,8 @@ from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
+import sabnzbd.cfg as cfg
+import os
 import cherrypy
 
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread
@@ -52,6 +54,7 @@ class SABTrayThread(SysTrayIconThread):
         text = "SABnzbd"
 
         menu_options = (
+            (T('Open complete directory'), None, self.opencomplete),
             (T('Show interface'), None, self.browse),
             (T('Restart without login'), None, self.nologin),
             (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost),
@@ -89,6 +92,10 @@ class SABTrayThread(SysTrayIconThread):
             self.counter = 0
         if sabnzbd.SABSTOP:
             self.terminate = True
+
+    # menu handler
+    def opencomplete(self, icon):
+        os.startfile(cfg.complete_dir.get_path())
 
     # menu handler
     def browse(self, icon):
