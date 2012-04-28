@@ -28,6 +28,8 @@ from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
+import sabnzbd.cfg as cfg
+import os
 import cherrypy
 
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread
@@ -54,11 +56,12 @@ class SABTrayThread(SysTrayIconThread):
         codepage = sabnzbd.lang.CODEPAGE
         logging.debug('WinTray uses codepage %s', codepage)
         menu_options = (
-            (T('Show interface').encode(codepage, 'replace'), None, self.browse),
-            (T('Restart without login').encode(codepage, 'replace'), None, self.nologin),
-            ((T('Restart') + ' - 127.0.0.1:8080').encode(codepage, 'replace'), None, self.defhost),
-            ((T('Pause') + '/' + T('Resume')).encode(codepage, 'replace'), None, self.pauseresume),
-            (T('Shutdown').encode(codepage, 'replace'), None, self.shutdown),
+            (T('Show interface'), None, self.browse),
+            (T('Open complete folder'), None, self.opencomplete),
+            (T('Restart without login'), None, self.nologin),
+            (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost),
+            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
+            (T('Shutdown'), None, self.shutdown),
         )
 
         SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
@@ -91,6 +94,10 @@ class SABTrayThread(SysTrayIconThread):
             self.counter = 0
         if sabnzbd.SABSTOP:
             self.terminate = True
+
+    # menu handler
+    def opencomplete(self, icon):
+        os.startfile(cfg.complete_dir.get_path())
 
     # menu handler
     def browse(self, icon):

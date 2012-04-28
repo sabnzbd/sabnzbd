@@ -474,6 +474,11 @@ if target == 'app':
     os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
+    # Sign the App if possible
+    authority = os.environ.get('SIGNING_AUTH')
+    if authority:
+        os.system('codesign -f -i "%s" -s "%s" dist/SABnzbd.app' % (volume, authority))
+
     #copy app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 

@@ -36,11 +36,11 @@ msgstr "Quittez \"SABnzbd.exe\" avant l'installation, SVP"
 #: NSIS_Installer.nsi:442
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
 msgstr ""
 "                  >>>> AVERTISSEMENT<<<<\\r\\n\\r\\nS'il vous plaît, "
 "vérifiez d'abord les notes de version ou visiter "
-"http://wiki.sabnzbd.org/introducing-0-7-0 !"
+"http://wiki.sabnzbd.org/introducing-0-6-0 !"
 
 #: NSIS_Installer.nsi:451
 msgid "This will uninstall SABnzbd from your system"
