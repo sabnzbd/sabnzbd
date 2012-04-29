@@ -181,9 +181,9 @@
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
   !insertmacro MUI_PAGE_INSTFILES
-  !define MUI_FINISHPAGE_RUN
-  !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
-  !define MUI_FINISHPAGE_RUN_TEXT $(MsgStartSab)
+  ;!define MUI_FINISHPAGE_RUN
+  ;!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+  ;!define MUI_FINISHPAGE_RUN_TEXT $(MsgStartSab)
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT $(MsgShowRelNote)
   ;!define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
@@ -223,9 +223,9 @@
 
 
 ;------------------------------------------------------------------
-Function LaunchLink
-  ExecShell "" "$INSTDIR\SABnzbd.exe"
-FunctionEnd
+;Function LaunchLink
+;  ExecShell "" "$INSTDIR\SABnzbd.exe"
+;FunctionEnd
 
 
 ;------------------------------------------------------------------
