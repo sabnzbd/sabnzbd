@@ -43,6 +43,7 @@
   Delete   "${idir}\email\email-ro.tmpl"
   Delete   "${idir}\email\email-sr.tmpl"
   Delete   "${idir}\email\email-es.tmpl"
+  Delete   "${idir}\email\email-pt_BR.tmpl"
   Delete   "${idir}\email\rss-de.tmpl"
   Delete   "${idir}\email\rss-en.tmpl"
   Delete   "${idir}\email\rss-nl.tmpl"
@@ -53,6 +54,7 @@
   Delete   "${idir}\email\rss-ro.tmpl"
   Delete   "${idir}\email\rss-sr.tmpl"
   Delete   "${idir}\email\rss-es.tmpl"
+  Delete   "${idir}\email\rss-pt_BR.tmpl"
   Delete   "${idir}\email\badfetch-da.tmpl"
   Delete   "${idir}\email\badfetch-de.tmpl"
   Delete   "${idir}\email\badfetch-en.tmpl"
@@ -64,6 +66,7 @@
   Delete   "${idir}\email\badfetch-sv.tmpl"
   Delete   "${idir}\email\badfetch-sr.tmpl"
   Delete   "${idir}\email\badfetch-es.tmpl"
+  Delete   "${idir}\email\badfetch-pt_BR.tmpl"
   RMDir    "${idir}\email"
   RMDir /r "${idir}\locale"
   RMDir /r "${idir}\interfaces\Classic"
@@ -207,6 +210,7 @@
   !insertmacro MUI_LANGUAGE "NORWEGIAN"
   !insertmacro MUI_LANGUAGE "Romanian"
   !insertmacro MUI_LANGUAGE "Spanish"
+  !insertmacro MUI_LANGUAGE "Portuguese"
 
 
 ;------------------------------------------------------------------

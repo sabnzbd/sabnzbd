@@ -8,10 +8,10 @@ locale/
 srcdist/
 
 # Generated email templates
-email/
+email/*.tmpl
 
 # Romanian ro.po is generated from ro.px, due to mapping to latin-1
-po/*/ro.po
+ro.po
 
 # Build results
 SABnzbd*.zip

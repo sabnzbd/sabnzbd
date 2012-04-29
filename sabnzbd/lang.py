@@ -85,8 +85,14 @@ def list_languages():
         if os.path.isdir(path) and not path.endswith('en'):
             lngname = os.path.basename(path)
             lng = locale.normalize(lngname)
-            lng = lng[:lng.find('_')]
-            language = LanguageTable.get(lng, (lng, lng))
+            # Example: 'pt_BR.ISO8859-1'
+            lng_short = lng[:lng.find('_')]
+            lng_full = lng[:lng.find('.')]
+            # First try full language string, e.g. 'pt_BR'
+            language = LanguageTable.get(lng_full, (lng_full, lng_full))
+            if language[0] == lng_full:
+                # Full language string not defined: try short form, e.g. 'pt'
+                language = LanguageTable.get(lng_short, (lng_short, lng_short))
             language = language[1].decode('utf-8')
             lst.append((lng, language))
     if lst:
@@ -155,6 +161,7 @@ LanguageTable = {
     'om' : ('Oromo', 'Afaan Oromoo'),
     'pl' : ('Polish', 'Polski'),
     'pt' : ('Portuguese', 'Português'),
+    'pt_BR' : ('Portuguese Brazillian', 'Português, Brasil'),
     'rm' : ('Romansh', 'Rumantsch grischun'),
     'rn' : ('Kirundi', 'kiRundi'),
     'ro' : ('Romanian', 'Româna'),
