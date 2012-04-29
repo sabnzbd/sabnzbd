@@ -93,6 +93,9 @@ def list_languages():
             if language[0] == lng_full:
                 # Full language string not defined: try short form, e.g. 'pt'
                 language = LanguageTable.get(lng_short, (lng_short, lng_short))
+                lng = lng_short
+            else:
+                lng = lng_full
             language = language[1].decode('utf-8')
             lst.append((lng, language))
     if lst:
