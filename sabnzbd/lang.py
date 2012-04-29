@@ -161,7 +161,7 @@ LanguageTable = {
     'om' : ('Oromo', 'Afaan Oromoo'),
     'pl' : ('Polish', 'Polski'),
     'pt' : ('Portuguese', 'Português'),
-    'pt_BR' : ('Portuguese Brazillian', 'Português, Brasil'),
+    'pt_BR' : ('Portuguese Brazillian', 'Português Brasileiro'),
     'rm' : ('Romansh', 'Rumantsch grischun'),
     'rn' : ('Kirundi', 'kiRundi'),
     'ro' : ('Romanian', 'Româna'),

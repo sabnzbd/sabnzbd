@@ -210,7 +210,7 @@
   !insertmacro MUI_LANGUAGE "NORWEGIAN"
   !insertmacro MUI_LANGUAGE "Romanian"
   !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "Portuguese"
+  !insertmacro MUI_LANGUAGE "PortugueseBR"
 
 
 ;------------------------------------------------------------------
