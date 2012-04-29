@@ -97,6 +97,7 @@ LanguageTable = {
     'om' : ('Oromo', 'Afaan Oromoo'),
     'pl' : ('Polish', 'Polski'),
     'pt' : ('Portuguese', 'Português'),
+    'pt_BR' : ('PortugueseBR', 'Português, Brasil'), # NSIS uses "PortugueseBR"
     'rm' : ('Romansh', 'Rumantsch grischun'),
     'rn' : ('Kirundi', 'kiRundi'),
     'ro' : ('Romanian', 'Româna'),

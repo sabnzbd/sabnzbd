@@ -95,6 +95,11 @@ SKIN_TEXT = {
     'total' : TT('Total'),
     'on' : TT('on'),
     'off' : TT('off'),
+    'parameters' : TT('Parameters'), #: Config: startup parameters of SABnzbd
+    'pythonVersion' : TT('Python Version'),
+    'homePage' : TT('Home page'), #: Home page of the SABnzbd project
+    'source' : TT('Source'), #: Where to find the SABnzbd sourcecode
+    'or' : TT('or'), #: Used in "IRC or IRC-Webaccess"
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
