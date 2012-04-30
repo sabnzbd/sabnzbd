@@ -44,6 +44,8 @@
   Delete   "${idir}\email\email-sr.tmpl"
   Delete   "${idir}\email\email-es.tmpl"
   Delete   "${idir}\email\email-pt_BR.tmpl"
+  Delete   "${idir}\email\email-sr.tmpl"
+  Delete   "${idir}\email\email-ru.tmpl"
   Delete   "${idir}\email\rss-de.tmpl"
   Delete   "${idir}\email\rss-en.tmpl"
   Delete   "${idir}\email\rss-nl.tmpl"
@@ -55,6 +57,8 @@
   Delete   "${idir}\email\rss-sr.tmpl"
   Delete   "${idir}\email\rss-es.tmpl"
   Delete   "${idir}\email\rss-pt_BR.tmpl"
+  Delete   "${idir}\email\rss-sr.tmpl"
+  Delete   "${idir}\email\rss-ru.tmpl"
   Delete   "${idir}\email\badfetch-da.tmpl"
   Delete   "${idir}\email\badfetch-de.tmpl"
   Delete   "${idir}\email\badfetch-en.tmpl"
@@ -67,6 +71,7 @@
   Delete   "${idir}\email\badfetch-sr.tmpl"
   Delete   "${idir}\email\badfetch-es.tmpl"
   Delete   "${idir}\email\badfetch-pt_BR.tmpl"
+  Delete   "${idir}\email\badfetch-ru.tmpl"
   RMDir    "${idir}\email"
   RMDir /r "${idir}\locale"
   RMDir /r "${idir}\interfaces\Classic"
@@ -181,13 +186,12 @@
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
   !insertmacro MUI_PAGE_INSTFILES
-  ;!define MUI_FINISHPAGE_RUN
-  ;!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
-  ;!define MUI_FINISHPAGE_RUN_TEXT $(MsgStartSab)
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+  !define MUI_FINISHPAGE_RUN_TEXT $(MsgGoWiki)
+  !define MUI_FINISHPAGE_RUN_NOTCHECKED
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT $(MsgShowRelNote)
-  ;!define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
-  ;!define MUI_FINISHPAGE_LINK_LOCATION "http://wiki.sabnzbd.org/"
   !define MUI_FINISHPAGE_LINK $(MsgSupportUs)
   !define MUI_FINISHPAGE_LINK_LOCATION "http://www.sabnzbd.org/contribute/"
 
@@ -223,9 +227,9 @@
 
 
 ;------------------------------------------------------------------
-;Function LaunchLink
-;  ExecShell "" "$INSTDIR\SABnzbd.exe"
-;FunctionEnd
+Function LaunchLink
+  ExecShell "" "http://wiki.sabnzbd.org/"
+FunctionEnd
 
 
 ;------------------------------------------------------------------
@@ -410,8 +414,7 @@ SectionEnd
 
 ;--------------------------------
 ;Language strings
-; MsgWarnRunning 'Please close "SABnzbd.exe" first'
-  LangString MsgStartSab    ${LANG_ENGLISH} "Start SABnzbd (hidden)"
+  LangString MsgGoWiki      ${LANG_ENGLISH} "Go to the SABnzbd Wiki"
 
   LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
 
