@@ -266,7 +266,7 @@ def patch_nsis():
             new.append(line)
     src.close()
 
-    dst = open(NSIS, 'w')
+    dst = open(NSIS+'.tmp', 'w')
     for line in new:
         dst.write(line)
     dst.close()

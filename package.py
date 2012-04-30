@@ -496,8 +496,6 @@ if target == 'app':
     #Make image internet-enabled
     os.system("hdiutil internet-enable %s" % fileDmg)
 
-
-    os.system(GitRevertApp + "NSIS_Installer.nsi")
     os.system(GitRevertApp + VERSION_FILEAPP)
     os.system(GitRevertApp + VERSION_FILE)
 
@@ -609,9 +607,9 @@ elif target in ('binary', 'installer'):
     ############################
     if target == 'installer':
 
-        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi.tmp' % \
                   (prod, release, fileIns))
-
+        DeleteFiles('NSIS_Installer.nsi.tmp')
 
     DeleteFiles(fileBin)
     #write_dll_message('dist/IMPORTANT_MESSAGE.txt')
