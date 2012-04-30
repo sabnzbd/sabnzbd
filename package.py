@@ -118,7 +118,6 @@ def PatchVersion(name):
     my_baseline = commit + state
     my_version = name
 
-    regex = re.compile(r'__baseline__\s+=\s+"\w*"')
     text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % my_baseline, text)
     text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % my_version, text)
 
@@ -240,25 +239,6 @@ def rename_file(folder, old, new):
     except WindowsError:
         print "Cannot create %s" % newpath
         exit(1)
-
-def check_runtimes():
-    """ Return location of MS DLL files for Python 2.6 and higher
-        This assumes that the stand-alone version of Bazaar has been
-        installed, since this will be used as the source for the DLLs
-        and Manifest files.
-    """
-    path = None
-    if sys.version_info >= (2, 6):
-        path = os.environ.get('ProgramFiles(x86)')
-        if not path:
-            path = os.environ.get('ProgramFiles')
-        if path:
-            path = os.path.join(path, 'Bazaar')
-            if not os.path.exists(path):
-                print 'Cannot find runtime libraries, have you installed Bazaar'
-                print 'in %s ?' % path
-                exit(1)
-    return path
 
 
 print sys.argv[0]
@@ -417,11 +397,11 @@ if target == 'app':
 
     # Due to ApplePython bug
     if apple_py:
-        sys.argv.append('-p');
-        sys.argv.append('email');
+        sys.argv.append('-p')
+        sys.argv.append('email')
 
     APP = ['SABnzbd.py']
-    DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
+    DATA_FILES = ['interfaces', 'locale', 'email', ('', glob.glob("osx/resources/*"))]
 
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
@@ -432,7 +412,7 @@ if target == 'app':
             LSTypeIsPackage = 0,
             NSPersistentStoreTypeKey = 'Binary',
     )
-    OPTIONS = {'argv_emulation': not apple_py, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
+    OPTIONS = {'argv_emulation': not apple_py, 'iconfile': 'osx/resources/sabnzbdplus.icns', 'plist': {
        'NSUIElement':1,
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
@@ -487,7 +467,7 @@ if target == 'app':
     #Convert sparseimage to read only compressed dmg
     if os.path.exists(fileDmg):
         os.remove(fileDmg)
-    os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg,fileDmg))
+    os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg, fileDmg))
     #Remove sparseimage
     os.system("rm %s>/dev/null" % (fileImg))
 
