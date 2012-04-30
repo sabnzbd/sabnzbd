@@ -266,18 +266,6 @@ def check_runtimes():
                 exit(1)
     return path
 
-def write_dll_message(path):
-    f = open(path, 'w')
-    f.write('''
-                          **** IMPORTANT ****
-
-If you get a Windows error message, claiming that DLL files are missing,
-please install "Microsoft Visual C++ 2008 Redistributable Package (x86)".
-Download from http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=29
-Install this and *not* the SP1 package (or install both).
-
-''')
-    f.close()
 
 print sys.argv[0]
 
@@ -285,17 +273,27 @@ Git = CheckPath('git')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
 if os.name == 'nt':
+    msg = 'Requires the Unicode version of NSIS'
     NSIS = CheckPath('makensis')
+    if NSIS:
+        log = '%s.log' % NSIS
+        os.system('%s >%s' % (NSIS, log))
+        if 'Unicode' in open(log).read():
+            msg = ''
+        DeleteFiles(log)
+    if msg:
+        print msg
+        exit(1)
 else:
     NSIS = '-'
 
 GitRevertApp =  Git + ' checkout -- '
-#GitUpdateApp = Git + ' update '
 GitRevertVersion =  GitRevertApp + ' ' + VERSION_FILE
 GitVersion = Git + ' log -1'
 GitStatus = Git + ' status'
 
-if not (Git and ZipCmd and UnZipCmd and NSIS):
+if not (Git and ZipCmd and UnZipCmd):
+    print 'Missing programs. Need "git", "zip" and "unzip"'
     exit(1)
 
 if len(sys.argv) < 2:
