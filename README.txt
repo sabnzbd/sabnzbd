@@ -1,4 +1,4 @@
-************************  SABnzbd 0.7.0Beta3 ************************
+************************  SABnzbd 0.7.0Beta4 ************************
 
 What's new:
 
@@ -16,9 +16,10 @@ What's new:
 - More persistent retries for unreliable indexers
 - Single Configuration skin for all others skins (there is an option for the old style)
 - Config->Special for settings that were previously only changeable in the sabnzbd.ini file
-- Add Spanish translation
+- Add Spanish and Portuguese (Brazil) translations
+- Individual RSS filter toggle
 
-For problems fixed in Beta3, see CHANGELOG.txt
+For problems fixed in Beta4, see CHANGELOG.txt
 
 
 About:

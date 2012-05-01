@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add Portuguese (Brazil) language
+- Updated translations
+- Some odd NZB files led to blank initial filenames in file overview
+- Jobs that have 99.91%-99.99% completion rate should not be rounded to 100.0%
+- Windows Tray icon now has entry to show "complete" folder
+- Some minor fixes in code and Config skin
+- Individual RSS filter toggle
+-------------------------------------------------------------------------------
  0.7.0Beta3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - OSX/Linux: permissions are now also applied to the "temporary download folder"

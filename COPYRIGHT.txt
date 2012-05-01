@@ -14,6 +14,19 @@ Sleeping members
 Honorary member (and original author)
     Gregor Kaufmann <tdian@users.sourceforge.net>
 
+The main contributors and moderators of the translations
+    Danish: Rene (nordjyden6)
+    Dutch: ShyPike
+    French : rAf and Fox Ace
+    German: Severin Heiniger
+    Norwegian: Protx
+    Romanian: nicusor
+    Serbian: Ozzii
+    Swedish: Malmis
+    Spanish: Syquus
+    Portuguese (Brazil): lrrosa
+    Russian: Pavel Maryanov
+
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
