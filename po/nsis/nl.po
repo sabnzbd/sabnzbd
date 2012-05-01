@@ -7,65 +7,65 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-03-23 18:31+0000\n"
-"PO-Revision-Date: 2012-04-06 14:45+0000\n"
+"POT-Creation-Date: 2012-05-01 18:51+0000\n"
+"PO-Revision-Date: 2012-05-01 18:56+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-07 05:10+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-05-01 19:12+0000\n"
+"X-Generator: Launchpad (build 15177)\n"
 
-#: NSIS_Installer.nsi:406
-msgid "Start SABnzbd (hidden)"
-msgstr "Start SABnzbd (verborgen)"
+#: NSIS_Installer.nsi:417
+msgid "Go to the SABnzbd Wiki"
+msgstr "Ga naar de SABnzbd Wiki"
 
-#: NSIS_Installer.nsi:415
+#: NSIS_Installer.nsi:419
 msgid "Show Release Notes"
 msgstr "Toon vrijgave bericht"
 
-#: NSIS_Installer.nsi:424
+#: NSIS_Installer.nsi:421
 msgid "Support the project, Donate!"
 msgstr "Steun het project, Doneer!"
 
-#: NSIS_Installer.nsi:433
+#: NSIS_Installer.nsi:423
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Sluit \"SABnzbd.exe\" eerst af"
 
-#: NSIS_Installer.nsi:442
+#: NSIS_Installer.nsi:425
 msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 msgstr ""
-"                  >>>> WAARSCHUWING <<<<\\r\\n\\r\\nLees eerst het vrijgave "
-"bericht of ga naar \"http://wiki.sabnzbd.org/introducing-0-6-0 !\""
+"                  >>>> WAARSCHUWING <<<<\\\\r\\\\n\\\\r\\\\nLees eerst het "
+"vrijgave bericht of ga naar http://wiki.sabnzbd.org/introducing-0-7-0 !"
 
-#: NSIS_Installer.nsi:451
+#: NSIS_Installer.nsi:427
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Dit verwijdert SABnzbd van je systeem"
 
-#: NSIS_Installer.nsi:460
+#: NSIS_Installer.nsi:429
 msgid "Run at startup"
 msgstr "Opstarten bij systeem start"
 
-#: NSIS_Installer.nsi:469
+#: NSIS_Installer.nsi:431
 msgid "Desktop Icon"
 msgstr "Pictogram op bureaublad"
 
-#: NSIS_Installer.nsi:478
+#: NSIS_Installer.nsi:433
 msgid "NZB File association"
 msgstr "NZB bestanden koppelen aan SABnzbd"
 
-#: NSIS_Installer.nsi:487
+#: NSIS_Installer.nsi:435
 msgid "Delete Program"
 msgstr "Verwijder programma"
 
-#: NSIS_Installer.nsi:496
+#: NSIS_Installer.nsi:437
 msgid "Delete Settings"
 msgstr "Verwijder instellingen"
 
-#: NSIS_Installer.nsi:505
+#: NSIS_Installer.nsi:439
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
@@ -73,19 +73,19 @@ msgstr ""
 "Op dit systeem moeten eerst de Microsoft runtime bibliotheek VC90 "
 "geïnstalleerd worden. Wilt u dat nu doen?"
 
-#: NSIS_Installer.nsi:514
+#: NSIS_Installer.nsi:441
 msgid "Downloading Microsoft runtime installer..."
 msgstr "Downloaden van de Microsoft bibliotheek"
 
-#: NSIS_Installer.nsi:523
+#: NSIS_Installer.nsi:443
 msgid "Download error, retry?"
 msgstr "Download mislukt, opnieuw?"
 
-#: NSIS_Installer.nsi:532
+#: NSIS_Installer.nsi:445
 msgid "Cannot install without runtime library, retry?"
 msgstr "Installeren heeft geen zin zonder de bibliotheek, opnieuw?"
 
-#: NSIS_Installer.nsi:541
+#: NSIS_Installer.nsi:447
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -93,12 +93,22 @@ msgstr ""
 "U kunt geen bestaande installatie overschrijven.\\n\\nKlik op `OK` om de "
 "vorige versie te verwijderen of op `Annuleren` om te stoppen."
 
-#: NSIS_Installer.nsi:550
+#: NSIS_Installer.nsi:449
 msgid "Your settings and data will be preserved."
 msgstr "Je instellingen en bestanden blijven behouden."
+
+#~ msgid "Start SABnzbd (hidden)"
+#~ msgstr "Start SABnzbd (verborgen)"
 
 #~ msgid "Delete Logs"
 #~ msgstr "Verwijder logging"
 
 #~ msgid "Delete Cache"
 #~ msgstr "Verwijder Cache"
+
+#~ msgid ""
+#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#~ msgstr ""
+#~ "                  >>>> WAARSCHUWING <<<<\\r\\n\\r\\nLees eerst het vrijgave "
+#~ "bericht of ga naar \"http://wiki.sabnzbd.org/introducing-0-6-0 !\""
