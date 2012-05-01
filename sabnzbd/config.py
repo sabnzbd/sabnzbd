@@ -492,7 +492,9 @@ class OptionFilters(Option):
                 else:
                     filters.append(listquote.simplelist(val))
                 while len(filters[-1]) < 7:
-                    filters[-1].append('')
+                    filters[-1].append('1')
+                if not filters[-1][6]:
+                    filters[-1][6] = '1'
         if filters:
             self.set(filters)
         return True
