@@ -56,8 +56,9 @@ class SABTrayThread(SysTrayIconThread):
         menu_options = (
             (T('Show interface'), None, self.browse),
             (T('Open complete folder'), None, self.opencomplete),
-            (T('Restart without login'), None, self.nologin),
-            (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost),
+            (T('Troubleshoot'), None, ((T('Restart'), None, self.restart),
+                                      (T('Restart without login'), None, self.nologin),
+                                      (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost))),
             (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
             (T('Shutdown'), None, self.shutdown),
         )
@@ -107,6 +108,12 @@ class SABTrayThread(SysTrayIconThread):
             self.resume()
         else:
             self.pause()
+
+    # menu handler
+    def restart(self, icon):
+        self.hover_text = T('Restart')
+        sabnzbd.halt()
+        cherrypy.engine.restart()
 
     # menu handler
     def nologin(self, icon):
