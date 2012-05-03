@@ -1190,7 +1190,7 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
             )
 SPECIAL_VALUE_LIST = \
-            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit'
+            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'marker_file'
             )
 
 class ConfigSpecial(object):

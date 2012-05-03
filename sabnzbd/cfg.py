@@ -235,6 +235,7 @@ osx_speed = OptionBool('misc', 'osx_speed', True)
 win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
+marker_file = OptionStr('misc', 'marker_file', '.nomedia')
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
