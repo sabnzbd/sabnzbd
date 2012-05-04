@@ -336,7 +336,7 @@
       </div>
     </fieldset>
 
-  </div><!-- /component-group6 -->
+  </div><!-- /component-group5 -->
   <div id="core-component-group6" class="component-group clearfix">
     <div class="component-group-desc">
       <h3>$T('swtag-quota')</h3>
@@ -385,7 +385,32 @@
         </label>
       </div>
     </fieldset>
-  </div><!-- /component-group5 -->
+  </div><!-- /component-group6 -->
+
+  <div id="core-component-group7" class="component-group clearfix">
+    <div class="component-group-desc">
+      <h3>$T('swtag-cross_site')</h3>
+    </div>
+    <fieldset class="component-group-list">
+      <div class="field-pair">
+        <input type="checkbox" name="bless_cross_site" id="bless_cross_site" value="1" <!--#if $bless_cross_site > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="bless_cross_site">
+          <span class="component-title">$T('opt-bless_cross_site')</span>
+          <span class="component-desc">$T('explain-bless_cross_site')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <label class="nocheck clearfix" for="blessed_hosts">
+          <span class="component-title">$T('opt-blessed_hosts')</span>
+          <input type="text" name="blessed_hosts" id="blessed_hosts" size="50" value="$blessed_hosts"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-blessed_hosts')</span>
+        </label>
+      </div>
+    </fieldset>
+  </div><!-- /component-group7 -->
 
   <div class="component-group-last clearfix">
     <div class="component-group-desc">
