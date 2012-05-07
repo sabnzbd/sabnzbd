@@ -257,7 +257,8 @@ def process_job(nzo):
                 emsg = '%.1f%%' % (ratio * 100.0)
                 if emsg == '100.0%%':
                     emsg = '99.9%%'
-                emsg = T('Download would not be successful, only %s available') % emsg
+                emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
+                emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
