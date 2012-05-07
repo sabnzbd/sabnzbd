@@ -208,7 +208,7 @@ language = OptionStr('misc', 'language', 'en')
 ssl_type = OptionStr('misc', 'ssl_type', 'v23')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
-random_server_ip = OptionBool('misc', 'random_server_ip', False)
+random_server_ip = OptionBool('misc', 'random_server_ip', True)
 
 # Internal options, not saved in INI file
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
