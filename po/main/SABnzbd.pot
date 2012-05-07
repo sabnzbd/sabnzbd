@@ -1160,7 +1160,7 @@ msgid "Failed to remove nzo from postproc queue (id)"
 msgstr ""
 
 #: sabnzbd/postproc.py:260
-msgid "Download would not be successful, only %s available"
+msgid "Download might fail, only %s of required %s available"
 msgstr ""
 
 #: sabnzbd/postproc.py:262
