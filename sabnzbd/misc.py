@@ -1242,7 +1242,7 @@ def format_source_url(url):
     else:
         prot = 'http:'
     if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (cfg.newzbin_url(), prot, str(url))
+        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
     else:
         return url
 
@@ -1280,8 +1280,8 @@ def set_chmod(path, permissions, report):
         if report:
             logging.error(Ta('Cannot change permissions of %s'), path)
             logging.info("Traceback: ", exc_info = True)
-    
-    
+
+
 def set_permissions(path, recursive=True):
     """ Give folder tree and its files their proper permissions """
     if not sabnzbd.WIN32:
@@ -1296,10 +1296,10 @@ def set_permissions(path, recursive=True):
             # Don't report errors (because the system might not support it)
             umask = int('0777', 8) & (sabnzbd.ORG_UMASK ^ int('0777', 8))
             report = False
-    
+
         # Remove X bits for files
         umask_file = umask & int('7666', 8)
-    
+
         if os.path.isdir(path):
             if recursive:
                 # Parse the dir/file tree and set permissions

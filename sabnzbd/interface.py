@@ -1188,9 +1188,11 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
+              'random_server_ip'
             )
 SPECIAL_VALUE_LIST = \
-            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit'
+            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'marker_file',
+              'req_completion_rate'
             )
 
 class ConfigSpecial(object):

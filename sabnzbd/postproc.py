@@ -257,7 +257,8 @@ def process_job(nzo):
                 emsg = '%.1f%%' % (ratio * 100.0)
                 if emsg == '100.0%%':
                     emsg = '99.9%%'
-                emsg = T('Download would not be successful, only %s available') % emsg
+                emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
+                emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
@@ -288,6 +289,7 @@ def process_job(nzo):
         # Set complete dir to workdir in case we need to abort
         workdir_complete = workdir
         dirname = nzo.final_name
+        marker_file = None
 
         if all_ok:
             one_folder = False
@@ -312,6 +314,11 @@ def process_job(nzo):
                 workdir_complete = create_dirs(complete_dir)
             else:
                 workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+                marker_file = cfg.marker_file()
+                if marker_file:
+                    marker_file = os.path.join(workdir_complete, marker_file)
+                    open(marker_file, 'w').write('\n')
+
             if not workdir_complete or not os.path.exists(workdir_complete):
                 crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
                 raise IOError
@@ -511,6 +518,11 @@ def process_job(nzo):
 
     ## Remove download folder
     if all_ok:
+        if marker_file:
+            try:
+                os.remove(marker_file)
+            except:
+                pass
         try:
             if os.path.exists(workdir):
                 logging.debug('Removing workdir %s', workdir)

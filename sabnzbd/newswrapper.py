@@ -345,7 +345,7 @@ class NewsWrapper(object):
         # See if incorrect newline-only was used
         # Do this as a special case to prevent using extra memory
         # for normal articles
-        if len(new_lines) == 1 and '\r' not in data:
+        if len(new_lines) == 1 and '\r' not in self.data:
             new_lines = self.data.split('\n')
 
         self.data = new_lines.pop()

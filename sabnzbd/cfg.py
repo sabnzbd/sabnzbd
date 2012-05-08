@@ -101,6 +101,7 @@ par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
 pre_check = OptionBool('misc', 'pre_check', False)
+req_completion_rate = OptionNumber('misc', 'req_completion_rate', 101.0, 100, 200)
 
 newzbin_username = OptionStr('newzbin', 'username')
 newzbin_password = OptionPassword('newzbin', 'password')
@@ -208,6 +209,7 @@ language = OptionStr('misc', 'language', 'en')
 ssl_type = OptionStr('misc', 'ssl_type', 'v23')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
+random_server_ip = OptionBool('misc', 'random_server_ip', True)
 
 # Internal options, not saved in INI file
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
@@ -235,6 +237,7 @@ osx_speed = OptionBool('misc', 'osx_speed', True)
 win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
+marker_file = OptionStr('misc', 'marker_file', '.nomedia')
 
 bless_cross_site = OptionBool('misc', 'bless_cross_site', False)
 blessed_hosts = OptionStr('misc', 'blessed_hosts', '', validation=no_nonsense)
