@@ -1,0 +1,101 @@
+<!--#set global $pane="Scheduling"#-->
+<!--#set global $help_uri="configure-scheduling-0-7"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+
+<%
+import time
+t = time.localtime()
+hour = t[3]
+if hour != 23:
+  hour += 1
+else:
+  hour = 0
+%>
+
+<div class="colmask">
+    <div class="section">
+        <div class="col2">
+            <h3>$T('addSchedule')</h3>
+        </div><!-- /col2 -->
+        <form action="addSchedule" method="post">
+        <input type="hidden" id="session" name="session" value="$session" />
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="hour">$T('hour').capitalize() : $T('minute').capitalize()</label>
+                    <select name="hour" id="hour">
+                        <!--#for $i in range(24)#-->
+                            <option value="$i" <!--#if hour == i then 'selected="selected"' else ""#--> > $str($i).zfill(2) </option>
+                        <!--#end for#-->
+                    </select>&nbsp;<b>:</b>&nbsp;<select name="minute" id="minute">
+                        <!--#for $i in range(60)#-->
+                            <option value="$i"> $str($i).zfill(2) </option>
+                        <!--#end for#-->
+                    </select>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="dayofweek">$T('sch-frequency')</label>
+                    <select name="dayofweek" id="dayofweek">
+                        <option value="*" selected="selected">$T('daily')</option>
+                        <option value="1">$T('monday')</option>
+                        <option value="2">$T('tuesday')</option>
+                        <option value="3">$T('wednesday')</option>
+                        <option value="4">$T('thursday')</option>
+                        <option value="5">$T('friday')</option>
+                        <option value="6">$T('saturday')</option>
+                        <option value="7">$T('sunday')</option>
+                    </select>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="action">$T('sch-action')</label>
+                    <select name="action" id="action">
+                        <!--#for $action in $actions#-->
+                            <option value="$action">$actions_lng[$action]</option>
+                        <!--#end for#-->
+                    </select>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="arguments">$T('sch-arguments')</label>
+                    <input type="text" name="arguments" id="arguments" value="" size="20" />
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-addSchedule')" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    </form>
+    <div class="section">
+        <div class="col2">
+            <h3>$T('currentSchedules')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <!--#if $schedlines#-->
+                        <!--#set $schednum = 0#-->
+                        <!--#set $odd = True#-->
+                        <!--#for $line in $schedlines#-->
+                            <!--#set $odd = not $odd#-->
+                            <form action="delSchedule" method="post">
+                                <input type="hidden" name="session" id="session" value="$session">
+                                <input type="hidden" name="line" id="line" value="$line"/>
+                                <div class="field-pair infoTableSeperator<!--#if $odd then "" else " alt"#-->">
+                                    <input class="float-left" type="submit" value="$T('button-x')" />
+                                    <div class="scheduleEntry">
+                                        <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
+                                    </div>
+                                </div>
+                            </form>
+                            <!--#set $schednum = $schednum+1#-->
+                        <!--#end for#-->
+                <!--#else#-->
+                    <div class="field-pair">
+                        <label class="config">$T('none')</label>
+                    </div>
+                <!--#end if#-->
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+</div><!-- /colmask -->
+
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
