@@ -254,9 +254,12 @@ def process_job(nzo):
         # if no files are present (except __admin__), fail the job
         if len(globber(workdir)) < 2:
             if nzo.precheck:
+                req_ratio = float(cfg.req_completion_rate()) / 100.0
+                # Make sure that rounded ratio doesn't equal required ratio
+                # when it is actually below required
+                if (ratio < req_ratio) and (req_ratio - ratio) < 0.001:
+                    ratio = req_ratio - 0.001
                 emsg = '%.1f%%' % (ratio * 100.0)
-                if emsg == '100.0%%':
-                    emsg = '99.9%%'
                 emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
