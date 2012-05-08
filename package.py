@@ -354,39 +354,29 @@ if target == 'app':
     # Check which Python flavour
     apple_py = 'ActiveState' not in sys.copyright
 
-    #Create sparseimage from template
-    os.system("unzip osx/image/template.sparseimage.zip")
-    os.rename('sabnzbd-template.sparseimage', fileImg)
-
-    #mount sparseimage and modify volume label
-    os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
-
-    # Select OSX version specific background image
-    # Take care to preserve the special attributes of the background image file
     if OSX_LION:
-        # Lion and higher: generates SnowLeopard/Lion DMG
-        f = open('osx/image/sabnzbd.png', 'rb')
-        png = f.read()
-        f.close()
-    else:
-        # Snow Leopard and lower: generates Leopard DMG
-        fileDmg = fileDmgLp
-        f = open('osx/image/sabnzbd_leopard.png', 'rb')
-        png = f.read()
-        f.close()
-    f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
-    f.write(png)
-    f.close()
-
-    # Rename the volume
-    fp = open('mount.log', 'r')
-    data = fp.read()
-    fp.close()
-    os.remove('mount.log')
-    m = re.search(r'/dev/(\w+)\s+', data)
-    volume = 'SABnzbd-' + str(my_version)
-    os.system('disktool -n %s %s' % (m.group(1), volume))
-
+        # Check if Leopard build is present
+        leopard_build = '/project/leopard/%s' % str(my_version)
+        if not os.path.isdir(leopard_build):
+            print 'Leopard build not found at %s' % leopard_build
+            exit(1)
+    
+        #Create sparseimage from template
+        os.system("unzip -o osx/image/template.sparseimage.zip")
+        os.rename('template.sparseimage', fileImg)
+    
+        #mount sparseimage and modify volume label
+        os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
+    
+        # Rename the volume
+        fp = open('mount.log', 'r')
+        data = fp.read()
+        fp.close()
+        os.remove('mount.log')
+        m = re.search(r'/dev/(\w+)\s+', data)
+        volume = 'SABnzbd-' + str(my_version)
+        os.system('disktool -n %s %s' % (m.group(1), volume))
+    
     options['description'] = 'SABnzbd ' + str(my_version)
 
     #Create MO files
@@ -395,10 +385,10 @@ if target == 'app':
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
 
-    # Due to ApplePython bug
-    if apple_py:
-        sys.argv.append('-p')
-        sys.argv.append('email')
+    #if apple_py:
+    #    # Due to ApplePython bug
+    #    sys.argv.append('-p')
+    #    sys.argv.append('email')
 
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces', 'locale', 'email', ('', glob.glob("osx/resources/*"))]
@@ -412,13 +402,19 @@ if target == 'app':
             LSTypeIsPackage = 0,
             NSPersistentStoreTypeKey = 'Binary',
     )
-    OPTIONS = {'argv_emulation': not apple_py, 'iconfile': 'osx/resources/sabnzbdplus.icns', 'plist': {
-       'NSUIElement':1,
-       'CFBundleShortVersionString':release,
-       'NSHumanReadableCopyright':'The SABnzbd-Team',
-       'CFBundleIdentifier':'org.sabnzbd.team',
-       'CFBundleDocumentTypes':[NZBFILE]
-       }}
+    OPTIONS = {'argv_emulation': not apple_py,
+               'iconfile': 'osx/resources/sabnzbdplus.icns',
+               'plist': {
+                   'NSUIElement':1,
+                   'CFBundleShortVersionString':release,
+                   'NSHumanReadableCopyright':'The SABnzbd-Team',
+                   'CFBundleIdentifier':'org.sabnzbd.team',
+                   'CFBundleDocumentTypes':[NZBFILE],
+                   },
+               'packages': "email,xml,Cheetah",
+               'excludes': ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
+                            "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"]
+              }
 
     setup(
         app=APP,
@@ -441,38 +437,49 @@ if target == 'app':
     os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
-    # Sign the App if possible
-    authority = os.environ.get('SIGNING_AUTH')
-    if authority:
-        os.system('codesign -f -i "%s" -s "%s" dist/SABnzbd.app' % (volume, authority))
+    if OSX_LION:
+        # Sign the App if possible
+        authority = os.environ.get('SIGNING_AUTH')
+        if authority:
+            os.system('codesign -f -i "%s" -s "%s-lion" dist/SABnzbd.app' % (volume, authority))
+            os.system('codesign -f -i "%s" -s "%s-leopard" %s/dist/SABnzbd.app' % (leopard_build, volume, authority))
+    
+        # copy app to mounted sparseimage
+        os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OS X 10.6 and Above/" >/dev/null' % volume)
 
-    #copy app to mounted sparseimage
-    os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
+        # Copy the Leopard build
+        os.system('cp -r %s/dist/SABnzbd.app "/Volumes/%s/OS X 10.5 and Below/" >/dev/null' % (leopard_build, volume))
+    
+        print 'Create src %s' % fileOSr
+        os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+                  '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
+                  './ >/dev/null' % (fileOSr) )
+    
+        # Copy README.txt
+        os.system("cp README.rtf /Volumes/%s/" % volume)
 
-    print 'Create src %s' % fileOSr
-    os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
-              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
-              './ >/dev/null' % (fileOSr) )
-
-    # Copy README.txt
-    os.system("cp README.rtf /Volumes/%s/" % volume)
-
-    # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
-    os.remove('/Volumes/%s/SABnzbd.app/Contents/Resources/site.py' % volume)
-
-    #Unmount sparseimage
-    os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
-
-    os.system("sleep 5")
-    #Convert sparseimage to read only compressed dmg
-    if os.path.exists(fileDmg):
-        os.remove(fileDmg)
-    os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg, fileDmg))
-    #Remove sparseimage
-    os.system("rm %s>/dev/null" % (fileImg))
-
-    #Make image internet-enabled
-    os.system("hdiutil internet-enable %s" % fileDmg)
+        # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
+        os.remove('/Volumes/%s/OS X 10.6 and Above/SABnzbd.app/Contents/Resources/site.py' % volume)
+        os.remove('/Volumes/%s/OS X 10.5 and Below/SABnzbd.app/Contents/Resources/site.py' % volume)
+    
+        #Unmount sparseimage
+        os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
+    
+        os.system("sleep 5")
+        #Convert sparseimage to read only compressed dmg
+        if os.path.exists(fileDmg):
+            os.remove(fileDmg)
+        os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg, fileDmg))
+        #Remove sparseimage
+        os.system("rm %s>/dev/null" % (fileImg))
+    
+        #Make image internet-enabled
+        os.system("hdiutil internet-enable %s" % fileDmg)
+    else:
+        dest = '/Volumes/VMware Shared Folders/leopard/%s' % str(my_version)
+        os.system('rm -rf "%s"' % dest)
+        os.makedirs('%s/dist' % dest)
+        os.system('cp -r dist/SABnzbd.app "%s/dist/" >/dev/null' % dest)
 
     os.system(GitRevertApp + VERSION_FILEAPP)
     os.system(GitRevertApp + VERSION_FILE)
