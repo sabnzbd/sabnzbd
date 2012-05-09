@@ -1,0 +1,231 @@
+<!--#set global $pane="General"#-->
+<!--#set global $help_uri="configure-general-0-7"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+
+<div class="colmask">
+    <form action="saveGeneral" method="post" name="fullform" id="fullform" novalidate>
+    <input type="hidden" id="session" name="session" value="$session" />
+    <div class="section">
+        <div class="col2">
+            <h3>$T('webServer')</h3>
+            <p><b>$T('restartRequired')</b></p>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="host">$T('opt-host')</label>
+                    <input type="url" name="host" id="host" value="$host" size="40" />
+                    <span class="desc">$T('explain-host')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="port">$T('opt-port')</label>
+                    <input type="text" name="port" id="port" value="$port" size="8" />
+                    <span class="desc">$T('explain-port')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="username">$T('opt-web_username')</label>
+                    <input type="text" name="username" id="username" value="$username" size="30" />
+                    <span class="desc">$T('explain-web_username')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="password">$T('opt-web_password')</label>
+                    <input type="password" name="password" id="password" value="$password" size="30" />
+                    <span class="desc">$T('explain-web_password')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="web_dir">$T('opt-web_dir')</label>
+                        <select name="web_dir" id="web_dir">
+                        <!--#for $webline in $web_list#-->
+                            <!--#if $webline.lower() == $web_dir.lower()#-->
+                                <option value="$webline" selected="selected" class="selected">$webline</option>
+                            <!--#else#-->
+                                <option value="$webline">$webline</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('explain-web_dir')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
+                        <select name="web_dir2" id="web_dir2">
+                        <!--#for $webline in $web_list2#-->
+                            <!--#if $webline.lower() == $web_dir2.lower()#-->
+                                <option value="$webline" selected="selected" class="selected">$webline</option>
+                            <!--#else#-->
+                                <option value="$webline">$webline</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('explain-web_dir2')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="language">$T('opt-language')</label>
+                        <select name="language" id="language" id="language" class="select">
+                        <!--#for $webline in $lang_list#-->
+                            <!--#if $webline[0].lower() == $language.lower()#-->
+                                <option value="$webline[0]" selected="selected" class="selected">$webline[1]</option>
+                            <!--#else#-->
+                                <option value="$webline[0]">$webline[1]</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                    <span class="desc">$T('explain-language')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>
+                    <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if int($disable_api_key) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-disableApikey')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="apikey">$T('opt-apikey')</label>
+                    <input type="text" id="apikey" value="$session" size="35" />
+                    <input type="button" value="$T('button-apikey')" id="generate_new_apikey" />
+                    <input type="button" value="$T('qr-code')" title="$T('explain-qr-code')" class="show_qrcode" rel="$session" />
+                    <span class="desc">$T('explain-apikey')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
+                    <input type="text" id="nzbkey" value="$nzb_key" size="35" />
+                    <input type="button" value="$T('button-apikey')" id="generate_new_nzbkey" />
+                    <input type="button" value="$T('qr-code')" title="$T('explain-qr-code')" class="show_qrcode" rel="$nzb_key" />
+                    <span class="desc">$T('explain-nzbkey')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('httpsSupport')</h3>
+            <p><b>$T('restartRequired')</b></p>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
+                </div>
+                <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="enable_https">$T('opt-enable_https')</label>
+                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+                    <span class="desc">$T('explain-enable_https')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="https_port">$T('opt-https_port')</label>
+                    <input type="text" name="https_port" id="https_port" value="$https_port" size="8" />
+                    <span class="desc">$T('explain-https_port')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="https_cert">$T('opt-https_cert')</label>
+                    <input type="text" name="https_cert" id="https_cert" value="$https_cert" size="50" />
+                    <span class="desc">$T('explain-https_cert')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="https_key">$T('opt-https_key')</label>
+                    <input type="text" name="https_key" id="https_key" value="$https_key" size="50" />
+                    <span class="desc">$T('explain-https_key')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('tuning')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="bandwidth_limit">$T('opt-bandwidth_limit')</label>
+                    <input type="number" name="bandwidth_limit" id="bandwidth_limit" value="$bandwidth_limit" size="8" step="1024" min="0" />
+                    <span class="desc">$T('explain-bandwidth_limit')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
+                    <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" size="8" />
+                    <span class="desc">$T('explain-cache_limitstr')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
+                    <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50" placeholder=".nfo, .sfv" />
+                    <span class="desc">$T('explain-cleanup_list')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="padding alt">
+        <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+        <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
+    </div>
+    </form>
+</div><!-- /colmask -->
+
+<script>
+\$(document).ready(function(){
+    \$('#apikey, #nzbkey').click(function () { \$(this).select() });
+    \$('#generate_new_apikey').click(function () {
+      if (confirm("$T('Plush-confirm')")) {
+        $.ajax({
+          type: "POST",
+          url: "../../tapi",
+          data: {mode:'config', name:'set_apikey', apikey: \$('#apikey').val()},
+          success: function(msg){
+            \$('#apikey').val(msg);
+            window.location.reload();
+          }
+        });
+      }
+    });
+    \$('#generate_new_nzbkey').click(function () {
+      if (confirm("$T('Plush-confirm')")) {
+        $.ajax({
+          type: "POST",
+          url: "../../tapi",
+          data: {mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val()},
+          success: function(msg){
+            \$('#nzbkey').val(msg);
+            window.location.reload();
+          }
+        });
+      }
+    });
+
+    \$('.show_qrcode').each(function () {
+        var qrkey = \$(this).attr('rel'),
+        qrcode = \$('<img />', {
+            src: 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + qrkey,
+            alt: 'loading...',
+            width: 300,
+            height: 300
+        });
+        \$(this).qtip( {
+            content: {
+                text: qrcode
+            },
+            position: {
+                my: 'center',
+                at: 'center',
+                target: \$(window)
+            },
+            show: {
+                event: 'click',
+                solo: true,
+                modal: true
+            },
+            hide: false,
+            style: 'ui-tooltip-light ui-tooltip-rounded ui-tooltip-shadow ui-tooltip-qrcode'
+        });
+    });
+
+});
+</script>
+
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

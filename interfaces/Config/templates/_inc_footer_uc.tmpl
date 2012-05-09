@@ -1,0 +1,14 @@
+    <!-- Content end -->
+    </div>
+<script>
+    function is_touch_device() {
+        return !!('ontouchstart' in window) ? 1 : 0;
+    }
+    if (is_touch_device() === 1) {
+        // touch device found
+        \$('#content').css('overflow-y', 'inherit');
+        \$('html').css('overflow-y', 'scroll');
+    }
+</script>
+</body>
+</html>
