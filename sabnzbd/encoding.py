@@ -197,7 +197,9 @@ def titler(p):
     """ title() replacement
         Python's title() fails with Latin-1, so use Unicode detour.
     """
-    if gUTF:
+    if isinstance(p, unicode):
+        return p.title()
+    elif gUTF:
         try:
             return p.decode('utf-8').title().encode('utf-8')
         except:
