@@ -1534,6 +1534,7 @@ def clear_trans_cache():
     dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
     del dummy
+    sabnzbd.WEBUI_READY = True
     logging.debug('Cleared translation cache')
 
 

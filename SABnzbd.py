@@ -538,7 +538,7 @@ def ipv_localhost(v):
             return True
         elif v == '6' and ':' in item:
             return True
-    return False    
+    return False
 
 #------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
@@ -549,7 +549,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = ''
     elif cherryhost == '::' and not ipv_localhost('6'):
         cherryhost = ''
-        
+
     if cherryhost is None:
         cherryhost = sabnzbd.cfg.cherryhost()
     else:
@@ -1482,8 +1482,6 @@ def main():
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
-
-    sabnzbd.WEBUI_READY = True
 
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
