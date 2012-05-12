@@ -323,4 +323,20 @@ def fixup_ff4(p):
     return ''.join(name)
 
 
+_HTML_TABLE = {
+    #'&' : '&amp;', # Not yet, texts need to be cleaned from HTML first
+    #'>' : '&gt;',  # Not yet, texts need to be cleaned from HTML first
+    #'<' : '&lt;',  # Not yet, texts need to be cleaned from HTML first
+    '"' : '&#34;',
+    "'" : '&#39;'
+    }
+    
+def html_escape(txt):
+    """ Replace HTML metacharacters with &-constructs """
+    # Replacement for inefficient xml.sax.saxutils.escape function
+    if [True for ch in _HTML_TABLE if ch in txt]:
+        return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
+    else:
+        return txt
+
 auto_fsys()

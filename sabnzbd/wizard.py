@@ -77,7 +77,7 @@ class Wizard(object):
         language = kwargs.get('lang')
         cfg.language.set(language)
         set_language(language)
-        sabnzbd.api.cache_skin_trans()
+        sabnzbd.api.clear_trans_cache()
 
         # Always setup Plush
         sabnzbd.interface.change_web_dir('Plush - Gold')

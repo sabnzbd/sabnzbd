@@ -45,7 +45,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def __init__(self):
         # Wait for translated texts to be loaded
-        while not api.check_trans():
+        while not sabnzbd.WEBUI_READY:
             sleep(0.2)
             logging.debug('language file not loaded, waiting')
 

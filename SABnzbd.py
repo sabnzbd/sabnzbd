@@ -1483,6 +1483,8 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
+    sabnzbd.WEBUI_READY = True
+
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
     else:
