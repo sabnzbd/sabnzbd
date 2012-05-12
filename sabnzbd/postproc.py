@@ -320,7 +320,10 @@ def process_job(nzo):
                 marker_file = cfg.marker_file()
                 if marker_file:
                     marker_file = os.path.join(workdir_complete, marker_file)
-                    open(marker_file, 'w').write('\n')
+                    try:
+                        open(marker_file, 'w').write('\n')
+                    except:
+                        marker_file = None
 
             if not workdir_complete or not os.path.exists(workdir_complete):
                 crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
@@ -523,7 +526,8 @@ def process_job(nzo):
     if all_ok:
         if marker_file:
             try:
-                os.remove(marker_file)
+                # Recalculate marker file path, it may have been moved
+                os.remove(os.path.join(complete_dir, os.path.split(marker_file)[1]))
             except:
                 pass
         try:
