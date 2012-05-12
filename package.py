@@ -47,12 +47,6 @@ VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 my_version = 'unknown'
 my_baseline = 'unknown'
 
-if sys.getdefaultencoding().lower() != 'utf-8':
-    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
-    print 'or find another way to force Python to use UTF-8 for string encoding.'
-    sys.exit(1)
-
-
 def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
     for f in glob.glob(name):
@@ -124,7 +118,6 @@ def PatchVersion(name):
     my_baseline = commit + state
     my_version = name
 
-    regex = re.compile(r'__baseline__\s+=\s+"\w*"')
     text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % my_baseline, text)
     text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % my_version, text)
 
@@ -247,25 +240,6 @@ def rename_file(folder, old, new):
         print "Cannot create %s" % newpath
         exit(1)
 
-def check_runtimes():
-    """ Return location of MS DLL files for Python 2.6 and higher
-        This assumes that the stand-alone version of Bazaar has been
-        installed, since this will be used as the source for the DLLs
-        and Manifest files.
-    """
-    path = None
-    if sys.version_info >= (2, 6):
-        path = os.environ.get('ProgramFiles(x86)')
-        if not path:
-            path = os.environ.get('ProgramFiles')
-        if path:
-            path = os.path.join(path, 'Bazaar')
-            if not os.path.exists(path):
-                print 'Cannot find runtime libraries, have you installed Bazaar'
-                print 'in %s ?' % path
-                exit(1)
-    return path
-
 
 print sys.argv[0]
 
@@ -380,59 +354,43 @@ if target == 'app':
     # Check which Python flavour
     apple_py = 'ActiveState' not in sys.copyright
 
-    #Create sparseimage from template
-    os.system("unzip osx/image/template.sparseimage.zip")
-    os.rename('sabnzbd-template.sparseimage', fileImg)
-
-    #mount sparseimage and modify volume label
-    os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
-
-    # Select OSX version specific background image
-    # Take care to preserve the special attributes of the background image file
     if OSX_LION:
-        # Lion and higher: generates SnowLeopard/Lion DMG
-        f = open('osx/image/sabnzbd.png', 'rb')
-        png = f.read()
-        f.close()
-    else:
-        # Snow Leopard and lower: generates Leopard DMG
-        fileDmg = fileDmgLp
-        f = open('osx/image/sabnzbd_leopard.png', 'rb')
-        png = f.read()
-        f.close()
-    f = open('/Volumes/SABnzbd/sabnzbd.png', 'wb')
-    f.write(png)
-    f.close()
+        # Check if Leopard build is present
+        leopard_build = '/project/leopard/%s' % str(my_version)
+        if not os.path.isdir(leopard_build):
+            print 'Leopard build not found at %s' % leopard_build
+            exit(1)
 
-    # Rename the volume
-    fp = open('mount.log', 'r')
-    data = fp.read()
-    fp.close()
-    os.remove('mount.log')
-    m = re.search(r'/dev/(\w+)\s+', data)
-    volume = 'SABnzbd-' + str(my_version)
-    os.system('disktool -n %s %s' % (m.group(1), volume))
+        # Create sparseimage from template
+        os.system("unzip -o osx/image/template.sparseimage.zip")
+        os.rename('template.sparseimage', fileImg)
+
+        # mount sparseimage and modify volume label
+        os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
+
+        # Rename the volume
+        fp = open('mount.log', 'r')
+        data = fp.read()
+        fp.close()
+        os.remove('mount.log')
+        m = re.search(r'/dev/(\w+)\s+', data)
+        volume = 'SABnzbd-' + str(my_version)
+        os.system('disktool -n %s %s' % (m.group(1), volume))
 
     options['description'] = 'SABnzbd ' + str(my_version)
 
-    #Create MO files
+    # Create MO files
     os.system('python ./tools/make_mo.py')
 
-    #build SABnzbd.py
+    # build SABnzbd.py
     sys.argv[1] = 'py2app'
 
-    # Due to ApplePython bug
-    if apple_py:
-        sys.argv.append('-p');
-        sys.argv.append('email');
-        sys.argv.append('-p');
-        sys.argv.append('sitecustomize');
-    else:
+    if not apple_py:
         print 'UNICODE for ActiveState Python not tested yet!'
         exit(1)
 
     APP = ['SABnzbd.py']
-    DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
+    DATA_FILES = ['interfaces', 'locale', 'email', ('', glob.glob("osx/resources/*"))]
 
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
@@ -443,13 +401,19 @@ if target == 'app':
             LSTypeIsPackage = 0,
             NSPersistentStoreTypeKey = 'Binary',
     )
-    OPTIONS = {'argv_emulation': not apple_py, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
-       'NSUIElement':1,
-       'CFBundleShortVersionString':release,
-       'NSHumanReadableCopyright':'The SABnzbd-Team',
-       'CFBundleIdentifier':'org.sabnzbd.team',
-       'CFBundleDocumentTypes':[NZBFILE]
-       }}
+    OPTIONS = {'argv_emulation': not apple_py,
+               'iconfile': 'osx/resources/sabnzbdplus.icns',
+               'plist': {
+                   'NSUIElement':1,
+                   'CFBundleShortVersionString':release,
+                   'NSHumanReadableCopyright':'The SABnzbd-Team',
+                   'CFBundleIdentifier':'org.sabnzbd.team',
+                   'CFBundleDocumentTypes':[NZBFILE],
+                   },
+               'packages': "sitecustomize,email,xml,Cheetah",
+               'excludes': ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
+                            "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"]
+              }
 
     setup(
         app=APP,
@@ -458,7 +422,7 @@ if target == 'app':
         setup_requires=['py2app'],
     )
 
-    #copy unrar & par2 binary to avoid striping
+    # copy unrar & par2 binary to avoid striping
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
@@ -472,41 +436,50 @@ if target == 'app':
     os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
-    # Sign the App if possible
-    authority = os.environ.get('SIGNING_AUTH')
-    if authority:
-        os.system('codesign -f -i "%s" -s "%s" dist/SABnzbd.app' % (volume, authority))
+    if OSX_LION:
+        # Sign the App if possible
+        authority = os.environ.get('SIGNING_AUTH')
+        if authority:
+            os.system('codesign -f -i "%s-lion" -s "%s" dist/SABnzbd.app' % (volume, authority))
+            os.system('codesign -f -i "%s-leopard" -s "%s" %s/dist/SABnzbd.app' % (leopard_build, volume, authority))
 
-    #copy app to mounted sparseimage
-    os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
+        # copy app to mounted sparseimage
+        os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OS X 10.6 and Above/" >/dev/null' % volume)
 
-    print 'Create src %s' % fileOSr
-    os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
-              '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
-              './ >/dev/null' % (fileOSr) )
+        # Copy the Leopard build
+        os.system('cp -r %s/dist/SABnzbd.app "/Volumes/%s/OS X 10.5 and Below/" >/dev/null' % (leopard_build, volume))
 
-    # Copy README.txt
-    os.system("cp README.rtf /Volumes/%s/" % volume)
+        print 'Create src %s' % fileOSr
+        os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+                  '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
+                  './ >/dev/null' % (fileOSr) )
 
-    # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
-    os.remove('/Volumes/%s/SABnzbd.app/Contents/Resources/site.py' % volume)
+        # Copy README.txt
+        os.system("cp README.rtf /Volumes/%s/" % volume)
 
-    #Unmount sparseimage
-    os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
+        # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
+        os.remove('/Volumes/%s/OS X 10.6 and Above/SABnzbd.app/Contents/Resources/site.py' % volume)
+        os.remove('/Volumes/%s/OS X 10.5 and Below/SABnzbd.app/Contents/Resources/site.py' % volume)
 
-    os.system("sleep 5")
-    #Convert sparseimage to read only compressed dmg
-    if os.path.exists(fileDmg):
-        os.remove(fileDmg)
-    os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg,fileDmg))
-    #Remove sparseimage
-    os.system("rm %s>/dev/null" % (fileImg))
+        #Unmount sparseimage
+        os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
 
-    #Make image internet-enabled
-    os.system("hdiutil internet-enable %s" % fileDmg)
+        os.system("sleep 5")
+        # Convert sparseimage to read only compressed dmg
+        if os.path.exists(fileDmg):
+            os.remove(fileDmg)
+        os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg, fileDmg))
+        # Remove sparseimage
+        os.system("rm %s>/dev/null" % (fileImg))
 
+        # Make image internet-enabled
+        os.system("hdiutil internet-enable %s" % fileDmg)
+    else:
+        dest = '/Volumes/VMware Shared Folders/leopard/%s' % str(my_version)
+        os.system('rm -rf "%s"' % dest)
+        os.makedirs('%s/dist' % dest)
+        os.system('cp -r dist/SABnzbd.app "%s/dist/" >/dev/null' % dest)
 
-    os.system(GitRevertApp + "NSIS_Installer.nsi")
     os.system(GitRevertApp + VERSION_FILEAPP)
     os.system(GitRevertApp + VERSION_FILE)
 
@@ -515,8 +488,6 @@ elif target in ('binary', 'installer'):
         print "Sorry, only works on Windows!"
         os.system(GitRevertVersion)
         exit(1)
-
-    #run_times = check_runtimes()
 
     # Create MO files
     os.system('tools\\make_mo.py all')
@@ -602,33 +573,23 @@ elif target in ('binary', 'installer'):
     DeleteFiles(r'dist\interfaces\Config\.git')
 
     ############################
-    # Copy MS runtime files or Curl
-    if sys.version_info > (2, 5):
-        #Won't work with OpenSSL DLLs :(
-        #shutil.copy2(os.path.join(run_times, r'Microsoft.VC90.CRT.manifest'), r'dist')
-        #shutil.copy2(os.path.join(run_times, r'msvcp90.dll'), r'dist')
-        #shutil.copy2(os.path.join(run_times, r'msvcr90.dll'), r'dist')
-        #shutil.copy2(os.path.join(run_times, r'lib\Microsoft.VC90.CRT.manifest'), r'dist\lib')
-        pass
-    else:
+    # Copy Curl if needed
+    if not (sys.version_info > (2, 5)):
         # Curl for Python 2.5
         os.system(r'unzip -o win\curl\curl.zip -d dist\lib')
 
 
     ############################
     if target == 'installer':
-
         DeleteFiles(fileIns)
-        cmd = 'makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-                  (prod, release, fileIns)
-        print cmd
-        os.system(cmd)
+        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi.tmp' % \
+                  (prod, release, fileIns))
+        DeleteFiles('NSIS_Installer.nsi.tmp')
         if not os.path.exists(fileIns):
             print 'Fatal error creating %s' % fileIns
             exit(1)
 
     DeleteFiles(fileBin)
-    #write_dll_message('dist/IMPORTANT_MESSAGE.txt')
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
     time.sleep(1.0)

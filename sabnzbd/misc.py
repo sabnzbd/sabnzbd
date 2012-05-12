@@ -1238,7 +1238,7 @@ def format_source_url(url):
     else:
         prot = 'http:'
     if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (cfg.newzbin_url(), prot, str(url))
+        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
     else:
         return url
 

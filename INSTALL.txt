@@ -49,10 +49,11 @@ Just like you do with so many apps.
 4) INSTALL with only sources
 -------------------------------------------------------------------------------
 
-You need to have Python installed and some modules.
+You need to have Python installed plus some non-standard Python modules
+and a few tools.
 
 Unix/Linux/OSX
-    Python-2.5, 2.6 or 2.7  http://www.python.org
+    Python-2.6 or 2.7  http://www.python.org
 
 OSX Leopard/SnowLeopard
     Python 2.6              http://www.activestate.com
@@ -64,14 +65,14 @@ Windows
 
 Essential modules
     cheetah-2.0.1+          http://www.cheetahtemplate.org/ (or use "pypm install cheetah")
-    yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
-                            http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
                             http://chuchusoft.com/par2_tbb/index.html (multi-core)
 
 Optional modules
     unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
+    yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
+                            http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     gnu gettext             http://www.gnu.org/software/gettext/
     gntp                    https://github.com/kfdm/gntp/ (or use "pypm install gntp")
 

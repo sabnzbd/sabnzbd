@@ -16,7 +16,12 @@ What's new:
 - More persistent retries for unreliable indexers
 - Single Configuration skin for all others skins (there is an option for the old style)
 - Config->Special for settings that were previously only changeable in the sabnzbd.ini file
-- Add Spanish translation
+- Add Spanish and Portuguese (Brazil) translations
+- Individual RSS filter toggle
+- Unified OSX DMG
+
+For problems fixed in Beta4&5, see CHANGELOG.txt
+
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.

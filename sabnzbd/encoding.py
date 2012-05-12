@@ -174,7 +174,7 @@ def titler(p):
     """
     if isinstance(p, unicode):
         return p.title()
-    if gUTF:
+    elif gUTF:
         try:
             return p.decode('utf-8').title().encode('utf-8')
         except:

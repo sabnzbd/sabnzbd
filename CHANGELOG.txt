@@ -1,4 +1,42 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Solved serious connection problem with some providers
+- Windows Tray has the "restart" entries no under a Troubleshoot menu
+- Fix newzbin entries in History's "Source" field
+- During unpacking the destination folder will contain a ".nomedia" file
+  which will keep mediaplayers temporarily from indexing
+- Pre-check jobs now require 101% completion rate (with a "special" parameter)
+- Unified OSX DMG
+-------------------------------------------------------------------------------
+ 0.7.0Beta4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add Portuguese (Brazil) language
+- Updated translations
+- Some odd NZB files led to blank initial filenames in file overview
+- Jobs that have 99.91%-99.99% completion rate should not be rounded to 100.0%
+- Windows Tray icon now has entry to show "complete" folder
+- Some minor fixes in code and Config skin
+- Individual RSS filter toggle
+-------------------------------------------------------------------------------
+ 0.7.0Beta3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- OSX/Linux: permissions are now also applied to the "temporary download folder"
+- Fix some issues in the Config skin.
+- The default for "apply max retries only on optional servers" is now 0,
+  thus enabling the new anti-deadlock behaviour for all servers
+- Fix incompatibility with nzbsa.co.za indexer
+- Log all API calls (in debug mode)
+- Restore Python2.5 compatibility in growler.py
+- After a language change, register again with Growl
+- Clean up the api-call auth. It will now give preference to 'apikey'.
+- Fix detection of retry-able history entries for case-insensitive file systems.
+- API-calls "addfile" and "addlocalfile" returned an incorrect status value.
+- Add support for the peculiar Usenet provider "free.xsusenet.com".
+- OSX menu now uses the same formatting for speed as the skins.
+- Accept multiple items in API-calls "addurl" and "addid".
+  The "name" and "nzbname" keywords can be repeated.
+-------------------------------------------------------------------------------
  0.7.0Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix behavior when using host address 0.0.0.0 on a system

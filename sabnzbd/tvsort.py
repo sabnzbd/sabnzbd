@@ -247,7 +247,10 @@ class SeriesSorter(object):
 
     def get_seasons(self):
         ''' Get the season number from the match object and format it '''
-        season = self.match_obj.group(1).strip('_') # season number
+        try:
+            season = self.match_obj.group(1).strip('_') # season number
+        except AttributeError:
+            season = '1'
 
         # Provide alternatve formatting (0 padding)
         if season.lower() == 's':
@@ -265,7 +268,10 @@ class SeriesSorter(object):
 
     def get_episodes(self):
         ''' Get the episode numbers from the match object, format and join them '''
-        ep_no = self.match_obj.group(2) # episode number
+        try:
+            ep_no = self.match_obj.group(2) # episode number
+        except AttributeError:
+            ep_no = '1'
         # Store the original episode number
 
         # Provide alternatve formatting (0 padding)

@@ -1028,8 +1028,8 @@ class NzbObject(TryList):
             else:
                 need += nzf.bytes
         have = need + pars - short
-        enough = have >= need
         ratio = float(have) / float(max(1, need))
+        enough = ratio * 100.0 >= float(cfg.req_completion_rate())
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
         return enough, ratio
 
