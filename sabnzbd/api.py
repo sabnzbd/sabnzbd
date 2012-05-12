@@ -1530,12 +1530,10 @@ def clear_trans_cache():
     """ Clean cache for skin translations
     """
     global _SKIN_CACHE
-    # One dummy entry needed for check_trans()
     dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
     del dummy
     sabnzbd.WEBUI_READY = True
-    logging.debug('Cleared translation cache')
 
 
 def build_header(prim, webdir=''):
