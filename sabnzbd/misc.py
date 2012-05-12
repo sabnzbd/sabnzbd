@@ -944,10 +944,13 @@ def on_cleanup_list(filename, skip_nzb=False):
     """
     lst = cfg.cleanup_list()
     if lst:
-        ext = os.path.splitext(filename)[1].strip().strip('.').lower()
+        name, ext = os.path.splitext(filename)
+        ext = ext.strip().lower()
+        name = name.strip()
         for k in lst:
             item = k.strip().strip('.').lower()
-            if item == ext and not (skip_nzb and item == 'nzb'):
+            item = '.' + item
+            if (item == ext or (ext == '' and item == name)) and not (skip_nzb and item == '.nzb'):
                 return True
     return False
 
