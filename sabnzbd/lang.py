@@ -199,6 +199,7 @@ LanguageTable = {
     'xh' : ('Xhosa', 'isi Xhosa', 0),
     'yo' : ('Yoruba', 'Yorùbá', 0),
     'zu' : ('Zulu', 'isi Zulu', 0),
+    'zh_CN' : ('SimpChinese', '简体中文', 0),
 }
 
 # Setup a safe null-translation

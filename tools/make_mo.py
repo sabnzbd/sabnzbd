@@ -129,6 +129,7 @@ LanguageTable = {
     'xh' : ('Xhosa', 'isi Xhosa'),
     'yo' : ('Yoruba', 'Yorùbá'),
     'zu' : ('Zulu', 'isi Zulu'),
+    'zh_CN' : ('SimpChinese', '简体中文'),
 }
 
 # Filter for retrieving readable language from PO file
