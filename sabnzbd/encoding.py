@@ -327,10 +327,10 @@ _HTML_TABLE = {
     #'&' : '&amp;', # Not yet, texts need to be cleaned from HTML first
     #'>' : '&gt;',  # Not yet, texts need to be cleaned from HTML first
     #'<' : '&lt;',  # Not yet, texts need to be cleaned from HTML first
-    '"' : '&#34;',
-    "'" : '&#39;'
+    '"' : '&quot;',
+    "'" : '&apos;'
     }
-    
+
 def html_escape(txt):
     """ Replace HTML metacharacters with &-constructs """
     # Replacement for inefficient xml.sax.saxutils.escape function
