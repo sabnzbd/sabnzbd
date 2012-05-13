@@ -1,0 +1,175 @@
+<!--#set global $pane="Email"#-->
+<!--#set global $help_uri="configure-notifications-0-7"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+
+<div class="colmask">
+    <form action="saveEmail" method="post" name="fullform" id="fullform" novalidate>
+    <input type="hidden" id="session" name="session" value="$session" />
+    <div class="section">
+        <div class="col2">
+            <h3>$T('emailOptions')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="email_endjob_radio">$T('opt-email_endjob')</label>
+                    <select name="email_endjob" id="email_endjob">
+                        <option value="0" <!--#if int($email_endjob) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('email-never')</option>
+                        <option value="1" <!--#if int($email_endjob) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('email-always')</option>
+                        <option value="2" <!--#if int($email_endjob) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('email-errorOnly')</option>
+                    </select>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="email_full">$T('opt-email_full')</label>
+                    <input type="checkbox" name="email_full" id="email_full" value="1" <!--#if int($email_full) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-email_full')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="email_rss">$T('opt-email_rss')</label>
+                    <input type="checkbox" name="email_rss" id="email_rss" value="1" <!--#if int($email_rss) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-email_rss')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="email_dir">$T('opt-email_dir')</label>
+                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" size="45" />
+                    <span class="desc">$T('explain-email_dir')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('emailAccount')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="email_server">$T('opt-email_server')</label>
+                    <input type="url" name="email_server" id="email_server" value="$email_server" size="40" />
+                    <span class="desc">$T('explain-email_server')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="email_to">$T('opt-email_to')</label>
+                    <input type="email" name="email_to" id="email_to" value="$email_to" size="40" />
+                    <span class="desc">$T('explain-email_to')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="email_from">$T('opt-email_from')</label>
+                    <input type="email" name="email_from" id="email_from" value="$email_from" size="40" />
+                    <span class="desc">$T('explain-email_from')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="email_account">$T('opt-email_account')</label>
+                    <input type="email" name="email_account" id="email_account" value="$email_account" size="30" />
+                    <span class="desc">$T('explain-email_account')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="email_pwd">$T('opt-email_pwd')</label>
+                    <input type="password" name="email_pwd" id="email_pwd" value="$email_pwd" size="30" />
+                    <span class="desc">$T('explain-email_pwd')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('link-testEmail')" id="test_email" rel="$T('askTestEmail')" />
+                    <span id="testmail-result" class="icon path darkred">&nbsp;</span>
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('growlSettings')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt <!--#if not $have_ntfosd then "disabled" else "" #-->">
+                    <label class="config" for="ntfosd_enable">$T('opt-ntfosd_enable')</label>
+                    <input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if int($ntfosd_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ntfosd then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <span class="desc">$T('explain-ntfosd_enable')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="growl_enable">$T('opt-growl_enable')</label>
+                    <input type="checkbox" name="growl_enable" id="growl_enable" value="1" <!--#if int($growl_enable) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-growl_enable')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="growl_server">$T('opt-growl_server')</label>
+                    <input type="url" name="growl_server" id="growl_server" value="$growl_server" size="40" />
+                    <span class="desc">$T('explain-growl_server')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="growl_password">$T('opt-growl_password')</label>
+                    <input type="password" name="growl_password" id="growl_password" value="$growl_password" size="30" />
+                    <span class="desc">$T('explain-growl_password')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('testNotify')" id="test_notification" />
+                    <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="padding alt">
+        <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+        <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
+    </div>
+    </form>
+</div><!-- /colmask -->
+
+<script>
+\$(document).ready(function(){
+    \$('#email_dir').fileBrowser({ title: 'Select $T('opt-email_dir')' });
+    \$('#test_email').click(function () {
+        if (confirm(\$('#test_email').attr('rel'))) {
+            \$.ajax({
+                type: "GET",
+                url: "../../tapi",
+                data: {mode: 'test_email', apikey: '$session', output: 'json' },
+                beforeSend: function () {
+                    \$('#test_email').attr("disabled", "disabled");
+                    \$('#testmail-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+                },
+                complete: function () {
+                    \$('#test_email').removeAttr("disabled");
+                    \$('#testmail-result').removeClass("loading");
+                },
+                success: function (data) {
+                    if (data.status == true) {
+                      \$('#testmail-result').addClass("success").html('$T('smpl-emailsent')');
+                    } else {
+                      \$('#testmail-result').addClass("failure").html(data.error);
+                    }
+                }
+            });
+        }
+    });
+    \$('#test_notification').click(function () {
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: {mode: 'test_notif', apikey: '$session', output: 'json' },
+            beforeSend: function () {
+                \$('#test_notification').attr("disabled", "disabled");
+                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+            },
+            complete: function () {
+                \$('#test_notification').removeAttr("disabled");
+                \$('#testnotice-result').removeClass("loading");
+            },
+            success: function (data) {
+                if (data.status == true) {
+                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
+                } else { 
+                  \$('#testnotice-result').addClass("failure").html(data.error);
+                }
+            }
+        });
+    });
+});
+</script>
+
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

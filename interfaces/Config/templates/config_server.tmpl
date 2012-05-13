@@ -1,0 +1,194 @@
+<!--#set global $pane="Servers"#-->
+<!--#set global $help_uri="configure-servers-0-7"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+
+<div class="colmask">
+    <form action="addServer" method="post" novalidate>
+    <input type="hidden" name="session" value="$session" />
+    <div id="addServer">
+        <div class="padding alt">
+            <input type="button" value="$T('button-addServer')" id="addServerButton" />
+        </div>
+    </div>
+    <div class="section" id="addServerContent" style="display: none;">
+        <div class="col2">
+            <h3>$T('addServer')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="enable">$T('srv-enable')</label>
+                    <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
+                    <span class="desc">$T('srv-enable')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="host">$T('srv-host')</label>
+                    <input type="url" name="host" id="host" size="40" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="port">$T('srv-port')</label>
+                    <input type="text" name="port" id="port" size="8" />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="username">$T('srv-username')</label>
+                    <input type="text" name="username" id="username" size="30" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="password">$T('srv-password')</label>
+                    <input type="text" name="password" id="password" size="30" />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="connections">$T('srv-connections')</label>
+                    <input type="number" name="connections" id="connections" size="8" min="0" max="100" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="retention">$T('srv-retention')</label>
+                    <input type="number" name="retention" id="retention" size="8" min="0" /> <i>$T('days')</i>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="timeout">$T('srv-timeout')</label>
+                    <input type="number" name="timeout" id="timeout" size="8" min="30" /> <i>$T('seconds')</i>
+                </div>
+                <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl">$T('srv-ssl')</label>
+                    <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <span class="desc">$T('srv-ssl')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="fillserver">$T('srv-fillserver')</label>
+                    <input type="checkbox" name="fillserver" id="fillserver" value="1" />
+                    <span class="desc">$T('srv-fillserver')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="optional">$T('srv-optional')</label>
+                    <input type="checkbox" name="optional" id="optional" value="1" />
+                    <span class="desc">$T('srv-optional')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-addServer')" />
+                    <input type="button" value="$T('button-testServer')" class="testServer" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    </form>
+
+<!--#set $slist = $servers.keys()#-->
+<!--#$slist.sort()#-->
+<!--#set $cur = 0#-->
+<!--#for $server in $slist#-->
+    <!--#set $cur = $cur + 1#-->
+
+    <form action="saveServer" method="post" id="fullform" novalidate>
+    <input type="hidden" name="session" value="$session" />
+    <input type="hidden" name="server" value="$server" />
+
+    <div class="section">
+        <div class="col2">
+            <h3>$servers[$server]['name']</h3>
+            <!--#if 'amounts' in $servers[$server]#-->
+            <p>
+                <b>$T('srv-bandwidth'):</b><br/>
+                $T('total'): $servers[$server]['amounts'][0]<br/>
+                $T('today'): $servers[$server]['amounts'][3]<br/>
+                $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
+                $T('thisMonth'): $servers[$server]['amounts'][1]
+            </p>
+            <input type="button" value="$T('button-clrServer')" class="clrServer" />
+            <!--#end if#-->
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair alt">
+                    <label class="config" for="enable$cur">$T('srv-enable')</label>
+                    <input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('srv-enable')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="host$cur">$T('srv-host')</label>
+                    <input type="url" name="host" id="host$cur" value="$servers[$server]['host']" size="40" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="port$cur">$T('srv-port')</label>
+                    <input type="text" name="port" id="port$cur" value="$servers[$server]['port']" size="8" />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="username$cur">$T('srv-username')</label>
+                    <input type="text" name="username" id="username$cur" value="$servers[$server]['username']" size="30" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="password$cur">$T('srv-password')</label>
+                    <input type="password" name="password" id="password$cur" value="$servers[$server]['password']" size="30" />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="connections$cur">$T('srv-connections')</label>
+                    <input type="number" name="connections" id="connections$cur" value="$servers[$server]['connections']" size="8" min="0" max="100" />
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="retention$cur">$T('srv-retention')</label>
+                    <input type="number" name="retention" id="retention$cur" value="$servers[$server]['retention']" size="8" min="0" /> <i>$T('days')</i>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="timeout$cur">$T('srv-timeout')</label>
+                    <input type="number" name="timeout" id="timeout$cur" value="$servers[$server]['timeout']" size="8" min="30" /> <i>$T('seconds')</i>
+                </div>
+                <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl$cur">$T('srv-ssl')</label>
+                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <span class="desc">$T('srv-ssl')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="fillserver$cur">$T('srv-fillserver')</label>
+                    <input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('srv-fillserver')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="optional$cur">$T('srv-optional')</label>
+                    <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('srv-optional')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('button-testServer')" class="testServer" />
+                    <input type="button" value="$T('button-delServer')" class="delServer" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
+    </form>
+<!--#end for#-->
+
+</div><!-- /colmask -->
+
+<script>
+\$(document).ready(function(){
+    \$('#addServerButton').click(function(){
+        \$('#addServer').hide();
+        \$('#addServerContent').show();
+    });
+    \$('.testServer').click(function(event){
+      \$(this).attr("disabled", "disabled")
+      \$.ajax({
+        type: "POST",
+        url: "../../tapi",
+        data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize() + "&amp;apikey=" + \$('#apikey').val(),
+        success: function(msg){
+          alert(msg);
+          \$(event.target).removeAttr("disabled")
+        }
+      });
+    });
+    \$('.delServer').click(function(){
+      if( confirm("$T('Plush-confirm')") )
+        \$(this).parents('form:first').attr('action','delServer').submit();
+      return false;
+    });
+    \$('.clrServer').click(function(){
+      if( confirm("$T('Plush-confirm')") )
+        \$(this).parents('form:first').attr('action','clrServer').submit();
+      return false;
+    });
+});
+</script>
+
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
