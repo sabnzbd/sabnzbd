@@ -47,6 +47,8 @@
   Delete   "${idir}\email\email-pt_BR.tmpl"
   Delete   "${idir}\email\email-sr.tmpl"
   Delete   "${idir}\email\email-ru.tmpl"
+  Delete   "${idir}\email\email-pl.tmpl"
+  Delete   "${idir}\email\email-zh_CN.tmpl"
   Delete   "${idir}\email\rss-de.tmpl"
   Delete   "${idir}\email\rss-en.tmpl"
   Delete   "${idir}\email\rss-nl.tmpl"
@@ -60,6 +62,8 @@
   Delete   "${idir}\email\rss-pt_BR.tmpl"
   Delete   "${idir}\email\rss-sr.tmpl"
   Delete   "${idir}\email\rss-ru.tmpl"
+  Delete   "${idir}\email\rss-pl.tmpl"
+  Delete   "${idir}\email\rss-zh_CN.tmpl"
   Delete   "${idir}\email\badfetch-da.tmpl"
   Delete   "${idir}\email\badfetch-de.tmpl"
   Delete   "${idir}\email\badfetch-en.tmpl"
@@ -73,6 +77,8 @@
   Delete   "${idir}\email\badfetch-es.tmpl"
   Delete   "${idir}\email\badfetch-pt_BR.tmpl"
   Delete   "${idir}\email\badfetch-ru.tmpl"
+  Delete   "${idir}\email\badfetch-pl.tmpl"
+  Delete   "${idir}\email\badfetch-zh_CN.tmpl"
   RMDir    "${idir}\email"
   RMDir /r "${idir}\locale"
   RMDir /r "${idir}\interfaces\Classic"
@@ -218,6 +224,8 @@
   !insertmacro MUI_LANGUAGE "PortugueseBR"
   !insertmacro MUI_LANGUAGE "Serbian"
   !insertmacro MUI_LANGUAGE "Russian"
+  !insertmacro MUI_LANGUAGE "Polish"
+  !insertmacro MUI_LANGUAGE "SimpChinese"
 
 
 ;------------------------------------------------------------------
