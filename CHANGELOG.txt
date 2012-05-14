@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Solved serious connection problem with some providers
+- Windows Tray has the "restart" entries no under a Troubleshoot menu
+- Fix newzbin entries in History's "Source" field
+- During unpacking the destination folder will contain a ".nomedia" file
+  which will keep mediaplayers temporarily from indexing
+- Pre-check jobs now require 101% completion rate (with a "special" parameter)
+- Unified OSX DMG
+-------------------------------------------------------------------------------
  0.7.0Beta4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Add Portuguese (Brazil) language

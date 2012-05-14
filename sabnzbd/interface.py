@@ -1369,7 +1369,7 @@ class ConfigGeneral(object):
         if language and language != cfg.language():
             cfg.language.set(language)
             set_language(language)
-            sabnzbd.api.cache_skin_trans()
+            sabnzbd.api.clear_trans_cache()
 
         cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:

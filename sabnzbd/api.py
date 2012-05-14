@@ -53,7 +53,7 @@ from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, time_format, remove_all, \
                          starts_with_path
-from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
+from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -1522,21 +1522,24 @@ _SKIN_CACHE = {}    # Stores pre-translated acronyms
 def Ttemplate(txt):
     """ Translation function for Skin texts
     """
-    return _SKIN_CACHE.get(txt, txt)
+    global _SKIN_CACHE
+    if txt in _SKIN_CACHE:
+        return _SKIN_CACHE[txt]
+    else:
+        tra = html_escape(Tx(SKIN_TEXT.get(txt, txt)))
+        _SKIN_CACHE[txt] = tra
+        return tra
 
 
-def cache_skin_trans():
-    """ Build cache for skin translations
+def clear_trans_cache():
+    """ Clean cache for skin translations
     """
     global _SKIN_CACHE
-    for txt in SKIN_TEXT:
-        _SKIN_CACHE[txt] = Tx(SKIN_TEXT.get(txt, txt))
+    dummy = _SKIN_CACHE
+    _SKIN_CACHE = {}
+    del dummy
+    sabnzbd.WEBUI_READY = True
 
-def check_trans():
-    """ Check whether language has been initialized
-    """
-    global _SKIN_CACHE
-    return bool(_SKIN_CACHE)
 
 def build_header(prim, webdir=''):
     try:

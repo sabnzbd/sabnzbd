@@ -1,4 +1,4 @@
-************************  SABnzbd 0.7.0Beta4 ************************
+************************  SABnzbd 0.7.0Beta5 ************************
 
 What's new:
 
@@ -18,8 +18,9 @@ What's new:
 - Config->Special for settings that were previously only changeable in the sabnzbd.ini file
 - Add Spanish and Portuguese (Brazil) translations
 - Individual RSS filter toggle
+- Unified OSX DMG
 
-For problems fixed in Beta4, see CHANGELOG.txt
+For problems fixed in Beta4&5, see CHANGELOG.txt
 
 
 About:

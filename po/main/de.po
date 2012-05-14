@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-01 18:51+0000\n"
-"PO-Revision-Date: 2012-04-18 11:10+0000\n"
-"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
+"POT-Creation-Date: 2012-05-07 20:21+0000\n"
+"PO-Revision-Date: 2012-05-04 14:12+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-02 05:52+0000\n"
-"X-Generator: Launchpad (build 15177)\n"
+"X-Launchpad-Export-Date: 2012-05-08 05:37+0000\n"
+"X-Generator: Launchpad (build 15204)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -558,7 +558,7 @@ msgstr "Sonntag"
 
 #: sabnzbd/interface.py:1920 ["Off" value for speedlimit in scheduler] # sabnzbd/skintext.py:97
 msgid "off"
-msgstr ""
+msgstr "Aus"
 
 #: sabnzbd/interface.py:2274
 msgid "&nbsp;Resolving address"
@@ -924,7 +924,7 @@ msgstr "Importieren von %s Dateien von %s fehlgeschlagen"
 
 #: sabnzbd/nzbstuff.py:681 [Warning message]
 msgid "Incomplete NZB file %s"
-msgstr ""
+msgstr "Unvollständige NZB-Datei %s"
 
 #: sabnzbd/nzbstuff.py:683 [Warning message] # sabnzbd/nzbstuff.py:687 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -960,7 +960,7 @@ msgstr "UNVOLLSTÄNDIG"
 
 #: sabnzbd/nzbstuff.py:974 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
-msgstr ""
+msgstr "WARTE %s Sek"
 
 #: sabnzbd/nzbstuff.py:1053
 msgid "Downloaded in %s at an average of %sB/s"
@@ -1049,7 +1049,7 @@ msgstr "Unfertige Download"
 
 #: sabnzbd/osxmenu.py:273
 msgid "Troubleshoot"
-msgstr ""
+msgstr "Fehler suchen"
 
 #: sabnzbd/osxmenu.py:275 # sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:60
 #: sabnzbd/sabtray.py:116 # sabnzbd/sabtray.py:125 # sabnzbd/skintext.py:58 [#: Config->Scheduler]
@@ -1301,8 +1301,8 @@ msgstr ""
 "(id)"
 
 #: sabnzbd/postproc.py:260
-msgid "Download would not be successful, only %s available"
-msgstr "Download würde nicht erfolgreich sein, da nur %s verfügbar sind"
+msgid "Download might fail, only %s of required %s available"
+msgstr ""
 
 #: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
@@ -1491,7 +1491,7 @@ msgstr "Skript"
 
 #: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:101 [Where to find the SABnzbd sourcecode]
 msgid "Source"
-msgstr ""
+msgstr "Quelle"
 
 #: sabnzbd/skintext.py:32 [PP Failure message]
 msgid "Failure"
@@ -1671,11 +1671,11 @@ msgstr "Gesamt"
 
 #: sabnzbd/skintext.py:96
 msgid "on"
-msgstr ""
+msgstr "An"
 
 #: sabnzbd/skintext.py:98 [Config: startup parameters of SABnzbd]
 msgid "Parameters"
-msgstr ""
+msgstr "Parameter"
 
 #: sabnzbd/skintext.py:99
 msgid "Python Version"
@@ -1683,11 +1683,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py:100 [Home page of the SABnzbd project]
 msgid "Home page"
-msgstr ""
+msgstr "Startseite"
 
 #: sabnzbd/skintext.py:102 [Used in "IRC or IRC-Webaccess"]
 msgid "or"
-msgstr ""
+msgstr "oder"
 
 #: sabnzbd/skintext.py:105 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -4323,7 +4323,7 @@ msgstr "Ungültige nzbmatrix.com-Bericht-ID %s."
 
 #: sabnzbd/urlgrabber.py:286
 msgid "You need an nzbmatrix VIP account to use the API"
-msgstr ""
+msgstr "Sie benötigen einen NZBMatrix VIP-Konto, um die API zu nutzen"
 
 #: sabnzbd/urlgrabber.py:288
 msgid "Invalid nzbmatrix credentials"

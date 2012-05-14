@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-01 18:51+0000\n"
-"PO-Revision-Date: 2012-05-03 03:19+0000\n"
+"POT-Creation-Date: 2012-05-07 20:21+0000\n"
+"PO-Revision-Date: 2012-05-09 04:42+0000\n"
 "Last-Translator: Rene <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-04 05:13+0000\n"
-"X-Generator: Launchpad (build 15195)\n"
+"X-Launchpad-Export-Date: 2012-05-10 05:55+0000\n"
+"X-Generator: Launchpad (build 15213)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -1263,8 +1263,8 @@ msgid "Failed to remove nzo from postproc queue (id)"
 msgstr "Det lykkedes ikke at fjerne nzo fra efterbehandlings køen (id)"
 
 #: sabnzbd/postproc.py:260
-msgid "Download would not be successful, only %s available"
-msgstr "Download vil ikke blive en succes, kun %s tilgængelig"
+msgid "Download might fail, only %s of required %s available"
+msgstr "Overførslen kan mislykkes, kun %s af det krævet %s tilgængelige"
 
 #: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
