@@ -195,16 +195,39 @@ def make_templates():
 
 
 # Convert Romanian PX files to Latin1 PO files
-table = {
-u"\u015f" : u"s", # ș
-u"\u015e" : u"S", # Ș
-u"\u0163" : u"t", # ț
-u"\u0162" : u"T", # Ț
-u"\u0103" : u"ã", # ă
-u"\u0102" : u"Ã", # Ă
-u'\u021b' : u"t", # ț
-u'\u0218' : u"s", # Ș
-u'\u0219' : u"s"  # ș
+ro_table = {
+    u"\u015f" : u"s", # ș
+    u"\u015e" : u"S", # Ș
+    u"\u0163" : u"t", # ț
+    u"\u0162" : u"T", # Ț
+    u"\u0103" : u"ã", # ă
+    u"\u0102" : u"Ã", # Ă
+    u'\u021b' : u"t", # ț
+    u'\u0218' : u"S", # Ș
+    u'\u0219' : u"s"  # ș
+}
+
+# Convert Polish PX files to Latin1 PO files
+pl_table = {
+    u"\u0104" : u"A", # Ą
+    u"\u0106" : u"C", # Ć
+    u"\u0118" : u"E", # Ę
+    u"\u0141" : u"L", # Ł
+    u"\u013B" : u"L", # Ł
+    u"\u0143" : u"N", # Ń
+    #u"\u00D3" : u"O", # Ó
+    u"\u015A" : u"S", # Ś
+    u"\u0179" : u"Z", # Ź
+    u"\u017B" : u"Z", # Ż
+    u"\u0105" : u"a", # ą
+    u"\u0107" : u"c", # ć
+    u"\u0119" : u"e", # ę
+    u"\u0142" : u"l", # ł
+    u"\u0144" : u"n", # ń
+    #u"\u00F3" : u"o", # ó
+    u"\u015B" : u"s", # ś
+    u"\u017A" : u"z", # ź
+    u"\u017C" : u"z"  # ż
 }
 
 def fix_ro():
@@ -215,18 +238,44 @@ def fix_ro():
         data = f.read().decode('utf-8')
         f.close()
 
-        for ch in table:
-            data = data.replace(ch, table[ch])
+        for ch in ro_table:
+            data = data.replace(ch, ro_table[ch])
 
         f = open('po/%s/ro.po' % section, 'wb')
         f.write(data.encode('utf-8'))
         f.close()
         try:
+            lnum = 0
             for line in data.split('\n'):
+                lnum += 1
                 line.encode('latin-1')
         except:
             print line.encode('utf-8')
-            print 'WARNING: file po/%s/ro.po is not Latin-1' % section
+            print 'WARNING: line %d in file po/%s/ro.po is not Latin-1' % (lnum, section)
+            exit(1)
+
+def fix_pl():
+    """ Convert pl.px files to pl.po files with only Latin1
+    """
+    for section in ('main', 'email', 'nsis'):
+        f = open('po/%s/pl.px' % section, 'rb')
+        data = f.read().decode('utf-8')
+        f.close()
+
+        for ch in pl_table:
+            data = data.replace(ch, pl_table[ch])
+
+        f = open('po/%s/pl.po' % section, 'wb')
+        f.write(data.encode('utf-8'))
+        f.close()
+        try:
+            lnum = 0
+            for line in data.split('\n'):
+                lnum += 1
+                line.encode('latin-1')
+        except:
+            print line.encode('utf-8')
+            print 'WARNING: line %d in file po/%s/pl.po is not Latin-1' % (lnum, section)
             exit(1)
 
 
@@ -281,8 +330,9 @@ if os.path.exists(tl):
     else:
         TOOL = '"%s"' % tl
 
-# Fix up Romanian texts
+# Fix up Romanian and Polish texts
 fix_ro()
+fix_pl()
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'
