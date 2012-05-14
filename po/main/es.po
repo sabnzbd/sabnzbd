@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-01 18:51+0000\n"
-"PO-Revision-Date: 2012-04-03 21:08+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"POT-Creation-Date: 2012-05-07 20:21+0000\n"
+"PO-Revision-Date: 2012-05-09 21:05+0000\n"
+"Last-Translator: Jabroni <asskick@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-02 05:52+0000\n"
-"X-Generator: Launchpad (build 15177)\n"
+"X-Launchpad-Export-Date: 2012-05-10 05:55+0000\n"
+"X-Generator: Launchpad (build 15213)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -1282,8 +1282,8 @@ msgid "Failed to remove nzo from postproc queue (id)"
 msgstr "Error al eliminar nzo desde la cola de postprocesado (id)"
 
 #: sabnzbd/postproc.py:260
-msgid "Download would not be successful, only %s available"
-msgstr "La descarga no acabará bien, sólo hay %s disponibles"
+msgid "Download might fail, only %s of required %s available"
+msgstr "La descarga fallo, solo %s de los %s requeridos estan disponibles"
 
 #: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
@@ -1433,7 +1433,7 @@ msgstr "Mostrar interfaz"
 
 #: sabnzbd/sabtray.py:58
 msgid "Open complete folder"
-msgstr ""
+msgstr "Abrir todo el folder"
 
 #: sabnzbd/sabtray.py:62 # sabnzbd/sabtray.py:131 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:150 # sabnzbd/skintext.py:493
@@ -1658,19 +1658,19 @@ msgstr "activado"
 
 #: sabnzbd/skintext.py:98 [Config: startup parameters of SABnzbd]
 msgid "Parameters"
-msgstr ""
+msgstr "Parametros"
 
 #: sabnzbd/skintext.py:99
 msgid "Python Version"
-msgstr ""
+msgstr "Version de Python"
 
 #: sabnzbd/skintext.py:100 [Home page of the SABnzbd project]
 msgid "Home page"
-msgstr ""
+msgstr "Pagina principal"
 
 #: sabnzbd/skintext.py:102 [Used in "IRC or IRC-Webaccess"]
 msgid "or"
-msgstr ""
+msgstr "o"
 
 #: sabnzbd/skintext.py:105 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -3805,11 +3805,11 @@ msgstr "No se han guardado los cambios, y se perderán."
 
 #: sabnzbd/skintext.py:713
 msgid "Open Source URL"
-msgstr ""
+msgstr "Abrir URL Fuente"
 
 #: sabnzbd/skintext.py:714
 msgid "Open Informational URL"
-msgstr ""
+msgstr "Abrir URL de informacion"
 
 #: sabnzbd/skintext.py:716
 msgid "Storage"
@@ -3817,11 +3817,11 @@ msgstr "Almacenamiento"
 
 #: sabnzbd/skintext.py:717
 msgid "View Script Log"
-msgstr ""
+msgstr "Ver bitacora de Scripts"
 
 #: sabnzbd/skintext.py:721
 msgid "You must enable JavaScript for Plush to function!"
-msgstr ""
+msgstr "Debes activar JavaScript para que pueda funcionar Plush!"
 
 #: sabnzbd/skintext.py:722
 msgid "Add NZB"
@@ -4054,11 +4054,11 @@ msgstr "Activar-desactivar Añadir NZB"
 
 #: sabnzbd/skintext.py:804
 msgid "DualView1"
-msgstr ""
+msgstr "Vista Dual 1"
 
 #: sabnzbd/skintext.py:805
 msgid "DualView2"
-msgstr ""
+msgstr "Vista Dual 2"
 
 #: sabnzbd/skintext.py:807
 msgid "Custom"
