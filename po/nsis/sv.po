@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-01 18:51+0000\n"
-"PO-Revision-Date: 2011-06-26 10:50+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2012-05-15 19:42+0000\n"
+"Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-02 05:52+0000\n"
-"X-Generator: Launchpad (build 15177)\n"
+"X-Launchpad-Export-Date: 2012-05-16 05:28+0000\n"
+"X-Generator: Launchpad (build 15247)\n"
 
 #: NSIS_Installer.nsi:417
 msgid "Go to the SABnzbd Wiki"
-msgstr ""
+msgstr "Gå till SABnzbd Wiki"
 
 #: NSIS_Installer.nsi:419
 msgid "Show Release Notes"
-msgstr "Visa release noteringar"
+msgstr "Visa releasenoteringar"
 
 #: NSIS_Installer.nsi:421
 msgid "Support the project, Donate!"
@@ -38,6 +38,8 @@ msgid ""
 "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 msgstr ""
+"                  >>>> VARNING <<<<\\r\\n\\r\\nVänligen läs först "
+"releasenoteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-7-0 !"
 
 #: NSIS_Installer.nsi:427
 msgid "This will uninstall SABnzbd from your system"
@@ -57,39 +59,44 @@ msgstr "NZB Filassosication"
 
 #: NSIS_Installer.nsi:435
 msgid "Delete Program"
-msgstr "Ta bort programmet"
+msgstr "Radera programmet"
 
 #: NSIS_Installer.nsi:437
 msgid "Delete Settings"
-msgstr "Ta bort inställningar"
+msgstr "Radera inställningar"
 
 #: NSIS_Installer.nsi:439
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
 msgstr ""
+"Detta system kräver att Microsofts runtimebibliotek VC90 är installerat. "
+"Vill du göra detta nu?"
 
 #: NSIS_Installer.nsi:441
 msgid "Downloading Microsoft runtime installer..."
-msgstr ""
+msgstr "Laddar ned Microsofts runtimeinstaller..."
 
 #: NSIS_Installer.nsi:443
 msgid "Download error, retry?"
-msgstr ""
+msgstr "Misslyckat nedladdningsförsök, försök igen?"
 
 #: NSIS_Installer.nsi:445
 msgid "Cannot install without runtime library, retry?"
-msgstr ""
+msgstr "Kan inte installera utan runtimebibliotek, försök igen?"
 
 #: NSIS_Installer.nsi:447
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
+"Kan inte skriva över en existerande installation. \\n\\nKlicka 'OK' för att "
+"avinstallera tidigare version eller 'Avbryt' för att avbryta denna "
+"uppgradering."
 
 #: NSIS_Installer.nsi:449
 msgid "Your settings and data will be preserved."
-msgstr ""
+msgstr "Dina inställningar och ditt data kommer att bevaras."
 
 #~ msgid "Start SABnzbd (hidden)"
 #~ msgstr "Starta SABnzbd (dold)"

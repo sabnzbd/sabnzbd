@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-03-15 20:59+0000\n"
-"Last-Translator: Xoz Özmen <ozmen@kth.se>\n"
+"PO-Revision-Date: 2012-05-15 20:07+0000\n"
+"Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-08 05:38+0000\n"
-"X-Generator: Launchpad (build 15204)\n"
+"X-Launchpad-Export-Date: 2012-05-16 05:28+0000\n"
+"X-Generator: Launchpad (build 15247)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
-msgstr "Det gick inte att starta webbkontrollen"
+msgstr "Det gick inte att starta webbgränssnittet"
 
 #: SABnzbd.py:339 [Warning message]
 msgid "Cannot find web template: %s, trying standard template"
-msgstr "Kan inte hitta webb mall: %s, försök med standard mall"
+msgstr "Hittar inte webbmall: %s, försöker med standardmall"
 
 #: SABnzbd.py:464 [Error message]
 msgid "_yenc module... NOT found!"
@@ -46,11 +46,11 @@ msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
 msgstr ""
-"Tänk på att 0.0.0.0 värdnamnet behöver en IPv6-adress för extern åtkomst"
+"Tänk på att värdnamnet 0.0.0.0 behöver en IPv6-adress för extern åtkomst"
 
 #: SABnzbd.py:1350 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
-msgstr "Avaktiverade HTTPS på grund av felande CERT och KEY filer"
+msgstr "Avaktiverade HTTPS då CERT och KEY -filer saknas"
 
 #: SABnzbd.py:1641 # sabnzbd/osxmenu.py:768
 msgid "SABnzbd shutdown finished"
@@ -58,12 +58,12 @@ msgstr "SABnzbd nedstängning utförd."
 
 #: sabnzbd/utils/servertests.py:35
 msgid "The hostname is not set."
-msgstr "Adressen är inte inställd."
+msgstr "Adressen är inte angiven."
 
 #: sabnzbd/utils/servertests.py:41
 msgid "There are no connections set. Please set at least one connection."
 msgstr ""
-"Det är inga anslutningar aktiverade. Var vänlig aktivera minst en anslutning."
+"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
 
 #: sabnzbd/utils/servertests.py:74
 msgid "Password masked in ******, please re-enter"
@@ -83,7 +83,7 @@ msgstr "Timeout"
 
 #: sabnzbd/utils/servertests.py:97
 msgid "Invalid server address."
-msgstr "Ogiltig server adress"
+msgstr "giltig serveradress"
 
 #: sabnzbd/utils/servertests.py:101
 msgid "Server quit during login sequence."
@@ -91,7 +91,7 @@ msgstr "Servern avslutades under inloggning"
 
 #: sabnzbd/utils/servertests.py:123
 msgid "Server requires username and password."
-msgstr "Servern kräven användarnamn och lösenord."
+msgstr "Servern kräver användarnamn och lösenord."
 
 #: sabnzbd/utils/servertests.py:126
 msgid "Connection Successful!"
@@ -132,7 +132,7 @@ msgstr "Försöker att hämta NZB från %s"
 
 #: sabnzbd/__init__.py:604 [Error message]
 msgid "Cannot create temp file for %s"
-msgstr "Kan inte skapa temp fil för %s"
+msgstr "Kan inte skapa temp -fil för %s"
 
 #: sabnzbd/__init__.py:621 [Warning message] # sabnzbd/__init__.py:633 [Warning message]
 msgid "Trying to set status of non-existing server %s"
@@ -923,7 +923,7 @@ msgstr "Pausar dubblett för NZB \"%s\""
 
 #: sabnzbd/nzbstuff.py:964 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
-msgstr ""
+msgstr "DUBLETT"
 
 #: sabnzbd/nzbstuff.py:966 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
@@ -935,11 +935,11 @@ msgstr "FÖR STOR"
 
 #: sabnzbd/nzbstuff.py:970 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
-msgstr ""
+msgstr "INKOMPLETT"
 
 #: sabnzbd/nzbstuff.py:974 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
-msgstr ""
+msgstr "VÄNTA %s SEKUNDER"
 
 #: sabnzbd/nzbstuff.py:1053
 msgid "Downloaded in %s at an average of %sB/s"
@@ -947,15 +947,15 @@ msgstr "Hämtade i %s vid ett genomsnitt på %sB/s"
 
 #: sabnzbd/nzbstuff.py:1059
 msgid "%s articles were malformed"
-msgstr ""
+msgstr "%s artiklar var felaktiga"
 
 #: sabnzbd/nzbstuff.py:1061
 msgid "%s articles were missing"
-msgstr ""
+msgstr "%s artiklar saknades"
 
 #: sabnzbd/nzbstuff.py:1063
 msgid "%s articles had non-matching duplicates"
-msgstr ""
+msgstr "%s artiklar hade icke-matchande dubletter"
 
 #: sabnzbd/nzbstuff.py:1095 [Error message]
 msgid "Error importing %s"
@@ -1015,7 +1015,7 @@ msgstr "Hämta Newzbin bokmärken"
 
 #: sabnzbd/osxmenu.py:242 # sabnzbd/skintext.py:63 [#: Config->Scheduler]
 msgid "Scan watched folder"
-msgstr ""
+msgstr "Scanna bevakad mapp"
 
 #: sabnzbd/osxmenu.py:255 # sabnzbd/osxmenu.py:614
 msgid "Complete Folder"
@@ -1037,7 +1037,7 @@ msgstr "Starta om"
 
 #: sabnzbd/osxmenu.py:277 # sabnzbd/sabtray.py:59
 msgid "Restart without login"
-msgstr ""
+msgstr "Starta om utan login"
 
 #: sabnzbd/osxmenu.py:290
 msgid "Quit"
@@ -1071,7 +1071,7 @@ msgstr "Stänger..."
 
 #: sabnzbd/panic.py:44
 msgid "Problem with"
-msgstr ""
+msgstr "Problem med"
 
 #: sabnzbd/panic.py:59
 msgid ""
@@ -1082,6 +1082,12 @@ msgid ""
 "    Please file a complaint at your firewall supplier.<br>\n"
 "    <br>\n"
 msgstr ""
+"\n"
+"    SABnzbd är inte kompatibelt med vissa mjukvarubaserade brandväggar.<br>\n"
+"    %s<br>\n"
+"    Tyvärr kan vi inte lösa denna inkompatibilitet just nu.<br>\n"
+"    Vänligen registrera ett klagomål hos brandväggens tillverkare.<br>\n"
+"    <br>\n"
 
 #: sabnzbd/panic.py:68
 msgid ""
@@ -1092,6 +1098,13 @@ msgid ""
 "    <br>\n"
 "    Please restart SABnzbd with a different port number."
 msgstr ""
+"\n"
+"    SABnzbd behöver en ledig tcp/ip -port för sin interna webbserver.<br>\n"
+"    Port %s på %s testades , men den är inte tillgänglig.<br>\n"
+"    Någon annan applikation använder porten eller så körs redan "
+"SABnzbd.<br>\n"
+"    <br>\n"
+"    Vänligen starta om SABnzbd med ett annat portnummer."
 
 #: sabnzbd/panic.py:79 # sabnzbd/panic.py:93
 msgid ""
