@@ -297,6 +297,24 @@ def fixup_ff4(p):
             name.append(ch)
     return ''.join(name)
 
+
+_HTML_TABLE = {
+    #'&' : '&amp;', # Not yet, texts need to be cleaned from HTML first
+    #'>' : '&gt;',  # Not yet, texts need to be cleaned from HTML first
+    #'<' : '&lt;',  # Not yet, texts need to be cleaned from HTML first
+    '"' : '&quot;',
+    "'" : '&apos;'
+    }
+
+def html_escape(txt):
+    """ Replace HTML metacharacters with &-constructs """
+    # Replacement for inefficient xml.sax.saxutils.escape function
+    if [True for ch in _HTML_TABLE if ch in txt]:
+        return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
+    else:
+        return txt
+
+
 def deunicode(p):
     """ Return the correct 8bit ASCII encoding for the platform:
         Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF

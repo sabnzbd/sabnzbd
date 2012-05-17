@@ -197,42 +197,6 @@ def make_templates():
                 os.remove(mo_path)
 
 
-# Convert Romanian PX files to Latin1 PO files
-table = {
-u"\u015f" : u"s", # ș
-u"\u015e" : u"S", # Ș
-u"\u0163" : u"t", # ț
-u"\u0162" : u"T", # Ț
-u"\u0103" : u"ã", # ă
-u"\u0102" : u"Ã", # Ă
-u'\u021b' : u"t", # ț
-u'\u0218' : u"s", # Ș
-u'\u0219' : u"s"  # ș
-}
-
-def fix_ro():
-    """ Convert ro.px files to ro.po files with only Latin1
-    """
-    for section in []:
-        f = open('po/%s/ro.px' % section, 'rb')
-        data = f.read().decode('utf-8')
-        f.close()
-
-        for ch in table:
-            data = data.replace(ch, table[ch])
-
-        f = open('po/%s/ro.po' % section, 'wb')
-        f.write(data.encode('utf-8'))
-        f.close()
-        try:
-            for line in data.split('\n'):
-                line.encode('latin-1')
-        except:
-            print line.encode('utf-8')
-            print 'WARNING: file po/%s/ro.po is not Latin-1' % section
-            exit(1)
-
-
 def patch_nsis():
     """ Patch translation into the NSIS script
     """
@@ -284,9 +248,6 @@ if os.path.exists(tl):
         TOOL = 'python "%s"' % tl
     else:
         TOOL = '"%s"' % tl
-
-# Fix up Romanian texts
-fix_ro()
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'

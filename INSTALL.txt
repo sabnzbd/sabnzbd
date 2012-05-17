@@ -42,8 +42,10 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 -------------------------------------------------------------------------------
 3) INSTALL pre-built OSX binaries
 -------------------------------------------------------------------------------
-Download teh DMG file, mount and drag the SABnzbd icon to Programs.
+Download the DMG file, mount and drag the SABnzbd icon to Programs.
 Just like you do with so many apps.
+Make sure you pick the right folder, depending on your OSX version.
+
 
 -------------------------------------------------------------------------------
 4) INSTALL with only sources
@@ -53,7 +55,7 @@ You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
 Unix/Linux/OSX
-    Python-2.6 or 2.7  http://www.python.org
+    Python-2.5, 2.6 or 2.7  http://www.python.org
 
 OSX Leopard/SnowLeopard
     Python 2.6              http://www.activestate.com

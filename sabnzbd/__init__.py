@@ -129,6 +129,7 @@ PAUSED_ALL = False
 OLD_QUEUE = False
 SCHED_RESTART = False # Set when restarted through scheduler
 WINTRAY = None # Thread for the Windows SysTray icon
+WEBUI_READY = False
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -259,7 +260,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Set language files
     lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
     lang.set_language(cfg.language())
-    sabnzbd.api.cache_skin_trans()
+    sabnzbd.api.clear_trans_cache()
 
     ### Check for old queue (when a new queue is not present)
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):

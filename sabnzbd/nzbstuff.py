@@ -547,8 +547,8 @@ class NzbObject(TryList):
         self.script = script        # External script for this set
         self.msgid = '0'            # Newzbin msgid
         self.cat = cat              # Newzbin category
-        if futuretype:
-            self.url = str(url)     # Either newzbin-id or URL queued (future-type only)
+        if url:
+            self.url = str(url)     # Either newzbin-id or source URL
         else:
             self.url = filename
         self.groups = []
