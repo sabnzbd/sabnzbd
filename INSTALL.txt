@@ -42,8 +42,10 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 -------------------------------------------------------------------------------
 3) INSTALL pre-built OSX binaries
 -------------------------------------------------------------------------------
-Download teh DMG file, mount and drag the SABnzbd icon to Programs.
+Download the DMG file, mount and drag the SABnzbd icon to Programs.
 Just like you do with so many apps.
+Make sure you pick the right folder, depending on your OSX version.
+
 
 -------------------------------------------------------------------------------
 4) INSTALL with only sources

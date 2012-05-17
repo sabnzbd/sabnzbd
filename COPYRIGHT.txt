@@ -26,6 +26,7 @@ The main contributors and moderators of the translations
     Spanish: Syquus
     Portuguese (Brazil): lrrosa
     Russian: Pavel Maryanov
+    Polish: Tomasz 'Zen' Napierala
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
