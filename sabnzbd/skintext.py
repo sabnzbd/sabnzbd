@@ -858,6 +858,8 @@ SKIN_TEXT = {
     'wizard-step-four' :  TT('Step Four'), #: Wizard step
     'wizard-step-five' :  TT('Step Five'), #: Wizard step
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
+    'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
+    'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
 
 #Special
     'yourRights' : TT('''
