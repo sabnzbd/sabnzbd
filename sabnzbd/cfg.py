@@ -239,6 +239,9 @@ uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 marker_file = OptionStr('misc', 'marker_file', '.nomedia')
 
+bless_cross_site = OptionBool('misc', 'bless_cross_site', False)
+blessed_hosts = OptionStr('misc', 'blessed_hosts', '', validation=no_nonsense)
+
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #

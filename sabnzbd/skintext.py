@@ -440,6 +440,7 @@ SKIN_TEXT = {
     'swtag-pp' : TT('Post processing'),
     'swtag-naming' : TT('Naming'),
     'swtag-quota' : TT('Quota'),
+    'swtag-cross_site' : TT('Cross-site AJAX'),
     'opt-quota_size' : TT('Size'), #: Size of the download quota
     'explain-quota_size' : TT('How much can be downloaded this month (K/M/G)'),
     'opt-quota_day' : TT('Reset day'), #: Reset day of the download quota
@@ -454,6 +455,10 @@ SKIN_TEXT = {
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
+    'opt-blessed_hosts' : TT('Allowed cross-site hosts'),
+    'explain-blessed_hosts' : TT('"*" for all or comma seperated list with protocol (e.g. http://binsearch.com)'),
+    'opt-bless_cross_site' : TT('Allow cross-site AJAX requests.'),
+    'explain-bless_cross_site' : TT('Adds certain HTTP-headers to at least smoothen cross-site AJAX-requests to the API.'),
 
 
 # Config->Server
