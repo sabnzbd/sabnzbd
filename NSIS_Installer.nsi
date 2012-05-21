@@ -117,6 +117,7 @@
   Delete   "${idir}\IMPORTANT_MESSAGE.txt"
   Delete   "${idir}\SABnzbd-console.exe"
   Delete   "${idir}\SABnzbd.exe"
+  Delete   "${idir}\SABnzbd.exe.log"
   Delete   "${idir}\SABnzbd-helper.exe"
   Delete   "${idir}\SABnzbd-service.exe"
   Delete   "${idir}\Sample-PostProc.cmd"
