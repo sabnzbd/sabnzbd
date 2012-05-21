@@ -68,10 +68,8 @@ def endswith_ext(path):
 
 
 def move_to_parent_folder(workdir):
-    """ Move content of 'workdir' to 'workdir/..' possibly skipping some files
-        If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
+    """ Move content of 'workdir' to 'workdir/..' (except marker file)
     """
-    skipped = False # Keep track of any skipped files
     path1 = os.path.abspath(os.path.normpath(os.path.join(workdir, '..'))) #move things to the folder below
 
     for root, dirs, files in os.walk(workdir):
