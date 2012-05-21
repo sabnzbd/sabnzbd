@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta6 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Upgrade unzip for Windows to 6.00 (supports ZIPs above 2G)
+- Lower threshold for pre-check to 100.5%
+- Fix removal of .nomedia file when using Sorting
+- Add Polish translation (using reduced character set)
+- Extension-based cleanup list now also removes extension-only files like ".sfv".
+- Several small issues
+-------------------------------------------------------------------------------
  0.7.0Beta5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Solved serious connection problem with some providers

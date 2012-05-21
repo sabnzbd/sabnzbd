@@ -59,7 +59,7 @@ class URLGrabber(Thread):
 
     def add(self, url, future_nzo, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
-        if when:
+        if when and future_nzo:
             future_nzo.wait = time.time() + when
         self.queue.put((url, future_nzo))
 
@@ -169,13 +169,14 @@ class URLGrabber(Thread):
                     msg = ''
                     retry = True
 
+                if del_bookmark:
+                    # No retries of nzbmatrix bookmark removals
+                    continue
+
                 # Check if the filepath is specified, if not, check if a retry is allowed.
                 if not fn:
                     logging.info('Retry URL %s', url)
                     self.add(url, future_nzo, 5)
-                    continue
-
-                if del_bookmark:
                     continue
 
                 if not filename:

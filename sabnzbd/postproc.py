@@ -317,13 +317,7 @@ def process_job(nzo):
                 workdir_complete = create_dirs(complete_dir)
             else:
                 workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
-                marker_file = cfg.marker_file()
-                if marker_file:
-                    marker_file = os.path.join(workdir_complete, marker_file)
-                    try:
-                        open(marker_file, 'w').write('\n')
-                    except:
-                        marker_file = None
+                marker_file = set_marker(workdir_complete)
 
             if not workdir_complete or not os.path.exists(workdir_complete):
                 crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
@@ -524,12 +518,7 @@ def process_job(nzo):
 
     ## Remove download folder
     if all_ok:
-        if marker_file:
-            try:
-                # Recalculate marker file path, it may have been moved
-                os.remove(os.path.join(complete_dir, os.path.split(marker_file)[1]))
-            except:
-                pass
+        del_marker(marker_file, complete_dir)
         try:
             if os.path.exists(workdir):
                 logging.debug('Removing workdir %s', workdir)
@@ -751,3 +740,49 @@ def collapse_folder(oldpath, newpath):
         remove_dir(orgpath)
     except:
         pass
+
+
+#------------------------------------------------------------------------------
+def set_marker(folder):
+    """ Set marker file and return path """
+    path = cfg.marker_file()
+    if path:
+        path = os.path.join(folder, path)
+        logging.debug('Create marker file %s', path)
+        try:
+            fp = open(path, 'w')
+            fp.close()
+        except:
+            logging.info('Cannot create marker file %s', path)
+            logging.info("Traceback: ", exc_info = True)
+            path = None
+    return path
+
+
+def del_marker(path, folder):
+    """ Remove marker file """
+    if path:
+        if os.path.exists(path):
+            logging.debug('Removing marker file %s', path)
+            try:
+                os.remove(path)
+            except:
+                logging.info('Cannot remove marker file %s', path)
+                logging.info("Traceback: ", exc_info = True)
+        else:
+            # Marker file was moved, find it.
+            marker = os.path.split(path)[1]
+            path = None
+            logging.debug('Looking for marker file in %s', folder)
+            for root, dirs, files in os.walk(folder):
+                for name in files:
+                    if name == marker:
+                        path = os.path.join(root, name)
+                        logging.debug('Removing marker file %s', path)
+                        try:
+                            os.remove(path)
+                        except:
+                            logging.info('Cannot remove marker file %s', path)
+                            logging.info("Traceback: ", exc_info = True)
+            if not path:
+                logging.info('Cannot find marker file %s in %s', marker, folder)

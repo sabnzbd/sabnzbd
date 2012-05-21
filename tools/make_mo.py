@@ -306,6 +306,7 @@ def patch_nsis():
                         # The unicode flag will make _() return Unicode
                         trans.install(unicode=True, names=['lgettext'])
                         trans = lgettext(text)
+                        trans = trans.replace('\r', '').replace('\n', '\\r\\n')
                         trans = trans.replace('\\', '$\\').replace('"', '$\\"')
                         line = '%s%s} "%s"\n' % (leader, lng, trans)
                         new.append(line)

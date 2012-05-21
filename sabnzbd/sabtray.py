@@ -76,16 +76,16 @@ class SABTrayThread(SysTrayIconThread):
             self.sabpaused = status.get('paused', False)
 
             if state == 'IDLE':
-                self.hover_text = 'SABnzbd idle'
+                self.hover_text = T('Idle')
                 self.icon = self.sabicons['default']
             elif state == 'PAUSED':
-                self.hover_text = 'SABnzbd paused'
+                self.hover_text = T('Paused')
                 self.icon = self.sabicons['pause']
             elif state == 'DOWNLOADING':
                 self.hover_text = "%sB/s %s: %s MB (%s)" % (status.get('speed', "---"), T('Remaining'), str(int(status.get('mbleft', "0"))), status.get('timeleft', "---"))
                 self.icon = self.sabicons['green']
             else:
-                self.hover_text = 'UNKNOWN STATE'
+                self.hover_text = '??'
                 self.icon = self.sabicons['pause']
 
 

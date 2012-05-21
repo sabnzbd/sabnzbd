@@ -1066,11 +1066,12 @@ def stripFolders(folders):
 def rename_similar(path, file, name):
     logging.debug('Renaming files similar to: %s to %s', file, name)
     file_prefix, ext = os.path.splitext(file)
+    file_prefix = file_prefix.lower()
     for root, dirs, files in os.walk(path):
         for _file in files:
             fpath = os.path.join(root, _file)
             tmp, ext = os.path.splitext(_file)
-            if tmp == file_prefix:
+            if tmp.lower() == file_prefix:
                 newname = "%s%s" % (name,ext)
                 newname = newname.replace('%fn',tmp)
                 newpath = os.path.join(path, newname)

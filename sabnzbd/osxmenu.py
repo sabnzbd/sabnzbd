@@ -450,6 +450,9 @@ class SABnzbdDelegate(NSObject):
 
                 self.state = ""
                 speed = to_units(bpsnow, dec_limit=1) + 'B/s'
+                # "10.1 MB/s" doesn't fit, remove space char
+                if 'M' in speed and len(speed) > 8:
+                    speed = speed.replace(' ', '')
                 timeleft = (bpsnow>10 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
 
                 statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)

@@ -305,8 +305,8 @@ class Downloader(Thread):
             for server in self.servers:
                 assert isinstance(server, Server)
                 for nw in server.busy_threads[:]:
-                    if nw.nntp.error_msg or (nw.timeout and time.time() > nw.timeout):
-                        if nw.nntp.error_msg:
+                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
+                        if (nw.nntp and nw.nntp.error_msg):
                             self.__reset_nw(nw, "", warn=False)
                         else:
                             self.__reset_nw(nw, "timed out")
