@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta7 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix for .nomedia files not being deleted
+- Fix NZB re-queueing (due to .nomedia remaining)
+- Polish was missing in Windows installer and Dutch was incorrect
+- When Sort renames auxillirary files, it should disregard case
+- Fix crash in Wizard on some Linux systems
+-------------------------------------------------------------------------------
  0.7.0Beta6 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Upgrade unzip for Windows to 6.00 (supports ZIPs above 2G)
