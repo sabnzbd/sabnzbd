@@ -437,7 +437,7 @@ if target == 'app':
         authority = os.environ.get('SIGNING_AUTH')
         if authority:
             os.system('codesign -f -i "%s-lion" -s "%s" dist/SABnzbd.app' % (volume, authority))
-            os.system('codesign -f -i "%s-leopard" -s "%s" %s/dist/SABnzbd.app' % (leopard_build, volume, authority))
+            os.system('codesign -f -i "%s-leopard" -s "%s" %s/dist/SABnzbd.app' % (volume, authority, leopard_build))
 
         # copy app to mounted sparseimage
         os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OS X 10.6 and Above/" >/dev/null' % volume)
