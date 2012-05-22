@@ -216,7 +216,10 @@ class Wizard(object):
             host = socket.gethostname()
             socks = [host]
             # Grab a list of all ips for the hostname
-            addresses = socket.getaddrinfo(host, None)
+            try:
+                addresses = socket.getaddrinfo(host, None)
+            except:
+                addresses = []
             for addr in addresses:
                 address = addr[4][0]
                 # Filter out ipv6 addresses (should not be allowed)
