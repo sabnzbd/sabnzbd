@@ -366,6 +366,9 @@ def process_job(nzo):
             set_permissions(tmp_workdir_complete)
 
             if all_ok:
+                del_marker(marker_file)
+
+            if all_ok:
                 ## Remove files matching the cleanup list
                 cleanup_list(tmp_workdir_complete, True)
 
@@ -518,7 +521,6 @@ def process_job(nzo):
 
     ## Remove download folder
     if all_ok:
-        del_marker(marker_file, complete_dir)
         try:
             if os.path.exists(workdir):
                 logging.debug('Removing workdir %s', workdir)
@@ -759,30 +761,12 @@ def set_marker(folder):
     return path
 
 
-def del_marker(path, folder):
+def del_marker(path):
     """ Remove marker file """
-    if path:
-        if os.path.exists(path):
-            logging.debug('Removing marker file %s', path)
-            try:
-                os.remove(path)
-            except:
-                logging.info('Cannot remove marker file %s', path)
-                logging.info("Traceback: ", exc_info = True)
-        else:
-            # Marker file was moved, find it.
-            marker = os.path.split(path)[1]
-            path = None
-            logging.debug('Looking for marker file in %s', folder)
-            for root, dirs, files in os.walk(folder):
-                for name in files:
-                    if name == marker:
-                        path = os.path.join(root, name)
-                        logging.debug('Removing marker file %s', path)
-                        try:
-                            os.remove(path)
-                        except:
-                            logging.info('Cannot remove marker file %s', path)
-                            logging.info("Traceback: ", exc_info = True)
-            if not path:
-                logging.info('Cannot find marker file %s in %s', marker, folder)
+    if path and os.path.exists(path):
+        logging.debug('Removing marker file %s', path)
+        try:
+            os.remove(path)
+        except:
+            logging.info('Cannot remove marker file %s', path)
+            logging.info("Traceback: ", exc_info = True)
