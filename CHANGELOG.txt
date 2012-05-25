@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.0Beta8 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disabled the .nomedia marker file feature.
+  Those who want to try it, use the "nomedia_marker" setting in Config->Special
+  It remains an experimental feature without guarantees
+- Add missing info in email about failed pre-check
+- Updated translations
+-------------------------------------------------------------------------------
  0.7.0Beta7 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix for .nomedia files not being deleted
