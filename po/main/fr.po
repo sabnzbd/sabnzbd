@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-10 07:16+0000\n"
+"PO-Revision-Date: 2012-05-24 17:54+0000\n"
 "Last-Translator: Fox Ace <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-11 06:04+0000\n"
-"X-Generator: Launchpad (build 15225)\n"
+"X-Launchpad-Export-Date: 2012-05-25 05:12+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -368,7 +368,7 @@ msgstr "Échec de l'authentification au serveur de mail"
 
 #: sabnzbd/emailer.py:113
 msgid "Failed to send e-mail"
-msgstr "Échec de l'envoi du mail"
+msgstr "Échec de l'envoi de l'email"
 
 #: sabnzbd/emailer.py:118
 msgid "Failed to close mail connection"
@@ -1026,7 +1026,7 @@ msgstr "Reprendre"
 
 #: sabnzbd/osxmenu.py:232
 msgid "Get Newzbin Bookmarks"
-msgstr "Récupérer Favoris Newzbin"
+msgstr "Récupérer favoris Newzbin"
 
 #: sabnzbd/osxmenu.py:242 # sabnzbd/skintext.py:63 [#: Config->Scheduler]
 msgid "Scan watched folder"
@@ -1668,7 +1668,7 @@ msgstr "oui"
 
 #: sabnzbd/skintext.py:98 [Config: startup parameters of SABnzbd]
 msgid "Parameters"
-msgstr "Paramétres"
+msgstr "Paramètres"
 
 #: sabnzbd/skintext.py:99
 msgid "Python Version"
@@ -1744,7 +1744,7 @@ msgstr "Répertoires"
 
 #: sabnzbd/skintext.py:125 [Main menu item] # sabnzbd/skintext.py:653
 msgid "Switches"
-msgstr "Paramètres"
+msgstr "Switches"
 
 #: sabnzbd/skintext.py:126 [Main menu item]
 msgid "Servers"
@@ -1764,7 +1764,7 @@ msgstr "Notifications"
 
 #: sabnzbd/skintext.py:130 [Main menu item]
 msgid "Email"
-msgstr "E-mail"
+msgstr "Email"
 
 #: sabnzbd/skintext.py:131 [Main menu item]
 msgid "Index Sites"
@@ -2088,7 +2088,7 @@ msgstr "Forcer Déconnexion"
 
 #: sabnzbd/skintext.py:238
 msgid "This will send a test email to your account."
-msgstr "Ceci enverra un e-mail de test sur votre compte."
+msgstr "Ceci enverra un email de test sur votre compte."
 
 #: sabnzbd/skintext.py:239 [Status page button]
 msgid "Show Logging"
@@ -2100,7 +2100,7 @@ msgstr "Afficher les weblogs"
 
 #: sabnzbd/skintext.py:241 [Status page button]
 msgid "Test Email"
-msgstr "E-mail de Test"
+msgstr "Email de Test"
 
 #: sabnzbd/skintext.py:242 [Status page selection menu]
 msgid "Logging"
@@ -2128,7 +2128,7 @@ msgstr "Traitement"
 
 #: sabnzbd/skintext.py:248 [Status page, title for email test result]
 msgid "Email Test Result"
-msgstr "Résultat de l'E-mail de test"
+msgstr "Résultat de l'Email de test"
 
 #: sabnzbd/skintext.py:249 [Status page, table header]
 msgid "Latest Warnings"
@@ -2226,7 +2226,7 @@ msgstr "Les modifications nécessiteront un redémarrage de SABnzbd !"
 
 #: sabnzbd/skintext.py:277
 msgid "SABnzbd Web Server"
-msgstr "SABnzbd Serveur Web"
+msgstr "Serveur web SABnzbd"
 
 #: sabnzbd/skintext.py:278
 msgid "SABnzbd Host"
@@ -2254,7 +2254,7 @@ msgstr "Choisissez un thème."
 
 #: sabnzbd/skintext.py:284
 msgid "Secondary Web Interface"
-msgstr "Seconde Interface Web"
+msgstr "Interface Web secondaire"
 
 #: sabnzbd/skintext.py:285
 msgid "Activate an alternative skin."
@@ -2322,7 +2322,7 @@ msgstr "Nom du fichier ou chemin de la clé HTTPS."
 
 #: sabnzbd/skintext.py:301
 msgid "Tuning"
-msgstr "Réglage"
+msgstr "Réglages"
 
 #: sabnzbd/skintext.py:302
 msgid "Queue auto refresh interval:"
@@ -2355,7 +2355,7 @@ msgstr "Vitesse limite de téléchargement en kilobytes par seconde (kB/s)"
 
 #: sabnzbd/skintext.py:308
 msgid "Article Cache Limit"
-msgstr "Limite d'Article en cache"
+msgstr "Limite d'article en cache"
 
 #: sabnzbd/skintext.py:309
 msgid ""
@@ -2535,11 +2535,11 @@ msgstr "Dossier contenant les scripts utilisés lors du post-traitement."
 
 #: sabnzbd/skintext.py:345
 msgid "Email Templates Folder"
-msgstr "Dossier de modèles d'E-mail"
+msgstr "Dossier des modèles d'email"
 
 #: sabnzbd/skintext.py:346
 msgid "Folder containing user-defined email templates."
-msgstr "Dossier contenant les modèles d'e-mail définis par l'utilisateur."
+msgstr "Dossier contenant les modèles d'email définis par l'utilisateur."
 
 #: sabnzbd/skintext.py:347
 msgid "Password file"
@@ -2573,7 +2573,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:353
 msgid "Log Folder"
-msgstr "Dossier du journal"
+msgstr "Dossier du fichier journal"
 
 #: sabnzbd/skintext.py:354
 msgid ""
@@ -2604,7 +2604,7 @@ msgstr "Options de traitement"
 
 #: sabnzbd/skintext.py:362
 msgid "Enable Quick Check"
-msgstr "Activer Contrôle Rapide"
+msgstr "Activer contrôle rapide"
 
 #: sabnzbd/skintext.py:363
 msgid "Skip par2 checking when files are 100% valid."
@@ -2649,7 +2649,7 @@ msgstr "Activer nettoyage Par"
 #: sabnzbd/skintext.py:373
 msgid "Cleanup par files (if verifiying/repairing succeded)."
 msgstr ""
-"Supprimer les fichiers Par2 (uniquement si la vérification/réparation a "
+"Supprime les fichiers Par2 (uniquement si la vérification/réparation a "
 "réussie)."
 
 #: sabnzbd/skintext.py:374
@@ -2716,7 +2716,7 @@ msgstr "Activer les contrôles SFV"
 
 #: sabnzbd/skintext.py:388
 msgid "Do an extra verification based on SFV files."
-msgstr "Faites une vérification supplémentaire basée sur les fichiers SFV."
+msgstr "Fait une vérification supplémentaire basée sur les fichiers SFV."
 
 #: sabnzbd/skintext.py:389
 msgid "Check result of unpacking"
@@ -2725,7 +2725,7 @@ msgstr "Vérifier le résultat de l'extraction"
 #: sabnzbd/skintext.py:390
 msgid "Check result of unpacking (needs to be off for some file systems)."
 msgstr ""
-"Vérifier le résultat de l'extraction (doit être désactivée pour certains "
+"Vérifie le résultat de l'extraction (doit être désactivée pour certains "
 "systèmes de fichiers)."
 
 #: sabnzbd/skintext.py:391
@@ -2843,7 +2843,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:420
 msgid "Replace dots in Foldername"
-msgstr "Remplacez les points dans les noms de dossier"
+msgstr "Remplacer les points dans les noms de dossier"
 
 #: sabnzbd/skintext.py:421
 msgid "Replace dots with spaces in folder names."
@@ -2870,7 +2870,7 @@ msgstr "Lance le navigateur web au démarrage de SABnzbd."
 
 #: sabnzbd/skintext.py:426
 msgid "Pause Downloading During Post-Processing"
-msgstr "Mettre en pause les téléchargement lors du post-traitement"
+msgstr "Mettre en pause les téléchargements lors du post-traitement"
 
 #: sabnzbd/skintext.py:427
 msgid ""
@@ -2897,7 +2897,7 @@ msgstr "Ne pas télécharger"
 
 #: sabnzbd/skintext.py:433
 msgid "SSL type"
-msgstr "type SSL"
+msgstr "Type SSL"
 
 #: sabnzbd/skintext.py:434
 msgid "Use V23 unless your provider requires otherwise!"
@@ -2909,7 +2909,7 @@ msgstr "Utiliser l'horloge 12 heures (AM/PM)"
 
 #: sabnzbd/skintext.py:436
 msgid "Show times in AM/PM notation (does not affect scheduler)."
-msgstr "Afficher l'heure en format AM/PM (n'affecte pas la planification)."
+msgstr "Affiche l'heure au format AM/PM (n'affecte pas la planification)."
 
 #: sabnzbd/skintext.py:438
 msgid "Server"
@@ -2966,7 +2966,8 @@ msgstr "Vérifiez avant de télécharger"
 
 #: sabnzbd/skintext.py:452
 msgid "Try to predict successful completion before actual download (slower!)"
-msgstr "Essayez de prévoir complet avant de télécharger réellement (lent!)"
+msgstr ""
+"Tente de prédire l’achèvement complet avant le téléchargement réel (lent!)"
 
 #: sabnzbd/skintext.py:453
 msgid "Maximum retries"
@@ -3159,11 +3160,11 @@ msgstr "Filtres"
 
 #: sabnzbd/skintext.py:524 [Section header]
 msgid "Email Options"
-msgstr "Options E-mail"
+msgstr "Options email"
 
 #: sabnzbd/skintext.py:525
 msgid "Email Notification On Job Completion"
-msgstr "Notification par E-mail lorsque des téléchargements sont terminés"
+msgstr "Notification par email lorsque des téléchargements sont terminés"
 
 #: sabnzbd/skintext.py:526 [When to send email]
 msgid "Never"
@@ -3184,7 +3185,7 @@ msgstr "Notifications de disque dur plein"
 #: sabnzbd/skintext.py:530
 msgid "Send email when disk is full and SABnzbd is paused."
 msgstr ""
-"Envoie un e-mail lorsque le disque dur est plein et que SABnzbd a été mis en "
+"Envoie un email lorsque le disque dur est plein et que SABnzbd a été mis en "
 "pause."
 
 #: sabnzbd/skintext.py:531
@@ -3194,11 +3195,11 @@ msgstr "Envoyer les notifications RSS"
 #: sabnzbd/skintext.py:532
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr ""
-"Envoyer un e-mail quand un flux RSS ajoute un fichier dans la file d'attente."
+"Envoie un email quand un flux RSS ajoute un fichier dans la file d'attente."
 
 #: sabnzbd/skintext.py:533
 msgid "Email Account Settings"
-msgstr "Paramètres du compte E-mail"
+msgstr "Paramètres du compte email"
 
 #: sabnzbd/skintext.py:534
 msgid "SMTP Server"
@@ -3210,19 +3211,19 @@ msgstr "Entrez le serveur de courrier sortant de votre FAI."
 
 #: sabnzbd/skintext.py:536
 msgid "Email Recipient"
-msgstr "Adresse E-mail de réception"
+msgstr "Adresse email de réception"
 
 #: sabnzbd/skintext.py:537
 msgid "Email address to send the email to."
-msgstr "Adresse E-mail à laquelle seront envoyées les notifications."
+msgstr "Adresse email à laquelle seront envoyées les notifications."
 
 #: sabnzbd/skintext.py:538
 msgid "Email Sender"
-msgstr "Adresse E-mail d'envoi"
+msgstr "Adresse email d'envoi"
 
 #: sabnzbd/skintext.py:539
 msgid "Who should we say sent the email?"
-msgstr "Adresse E-mail de provenance des notifications."
+msgstr "Adresse email de provenance des notifications."
 
 #: sabnzbd/skintext.py:540
 msgid "OPTIONAL Account Username"
@@ -3250,7 +3251,7 @@ msgstr "Activer Growl"
 
 #: sabnzbd/skintext.py:546 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
-msgstr "Envoyer une notification Growl"
+msgstr "Envoie une notification Growl"
 
 #: sabnzbd/skintext.py:547 [Address of Growl server]
 msgid "Server address"
@@ -3274,7 +3275,7 @@ msgstr "Activer NotifyOSD"
 
 #: sabnzbd/skintext.py:552 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
-msgstr "Envoyer les notifications à NotifyOSD"
+msgstr "Envoie les notifications à NotifyOSD"
 
 #: sabnzbd/skintext.py:556
 msgid ""
@@ -3287,7 +3288,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:557
 msgid "Account info"
-msgstr "Paramètres de compte"
+msgstr "information compte"
 
 #: sabnzbd/skintext.py:558
 msgid "Newzbin Username"
@@ -3414,7 +3415,7 @@ msgstr "Configuration du tri"
 
 #: sabnzbd/skintext.py:591
 msgid "Series Sorting"
-msgstr "Tri des Séries"
+msgstr "Tri des séries"
 
 #: sabnzbd/skintext.py:592
 msgid "Enable TV Sorting"
@@ -3442,7 +3443,7 @@ msgstr "Exemple"
 
 #: sabnzbd/skintext.py:598
 msgid "Generic Sorting"
-msgstr "Tri Générique"
+msgstr "Tri générique"
 
 #: sabnzbd/skintext.py:599
 msgid "Enable Movie Sorting"
@@ -3602,11 +3603,11 @@ msgstr "Pas De Dossiers"
 
 #: sabnzbd/skintext.py:640
 msgid "Date Sorting"
-msgstr "Tri Par Date"
+msgstr "Tri par date"
 
 #: sabnzbd/skintext.py:641
 msgid "Enable Date Sorting"
-msgstr "Activer le tri Par Date"
+msgstr "Activer le tri par date"
 
 #: sabnzbd/skintext.py:642
 msgid "Enable sorting and renaming of date named files."
@@ -4048,7 +4049,7 @@ msgstr "Affichage d'un seul résultat"
 
 #: sabnzbd/skintext.py:797
 msgid "Email Sent!"
-msgstr "E-mail Envoyé !"
+msgstr "Email Envoyé !"
 
 #: sabnzbd/skintext.py:798
 msgid "Notification Sent!"
