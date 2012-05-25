@@ -265,6 +265,7 @@ def process_job(nzo):
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
+            nzo.set_unpack_info('Fail', emsg)
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
