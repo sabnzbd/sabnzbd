@@ -1191,7 +1191,7 @@ SPECIAL_BOOL_LIST = \
               'random_server_ip'
             )
 SPECIAL_VALUE_LIST = \
-            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'marker_file',
+            ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate'
             )
 

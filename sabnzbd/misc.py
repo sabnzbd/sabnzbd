@@ -791,8 +791,9 @@ def move_to_path(path, new_path, unique=True):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
-                logging.error(Ta('Failed moving %s to %s'), path, new_path)
-                logging.info("Traceback: ", exc_info = True)
+                if cfg.marker_file()and cfg.marker_file() not in path:
+                    logging.error(Ta('Failed moving %s to %s'), path, new_path)
+                    logging.info("Traceback: ", exc_info = True)
                 new_path = None
     return new_path
 
