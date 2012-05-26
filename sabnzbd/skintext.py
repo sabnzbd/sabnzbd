@@ -72,7 +72,7 @@ SKIN_TEXT = {
     'hour' : TT('hour'), #: One hour
     'hours' : TT('hours'), #: Multiple hours
     'minute' : TT('min'), #: One minute
-    'minutes' : TT('mins'), #: Multiple minutes
+    'minutes' : TT('minutes'), #: Multiple minutes
     'second' : TT('sec'), #: One second
     'seconds' : TT('seconds'), #: Multiple seconds
     'day' : TT('day'),
