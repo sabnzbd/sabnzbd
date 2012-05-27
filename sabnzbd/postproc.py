@@ -366,8 +366,8 @@ def process_job(nzo):
             ## Set permissions right
             set_permissions(tmp_workdir_complete)
 
-            if all_ok:
-                del_marker(marker_file)
+            if all_ok and marker_file:
+                del_marker(os.path.join(tmp_workdir_complete, marker_file))
                 remove_from_list(marker_file, newfiles)
 
             if all_ok:
@@ -748,10 +748,10 @@ def collapse_folder(oldpath, newpath):
 
 #------------------------------------------------------------------------------
 def set_marker(folder):
-    """ Set marker file and return path """
-    path = cfg.marker_file()
-    if path:
-        path = os.path.join(folder, path)
+    """ Set marker file and return name """
+    name = cfg.marker_file()
+    if name:
+        path = os.path.join(folder, name)
         logging.debug('Create marker file %s', path)
         try:
             fp = open(path, 'w')
@@ -759,8 +759,8 @@ def set_marker(folder):
         except:
             logging.info('Cannot create marker file %s', path)
             logging.info("Traceback: ", exc_info = True)
-            path = None
-    return path
+            name = None
+    return name
 
 
 def del_marker(path):
@@ -776,7 +776,6 @@ def del_marker(path):
 
 def remove_from_list(name, lst):
     if name:
-        name = os.path.split(name)[1]
         for n in xrange(len(lst)):
             if lst[n].endswith(name):
                 logging.debug('Popping %s', lst[n])
