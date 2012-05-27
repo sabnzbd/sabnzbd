@@ -139,6 +139,7 @@ class BPSMeter(object):
     def read(self):
         """ Read admin from disk """
         quota = self.left = cfg.quota_size.get_float() # Quota for this period
+        self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
         try:
             self.last_update, self.grand_total, \
@@ -162,7 +163,6 @@ class BPSMeter(object):
             if week:  self.week_total['x'] = week
             self.quota = self.left = cfg.quota_size.get_float()
             res = False
-        self.have_quota = bool(cfg.quota_size())
         # Force update of counters
         self.update()
         return res
