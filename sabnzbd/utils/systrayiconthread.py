@@ -22,10 +22,10 @@ class SysTrayIconThread(Thread):
     '''TODO'''
     QUIT = 'QUIT'
     SPECIAL_ACTIONS = [QUIT]
-    
+
     FIRST_ID = 1023
     terminate = False
-    
+
     def __init__(self,
                  icon,
                  hover_text,
@@ -38,21 +38,21 @@ class SysTrayIconThread(Thread):
         self.icons = {}
         self.hover_text = hover_text
         self.on_quit = on_quit
-        
+
 #        menu_options = menu_options + (('Quit', None, self.QUIT),)
         self._next_action_id = self.FIRST_ID
         self.menu_actions_by_id = set()
         self.menu_options = self._add_ids_to_menu_options(list(menu_options))
         self.menu_actions_by_id = dict(self.menu_actions_by_id)
         del self._next_action_id
-        
-        
+
+
         self.default_menu_index = (default_menu_index or 0)
         self.window_class_name = window_class_name or "SysTrayIconPy"
-        
+
         self.start()
-        
-        
+
+
     def initialize(self):
         message_map = {win32gui.RegisterWindowMessage("TaskbarCreated"): self.restart,
                        win32con.WM_DESTROY: self.destroy,
@@ -83,7 +83,7 @@ class SysTrayIconThread(Thread):
         win32gui.UpdateWindow(self.hwnd)
         self.notify_id = None
         self.refresh_icon()
-        
+
     def run(self):
         self.initialize()
         while not self.terminate:
@@ -91,11 +91,11 @@ class SysTrayIconThread(Thread):
             self.doUpdates()
             sleep(0.100)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
-        
+
     # override this
     def doUpdates(self):
         pass
-    
+
     def _add_ids_to_menu_options(self, menu_options):
         result = []
         for menu_option in menu_options:
@@ -112,11 +112,11 @@ class SysTrayIconThread(Thread):
                 print 'Unknown item', option_text, option_icon, option_action
             self._next_action_id += 1
         return result
-    
+
     def get_icon(self, path):
         hicon = self.icons.get(path);
         if hicon != None: return hicon
-        
+
         # Try and find a custom icon
         hinst = win32gui.GetModuleHandle(None)
         if os.path.isfile(path):
@@ -130,10 +130,10 @@ class SysTrayIconThread(Thread):
         else:
             print "Can't find icon file - using default."
             hicon = win32gui.LoadIcon(0, win32con.IDI_APPLICATION)
-        
+
         self.icons[path] = hicon
         return hicon
-    
+
     def refresh_icon(self):
         hicon = self.get_icon(self.icon)
         if self.notify_id: message = win32gui.NIM_MODIFY
@@ -144,7 +144,11 @@ class SysTrayIconThread(Thread):
                           win32con.WM_USER+20,
                           hicon,
                           self.hover_text)
-        win32gui.Shell_NotifyIcon(message, self.notify_id)
+        try:
+            win32gui.Shell_NotifyIcon(message, self.notify_id)
+        except:
+            # Timeouts can occur after system comes out of standby/hibernate
+            pass
 
     def restart(self, hwnd, msg, wparam, lparam):
         self.refresh_icon()
@@ -163,12 +167,12 @@ class SysTrayIconThread(Thread):
         elif lparam==win32con.WM_LBUTTONUP:
             pass
         return True
-        
+
     def show_menu(self):
         menu = win32gui.CreatePopupMenu()
         self.create_menu(menu, self.menu_options)
         #win32gui.SetMenuDefaultItem(menu, 1000, 0)
-        
+
         pos = win32gui.GetCursorPos()
         # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
         win32gui.SetForegroundWindow(self.hwnd)
@@ -180,13 +184,13 @@ class SysTrayIconThread(Thread):
                                 self.hwnd,
                                 None)
         win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
-    
+
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:
             if option_icon:
                 option_icon = self.prep_menu_icon(option_icon)
-            
-            if option_id in self.menu_actions_by_id:                
+
+            if option_id in self.menu_actions_by_id:
                 item, extras = win32gui_struct.PackMENUITEMINFO(text=option_text,
                                                                 hbmpItem=option_icon,
                                                                 wID=option_id)
@@ -219,20 +223,20 @@ class SysTrayIconThread(Thread):
         win32gui.DrawIconEx(hdcBitmap, 0, 0, hicon, ico_x, ico_y, 0, 0, win32con.DI_NORMAL)
         win32gui.SelectObject(hdcBitmap, hbmOld)
         win32gui.DeleteDC(hdcBitmap)
-        
+
         return hbm
 
     def command(self, hwnd, msg, wparam, lparam):
         id = win32gui.LOWORD(wparam)
         self.execute_menu_option(id)
-        
+
     def execute_menu_option(self, id):
-        menu_action = self.menu_actions_by_id[id]      
+        menu_action = self.menu_actions_by_id[id]
         if menu_action == self.QUIT:
             win32gui.DestroyWindow(self.hwnd)
         else:
             menu_action(self)
-            
+
 def non_string_iterable(obj):
     try:
         iter(obj)
