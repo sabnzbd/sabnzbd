@@ -367,6 +367,7 @@ def process_job(nzo):
             set_permissions(tmp_workdir_complete)
 
             if all_ok:
+                marker_file = os.path.join(tmp_workdir_complete, cfg.marker_file())    #reset marker_file for _UNPACK_ path
                 del_marker(marker_file)
                 remove_from_list(marker_file, newfiles)
 
