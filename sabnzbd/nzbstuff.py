@@ -1008,7 +1008,10 @@ class NzbObject(TryList):
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
-        parfile.extrapars.remove(parfile)
+        if parfile.extrapars:
+            parfile.extrapars.remove(parfile)
+        else:
+            logging.debug('PARFILE without EXTRAPARS %s', parfile.filename or parfile.subject)
 
     def remove_parset(self, setname):
         self.partable.pop(setname)
