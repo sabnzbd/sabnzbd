@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.0RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix for rare crash in par2 fetching
+- Another /nomedia fix
+- Quota reset wasn't done when quota-reset-time was passed while SABnzbd wasn't running.
+-------------------------------------------------------------------------------
  0.7.0Beta8 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Disabled the .nomedia marker file feature.
