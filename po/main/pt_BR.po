@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-12 02:05+0000\n"
+"PO-Revision-Date: 2012-05-26 00:41+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-13 04:57+0000\n"
-"X-Generator: Launchpad (build 15225)\n"
+"X-Launchpad-Export-Date: 2012-05-27 04:57+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -551,7 +551,7 @@ msgstr "domingo"
 
 #: sabnzbd/interface.py:1920 ["Off" value for speedlimit in scheduler] # sabnzbd/skintext.py:97
 msgid "off"
-msgstr "desativado"
+msgstr "desligado"
 
 #: sabnzbd/interface.py:2274
 msgid "&nbsp;Resolving address"
@@ -1434,7 +1434,7 @@ msgstr "Encerrar"
 
 #: sabnzbd/sabtray.py:84 # sabnzbd/skintext.py:766
 msgid "Remaining"
-msgstr "Restando"
+msgstr "Restante"
 
 #: sabnzbd/scheduler.py:81 [Warning message]
 msgid "Bad schedule %s at %s:%s"
@@ -1646,7 +1646,7 @@ msgstr "Total"
 
 #: sabnzbd/skintext.py:96
 msgid "on"
-msgstr "em"
+msgstr "ligado"
 
 #: sabnzbd/skintext.py:98 [Config: startup parameters of SABnzbd]
 msgid "Parameters"
@@ -1822,7 +1822,7 @@ msgstr "Categoria"
 
 #: sabnzbd/skintext.py:158 # sabnzbd/skintext.py:192 [Queue page table column header]
 msgid "Processing"
-msgstr "Processando"
+msgstr "Processamento"
 
 #: sabnzbd/skintext.py:160
 msgid "Priority"
@@ -2214,7 +2214,7 @@ msgstr "Host do SABnzbd"
 
 #: sabnzbd/skintext.py:279
 msgid "Host SABnzbd should listen on."
-msgstr "Host onde o SABnzbd será ativado."
+msgstr "Computador onde o SABnzbd ficará ativo."
 
 #: sabnzbd/skintext.py:280
 msgid "SABnzbd Port"
@@ -2274,7 +2274,7 @@ msgstr "não instalado"
 
 #: sabnzbd/skintext.py:294
 msgid "Enable accessing the interface from a HTTPS address."
-msgstr "Ativar acesso à interface de um endereço HTTPS."
+msgstr "Ativar acesso à interface por um endereço HTTPS."
 
 #: sabnzbd/skintext.py:295
 msgid "HTTPS Port"
@@ -2282,7 +2282,7 @@ msgstr "Porta HTTPS"
 
 #: sabnzbd/skintext.py:296
 msgid "If empty, the standard port will only listen to HTTPS."
-msgstr "Se estiver vazio, a porta padrão só vai funcionar com HTTPS."
+msgstr "Se estiver vazio, a porta padrão só irá funcionar com HTTPS."
 
 #: sabnzbd/skintext.py:297
 msgid "HTTPS Certificate"
@@ -2355,8 +2355,8 @@ msgid ""
 "List of file extensions that should be deleted after download.<br />For "
 "example: <b>.nfo</b> or <b>.nfo, .sfv</b>"
 msgstr ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>.nfo</b> or <b>.nfo, .sfv</b>"
+"Lista de extensões dos arquivos que devem ser excluídos após o download.<br "
+"/>Por exemplo: <b>.nfo</b> ou então <b>.nfo, .sfv</b>"
 
 #: sabnzbd/skintext.py:312
 msgid "Save Changes"
@@ -2420,8 +2420,8 @@ msgid ""
 "<em>NOTE:</em> Folders will be created automatically when Saving. You may "
 "use absolute paths to save outside of the default folders."
 msgstr ""
-"<em>NOTA:</em>Pastas serão criadas automaticamente ao salvar. Você pode usar "
-"caminhos absolutos para salvar fora das pastas padrão."
+"<em>NOTA: </em>Pastas serão criadas automaticamente ao salvar. Você pode "
+"usar caminhos absolutos para salvar fora das pastas padrão."
 
 #: sabnzbd/skintext.py:329
 msgid "User Folders"
@@ -2568,7 +2568,7 @@ msgstr "Local onde os arquivos .nzb serão armazenados."
 
 #: sabnzbd/skintext.py:357
 msgid "Default Base Folder"
-msgstr "Pasta Principal Padrão"
+msgstr "Pasta Inicial Padrão"
 
 #: sabnzbd/skintext.py:360
 msgid "Switches configuration"
@@ -2654,7 +2654,7 @@ msgstr "Pós-processar apenas os trabalhos verificados"
 #: sabnzbd/skintext.py:379
 msgid "Only perform post-processing on jobs that passed all PAR2 checks."
 msgstr ""
-"Realizar pós-processamento apenas em trabalhos que passaram todos as "
+"Realizar pós-processamento apenas em trabalhos que passaram todas as "
 "verificações PAR2."
 
 #: sabnzbd/skintext.py:380
@@ -2735,7 +2735,7 @@ msgstr "Usado quando nenhum script de usuário é definido pela categoria."
 
 #: sabnzbd/skintext.py:397
 msgid "Pre-queue user script"
-msgstr "Pré-fila do script de usuário"
+msgstr "Script de usuário de pré-fila"
 
 #: sabnzbd/skintext.py:398
 msgid "Used before an NZB enters the queue."
@@ -2825,14 +2825,14 @@ msgstr "Substituir pontos por espaços no nome da pasta."
 
 #: sabnzbd/skintext.py:422
 msgid "Replace Illegal Characters in Folder Names"
-msgstr "Substituir caracteres inválidos no nome das pastas"
+msgstr "Substituir caracteres inválidos em nomes de pastas"
 
 #: sabnzbd/skintext.py:423
 msgid ""
 "Replace illegal characters in folder names by equivalents (otherwise remove)."
 msgstr ""
-"Substituir caracteres inválidos por equivalentes no nome das pastas. Se não "
-"for possível, remove-los-ei."
+"Substituir caracteres inválidos em nomes de pastas por equivalentes (caso "
+"contrário, removê-los)."
 
 #: sabnzbd/skintext.py:424
 msgid "Launch Browser on Startup"
@@ -2844,14 +2844,13 @@ msgstr "Abrir o navegador padrão ao iniciar o SABnzbd."
 
 #: sabnzbd/skintext.py:426
 msgid "Pause Downloading During Post-Processing"
-msgstr "Pausar o download durante o pós processamento."
+msgstr "Pausar o download durante o pós-processamento."
 
 #: sabnzbd/skintext.py:427
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
 msgstr ""
-"Pausar o download no início de um pós processamento e resumir quando "
-"finalizado."
+"Pausar o download no início do pós-processamento e retomar quando concluído."
 
 #: sabnzbd/skintext.py:428
 msgid "Ignore Samples"
@@ -2875,7 +2874,7 @@ msgstr "Tipo SSL"
 
 #: sabnzbd/skintext.py:434
 msgid "Use V23 unless your provider requires otherwise!"
-msgstr "Utilizar V23 a não ser que o seu provedor exija o contrário!"
+msgstr "Utilize V23 a não ser que o seu provedor exija outro!"
 
 #: sabnzbd/skintext.py:435
 msgid "Use 12 hour clock (AM/PM)"
@@ -2891,7 +2890,7 @@ msgstr "Servidor"
 
 #: sabnzbd/skintext.py:440
 msgid "Post processing"
-msgstr "Pós processamento"
+msgstr "Pós-processamento"
 
 #: sabnzbd/skintext.py:441
 msgid "Naming"
@@ -2914,8 +2913,8 @@ msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
 msgstr ""
-"Em que dia do mês ou semana (1=Segunda) seu ISP reseta sua quota? (Utilizar "
-"opcionalmente  hh:mm)"
+"Em que dia do mês ou da semana (1 = segunda-feira) seu provedor de Internet "
+"redefine sua quota? (Opcionalmente com hh: mm)"
 
 #: sabnzbd/skintext.py:447 [Auto-resume download on the reset day]
 msgid "Auto resume"
@@ -3156,7 +3155,8 @@ msgstr "Notificações de Disco Cheio"
 
 #: sabnzbd/skintext.py:530
 msgid "Send email when disk is full and SABnzbd is paused."
-msgstr "Enviar email quando o disco estiver cheio e SABnzbd estiver pausado."
+msgstr ""
+"Enviar e-mail quando o disco estiver cheio e SABnzbd estiver pausado."
 
 #: sabnzbd/skintext.py:531
 msgid "Send RSS notifications"
@@ -3363,7 +3363,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:584
 msgid "Relative folders are based on"
-msgstr "Baseado em pastas relativas"
+msgstr "Caminho base das pastas relativas"
 
 #: sabnzbd/skintext.py:585
 msgid "Folder/Path"
@@ -3391,7 +3391,7 @@ msgstr "Ativa a ordenação e renomeação de episódios."
 
 #: sabnzbd/skintext.py:594
 msgid "Pattern Key"
-msgstr "Chave de padrão"
+msgstr "Modelo do padrão"
 
 #: sabnzbd/skintext.py:595
 msgid "Clear"
@@ -3411,7 +3411,7 @@ msgstr "Ordenação genérica"
 
 #: sabnzbd/skintext.py:599
 msgid "Enable Movie Sorting"
-msgstr "Ativar a ordenação dos Filmes"
+msgstr "Ativar a ordenação de filmes"
 
 #: sabnzbd/skintext.py:600
 msgid "Enable generic sorting and renaming of files."
@@ -3904,7 +3904,7 @@ msgstr "Taxa de Atualização"
 
 #: sabnzbd/skintext.py:756
 msgid "Container Width"
-msgstr "Largura do Contâiner"
+msgstr "Largura do Contêiner"
 
 #: sabnzbd/skintext.py:757
 msgid "Confirm Queue Deletions"
