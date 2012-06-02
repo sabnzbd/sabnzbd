@@ -1281,7 +1281,8 @@ def set_chmod(path, permissions, report):
     try:
         os.chmod(path, permissions)
     except:
-        if report:
+        lpath = path.lower()
+        if report and '.appledouble' not in lpath and '.ds_store' not in lpath:
             logging.error(Ta('Cannot change permissions of %s'), path)
             logging.info("Traceback: ", exc_info = True)
 
