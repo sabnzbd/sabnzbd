@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-14 15:48+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2012-05-31 09:53+0000\n"
+"Last-Translator: Tomasz 'Zen' Napierala <tomasz@napierala.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 05:18+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-06-01 05:45+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -27,25 +27,25 @@ msgstr "Nie ma szablonu: %s, użyto standardowego szablonu"
 
 #: SABnzbd.py:464 [Error message]
 msgid "_yenc module... NOT found!"
-msgstr "modół _yenc ... NIE znaleziony!"
+msgstr "moduł _yens... NIE znaleziono!"
 
 #: SABnzbd.py:471 [Error message]
 msgid "par2 binary... NOT found!"
-msgstr "program par2 ... NIE znaleziony!"
+msgstr "program par2 ... NIE znaleziono!"
 
 #: SABnzbd.py:479 [Warning message]
 msgid "unrar binary... NOT found"
-msgstr "program unrar ... NIE znaleziony!"
+msgstr "program unrar ... NIE znaleziono!"
 
 #: SABnzbd.py:484 [Warning message]
 msgid "unzip binary... NOT found!"
-msgstr "program unzip ... NIE znaleziony!"
+msgstr "program unzip ... NIE znaleziono!"
 
 #: SABnzbd.py:634 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
-msgstr "0.0.0.0 potrzebuje adresu IPv6 do dostępu z zewnątrz"
+msgstr "Nazwa hosta 0.0.0.0 wymaga adresu IPv6 do dostępu z zewnątrz"
 
 #: SABnzbd.py:1350 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
@@ -57,7 +57,7 @@ msgstr "SABnabd został wyłączony"
 
 #: sabnzbd/utils/servertests.py:35
 msgid "The hostname is not set."
-msgstr "Nazwa hosta nie jest ustawiona"
+msgstr "Nazwa hosta nie została ustawiona."
 
 #: sabnzbd/utils/servertests.py:41
 msgid "There are no connections set. Please set at least one connection."
@@ -76,7 +76,7 @@ msgstr "Niewłaściwe dane serwera"
 #: sabnzbd/utils/servertests.py:90
 msgid "Timed out: Try enabling SSL or connecting on a different port."
 msgstr ""
-"Upłynął limit czasu odpowiedzi: Spróbuj włączyć SSL, lub połącz się z innym "
+"Upłynął limit czasu odpowiedzi: Spróbuj włączyć SSL lub połącz się z innym "
 "portem."
 
 #: sabnzbd/utils/servertests.py:92
@@ -89,7 +89,7 @@ msgstr "Nieprawidłowy adres serwera."
 
 #: sabnzbd/utils/servertests.py:101
 msgid "Server quit during login sequence."
-msgstr "Seerwer przerwał komunikację w trakcie logowania"
+msgstr "Serwer przerwał komunikację w trakcie logowania"
 
 #: sabnzbd/utils/servertests.py:123
 msgid "Server requires username and password."
@@ -111,11 +111,11 @@ msgstr ""
 
 #: sabnzbd/utils/servertests.py:135
 msgid "Could not determine connection result (%s)"
-msgstr "Nie mogę określić rezultatu połączenia (%s)"
+msgstr "Nie można określić rezultatu połączenia (%s)"
 
 #: sabnzbd/__init__.py:160 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
-msgstr "Sygnał %s został złapany, zapisuję i wychodzę..."
+msgstr "Odebrano sygnał %s. Zapisywanie i i zamykanie programu..."
 
 #: sabnzbd/__init__.py:463
 msgid "fetching msgid %s from www.newzbin2.es"
@@ -143,7 +143,7 @@ msgstr "Próba ustawienia statusu nieistniejącego serwera %s"
 
 #: sabnzbd/__init__.py:766 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
-msgstr "Zbyt mało miejsca, włączam PAUZĘ"
+msgstr "Zbyt mało miejsca, wymuszanie WSTRZYMANIA"
 
 #: sabnzbd/__init__.py:792 [Error message]
 msgid "Failure in tempfile.mkstemp"
