@@ -277,8 +277,10 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 expected_size = 0
                 # Make sure there are no missing files in the file sequence
                 # Add 1 to the value before adding to take into account .000
-                for i in xrange(len(joinable_sets[joinable_set])+1):
-                    expected_size += i
+                # MODIFICATION: Instead of adding the value of the filenames,
+                # Add only the number of files together
+                for i in xrange(len(joinable_sets[joinable_set])):
+                    expected_size += 1
                 logging.debug("FJN, expsize: %s", expected_size)
 
                 # Add together the values of .001 (+1 for .000)
@@ -288,9 +290,9 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     head, tail = os.path.splitext(joinable)
                     if tail == '.ts':
                         match, set, num = match_ts(joinable)
-                        real_size += num+1
+                        real_size += 1
                     else:
-                        real_size += int(tail[1:])
+                        real_size += 1
                 logging.debug("FJN, realsize: %s", real_size)
 
                 if real_size != expected_size:
