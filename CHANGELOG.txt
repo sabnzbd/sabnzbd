@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.7.0RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Suppress permission errors on paths containing ".AppleDouble" or ".DS_Store"
+  (Required for NAS systems that support Apple AFP shares)
+- OSX/Windows: Set article cache to 200M when not already set.
+- Pre-check: lower default minimum completion rate to 100.2%
+-------------------------------------------------------------------------------
  0.7.0RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix for rare crash in par2 fetching
