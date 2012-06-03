@@ -60,6 +60,8 @@ TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
+SEVENZIP_RE = re.compile(r'\.7z$', re.I)
+SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
 VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
@@ -69,6 +71,7 @@ PAR2C_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
+SEVEN_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
 CURL_COMMAND = None
@@ -96,6 +99,8 @@ def find_programs(curdir):
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
 
         sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
+        if sabnzbd.DARWIN_INTEL:
+            sabnzbd.newsunpack.SEVEN_COMMAND =  check(curdir, 'osx/7zip/7za')
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
@@ -107,6 +112,7 @@ def find_programs(curdir):
             sabnzbd.newsunpack.RAR_COMMAND =   check(curdir, 'win/unrar/UnRAR.exe')
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
         sabnzbd.newsunpack.ZIP_COMMAND =   check(curdir, 'win/unzip/unzip.exe')
+        sabnzbd.newsunpack.SEVEN_COMMAND =   check(curdir, 'win/7zip/7za.exe')
         sabnzbd.newsunpack.CURL_COMMAND = check(curdir, 'lib/curl.exe')
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -116,6 +122,7 @@ def find_programs(curdir):
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
+        sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
@@ -164,7 +171,7 @@ def SimpleRarExtract(rarfile, name):
     return ret, output
 
 #------------------------------------------------------------------------------
-def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, ts, depth=0):
+def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
@@ -174,9 +181,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xts = build_filelists(workdir, None)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, None)
     else:
-        xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
 
     rerun = False
     newfiles = []
@@ -214,6 +221,16 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line()
 
+    if cfg.enable_7zip():
+        new_sevens = [seven for seven in xsevens if seven not in sevens]
+        if new_sevens:
+            rerun = True
+            logging.info('7za starting on %s', workdir)
+            if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
+                error = True
+            logging.info('7za finished on %s', workdir)
+            nzo.set_action_line()
+
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
         if new_ts:
@@ -228,7 +245,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     if rerun:
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
-                            xjoinables, xzips, xrars, xts, depth)
+                            xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
             error = z
         if y:
@@ -748,10 +765,167 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                          startupinfo=stup, creationflags=creationflags)
 
     output = p.stdout.read()
+    logging.debug('unzip output: %s', output)
 
     ret = p.wait()
 
     return ret
+
+#------------------------------------------------------------------------------
+# 7Zip Functions
+#------------------------------------------------------------------------------
+
+def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
+    """ Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
+        When 'delete' is set, originals will be deleted.
+    """
+    i = 0
+    unseven_failed = False
+    tms = time()
+
+    # Find multi-volume sets, because 7zip will not provide actual set members
+    sets = {}
+    for seven in sevens:
+        name, ext = os.path.splitext(seven)
+        ext = ext.strip('.')
+        if not ext.isdigit():
+            name = seven
+            ext = None
+        if name not in sets:
+            sets[name] = []
+        if ext:
+            sets[name].append(ext)
+
+    # Unpack each set
+    for seven in sets:
+        extensions = sets[seven]
+        logging.info("Starting extract on 7zip set/file: %s ", seven)
+        nzo.set_action_line(T('Unpacking'), '%s' % unicoder(seven))
+
+        if workdir_complete and seven.startswith(workdir):
+            extraction_path = workdir_complete
+        else:
+            extraction_path = os.path.split(seven)[0]
+
+        res, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
+        if res:
+            unseven_failed = True
+            nzo.set_unpack_info('Unpack', msg)
+        else:
+            i += 1
+
+    if not unseven_failed:
+        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        nzo.set_unpack_info('Unpack', msg)
+
+    return unseven_failed
+
+
+def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
+    """ Unpack single set 'sevenset' to 'extraction_path',
+        with password tries
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
+    """
+
+    fail = 0
+    if nzo.password:
+        passwords = [nzo.password]
+    else:
+        passwords = []
+        pw_file = cfg.password_file.get_path()
+        if pw_file:
+            try:
+                pwf = open(pw_file, 'r')
+                passwords = pwf.read().split('\n')
+                # Remove empty lines and space-only passwords and remove surrounding spaces
+                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+                pwf.close()
+                logging.info('Read the passwords file %s', pw_file)
+            except IOError:
+                logging.info('Failed to read the passwords file %s', pw_file)
+
+    if nzo.password:
+        # If an explicit password was set, add a retry without password, just in case.
+        passwords.append('')
+    elif not passwords or not nzo.encrypted:
+        # If we're not sure about encryption, start with empty password
+        # and make sure we have at least the empty password
+        passwords.insert(0, '')
+
+    for password in passwords:
+        if password:
+            logging.debug('Trying 7zip with password "%s"', password)
+            msg = T('Trying 7zip with password "%s"') % unicoder(password)
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg)
+        fail, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
+        if fail != 2:
+            break
+
+    nzo.fail_msg = ''
+    if fail == 2:
+        logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(os.path.split(sevenset)[1]))
+    return fail, msg
+
+
+def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
+    """ Unpack single 7Z set 'sevenset' to 'extraction_path'
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), message
+    """
+    msg = None
+    if one_folder:
+        method = 'e'  # Unpack without folders
+    else:
+        method = 'x'  # Unpack with folders
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        case = '-ssc-' # Case insensitive
+    else:
+        case = '-ssc'  # Case sensitive
+    if password:
+        password = '-p%s' % password
+    else:
+        password = '-p'
+
+
+    if len(extensions) > 0:
+        name = '%s.001' % sevenset
+    else:
+        name = sevenset
+
+    if not os.path.exists(name):
+        return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
+
+    command = [SEVEN_COMMAND, method, '-y', '-aou', case, password,
+               '-o%s' % extraction_path, name]
+
+    stup, need_shell, command, creationflags = build_command(command)
+
+    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         startupinfo=stup, creationflags=creationflags)
+
+    output = p.stdout.read()
+    logging.debug('7za output: %s', output)
+
+    ret = p.wait()
+
+    if ret == 0 and delete:
+        if extensions:
+            for ext in extensions:
+                path = '%s.%s' % (sevenset, ext)
+                try:
+                    os.remove(path)
+                except:
+                    logging.warning(Ta('Deleting %s failed!'), latin1(path))
+        else:
+            try:
+                os.remove(sevenset)
+            except:
+                logging.warning(Ta('Deleting %s failed!'), latin1(sevenset))
+
+    # Always return an error message, even when return code is 0
+    return ret, T('Could not unpack %s') % unicoder(sevenset)
+
 
 #------------------------------------------------------------------------------
 # PAR2 Functions
@@ -786,7 +960,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             nzo.set_action_line(T('Repair'), T('Starting Repair'))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, ts = build_filelists(workdir, None, check_rar=False)
+            joinables, zips, rars, sevens, ts = build_filelists(workdir, None, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables = PAR_Verify(parfile, parfile_nzf, nzo,
                                                                           setname, joinables)
@@ -1235,7 +1409,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
-    joinables, zips, rars, filelist = ([], [], [], [])
+    joinables, zips, rars, sevens, filelist = ([], [], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
@@ -1247,10 +1421,13 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
             for _file in files:
                 filelist.append(os.path.join(root, _file))
 
+    sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
+    sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
+
     if check_rar:
-        joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not is_rarfile(f)]
+        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f) and not is_rarfile(f)]
     else:
-        joinables = [f for f in filelist if SPLITFILE_RE.search(f)]
+        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f)]
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
@@ -1259,14 +1436,15 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     else:
         rars = [f for f in filelist if RAR_RE.search(f)]
 
-    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
+    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables and f not in sevens]
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): zips: %s", zips)
     logging.debug("build_filelists(): rars: %s", rars)
+    logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return (joinables, zips, rars, ts)
+    return (joinables, zips, rars, sevens, ts)
 
 
 def QuickCheck(set, nzo):

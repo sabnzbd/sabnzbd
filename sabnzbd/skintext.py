@@ -365,6 +365,8 @@ SKIN_TEXT = {
     'explain-enable_unrar' : TT('Enable built-in unrar functionality.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'explain-enable_unzip' : TT('Enable built-in unzip functionality.'),
+    'opt-enable_7zip' : TT('Enable 7zip'),
+    'explain-enable_7zip' : TT('Enable built-in 7zip functionality.'),
     'opt-enable_filejoin' : TT('Enable Filejoin'),
     'explain-enable_filejoin' : TT('Join files ending in .001, .002 etc. into one file.'),
     'opt-enable_tsjoin' : TT('Enable TS Joining'),

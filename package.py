@@ -327,6 +327,7 @@ data_files = [
          'win/par2/',
          'win/unzip/',
          'win/unrar/',
+         'win/7zip/',
          'icons/'
        ]
 
@@ -418,7 +419,7 @@ if target == 'app':
         setup_requires=['py2app'],
     )
 
-    # copy unrar & par2 binary to avoid striping
+    # copy unrar, 7zip & par2 binary to avoid striping
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
@@ -428,6 +429,8 @@ if target == 'app':
         os.system("cp -pR osx/unrar/unrar dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
     else:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
+    os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
+    os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")

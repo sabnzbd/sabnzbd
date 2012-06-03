@@ -1134,7 +1134,7 @@ SWITCH_LIST = \
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt'
+             'pre_check', 'max_art_tries', 'max_art_opt', 'enable_7zip'
              )
 
 #------------------------------------------------------------------------------
@@ -1154,6 +1154,9 @@ class ConfigSwitches(object):
         conf['nt'] = sabnzbd.WIN32
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
+        conf['have_unrar'] = bool(sabnzbd.newsunpack.RAR_COMMAND)
+        conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
+        conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw)()
