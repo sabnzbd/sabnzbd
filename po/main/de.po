@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-04 14:12+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2012-06-04 16:01+0000\n"
+"Last-Translator: Thomas Lucke (Lucky) <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-08 05:37+0000\n"
-"X-Generator: Launchpad (build 15204)\n"
+"X-Launchpad-Export-Date: 2012-06-05 05:13+0000\n"
+"X-Generator: Launchpad (build 15353)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -91,7 +91,7 @@ msgstr "Ungültige Server-Adresse."
 
 #: sabnzbd/utils/servertests.py:101
 msgid "Server quit during login sequence."
-msgstr ""
+msgstr "Sever beendet beim Anmeldeverlauf."
 
 #: sabnzbd/utils/servertests.py:123
 msgid "Server requires username and password."
@@ -230,15 +230,15 @@ msgstr "Server-Adresse wird benötigt"
 
 #: sabnzbd/config.py:207
 msgid "Cannot create %s folder %s"
-msgstr ""
+msgstr "Kann kein %s Ordner %s erstellen"
 
 #: sabnzbd/config.py:738 [Error message]
 msgid "Cannot write to INI file %s"
-msgstr ""
+msgstr "Kann INI-Datei %s nicht schreiben"
 
 #: sabnzbd/config.py:770 [Error message]
 msgid "Cannot create backup file for %s"
-msgstr ""
+msgstr "Kann keine Sicherungsdatei erstellen für %s"
 
 #: sabnzbd/config.py:894 [Error message]
 msgid "Incorrectly encoded password %s"
@@ -664,7 +664,7 @@ msgstr "Zusammenfügen"
 
 #: sabnzbd/newsunpack.py:359
 msgid "Incomplete sequence of joinable files"
-msgstr ""
+msgstr "Unvollständiger Ablauf beim zusammenführen von Dateien"
 
 #: sabnzbd/newsunpack.py:360 # sabnzbd/newsunpack.py:368
 msgid "File join of %s failed"
@@ -704,7 +704,7 @@ msgstr "Löschen von %s fehlgeschlagen!"
 
 #: sabnzbd/newsunpack.py:486
 msgid "Trying unrar with password \"%s\""
-msgstr ""
+msgstr "Versuche entpacken mit Passwort \"%s\""
 
 #: sabnzbd/newsunpack.py:494 [Error message] # sabnzbd/newsunpack.py:615
 #: sabnzbd/newsunpack.py:616
@@ -1059,7 +1059,7 @@ msgstr "Neu starten"
 
 #: sabnzbd/osxmenu.py:277 # sabnzbd/sabtray.py:59
 msgid "Restart without login"
-msgstr ""
+msgstr "Neustart ohne Anmeldung"
 
 #: sabnzbd/osxmenu.py:290
 msgid "Quit"
@@ -1303,6 +1303,7 @@ msgstr ""
 #: sabnzbd/postproc.py:260
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
+"Download wahrscheinlich fehlgeschlagen, nur %s von benötigten %s verfügbar"
 
 #: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
@@ -1330,7 +1331,7 @@ msgstr "Fehler beim Umbenennen von \"%s\" nach \"%s\""
 
 #: sabnzbd/postproc.py:407
 msgid "Failed to move files"
-msgstr ""
+msgstr "Dateien verschieben fehlgeschlagen"
 
 #: sabnzbd/postproc.py:415
 msgid "Running script"
@@ -1386,7 +1387,7 @@ msgstr "Nachbearbeitung"
 
 #: sabnzbd/postproc.py:571
 msgid "Trying SFV verification"
-msgstr ""
+msgstr "Versuche SFV-Überprüfung"
 
 #: sabnzbd/postproc.py:574
 msgid "Some files failed to verify against \"%s\""
@@ -1394,7 +1395,7 @@ msgstr "Überprüfung einiger Dateien mittels %s fehlgeschlagen"
 
 #: sabnzbd/postproc.py:577
 msgid "Verified successfully using SFV files"
-msgstr ""
+msgstr "Überprüfung mit SFV-Datei(en) erfolgreich"
 
 #: sabnzbd/postproc.py:580
 msgid "[%s] No par2 sets"
@@ -1438,7 +1439,7 @@ msgstr "RSS-Feed %s war leer"
 
 #: sabnzbd/rss.py:361 # sabnzbd/rss.py:363
 msgid "Incompatible feed"
-msgstr ""
+msgstr "Inkompatibeler RSS-Feed"
 
 #: sabnzbd/rss.py:649 [Warning message]
 msgid "Empty RSS entry found (%s)"
@@ -1450,7 +1451,7 @@ msgstr "Interface anzeigen"
 
 #: sabnzbd/sabtray.py:58
 msgid "Open complete folder"
-msgstr ""
+msgstr "Öffne Zielverzeichnis"
 
 #: sabnzbd/sabtray.py:62 # sabnzbd/sabtray.py:131 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:150 # sabnzbd/skintext.py:493
@@ -1679,7 +1680,7 @@ msgstr "Parameter"
 
 #: sabnzbd/skintext.py:99
 msgid "Python Version"
-msgstr ""
+msgstr "Python Version"
 
 #: sabnzbd/skintext.py:100 [Home page of the SABnzbd project]
 msgid "Home page"
@@ -1787,7 +1788,7 @@ msgstr "Sortierung"
 
 #: sabnzbd/skintext.py:134 [Main menu item]
 msgid "Special"
-msgstr ""
+msgstr "Spezial"
 
 #: sabnzbd/skintext.py:137
 msgid "Download Dir"
@@ -2437,7 +2438,7 @@ msgstr "QR-Code"
 
 #: sabnzbd/skintext.py:324 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
-msgstr ""
+msgstr "API-Key OR-Code"
 
 #: sabnzbd/skintext.py:327
 msgid "Folder configuration"
@@ -3062,7 +3063,7 @@ msgstr "Server überprüfen"
 
 #: sabnzbd/skintext.py:477 [Button: Clear server's byte counters]
 msgid "Clear Counters"
-msgstr ""
+msgstr "Zähler zurücksetzen"
 
 #: sabnzbd/skintext.py:478
 msgid "Testing server details..."
@@ -3291,6 +3292,9 @@ msgid ""
 "If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
 msgstr ""
+"Wenn Sie ein Konto bei <strong>www.newzbin2.es</strong> haben, können Sie "
+"hier Ihre Zugangsdaten eingeben.<br />Dies wird Zusatzfunktionen "
+"freischalten."
 
 #: sabnzbd/skintext.py:557
 msgid "Account info"
@@ -3634,11 +3638,11 @@ msgstr "Tägliche Ordner"
 
 #: sabnzbd/skintext.py:646 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
-msgstr ""
+msgstr "Groß- / Kleinschreibung berücksichtigen"
 
 #: sabnzbd/skintext.py:647
 msgid "Processed Result"
-msgstr ""
+msgstr "Ergebnis"
 
 #: sabnzbd/skintext.py:650
 msgid ""
@@ -3647,6 +3651,10 @@ msgid ""
 "Wiki first, as some have serious side-effects.<br>The default values are "
 "between parentheses."
 msgstr ""
+"Selten genutzte Funktionen. Bedeutung und Erklärungen finden Sie per klick "
+"auf den Hilfe-Button um auf die Wiki-Seite zu gelangen.<br>Änder nichts ohne "
+"vorher das Wiki gelesen zu haben, da sonst schwerwiegende Nebeneffekte "
+"auftreten können.<br>Die Ursprungswerte stehen zwischen den runden Klammern."
 
 #: sabnzbd/skintext.py:654
 msgid "Values"
@@ -3710,7 +3718,7 @@ msgstr "Neu laden"
 
 #: sabnzbd/skintext.py:678 # sabnzbd/skintext.py:724
 msgid "Options"
-msgstr "Einstellungen"
+msgstr "Optionen"
 
 #: sabnzbd/skintext.py:679
 msgid "Page"
@@ -3718,7 +3726,7 @@ msgstr "Seite"
 
 #: sabnzbd/skintext.py:680 # sabnzbd/skintext.py:718 # sabnzbd/skintext.py:790
 msgid "Prev"
-msgstr "Züruck"
+msgstr "Zurück"
 
 #: sabnzbd/skintext.py:681 # sabnzbd/skintext.py:719 # sabnzbd/skintext.py:791
 #: sabnzbd/skintext.py:823 [Button to go to next Wizard page]
@@ -4327,7 +4335,7 @@ msgstr "Sie benötigen einen NZBMatrix VIP-Konto, um die API zu nutzen"
 
 #: sabnzbd/urlgrabber.py:288
 msgid "Invalid nzbmatrix credentials"
-msgstr ""
+msgstr "Fehlerhafte nzbmatrix Anmeldedaten"
 
 #: sabnzbd/urlgrabber.py:306
 msgid "Problem accessing nzbmatrix server (%s)"
