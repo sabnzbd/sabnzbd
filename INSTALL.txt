@@ -75,8 +75,6 @@ Optional modules
     unzip >= 5.52           http://www.info-zip.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
-    gnu gettext             http://www.gnu.org/software/gettext/
-    gntp                    https://github.com/kfdm/gntp/ (or use "pypm install gntp")
 
 Optional modules Windows
     pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
