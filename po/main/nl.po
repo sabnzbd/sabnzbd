@@ -209,7 +209,7 @@ msgstr "Schrijf fout bij opslaan van bestand %s"
 
 #: sabnzbd/assembler.py:110 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
-msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file"
+msgstr "WAARSCHUWING: Item \"%s\" gepauzeerd vanwege versleuteld RAR bestand"
 
 #: sabnzbd/assembler.py:142
 msgid "%s missing"
@@ -233,7 +233,7 @@ msgstr "Kan %s map %s  niet aanmaken"
 
 #: sabnzbd/config.py:738 [Error message]
 msgid "Cannot write to INI file %s"
-msgstr "Schijven naar het INI bestand %s lukt niet"
+msgstr "Schrijven naar het INI bestand %s lukt niet"
 
 #: sabnzbd/config.py:770 [Error message]
 msgid "Cannot create backup file for %s"
@@ -653,7 +653,7 @@ msgstr "Samenvoegen"
 
 #: sabnzbd/newsunpack.py:359
 msgid "Incomplete sequence of joinable files"
-msgstr "onvolledige reeks van samenvoegbare bestanden"
+msgstr "Onvolledige reeks van samenvoegbare bestanden"
 
 #: sabnzbd/newsunpack.py:360 # sabnzbd/newsunpack.py:368
 msgid "File join of %s failed"
@@ -1362,7 +1362,7 @@ msgstr "Probeer SFV verificatie"
 
 #: sabnzbd/postproc.py:574
 msgid "Some files failed to verify against \"%s\""
-msgstr "Some files failed to verify against \"%s\""
+msgstr "Sommige bestanden konden niet geverifieerd worden met \"%s\""
 
 #: sabnzbd/postproc.py:577
 msgid "Verified successfully using SFV files"
