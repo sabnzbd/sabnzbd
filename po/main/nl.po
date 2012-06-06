@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-17 16:46+0000\n"
+"PO-Revision-Date: 2012-06-06 09:39+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-18 05:04+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-06-06 15:32+0000\n"
+"X-Generator: Launchpad (build 15353)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -209,7 +209,7 @@ msgstr "Schrijf fout bij opslaan van bestand %s"
 
 #: sabnzbd/assembler.py:110 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
-msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file"
+msgstr "WAARSCHUWING: Item \"%s\" gepauzeerd vanwege versleuteld RAR bestand"
 
 #: sabnzbd/assembler.py:142
 msgid "%s missing"
@@ -233,7 +233,7 @@ msgstr "Kan %s map %s  niet aanmaken"
 
 #: sabnzbd/config.py:738 [Error message]
 msgid "Cannot write to INI file %s"
-msgstr "Schijven naar het INI bestand %s lukt niet"
+msgstr "Schrijven naar het INI bestand %s lukt niet"
 
 #: sabnzbd/config.py:770 [Error message]
 msgid "Cannot create backup file for %s"
@@ -653,7 +653,7 @@ msgstr "Samenvoegen"
 
 #: sabnzbd/newsunpack.py:359
 msgid "Incomplete sequence of joinable files"
-msgstr "onvolledige reeks van samenvoegbare bestanden"
+msgstr "Onvolledige reeks van samenvoegbare bestanden"
 
 #: sabnzbd/newsunpack.py:360 # sabnzbd/newsunpack.py:368
 msgid "File join of %s failed"
@@ -1362,7 +1362,7 @@ msgstr "Probeer SFV verificatie"
 
 #: sabnzbd/postproc.py:574
 msgid "Some files failed to verify against \"%s\""
-msgstr "Some files failed to verify against \"%s\""
+msgstr "Sommige bestanden konden niet geverifieerd worden met \"%s\""
 
 #: sabnzbd/postproc.py:577
 msgid "Verified successfully using SFV files"
