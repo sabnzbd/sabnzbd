@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-01 18:51+0000\n"
-"PO-Revision-Date: 2012-05-07 01:37+0000\n"
-"Last-Translator: Robert Sanchez <rsanch1@gmail.com>\n"
+"PO-Revision-Date: 2012-06-07 03:07+0000\n"
+"Last-Translator: Carlos Hernandez <imaginingdreamer@yahoo.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-08 05:38+0000\n"
-"X-Generator: Launchpad (build 15204)\n"
+"X-Launchpad-Export-Date: 2012-06-08 05:13+0000\n"
+"X-Generator: Launchpad (build 15376)\n"
 
 #: NSIS_Installer.nsi:417
 msgid "Go to the SABnzbd Wiki"
-msgstr "Vaya al wiki de SABnzbd"
+msgstr "Ir al wiki de SABnzbd"
 
 #: NSIS_Installer.nsi:419
 msgid "Show Release Notes"
@@ -27,11 +27,11 @@ msgstr "Mostrar notas de la versión"
 
 #: NSIS_Installer.nsi:421
 msgid "Support the project, Donate!"
-msgstr "Apoya el proyecto, haz una donación!"
+msgstr "¡Apoye el proyecto, haga una  donación!"
 
 #: NSIS_Installer.nsi:423
 msgid "Please close \"SABnzbd.exe\" first"
-msgstr "Por favor de cierrar primero \"SABnzbd.exe\""
+msgstr "Por favor cierre primero \"SABnzbd.exe\""
 
 #: NSIS_Installer.nsi:425
 msgid ""
