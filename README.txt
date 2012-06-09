@@ -1,4 +1,4 @@
-************************  SABnzbd 0.7.0RC2 ************************
+************************  SABnzbd 0.7.0 ************************
 
 What's new:
 
@@ -20,13 +20,11 @@ What's new:
 - Individual RSS filter toggle
 - Unified OSX DMG
 
-For problems fixed in the various Betas, see CHANGELOG.txt
-
 
 About:
   SABnzbd is an open-source cross-platform binary newsreader.
   It simplifies the process of downloading from Usenet dramatically,
-  thanks to its friendly web-based user interface and advanced
+  thanks to its web-based user interface and advanced
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
