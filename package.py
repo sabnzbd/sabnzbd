@@ -570,7 +570,7 @@ elif target in ('binary', 'installer'):
 
     ############################
     # Copy Curl if needed
-    if not (sys.version_info > (2, 5)):
+    if sys.version_info < (2, 6):
         # Curl for Python 2.5
         os.system(r'unzip -o win\curl\curl.zip -d dist\lib')
 

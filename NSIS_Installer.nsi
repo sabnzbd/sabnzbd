@@ -84,6 +84,7 @@
   RMDir /r "${idir}\interfaces\wizard"
   RMDir /r "${idir}\interfaces\Config"
   RMDir    "${idir}\interfaces"
+  RMDir /r "${idir}\win\curl"
   RMDir /r "${idir}\win\par2"
   RMDir /r "${idir}\win\unrar"
   RMDir /r "${idir}\win\unzip"
