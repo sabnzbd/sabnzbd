@@ -31,16 +31,14 @@ $T('hour'):<br>
 <!--#end for#-->
 </select>
 <br>$T('sch-frequency'): <br>
-<select name="dayofweek">
-<option value="*" selected>$T('daily')
-<option value="1">$T('monday')
-<option value="2">$T('tuesday')
-<option value="3">$T('wednesday')
-<option value="4">$T('thursday')
-<option value="5">$T('friday')
-<option value="6">$T('saturday')
-<option value="7">$T('sunday')
-</select>
+<input type="checkbox" name="daysofweek" value="1">$T('monday')<br/>
+<input type="checkbox" name="daysofweek" value="2">$T('tuesday')<br/>
+<input type="checkbox" name="daysofweek" value="3">$T('wednesday')<br/>
+<input type="checkbox" name="daysofweek" value="4">$T('thursday')<br/>
+<input type="checkbox" name="daysofweek" value="5">$T('friday')<br/>
+<input type="checkbox" name="daysofweek" value="6">$T('saturday')<br/>
+<input type="checkbox" name="daysofweek" value="7">$T('sunday')<br/>
+
 <br>$T('sch-action'):<br>
 <select name="action">
 <!--#for $action in $actions#-->
