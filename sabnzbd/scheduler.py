@@ -82,7 +82,7 @@ def init():
             continue
 
         if d.isdigit():
-            d = [int(d)]
+            d = [int(i) for i in d]
         else:
             d = range(1, 8)
 

@@ -36,18 +36,15 @@ else:
         </label>
       </div>
       <div class="field-pair alt">
-        <label class="nocheck clearfix" for="dayofweek">
+        <label class="nocheck clearfix" for="daysofweek">
           <span class="component-title">$T('sch-frequency')</span>
-          <select name="dayofweek" id="dayofweek">
-            <option value="*" selected>$T('daily')</option>
-            <option value="1">$T('monday')</option>
-            <option value="2">$T('tuesday')</option>
-            <option value="3">$T('wednesday')</option>
-            <option value="4">$T('thursday')</option>
-            <option value="5">$T('friday')</option>
-            <option value="6">$T('saturday')</option>
-            <option value="7">$T('sunday')</option>
-          </select>
+          <input type="checkbox" name="daysofweek" value="1">$T('monday')<br/>
+          <input type="checkbox" name="daysofweek" value="2">$T('tuesday')<br/>
+          <input type="checkbox" name="daysofweek" value="3">$T('wednesday')<br/>
+          <input type="checkbox" name="daysofweek" value="4">$T('thursday')<br/>
+          <input type="checkbox" name="daysofweek" value="5">$T('friday')<br/>
+          <input type="checkbox" name="daysofweek" value="6">$T('saturday')<br/>
+          <input type="checkbox" name="daysofweek" value="7">$T('sunday')<br/>
         </label>
       </div>
       <div class="field-pair">
