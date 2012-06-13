@@ -349,7 +349,7 @@ Section $(MsgIcon) desktop
 SectionEnd ; end of desktop icon section
 
 Section /o $(MsgAssoc) assoc
-  ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+  ${registerExtension} "$INSTDIR\icons\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
   ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
 SectionEnd ; end of file association section
 
