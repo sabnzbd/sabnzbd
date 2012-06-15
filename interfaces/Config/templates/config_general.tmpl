@@ -141,21 +141,26 @@
         <div class="col1">
             <fieldset>
                 <div class="field-pair alt">
-                    <label class="config" for="bandwidth_limit">$T('opt-bandwidth_limit')</label>
-                    <input type="number" name="bandwidth_limit" id="bandwidth_limit" value="$bandwidth_limit" size="8" step="1024" min="0" />
-                    <span class="desc">$T('explain-bandwidth_limit')</span>
+                    <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
+                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max"/>
+                    <span class="desc">$T('explain-bandwidth_max')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
+                    <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" size="8" step="10" min="0" max="100"/>
+                    <span class="desc">$T('explain-bandwidth_perc')</span>
+                </div>
+                <div class="field-pair alt">
                     <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
                     <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" size="8" />
                     <span class="desc">$T('explain-cache_limitstr')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                     <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50" placeholder=".nfo, .sfv" />
                     <span class="desc">$T('explain-cleanup_list')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair alt">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
                 </div>
             </fieldset>

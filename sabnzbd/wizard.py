@@ -143,6 +143,7 @@ class Wizard(object):
         info['autobrowser'] = cfg.autobrowser()
         info['web_user'] = cfg.username()
         info['web_pass'] = cfg.password()
+        info['bandwidth'] = cfg.bandwidth_max()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
@@ -157,6 +158,7 @@ class Wizard(object):
                 cfg.cherryhost.set(kwargs['access'])
             cfg.enable_https.set(kwargs.get('enable_https',0))
             cfg.autobrowser.set(kwargs.get('autobrowser',0))
+            cfg.bandwidth_max.set(kwargs.get('bandwidth',''))
             cfg.username.set(kwargs.get('web_user', ''))
             cfg.password.set(kwargs.get('web_pass', ''))
             if not cfg.username() or not cfg.password():

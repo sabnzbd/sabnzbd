@@ -235,7 +235,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.https_cert.callback(guard_restart)
     cfg.https_key.callback(guard_restart)
     cfg.enable_https.callback(guard_restart)
-    cfg.bandwidth_limit.callback(guard_speedlimit)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
     cfg.growl_server.callback(sabnzbd.growler.change_value)
@@ -425,10 +424,6 @@ def guard_restart():
     """ Callback for config options requiring a restart """
     global RESTART_REQ
     sabnzbd.RESTART_REQ = True
-
-def guard_speedlimit():
-    """ Callback for change of bandwidth_limit, sets actual speed """
-    Downloader.do.limit_speed(cfg.bandwidth_limit())
 
 def guard_top_only():
     """ Callback for change of top_only option """

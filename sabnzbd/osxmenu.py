@@ -187,9 +187,8 @@ class SABnzbdDelegate(NSObject):
 
         self.menu_speed = NSMenu.alloc().init()
 
-        speeds ={  0 : T('None'), 50 :'50 KB/s' , 100 : '100 KB/s', 200 : '200 KB/s' , 300 : '300 KB/s' ,
-                   400 : '400 KB/s', 500 :'500 KB/s' , 600 : '600 KB/s', 700 : '700 KB/s' , 800 : '800 KB/s' ,
-                   900 : '900 KB/s', 1000 :'1000 KB/s' , 1500 : '1500 KB/s', 2000 : '2000 KB/s' , 3000 : '3000 KB/s'
+        speeds ={  10 :'10%' , 20 : '20%', 30 : '30%', 40 : '40%', 50 : '50%',
+                   60 :'60%' , 70 : '70%', 80 : '80%', 90 : '90%', 100 : '100%'
                 }
 
         for speed in sorted(speeds.keys()):

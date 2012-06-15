@@ -303,8 +303,10 @@ SKIN_TEXT = {
     'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),
     'opt-rss_rate' : TT('RSS Checking Interval'),
     'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
-    'opt-bandwidth_limit' : TT('Download Speed Limit'),
-    'explain-bandwidth_limit' : TT('Download rate limit (in KB/s - kilobytes per second).'),
+    'opt-bandwidth_max' : TT('Maximum line speed'),
+    'explain-bandwidth_max' : TT('Highest possible linespeed in Bytes/second, e.g. 2M.'),
+    'opt-bandwidth_perc' : TT('Percentage of line speed'),
+    'explain-bandwidth_perc' : TT('Which percentage of the linespeed should SABnzbd use, e.g. 50'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
     'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'),
     'opt-cleanup_list' : TT('Cleanup List'),
@@ -863,6 +865,8 @@ SKIN_TEXT = {
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
+    'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
+    'wizard-bandwidth-error' : TT('Enter a speed (e.g. 5M)'), #: Wizard tell user to enter a max bandwidth
 
 #Special
     'yourRights' : TT('''

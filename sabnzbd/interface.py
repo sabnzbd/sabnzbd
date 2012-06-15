@@ -1341,7 +1341,8 @@ class ConfigGeneral(object):
         conf['enable_https'] = cfg.enable_https()
         conf['username'] = cfg.username()
         conf['password'] = cfg.password.get_stars()
-        conf['bandwidth_limit'] = cfg.bandwidth_limit()
+        conf['bandwidth_max'] = cfg.bandwidth_max()
+        conf['bandwidth_perc'] = cfg.bandwidth_perc()
         conf['refresh_rate'] = cfg.refresh_rate()
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
@@ -1394,10 +1395,14 @@ class ConfigGeneral(object):
             cfg.web_dir2.set(web_dir2)
         cfg.web_color2.set(web_color2)
 
-        bandwidth_limit = kwargs.get('bandwidth_limit')
-        if bandwidth_limit != None:
-            bandwidth_limit = int_conv(bandwidth_limit)
-            cfg.bandwidth_limit.set(bandwidth_limit)
+        bandwidth_max = kwargs.get('bandwidth_max')
+        if bandwidth_max != None:
+            cfg.bandwidth_max.set(bandwidth_max)
+        bandwidth_perc = kwargs.get('bandwidth_perc')
+        if bandwidth_perc != None:
+            cfg.bandwidth_perc.set(bandwidth_perc)
+        if bandwidth_perc and not bandwidth_max:
+            logging.warning(Ta('You must set a maximum bandwidth before you can set a bandwidth limit'))
 
         config.save_config()
 

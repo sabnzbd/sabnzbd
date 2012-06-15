@@ -127,8 +127,9 @@ class Downloader(Thread):
         self.paused = paused
 
         #used for throttling bandwidth and scheduling bandwidth changes
-        self.bandwidth_limit = cfg.bandwidth_limit()
-        cfg.bandwidth_limit.callback(self.speed_set)
+        cfg.bandwidth_perc.callback(self.speed_set)
+        cfg.bandwidth_max.callback(self.speed_set)
+        self.speed_set()
 
         # Used for reducing speed
         self.delayed = False
@@ -248,14 +249,29 @@ class Downloader(Thread):
 
     @synchronized_CV
     def limit_speed(self, value):
-        self.bandwidth_limit = int(value)
-        logging.info("Bandwidth limit set to %s", value)
+        if value:
+            self.bandwidth_perc = int(value)
+            mx = cfg.bandwidth_max.get_int()
+            if mx:
+                self.bandwidth_limit = mx * int(value) / 100
+            else:
+                logging.warning(Ta('You must set a maximum bandwidth before you can set a bandwidth limit'))
+        else:
+            self.speed_set()
+        logging.info("Bandwidth limit set to %s%%", value)
 
     def get_limit(self):
-        return self.bandwidth_limit
+        return self.bandwidth_perc
 
     def speed_set(self):
-        self.bandwidth_limit = cfg.bandwidth_limit()
+        limit = cfg.bandwidth_max.get_int()
+        perc = cfg.bandwidth_perc()
+        if limit and perc:
+            self.bandwidth_perc = perc
+            self.bandwidth_limit = limit * perc / 100
+        else:
+            self.bandwidth_perc = 0
+            self.bandwidth_limit = 0
 
     def is_paused(self):
         from sabnzbd.nzbqueue import NzbQueue
@@ -471,7 +487,7 @@ class Downloader(Thread):
                     if self.bandwidth_limit:
                         bps = BPSMeter.do.get_bps()
                         bps += bytes
-                        limit = self.bandwidth_limit * 1024
+                        limit = self.bandwidth_limit
                         if bps > limit:
                             while BPSMeter.do.get_bps() > limit:
                                 time.sleep(0.05)

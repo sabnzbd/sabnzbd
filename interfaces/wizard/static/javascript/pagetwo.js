@@ -15,8 +15,47 @@ function toggleWebPass()
   }
 };
 
+
+function checkRequired()
+{
+  if ($("#bandwidth").val())
+  {
+    $("#next-button").removeAttr("disabled");
+  } else {
+    $("#next-button").attr("disabled","disabled");
+  }
+};
+
+
 $(document).ready(function() {
+  checkRequired();
   toggleWebPass();
+
+  $(".validate-text-required").blur(function(){
+    if (this.value || this.checked){
+      $(this).removeClass("incorrect");
+      $(this).addClass("correct");
+    } else {
+      $(this).removeClass("correct");
+      $(this).addClass("incorrect");
+    }
+  });
+  $("#bandwidth").bind('keyup blur',function(){
+    if (this.value){
+      $(this).removeClass("incorrect");
+      $(this).addClass("correct");
+      $("#bandwidth-tip").removeClass("hidden");
+      $("#bandwidth-error").addClass("hidden");
+      checkRequired();
+    } else {
+      $(this).removeClass("correct");
+      $(this).addClass("incorrect");
+      $("#bandwidth-tip").addClass("hidden");
+      $("#bandwidth-error").removeClass("hidden");
+      checkRequired();
+    }
+  });
+
   $('#enable_webpass').bind('change click focus', function() {
   toggleWebPass();
   });
