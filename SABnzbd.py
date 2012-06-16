@@ -563,7 +563,8 @@ def get_webhost(cherryhost, cherryport, https_port):
         info = socket.getaddrinfo(socket.gethostname(), None)
     except:
         # Hostname does not resolve, use 0.0.0.0
-        cherryhost = '0.0.0.0'
+        if cherryhost not in ('localhost', '127.0.0.1', '::1'):
+            cherryhost = '0.0.0.0'
         info = socket.getaddrinfo(localhost, None)
     for item in info:
         ip = str(item[4][0])
