@@ -563,6 +563,7 @@ elif target in ('binary', 'installer'):
     DeleteFiles(r'dist\lib\API-MS-Win-*.dll')
     DeleteFiles(r'dist\lib\MSWSOCK.DLL')
     DeleteFiles(r'dist\lib\POWRPROF.DLL')
+    DeleteFiles(r'dist\lib\KERNELBASE.dll')
 
     ############################
     # Remove .git residue
