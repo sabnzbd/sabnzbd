@@ -1192,7 +1192,7 @@ SPECIAL_BOOL_LIST = \
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate'
+              'req_completion_rate', 'wait_ext_drive'
             )
 
 class ConfigSpecial(object):

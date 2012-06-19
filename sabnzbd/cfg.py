@@ -238,6 +238,7 @@ win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
+wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

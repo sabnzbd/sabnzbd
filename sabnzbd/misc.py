@@ -713,15 +713,22 @@ def hostname():
 #------------------------------------------------------------------------------
 def check_mount(path):
     """ Return False if volume isn't mounted on Linux or OSX
+        Retry 6 times with an interval of 1 sec.
     """
     if sabnzbd.DARWIN:
         m = re.search(r'^(/Volumes/[^/]+)/', path, re.I)
-    elif not sabnzbd.WIN32:
-        m = re.search(r'^(/(?:mnt|media)/[^/]+)/', path)
+    elif sabnzbd.WIN32:
+        m = re.search(r'^([a-z]:\\)', path, re.I)
     else:
-        m = None
-    return (not m) or os.path.exists(m.group(1))
+        m = re.search(r'^(/(?:mnt|media)/[^/]+)/', path)
 
+    if m:
+        for n in xrange(cfg.wait_ext_drive() or 1):
+            if os.path.exists(m.group(1)):
+                return True
+            logging.debug('Waiting for %s to come online', m.group(1))
+            time.sleep(1)
+    return not m
 
 #------------------------------------------------------------------------------
 # Locked directory operations
