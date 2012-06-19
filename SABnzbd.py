@@ -565,7 +565,11 @@ def get_webhost(cherryhost, cherryport, https_port):
         # Hostname does not resolve, use 0.0.0.0
         if cherryhost not in ('localhost', '127.0.0.1', '::1'):
             cherryhost = '0.0.0.0'
-        info = socket.getaddrinfo(localhost, None)
+        try:
+            info = socket.getaddrinfo(localhost, None)
+        except:
+            info = socket.getaddrinfo('127.0.0.1', None)
+            localhost = '127.0.0.1'
     for item in info:
         ip = str(item[4][0])
         if ip.startswith('169.254.'):
