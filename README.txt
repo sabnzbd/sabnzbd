@@ -1,6 +1,18 @@
-************************  SABnzbd 0.7.0 ************************
+Release Notes  -  SABnzbd 0.7.1RC1
+==================================
 
-What's new:
+## Fixes in 0.7.1
+
+- Plush skin: fix problems with pull-down menus in Mobile Safari
+- On some Linux and OSX systems using localhost would still make SABnzbd
+  give access to other computers
+- Windows: the installer did not set an icon when associating NZB files with SABnzbd
+- Fix problem that the Opera browser had with Config->Servers
+- Retry a few times when accessing a mounted drive to create the
+  final destination folder
+- Minor fixes in  Window Tray icon and OSX top menu
+
+## What's new in 0.7.0
 
 - Download quota management
 - Windows: simple system tray menu
@@ -21,7 +33,7 @@ What's new:
 - Unified OSX DMG
 
 
-About:
+## About
   SABnzbd is an open-source cross-platform binary newsreader.
   It simplifies the process of downloading from Usenet dramatically,
   thanks to its web-based user interface and advanced

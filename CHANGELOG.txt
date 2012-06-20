@@ -1,4 +1,15 @@
 -------------------------------------------------------------------------------
+ 0.7.1RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush skin: fix problems with pull-down menus in Mobile Safari
+- On some Linux and OSX systems using localhost would still make SABnzbd
+  give access to other computers
+- Windows: the installer did not set an icon when associating NZB files with SABnzbd
+- Fix problem that the Opera browser had with Config->Servers
+- Retry a few times when accessing a mounted drive to create the
+  final destination folder
+- Reduce load caused by WinTray and OSX topmenu
+-------------------------------------------------------------------------------
  0.7.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Updated translations
