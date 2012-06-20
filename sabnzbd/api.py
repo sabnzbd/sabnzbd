@@ -1253,6 +1253,16 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
 
 #------------------------------------------------------------------------------
+def fast_queue():
+    """ Return paused, bytes_left, bpsnow, time_left """
+    bytes_left = NzbQueue.do.remaining()
+    paused = Downloader.do.paused
+    bpsnow = BPSMeter.do.get_bps()
+    time_left = calc_timeleft(bytes_left, bpsnow)
+    return paused, bytes_left, bpsnow, time_left
+
+
+#------------------------------------------------------------------------------
 def qstatus_data():
     """Build up the queue status as a nested object and output as a JSON object
     """
@@ -1287,8 +1297,8 @@ def qstatus_data():
         "state" : state,
         "paused" : Downloader.do.paused,
         "pause_int" : scheduler.pause_int(),
-        "kbpersec" : BPSMeter.do.get_bps() / KIBI,
-        "speed" : to_units(BPSMeter.do.get_bps(), dec_limit=1),
+        "kbpersec" : bpsnow / KIBI,
+        "speed" : to_units(bpsnow, dec_limit=1),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),

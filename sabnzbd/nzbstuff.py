@@ -1228,6 +1228,13 @@ class NzbObject(TryList):
                 except:
                     pass
 
+    def remaining(self):
+        """ Return remaining bytes """
+        bytes_left = 0
+        for nzf in self.files:
+            bytes_left += nzf.bytes_left
+        return bytes_left
+
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
 
