@@ -778,7 +778,7 @@ def evaluate_inipath(path):
     inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
         return inipath
-    elif os.path.isfile(path):
+    elif os.path.isfile(path) or os.path.isfile(path + '.bak'):
         return path
     else:
         dirpart, name = os.path.split(path)
@@ -1058,7 +1058,7 @@ def main():
         GetProfileInfo(vista_plus)
         # Find out where INI file is
         inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
-        if not os.path.exists(inifile):
+        if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak'):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
             if sabnzbd.DARWIN:
                 copy_old_files(sabnzbd.DIR_LCLDATA)
@@ -1070,7 +1070,7 @@ def main():
     # All system data dirs are relative to the place we found the INI file
     sabnzbd.DIR_LCLDATA = os.path.dirname(inifile)
 
-    if not os.path.exists(inifile) and not os.path.exists(sabnzbd.DIR_LCLDATA):
+    if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak') and not os.path.exists(sabnzbd.DIR_LCLDATA):
         try:
             os.makedirs(sabnzbd.DIR_LCLDATA)
         except IOError:

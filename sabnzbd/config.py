@@ -22,6 +22,7 @@ sabnzbd.config - Configuration Support
 import os
 import logging
 import threading
+import shutil
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.utils import listquote
@@ -636,7 +637,22 @@ def read_config(path):
     """ Read the complete INI file and check its version number
         if OK, pass values to config-database
     """
+    return _read_config(path)
+
+
+def _read_config(path, try_backup=False):
+    """ Read the complete INI file and check its version number
+        if OK, pass values to config-database
+    """
     global CFG, database, modified
+
+    if try_backup or not os.path.exists(path):
+        # Not found, try backup
+        try:
+            shutil.copyfile(path + '.bak', path)
+            try_backup = True
+        except IOError:
+            pass
 
     if not os.path.exists(path):
         # No file found, create default INI file
@@ -659,7 +675,10 @@ def read_config(path):
         except (KeyError, ValueError):
             CFG['__version__'] = CONFIG_VERSION
     except configobj.ConfigObjError, strerror:
-        return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+        if try_backup:
+            return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+        else:
+            return _read_config(path, True)
 
     CFG['__version__'] = CONFIG_VERSION
 
@@ -731,46 +750,32 @@ def save_config(force=False):
                 else:
                     CFG[sec][kw] = value
 
+    res = False
     filename = CFG.filename
+    bakname = filename + '.bak'
+
+    # Check if file is writable
+    if not sabnzbd.misc.is_writable(filename):
+        logging.error(Ta('Cannot write to INI file %s'), filename)
+        return res
+
+    # copy current file to backup
     try:
-        # Check if file is writable
-        if not sabnzbd.misc.is_writable(filename):
-            logging.error(Ta('Cannot write to INI file %s'), filename)
-            modified = False
-            return False
+        shutil.copyfile(filename, bakname)
+    except:
+        # Something wrong with the backup,
+        logging.warning(Ta('Cannot create backup file for %s'), bakname)
+        logging.info("Traceback: ", exc_info = True)
 
-        # Read current content
-        f = open(filename)
-        data = f.read()
-        f.close()
-
-        tmpname = filename + '.tmp'
-        bakname = filename + '.bak'
-
-        # Write new file
-        f = open(tmpname, 'w')
-        f.write(data)
-        f.close()
-
-        # Update temp file content
-        CFG.filename = tmpname
+    # Write new config file
+    try:
         CFG.write()
-
-        # Rename to backup
-        if os.path.isfile(bakname):
-            os.remove(bakname)
-        os.rename(filename, bakname)
-
-        # Rename temp file, overwriting old one
-        os.rename(tmpname, filename)
-
         modified = False
         res = True
     except:
-        logging.error(Ta('Cannot create backup file for %s'), filename)
+        logging.error(Ta('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info = True)
-        res = False
-    CFG.filename = filename
+
     return res
 
 
