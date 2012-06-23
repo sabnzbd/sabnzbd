@@ -1401,7 +1401,7 @@ msgstr "Det gick inte att hämta RSS flödet från %s: %s"
 
 #: sabnzbd/rss.py:334
 msgid "Do not have valid authentication for feed %s"
-msgstr "Har inte giltig autentisering för flöde &s"
+msgstr "Har inte giltig autentisering för flöde %s"
 
 #: sabnzbd/rss.py:344
 msgid "RSS Feed %s was empty"
