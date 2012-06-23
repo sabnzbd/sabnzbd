@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-15 20:07+0000\n"
-"Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
+"PO-Revision-Date: 2012-06-21 12:41+0000\n"
+"Last-Translator: Mattias Nordgren <oxidanter@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-16 05:28+0000\n"
-"X-Generator: Launchpad (build 15247)\n"
+"X-Launchpad-Export-Date: 2012-06-22 05:08+0000\n"
+"X-Generator: Launchpad (build 15461)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -1110,6 +1110,8 @@ msgstr ""
 msgid ""
 "If you get this error message again, please try a different number.<br>"
 msgstr ""
+"Om du får detta felmeddelande igen, var vänlig försök med en annan "
+"siffra.<br>"
 
 #: sabnzbd/panic.py:82
 msgid ""
@@ -1121,6 +1123,15 @@ msgid ""
 "    <br>\n"
 "    Please restart SABnzbd with a different port number."
 msgstr ""
+"\n"
+"    SABnzbd behöver en tillgänglig tcp/ip port för dess interna web "
+"server.<br>\n"
+"    Port %s på %s testades, men kontot som används för SABnzbd har inte "
+"tillåtelse att använda den.<br>\n"
+"    På OSX och Linux-system måste normala användare använda portnummer 1023 "
+"eller högre.<br>\n"
+"    <br>\n"
+"    Var vänlig starta om SABnzbd med ett annat portnummer."
 
 #: sabnzbd/panic.py:96
 msgid ""
@@ -1131,6 +1142,12 @@ msgid ""
 "    <br>\n"
 "    Please restart SABnzbd with a proper host address."
 msgstr ""
+"\n"
+"    SABnzbd behöver en giltig värdadress för dess interna webbserver.<br>\n"
+"    Du har specifierat en ogiltig adress.<br>\n"
+"    Säkra värdadresser är <b>localhost</b> och <b>0.0.0.0</b><br>\n"
+"    <br>\n"
+"    Var vänlig starta om SABnzbd med en giltig värdadress."
 
 #: sabnzbd/panic.py:110
 msgid ""
@@ -1142,6 +1159,14 @@ msgid ""
 "    This will erase the current queue and history!<br>\n"
 "    SABnzbd read the file \"%s\"."
 msgstr ""
+"\n"
+"    SABnzbd har upptäckt sparad data från en annan version av SABnzbd<br>\n"
+"    men kan inte återanvända datan från det andra programmet.<br><br>\n"
+"    Färdigställ dina nedladdningar med det andra programmet först.<br><br>\n"
+"    Därefter kan du starta det här programmet med alternativet \"--"
+"clean\".<br>\n"
+"    Detta kommando kommer att ta bort din nuvarande kö och historik!<br>\n"
+"    SABnzbd read the file \"%s\"."
 
 #: sabnzbd/panic.py:125
 msgid ""
@@ -1150,10 +1175,14 @@ msgid ""
 "    Please install the program again.<br>\n"
 "    <br>\n"
 msgstr ""
+"\n"
+"    SABnzbd kan inte hitta webbgränssnittets filer i %s.<br>\n"
+"    Var vänlig installera om programmet.<br>\n"
+"    <br>\n"
 
 #: sabnzbd/panic.py:132
 msgid "SABnzbd detected a fatal error:"
-msgstr ""
+msgstr "SABnzbd upptäckte ett allvarligt fel:"
 
 #: sabnzbd/panic.py:135
 msgid ""
@@ -1165,10 +1194,17 @@ msgid ""
 "program.<br><br>\n"
 "    Click OK to proceed to SABnzbd"
 msgstr ""
+"\n"
+"    SABnzbd upptäckte Kö and Historik från en äldre (0.4.x) "
+"version.<br><br>\n"
+"    Både kö och historik kommer att ignoreras och kan försvinna!<br><br>\n"
+"    Du kan välja att stoppa SABnzbd och färdigställa nedladdningskön med den "
+"äldre versionen.<br><br>\n"
+"    Klicka OK för att gå vidare till SABnzbd"
 
 #: sabnzbd/panic.py:140
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: sabnzbd/panic.py:143
 msgid ""
@@ -1179,22 +1215,29 @@ msgid ""
 "to your virus-scanner vendor.<br>\n"
 "    <br>\n"
 msgstr ""
+"\n"
+"    SABnzbd upptäckte att filen sqlite3.dll saknas.<br><br>\n"
+"    Det händer att bristfälligt designade virusprogram tar bort denna "
+"fil.<br>\n"
+"    Var vänlig kontrollera ditt virusprogram, försök installera om SABnzbd "
+"och klaga till din återförsäljare.<br>\n"
+"    <br>\n"
 
 #: sabnzbd/panic.py:154
 msgid "Press Startkey+R and type the line (example):"
-msgstr ""
+msgstr "Tryck på Startknappen+R och skriv raden (exempel):"
 
 #: sabnzbd/panic.py:157
 msgid "Open a Terminal window and type the line (example):"
-msgstr ""
+msgstr "Öppna ett Terminal-fönster och skriv raden (exempel):"
 
 #: sabnzbd/panic.py:177
 msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
-msgstr ""
+msgstr "Det är troligt att du använder ZoneAlarm på Vista.<br>"
 
 #: sabnzbd/panic.py:188
 msgid "Program did not start!"
-msgstr ""
+msgstr "Programmet startade inte!"
 
 #: sabnzbd/panic.py:213 [Error message]
 msgid "You have no permisson to use port %s"
@@ -1202,7 +1245,7 @@ msgstr "Du har ingen behörighet för att använda port %s"
 
 #: sabnzbd/panic.py:229
 msgid "Fatal error"
-msgstr ""
+msgstr "Allvarligt fel"
 
 #: sabnzbd/panic.py:249 [Warning message]
 msgid "Cannot launch the browser, probably not found"
@@ -1210,11 +1253,11 @@ msgstr "Kan inte starta webbläsaren, hittades troligtvis inte"
 
 #: sabnzbd/panic.py:255
 msgid "Access denied"
-msgstr ""
+msgstr "Åtkomst nekades"
 
 #: sabnzbd/panic.py:256
 msgid "Error %s: You need to provide a valid username and password."
-msgstr ""
+msgstr "Error %s: Du måste ange ett giltigt användarnamn och lösenord."
 
 #: sabnzbd/postproc.py:97 [Warning message]
 msgid ""
@@ -1230,6 +1273,7 @@ msgstr "Det gick inte att ta bort nzo från efterbehandlings kön (id)"
 #: sabnzbd/postproc.py:260
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
+"Nerladdningen kan misslyckas, bara %s av krävda %s finns tillgängligt"
 
 #: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
@@ -1237,7 +1281,7 @@ msgstr "Hämtning misslyclades - Out of your server's retention?"
 
 #: sabnzbd/postproc.py:316
 msgid "Cannot create final folder %s"
-msgstr ""
+msgstr "Kan inte skapa slutgiltig mapp %s"
 
 #: sabnzbd/postproc.py:338
 msgid "No post-processing because of failed verification"
@@ -1257,7 +1301,7 @@ msgstr "Det gick inte att döpa om \"%s\" till \"%s\""
 
 #: sabnzbd/postproc.py:407
 msgid "Failed to move files"
-msgstr ""
+msgstr "Misslyckades med att flytta filer"
 
 #: sabnzbd/postproc.py:415
 msgid "Running script"
@@ -1281,11 +1325,11 @@ msgstr "Visa skriptutmatning"
 
 #: sabnzbd/postproc.py:464
 msgid "Download Completed"
-msgstr ""
+msgstr "Hämtningen slutfördes"
 
 #: sabnzbd/postproc.py:467 # sabnzbd/postproc.py:476
 msgid "Download Failed"
-msgstr ""
+msgstr "Hämtning misslyckades"
 
 #: sabnzbd/postproc.py:471 [Error message]
 msgid "Post Processing Failed for %s (%s)"
@@ -1293,11 +1337,11 @@ msgstr "Efterbehandling misslyckades för %s (%s)"
 
 #: sabnzbd/postproc.py:474
 msgid "see logfile"
-msgstr ""
+msgstr "se loggfil"
 
 #: sabnzbd/postproc.py:475
 msgid "PostProcessing was aborted (%s)"
-msgstr ""
+msgstr "Efterbehandling avbröts (%s)"
 
 #: sabnzbd/postproc.py:509 [Error message]
 msgid "Cleanup of %s failed."
@@ -1309,11 +1353,11 @@ msgstr "Det gick inte att ta bort arbetsmapp (%s)"
 
 #: sabnzbd/postproc.py:531
 msgid "Post-processing"
-msgstr ""
+msgstr "Efterbehandling"
 
 #: sabnzbd/postproc.py:571
 msgid "Trying SFV verification"
-msgstr ""
+msgstr "Försöker verifiera SFV"
 
 #: sabnzbd/postproc.py:574
 msgid "Some files failed to verify against \"%s\""
@@ -1321,7 +1365,7 @@ msgstr "Some files failed to verify against \"%s\""
 
 #: sabnzbd/postproc.py:577
 msgid "Verified successfully using SFV files"
-msgstr ""
+msgstr "Verifieringen lyckades med SFV-filer"
 
 #: sabnzbd/postproc.py:580
 msgid "[%s] No par2 sets"
@@ -1333,7 +1377,7 @@ msgstr "Borttagning av %s misslyckades"
 
 #: sabnzbd/powersup.py:39 [Error message]
 msgid "Failed to hibernate system"
-msgstr ""
+msgstr "Kunde inte sätta systemet i vänteläge"
 
 #: sabnzbd/powersup.py:50 [Error message] # sabnzbd/powersup.py:93 [Error message]
 msgid "Failed to standby system"
@@ -1341,7 +1385,7 @@ msgstr "Det gick inte att sätta systemet i viloläge"
 
 #: sabnzbd/powersup.py:81 [Error message]
 msgid "Error while shutting down system"
-msgstr ""
+msgstr "Fel uppstod då systemet skulle stängas"
 
 #: sabnzbd/rss.py:128 [Error message]
 msgid "Could not compile regex: %s"
@@ -1357,15 +1401,15 @@ msgstr "Det gick inte att hämta RSS flödet från %s: %s"
 
 #: sabnzbd/rss.py:334
 msgid "Do not have valid authentication for feed %s"
-msgstr ""
+msgstr "Har inte giltig autentisering för flöde &s"
 
 #: sabnzbd/rss.py:344
 msgid "RSS Feed %s was empty"
-msgstr ""
+msgstr "RSS-flödet %s var tomt"
 
 #: sabnzbd/rss.py:361 # sabnzbd/rss.py:363
 msgid "Incompatible feed"
-msgstr ""
+msgstr "Inkompatibel feed"
 
 #: sabnzbd/rss.py:649 [Warning message]
 msgid "Empty RSS entry found (%s)"
@@ -1373,11 +1417,11 @@ msgstr "Tom RSS post hittades (%s)"
 
 #: sabnzbd/sabtray.py:57
 msgid "Show interface"
-msgstr ""
+msgstr "Visa gränssnitt"
 
 #: sabnzbd/sabtray.py:58
 msgid "Open complete folder"
-msgstr ""
+msgstr "Öppna färdig mapp"
 
 #: sabnzbd/sabtray.py:62 # sabnzbd/sabtray.py:131 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:150 # sabnzbd/skintext.py:493
@@ -1418,11 +1462,11 @@ msgstr "Skript"
 
 #: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:101 [Where to find the SABnzbd sourcecode]
 msgid "Source"
-msgstr ""
+msgstr "Källa"
 
 #: sabnzbd/skintext.py:32 [PP Failure message]
 msgid "Failure"
-msgstr ""
+msgstr "Misslyckades"
 
 #: sabnzbd/skintext.py:34 [PP status] # sabnzbd/skintext.py:226 [History: job status]
 msgid "Completed"
@@ -1434,7 +1478,7 @@ msgstr "Misslyckades"
 
 #: sabnzbd/skintext.py:36 [Queue and PP status]
 msgid "Waiting"
-msgstr ""
+msgstr "Väntar"
 
 #: sabnzbd/skintext.py:38 [PP status]
 msgid "Repairing..."
@@ -1470,11 +1514,11 @@ msgstr "Laddar ner"
 
 #: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Grabbing status]
 msgid "Get NZB"
-msgstr ""
+msgstr "Lägg till NZB"
 
 #: sabnzbd/skintext.py:47 [PP status]
 msgid "Checking"
-msgstr ""
+msgstr "Kontrollerar"
 
 #: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:485
 msgid "Frequency"
@@ -1518,19 +1562,19 @@ msgstr "Återuppta efterbehandla"
 
 #: sabnzbd/skintext.py:64 [#: Config->Scheduler]
 msgid "Read RSS feeds"
-msgstr ""
+msgstr "Läs RSS-flöden"
 
 #: sabnzbd/skintext.py:69 [Speed indicator kilobytes/sec]
 msgid "KB/s"
-msgstr ""
+msgstr "KB/s"
 
 #: sabnzbd/skintext.py:70 [Megabytes]
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: sabnzbd/skintext.py:71 [Gigabytes]
 msgid "GB"
-msgstr ""
+msgstr "GB"
 
 #: sabnzbd/skintext.py:72 [One hour]
 msgid "hour"
@@ -1558,15 +1602,15 @@ msgstr "sekunder"
 
 #: sabnzbd/skintext.py:78
 msgid "day"
-msgstr ""
+msgstr "dag"
 
 #: sabnzbd/skintext.py:79
 msgid "days"
-msgstr ""
+msgstr "dagar"
 
 #: sabnzbd/skintext.py:80
 msgid "week"
-msgstr ""
+msgstr "vecka"
 
 #: sabnzbd/skintext.py:81
 msgid "Month"
@@ -1598,23 +1642,23 @@ msgstr "Totalt"
 
 #: sabnzbd/skintext.py:96
 msgid "on"
-msgstr ""
+msgstr "den"
 
 #: sabnzbd/skintext.py:98 [Config: startup parameters of SABnzbd]
 msgid "Parameters"
-msgstr ""
+msgstr "Parametrar"
 
 #: sabnzbd/skintext.py:99
 msgid "Python Version"
-msgstr ""
+msgstr "Python-version"
 
 #: sabnzbd/skintext.py:100 [Home page of the SABnzbd project]
 msgid "Home page"
-msgstr ""
+msgstr "Webbplats"
 
 #: sabnzbd/skintext.py:102 [Used in "IRC or IRC-Webaccess"]
 msgid "or"
-msgstr ""
+msgstr "eller"
 
 #: sabnzbd/skintext.py:105 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -1630,7 +1674,7 @@ msgstr "Köad"
 
 #: sabnzbd/skintext.py:109 [Generic "Delete" button, short form] # sabnzbd/skintext.py:513 [Config->RSS button "Delete filter"] # sabnzbd/skintext.py:587
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: sabnzbd/skintext.py:110 [Used in confirmation popups] # sabnzbd/skintext.py:712
 msgid "Are you sure?"
@@ -1638,7 +1682,7 @@ msgstr "Är du säker?"
 
 #: sabnzbd/skintext.py:111 [Used in confirmation popups]
 msgid "Delete all downloaded files?"
-msgstr ""
+msgstr "Ta bort alla nedladdade filer?"
 
 #: sabnzbd/skintext.py:114 [Main menu item]
 msgid "Home"
@@ -1650,7 +1694,7 @@ msgstr "Konfiguration"
 
 #: sabnzbd/skintext.py:118 [Main menu item] # sabnzbd/skintext.py:228 [History table header]
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: sabnzbd/skintext.py:119 [Main menu item] # sabnzbd/skintext.py:833 [Wizard help link]
 msgid "Help"
@@ -1658,15 +1702,15 @@ msgstr "Hjälp"
 
 #: sabnzbd/skintext.py:120 [Main menu item]
 msgid "Wiki"
-msgstr ""
+msgstr "Wiki"
 
 #: sabnzbd/skintext.py:121 [Main menu item]
 msgid "Forum"
-msgstr ""
+msgstr "Forum"
 
 #: sabnzbd/skintext.py:122 [Main menu item]
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sabnzbd/skintext.py:123 [Main menu item] # sabnzbd/skintext.py:437
 msgid "General"
@@ -1690,11 +1734,11 @@ msgstr "Schemaläggare"
 
 #: sabnzbd/skintext.py:128 [Main menu item]
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #: sabnzbd/skintext.py:129 [Main menu item] # sabnzbd/skintext.py:523 [Main Config page] # sabnzbd/skintext.py:544 [Section header]
 msgid "Notifications"
-msgstr ""
+msgstr "Meddelanden"
 
 #: sabnzbd/skintext.py:130 [Main menu item]
 msgid "Email"
@@ -1714,7 +1758,7 @@ msgstr "Sortering"
 
 #: sabnzbd/skintext.py:134 [Main menu item]
 msgid "Special"
-msgstr ""
+msgstr "Speciell"
 
 #: sabnzbd/skintext.py:137
 msgid "Download Dir"
@@ -1738,7 +1782,7 @@ msgstr "Sparat %s artiklar (%s)"
 
 #: sabnzbd/skintext.py:143
 msgid "Sysload"
-msgstr ""
+msgstr "Systembelastning"
 
 #: sabnzbd/skintext.py:144
 msgid "WARNINGS"
@@ -1794,11 +1838,11 @@ msgstr "+Ta bort"
 
 #: sabnzbd/skintext.py:165
 msgid "&nbsp;"
-msgstr ""
+msgstr "&nbsp;"
 
 #: sabnzbd/skintext.py:166
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: sabnzbd/skintext.py:167
 msgid "U"
@@ -1814,7 +1858,7 @@ msgstr "Tvinga"
 
 #: sabnzbd/skintext.py:171
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: sabnzbd/skintext.py:172
 msgid "High"
@@ -1826,7 +1870,7 @@ msgstr "Låg"
 
 #: sabnzbd/skintext.py:175
 msgid "Stop"
-msgstr ""
+msgstr "Stopp"
 
 #: sabnzbd/skintext.py:176
 msgid "Enter URL"
@@ -1898,7 +1942,7 @@ msgstr "Återstår/Totalt"
 
 #: sabnzbd/skintext.py:196 [Queue page table column header, "estimated time of arrival"]
 msgid "ETA"
-msgstr ""
+msgstr "Tid kvar"
 
 #: sabnzbd/skintext.py:197 [Queue page table column header, "age of the NZB"]
 msgid "AGE"
@@ -1910,15 +1954,15 @@ msgstr "Ta bort"
 
 #: sabnzbd/skintext.py:201 [Queue page button]
 msgid "Retry"
-msgstr ""
+msgstr "Försök igen"
 
 #: sabnzbd/skintext.py:202 [Queue end-of-queue selection box] # sabnzbd/skintext.py:774
 msgid "Actions"
-msgstr ""
+msgstr "Åtgärder"
 
 #: sabnzbd/skintext.py:203 [Queue page table, script selection menu]
 msgid "Scripts"
-msgstr ""
+msgstr "Skript"
 
 #: sabnzbd/skintext.py:205 [Confirmation popup]
 msgid "Delete all items from the queue?"
@@ -1926,51 +1970,51 @@ msgstr "Ta bort alla saker från kön?"
 
 #: sabnzbd/skintext.py:206 [Queue page button]
 msgid "Purge NZBs"
-msgstr ""
+msgstr "Rensa NZB:er"
 
 #: sabnzbd/skintext.py:207 [Queue page button]
 msgid "Purge NZBs & Delete Files"
-msgstr ""
+msgstr "Rensa NZB:er och ta bort filer"
 
 #: sabnzbd/skintext.py:208 [Queue page button]
 msgid "Remove NZB"
-msgstr ""
+msgstr "Ta bort NZB"
 
 #: sabnzbd/skintext.py:209 [Queue page button]
 msgid "Remove NZB & Delete Files"
-msgstr ""
+msgstr "Ta bort NZB och filer"
 
 #: sabnzbd/skintext.py:210 [Queue page, as in "4G *of* 10G"]
 msgid "of"
-msgstr ""
+msgstr "av"
 
 #: sabnzbd/skintext.py:211 [Caption for missing articles in Queue]
 msgid "Missing articles"
-msgstr ""
+msgstr "Saknade artiklar"
 
 #: sabnzbd/skintext.py:212 [Remaining quota (displayed in Queue)]
 msgid "Quota left"
-msgstr ""
+msgstr "Kvot kvar"
 
 #: sabnzbd/skintext.py:213 [Manual reset of quota]
 msgid "manual"
-msgstr ""
+msgstr "handbok"
 
 #: sabnzbd/skintext.py:214
 msgid "Reset Quota now"
-msgstr ""
+msgstr "Återställ Kvot nu"
 
 #: sabnzbd/skintext.py:218 [History page button]
 msgid "Purge Failed History"
-msgstr ""
+msgstr "Rensa Misslyckad Historik"
 
 #: sabnzbd/skintext.py:219 [Confirmation popup]
 msgid "Delete all completed items from History?"
-msgstr ""
+msgstr "Ta bort alla slutförda objekt från Historik?"
 
 #: sabnzbd/skintext.py:220 [Confirmation popup]
 msgid "Delete all failed items from History?"
-msgstr ""
+msgstr "Ta bort alla misslyckade objekt från Historik?"
 
 #: sabnzbd/skintext.py:221 [Button/link hiding History job details]
 msgid "Hide details"
@@ -1986,11 +2030,11 @@ msgstr "Historikstorlek"
 
 #: sabnzbd/skintext.py:224 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
 msgid "Show Failed"
-msgstr ""
+msgstr "Visa Misslyckade"
 
 #: sabnzbd/skintext.py:225 [Button or link showing all History jobs]
 msgid "Show All"
-msgstr ""
+msgstr "Visa alla"
 
 #: sabnzbd/skintext.py:227 [History table header] # sabnzbd/skintext.py:443 [Size of the download quota] # sabnzbd/skintext.py:784
 msgid "Size"
@@ -1998,19 +2042,19 @@ msgstr "Storlek"
 
 #: sabnzbd/skintext.py:229 [Button to delete all failed jobs in History]
 msgid "Purge Failed NZBs"
-msgstr ""
+msgstr "Rensa Misslyckade NZB:er."
 
 #: sabnzbd/skintext.py:230 [Button to delete all failed jobs in History, including files]
 msgid "Purge Failed NZBs & Delete Files"
-msgstr ""
+msgstr "Rensa Misslyckade NZB:er och ta bort filer"
 
 #: sabnzbd/skintext.py:231 [Button to delete all completed jobs in History]
 msgid "Purge Completed NZBs"
-msgstr ""
+msgstr "Rensa färdiga NZB:er"
 
 #: sabnzbd/skintext.py:232 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
-msgstr ""
+msgstr "Valfri Kompletterande NZB"
 
 #: sabnzbd/skintext.py:233 [Path as displayed in History details] # sabnzbd/skintext.py:715 # sabnzbd/skintext.py:785
 msgid "Path"
@@ -2046,11 +2090,11 @@ msgstr "Fel/Varning"
 
 #: sabnzbd/skintext.py:244 [Status page logging selection value]
 msgid "+ Info"
-msgstr ""
+msgstr "+ Info"
 
 #: sabnzbd/skintext.py:245 [Status page logging selection value]
 msgid "+ Debug"
-msgstr ""
+msgstr "+ Debug"
 
 #: sabnzbd/skintext.py:246 [Status page tab header] # sabnzbd/skintext.py:468 [Server: amount of connections]
 msgid "Connections"
@@ -2078,15 +2122,15 @@ msgstr "Ta bort blockering"
 
 #: sabnzbd/skintext.py:252 [Status page, article identifier]
 msgid "Article identifier"
-msgstr ""
+msgstr "Artikel-ID"
 
 #: sabnzbd/skintext.py:253 [Status page, par-set that article belongs to]
 msgid "File set"
-msgstr ""
+msgstr "Filuppsättning"
 
 #: sabnzbd/skintext.py:254 [Status page, table column header, when error occured]
 msgid "When"
-msgstr ""
+msgstr "När"
 
 #: sabnzbd/skintext.py:255 [Status page, table column header, type of message] # sabnzbd/skintext.py:506 [Config->RSS table column header]
 msgid "Type"
@@ -2094,11 +2138,11 @@ msgstr "Typ"
 
 #: sabnzbd/skintext.py:256 [Status page, table column header, actual message]
 msgid "Warning"
-msgstr ""
+msgstr "Varning"
 
 #: sabnzbd/skintext.py:258 [Status page, indicator that server is enabled]
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiverad"
 
 #: sabnzbd/skintext.py:262
 msgid "Config File"
@@ -2106,7 +2150,7 @@ msgstr "Konfig fil"
 
 #: sabnzbd/skintext.py:263 [Main config page, how much cache is in use]
 msgid "Used cache"
-msgstr ""
+msgstr "Använt cache"
 
 #: sabnzbd/skintext.py:264
 msgid ""
@@ -2114,6 +2158,9 @@ msgid ""
 "stability problem.<br />Downloading will be paused before the restart and "
 "resume afterwards."
 msgstr ""
+"Detta kommer att starta om SABnzbd.<br />Använd det när du tror att "
+"programmet har stabilitetsproblem.<br />Nerladdningar kommer att pusas innan "
+"omstarten och återupptas efteråt."
 
 #: sabnzbd/skintext.py:266
 msgid ""
@@ -2133,7 +2180,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:270
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: sabnzbd/skintext.py:271
 msgid "Uptime"
@@ -2141,7 +2188,7 @@ msgstr "Upptid"
 
 #: sabnzbd/skintext.py:272 [Indicates that server is Backup server in Status page]
 msgid "Backup"
-msgstr ""
+msgstr "Säkerhetskopiera"
 
 #: sabnzbd/skintext.py:275
 msgid "General configuration"
@@ -2165,7 +2212,7 @@ msgstr "Adress som SABnzbd ska lyssna på."
 
 #: sabnzbd/skintext.py:280
 msgid "SABnzbd Port"
-msgstr ""
+msgstr "SABnzbd-port"
 
 #: sabnzbd/skintext.py:281
 msgid "Port SABnzbd should listen on."
@@ -2225,11 +2272,11 @@ msgstr "Aktivera åtkomst till webbkontrollen med HTTPS adress."
 
 #: sabnzbd/skintext.py:295
 msgid "HTTPS Port"
-msgstr ""
+msgstr "HTTPS-port"
 
 #: sabnzbd/skintext.py:296
 msgid "If empty, the standard port will only listen to HTTPS."
-msgstr ""
+msgstr "Om tom kommer standardporten endast lyssna till HTTPS."
 
 #: sabnzbd/skintext.py:297
 msgid "HTTPS Certificate"
@@ -2268,6 +2315,8 @@ msgid ""
 "Checking interval (in minutes, at least 15). Not active when you use the "
 "Scheduler!"
 msgstr ""
+"Kontrollintervall (i minuter, minst 15). Ej aktiv om du använder "
+"Schemaläggaren!"
 
 #: sabnzbd/skintext.py:306
 msgid "Download Speed Limit"
@@ -2320,15 +2369,17 @@ msgstr "API-nyckel"
 
 #: sabnzbd/skintext.py:316
 msgid "This key will give 3rd party programs full access to SABnzbd."
-msgstr ""
+msgstr "Denna nyckel ger tredjepartsprogram full tillgång till SABnzbd."
 
 #: sabnzbd/skintext.py:317
 msgid "NZB Key"
-msgstr ""
+msgstr "NZB-nyckel"
 
 #: sabnzbd/skintext.py:318
 msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
 msgstr ""
+"Denna nyckel ger tredjepartsprogram möjlighet att lägga till NZB:er i "
+"SABnzbd."
 
 #: sabnzbd/skintext.py:319
 msgid "Generate New Key"
@@ -2348,11 +2399,11 @@ msgstr "ANVÄND PÅ EGEN RISK!"
 
 #: sabnzbd/skintext.py:323 [Button to show QR code of APIKEY]
 msgid "QR Code"
-msgstr ""
+msgstr "QR-kod"
 
 #: sabnzbd/skintext.py:324 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
-msgstr ""
+msgstr "API- eller QR-kod"
 
 #: sabnzbd/skintext.py:327
 msgid "Folder configuration"
@@ -2460,11 +2511,12 @@ msgstr "Mapp som innehåller användar-definierade e-mail mallar."
 
 #: sabnzbd/skintext.py:347
 msgid "Password file"
-msgstr ""
+msgstr "Lösenordsfil"
 
 #: sabnzbd/skintext.py:348
 msgid "File containing all passwords to be tried on encrypted RAR files."
 msgstr ""
+"Fil som innehåller alla lösenord som ska prövas på krypterade RAR-filer."
 
 #: sabnzbd/skintext.py:349
 msgid "System Folders"
@@ -2472,7 +2524,7 @@ msgstr "Systemmappar"
 
 #: sabnzbd/skintext.py:350
 msgid "Administrative Folder"
-msgstr ""
+msgstr "Administrativ mapp"
 
 #: sabnzbd/skintext.py:351
 msgid ""
