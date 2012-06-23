@@ -1,8 +1,11 @@
-Release Notes  -  SABnzbd 0.7.1RC1
+Release Notes  -  SABnzbd 0.7.1RC2
 ==================================
 
 ## Fixes in 0.7.1
-
+### RC2
+- Improved backup of sabnzbd.ini file, now uses backup when original is gone or corrupt
+- Swedish translation extended
+### RC1
 - Plush skin: fix problems with pull-down menus in Mobile Safari
 - On some Linux and OSX systems using localhost would still make SABnzbd
   give access to other computers

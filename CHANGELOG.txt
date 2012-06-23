@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.1RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Improved backup of sabnzbd.ini file
+  Will use backup when original is gone or become corrupt
+- Windows: Using ::1 as single webhost address would start IE instead of default browser
+-------------------------------------------------------------------------------
  0.7.1RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Plush skin: fix problems with pull-down menus in Mobile Safari
