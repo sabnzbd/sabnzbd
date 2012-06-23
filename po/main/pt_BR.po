@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-07 20:21+0000\n"
-"PO-Revision-Date: 2012-05-26 00:41+0000\n"
-"Last-Translator: lrrosa <Unknown>\n"
+"PO-Revision-Date: 2012-06-17 22:15+0000\n"
+"Last-Translator: diegosps <diegosps@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-27 04:57+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-18 05:39+0000\n"
+"X-Generator: Launchpad (build 15419)\n"
 
 #: SABnzbd.py:301 [Error message]
 msgid "Failed to start web-interface"
@@ -653,7 +653,7 @@ msgstr "Unindo"
 
 #: sabnzbd/newsunpack.py:359
 msgid "Incomplete sequence of joinable files"
-msgstr "Sequência incompleta de arquivos acopláveis."
+msgstr "Sequência de arquivos multiparte incompleta"
 
 #: sabnzbd/newsunpack.py:360 # sabnzbd/newsunpack.py:368
 msgid "File join of %s failed"
@@ -751,7 +751,7 @@ msgstr "A descompactação falhou. Este(s) arquivo(s) estão faltando:"
 
 #: sabnzbd/newsunpack.py:668
 msgid "Unpacked %s files/folders in %s"
-msgstr "Descompactando %s arquivos/pastas em %s"
+msgstr "Descompactados %s arquivos/pastas em %s"
 
 #: sabnzbd/newsunpack.py:702
 msgid "%s files in %s"
@@ -1369,7 +1369,7 @@ msgstr "Alguns arquivos falharam na verificação de \"%s\""
 
 #: sabnzbd/postproc.py:577
 msgid "Verified successfully using SFV files"
-msgstr "Verificado com sucesso usando arquivos SFV"
+msgstr "Verificado com sucesso. Usando arquivos SFV."
 
 #: sabnzbd/postproc.py:580
 msgid "[%s] No par2 sets"
@@ -1466,7 +1466,7 @@ msgstr "Script"
 
 #: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:101 [Where to find the SABnzbd sourcecode]
 msgid "Source"
-msgstr "Origem"
+msgstr "Código fonte"
 
 #: sabnzbd/skintext.py:32 [PP Failure message]
 msgid "Failure"
@@ -1890,7 +1890,7 @@ msgstr "Ordenar pelo nome"
 
 #: sabnzbd/skintext.py:181 [Queue page button]
 msgid "Sort by age"
-msgstr "Ordenar por data"
+msgstr "Ordenar por idade"
 
 #: sabnzbd/skintext.py:182 [Queue page button]
 msgid "Sort by size"
@@ -1950,7 +1950,7 @@ msgstr "Estimado"
 
 #: sabnzbd/skintext.py:197 [Queue page table column header, "age of the NZB"]
 msgid "AGE"
-msgstr "DATA"
+msgstr "IDADE"
 
 #: sabnzbd/skintext.py:198 [Queue page table, "Delete" button]
 msgid "Del"
@@ -2793,11 +2793,11 @@ msgstr "Enviar comando do grupo antes de solicitar artigos."
 
 #: sabnzbd/skintext.py:414
 msgid "Sort by Age"
-msgstr "Ordernar por Data"
+msgstr "Ordernar por Idade"
 
 #: sabnzbd/skintext.py:415
 msgid "Automatically sort items by (average) age."
-msgstr "Classificar automaticamente os itens por média de data."
+msgstr "Classificar automaticamente os itens por (média de) idade."
 
 #: sabnzbd/skintext.py:416
 msgid "Check for New Release"
@@ -3655,7 +3655,7 @@ msgstr "Assunto"
 
 #: sabnzbd/skintext.py:669 [Job details page, file age column header] # sabnzbd/skintext.py:817
 msgid "Age"
-msgstr "Data"
+msgstr "Idade"
 
 #: sabnzbd/skintext.py:670 [Job details page, section header]
 msgid "Selection"
@@ -3748,11 +3748,11 @@ msgstr "Pausar por 24 horas"
 
 #: sabnzbd/skintext.py:698
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
-msgstr "Ordenar por Data <small>Mais antigo&rarr;Mais novo</small>"
+msgstr "Ordenar por Idade <small>Mais antigo&rarr;Mais novo</small>"
 
 #: sabnzbd/skintext.py:699
 msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
-msgstr "Ordenar por Data <small>Mais novo&rarr;Mais antigo</small>"
+msgstr "Ordenar por Idade <small>Mais novo&rarr;Mais antigo</small>"
 
 #: sabnzbd/skintext.py:700
 msgid "Sort by Name <small>A&rarr;Z</small>"
@@ -3800,7 +3800,7 @@ msgstr "Armazenamento"
 
 #: sabnzbd/skintext.py:717
 msgid "View Script Log"
-msgstr "Exibir Log de Script"
+msgstr "Exibir Log do Script"
 
 #: sabnzbd/skintext.py:721
 msgid "You must enable JavaScript for Plush to function!"
@@ -3840,11 +3840,11 @@ msgstr "Ao Concluir"
 
 #: sabnzbd/skintext.py:739
 msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Ordenar por Data <small>(Mais antigo&rarr;Mais novo)</small>"
+msgstr "Ordenar por Idade <small>(Mais antigo&rarr;Mais novo)</small>"
 
 #: sabnzbd/skintext.py:740
 msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Ordenar por Data <small>(Mais novo&rarr;Mais antigo)</small>"
+msgstr "Ordenar por Idade <small>(Mais novo&rarr;Mais antigo)</small>"
 
 #: sabnzbd/skintext.py:741
 msgid "Sort by Name <small>(A&rarr;Z)</small>"
@@ -4052,7 +4052,7 @@ msgstr "Obter Favoritos"
 
 #: sabnzbd/skintext.py:809
 msgid "Are you sure you want to restart SABnzbd?"
-msgstr "Tem certeza que deseja reiniciar SABnzbd?"
+msgstr "Tem certeza que deseja reiniciar o SABnzbd?"
 
 #: sabnzbd/skintext.py:810
 msgid "Refresh rate"
@@ -4097,11 +4097,11 @@ msgstr "Acesso"
 #: sabnzbd/skintext.py:825
 msgid "I want SABnzbd to be viewable by any pc on my network."
 msgstr ""
-"Quero que SABnzbd seja acessado de qualquer computador em minha rede."
+"Quero que o SABnzbd seja acessado de qualquer computador em minha rede."
 
 #: sabnzbd/skintext.py:826
 msgid "I want SABnzbd to be viewable from my pc only."
-msgstr "Quero que SABnzbd seja acessado somente pelo meu computador."
+msgstr "Quero que o SABnzbd seja acessado somente pelo meu computador."
 
 #: sabnzbd/skintext.py:827
 msgid "Password protect access to SABnzbd (recommended)"
@@ -4199,23 +4199,23 @@ msgstr "SABnzbd agora será executado em segundo plano."
 
 #: sabnzbd/skintext.py:850 [Wizard tip]
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
-msgstr "Fechar qualquer janela/aba do navegador NÃO vai fechar SABnzbd."
+msgstr "Fechar qualquer janela/aba do navegador NÃO vai fechar o SABnzbd."
 
 #: sabnzbd/skintext.py:851 [Wizard tip]
 msgid ""
 "After SABnzbd has finished restarting you will be able to access it at the "
 "following location: %s"
 msgstr ""
-"Após SABnzbd ter reiniciado você será capaz de acessá-lo no seguinte local: "
-"%s"
+"Após o SABnzbd ter reiniciado você será capaz de acessá-lo no seguinte "
+"local: %s"
 
 #: sabnzbd/skintext.py:852 [Wizard tip]
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
 msgstr ""
-"Recomenda-se que você adicione este local como favorito para acessar SABnzbd "
-"quando ele estiver sendo executado em segundo plano."
+"Recomenda-se que você adicione este local como favorito para acessar o "
+"SABnzbd quando ele estiver sendo executado em segundo plano."
 
 #: sabnzbd/skintext.py:853 [Will be appended with a wiki-link, adjust word order accordingly]
 msgid "Further help can be found on our"
@@ -4223,7 +4223,7 @@ msgstr "Mais ajuda pode ser encontrada em nosso"
 
 #: sabnzbd/skintext.py:854 [Wizard step]
 msgid "Go to SABnzbd"
-msgstr "Ir para SABnzbd"
+msgstr "Ir para o SABnzbd"
 
 #: sabnzbd/skintext.py:855 [Wizard step] # sabnzbd/wizard.py:86
 msgid "Step One"
