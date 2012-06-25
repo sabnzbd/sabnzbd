@@ -253,6 +253,7 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
+    print "      --no_ipv6            Do listen on IPv6 address [::1]"
 
 def print_version():
     print """
@@ -675,13 +676,14 @@ def get_webhost(cherryhost, cherryport, https_port):
 def attach_server(host, port, cert=None, key=None):
     """ Define and attach server, optionally HTTPS
     """
-    http_server = _cpwsgi_server.CPWSGIServer()
-    http_server.bind_addr = (host, port)
-    if cert and key:
-        http_server.ssl_certificate = cert
-        http_server.ssl_private_key = key
-    adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-    adapter.subscribe()
+    if not (sabnzbd.cfg.no_ipv6() and '::1' in host):
+        http_server = _cpwsgi_server.CPWSGIServer()
+        http_server.bind_addr = (host, port)
+        if cert and key:
+            http_server.ssl_certificate = cert
+            http_server.ssl_private_key = key
+        adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
+        adapter.subscribe()
 
 
 def is_sabnzbd_running(url):
@@ -841,7 +843,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates',
+                                    'weblogging=', 'server=', 'templates', 'no_ipv6',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
@@ -919,6 +921,7 @@ def main():
     new_instance = False
     force_sessions = False
     osx_console = False
+    no_ipv6 = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -1005,6 +1008,8 @@ def main():
         elif opt in ('--console',):
             re_argv.append(opt)
             osx_console = True
+        elif opt in ('--no_ipv6',):
+            no_ipv6 = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1086,6 +1091,9 @@ def main():
 
     # Set root folders for HTTPS server file paths
     sabnzbd.cfg.set_root_folders2()
+
+    if no_ipv6:
+        sabnzbd.cfg.no_ipv6.set(True)
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)

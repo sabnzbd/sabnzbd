@@ -221,6 +221,7 @@ api_warnings = OptionBool('misc', 'api_warnings', True)
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
+no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
