@@ -174,7 +174,7 @@ def _assemble(nzf, path, dupe):
 
     fout.flush()
     fout.close()
-    set_permissions(path)    
+    set_permissions(path)
     if md5:
         nzf.md5sum = md5.digest()
         del md5
@@ -209,7 +209,7 @@ def GetMD5Hashes(fname):
     try:
         f = open(fname, 'rb')
     except:
-        return table
+        return table, new_encoding
 
     try:
         header = f.read(8)
