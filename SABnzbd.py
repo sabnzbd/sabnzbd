@@ -16,8 +16,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,5):
-    print "Sorry, requires Python 2.5 or higher."
+if sys.version_info < (2, 5):
+    print "Sorry, requires Python 2.5, 2.6 or 2.7."
+    sys.exit(1)
+if sys.version_info >= (3, 0):
+    print("Sorry, requires Python 2.5, 2.6 or 2.7.")
     sys.exit(1)
 
 import logging
