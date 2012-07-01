@@ -65,7 +65,7 @@ else:
 # Configuration instances
 #
 quick_check = OptionBool('misc', 'quick_check', True)
-fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
+fail_on_crc = OptionBool('misc', 'fail_on_crc', True)
 send_group = OptionBool('misc', 'send_group', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 

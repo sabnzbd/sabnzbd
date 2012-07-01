@@ -120,7 +120,7 @@ class Decoder(Thread):
                             register = False
                             logme = None
 
-                except BadYenc, e:
+                except BadYenc:
                     logme = Ta('Badly formed yEnc article in %s') % article
                     logging.info(logme)
 
@@ -211,19 +211,22 @@ def decode(article, data):
         #Deal with non-yencoded posts
         if not ybegin:
             found = False
-            for i in xrange(10):
-                if data[i].startswith('begin '):
-                    nzf.filename = name_fixer(data[i].split(None, 2)[2])
-                    nzf.type = 'uu'
-                    found = True
-                    break
-            if found:
-                for n in xrange(i+1):
-                    data.pop(0)
-            if data[-1] == 'end':
-                data.pop()
-                if data[-1] == '`':
+            try:
+                for i in xrange(10):
+                    if data[i].startswith('begin '):
+                        nzf.filename = name_fixer(data[i].split(None, 2)[2])
+                        nzf.type = 'uu'
+                        found = True
+                        break
+                if found:
+                    for n in xrange(i+1):
+                        data.pop(0)
+                if data[-1] == 'end':
                     data.pop()
+                    if data[-1] == '`':
+                        data.pop()
+            except IndexError:
+                raise BadYenc()
 
             decoded_data = '\r\n'.join(data)
 
