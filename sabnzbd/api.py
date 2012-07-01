@@ -461,33 +461,6 @@ def _api_get_files(name, output, kwargs):
     else:
         return report(output, _MSG_NO_VALUE)
 
-def _api_addurl(names, output, kwargs):
-    """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    pp = kwargs.get('pp')
-    script = kwargs.get('script')
-    cat = kwargs.get('cat')
-    priority = kwargs.get('priority')
-    nzbnames = kwargs.get('nzbname')
-    if not isinstance(names, list):
-        names = [names]
-    if not isinstance(nzbnames, list):
-        nzbnames = [nzbnames]
-
-    for n in xrange(len(names)):
-        name = names[n]
-        if n < len(nzbnames):
-            nzbname = nzbnames[n]
-        else:
-            nzbname = ''
-        if name:
-            name = name.strip()
-        sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
-
-    if len(names) > 0:
-        return report(output)
-    else:
-        return report(output, _MSG_NO_VALUE)
-
 
 _RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
 def _api_addid(names, output, kwargs):
@@ -796,7 +769,7 @@ _api_table = {
     'fullstatus'      : _api_fullstatus,
     'history'         : _api_history,
     'get_files'       : _api_get_files,
-    'addurl'          : _api_addurl,
+    'addurl'          : _api_addid,
     'addid'           : _api_addid,
     'pause'           : _api_pause,
     'resume'          : _api_resume,
