@@ -325,7 +325,7 @@ def _analyse_others(fn, url):
         return None, msg, True, 60
     try:
         f = open(fn, 'r')
-        data = f.read(500).lower()
+        data = f.read(100).lower()
         f.close()
     except:
         logging.debug('Problem with tempfile %s from indexer, retry after 60 sec', fn)
@@ -337,23 +337,19 @@ def _analyse_others(fn, url):
         return None, msg, True, 60
 
     ldata = data.lower()
-    if '.nzbsrus.' in url and '<nzb' not in data:
+    if '.nzbsrus.' in url:
         if misc.match_str(ldata, ('invalid link', 'nuked', 'deleted')):
             logging.debug('nzbsrus says: %s, abort', data)
             return None, data, False, 0
         if 'temporarily' in data:
             logging.debug('nzbsrus says: %s, retry', data)
             return None, data, True, 600
-        if '<!doctype' in ldata:
+        if '<nzb' not in ldata and '<!doctype' in ldata:
             msg = Ta('Invalid URL for nzbsrus')
             logging.debug(msg)
             return None, msg, False, 0
 
-    if '<nzb' in ldata:
-        return fn, msg, False, 0
-    else:
-        return None, msg, True, 60
-
+    return fn, msg, False, 0
 
 #------------------------------------------------------------------------------
 _MATRIX_MAP = {
