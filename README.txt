@@ -2,6 +2,10 @@ Release Notes  -  SABnzbd 0.7.1
 ===============================
 
 ## Fixes in 0.7.1
+- Fixed problem were fetching par2 files after first verification could stall in the queue
+- Fixed retry behaviour of NZB fetching from URL (with handling of nzbsrus.com error codes)
+- Verification/repair would not be executed properly when one more RAR files
+  missed their first article.
 - Improved backup of sabnzbd.ini file, now uses backup when original is gone or corrupt
 - Several translations extended/improved
 - Plush skin: fix problems with pull-down menus in Mobile Safari
@@ -13,6 +17,8 @@ Release Notes  -  SABnzbd 0.7.1
   final destination folder
 - Minor fixes in  Window Tray icon and OSX top menu
 - Add no_ipv6 special for systems that keep having issues with [::1]
+- Fix crash in QuickCheck when expected par2 file wasn't downloaded
+- API calls "addurl" and "addid" (newzbin) can now be used interchangeably
 
 ## What's new in 0.7.0
 
