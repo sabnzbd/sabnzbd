@@ -1,5 +1,5 @@
-Release Notes  -  SABnzbd 0.7.1
-===============================
+Release Notes  -  SABnzbd 0.7.1RC4
+==================================
 
 ## Fixes in 0.7.1
 - Fixed problem were fetching par2 files after first verification could stall in the queue
