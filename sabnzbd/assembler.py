@@ -60,18 +60,18 @@ class Assembler(Thread):
     def stop(self):
         self.process(None)
 
-    def process(self, nzf):
-        self.queue.put(nzf)
+    def process(self, job):
+        self.queue.put(job)
 
     def run(self):
         import sabnzbd.nzbqueue
         while 1:
-            nzo_nzf_tuple = self.queue.get()
-            if not nzo_nzf_tuple:
+            job = self.queue.get()
+            if not job:
                 logging.info("Shutting down")
                 break
 
-            nzo, nzf = nzo_nzf_tuple
+            nzo, nzf = job
 
             if nzf:
                 sabnzbd.CheckFreeSpace()

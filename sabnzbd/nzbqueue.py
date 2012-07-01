@@ -673,7 +673,7 @@ class NzbQueue(TryList):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.deleted or nzf.deleted:
+        if nzf.deleted:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
@@ -715,7 +715,9 @@ class NzbQueue(TryList):
             sabnzbd.downloader.Downloader.do.disconnect()
 
         # Notify assembler to call postprocessor
-        Assembler.do.process((nzo, None))
+        if not nzo.deleted:
+            nzo.deleted = True
+            Assembler.do.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)
