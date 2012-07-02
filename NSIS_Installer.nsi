@@ -297,7 +297,7 @@ SetOutPath "$INSTDIR"
 ;------------------------------------------------------------------
 ; Make sure old versions are gone
 IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
-  IfFileExists $INSTDIR\python25.dll 0 endWarnExist
+  IfFileExists $INSTDIR\python27.dll 0 endWarnExist
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "$(MsgRemoveOld)$\n$\n$(MsgRemoveOld2)" IDOK uninst
     Abort
 uninst:
