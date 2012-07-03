@@ -325,7 +325,7 @@ def _analyse_others(fn, url):
         return None, msg, True, 60
     try:
         f = open(fn, 'r')
-        data = f.read(100).lower()
+        data = f.read(100)
         f.close()
     except:
         logging.debug('Problem with tempfile %s from indexer, retry after 60 sec', fn)
@@ -336,14 +336,23 @@ def _analyse_others(fn, url):
         logging.debug('Received nothing from indexer, retry after 60 sec')
         return None, msg, True, 60
 
-    ldata = data.lower()
     if '.nzbsrus.' in url:
+        # Provisional support for nzbsrus.com's lack of an API
+        # Trying to make sense of their response
+        # Their non-VIP limiting is particularly weak
+        f = open(fn, 'r')
+        data = f.read(10000)
+        f.close()
+        ldata = data[:100].lower()
         if misc.match_str(ldata, ('invalid link', 'nuked', 'deleted')):
             logging.debug('nzbsrus says: %s, abort', data)
             return None, data, False, 0
-        if 'temporarily' in data:
+        if 'temporarily' in ldata:
             logging.debug('nzbsrus says: %s, retry', data)
             return None, data, True, 600
+        if 'Upgrade To ViP' in data:
+            logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
+            return None, 'upgrade to VIP', True, 3600
         if '<nzb' not in ldata and '<!doctype' in ldata:
             msg = Ta('Invalid URL for nzbsrus')
             logging.debug(msg)
