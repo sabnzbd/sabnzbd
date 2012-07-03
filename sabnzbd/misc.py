@@ -939,8 +939,9 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     if isinstance(url, int) or url.isdigit():
         url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
-    #import sabnzbd.emailer
-    sabnzbd.emailer.badfetch_mail(msg, url)
+    if cfg.email_endjob() > 0:
+        #import sabnzbd.emailer
+        sabnzbd.emailer.badfetch_mail(msg, url)
 
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)
