@@ -1,8 +1,10 @@
 -------------------------------------------------------------------------------
- 0.7.1Final by The SABnzbd-Team
+ 0.7.1RC5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix signing of OSX DMG
 - Fix endless par2-fetch loop after retrying failed job
+- Don't send "bad fetch" email when emailing is off
+- Add some support for nzbrus.com's non-VIP limiting
 -------------------------------------------------------------------------------
  0.7.1RC4 by The SABnzbd-Team
 -------------------------------------------------------------------------------

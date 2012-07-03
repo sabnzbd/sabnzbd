@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 0.7.1
-===============================
+Release Notes  -  SABnzbd 0.7.1RC5
+==================================
+
+## Fixes in RC5
+- Fix signing of OSX DMG
+- Fix endless par2-fetch loop after retrying failed job
+- Don't send "bad fetch" email when emailing is off
+- Add some support for nzbrus.com's non-VIP limiting
 
 ## Fixes in 0.7.1
 - Fixed problem were fetching par2 files after first verification could stall in the queue
