@@ -353,6 +353,9 @@ def _analyse_others(fn, url):
         if 'Upgrade To ViP' in data:
             logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
             return None, 'upgrade to VIP', True, 3600
+        if 'Maintenance' in data:
+            logging.debug('nzbsrus says: Maintenance, retry after an hour')
+            return None, 'Maintenance', True, 3600
         if '<nzb' not in ldata and '<!doctype' in ldata:
             msg = Ta('Invalid URL for nzbsrus')
             logging.debug(msg)
