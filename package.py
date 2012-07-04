@@ -95,7 +95,7 @@ def PatchVersion(name):
     try:
         pipe = subprocess.Popen(GitStatus, shell=True, stdout=subprocess.PIPE).stdout
         for line in pipe.read().split('\n'):
-            if 'nothing to commit' in line:
+            if 'nothing to commit' in line or 'nothing added to commit' in line:
                 state = ''
                 break
         pipe.close()
