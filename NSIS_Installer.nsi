@@ -245,6 +245,7 @@ Function .onInit
 ;--------------------------------
 ;make sure that the requires MS Runtimes are installed
 ;
+goto nodownload ; Not needed while still using Python25
 runtime_loop:
   push 'msvcr90.dll'
   push 'Microsoft.VC90.CRT,version="9.0.21022.8",type="win32",processorArchitecture="x86",publicKeyToken="1fc8b3b9a1e18e3b"'
