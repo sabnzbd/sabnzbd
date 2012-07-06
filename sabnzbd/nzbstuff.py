@@ -810,6 +810,7 @@ class NzbObject(TryList):
         if nzf in self.files:
             self.files.remove(nzf)
             self.finished_files.append(nzf)
+            nzf.import_finished = True
             nzf.deleted = True
         return not bool(self.files)
 
@@ -924,7 +925,6 @@ class NzbObject(TryList):
                 subject = sanitize_filename(latin1(nzf.subject))
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
-                    nzf.completed = True
                     self.handle_par2(nzf, file_done=True)
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
@@ -937,7 +937,6 @@ class NzbObject(TryList):
                 tup = os.stat(os.path.join(wdir, filename))
                 tm = datetime.datetime.fromtimestamp(tup.st_mtime)
                 nzf = NzbFile(tm, '"%s"' % filename, [], tup.st_size, self)
-                nzf.completed = True
                 self.files.append(nzf)
                 self.files_table[nzf.nzf_id] = nzf
                 self.bytes += nzf.bytes
