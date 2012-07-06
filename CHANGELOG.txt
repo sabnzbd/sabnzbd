@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.7.1Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disable VC90 check in Windows Installer as long as we're still on Python 2.5
+- Windows: make sure \\server\share notation is never seen as a relative path
+-------------------------------------------------------------------------------
  0.7.1RC5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix signing of OSX DMG

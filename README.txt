@@ -1,11 +1,5 @@
-Release Notes  -  SABnzbd 0.7.1RC5
-==================================
-
-## Fixes in RC5
-- Fix signing of OSX DMG
-- Fix endless par2-fetch loop after retrying failed job
-- Don't send "bad fetch" email when emailing is off
-- Add some support for nzbrus.com's non-VIP limiting
+Release Notes  -  SABnzbd 0.7.1
+===============================
 
 ## Fixes in 0.7.1
 - Fixed problem were fetching par2 files after first verification could stall in the queue
@@ -21,10 +15,14 @@ Release Notes  -  SABnzbd 0.7.1RC5
 - Fix problem that the Opera browser had with Config->Servers
 - Retry a few times when accessing a mounted drive to create the
   final destination folder
-- Minor fixes in  Window Tray icon and OSX top menu
+- Minor fixes in Window Tray icon and OSX top menu
 - Add no_ipv6 special for systems that keep having issues with [::1]
 - Fix crash in QuickCheck when expected par2 file wasn't downloaded
 - API calls "addurl" and "addid" (newzbin) can now be used interchangeably
+- Fix endless par2-fetch loop after retrying failed job
+- Don't send "bad fetch" email when emailing is off
+- Add some support for nzbrus.com's non-VIP limiting
+- Fix signing of OSX DMG
 
 ## What's new in 0.7.0
 
