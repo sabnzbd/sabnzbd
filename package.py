@@ -95,7 +95,7 @@ def PatchVersion(name):
     try:
         pipe = subprocess.Popen(GitStatus, shell=True, stdout=subprocess.PIPE).stdout
         for line in pipe.read().split('\n'):
-            if 'nothing to commit' in line:
+            if 'nothing to commit' in line or 'nothing added to commit' in line:
                 state = ''
                 break
         pipe.close()
@@ -432,6 +432,13 @@ if target == 'app':
     os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
+    # Remove source files to prevent re-compilation, which would invalidate signing
+    py_ver = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/Cheetah -name '*.py' | xargs rm" % py_ver)
+    os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/xml -name '*.py' | xargs rm" % py_ver)
+    os.remove('dist/SABnzbd.app/Contents/Resources/site.py')
+    os.system("sleep 5")
+
     if OSX_LION:
         # Sign the App if possible
         authority = os.environ.get('SIGNING_AUTH')
@@ -447,15 +454,11 @@ if target == 'app':
 
         print 'Create src %s' % fileOSr
         os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
-                  '--exclude "*.sparseimage" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
+                  '--exclude "*.sparseimage*" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
                   './ >/dev/null' % (fileOSr) )
 
         # Copy README.txt
         os.system("cp README.rtf /Volumes/%s/" % volume)
-
-        # Remove site.py to prevent re-compilation (otherwise the OSX Firewall may complain)
-        os.remove('/Volumes/%s/OS X 10.6 and Above/SABnzbd.app/Contents/Resources/site.py' % volume)
-        os.remove('/Volumes/%s/OS X 10.5 and Below/SABnzbd.app/Contents/Resources/site.py' % volume)
 
         #Unmount sparseimage
         os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
@@ -563,6 +566,7 @@ elif target in ('binary', 'installer'):
     DeleteFiles(r'dist\lib\API-MS-Win-*.dll')
     DeleteFiles(r'dist\lib\MSWSOCK.DLL')
     DeleteFiles(r'dist\lib\POWRPROF.DLL')
+    DeleteFiles(r'dist\lib\KERNELBASE.dll')
 
     ############################
     # Remove .git residue

@@ -165,19 +165,20 @@ class URLGrabber(Thread):
                             misc.bad_fetch(future_nzo, clean_matrix_url(url), msg, retry=True)
                         continue
                     category = _MATRIX_MAP.get(category, category)
+
+                    if del_bookmark:
+                        # No retries of nzbmatrix bookmark removals
+                        continue
+
                 else:
-                    msg = ''
-                    retry = True
-
-                if del_bookmark:
-                    # No retries of nzbmatrix bookmark removals
-                    continue
-
-                # Check if the filepath is specified, if not, check if a retry is allowed.
-                if not fn:
-                    logging.info('Retry URL %s', url)
-                    self.add(url, future_nzo, 5)
-                    continue
+                    fn, msg, retry, wait = _analyse_others(fn, url)
+                    if not fn:
+                        if retry:
+                            logging.info('Retry URL %s', url)
+                            self.add(url, future_nzo, wait)
+                        else:
+                            misc.bad_fetch(future_nzo, url, msg, retry=True)
+                        continue
 
                 if not filename:
                     filename = os.path.basename(url) + '.nzb'
@@ -312,6 +313,55 @@ def _analyse_matrix(fn, matrix_id):
 
     return fn, msg, False, 0
 
+
+def _analyse_others(fn, url):
+    """ Analyse respons of indexer
+        returns fn|None, error-message|None, retry, wait-seconds
+    """
+    msg = ''
+    wait = 0
+    if not fn:
+        logging.debug('No response from indexer, retry after 60 sec')
+        return None, msg, True, 60
+    try:
+        f = open(fn, 'r')
+        data = f.read(100)
+        f.close()
+    except:
+        logging.debug('Problem with tempfile %s from indexer, retry after 60 sec', fn)
+        return None, msg, True, 60
+
+    # Check for an error response
+    if not data:
+        logging.debug('Received nothing from indexer, retry after 60 sec')
+        return None, msg, True, 60
+
+    if '.nzbsrus.' in url:
+        # Provisional support for nzbsrus.com's lack of an API
+        # Trying to make sense of their response
+        # Their non-VIP limiting is particularly weak
+        f = open(fn, 'r')
+        data = f.read(10000)
+        f.close()
+        ldata = data[:100].lower()
+        if misc.match_str(ldata, ('invalid link', 'nuked', 'deleted')):
+            logging.debug('nzbsrus says: %s, abort', data)
+            return None, data, False, 0
+        if 'temporarily' in ldata:
+            logging.debug('nzbsrus says: %s, retry', data)
+            return None, data, True, 600
+        if 'Upgrade To ViP' in data:
+            logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
+            return None, 'upgrade to VIP', True, 3600
+        if 'Maintenance' in data:
+            logging.debug('nzbsrus says: Maintenance, retry after an hour')
+            return None, 'Maintenance', True, 3600
+        if '<nzb' not in ldata and '<!doctype' in ldata:
+            msg = Ta('Invalid URL for nzbsrus')
+            logging.debug(msg)
+            return None, msg, False, 0
+
+    return fn, msg, False, 0
 
 #------------------------------------------------------------------------------
 _MATRIX_MAP = {

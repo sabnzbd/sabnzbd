@@ -65,7 +65,7 @@ else:
 # Configuration instances
 #
 quick_check = OptionBool('misc', 'quick_check', True)
-fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
+fail_on_crc = OptionBool('misc', 'fail_on_crc', True)
 send_group = OptionBool('misc', 'send_group', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
@@ -221,6 +221,7 @@ api_warnings = OptionBool('misc', 'api_warnings', True)
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
+no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
@@ -238,6 +239,7 @@ win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
+wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

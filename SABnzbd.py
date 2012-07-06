@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,5):
-    print "Sorry, requires Python 2.5 or higher."
+if sys.version_info < (2, 5):
+    print "Sorry, requires Python 2.5, 2.6 or 2.7."
     sys.exit(1)
 
 import logging
@@ -253,6 +253,7 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
+    print "      --no_ipv6            Do listen on IPv6 address [::1]"
 
 def print_version():
     print """
@@ -563,8 +564,13 @@ def get_webhost(cherryhost, cherryport, https_port):
         info = socket.getaddrinfo(socket.gethostname(), None)
     except:
         # Hostname does not resolve, use 0.0.0.0
-        cherryhost = '0.0.0.0'
-        info = socket.getaddrinfo(localhost, None)
+        if cherryhost not in ('localhost', '127.0.0.1', '::1'):
+            cherryhost = '0.0.0.0'
+        try:
+            info = socket.getaddrinfo(localhost, None)
+        except:
+            info = socket.getaddrinfo('127.0.0.1', None)
+            localhost = '127.0.0.1'
     for item in info:
         ip = str(item[4][0])
         if ip.startswith('169.254.'):
@@ -670,13 +676,14 @@ def get_webhost(cherryhost, cherryport, https_port):
 def attach_server(host, port, cert=None, key=None):
     """ Define and attach server, optionally HTTPS
     """
-    http_server = _cpwsgi_server.CPWSGIServer()
-    http_server.bind_addr = (host, port)
-    if cert and key:
-        http_server.ssl_certificate = cert
-        http_server.ssl_private_key = key
-    adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-    adapter.subscribe()
+    if not (sabnzbd.cfg.no_ipv6() and '::1' in host):
+        http_server = _cpwsgi_server.CPWSGIServer()
+        http_server.bind_addr = (host, port)
+        if cert and key:
+            http_server.ssl_certificate = cert
+            http_server.ssl_private_key = key
+        adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
+        adapter.subscribe()
 
 
 def is_sabnzbd_running(url):
@@ -773,7 +780,7 @@ def evaluate_inipath(path):
     inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
         return inipath
-    elif os.path.isfile(path):
+    elif os.path.isfile(path) or os.path.isfile(path + '.bak'):
         return path
     else:
         dirpart, name = os.path.split(path)
@@ -836,7 +843,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates',
+                                    'weblogging=', 'server=', 'templates', 'no_ipv6',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
@@ -914,6 +921,7 @@ def main():
     new_instance = False
     force_sessions = False
     osx_console = False
+    no_ipv6 = False
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
 
@@ -1000,6 +1008,8 @@ def main():
         elif opt in ('--console',):
             re_argv.append(opt)
             osx_console = True
+        elif opt in ('--no_ipv6',):
+            no_ipv6 = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1053,7 +1063,7 @@ def main():
         GetProfileInfo(vista_plus)
         # Find out where INI file is
         inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
-        if not os.path.exists(inifile):
+        if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak'):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
             if sabnzbd.DARWIN:
                 copy_old_files(sabnzbd.DIR_LCLDATA)
@@ -1065,7 +1075,7 @@ def main():
     # All system data dirs are relative to the place we found the INI file
     sabnzbd.DIR_LCLDATA = os.path.dirname(inifile)
 
-    if not os.path.exists(inifile) and not os.path.exists(sabnzbd.DIR_LCLDATA):
+    if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak') and not os.path.exists(sabnzbd.DIR_LCLDATA):
         try:
             os.makedirs(sabnzbd.DIR_LCLDATA)
         except IOError:
@@ -1081,6 +1091,9 @@ def main():
 
     # Set root folders for HTTPS server file paths
     sabnzbd.cfg.set_root_folders2()
+
+    if no_ipv6:
+        sabnzbd.cfg.no_ipv6.set(True)
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)

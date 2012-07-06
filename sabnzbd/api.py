@@ -461,33 +461,6 @@ def _api_get_files(name, output, kwargs):
     else:
         return report(output, _MSG_NO_VALUE)
 
-def _api_addurl(names, output, kwargs):
-    """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    pp = kwargs.get('pp')
-    script = kwargs.get('script')
-    cat = kwargs.get('cat')
-    priority = kwargs.get('priority')
-    nzbnames = kwargs.get('nzbname')
-    if not isinstance(names, list):
-        names = [names]
-    if not isinstance(nzbnames, list):
-        nzbnames = [nzbnames]
-
-    for n in xrange(len(names)):
-        name = names[n]
-        if n < len(nzbnames):
-            nzbname = nzbnames[n]
-        else:
-            nzbname = ''
-        if name:
-            name = name.strip()
-        sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
-
-    if len(names) > 0:
-        return report(output)
-    else:
-        return report(output, _MSG_NO_VALUE)
-
 
 _RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
 def _api_addid(names, output, kwargs):
@@ -796,7 +769,7 @@ _api_table = {
     'fullstatus'      : _api_fullstatus,
     'history'         : _api_history,
     'get_files'       : _api_get_files,
-    'addurl'          : _api_addurl,
+    'addurl'          : _api_addid,
     'addid'           : _api_addid,
     'pause'           : _api_pause,
     'resume'          : _api_resume,
@@ -1253,6 +1226,16 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
 
 #------------------------------------------------------------------------------
+def fast_queue():
+    """ Return paused, bytes_left, bpsnow, time_left """
+    bytes_left = NzbQueue.do.remaining()
+    paused = Downloader.do.paused
+    bpsnow = BPSMeter.do.get_bps()
+    time_left = calc_timeleft(bytes_left, bpsnow)
+    return paused, bytes_left, bpsnow, time_left
+
+
+#------------------------------------------------------------------------------
 def qstatus_data():
     """Build up the queue status as a nested object and output as a JSON object
     """
@@ -1287,8 +1270,8 @@ def qstatus_data():
         "state" : state,
         "paused" : Downloader.do.paused,
         "pause_int" : scheduler.pause_int(),
-        "kbpersec" : BPSMeter.do.get_bps() / KIBI,
-        "speed" : to_units(BPSMeter.do.get_bps(), dec_limit=1),
+        "kbpersec" : bpsnow / KIBI,
+        "speed" : to_units(bpsnow, dec_limit=1),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),

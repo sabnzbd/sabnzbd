@@ -245,6 +245,7 @@ Function .onInit
 ;--------------------------------
 ;make sure that the requires MS Runtimes are installed
 ;
+goto nodownload ; Not needed while still using Python25
 runtime_loop:
   push 'msvcr90.dll'
   push 'Microsoft.VC90.CRT,version="9.0.21022.8",type="win32",processorArchitecture="x86",publicKeyToken="1fc8b3b9a1e18e3b"'
@@ -297,7 +298,7 @@ SetOutPath "$INSTDIR"
 ;------------------------------------------------------------------
 ; Make sure old versions are gone
 IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
-  IfFileExists $INSTDIR\python25.dll 0 endWarnExist
+  IfFileExists $INSTDIR\python27.dll 0 endWarnExist
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "$(MsgRemoveOld)$\n$\n$(MsgRemoveOld2)" IDOK uninst
     Abort
 uninst:

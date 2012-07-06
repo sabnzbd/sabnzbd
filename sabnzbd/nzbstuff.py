@@ -272,7 +272,7 @@ class NzbFile(TryList):
     @property
     def completed(self):
         """ Is this file completed? """
-        return not bool(self.articles)
+        return self.import_finished and not bool(self.articles)
 
     @property
     def lowest_partnum(self):
@@ -810,6 +810,7 @@ class NzbObject(TryList):
         if nzf in self.files:
             self.files.remove(nzf)
             self.finished_files.append(nzf)
+            nzf.import_finished = True
             nzf.deleted = True
         return not bool(self.files)
 
@@ -818,38 +819,35 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
-    def postpone_pars(self, nzf, head):
-        """ Move all vol-par files matching 'head' to the extrapars table """
-        self.partable[head] = nzf
-        self.extrapars[head] = []
-        nzf.extrapars = self.extrapars[head]
+    def postpone_pars(self, nzf, parset):
+        """ Move all vol-par files matching 'parset' to the extrapars table """
+        self.partable[parset] = nzf
+        self.extrapars[parset] = []
+        nzf.extrapars = self.extrapars[parset]
+        lparset = parset.lower()
         for xnzf in self.files[:]:
-            name = xnzf.filename
+            name = xnzf.filename or platform_encode(xnzf.subject)
             # Move only when not current NZF and filename was extractable from subject
             if name and nzf is not xnzf:
-                name = name.lower()
-                if head.lower() in name and '.vol' in name and name.endswith('.par2'):
-                    self.extrapars[head].append(xnzf)
+                head, vol, block = analyse_par2(name)
+                # When only subject is known, it's enough that that 'parset' is in subject
+                if head and lparset in head.lower():
+                    xnzf.set_par2(parset, vol, block)
+                    self.extrapars[parset].append(xnzf)
                     self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):
-        ## Special treatment for first part of par2 file
+        """ Check if file is a par2 and build up par2 collection
+        """
         fn = nzf.filename
         if fn:
+            # We have a real filename now
             fn = fn.strip()
             lfn = fn.lower()
-            if (not nzf.is_par2) and fn and lfn.endswith('.par2'):
-                par2match = PROBABLY_PAR2_RE.search(fn)
-                if par2match:
-                    head = par2match.group(1)
-                    vol = par2match.group(2)
-                    block = par2match.group(3)
-                elif lfn.endswith('.par2'):
-                    head = os.path.splitext(fn)[0]
-                    vol = block = 0
-                    par2match = True
+            if not nzf.is_par2:
+                head, vol, block = analyse_par2(fn)
                 ## Is a par2file and repair mode activated
-                if par2match and (self.repair or cfg.allow_streaming()):
+                if head and (self.repair or cfg.allow_streaming()):
                     nzf.set_par2(head, vol, block)
                     ## Already got a parfile for this set?
                     if head in self.partable:
@@ -867,10 +865,12 @@ class NzbObject(TryList):
                         ## This file either has more blocks,
                         ## or initialparfile is already decoded
                         else:
-                            if not file_done:
-                                nzf.reset_try_list()
+                            if file_done:
                                 if nzf in self.files: self.files.remove(nzf)
-                                self.extrapars[head].append(nzf)
+                                if nzf not in self.extrapars[head]: self.extrapars[head].append(nzf)
+                            else:
+                                nzf.reset_try_list()
+
                     ## No par2file in this set yet, set this as
                     ## initialparfile
                     else:
@@ -894,7 +894,8 @@ class NzbObject(TryList):
         if reset:
             self.reset_try_list()
 
-        self.handle_par2(nzf, file_done)
+        if file_done:
+            self.handle_par2(nzf, file_done)
 
         post_done = False
         if not self.files:
@@ -1008,10 +1009,8 @@ class NzbObject(TryList):
 
     def add_parfile(self, parfile):
         self.files.append(parfile)
-        if parfile.extrapars:
+        if parfile.extrapars and parfile in parfile.extrapars:
             parfile.extrapars.remove(parfile)
-        else:
-            logging.debug('PARFILE without EXTRAPARS %s', parfile.filename or parfile.subject)
 
     def remove_parset(self, setname):
         self.partable.pop(setname)
@@ -1227,6 +1226,13 @@ class NzbObject(TryList):
                     os.rmdir(self.downpath)
                 except:
                     pass
+
+    def remaining(self):
+        """ Return remaining bytes """
+        bytes_left = 0
+        for nzf in self.files:
+            bytes_left += nzf.bytes_left
+        return bytes_left
 
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
@@ -1532,3 +1538,22 @@ def set_attrib_file(path, attribs):
         f.write('%s\n' % item)
     f.close()
 
+
+def analyse_par2(name):
+    """ Check if file is a par2-file and determine vol/block
+        return head, vol, block
+        head is empty when not a par2 file
+    """
+    if name:
+        m = PROBABLY_PAR2_RE.search(name)
+        if m:
+            head = m.group(1)
+            vol = m.group(2)
+            block = m.group(3)
+        elif name.lower().find('.par2') > 0:
+            head = os.path.splitext(name)[0]
+            vol = block = 0
+        else:
+            head = None
+            vol = block = 0
+    return head, vol, block

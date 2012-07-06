@@ -317,6 +317,8 @@ def real_path(loc, path):
         When 'path' is absolute, return normalized path
         A path starting with ~ will be located in the user's Home folder
     """
+    # The Windows part is a bit convoluted because
+    # os.path.join() doesn't behave the same for all Python versions
     if path:
         path = path.strip()
     else:
@@ -325,9 +327,15 @@ def real_path(loc, path):
         if not sabnzbd.WIN32 and path.startswith('~/'):
             path = path.replace('~', sabnzbd.DIR_HOME, 1)
         if sabnzbd.WIN32:
-            if path[0].isalpha() and len(path) > 1 and path[1] == ':':
-                if len(path) == 2 or path[2] not in '\\/':
+            path = path.replace('/', '\\')
+            if len(path) > 1 and path[0].isalpha() and path[1] == ':':
+                if len(path) == 2 or path[2] != '\\':
                     path = path.replace(':', ':\\', 1)
+            elif path.startswith('\\\\'):
+                pass
+            elif path.startswith('\\'):
+                if len(loc) > 1 and loc[0].isalpha() and loc[1] == ':':
+                    path = loc[:2] + path
             else:
                 path = os.path.join(loc, path)
         elif path[0] != '/':
@@ -713,15 +721,22 @@ def hostname():
 #------------------------------------------------------------------------------
 def check_mount(path):
     """ Return False if volume isn't mounted on Linux or OSX
+        Retry 6 times with an interval of 1 sec.
     """
     if sabnzbd.DARWIN:
         m = re.search(r'^(/Volumes/[^/]+)/', path, re.I)
-    elif not sabnzbd.WIN32:
-        m = re.search(r'^(/(?:mnt|media)/[^/]+)/', path)
+    elif sabnzbd.WIN32:
+        m = re.search(r'^([a-z]:\\)', path, re.I)
     else:
-        m = None
-    return (not m) or os.path.exists(m.group(1))
+        m = re.search(r'^(/(?:mnt|media)/[^/]+)/', path)
 
+    if m:
+        for n in xrange(cfg.wait_ext_drive() or 1):
+            if os.path.exists(m.group(1)):
+                return True
+            logging.debug('Waiting for %s to come online', m.group(1))
+            time.sleep(1)
+    return not m
 
 #------------------------------------------------------------------------------
 # Locked directory operations
@@ -932,8 +947,9 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     if isinstance(url, int) or url.isdigit():
         url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
-    #import sabnzbd.emailer
-    sabnzbd.emailer.badfetch_mail(msg, url)
+    if cfg.email_endjob() > 0:
+        #import sabnzbd.emailer
+        sabnzbd.emailer.badfetch_mail(msg, url)
 
     from sabnzbd.nzbqueue import NzbQueue
     assert isinstance(NzbQueue.do, NzbQueue)

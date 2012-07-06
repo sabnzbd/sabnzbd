@@ -561,8 +561,7 @@ def parring(nzo, workdir):
             need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
             if need_re_add:
                 re_add = True
-            else:
-                par_error = par_error or not res
+            par_error = par_error or not res
 
         if re_add:
             logging.info('Readded %s to queue', filename)

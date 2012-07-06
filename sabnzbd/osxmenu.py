@@ -32,7 +32,6 @@ import sys
 import time
 
 import logging
-import logging.handlers
 
 import sabnzbd
 import sabnzbd.cfg
@@ -42,6 +41,7 @@ from sabnzbd.misc import get_filename, get_ext, diskfree, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.growler as growler
 
+from sabnzbd.api import fast_queue
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.config as config
 import sabnzbd.scheduler as scheduler
@@ -50,6 +50,7 @@ import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.database import get_history_handle
+from sabnzbd.encoding import unicoder
 
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
 start_time = NSDate.date()
@@ -328,7 +329,7 @@ class SABnzbdDelegate(NSObject):
 
     def queueUpdate(self):
         try:
-            qnfo = NzbQueue.do.queue_info()
+            qnfo = NzbQueue.do.queue_info(max_jobs=10)
             pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
             bytesleftprogess = 0
@@ -347,7 +348,7 @@ class SABnzbdDelegate(NSObject):
                 for pnfo in pnfo_list:
                     if job_nb > 10:
                         break
-                    filename = pnfo[PNFO_FILENAME_FIELD]
+                    filename = unicoder(pnfo[PNFO_FILENAME_FIELD])
                     msgid = pnfo[PNFO_MSGID_FIELD]
                     bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
                     bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
@@ -438,24 +439,23 @@ class SABnzbdDelegate(NSObject):
 
     def stateUpdate(self):
         try:
-            qnfo = NzbQueue.do.queue_info()
-            bpsnow = BPSMeter.do.get_bps()
-            if sabnzbd.downloader.Downloader.do.paused:
+            paused, bytes_left, bpsnow, time_left = fast_queue()
+
+            if paused:
                 self.state = T('Paused')
                 if sabnzbd.scheduler.pause_int() != "0":
                     self.setMenuTitle("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
                 else:
                     self.setMenuTitle("")
-            elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
-
+            elif bytes_left > 0:
                 self.state = ""
-                speed = to_units(bpsnow, dec_limit=1) + 'B/s'
+                speed = to_units(bpsnow, dec_limit=1)
                 # "10.1 MB/s" doesn't fit, remove space char
-                if 'M' in speed and len(speed) > 8:
+                if 'M' in speed and len(speed) > 5:
                     speed = speed.replace(' ', '')
-                timeleft = (bpsnow>10 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
+                time_left = (bpsnow>10 and time_left) or "------"
 
-                statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)
+                statusbarText = "\n\n%s\n%sB/s\n" % (time_left, speed)
 
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."

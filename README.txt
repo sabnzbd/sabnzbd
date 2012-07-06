@@ -1,6 +1,30 @@
-************************  SABnzbd 0.7.0 ************************
+Release Notes  -  SABnzbd 0.7.1
+===============================
 
-What's new:
+## Fixes in 0.7.1
+- Fixed problem were fetching par2 files after first verification could stall in the queue
+- Fixed retry behaviour of NZB fetching from URL (with handling of nzbsrus.com error codes)
+- Verification/repair would not be executed properly when one more RAR files
+  missed their first article.
+- Improved backup of sabnzbd.ini file, now uses backup when original is gone or corrupt
+- Several translations extended/improved
+- Plush skin: fix problems with pull-down menus in Mobile Safari
+- On some Linux and OSX systems using localhost would still make SABnzbd
+  give access to other computers
+- Windows: the installer did not set an icon when associating NZB files with SABnzbd
+- Fix problem that the Opera browser had with Config->Servers
+- Retry a few times when accessing a mounted drive to create the
+  final destination folder
+- Minor fixes in Window Tray icon and OSX top menu
+- Add no_ipv6 special for systems that keep having issues with [::1]
+- Fix crash in QuickCheck when expected par2 file wasn't downloaded
+- API calls "addurl" and "addid" (newzbin) can now be used interchangeably
+- Fix endless par2-fetch loop after retrying failed job
+- Don't send "bad fetch" email when emailing is off
+- Add some support for nzbrus.com's non-VIP limiting
+- Fix signing of OSX DMG
+
+## What's new in 0.7.0
 
 - Download quota management
 - Windows: simple system tray menu
@@ -21,7 +45,7 @@ What's new:
 - Unified OSX DMG
 
 
-About:
+## About
   SABnzbd is an open-source cross-platform binary newsreader.
   It simplifies the process of downloading from Usenet dramatically,
   thanks to its web-based user interface and advanced

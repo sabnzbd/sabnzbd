@@ -1254,7 +1254,10 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
-    rars = [f for f in filelist if RAR_RE.search(f) and is_rarfile(f)]
+    if check_rar:
+        rars = [f for f in filelist if RAR_RE.search(f) and is_rarfile(f)]
+    else:
+        rars = [f for f in filelist if RAR_RE.search(f)]
 
     ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 

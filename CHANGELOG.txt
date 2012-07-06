@@ -1,4 +1,51 @@
 -------------------------------------------------------------------------------
+ 0.7.1Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disable VC90 check in Windows Installer as long as we're still on Python 2.5
+- Windows: make sure \\server\share notation is never seen as a relative path
+-------------------------------------------------------------------------------
+ 0.7.1RC5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix signing of OSX DMG
+- Fix endless par2-fetch loop after retrying failed job
+- Don't send "bad fetch" email when emailing is off
+- Add some support for nzbrus.com's non-VIP limiting
+-------------------------------------------------------------------------------
+ 0.7.1RC4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix failure to grab NZBs from indexers that send compressed files.
+-------------------------------------------------------------------------------
+ 0.7.1RC3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed stalling par2 fetches (after first verification run)
+- Fixed retry behaviour of NZB fetching from URL
+  and add handling of nzbsrus.com error codes
+- Make sure that all malformed articles are retried on another server
+- Add no_ipv6 option that suppresses listing on ::1
+  (to be used if your system cannot handle that)
+- Prevent crash in QuickCheck when expected par2 file wasn't downloaded
+- Verification/repair would not be executed properly when one more RAR files
+  missed their first article.
+- API calls "addurl" and "addid" (newzbin) can be used interchangeably
+  (Fixes a problem in Qouch)
+-------------------------------------------------------------------------------
+ 0.7.1RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Improved backup of sabnzbd.ini file
+  Will use backup when original is gone or become corrupt
+- Windows: Using ::1 as single webhost address would start IE instead of default browser
+-------------------------------------------------------------------------------
+ 0.7.1RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush skin: fix problems with pull-down menus in Mobile Safari
+- On some Linux and OSX systems using localhost would still make SABnzbd
+  give access to other computers
+- Windows: the installer did not set an icon when associating NZB files with SABnzbd
+- Fix problem that the Opera browser had with Config->Servers
+- Retry a few times when accessing a mounted drive to create the
+  final destination folder
+- Reduce load caused by WinTray and OSX topmenu
+-------------------------------------------------------------------------------
  0.7.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Updated translations

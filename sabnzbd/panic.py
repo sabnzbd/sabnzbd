@@ -236,6 +236,10 @@ def launch_a_browser(url, force=False):
     if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
+    if '::1' in url and not '[::1]' in url:
+        # Get around ideosyncrasy in Python runtime
+        url = url.replace('::1', '[::1]')
+
     if cfg.enable_https() and not cfg.https_port.get_int():
         # Must use https, because http is not available
         url = url.replace('http:', 'https:')

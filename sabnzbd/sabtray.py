@@ -29,6 +29,8 @@ import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import MEBI
+from sabnzbd.misc import to_units
 import os
 import cherrypy
 
@@ -71,23 +73,19 @@ class SABTrayThread(SysTrayIconThread):
         """ Update menu info, once every 10 calls """
         self.counter += 1
         if self.counter > 10:
-            status = api.qstatus_data()
-            state = status.get('state', "SABnzbd")
-            self.sabpaused = status.get('paused', False)
+            self.sabpaused, bytes_left, bpsnow, time_left = api.fast_queue()
+            mb_left = to_units(bytes_left, dec_limit=1)
+            speed = to_units(bpsnow, dec_limit=1)
 
-            if state == 'IDLE':
-                self.hover_text = T('Idle')
-                self.icon = self.sabicons['default']
-            elif state == 'PAUSED':
+            if self.sabpaused:
                 self.hover_text = T('Paused')
                 self.icon = self.sabicons['pause']
-            elif state == 'DOWNLOADING':
-                self.hover_text = "%sB/s %s: %s MB (%s)" % (status.get('speed', "---"), T('Remaining'), str(int(status.get('mbleft', "0"))), status.get('timeleft', "---"))
+            elif bytes_left > 0:
+                self.hover_text = "%sB/s %s: %sB (%s)" % (speed, T('Remaining'), mb_left, time_left)
                 self.icon = self.sabicons['green']
             else:
-                self.hover_text = '??'
-                self.icon = self.sabicons['pause']
-
+                self.hover_text = T('Idle')
+                self.icon = self.sabicons['default']
 
             self.refresh_icon()
             self.counter = 0

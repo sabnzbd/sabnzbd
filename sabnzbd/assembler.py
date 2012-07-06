@@ -60,18 +60,18 @@ class Assembler(Thread):
     def stop(self):
         self.process(None)
 
-    def process(self, nzf):
-        self.queue.put(nzf)
+    def process(self, job):
+        self.queue.put(job)
 
     def run(self):
         import sabnzbd.nzbqueue
         while 1:
-            nzo_nzf_tuple = self.queue.get()
-            if not nzo_nzf_tuple:
+            job = self.queue.get()
+            if not job:
                 logging.info("Shutting down")
                 break
 
-            nzo, nzf = nzo_nzf_tuple
+            nzo, nzf = job
 
             if nzf:
                 sabnzbd.CheckFreeSpace()
@@ -174,7 +174,7 @@ def _assemble(nzf, path, dupe):
 
     fout.flush()
     fout.close()
-    set_permissions(path)    
+    set_permissions(path)
     if md5:
         nzf.md5sum = md5.digest()
         del md5
@@ -209,7 +209,7 @@ def GetMD5Hashes(fname):
     try:
         f = open(fname, 'rb')
     except:
-        return table
+        return table, new_encoding
 
     try:
         header = f.read(8)

@@ -673,7 +673,7 @@ class NzbQueue(TryList):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.deleted or nzf.deleted:
+        if nzf.deleted:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
@@ -715,7 +715,9 @@ class NzbQueue(TryList):
             sabnzbd.downloader.Downloader.do.disconnect()
 
         # Notify assembler to call postprocessor
-        Assembler.do.process((nzo, None))
+        if not nzo.deleted:
+            nzo.deleted = True
+            Assembler.do.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -733,18 +735,33 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def queue_info(self, for_cli = False):
+    def queue_info(self, for_cli=False, max_jobs=0):
         bytes_left = 0
         bytes = 0
         pnfo_list = []
+        n = 0
         for nzo in self.__nzo_list:
             pnfo = nzo.gather_info(for_cli = for_cli)
             if nzo.status != 'Paused':
                 bytes += pnfo[PNFO_BYTES_FIELD]
                 bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
             pnfo_list.append(pnfo)
-
+            n += 1
+            if max_jobs and n >= max_jobs:
+                break
         return (bytes, bytes_left, pnfo_list)
+
+
+    @synchronized(NZBQUEUE_LOCK)
+    def remaining(self):
+        """ Return bytes left in the queue by non-paused items
+        """
+        bytes_left = 0
+        for nzo in self.__nzo_list:
+            if nzo.status != 'Paused':
+                bytes_left += nzo.remaining()
+        return bytes_left
+
 
     @synchronized(NZBQUEUE_LOCK)
     def is_empty(self):
