@@ -330,7 +330,12 @@ class BPSMeter(object):
         self.have_quota = bool(cfg.quota_size())
         if self.have_quota:
             quota = cfg.quota_size.get_float()
-            self.left = quota - (self.quota - self.left)
+            if self.quota:
+                # Quota change, recalculate amount left
+                self.left = quota - (self.quota - self.left)
+            else:
+                # If previously no quota, self.left holds this period's usage
+                self.left = quota - self.left
             self.quota = quota
         else:
             self.quota = self.left = 0L
