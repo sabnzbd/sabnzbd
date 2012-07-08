@@ -1616,6 +1616,7 @@ class ConfigRss(object):
             rss[feed] = feeds[feed].get_dict()
             filters = feeds[feed].filters()
             rss[feed]['filters'] = filters
+            rss[feed]['filter_states'] = [bool(sabnzbd.rss.convert_filter(f[4])) for f in filters]
             rss[feed]['filtercount'] = len(filters)
 
             rss[feed]['pick_cat'] = pick_cat

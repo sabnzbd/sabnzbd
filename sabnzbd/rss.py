@@ -125,7 +125,7 @@ def convert_filter(text):
     try:
         return re.compile(txt, re.I)
     except:
-        logging.error(Ta('Could not compile regex: %s'), text)
+        logging.debug('Could not compile regex: %s', text)
         return None
 
 _EXPIRE_SEC = 3*24*3600 # 3 days
@@ -407,7 +407,10 @@ class RSSQueue(object):
                                     result = False
                                     break
                             else:
-                                found = re.search(regexes[n], title)
+                                if regexes[n]:
+                                    found = re.search(regexes[n], title)
+                                else:
+                                    found = False
                                 if reTypes[n] == 'M' and not found:
                                     logging.debug("Filter rejected on rule %d", n)
                                     result = False
