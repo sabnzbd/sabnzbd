@@ -343,23 +343,24 @@ def _analyse_others(fn, url):
         f = open(fn, 'r')
         data = f.read(10000)
         f.close()
-        ldata = data[:100].lower()
-        if misc.match_str(ldata, ('invalid link', 'nuked', 'deleted')):
+        ldata = data[:500].lower()
+        if misc.match_str(ldata[:50], ('invalid link', 'nuked', 'deleted')):
             logging.debug('nzbsrus says: %s, abort', data)
             return None, data, False, 0
-        if 'temporarily' in ldata:
+        if 'temporarily' in ldata[:50]:
             logging.debug('nzbsrus says: %s, retry', data)
             return None, data, True, 600
-        if 'Upgrade To ViP' in data:
-            logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
-            return None, 'upgrade to VIP', True, 3600
-        if 'Maintenance' in data:
-            logging.debug('nzbsrus says: Maintenance, retry after an hour')
-            return None, 'Maintenance', True, 3600
-        if '<nzb' not in ldata and '<!doctype' in ldata:
-            msg = Ta('Invalid URL for nzbsrus')
-            logging.debug(msg)
-            return None, msg, False, 0
+        if '<nzb' not in ldata:
+            if 'Upgrade To ViP' in data:
+                logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
+                return None, 'upgrade to VIP', True, 3600
+            if 'Maintenance' in data:
+                logging.debug('nzbsrus says: Maintenance, retry after an hour')
+                return None, 'Maintenance', True, 3600
+            if '<!doctype' in ldata:
+                msg = Ta('Invalid URL for nzbsrus')
+                logging.debug(msg)
+                return None, msg, False, 0
 
     return fn, msg, False, 0
 
