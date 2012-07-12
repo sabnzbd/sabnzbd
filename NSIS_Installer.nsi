@@ -412,7 +412,7 @@ Section "un.$(MsgDelProgram)" Uninstall
 
 SectionEnd ; end of uninstall section
 
-Section "un.$(MsgDelSettings)" DelSettings
+Section /o "un.$(MsgDelSettings)" DelSettings
   DetailPrint "Uninstall settings $LOCALAPPDATA"
   Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
   RMDir /r "$LOCALAPPDATA\sabnzbd"
