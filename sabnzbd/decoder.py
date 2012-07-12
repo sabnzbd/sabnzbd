@@ -37,6 +37,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import name_fixer
+from sabnzbd.misc import match_str
 
 #-------------------------------------------------------------------------------
 
@@ -85,18 +86,19 @@ class Decoder(Thread):
             data = None
 
             register = True  # Finish article
-            found = True     # Article found (only relevant for precheck)
+            found = False    # Proper article found
 
             if lines:
                 logme = None
                 try:
                     if nzo.precheck and '223' in lines[0]:
-                        raise IndexError
+                        raise BadYenc
                     register = True
                     logging.debug("Decoding %s", article)
 
                     data = decode(article, lines)
                     nzf.article_count += 1
+                    found = True
                 except IOError, e:
                     logme = Ta('Decoding %s failed') % article
                     logging.info(logme)
@@ -121,24 +123,35 @@ class Decoder(Thread):
                             logme = None
 
                 except BadYenc:
-                    logme = Ta('Badly formed yEnc article in %s') % article
-                    logging.info(logme)
+                    killed = False
+                    for line in lines:
+                        if match_str(line.lower(), ('dmca', 'removed', 'cancel')):
+                            logging.info('Article removed from server (%s)', article)
+                            killed = True
+                            break
+                    if not killed and nzo.precheck:
+                            # Pre-check, proper article found, just register
+                            register = True
+                            found = True
+                    if not killed and not found:
+                        logme = Ta('Badly formed yEnc article in %s') % article
+                        logging.info(logme)
 
-                    if cfg.fail_on_crc():
+                    if not found:
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
 
-                except IndexError:
-                    # Pre-check, article found, just register
-                    register = True
-
                 except:
                     logme = Ta('Unknown Error while decoding %s') % article
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info = True)
-                    pass
+
+                    new_server_found = self.__search_new_server(article)
+                    if new_server_found:
+                        register = False
+                        logme = None
 
                 if logme:
                     article.nzf.nzo.inc_log('bad_art_log', logme)
