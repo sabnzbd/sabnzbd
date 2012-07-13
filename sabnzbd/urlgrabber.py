@@ -314,6 +314,14 @@ def _analyse_matrix(fn, matrix_id):
     return fn, msg, False, 0
 
 
+
+RUS_FATAL = ('DENIED_MISSING_CREDENTIALS', 'DENIED_NO_ACCOUNT',
+             'DENIED_INVALID_CREDENTIALS', 'INCORRECT_URL',
+             'NZB_DELETED', 'POST_NUKED', 'FILE_UNAVAILABLE'
+             )
+RUS_15M =   ('SQL_ERROR', 'SERVICE_OFFLINE')
+RUS_60M =   ('UPGRADE_TO_VIP', 'MAX_DOWNLOAD_REACHED')
+
 def _analyse_others(fn, url):
     """ Analyse respons of indexer
         returns fn|None, error-message|None, retry, wait-seconds
@@ -343,14 +351,30 @@ def _analyse_others(fn, url):
         f = open(fn, 'r')
         data = f.read(10000)
         f.close()
+
         ldata = data[:500].lower()
-        if misc.match_str(ldata[:50], ('invalid link', 'nuked', 'deleted')):
-            logging.debug('nzbsrus says: %s, abort', data)
-            return None, data, False, 0
-        if 'temporarily' in ldata[:50]:
-            logging.debug('nzbsrus says: %s, retry', data)
-            return None, data, True, 600
+        udata = data[:100]
         if '<nzb' not in ldata:
+            if misc.match_str(udata, RUS_FATAL):
+                logging.debug('nzbsrus says: %s, abort', udata)
+                return None, udata, False, 0
+            if misc.match_str(udata, RUS_15M):
+                logging.debug('nzbsrus says: %s, wait 15m', udata)
+                return None, udata, True, 900
+            if misc.match_str(udata, RUS_60M):
+                logging.debug('nzbsrus says: %s, wait 60m', udata)
+                return None, udata, True, 3600
+
+            if misc.match_str(ldata[:50], ('invalid link', 'nuked', 'deleted')):
+                logging.debug('nzbsrus says: %s, abort', data)
+                return None, data, False, 0
+            if 'temporarily' in ldata[:50]:
+                logging.debug('nzbsrus says: %s, retry', data)
+                return None, data, True, 600
+            if 'denied_invalid_credentials' in ldata:
+                msg = Ta('Invalid credentials')
+                logging.debug('nzbsrus says: %s, bad login data', data)
+                return None, msg, False, 0
             if 'Upgrade To ViP' in data:
                 logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
                 return None, 'upgrade to VIP', True, 3600
