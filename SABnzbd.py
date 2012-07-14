@@ -525,30 +525,24 @@ def all_localhosts():
     return ips
 
 
-def ipv_localhost(v):
-    """ Return True if localhost resolves to some IPV4 ('4') or IPV6 ('6') address
+def check_resolve(host):
+    """ Return True if 'host' resolves
     """
     try:
-        info = socket.getaddrinfo('localhost', None)
+        info = socket.getaddrinfo(host, None)
     except:
-        # localhost does not resolve
+        # Does not resolve
         return False
-    for item in info:
-        item = item[4][0]
-        if v == '4' and ':' not in item:
-            return True
-        elif v == '6' and ':' in item:
-            return True
-    return False
+    return True
 
 #------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
     """
-    if cherryhost == '0.0.0.0' and not ipv_localhost('4'):
+    if cherryhost == '0.0.0.0' and not check_resolve('127.0.0.1'):
         cherryhost = ''
-    elif cherryhost == '::' and not ipv_localhost('6'):
+    elif cherryhost == '::' and not check_resolve('::1'):
         cherryhost = ''
 
     if cherryhost is None:
@@ -563,14 +557,18 @@ def get_webhost(cherryhost, cherryport, https_port):
     try:
         info = socket.getaddrinfo(socket.gethostname(), None)
     except:
-        # Hostname does not resolve, use 0.0.0.0
-        if cherryhost not in ('localhost', '127.0.0.1', '::1'):
-            cherryhost = '0.0.0.0'
+        # Hostname does not resolve
         try:
-            info = socket.getaddrinfo(localhost, None)
+            # Valid user defined name?
+            info = socket.getaddrinfo(cherryhost, None)
         except:
-            info = socket.getaddrinfo('127.0.0.1', None)
-            localhost = '127.0.0.1'
+            if cherryhost not in ('localhost', '127.0.0.1', '::1'):
+                cherryhost = '0.0.0.0'
+            try:
+                info = socket.getaddrinfo(localhost, None)
+            except:
+                info = socket.getaddrinfo('127.0.0.1', None)
+                localhost = '127.0.0.1'
     for item in info:
         ip = str(item[4][0])
         if ip.startswith('169.254.'):
