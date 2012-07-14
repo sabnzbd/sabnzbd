@@ -310,7 +310,7 @@ class NewsWrapper(object):
     def body(self, precheck):
         self.timeout = time.time() + self.server.timeout
         if precheck:
-            command = 'HEAD <%s>\r\n' % (self.article.article)
+            command = 'STAT <%s>\r\n' % (self.article.article)
         elif self.server.oddball:
             command = 'ARTICLE <%s>\r\n' % (self.article.article)
         else:

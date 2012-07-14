@@ -91,7 +91,7 @@ class Decoder(Thread):
             if lines:
                 logme = None
                 try:
-                    if nzo.precheck and '223' in lines[0]:
+                    if nzo.precheck:
                         raise BadYenc
                     register = True
                     logging.debug("Decoding %s", article)
@@ -123,17 +123,26 @@ class Decoder(Thread):
                             logme = None
 
                 except BadYenc:
+                    # Handles precheck and badly formed articles
                     killed = False
-                    for line in lines:
-                        if match_str(line.lower(), ('dmca', 'removed', 'cancel')):
-                            logging.info('Article removed from server (%s)', article)
-                            killed = True
-                            break
-                    if not killed and nzo.precheck:
+                    found = False
+                    if nzo.precheck and lines and lines[0].startswith('223 '):
+                        # STAT was used, so we only get a status code
+                        found = True
+                    else:
+                        # Examine headers (for precheck) or body (for download)
+                        # And look for DMCA clues (while skipping "X-" headers)
+                        for line in lines:
+                            if not line.startswith('X-') and match_str(line.lower(), ('dmca', 'removed', 'cancel')):
+                                logging.info('Article removed from server (%s)', article)
+                                killed = True
+                                break
+                    if nzo.precheck:
+                        if found or not killed:
                             # Pre-check, proper article found, just register
+                            logging.debug('Server has article %s', article)
                             register = True
-                            found = True
-                    if not killed and not found:
+                    elif not killed and not found:
                         logme = Ta('Badly formed yEnc article in %s') % article
                         logging.info(logme)
 
