@@ -1,5 +1,10 @@
-Release Notes  -  SABnzbd 0.7.2RC1
+Release Notes  -  SABnzbd 0.7.2RC2
 ==================================
+
+## Fixes in 0.7.2RC2
+- Improve support for nzbsrus.com
+- Don't try to show NZB age when not known yet
+- Prevent systems with unresolvable hostnames from always using 0.0.0.0
 
 ## Fixes in 0.7.2RC1
 - Fix fatal error in nzbsrus.com support
