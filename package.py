@@ -578,6 +578,9 @@ elif target in ('binary', 'installer'):
         # Curl for Python 2.5
         os.system(r'unzip -o win\curl\curl.zip -d dist\lib')
 
+    ############################
+    # Fix icon issue with NZB association
+    os.system(r'copy dist\icons\nzb.ico dist')
 
     ############################
     if target == 'installer':
