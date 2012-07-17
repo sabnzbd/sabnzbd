@@ -136,8 +136,21 @@ class BPSMeter(object):
             sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
 
+    def defaults(self):
+        """ Get the latest data from the database and assign to a fake server
+        """
+        logging.debug('Setting default BPS meter values')
+        grand, month, week  = sabnzbd.proxy_get_history_size()
+        if grand: self.grand_total['x'] = grand
+        if month: self.month_total['x'] = month
+        if week:  self.week_total['x'] = week
+        self.quota = self.left = cfg.quota_size.get_float()
+
+
     def read(self):
-        """ Read admin from disk """
+        """ Read admin from disk, return True when pause is needed
+        """
+        res = False
         quota = self.left = cfg.quota_size.get_float() # Quota for this period
         self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
@@ -155,16 +168,14 @@ class BPSMeter(object):
                 self.quota = self.left = cfg.quota_size.get_float()
             res = self.reset_quota()
         except:
-            # Get the latest data from the database and assign to a fake server
-            logging.debug('Setting default BPS meter values')
-            grand, month, week  = sabnzbd.proxy_get_history_size()
-            if grand: self.grand_total['x'] = grand
-            if month: self.month_total['x'] = month
-            if week:  self.week_total['x'] = week
-            self.quota = self.left = cfg.quota_size.get_float()
-            res = False
-        # Force update of counters
-        self.update()
+            self.defaults()
+        # Force update of counters and validate data
+        try:
+            for server in self.grand_total:
+                self.update(server)
+        except TypeError:
+            self.defaults()
+            self.update()
         return res
 
 
