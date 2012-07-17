@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.2Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix for NZB-icon issue when 0.7.0 was previously installed
+- Check validity of totals9.sab file
+- Fix startup problem when localhost has unexpected order of IP addresses
+-------------------------------------------------------------------------------
  0.7.2RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Improve support for nzbsrus.com
