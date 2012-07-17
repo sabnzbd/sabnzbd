@@ -1370,8 +1370,8 @@ def main():
         hosts[1] = '::1'
 
     # The Windows binary requires numeric localhost as primary address
-    if multilocal and cherryhost == 'localhost' and hosts[1] == '127.0.0.1':
-        cherryhost = '::1'
+    if multilocal and cherryhost == 'localhost':
+        cherryhost = hosts[0]
 
     if enable_https:
         if https_port:
