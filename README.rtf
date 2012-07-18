@@ -4,16 +4,30 @@
 \paperw11900\paperh16840\vieww16360\viewh15680\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\b\fs48 \cf0 SABnzbd 0.7.1\
+\f0\b\fs48 \cf0 SABnzbd 0.7.2\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
 \b0\fs26 \cf0 \
+
+\b Fixes in 0.7.2
+\b0 \
+- Improve support for nzbsrus.com\
+- Don't try to show NZB age when not known yet\
+- Prevent systems with unresolvable hostnames from always using 0.0.0.0\
+- Initial "quota left" was not set correctly when enabling quota\
+- Report incorrect RSS filter expressions (instead of aborting analysis)\
+- Improve detection of invalid articles (so that backup server will be tried)\
+- Windows installer: don't remove settings by default when uninstalling\
+- Fix sorting of rar files in job so that .rar preceeds .r00\
+- Fix for NZB-icon issue when 0.7.0 was previously installed\
+- Fix startup problem on Windows when IPv4 has precedence over IPv6\
+\
 
 \b Fixes in 0.7.1
 \b0 \
 - Fixed problem were fetching par2 files after first verification could stall in the queue\
 - Fixed retry behaviour of NZB fetching from URL (with handling of nzbsrus.com error codes)\
-- Verification/repair would not be executed properly when one more RAR files missed their first article\
+- Verification/repair would not be executed properly when one more RAR files missed their first article.\
 - Improved backup of sabnzbd.ini file, now uses backup when original is gone or corrupt\
 - Several translations extended/improved\
 - Plush skin: fix problems with pull-down menus in Mobile Safari\
@@ -31,7 +45,7 @@
 - Fix signing of OSX DMG\
 \
 
-\b What's new
+\b What's new in 0.7.0
 \b0 \
 - Download quota management\
 - Windows: simple system tray menu\

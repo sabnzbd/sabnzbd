@@ -150,10 +150,12 @@ class NzbQueue(TryList):
         """ Reconstruct admin for a single job folder, optionally with new NZB """
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
-        if new_nzb is None or not new_nzb.filename:
-            if verified_flag_file(folder):
-                filename = ''
-            else:
+        if hasattr(new_nzb, 'filename'):
+            filename = new_nzb.filename
+        else:
+            filename = ''
+        if not filename:
+            if not verified_flag_file(folder):
                 filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
@@ -164,7 +166,7 @@ class NzbQueue(TryList):
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
-            logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(new_nzb.filename))
+            logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(filename))
             sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
 
 

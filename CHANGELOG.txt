@@ -1,4 +1,26 @@
 -------------------------------------------------------------------------------
+ 0.7.2Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix for NZB-icon issue when 0.7.0 was previously installed
+- Check validity of totals9.sab file
+- Fix startup problem when localhost has unexpected order of IP addresses
+-------------------------------------------------------------------------------
+ 0.7.2RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Improve support for nzbsrus.com
+- Don't try to show NZB age when not known yet
+- Prevent systems with unresolvable hostnames from always using 0.0.0.0
+-------------------------------------------------------------------------------
+ 0.7.2RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix fatal error in nzbsrus.com support
+- Initial "quota left" was not set correctly when enabling quota
+- Report incorrect RSS filter expressions (instead of aborting analysis)
+- Improve detection of invalid articles (so that backup server will be tried)
+- Windows installer: improve NZB association so that a reboot isn't needed
+- Windows installer: don't remove settimngs by default when uninstalling
+- Fix sorting of rar files in job so that .rar preceeds .r00
+-------------------------------------------------------------------------------
  0.7.1Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Disable VC90 check in Windows Installer as long as we're still on Python 2.5

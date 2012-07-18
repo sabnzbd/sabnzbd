@@ -1,5 +1,17 @@
-Release Notes  -  SABnzbd 0.7.1
+Release Notes  -  SABnzbd 0.7.2
 ===============================
+
+## Fixes in 0.7.2
+- Improve support for nzbsrus.com
+- Don't try to show NZB age when not known yet
+- Prevent systems with unresolvable hostnames from always using 0.0.0.0
+- Initial "quota left" was not set correctly when enabling quota
+- Report incorrect RSS filter expressions (instead of aborting analysis)
+- Improve detection of invalid articles (so that backup server will be tried)
+- Windows installer: don't remove settings by default when uninstalling
+- Fix sorting of rar files in job so that .rar preceeds .r00
+- Fix for NZB-icon issue when 0.7.0 was previously installed
+- Fix startup problem on Windows when IPv4 has precedence over IPv6
 
 ## Fixes in 0.7.1
 - Fixed problem were fetching par2 files after first verification could stall in the queue

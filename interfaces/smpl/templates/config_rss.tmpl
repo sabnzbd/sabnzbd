@@ -213,6 +213,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 <input type="hidden" name="index" value="$fnum"/>
 <input type="hidden" name="feed" value="$feed"/>
 <input type="submit" value="$T('button-save')" onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+$fnum','1' )"/>
+<!--#if not $rss[$feed].filter_states[$fnum]#-->&nbsp;&nbsp;$T('Incorrect filter')<!--#end if#-->
 </td>
 
   </tr>

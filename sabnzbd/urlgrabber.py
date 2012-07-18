@@ -49,7 +49,6 @@ class URLGrabber(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        now = time.time()
         self.queue = Queue.Queue()
         for tup in NzbQueue.do.get_urls():
             url, nzo = tup
@@ -115,7 +114,10 @@ class URLGrabber(Thread):
                     logging.info('Removing nzbmatrix bookmark %s', matrix_id)
                 else:
                     logging.info('Grabbing URL %s', url)
-                opener = urllib.FancyURLopener({})
+                if '.nzbsrus.' in url:
+                    opener = urllib.URLopener({})
+                else:
+                    opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
                 opener.addheaders = []
                 opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
@@ -314,6 +316,14 @@ def _analyse_matrix(fn, matrix_id):
     return fn, msg, False, 0
 
 
+
+RUS_FATAL = ('DENIED_MISSING_CREDENTIALS', 'DENIED_NO_ACCOUNT',
+             'DENIED_INVALID_CREDENTIALS', 'INCORRECT_URL',
+             'NZB_DELETED', 'POST_NUKED', 'FILE_UNAVAILABLE'
+            )
+RUS_15M =   ('SQL_ERROR', 'SERVICE_OFFLINE')
+RUS_60M =   ('MAX_DOWNLOAD_REACHED_UPGRADE_TO_VIP', 'MAX_DOWNLOAD_REACHED')
+
 def _analyse_others(fn, url):
     """ Analyse respons of indexer
         returns fn|None, error-message|None, retry, wait-seconds
@@ -337,29 +347,16 @@ def _analyse_others(fn, url):
         return None, msg, True, 60
 
     if '.nzbsrus.' in url:
-        # Provisional support for nzbsrus.com's lack of an API
-        # Trying to make sense of their response
-        # Their non-VIP limiting is particularly weak
-        f = open(fn, 'r')
-        data = f.read(10000)
-        f.close()
-        ldata = data[:100].lower()
-        if misc.match_str(ldata, ('invalid link', 'nuked', 'deleted')):
+        # Partial support for nzbsrus.com's API
+        if misc.match_str(data, RUS_FATAL):
             logging.debug('nzbsrus says: %s, abort', data)
             return None, data, False, 0
-        if 'temporarily' in ldata:
-            logging.debug('nzbsrus says: %s, retry', data)
-            return None, data, True, 600
-        if 'Upgrade To ViP' in data:
-            logging.debug('nzbsrus says: upgrade to VIP, retry after an hour')
-            return None, 'upgrade to VIP', True, 3600
-        if 'Maintenance' in data:
-            logging.debug('nzbsrus says: Maintenance, retry after an hour')
-            return None, 'Maintenance', True, 3600
-        if '<nzb' not in ldata and '<!doctype' in ldata:
-            msg = Ta('Invalid URL for nzbsrus')
-            logging.debug(msg)
-            return None, msg, False, 0
+        if misc.match_str(data, RUS_15M):
+            logging.debug('nzbsrus says: %s, wait 15m', data)
+            return None, data, True, 900
+        if misc.match_str(data, RUS_60M):
+            logging.debug('nzbsrus says: %s, wait 60m', data)
+            return None, data, True, 3600
 
     return fn, msg, False, 0
 

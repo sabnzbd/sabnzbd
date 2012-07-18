@@ -21,6 +21,7 @@
 
 !include "MUI2.nsh"
 !include "registerExtension.nsh"
+!include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "WinVer.nsh"
 !include "WinSxSQuery.nsh"
@@ -351,7 +352,7 @@ SectionEnd ; end of desktop icon section
 
 Section /o $(MsgAssoc) assoc
   ${registerExtension} "$INSTDIR\icons\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
-  ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+  ${RefreshShellIcons}
 SectionEnd ; end of file association section
 
 ; begin uninstall settings/section
@@ -407,11 +408,11 @@ Section "un.$(MsgDelProgram)" Uninstall
   DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
 
   ${unregisterExtension} ".nzb" "NZB File"
-
+  ${RefreshShellIcons}
 
 SectionEnd ; end of uninstall section
 
-Section "un.$(MsgDelSettings)" DelSettings
+Section /o "un.$(MsgDelSettings)" DelSettings
   DetailPrint "Uninstall settings $LOCALAPPDATA"
   Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
   RMDir /r "$LOCALAPPDATA\sabnzbd"

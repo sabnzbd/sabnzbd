@@ -310,6 +310,7 @@ $T('explain-RSS')
   <input type="hidden" name="feed" value="$feed"/>
   <input type="hidden" name="session" value="$session">
   <input type="submit" class="juiButton" value="$T('button-save')"/>
+  <!--#if not $rss[$feed].filter_states[$fnum]#-->&nbsp;&nbsp;$T('Incorrect filter')<!--#end if#-->
   </td>
   </form>
   </tr>

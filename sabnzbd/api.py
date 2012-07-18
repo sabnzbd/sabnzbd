@@ -1138,7 +1138,11 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
 
-        slot['avg_age'] = calc_age(average_date, bool(trans))
+        if status == Status.GRABBING:
+            slot['avg_age'] = '---'
+        else:
+            slot['avg_age'] = calc_age(average_date, bool(trans))
+
         slot['verbosity'] = ""
         if web_dir:
             finished = []

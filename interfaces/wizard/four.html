@@ -8,9 +8,8 @@
 <br/>
 <div id="tips" class="hidden">
 $T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
-<!--#if len($urls) > 1#--><!--#set $s = 's'#--><!--#else#--><!--#set $s = ''#--><!--#end if#-->
-<!--#set $tip3 = $T('wizard-tip3') % $s#-->
-$tip3:<br/><br/>
+<!--#set $tip3 = $T('wizard-tip3') % ''#-->
+$tip3<br/><br/>
 <div class="quoteBlock">
 <!--#set $i = 0#-->
 <!--#for $url in $urls#-->
