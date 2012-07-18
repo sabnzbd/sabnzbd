@@ -253,7 +253,7 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
-    print "      --no_ipv6            Do listen on IPv6 address [::1]"
+    print "      --no_ipv6            Do not listen on IPv6 address [::1]"
 
 def print_version():
     print """
