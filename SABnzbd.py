@@ -1211,8 +1211,6 @@ def main():
             sabnzbd.cfg.log_backups())
 
         format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
-        if sabnzbd.WIN32:
-            format += '\r'
         rollover_log.setFormatter(logging.Formatter(format))
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
