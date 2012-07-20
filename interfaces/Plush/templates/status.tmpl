@@ -31,7 +31,7 @@
       <!--#for $warn in $warnings#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-          <td>$warn.replace("\n","</td><td>")</td></tr>
+          <td>$warn.replace("\n","</td><td>", 2)</td></tr>
       <!--#end for#-->
       </table>
     <!--#else#-->
