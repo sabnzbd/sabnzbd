@@ -133,7 +133,7 @@ class Decoder(Thread):
                         # Examine headers (for precheck) or body (for download)
                         # And look for DMCA clues (while skipping "X-" headers)
                         for line in lines:
-                            if not line.startswith('X-') and match_str(line.lower(), ('dmca', 'removed', 'cancel')):
+                            if not line.startswith('X-') and match_str(line.lower(), ('dmca', 'removed', 'cancel', 'blocked')):
                                 logging.info('Article removed from server (%s)', article)
                                 killed = True
                                 break
