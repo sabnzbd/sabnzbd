@@ -141,6 +141,10 @@ class BPSMeter(object):
         """
         logging.debug('Setting default BPS meter values')
         grand, month, week  = sabnzbd.proxy_get_history_size()
+        self.grand_total = {}
+        self.month_total = {}
+        self.week_total = {}
+        self.day_total = {}
         if grand: self.grand_total['x'] = grand
         if month: self.month_total['x'] = month
         if week:  self.week_total['x'] = week

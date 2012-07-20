@@ -253,7 +253,7 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
-    print "      --no_ipv6            Do listen on IPv6 address [::1]"
+    print "      --no_ipv6            Do not listen on IPv6 address [::1]"
 
 def print_version():
     print """
@@ -1211,8 +1211,6 @@ def main():
             sabnzbd.cfg.log_backups())
 
         format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
-        if sabnzbd.WIN32:
-            format += '\r'
         rollover_log.setFormatter(logging.Formatter(format))
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
