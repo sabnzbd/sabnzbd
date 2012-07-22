@@ -829,6 +829,10 @@ def cleanup_empty_directories(path):
                     pass
         if not repeat:
             break
+    try:
+        remove_dir(path)
+    except:
+        pass
 
 
 @synchronized(DIR_LOCK)

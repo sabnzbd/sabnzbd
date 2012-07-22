@@ -353,7 +353,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
             # Finish up
             joined_file.flush()
             joined_file.close()
-            newfiles.append(joinable_set)
+            newfiles.append(filename)
 
             if seq_error:
                 msg = T('Incomplete sequence of joinable files')
