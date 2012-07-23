@@ -231,7 +231,8 @@ class URLGrabber(Thread):
 
 
 #-------------------------------------------------------------------------------
-_RE_NZBMATRIX = re.compile(r'nzbmatrix.com/(.*)[\?&]id=(\d+)', re.I)
+_RE_NZBMATRIX = re.compile(r'nzbmatrix\.com/(.*)[\?&]id=(\d+)', re.I)
+_RE_NZBXXX    = re.compile(r'nzbxxx\.com/(.*)[\?&]id=(\d+)', re.I)
 _RE_NZBMATRIX_USER = re.compile(r'&username=([^&=]+)', re.I)
 _RE_NZBMATRIX_API  = re.compile(r'&apikey=([^&=]+)', re.I)
 
@@ -240,22 +241,38 @@ def _matrix_url(url):
 
     matrix_id = 0
     m = _RE_NZBMATRIX.search(url)
+    if not m:
+        mx = _RE_NZBXXX.search(url)
+
+    if m:
+        site = 'nzbmatrix.com'
+        user = urllib.quote_plus(cfg.matrix_username())
+        key = urllib.quote_plus(cfg.matrix_apikey())
+    elif mx:
+        site = 'nzbxxx.com'
+        user = urllib.quote_plus(cfg.xxx_username())
+        key = urllib.quote_plus(cfg.xxx_apikey())
+        m = mx
+
     if m:
         matrix_id = m.group(2)
         if not _RE_NZBMATRIX_USER.search(url) or not _RE_NZBMATRIX_API.search(url):
-            user = urllib.quote_plus(cfg.matrix_username())
-            key = urllib.quote_plus(cfg.matrix_apikey())
-            url = '%s://api.nzbmatrix.com/v1.1/download.php?id=%s&username=%s&apikey=%s' % \
-                  (_PROTOCOL, matrix_id, user, key)
+            url = '%s://api.%s/v1.1/download.php?id=%s&username=%s&apikey=%s' % \
+                  (_PROTOCOL, site, matrix_id, user, key)
     return url, matrix_id
 
 
 def clean_matrix_url(url):
     ''' Return nzbmatrix url without user credentials '''
+    site = 'nzbmatrix.com'
     m = _RE_NZBMATRIX.search(url)
+    if not m:
+        m = _RE_NZBXXX.search(url)
+        site = 'nzbxxx.com'
+
     if m:
         matrix_id = m.group(2)
-        url = '%s://api.nzbmatrix.com/v1.1/download.php?id=%s' % (_PROTOCOL, matrix_id)
+        url = '%s://api.%s/v1.1/download.php?id=%s' % (_PROTOCOL, site, matrix_id)
     return url
 
 
