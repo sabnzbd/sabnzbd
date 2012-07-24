@@ -87,13 +87,6 @@
         <div class="col2">
             <h3>$servers[$server]['name']</h3>
             <p>
-            <!--#if 'amounts' in $servers[$server]#-->
-                <b>$T('srv-bandwidth'):</b><br/>
-                $T('total'): $servers[$server]['amounts'][0]<br/>
-                $T('today'): $servers[$server]['amounts'][3]<br/>
-                $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
-                $T('thisMonth'): $servers[$server]['amounts'][1]
-            <!--#end if#-->
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$server" /></td>
               <td>&nbsp;$T('enabled')</td>
@@ -102,7 +95,7 @@
             <input type="button" value="$T('button-clrServer')" class="clrServer" />
             <input type="button" value="$T('showDetails')" class="showserver" />
         </div><!-- /col2 -->
-            <div class="col1" style="display:none;">
+            <div class="col1"  style="display:none;">
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="enable$cur">$T('srv-enable')</label>
@@ -159,6 +152,15 @@
                 </div>
             </fieldset>
         </div><!-- /col1 -->
+        <div class="col2"  style="display:block;">
+        <!--#if 'amounts' in $servers[$server]#-->
+            <b>$T('srv-bandwidth'):</b><br/>
+            $T('total'): $servers[$server]['amounts'][0]<br/>
+            $T('today'): $servers[$server]['amounts'][3]<br/>
+            $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
+            $T('thisMonth'): $servers[$server]['amounts'][1]
+        <!--#end if#-->
+        </div>
     </div><!-- /section -->
     </form>
 <!--#end for#-->
@@ -169,6 +171,7 @@
 \$(document).ready(function(){
     \$('.showserver').click(function () {
         \$(this).parent().next().toggle();
+        \$(this).parent().next().next().toggle();
         if (\$(this).attr("value") == "$T('showDetails')") {
             \$(this).attr("value", "$T('hideDetails')");
         } else {
