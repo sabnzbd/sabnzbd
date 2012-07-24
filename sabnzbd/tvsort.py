@@ -28,7 +28,7 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, remove_dir, sanitize_foldername
+                         get_unique_filename, get_ext, renamer, sanitize_foldername
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import titler
@@ -37,8 +37,8 @@ RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
 EXCLUDED_FILE_EXTS = ('.vob', '.bin')
 
-LOWERCASE = ('the','of','and','at','vs','a','an','but','nor','for','on',\
-                         'so','yet')
+LOWERCASE = ('the', 'of', 'and', 'at', 'vs', 'a', 'an', 'but', 'nor', 'for', 'on', \
+                         'so', 'yet')
 UPPERCASE = ('III', 'II', 'IV')
 
 REPLACE_AFTER = {
@@ -63,33 +63,38 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
 _RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
 
 def endswith_ext(path):
-    m = _RE_ENDEXT.search(path)
-    return m is not None
+    """ Return True when path ends with '.%ext'
+    """
+    return _RE_ENDEXT.search(path) is not None
 
 
 def move_to_parent_folder(workdir):
-    """ Move content of 'workdir' to 'workdir/..' (except marker file)
+    """ Move all in 'workdir' into 'workdir/..'
     """
-    path1 = os.path.abspath(os.path.normpath(os.path.join(workdir, '..'))) #move things to the folder below
+    # Determine 'folder'/..
+    workdir = os.path.abspath(os.path.normpath(workdir))
+    dest = os.path.normpath(os.path.join(workdir, '..'))
+
+    # Check for DVD folders and stop if found
+    for item in os.listdir(workdir):
+        if item.lower() in ('video_ts', 'audio_ts', 'bdmv'):
+            return workdir, True
 
     for root, dirs, files in os.walk(workdir):
         for _file in files:
             path = os.path.join(root, _file)
-            new_path = path.replace(workdir, path1)
+            new_path = path.replace(workdir, dest)
             new_path = get_unique_filename(new_path)
             if not move_to_path(path, new_path, False):
-                return path1, False
+                return dest, False
 
     cleanup_empty_directories(workdir)
-    try:
-        remove_dir(workdir)
-    except:
-        pass
-
-    return path1, True
+    return dest, True
 
 
 class Sorter(object):
+    """ Generic Sorter class
+    """
     def __init__(self, cat):
         self.sorter = None
         self.type = None
@@ -98,22 +103,24 @@ class Sorter(object):
         self.ext = ''
 
     def detect(self, dirname, complete_dir):
+        """ Detect which kind of sort applies
+        """
         self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
-        if self.sorter.is_match():
+        if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'tv'
             self.sort_file = True
             return complete_dir
 
         self.sorter = DateSorter(dirname, complete_dir, self.cat)
-        if self.sorter.is_match():
+        if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'date'
             self.sort_file = True
             return complete_dir
 
         self.sorter = GenericSorter(dirname, complete_dir, self.cat)
-        if self.sorter.is_match():
+        if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'movie'
             self.sort_file = True
@@ -123,12 +130,15 @@ class Sorter(object):
         return complete_dir
 
     def rename(self, newfiles, workdir_complete):
-        if self.sorter.should_rename():
+        """ Rename files of the job
+        """
+        if self.sorter.rename_or_not:
             self.sorter.rename(newfiles, workdir_complete)
 
     def rename_with_ext(self, workdir_complete):
-        """ Special renamer for %ext """
-        if self.sorter.should_rename() and '%ext' in workdir_complete and self.ext:
+        """ Special renamer for %ext
+        """
+        if self.sorter.rename_or_not and '%ext' in workdir_complete and self.ext:
             # Replace %ext with extension
             newpath = workdir_complete.replace('%ext', self.ext)
             try:
@@ -167,10 +177,10 @@ class Sorter(object):
                 ok = False
         return workdir_complete, ok
 
-    def is_sortfile(self):
-        return self.sort_file
 
 class SeriesSorter(object):
+    """ Methods for Series Sorting
+    """
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -181,6 +191,7 @@ class SeriesSorter(object):
         self.cats = cfg.tv_categories()
         self.filename_set = ''
         self.fname = '' # Value for %fn substitution in folders
+        self.final_path = ''
 
         self.match_obj = None
         self.extras = None
@@ -199,7 +210,7 @@ class SeriesSorter(object):
         if force or (cfg.enable_tv_sorting() and cfg.tv_sort_string()):
             if force or (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 #First check if the show matches TV episode regular expressions. Returns regex match object
-                self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
+                self.match_obj, self.extras = check_regexs(self.original_dirname, series_match)
                 if self.match_obj:
                     logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname)
                     self.matched = True
@@ -211,7 +222,8 @@ class SeriesSorter(object):
 
 
     def get_final_path(self):
-        # Collect and construct all the variables such as episode name, show names
+        """ Collect and construct all the variables such as episode name, show names
+        """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -239,8 +251,8 @@ class SeriesSorter(object):
     def get_shownames(self):
         ''' Get the show name from the match object and format it '''
         # Get the formatted title and alternate title formats
-        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = getTitles(self.match_obj, self.original_dirname, True)
-        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = getTitles(self.match_obj, self.original_dirname)
+        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.match_obj, self.original_dirname, True)
+        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.match_obj, self.original_dirname)
 
 
     def get_seasons(self):
@@ -289,7 +301,7 @@ class SeriesSorter(object):
 
     def get_showdescriptions(self):
         ''' Get the show descriptions from the match object and format them '''
-        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = getDescriptions(self.match_obj, self.original_dirname)
+        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.match_obj, self.original_dirname)
 
 
     def get_values(self):
@@ -367,10 +379,10 @@ class SeriesSorter(object):
             path = path.replace(key, name)
 
         # Lowercase all characters encased in {}
-        path = toLowercase(path)
+        path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
-        path = stripFolders(path)
+        path = strip_folders(path)
 
         # Split the last part of the path up for the renamer
         if extension:
@@ -382,12 +394,10 @@ class SeriesSorter(object):
 
         return os.path.normpath(head)
 
-    def should_rename(self):
-        return self.rename_or_not
-
     def rename(self, files, current_path):
+        """ Rename for Series
+        """
         logging.debug("Renaming Series")
-        renamed = None
         largest = (None, None, 0)
 
         def to_filepath(f, current_path):
@@ -419,18 +429,18 @@ class SeriesSorter(object):
             self.fname = tmp
             newname = "%s%s" % (self.filename_set, self.ext)
             # Replace %fn with the original filename
-            newname = newname.replace('%fn',tmp)
+            newname = newname.replace('%fn', tmp)
             newpath = os.path.join(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace('%ext', self.ext)
             if not os.path.exists(newpath):
                 try:
-                    logging.debug("Rename: %s to %s", filepath,newpath)
-                    renamer(filepath,newpath)
+                    logging.debug("Rename: %s to %s", filepath, newpath)
+                    renamer(filepath, newpath)
                 except:
                     logging.error("Failed to rename: %s to %s", current_path, newpath)
                     logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, file, self.filename_set)
+                rename_similar(current_path, self.ext, self.filename_set)
             else:
                 logging.debug('Current path already exists, skipping rename, %s', newpath)
         else:
@@ -443,6 +453,8 @@ _RE_MULTIPLE = ( \
     re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.avi blah-a-ok.avi
 )
 def check_for_multiple(files):
+    """ Return list of files that looks like a multi-part post
+    """
     for regex in _RE_MULTIPLE:
         matched_files = check_for_sequence(regex, files)
         if matched_files:
@@ -451,6 +463,8 @@ def check_for_multiple(files):
 
 
 def check_for_sequence(regex, files):
+    """ Return list of files that looks like a sequence, using 'regex'
+    """
     matches = {}
     prefix = None
     # Build up a dictionary of matches
@@ -502,6 +516,8 @@ def check_for_sequence(regex, files):
 
 
 class GenericSorter(object):
+    """ Methods for Generic Sorting
+    """
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -513,6 +529,7 @@ class GenericSorter(object):
         self.cat = cat
         self.filename_set = ''
         self.fname = '' # Value for %fn substitution in folders
+        self.final_path = ''
 
         self.match_obj = None
 
@@ -525,7 +542,8 @@ class GenericSorter(object):
 
 
     def match(self, force=False):
-        ''' Checks the category for a match, if so set self.match to true '''
+        """ Checks the category for a match, if so set self.match to true
+        """
         if force or (cfg.enable_movie_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
@@ -533,14 +551,9 @@ class GenericSorter(object):
                 self.matched = True
 
 
-    def is_match(self):
-        ''' Returns whether there was a match or not '''
-        return self.matched
-
-
-
     def get_final_path(self):
-        # Collect and construct all the variables such as episode name, show names
+        """ Collect and construct all the variables such as episode name, show names
+        """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -551,32 +564,33 @@ class GenericSorter(object):
             return os.path.join(self.original_path, self.original_dirname)
 
     def get_values(self):
-        """ Collect and construct all the values needed for path replacement """
-
+        """ Collect and construct all the values needed for path replacement
+        """
         ## - Get Year
         dirname = self.original_dirname.replace('_', ' ')
         RE_YEAR = re.compile(year_match, re.I)
         year_m = RE_YEAR.search(dirname)
         if year_m:
             # Find the last matched date
-            # Keep year_m to use in getTitles
+            # Keep year_m to use in get_titles
             year = RE_YEAR.findall(dirname)[-1][0]
             self.movie_info['year'] = year
         else:
             self.movie_info['year'] = ''
 
         ## - Get Decades
-        self.movie_info['decade'], self.movie_info['decade_two'] = getDecades(self.movie_info['year'])
+        self.movie_info['decade'], self.movie_info['decade_two'] = get_decades(self.movie_info['year'])
 
         ## - Get Title
-        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = getTitles(year_m, self.original_dirname, True)
-        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = getTitles(year_m, self.original_dirname)
+        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(year_m, self.original_dirname, True)
+        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(year_m, self.original_dirname)
 
         return True
 
 
     def construct_path(self):
-
+        """ Return path reconstructed from orginal and sort expression
+        """
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
@@ -618,10 +632,10 @@ class GenericSorter(object):
 
 
         # Lowercase all characters encased in {}
-        path = toLowercase(path)
+        path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
-        path = stripFolders(path)
+        path = strip_folders(path)
 
         # Split the last part of the path up for the renamer
         if extension:
@@ -633,10 +647,10 @@ class GenericSorter(object):
 
         return os.path.normpath(head)
 
-    def should_rename(self):
-        return self.rename_or_not
 
     def rename(self, _files, current_path):
+        """ Rename for Generic files
+        """
         logging.debug("Renaming Generic file")
         def filter_files(_file, current_path):
             if is_full_path(_file):
@@ -650,8 +664,7 @@ class GenericSorter(object):
                     return True
             return False
 
-        renamed = False
-        # remove any files below 300MB from this list
+        # remove any files below the limit from this list
         files = [_file for _file in _files if filter_files(_file, current_path)]
 
         length = len(files)
@@ -665,16 +678,16 @@ class GenericSorter(object):
             if os.path.exists(filepath):
                 tmp, ext = os.path.splitext(file)
                 self.fname = tmp
-                newname = "%s%s" % (self.filename_set,ext)
-                newname = newname.replace('%fn',tmp)
+                newname = "%s%s" % (self.filename_set, ext)
+                newname = newname.replace('%fn', tmp)
                 newpath = os.path.join(current_path, newname)
                 try:
-                    logging.debug("Rename: %s to %s", filepath,newpath)
-                    renamer(filepath,newpath)
+                    logging.debug("Rename: %s to %s", filepath, newpath)
+                    renamer(filepath, newpath)
                 except:
                     logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
                     logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, file, self.filename_set)
+                rename_similar(current_path, ext, self.filename_set)
 
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
@@ -688,21 +701,23 @@ class GenericSorter(object):
                     tmp, ext = os.path.splitext(file)
                     self.fname = tmp
                     name = '%s%s' % (self.filename_set, self.extra)
-                    name = name.replace('%1', str(index)).replace('%fn',tmp)
+                    name = name.replace('%1', str(index)).replace('%fn', tmp)
                     name = name + ext
                     newpath = os.path.join(current_path, name)
                     try:
-                        logging.debug("Rename: %s to %s", filepath,newpath)
-                        renamer(filepath,newpath)
+                        logging.debug("Rename: %s to %s", filepath, newpath)
+                        renamer(filepath, newpath)
                     except:
                         logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
                         logging.info("Traceback: ", exc_info = True)
-                    rename_similar(current_path, file, self.filename_set)
+                    rename_similar(current_path, ext, self.filename_set)
             else:
                 logging.debug("Movie files not in sequence %s", _files)
 
 
 class DateSorter(object):
+    """ Methods for Date Sorting
+    """
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -731,7 +746,7 @@ class DateSorter(object):
         if force or (cfg.enable_date_sorting() and self.sort_string):
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
+                self.match_obj, self.date_type = check_for_date(self.original_dirname, date_match)
                 if self.match_obj:
                     logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname)
                     self.matched = True
@@ -743,7 +758,8 @@ class DateSorter(object):
 
 
     def get_final_path(self):
-        # Collect and construct all the variables such as episode name, show names
+        """ Collect and construct all the variables such as episode name, show names
+        """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -769,25 +785,26 @@ class DateSorter(object):
         self.date_info['date_two'] = self.date_info['date'].rjust(2,'0')
 
         ## - Get Decades
-        self.date_info['decade'], self.date_info['decade_two'] = getDecades(self.date_info['year'])
+        self.date_info['decade'], self.date_info['decade_two'] = get_decades(self.date_info['year'])
 
         ## - Get Title
-        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = getTitles(self.match_obj, self.original_dirname, True)
-        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = getTitles(self.match_obj, self.original_dirname)
+        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.match_obj, self.original_dirname, True)
+        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.match_obj, self.original_dirname)
 
-        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = getDescriptions(self.match_obj, self.original_dirname)
+        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = get_descriptions(self.match_obj, self.original_dirname)
 
         return True
 
 
     def construct_path(self):
-
+        """ Return path reconstructed from orginal and sort expression
+        """
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
         if endswith_ext(sorter):
             extension = True
-            sorter= sorter.replace(".%ext", '')
+            sorter = sorter.replace(".%ext", '')
         else:
             extension = False
 
@@ -838,10 +855,10 @@ class DateSorter(object):
             path = path.replace(key, name)
 
         # Lowercase all characters encased in {}
-        path = toLowercase(path)
+        path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
-        path = stripFolders(path)
+        path = strip_folders(path)
 
         # Split the last part of the path up for the renamer
         if extension:
@@ -853,12 +870,11 @@ class DateSorter(object):
 
         return os.path.normpath(head)
 
-    def should_rename(self):
-        return self.rename_or_not
 
     def rename(self, files, current_path):
+        """ Renaming Date file
+        """
         logging.debug("Renaming Date file")
-        renamed = None
         #find the master file to rename
         for file in files:
             if is_full_path(file):
@@ -868,21 +884,21 @@ class DateSorter(object):
 
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
-                if size > 130000000:
+                if size > cfg.movie_rename_limit.get_int():
                     if 'sample' not in file:
                         tmp, ext = os.path.splitext(file)
                         self.fname = tmp
-                        newname = "%s%s" % (self.filename_set,ext)
-                        newname = newname.replace('%fn',tmp)
+                        newname = "%s%s" % (self.filename_set, ext)
+                        newname = newname.replace('%fn', tmp)
                         newpath = os.path.join(current_path, newname)
                         if not os.path.exists(newpath):
                             try:
-                                logging.debug("Rename: %s to %s", filepath,newpath)
-                                renamer(filepath,newpath)
+                                logging.debug("Rename: %s to %s", filepath, newpath)
+                                renamer(filepath, newpath)
                             except:
                                 logging.error(Ta('Failed to rename: %s to %s'), current_path, newpath)
                                 logging.info("Traceback: ", exc_info = True)
-                            rename_similar(current_path, file, self.filename_set)
+                            rename_similar(current_path, ext, self.filename_set)
                             break
 
 
@@ -909,7 +925,7 @@ def path_subst(path, mapping):
     return ''.join(newpath)
 
 
-def getTitles(match, name, titleing=False):
+def get_titles(match, name, titleing=False):
     '''
     The title will be the part before the match
     Clean it up and title() it
@@ -989,7 +1005,7 @@ def replace_word(input, one, two):
             input = input.replace(one, two)
     return input
 
-def getDescriptions(match, name):
+def get_descriptions(match, name):
     '''
     If present, get a description from the nzb name.
     A description has to be after the matched item, seperated either
@@ -1010,7 +1026,9 @@ def getDescriptions(match, name):
     return ep_name, ep_name2, ep_name3
 
 
-def getDecades(year):
+def get_decades(year):
+    """ Return 4 digit and 2 digit decades given 'year'
+    """
     if year:
         try:
             decade = year[2:3]+'0'
@@ -1023,14 +1041,18 @@ def getDecades(year):
         decade2 = ''
     return decade, decade2
 
+
 def check_for_folder(path):
+    """ Return True if any folder is found in the tree at 'path'
+    """
     for root, dirs, files in os.walk(path):
         if dirs:
             return True
     return False
 
+
 _RE_LOWERCASE = re.compile(r'{([^{]*)}')
-def toLowercase(path):
+def to_lowercase(path):
     ''' Lowercases any characters enclosed in {} '''
     while True:
         m = _RE_LOWERCASE.search(path)
@@ -1043,17 +1065,25 @@ def toLowercase(path):
     path = path.replace('}', '')
     return path
 
-def stripFolders(folders):
-    f = folders.strip('/').split('/')
+
+def strip_folders(path):
+    """ Return 'path' without leading and trailing spaces and underscores in each element
+        For Windows, also remove leading and trailing dots
+    """
+    f = path.strip('/').split('/')
 
     # For path beginning with a slash, insert empty element to prevent loss
-    if folders.strip()[0] in '/\\':
+    if path.strip()[0] in '/\\':
         f.insert(0, '')
 
     def strip_all(x):
+        """ Strip all leading/trailing underscores
+            also dots for Windows
+        """
         x = x.strip().strip('_')
         if sabnzbd.WIN32:
-            # Don't want to strip . from folders such as /.sabnzbd/
+            # OSX and Linux should keep dots, because leading dots are significant
+            # while Windows cannot handle trailing dots
             x = x.strip('.')
         x = x.strip()
         return x
@@ -1061,41 +1091,44 @@ def stripFolders(folders):
     return os.path.normpath('/'.join([strip_all(x) for x in f]))
 
 
-def rename_similar(path, file, name):
-    logging.debug('Renaming files similar to: %s to %s', file, name)
-    file_prefix, ext = os.path.splitext(file)
-    file_prefix = file_prefix.lower()
-    for root, dirs, files in os.walk(path):
-        for _file in files:
-            fpath = os.path.join(root, _file)
-            tmp, ext = os.path.splitext(_file)
-            if tmp.lower() == file_prefix:
-                newname = "%s%s" % (name,ext)
-                newname = newname.replace('%fn',tmp)
-                newpath = os.path.join(path, newname)
-                if not os.path.exists(newpath):
-                    try:
-                        logging.debug("Rename: %s to %s", fpath,newpath)
-                        renamer(fpath,newpath)
-                    except:
-                        logging.error(Ta('Failed to rename similar file: %s to %s'), path, newpath)
-                        logging.info("Traceback: ", exc_info = True)
+def rename_similar(folder, skip_ext, name):
+    """ Rename all other files in the 'folder' hierarchy after 'name'
+        and move them to the root of 'folder'.
+        Files having extension 'skip_ext' will be moved, but not renamed.
+    """
+    logging.debug('Give files in set "%s" matching names.', name)
+    folder = os.path.normpath(folder)
+    skip_ext = skip_ext.lower()
+
+    for root, dirs, files in os.walk(folder):
+        for f in files:
+            path = os.path.join(root, f)
+            org, ext = os.path.splitext(f)
+            if ext.lower() == skip_ext:
+                # Move file, but do not rename
+                newpath = os.path.join(folder, f)
+            else:
+                # Move file and rename
+                newname = "%s%s" % (name, ext)
+                newname = newname.replace('%fn', org)
+                newpath = os.path.join(folder, newname)
+            if path != newpath:
+                newpath = get_unique_filename(newpath)
+                try:
+                    logging.debug("Rename: %s to %s", path, newpath)
+                    renamer(path, newpath)
+                except:
+                    logging.error(Ta('Failed to rename similar file: %s to %s'), path, newpath)
+                    logging.info("Traceback: ", exc_info=True)
+    cleanup_empty_directories(folder)
 
 
-
-
-def check_regexs(filename, matchers, double=False):
+def check_regexs(filename, matchers):
     """
     Regular Expression match for a list of regexes
     Returns the MatchObject if a match is made
     This version checks for an additional match
     """
-    #if double:
-    #   matcher, extramatchers = matchers
-    #else:
-    #    matcher = matchers
-    #    extramatchers = []
-
     extras = []
     for expressions in matchers:
         expression, extramatchers = expressions
@@ -1104,7 +1137,7 @@ def check_regexs(filename, matchers, double=False):
         if match1:
             for m in extramatchers:
                 regex = re.compile(m)
-                match2 = regex.findall(filename,match1.end())
+                match2 = regex.findall(filename, match1.end())
                 if match2:
                     for match in match2:
                         if type(match) == type(()) and len(match) > 1:
@@ -1116,12 +1149,11 @@ def check_regexs(filename, matchers, double=False):
     return None, None
 
 
-def checkForDate(filename, matcher):
+def check_for_date(filename, matcher):
     """
     Regular Expression match for date based files
     Returns the MatchObject if a match is made
     """
-    match2 = None
     x = 0
     if matcher:
         for expression in matcher:
@@ -1133,6 +1165,8 @@ def checkForDate(filename, matcher):
     return None, 0
 
 def is_full_path(file):
+    """ Return True if path is absolute
+    """
     if file.startswith('\\') or file.startswith('/'):
         return True
     try:

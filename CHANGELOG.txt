@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.3Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Correct several errors in Sort function
+- Improve organization of Config->Servers
+- Support for nzbxxx.com
+- Make detection of samples less aggressive
+- Some minor corrections
+-------------------------------------------------------------------------------
  0.7.2Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix for NZB-icon issue when 0.7.0 was previously installed

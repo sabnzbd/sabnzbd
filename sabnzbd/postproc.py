@@ -311,7 +311,7 @@ def process_job(nzo):
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
             file_sorter = Sorter(cat)
             complete_dir = file_sorter.detect(dirname, complete_dir)
-            if file_sorter.is_sortfile():
+            if file_sorter.sort_file:
                 one_folder = False
 
             if one_folder:
@@ -358,6 +358,7 @@ def process_job(nzo):
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
                             new_path = get_unique_filename(new_path)
+                            newfiles.append(new_path)
                             if not move_to_path(path, new_path, unique=False):
                                 nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
                                 all_ok = False
@@ -409,7 +410,7 @@ def process_job(nzo):
                 remove_samples(workdir_complete)
 
             ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-            if all_ok and file_sorter.is_sortfile():
+            if all_ok and file_sorter.sort_file:
                 if newfiles:
                     file_sorter.rename(newfiles, workdir_complete)
                     workdir_complete, ok = file_sorter.move(workdir_complete)
