@@ -86,18 +86,23 @@
     <div class="section">
         <div class="col2">
             <h3>$servers[$server]['name']</h3>
-            <!--#if 'amounts' in $servers[$server]#-->
             <p>
+            <!--#if 'amounts' in $servers[$server]#-->
                 <b>$T('srv-bandwidth'):</b><br/>
                 $T('total'): $servers[$server]['amounts'][0]<br/>
                 $T('today'): $servers[$server]['amounts'][3]<br/>
                 $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
                 $T('thisMonth'): $servers[$server]['amounts'][1]
+            <!--#end if#-->
+            <table><tr>
+              <td><input type="checkbox" class="toggleServerCheckbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$server" /></td>
+              <td>&nbsp;$T('enabled')</td>
+            </tr></table>
             </p>
             <input type="button" value="$T('button-clrServer')" class="clrServer" />
-            <!--#end if#-->
+            <input type="button" value="$T('showDetails')" class="showserver" />
         </div><!-- /col2 -->
-        <div class="col1">
+            <div class="col1" style="display:none;">
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="enable$cur">$T('srv-enable')</label>
@@ -162,6 +167,14 @@
 
 <script>
 \$(document).ready(function(){
+    \$('.showserver').click(function () {
+        \$(this).parent().next().toggle();
+        if (\$(this).attr("value") == "$T('showDetails')") {
+            \$(this).attr("value", "$T('hideDetails')");
+        } else {
+            \$(this).attr("value", "$T('showDetails')");
+        }
+    });
     \$('#addServerButton').click(function(){
         \$('#addServer').hide();
         \$('#addServerContent').show();
@@ -187,6 +200,16 @@
       if( confirm("$T('Plush-confirm')") )
         \$(this).parents('form:first').attr('action','clrServer').submit();
       return false;
+    });
+    \$('.toggleServerCheckbox').click(function(){
+        var whichServer = \$(this).attr("rel");
+        \$.ajax({
+          type: "POST",
+          url: "toggleServer",
+          data: {server: whichServer, session: "$session" }
+        }).done(function() {
+          location.reload();
+        });
     });
 });
 </script>

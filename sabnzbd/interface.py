@@ -1506,6 +1506,18 @@ class ConfigServer(object):
             BPSMeter.do.clear_server(server)
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def toggleServer(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        server = kwargs.get('server')
+        if server:
+            svr = config.get_config('servers', server)
+            svr.enable.set(not svr.enable())
+            config.save_config()
+            Downloader.do.update_server(server, server)
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 def unique_svr_name(server):
