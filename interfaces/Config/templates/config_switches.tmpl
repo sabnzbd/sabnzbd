@@ -13,7 +13,11 @@
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
-                    <input type="checkbox" name="check_new_rel" id="check_new_rel" value="1" <!--#if int($check_new_rel) > 0 then 'checked="checked"' else ""#--> />
+                    <select name="check_new_rel" id="check_new_rel">
+                        <option value="0" <!--#if $check_new_rel == "1" then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
+                        <option value="1" <!--#if $check_new_rel == "2" then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
+                        <option value="2" <!--#if $check_new_rel == "3" then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
+                    </select>
                     <span class="desc">$T('explain-check_new_rel')</span>
                 </div>
                 <div class="field-pair">

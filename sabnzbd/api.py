@@ -1266,9 +1266,9 @@ def qstatus_data():
 
     state = "IDLE"
     if Downloader.do.paused:
-        state = "PAUSED"
+        state = Status.PAUSED
     elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
-        state = "DOWNLOADING"
+        state = Status.DOWNLOADING
 
     status = {
         "state" : state,
