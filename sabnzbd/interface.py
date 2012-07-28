@@ -1942,7 +1942,7 @@ class ConfigScheduling(object):
                     act = ''
                 if act in ('enable_server', 'disable_server'):
                     action = Ttemplate("sch-" + act) + ' ' + server
-            item = (snum, '%02d' % int(h), '%02d' % int(m), days.get(day, '**'), '%s %s' % (action, value))
+            item = (snum, '%02d' % int(h), '%02d' % int(m), days.get(day, day), '%s %s' % (action, value))
             conf['taskinfo'].append(item)
             snum += 1
 
