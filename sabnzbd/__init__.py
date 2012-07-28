@@ -607,7 +607,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             logging.error(Ta('Cannot create temp file for %s'), filename)
             logging.info("Traceback: ", exc_info = True)
 
-    if ext.lower() in ('.zip', '.rar'):
+    if ext.lower() in VALID_ARCHIVES:
         return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
         return ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, reuse=reuse)

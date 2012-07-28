@@ -749,7 +749,7 @@ class SABnzbdDelegate(NSObject):
                 fn = get_filename(name)
                 #logging.info('[osx] filename : %s' % (fn))
                 if fn:
-                    if get_ext(name) in ('.zip', '.rar'):
+                    if get_ext(name) in VALID_ARCHIVES:
                         #logging.info('[osx] archive')
                         dirscanner.ProcessArchiveFile(fn, name, keep=True)
                     elif get_ext(name) in ('.nzb', '.gz'):

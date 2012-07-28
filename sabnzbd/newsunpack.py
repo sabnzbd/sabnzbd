@@ -1651,3 +1651,65 @@ def get_from_url(url):
         s = urllib2.urlopen(url)
         output = s.read()
     return output
+
+
+def is_sevenfile(path):
+    """ Return True if path has proper extension and 7Zip is installed
+    """
+    return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == '.7z'
+
+
+class SevenZip(object):
+    """ Minimal emulation of ZipFile class for 7Zip """
+    def __init__(self, path):
+        self.path = path
+
+    def namelist(self):
+        """ Return list of names in 7Zip
+        """
+        names = []
+        # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
+        command = [SEVEN_COMMAND, 'l', '-p', '-y', '-slt', self.path]
+        stup, need_shell, command, creationflags = build_command(command)
+
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             startupinfo=stup, creationflags=creationflags)
+
+        output = p.stdout.read()
+        ret = p.wait()
+        re_path = re.compile('^Path = (.+)')
+        for line in output.split('\n'):
+            m = re_path.search(line)
+            if m:
+                names.append(m.group(1).strip('\r'))
+        if names:
+            # Remove name of archive itself
+            del names[0]
+        return names
+
+
+    def read(self, name):
+        """ Read named file from 7Zip and return data """
+        command = [SEVEN_COMMAND, 'e', '-p', '-y', '-so', self.path, name]
+        stup, need_shell, command, creationflags = build_command(command)
+
+        # Ignore diagnostic output, otherwise it will be appended to content
+        if sabnzbd.WIN32:
+            stderr = open('nul', 'w')
+        else:
+            stderr = open('/dev/null', 'w')
+
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=stderr,
+                             startupinfo=stup, creationflags=creationflags)
+
+        output = p.stdout.read()
+        ret = p.wait()
+        stderr.close()
+        return output
+
+
+    def close(self):
+        """ Close file """
+        pass

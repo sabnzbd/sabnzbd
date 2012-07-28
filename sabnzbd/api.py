@@ -342,7 +342,7 @@ def _api_addlocalfile(name, output, kwargs):
                 priority = kwargs.get('priority')
                 nzbname = kwargs.get('nzbname')
 
-                if get_ext(name) in ('.zip', '.rar'):
+                if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
                 elif get_ext(name) in ('.nzb', '.gz'):

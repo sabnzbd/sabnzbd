@@ -30,6 +30,7 @@ import threading
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
@@ -80,6 +81,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     elif is_rarfile(path):
         try:
             zf = RarFile(path)
+        except:
+            return -1, []
+    elif is_sevenfile(path):
+        try:
+            zf = SevenZip(path)
         except:
             return -1, []
     else:
@@ -293,7 +299,7 @@ class DirScanner(threading.Thread):
                     continue
 
                 ext = os.path.splitext(path)[1].lower()
-                candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
+                candidate = ext in ('.nzb', '.gz') or ext in VALID_ARCHIVES
                 if candidate:
                     try:
                         stat_tuple = os.stat(path)
@@ -330,8 +336,8 @@ class DirScanner(threading.Thread):
                     if not stable:
                         continue
 
-                    # Handle ZIP files, but only when containing just NZB files
-                    if ext in ('.zip', '.rar') :
+                    # Handle archive files, but only when containing just NZB files
+                    if ext in VALID_ARCHIVES:
                         res, nzo_ids = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
                         if res == -1:
                             self.suspected[path] = stat_tuple
