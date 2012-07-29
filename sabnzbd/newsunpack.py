@@ -971,7 +971,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 verified = 1
 
             elif line.startswith('Main packet not found'):
-                ## Initialparfile probaly didn't decode properly,
+                ## Initialparfile probably didn't decode properly,
                 logging.info(Ta('Main packet not found...'))
 
                 extrapars = parfile_nzf.extrapars
@@ -981,7 +981,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 ## Look for the smallest par2file
                 block_table = {}
                 for nzf in extrapars:
-                    block_table[int_conv(nzf.blocks)] = nzf
+                    if not nzf.completed:
+                        block_table[int_conv(nzf.blocks)] = nzf
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
