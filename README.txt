@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.7.3Beta1
+Release Notes  -  SABnzbd 0.7.3Beta2
 ====================================
+
+## Fixes in 0.7.3Beta2
+- Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
+- Prevent queue deadlock in case of fatally damaged par2 files
+- Add RSS filter-enable checkboxes to Plush, Smpl and Classic skins
+- Fix problem with saving modified paramters of an already enabled server
+- Extend "check new release" option with test releases
 
 ## Fixes in 0.7.3Beta1
 - Correct several errors in Sort function
