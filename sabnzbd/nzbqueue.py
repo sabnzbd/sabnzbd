@@ -27,14 +27,14 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, verified_flag_file, \
+from sabnzbd.misc import exit_sab, cat_to_opts, flag_file, \
                          get_admin_path, remove_all, globber
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
-                              REPAIR_PRIORITY, STOP_PRIORITY, \
+                              REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
                               PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -155,7 +155,7 @@ class NzbQueue(TryList):
         else:
             filename = ''
         if not filename:
-            if not verified_flag_file(folder):
+            if not flag_file(folder, VERIFIED_FILE):
                 filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))

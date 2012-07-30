@@ -35,7 +35,8 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer, \
-                         set_permissions
+                         set_permissions, flag_file
+from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -206,29 +207,30 @@ def GetMD5Hashes(fname):
     """
     new_encoding = False
     table = {}
-    try:
-        f = open(fname, 'rb')
-    except:
-        return table, new_encoding
+    if not flag_file(os.path.split(fname)[0], QCHECK_FILE):
+        try:
+            f = open(fname, 'rb')
+        except:
+            return table, new_encoding
 
-    try:
-        header = f.read(8)
-        while header:
-            name, hash = ParseFilePacket(f, header)
-            new_encoding |= is_utf8(name)
-            if name:
-                table[name] = hash
+        try:
             header = f.read(8)
+            while header:
+                name, hash = ParseFilePacket(f, header)
+                new_encoding |= is_utf8(name)
+                if name:
+                    table[name] = hash
+                header = f.read(8)
 
-    except (struct.error, IndexError):
-        logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-        table = {}
-    except:
-        logging.debug('QuickCheck parser crashed in file %s', fname)
-        logging.info('Traceback: ', exc_info = True)
-        table = {}
+        except (struct.error, IndexError):
+            logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
+            table = {}
+        except:
+            logging.debug('QuickCheck parser crashed in file %s', fname)
+            logging.info('Traceback: ', exc_info = True)
+            table = {}
 
-    f.close()
+        f.close()
     return table, new_encoding
 
 

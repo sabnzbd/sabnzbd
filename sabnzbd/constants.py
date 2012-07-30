@@ -63,6 +63,7 @@ TERM_FLAG_FILE    = 'running.sab'
 FUTURE_Q_FOLDER   = 'future'
 JOB_ADMIN = '__ADMIN__'
 VERIFIED_FILE = '__verified__'
+QCHECK_FILE = '__skip_qcheck__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
 

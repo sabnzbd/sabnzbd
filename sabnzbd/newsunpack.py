@@ -31,10 +31,11 @@ import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
+from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
+                         flag_file
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from constants import Status
+from constants import Status, QCHECK_FILE
 
 if sabnzbd.WIN32:
     try:
@@ -779,6 +780,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         result = True
 
     if not result:
+        flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
         result = False
         readd = False
@@ -990,6 +992,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     logging.info("Found new par2file %s", nzf.filename)
 
                     nzo.add_parfile(nzf)
+                    extrapars.remove(nzf)
                     ## mark for readd
                     readd = True
                 else:
@@ -1051,7 +1054,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                         extrapar_list = block_table[block_size]
 
                         if extrapar_list:
-                            nzo.add_parfile(extrapar_list.pop())
+                            new_nzf = extrapar_list.pop()
+                            nzo.add_parfile(new_nzf)
+                            extrapars.remove(new_nzf)
                             added_blocks += block_size
 
                         else:
