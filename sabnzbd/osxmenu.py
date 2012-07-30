@@ -23,9 +23,11 @@ from Foundation import *
 from AppKit import *
 from PyObjCTools import AppHelper
 from objc import YES, NO, nil
-from threading import Thread
 
 import os
+import subprocess
+from threading import Thread
+
 import cherrypy
 import Cheetah.DummyTransaction
 import sys
@@ -785,4 +787,41 @@ def notify(notificationName, message):
         nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
         nc.postNotificationName_object_(notificationName, message)
         del pool
+
+
+#------------------------------------------------------------------------------
+class OsxAwake(Thread):
+    """ Keep running 'caffeinate' as long as the 'stay_awake' flag is set
+    """
+    do = None
+    def __init__(self):
+        Thread.__init__(self)
+        self.stay_awake = False
+        self.__stop_now = False
+        self.__proc = None
+        logging.info('Starting caffeinate task')
+        OsxAwake.do = self
+
+    def run(self):
+        command = ['caffeinate', '-i', '-s', '-t300']
+        while not self.__stop_now:
+            if self.stay_awake:
+                self.stay_awake = False
+                logging.debug('Launching caffeinate')
+                self.__proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+                self.__proc.wait()
+                self.__proc = None
+            else:
+                time.sleep(30)
+
+    def stop(self):
+        logging.info('Stopping caffeinate task')
+        self.__stop_now = True
+        self.stay_awake = False
+        if self.__proc:
+            logging.debug('Stopping caffeinate')
+            try:
+                self.__proc.terminate()
+            except:
+                pass
 
