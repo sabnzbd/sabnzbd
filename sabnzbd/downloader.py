@@ -86,7 +86,7 @@ class Server(object):
     def hostip(self):
         """ Return a random entry from the possible IPs
         """
-        if cfg.random_server_ip() and self.info and len(self.info) > 1:
+        if cfg.randomize_server_ip() and self.info and len(self.info) > 1:
             rnd = random.randint(0, len(self.info)-1)
             ip = self.info[rnd][4][0]
             logging.debug('For server %s, using IP %s' % (self.host, ip))
