@@ -1,17 +1,22 @@
-Release Notes  -  SABnzbd 0.7.3Beta2
-====================================
+Release Notes  -  SABnzbd 0.7.3
+===============================
 
-## Fixes in 0.7.3Beta2
-- Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
+## Fixes in 0.7.3
+
 - Prevent queue deadlock in case of fatally damaged par2 files
+- Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
 - Add RSS filter-enable checkboxes to Plush, Smpl and Classic skins
 - Fix problem with saving modified paramters of an already enabled server
 - Extend "check new release" option with test releases
-
-## Fixes in 0.7.3Beta1
 - Correct several errors in Sort function
 - Improve organization of Config->Servers
 - Make detection of samples less aggressive
+- Ignore pseudo NZB files that start with a period in the name
+
+The Special option "random_server_ip" has been renamed to "randomize_server_ip"
+and the default is now "Off".
+The reason is that this option kills the speed of some Usenet providers.
+If you really need this feature, you have to re-enable it.
 
 
 ## What's new in 0.7.0

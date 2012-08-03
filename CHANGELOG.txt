@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.3Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Rename Special "random_server_ip" to "randomize_server_ip" so that we
+  can force the default to "Off". "On" kills speed on some servers.
+- Ignore pseudo NZB files that start with a period in the name
+- SFV failure now listed in History instead of issuing warnings
+- Translation updates
+-------------------------------------------------------------------------------
  0.7.3Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
