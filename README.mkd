@@ -4,9 +4,9 @@ Release Notes  -  SABnzbd 0.7.3
 ## Fixes in 0.7.3
 
 - Prevent queue deadlock in case of fatally damaged par2 files
-- Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
+- Try to keep OSX Mountain Lion awake as long as downloading and postprocessing run
 - Add RSS filter-enable checkboxes to Plush, Smpl and Classic skins
-- Fix problem with saving modified paramters of an already enabled server
+- Fix problem with saving modified parameters of an already enabled server
 - Extend "check new release" option with test releases
 - Correct several errors in Sort function
 - Improve organization of Config->Servers
@@ -47,4 +47,4 @@ If you really need this feature, you have to re-enable it.
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2012 by "The SABnzbd-team" <team@sabnzbd.org>
+  (c) Copyright 2007-2012 by "The SABnzbd-team" (team@sabnzbd.org)

@@ -246,6 +246,8 @@ print sys.argv[0]
 Git = CheckPath('git')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
+PanDoc = CheckPath('pandoc')
+
 if os.name == 'nt':
     msg = 'Requires the standard version of NSIS'
     NSIS = CheckPath('makensis')
@@ -429,7 +431,7 @@ if target == 'app':
     else:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
-    os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
+    os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     # Remove source files to prevent re-compilation, which would invalidate signing
@@ -458,7 +460,7 @@ if target == 'app':
                   './ >/dev/null' % (fileOSr) )
 
         # Copy README.txt
-        os.system("cp README.rtf /Volumes/%s/" % volume)
+        os.system("cp dist/SABnzbd.app/Contents/Resources/Credits.rtf /Volumes/%s/README.rtf" % volume)
 
         #Unmount sparseimage
         os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
