@@ -47,4 +47,30 @@ If you really need this feature, you have to re-enable it.
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2012 by "The SABnzbd-team" (team@sabnzbd.org)
+  (c) Copyright 2007-2012 by "The SABnzbd-team" \<team@sabnzbd.org\>
+
+
+### IMPORTANT INFORMATION about release 0.7.x
+<http://wiki.sabnzbd.org/introducing-0-7-0>
+
+### Known problems and solutions
+- Read the file "ISSUES.txt"
+
+### Upgrading from 0.6.x
+- Stop SABnzbd
+- Install new version
+- Start SABnzbd
+
+### Upgrading from 0.5.x
+- Stop SABnzbd
+- Install new version
+- Start SABnzbd.
+
+The organization of the download queue is different from 0.5.x.
+0.7.x will finish downloading an existing queue, but you
+cannot go back to an older version without losing your queue.
+Also, your sabnzbd.ini file will be upgraded, making it
+incompatible with release 0.5.x
+
+### Upgrading from 0.4.x
+Download your current queue before upgrading.
