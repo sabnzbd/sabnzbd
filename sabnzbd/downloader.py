@@ -531,7 +531,10 @@ class Downloader(Thread):
                                 if server.active:
                                     server.errormsg = Ta('Cannot connect to server %s [%s]') % ('', display_msg)
                                     logging.warning(Ta('Cannot connect to server %s [%s]'), '%s:%s' % (server.host, server.port), msg)
-                                penalty = _PENALTY_502
+                                if clues_pay(msg):
+                                    penalty = _PENALTY_PERM
+                                else:
+                                    penalty = _PENALTY_502
                                 block = True
                             else:
                                 # Unknown error, just keep trying
@@ -815,6 +818,16 @@ def clues_too_many_ip(text):
     """
     text = text.lower()
     for clue in ('simultaneous ip', 'multiple ip'):
+        if clue in text:
+            return True
+    return False
+
+
+def clues_pay(text):
+    """ Check for messages about payments
+    """
+    text = text.lower()
+    for clue in ('credits', 'paym', 'expired'):
         if clue in text:
             return True
     return False
