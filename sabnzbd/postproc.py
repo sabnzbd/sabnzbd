@@ -540,6 +540,7 @@ def process_job(nzo):
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add)
     """
+    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
     filename = nzo.final_name
     growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
@@ -582,8 +583,12 @@ def parring(nzo, workdir):
             par_error = False
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
             for sfv in sfvs:
-                if not sfv_check(sfv):
-                    nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
+                failed = sfv_check(sfv)
+                if failed:
+                    msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                    msg += '; '
+                    msg += '; '.join(failed)
+                    nzo.set_unpack_info('Repair', msg)
                     par_error = True
             if not par_error:
                 nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))

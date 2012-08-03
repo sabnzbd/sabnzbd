@@ -1343,32 +1343,35 @@ def unrar_check(rar):
 def sfv_check(sfv_path):
     """ Verify files using SFV file,
         input: full path of sfv, file are assumed to be relative to sfv
-        returns: True when all files verified OK
+        returns: List of failing files or [] when all is OK
     """
+    failed = []
     try:
         fp = open(sfv_path, 'r')
     except:
         logging.info('Cannot open SFV file %s', sfv_path)
-        return False
+        failed.append(unicoder(sfv_path))
+        return failed
     root = os.path.split(sfv_path)[0]
     status = True
     for line in fp:
         line = line.strip('\n\r ')
         if line[0] != ';':
             x = line.rfind(' ')
-            filename = line[:x].strip()
+            filename = platform_encode(line[:x].strip())
             checksum = line[x:].strip()
-            path = os.path.join(root, platform_encode(filename))
+            path = os.path.join(root, filename)
             if os.path.exists(path):
                 if crc_check(path, checksum):
                     logging.debug('File %s passed SFV check', path)
                 else:
-                    logging.warning('File %s did not pass SFV check', latin1(path))
-                    status = False
+                    logging.info('File %s did not pass SFV check', latin1(path))
+                    failed.append(unicoder(filename))
             else:
-                logging.warning('File %s mssing in SFV check', latin1(path))
+                logging.info('File %s missing in SFV check', latin1(path))
+                failed.append(unicoder(filename))
     fp.close()
-    return status
+    return failed
 
 
 def crc_check(path, target_crc):
