@@ -6,6 +6,7 @@
 - Ignore pseudo NZB files that start with a period in the name
 - SFV failure now listed in History instead of issuing warnings
 - Translation updates
+- "502" errors about payments/credits will now block a server
 -------------------------------------------------------------------------------
  0.7.3Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
