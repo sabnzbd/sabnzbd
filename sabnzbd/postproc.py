@@ -31,12 +31,12 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, make_script_path, verified_flag_file, \
+                         get_unique_filename, make_script_path, flag_file, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
                          set_permissions
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
-     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status
+     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
@@ -540,6 +540,7 @@ def process_job(nzo):
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add)
     """
+    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
     filename = nzo.final_name
     growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
@@ -582,8 +583,12 @@ def parring(nzo, workdir):
             par_error = False
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
             for sfv in sfvs:
-                if not sfv_check(sfv):
-                    nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
+                failed = sfv_check(sfv)
+                if failed:
+                    msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                    msg += '; '
+                    msg += '; '.join(failed)
+                    nzo.set_unpack_info('Repair', msg)
                     par_error = True
             if not par_error:
                 nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
@@ -592,7 +597,7 @@ def parring(nzo, workdir):
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
 
     if not par_error:
-        verified_flag_file(workdir, create=True)
+        flag_file(workdir, VERIFIED_FILE, create=True)
     return par_error, re_add
 
 

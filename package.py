@@ -207,7 +207,7 @@ def Dos2Unix(name):
 def Unix2Dos(name):
     """ Read file, remove \r, replace \n by \r\n and write back """
     base, ext = os.path.splitext(name)
-    if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd'):
+    if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd', '.mkd'):
         return
 
     print name
@@ -246,6 +246,11 @@ print sys.argv[0]
 Git = CheckPath('git')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
+if os.name != 'nt':
+    PanDoc = CheckPath('pandoc')
+else:
+    PanDoc = None
+
 if os.name == 'nt':
     msg = 'Requires the standard version of NSIS'
     NSIS = CheckPath('makensis')
@@ -305,7 +310,7 @@ PatchVersion(release)
 # List of data elements, directories end with a '/'
 data_files = [
          'ABOUT.txt',
-         'README.txt',
+         'README.mkd',
          'INSTALL.txt',
          'GPL2.txt',
          'GPL3.txt',
@@ -349,6 +354,11 @@ options = dict(
 if target == 'app':
     if not platform.system() == 'Darwin':
         print "Sorry, only works on Apple OSX!"
+        os.system(GitRevertVersion)
+        exit(1)
+
+    if not PanDoc:
+        print "Sorry, requires pandoc in the $PATH"
         os.system(GitRevertVersion)
         exit(1)
 
@@ -432,7 +442,7 @@ if target == 'app':
     os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
-    os.system("cp README.rtf dist/SABnzbd.app/Contents/Resources/Credits.rtf >/dev/null")
+    os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
     # Remove source files to prevent re-compilation, which would invalidate signing
@@ -460,8 +470,8 @@ if target == 'app':
                   '--exclude "*.sparseimage*" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
                   './ >/dev/null' % (fileOSr) )
 
-        # Copy README.txt
-        os.system("cp README.rtf /Volumes/%s/" % volume)
+        # Generate README.rtf
+        os.system("cp dist/SABnzbd.app/Contents/Resources/Credits.rtf /Volumes/%s/README.rtf" % volume)
 
         #Unmount sparseimage
         os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
@@ -524,7 +534,7 @@ elif target in ('binary', 'installer'):
     for tup in options['data_files']:
         for file in tup[1]:
             name, ext = os.path.splitext(file)
-            if ext.lower() in ('.txt', '.cmd'):
+            if ext.lower() in ('.txt', '.cmd', '.mkd'):
                 Unix2Dos("dist/%s" % file)
     DeleteFiles('dist/Sample-PostProc.sh')
     DeleteFiles('dist/PKG-INFO')
@@ -584,6 +594,10 @@ elif target in ('binary', 'installer'):
     ############################
     # Fix icon issue with NZB association
     os.system(r'copy dist\icons\nzb.ico dist')
+
+    ############################
+    # Rename MKD file
+    rename_file('dist', 'README.mkd', 'README.txt')
 
     ############################
     if target == 'installer':
@@ -661,6 +675,10 @@ else:
             if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and '~' not in ext:
                 shutil.copy2(file, dest)
                 Dos2Unix(fullname)
+
+    ############################
+    # Rename MKD file
+    rename_file(root, 'README.mkd', 'README.txt')
 
     os.chdir(root)
     os.chdir('..')

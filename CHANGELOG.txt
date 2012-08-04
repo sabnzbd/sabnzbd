@@ -1,4 +1,21 @@
 -------------------------------------------------------------------------------
+ 0.7.3Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Rename Special "random_server_ip" to "randomize_server_ip" so that we
+  can force the default to "Off". "On" kills speed on some servers.
+- Ignore pseudo NZB files that start with a period in the name
+- SFV failure now listed in History instead of issuing warnings
+- Translation updates
+- "502" errors about payments/credits will now block a server
+-------------------------------------------------------------------------------
+ 0.7.3Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Try to keep OSX Mountain Lion awake as long as downloading/postprocessing runs
+- Prevent queue deadlock in case of fatally damaged par2 files
+- Add RSS filter-enable checkboxes to Plush, Smpl and Classic skins
+- Fix problem with saving modified paramters of an already enabled server
+- Extend "check new release" option with test releases
+-------------------------------------------------------------------------------
  0.7.3Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Correct several errors in Sort function

@@ -73,6 +73,7 @@
   <table>
     <tr>
       <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;</th>
       <th>$T('rss-order')</th>
       <th>$T('rss-type')</th>
       <th>$T('rss-filter')</th>
@@ -86,6 +87,7 @@
   <form action="upd_rss_filter" method="get">
   <tr class="odd">
   <td></td>
+  <td><input type="checkbox" name="enabled" value="1" checked="checked" /></td>
   <td></td>
   <td>
     <select name="filter_type">
@@ -152,6 +154,10 @@
     </td>
 
   <form action="upd_rss_filter" method="get">
+  <td>
+    <input type="checkbox" name="enabled" value="1" <!--#if $filter[6] == '1' then 'checked="checked"' else ""#--> />
+  </td>
+
   <td>
     <input type="text" size="3" name="new_index" value=$fnum>
   </td>

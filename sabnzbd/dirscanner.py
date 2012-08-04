@@ -295,7 +295,7 @@ class DirScanner(threading.Thread):
 
             for filename in files:
                 path = os.path.join(folder, filename)
-                if os.path.isdir(path) or path in self.ignored:
+                if os.path.isdir(path) or path in self.ignored or filename[0] == '.':
                     continue
 
                 ext = os.path.splitext(path)[1].lower()

@@ -59,6 +59,10 @@ elif os.name == 'posix':
             pass
         if platform.machine() == 'i386':
             DARWIN_INTEL = True
+if DARWIN:
+    DARWIN_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8]
+else:
+    DARWIN_ML = False
 
 #------------------------------------------------------------------------
 
@@ -340,6 +344,11 @@ def start():
         logging.debug('Starting urlgrabber')
         URLGrabber.do.start()
 
+        if DARWIN_ML:
+            logging.debug('Starting OSX keep-awake service')
+            osxmenu.OsxAwake()
+            osxmenu.OsxAwake.do.start()
+
 
 @synchronized(INIT_LOCK)
 def halt():
@@ -398,6 +407,9 @@ def halt():
             save_state(flag=True)
         except:
             logging.error('Fatal error at saving state', exc_info=True)
+
+        if DARWIN_ML:
+            osxmenu.OsxAwake.do.stop()
 
 
         # The Scheduler cannot be stopped when the stop was scheduled.
@@ -749,11 +761,14 @@ def empty_queues():
 def keep_awake():
     """ If we still have work to do, keep Windows system awake
     """
-    global KERNEL32
-    if KERNEL32 and not sabnzbd.downloader.Downloader.do.paused:
-        if (not PostProcessor.do.empty()) or not NzbQueue.do.is_empty():
-            # set ES_SYSTEM_REQUIRED
-            KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
+    if KERNEL32 or DARWIN_ML:
+        if not sabnzbd.downloader.Downloader.do.paused:
+            if (not PostProcessor.do.empty()) or not NzbQueue.do.is_empty():
+                if KERNEL32:
+                    # set ES_SYSTEM_REQUIRED
+                    KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
+                else:
+                    osxmenu.OsxAwake.do.stay_awake = True
 
 
 def CheckFreeSpace():

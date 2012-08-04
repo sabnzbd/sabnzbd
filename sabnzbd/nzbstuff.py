@@ -54,7 +54,7 @@ RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
-
+REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I) # Reject duplicate par2 files
 
 ################################################################################
 # Article                                                                      #
@@ -925,6 +925,7 @@ class NzbObject(TryList):
                 subject = sanitize_filename(latin1(nzf.subject))
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
+                    nzf.completed = True
                     self.handle_par2(nzf, file_done=True)
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
@@ -1008,7 +1009,8 @@ class NzbObject(TryList):
         self.incomplete = False
 
     def add_parfile(self, parfile):
-        self.files.append(parfile)
+        if parfile not in self.files:
+            self.files.append(parfile)
         if parfile.extrapars and parfile in parfile.extrapars:
             parfile.extrapars.remove(parfile)
 
@@ -1109,8 +1111,14 @@ class NzbObject(TryList):
                     if article:
                         break
 
+        # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
+            nzf.deleted = True
+            nzf.completed = True
             self.files.remove(nzf)
+        # If cleanup emptied the active files list, end this job
+        if nzf_remove_list and not self.files:
+            sabnzbd.NzbQueue.do.end_job(self)
 
         if not article:
             # No articles for this server, block for next time
@@ -1544,7 +1552,9 @@ def analyse_par2(name):
         return head, vol, block
         head is empty when not a par2 file
     """
-    if name:
+    head = None
+    vol = block = 0
+    if name and not REJECT_PAR2_RE.search(name):
         m = PROBABLY_PAR2_RE.search(name)
         if m:
             head = m.group(1)
@@ -1552,8 +1562,6 @@ def analyse_par2(name):
             block = m.group(3)
         elif name.lower().find('.par2') > 0:
             head = os.path.splitext(name)[0]
-            vol = block = 0
         else:
             head = None
-            vol = block = 0
     return head, vol, block

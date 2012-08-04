@@ -259,10 +259,10 @@ def sanitize_foldername(name):
 
 
 #------------------------------------------------------------------------------
-def verified_flag_file(path, create=False):
+def flag_file(path, flag, create=False):
     """ Create verify flag file or return True if it already exists """
     path = os.path.join(path, JOB_ADMIN)
-    path = os.path.join(path, VERIFIED_FILE)
+    path = os.path.join(path, flag)
     if create:
         try:
             f = open(path, 'w')

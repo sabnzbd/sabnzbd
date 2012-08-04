@@ -31,10 +31,11 @@ import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv
+from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
+                         flag_file
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from constants import Status
+from constants import Status, QCHECK_FILE
 
 if sabnzbd.WIN32:
     try:
@@ -953,6 +954,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         result = True
 
     if not result:
+        flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
         result = False
         readd = False
@@ -1145,7 +1147,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 verified = 1
 
             elif line.startswith('Main packet not found'):
-                ## Initialparfile probaly didn't decode properly,
+                ## Initialparfile probably didn't decode properly,
                 logging.info(Ta('Main packet not found...'))
 
                 extrapars = parfile_nzf.extrapars
@@ -1155,7 +1157,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 ## Look for the smallest par2file
                 block_table = {}
                 for nzf in extrapars:
-                    block_table[int_conv(nzf.blocks)] = nzf
+                    if not nzf.completed:
+                        block_table[int_conv(nzf.blocks)] = nzf
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
@@ -1163,6 +1166,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     logging.info("Found new par2file %s", nzf.filename)
 
                     nzo.add_parfile(nzf)
+                    extrapars.remove(nzf)
                     ## mark for readd
                     readd = True
                 else:
@@ -1224,7 +1228,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                         extrapar_list = block_table[block_size]
 
                         if extrapar_list:
-                            nzo.add_parfile(extrapar_list.pop())
+                            new_nzf = extrapar_list.pop()
+                            nzo.add_parfile(new_nzf)
+                            extrapars.remove(new_nzf)
                             added_blocks += block_size
 
                         else:
@@ -1515,32 +1521,35 @@ def unrar_check(rar):
 def sfv_check(sfv_path):
     """ Verify files using SFV file,
         input: full path of sfv, file are assumed to be relative to sfv
-        returns: True when all files verified OK
+        returns: List of failing files or [] when all is OK
     """
+    failed = []
     try:
         fp = open(sfv_path, 'r')
     except:
         logging.info('Cannot open SFV file %s', sfv_path)
-        return False
+        failed.append(unicoder(sfv_path))
+        return failed
     root = os.path.split(sfv_path)[0]
     status = True
     for line in fp:
         line = line.strip('\n\r ')
         if line[0] != ';':
             x = line.rfind(' ')
-            filename = line[:x].strip()
+            filename = platform_encode(line[:x].strip())
             checksum = line[x:].strip()
-            path = os.path.join(root, platform_encode(filename))
+            path = os.path.join(root, filename)
             if os.path.exists(path):
                 if crc_check(path, checksum):
                     logging.debug('File %s passed SFV check', path)
                 else:
-                    logging.warning('File %s did not pass SFV check', latin1(path))
-                    status = False
+                    logging.info('File %s did not pass SFV check', latin1(path))
+                    failed.append(unicoder(filename))
             else:
-                logging.warning('File %s mssing in SFV check', latin1(path))
+                logging.info('File %s missing in SFV check', latin1(path))
+                failed.append(unicoder(filename))
     fp.close()
-    return status
+    return failed
 
 
 def crc_check(path, target_crc):
