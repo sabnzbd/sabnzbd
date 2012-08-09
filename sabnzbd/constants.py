@@ -157,3 +157,5 @@ class Status():
     REPAIRING = 'Repairing'
     RUNNING = 'Running'
     VERIFYING = 'Verifying'
+
+NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'other')

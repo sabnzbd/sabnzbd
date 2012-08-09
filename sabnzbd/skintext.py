@@ -551,6 +551,10 @@ SKIN_TEXT = {
     'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
     'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
+    'opt-ncenter_enable' : TT('Notification Center'),
+    'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
+    'opt-notify_classes' : TT('Notification classes'),
+    'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
 
 # Config->Newzbin

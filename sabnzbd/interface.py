@@ -2575,7 +2575,7 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable')
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable', 'ncenter_enable')
 
 class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
@@ -2595,11 +2595,15 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
+        conf['have_ncenter'] = sabnzbd.DARWIN_ML and bool(sabnzbd.growler.ncenter_path())
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
         for kw in LIST_GROWL:
             conf[kw] = config.get_config('growl', kw).get_string()
+        conf['notify_list'] = NOTIFY_KEYS
+        conf['notify_classes'] = cfg.notify_classes.get_string()
+        conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2618,6 +2622,7 @@ class ConfigNotify(object):
             msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+        cfg.notify_classes.set(kwargs.get('notify_classes', ''))
 
         config.save_config()
         self.__lastmail = None
