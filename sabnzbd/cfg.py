@@ -239,6 +239,7 @@ quota_period = OptionStr('misc', 'quota_period', 'm')
 
 osx_menu = OptionBool('misc', 'osx_menu', True)
 osx_speed = OptionBool('misc', 'osx_speed', True)
+keep_awake = OptionBool('misc', 'keep_awake', True)
 win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)

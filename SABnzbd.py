@@ -1574,7 +1574,7 @@ def main():
         ### 30 sec polling tasks
         if timer > 9:
             timer = 0
-            # Keep Windows awake (if needed)
+            # Keep OS awake (if needed)
             sabnzbd.keep_awake()
             # Restart scheduler (if needed)
             scheduler.restart()
