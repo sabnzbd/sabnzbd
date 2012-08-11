@@ -494,7 +494,7 @@ if target == 'app':
         # Make image internet-enabled
         os.system("hdiutil internet-enable %s" % fileDmg)
     else:
-        dest = '/Volumes/VMware Shared Folders/leopard/%s' % str(my_version)
+        dest = '/Volumes/VMware Shared Folders/osx/leopard/%s' % str(my_version)
         os.system('rm -rf "%s"' % dest)
         os.makedirs('%s/dist' % dest)
         os.system('cp -r dist/SABnzbd.app "%s/dist/" >/dev/null' % dest)
