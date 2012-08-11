@@ -772,7 +772,7 @@ def keep_awake():
                         # set ES_SYSTEM_REQUIRED
                         KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
                     else:
-                        sleepless.keep_awake()
+                        sleepless.keep_awake('SABnzbd is busy downloading and/or post-processing')
             if not awake and sleepless:
                 sleepless.allow_sleep()
 
