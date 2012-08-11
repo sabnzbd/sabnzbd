@@ -447,6 +447,16 @@ if target == 'app':
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/Cheetah -name '*.py' | xargs rm" % py_ver)
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/xml -name '*.py' | xargs rm" % py_ver)
     os.remove('dist/SABnzbd.app/Contents/Resources/site.py')
+    
+    # Add the SabNotifier app
+    if OSX_LION and os.path.exists('/project/sabnotifier/SABnzbd.app'):
+        os.system("cp -pR /project/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
+
+    # Add License files
+    os.mkdir("dist/SABnzbd.app/Contents/Resources/licenses/")
+    os.system("cp -p licenses/*.txt dist/SABnzbd.app/Contents/Resources/licenses/")
+    os.system("cp -p *.txt dist/SABnzbd.app/Contents/Resources/licenses/")
+
     os.system("sleep 5")
 
     if OSX_LION:
