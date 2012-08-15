@@ -2492,9 +2492,14 @@ def GetRssLog(feed):
     # Sort in the order the jobs came from the feed
     names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
 
-    done = [xml_name(jobs[job]['title']) for job in names if jobs[job]['status'] == 'D']
     good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
     bad  = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
+
+    # Sort in reverse order of time stamp for 'Done'
+    dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
+    dnames.sort(lambda x, y: jobs[y].get('timestamp', 0) - jobs[x].get('timestamp', 0))
+    done = [xml_name(jobs[job]['title']) for job in dnames]
+
 
     return done, good, bad
 
