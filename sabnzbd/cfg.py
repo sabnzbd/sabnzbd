@@ -228,9 +228,9 @@ no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
-growl_enable = OptionBool('growl', 'growl_enable', True)
+growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
 ntfosd_enable = OptionBool('growl', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
-ncenter_enable = OptionBool('growl', 'ncenter_enable', True)
+ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN)
 notify_classes = OptionList('growl', 'notify_classes', NOTIFY_KEYS)
 
 quota_size = OptionStr('misc', 'quota_size')
