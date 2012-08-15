@@ -1194,6 +1194,9 @@ SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate', 'wait_ext_drive'
             )
+SPECIAL_LIST_LIST = \
+    ( 'rss_odd_titles',
+    )
 
 class ConfigSpecial(object):
     def __init__(self, web_dir, root, prim):
@@ -1212,6 +1215,7 @@ class ConfigSpecial(object):
 
         conf['switches'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_BOOL_LIST]
         conf['entries'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
+        conf['entries'].extend( [ (kw, config.get_config('misc', kw).get_string(), '') for kw in SPECIAL_LIST_LIST] )
 
         template = Template(file=os.path.join(self.__web_dir, 'config_special.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1222,7 +1226,7 @@ class ConfigSpecial(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST:
+        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
             item = config.get_config('misc', kw)
             value = kwargs.get(kw)
             msg = item.set(value)

@@ -31,7 +31,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts
+from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, match_str
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder, xml_name
 
@@ -656,12 +656,12 @@ def _get_link(uri, entry):
 def special_rss_site(url):
     """ Return True if url describes an RSS site with odd titles
     """
-    return cfg.rss_filenames() or 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url
+    return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
 _ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
 def encl_sites(url, link):
-    """ Return True if url or link match sites that use enclosures
+    """ Return True if url or link matches sites that use enclosures
     """
     for site in _ENCL_SITES:
         if site in url or (link and site in link):
