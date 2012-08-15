@@ -911,6 +911,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
 
+    lines = []
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -950,6 +951,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             # Skip empty lines
             if line == '':
                 continue
+            
+            if 'Repairing:' not in line:            
+                lines.append(line)
 
             # And off we go
             if line.startswith('Invalid option specified'):
@@ -1148,6 +1152,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             retry_classic = True
         else:
             raise WindowsError(err)
+
+    logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
