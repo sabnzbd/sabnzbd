@@ -105,7 +105,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
 
     if not username or not password:
-        nw.nntp.sock.sendall('ARTICLE test@home\r\n')
+        nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
         try:
             nw.lines = []
             nw.recv_chunk(block=True)
