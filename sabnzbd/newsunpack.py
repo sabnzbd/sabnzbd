@@ -951,8 +951,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             # Skip empty lines
             if line == '':
                 continue
-            
-            if 'Repairing:' not in line:            
+
+            if 'Repairing:' not in line:
                 lines.append(line)
 
             # And off we go
@@ -1060,7 +1060,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                         if extrapar_list:
                             new_nzf = extrapar_list.pop()
                             nzo.add_parfile(new_nzf)
-                            extrapars.remove(new_nzf)
+                            if new_nzf in extrapars: extrapars.remove(new_nzf)
                             added_blocks += block_size
 
                         else:

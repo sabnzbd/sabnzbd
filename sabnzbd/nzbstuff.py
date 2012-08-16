@@ -942,6 +942,7 @@ class NzbObject(TryList):
                 self.files_table[nzf.nzf_id] = nzf
                 self.bytes += nzf.bytes
                 nzf.filename = filename
+                nzf.completed = True
                 self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
                 logging.info('File %s added to job', filename)
