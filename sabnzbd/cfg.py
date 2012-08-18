@@ -206,6 +206,7 @@ log_new = OptionBool('logging', 'log_new', False)
 
 https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
+https_chain = OptionDir('misc','https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
@@ -265,3 +266,4 @@ def set_root_folders(home, lcldata):
 def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())
     https_key.set_root(admin_dir.get_path())
+    https_chain.set_root(admin_dir.get_path())

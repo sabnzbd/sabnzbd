@@ -671,7 +671,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     return cherryhost, cherryport, browserhost, https_port
 
 
-def attach_server(host, port, cert=None, key=None):
+def attach_server(host, port, cert=None, key=None, chain=None):
     """ Define and attach server, optionally HTTPS
     """
     if not (sabnzbd.cfg.no_ipv6() and '::1' in host):
@@ -680,6 +680,7 @@ def attach_server(host, port, cert=None, key=None):
         if cert and key:
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
+            http_server.ssl_certificate_chain = chain
         adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
         adapter.subscribe()
 
@@ -1350,6 +1351,10 @@ def main():
 
     https_cert = sabnzbd.cfg.https_cert.get_path()
     https_key = sabnzbd.cfg.https_key.get_path()
+    https_chain = sabnzbd.cfg.https_chain.get_path()
+    if not (sabnzbd.cfg.https_chain() and os.path.exists(https_chain)):
+        https_chain = None
+
     if enable_https:
         # If either the HTTPS certificate or key do not exist, make some self-signed ones.
         if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
@@ -1379,14 +1384,15 @@ def main():
                 # Extra HTTP port for secondary localhost
                 attach_server(hosts[1], cherryport)
                 # Extra HTTPS port for secondary localhost
-                attach_server(hosts[1], https_port, https_cert, https_key)
+                attach_server(hosts[1], https_port, https_cert, https_key, https_chain)
             cherryport = https_port
         elif multilocal:
             # Extra HTTPS port for secondary localhost
             attach_server(hosts[1], cherryport, https_cert, https_key)
 
         cherrypy.config.update({'server.ssl_certificate' : https_cert,
-                                'server.ssl_private_key' : https_key })
+                                'server.ssl_private_key' : https_key,
+                                'server.ssl_certificate_chain' : https_chain})
     elif multilocal:
         # Extra HTTP port for secondary localhost
         attach_server(hosts[1], cherryport)

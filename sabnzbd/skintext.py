@@ -298,6 +298,8 @@ SKIN_TEXT = {
     'explain-https_cert' : TT('File name or path to HTTPS Certificate.'),
     'opt-https_key' : TT('HTTPS Key'),
     'explain-https_key' : TT('File name or path to HTTPS Key.'),
+    'opt-https_chain' : TT('HTTPS Chain Certifcates'),
+    'explain-https_chain' : TT('File name or path to HTTPS Chain.'),
     'tuning' : TT('Tuning'),
     'opt-refresh_rate' : TT('Queue auto refresh interval:'),
     'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),

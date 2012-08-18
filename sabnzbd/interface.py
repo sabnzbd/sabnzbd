@@ -1241,7 +1241,7 @@ class ConfigSpecial(object):
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
     'refresh_rate', 'cache_limit',
-    'enable_https', 'https_port', 'https_cert', 'https_key'
+    'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
 class ConfigGeneral(object):
@@ -1339,6 +1339,7 @@ class ConfigGeneral(object):
         conf['https_port'] = cfg.https_port()
         conf['https_cert'] = cfg.https_cert()
         conf['https_key'] = cfg.https_key()
+        conf['https_chain'] = cfg.https_chain()
         conf['enable_https'] = cfg.enable_https()
         conf['username'] = cfg.username()
         conf['password'] = cfg.password.get_stars()
