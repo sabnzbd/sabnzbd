@@ -184,8 +184,8 @@ class PostProcessor(Thread):
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
 
             self.__busy = True
-            if process_job(nzo):
-                self.remove(nzo)
+            process_job(nzo)
+            self.remove(nzo)
             check_eoq = True
 
             ## Allow download to proceed
