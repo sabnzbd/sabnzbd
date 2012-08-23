@@ -955,8 +955,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if 'Repairing:' not in line:
                 lines.append(line)
 
-            # And off we go
-            if line.startswith('Invalid option specified'):
+            if 'The recovery file does not exist' in line:
+                logging.info('%s', line)
+                nzo.set_unpack_info('Repair', unicoder(line), set=setname)
+                nzo.status = Status.FAILED
+
+            elif line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
