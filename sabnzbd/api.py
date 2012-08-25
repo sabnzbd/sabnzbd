@@ -1272,6 +1272,7 @@ def qstatus_data():
 
     status = {
         "state" : state,
+        "pp_active" : not PostProcessor.do.empty(),
         "paused" : Downloader.do.paused,
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsnow / KIBI,
