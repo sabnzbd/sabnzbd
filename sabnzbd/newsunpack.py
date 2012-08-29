@@ -524,17 +524,23 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         action = 'e'
     else:
         action = 'x'
+    if cfg.overwrite_files():
+        overwrite = '-o+' # Enable overwrite
+        rename = '-o+'    # Dummy
+    else:
+        overwrite = '-o-' # Disable overwrite
+        rename = '-or'    # Auto renaming
     if sabnzbd.WIN32:
         # Use all flags
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', '-ai', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
                    '%s' % rarfile, '%s/' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
                    '%s' % rarfile, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
                    '%s' % rarfile, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():

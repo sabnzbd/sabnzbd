@@ -357,9 +357,9 @@ def process_job(nzo):
                         for file_ in files:
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
-                            new_path = get_unique_filename(new_path)
+                            ok, new_path = move_to_path(path, new_path)
                             newfiles.append(new_path)
-                            if not move_to_path(path, new_path, unique=False):
+                            if not ok:
                                 nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
                                 all_ok = False
                                 break

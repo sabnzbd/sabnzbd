@@ -797,13 +797,23 @@ def create_dirs(dirpath):
 
 
 @synchronized(DIR_LOCK)
-def move_to_path(path, new_path, unique=True):
-    """ Move a file to a new path, optionally give unique filename """
-    if unique:
-        new_path = get_unique_path(new_path, create_dir=False)
+def move_to_path(path, new_path):
+    """ Move a file to a new path, optionally give unique filename
+        Return (ok, new_path)
+    """
+    ok = True
+    overwrite = cfg.overwrite_files()
+    if overwrite and os.path.exists(new_path):
+        try:
+            os.remove(new_path)
+        except:
+            overwrite = False
+    if not overwrite:
+        new_path = get_unique_filename(new_path)
+
     if new_path:
-        logging.debug("Moving. Old path:%s new path:%s unique?:%s",
-                                                  path,new_path, unique)
+        logging.debug("Moving. Old path:%s new path:%s overwrite?:%s",
+                                                  path, new_path, overwrite)
         try:
             # First try cheap rename
             renamer(path, new_path)
@@ -818,8 +828,8 @@ def move_to_path(path, new_path, unique=True):
                 if not (cfg.marker_file() and cfg.marker_file() in path):
                     logging.error(Ta('Failed moving %s to %s'), path, new_path)
                     logging.info("Traceback: ", exc_info = True)
-                new_path = None
-    return new_path
+                ok = False
+    return ok, new_path
 
 
 @synchronized(DIR_LOCK)
