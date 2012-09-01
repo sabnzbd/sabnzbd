@@ -1933,3 +1933,13 @@ def del_from_section(kwargs):
     else:
         return False
 
+
+#------------------------------------------------------------------------------
+def history_remove_failed():
+    """ Remove all failed jobs from history, including files """
+    logging.info('Scheduled removal of all failed jobs')
+    history_db = get_history_handle()
+    del_job_files(history_db.get_failed_paths())
+    history_db.remove_failed()
+    history_db.close()
+    del history_db

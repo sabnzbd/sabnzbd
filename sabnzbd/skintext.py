@@ -62,6 +62,7 @@ SKIN_TEXT = {
     'sch-resume_post'    : TT('Resume post-processing'), #:  #: Config->Scheduler
     'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
     'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
+    'sch-remove_failed'  : TT('Remove failed jobs'), #: Config->Scheduler
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus

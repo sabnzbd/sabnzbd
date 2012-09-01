@@ -116,6 +116,8 @@ def init():
         elif action_name == 'rss_scan':
             action = rss.run_method
             rss_planned = True
+        elif action_name == 'remove_failed':
+            action = sabnzbd.api.history_remove_failed
         else:
             logging.warning(Ta('Unknown action: %s'), action_name)
             continue

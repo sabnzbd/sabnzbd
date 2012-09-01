@@ -1890,7 +1890,7 @@ class ConfigRss(object):
 
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
-                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan')
+                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan', 'remove_failed')
 
 class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):
