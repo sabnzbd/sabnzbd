@@ -575,7 +575,7 @@ def parring(nzo, workdir):
 
     if (par_error and not re_add) or not repair_sets:
         # See if alternative SFV check is possible
-        if cfg.sfv_check():
+        if cfg.sfv_check() and not (flag_file(workdir, VERIFIED_FILE) and not repair_sets):
             sfvs = globber(workdir, '*.sfv')
         else:
             sfvs = None
