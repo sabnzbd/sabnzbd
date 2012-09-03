@@ -1410,6 +1410,17 @@ def main():
     else:
         sessions = None
 
+    mime_gzip = ('text/html',
+                 'text/plain',
+                 'text/css',
+                 'text/xml',
+                 'text/javascript',
+                 'application/javascript',
+                 'text/x-javascript',
+                 'application/x-javascript',
+                 'text/x-json',
+                 'application/json'
+                 )
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
@@ -1419,7 +1430,7 @@ def main():
                             'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
                             'tools.gzip.on' : True,
-                            'tools.gzip.mime_types' : ['text/html', 'text/plain', 'text/javascript', 'text/css', 'application/x-javascript'],
+                            'tools.gzip.mime_types' : mime_gzip,
                             'tools.sessions.on' : bool(sessions),
                             'tools.sessions.storage_type' : 'file',
                             'tools.sessions.storage_path' : sessions,
