@@ -140,7 +140,10 @@ class BPSMeter(object):
         """ Get the latest data from the database and assign to a fake server
         """
         logging.debug('Setting default BPS meter values')
-        grand, month, week  = sabnzbd.proxy_get_history_size()
+        import sabnzbd.database
+        history_db = sabnzbd.database.get_history_handle()
+        grand, month, week  = history_db.get_history_size()
+        history_db.close()
         self.grand_total = {}
         self.month_total = {}
         self.week_total = {}

@@ -1674,9 +1674,11 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     # Aquire the db instance
     try:
         history_db = cherrypy.thread_data.history_db
+        close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet
         history_db = get_history_handle()
+        close_db = True
 
     # Fetch history items
     if not h_limit:
@@ -1741,6 +1743,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     total_items += full_queue_size
     fetched_items = len(items)
+
+    if close_db:
+        history_db.close()
 
     return (items, fetched_items, total_items)
 

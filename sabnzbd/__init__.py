@@ -1082,10 +1082,6 @@ def proxy_postproc(nzo):
 def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
     return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
 
-def proxy_get_history_size():
-    history_db = sabnzbd.database.get_history_handle()
-    return history_db.get_history_size()
-
 def proxy_build_history():
     """ Proxy to let nzbqueue call api """
     return sabnzbd.api.build_history()

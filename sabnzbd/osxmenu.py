@@ -64,6 +64,7 @@ class SABnzbdDelegate(NSObject):
     icons = {}
     status_bar = None
     osx_icon = True
+    history_db = None
 
     def awakeFromNib(self):
         #Status Bar iniatilize
@@ -377,8 +378,9 @@ class SABnzbdDelegate(NSObject):
     def historyUpdate(self):
         try:
             # Fetch history items
-            history_db = sabnzbd.database.get_history_handle()
-            items, fetched_items, total_items = history_db.fetch_history(0,10,None)
+            if not self.history_db:
+                self.history_db = sabnzbd.database.get_history_handle()
+            items, fetched_items, total_items = self.history_db.fetch_history(0,10,None)
 
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = { NSForegroundColorAttributeName:NSColor.redColor(), NSFontAttributeName:NSFont.menuFontOfSize_(14.0) }
@@ -685,8 +687,9 @@ class SABnzbdDelegate(NSObject):
         if mode == "queue":
             NzbQueue.do.remove_all()
         elif mode == "history":
-            history_db = sabnzbd.database.get_history_handle()
-            history_db.remove_history()
+            if not self.history_db:
+                self.history_db = sabnzbd.database.get_history_handle()
+            self.history_db.remove_history()
 
     def pauseAction_(self, sender):
         minutes = int(sender.representedObject())
