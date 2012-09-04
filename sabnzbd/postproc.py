@@ -35,7 +35,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
                          set_permissions
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
+from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
@@ -567,7 +567,8 @@ def parring(nzo, workdir):
 
         if re_add:
             logging.info('Readded %s to queue', filename)
-            nzo.priority = REPAIR_PRIORITY
+            if nzo.priority != TOP_PRIORITY:
+                nzo.priority = REPAIR_PRIORITY
             sabnzbd.nzbqueue.add_nzo(nzo)
             sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
