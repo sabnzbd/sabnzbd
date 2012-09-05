@@ -89,7 +89,7 @@
                    <label class="config" for="notify_classes">$T('opt-notify_classes')</label>
                    <select name="notify_classes" multiple="multiple" class="multiple_cats">
                        <!--#for $item in $notify_list#-->
-                           <option value="$item" <!--#if $item in $notify_classes then 'selected="selected"' else ""#--> >$Tspec($notify_texts[$item])</option>
+                           <option value="$item" <!--#if $item in $notify_classes then 'selected="selected"' else ""#--> >$T($notify_texts[$item])</option>
                        <!--#end for#-->
                    </select>
                    <span class="desc">$T('explain-notify_classes')</span>
@@ -177,7 +177,7 @@
             success: function (data) {
                 if (data.status == true) {
                   \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
-                } else { 
+                } else {
                   \$('#testnotice-result').addClass("failure").html(data.error);
                 }
             }
