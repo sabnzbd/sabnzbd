@@ -1,4 +1,25 @@
 -------------------------------------------------------------------------------
+ 0.7.4Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- OSX Mountain Lion Notification Center support
+- OSX Mountain Lion improved "keep awake" support
+- OSX: separate builds: one for Mountain Lion and one for all others
+- OSX removed 64bit code
+- Scheduler: action can now run on multiple weekdays
+- Scheduler: add "remove failed jobs" action
+- Special option: rss_odd_titles (see Wiki)
+- Support for HTTPS chain files (needed when you buy your own certificate)
+- Prevent jobs from showing up in queue and history simultaneously
+- Add parameter 'pp_active' to history elements in qstatus API call
+- Fix some minor par2 handling bugs
+- Prevent potential crash when an actively downloading job is deleted from the queue
+- Special option: 'overwrite_files' (See Wiki)
+- Don't try an SFV check when a retried job was already successfully verified by par2
+- Enable compression of API call results
+- Log failed attempts to log in to the Web UI
+- A job with "forced" priority should keep that when fetching more par2 files
+- Updated translations
+-------------------------------------------------------------------------------
  0.7.3Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Rename Special "random_server_ip" to "randomize_server_ip" so that we
