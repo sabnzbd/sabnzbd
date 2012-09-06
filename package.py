@@ -34,9 +34,7 @@ except ImportError:
 try:
     import py2app
     from setuptools import setup
-    OSX_LION = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
-    OSX_SL = not OSX_LION and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 6, 0]
-    OSX_LEOPARD = not (OSX_LION or OSX_SL)
+    OSX_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8, 0]
 except ImportError:
     py2app = None
 
@@ -364,11 +362,11 @@ if target == 'app':
     # Check which Python flavour
     apple_py = 'ActiveState' not in sys.copyright
 
-    if OSX_LION:
-        # Check if Leopard build is present
-        leopard_build = '/project/leopard/%s' % str(my_version)
-        if not os.path.isdir(leopard_build):
-            print 'Leopard build not found at %s' % leopard_build
+    if OSX_ML:
+        # Check if SnowLeopard build is present
+        sl_build = '/project/leopard/%s' % str(my_version)
+        if not os.path.isdir(sl_build):
+            print 'SnowLeopard build not found at %s' % sl_build
             exit(1)
 
         # Create sparseimage from template
@@ -428,13 +426,18 @@ if target == 'app':
         setup_requires=['py2app'],
     )
 
+    # Remove 64bit code
+    os.system("mv dist/SABnzbd.app dist/SABnzbd.app.temp")
+    os.system("ditto --arch i386 --arch ppc dist/SABnzbd.app.temp dist/SABnzbd.app/")
+    os.system("rm -rf dist/SABnzbd.app.temp")
+    
     # copy unrar & par2 binary to avoid striping
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
-    if OSX_LION:
+    if OSX_ML:
         os.system("cp -pR osx/unrar/unrar dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
     else:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
@@ -449,7 +452,7 @@ if target == 'app':
     os.remove('dist/SABnzbd.app/Contents/Resources/site.py')
     
     # Add the SabNotifier app
-    if OSX_LION and os.path.exists('/project/sabnotifier/SABnzbd.app'):
+    if OSX_ML and os.path.exists('/project/sabnotifier/SABnzbd.app'):
         os.system("cp -pR /project/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
 
     # Add License files
@@ -459,18 +462,18 @@ if target == 'app':
 
     os.system("sleep 5")
 
-    if OSX_LION:
+    if OSX_ML:
         # Sign the App if possible
         authority = os.environ.get('SIGNING_AUTH')
         if authority:
-            os.system('codesign -f -i "%s-lion" -s "%s" dist/SABnzbd.app' % (volume, authority))
-            os.system('codesign -f -i "%s-leopard" -s "%s" %s/dist/SABnzbd.app' % (volume, authority, leopard_build))
+            os.system('codesign -f -i "%s-ML" -s "%s" dist/SABnzbd.app' % (volume, authority))
+            os.system('codesign -f -i "%s-OTHER" -s "%s" %s/dist/SABnzbd.app' % (volume, authority, sl_build))
 
         # copy app to mounted sparseimage
-        os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OS X 10.6 and Above/" >/dev/null' % volume)
+        os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OSX MountainLion/" >/dev/null' % volume)
 
         # Copy the Leopard build
-        os.system('cp -r %s/dist/SABnzbd.app "/Volumes/%s/OS X 10.5 and Below/" >/dev/null' % (leopard_build, volume))
+        os.system('cp -r %s/dist/SABnzbd.app "/Volumes/%s/OSX Lion and older/" >/dev/null' % (sl_build, volume))
 
         print 'Create src %s' % fileOSr
         os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
