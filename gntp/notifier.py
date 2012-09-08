@@ -99,7 +99,7 @@ class GrowlNotifier(object):
 		If it's a simple URL icon, then we return True. If it's a data icon
 		then we return False
 		'''
-		logger.info('Checking icon')
+		logger.debug('Checking icon')
 		return data.startswith('http')
 
 	def register(self):
@@ -109,7 +109,7 @@ class GrowlNotifier(object):
 			Before sending notifications to Growl, you need to have
 			sent a registration message at least once
 		"""
-		logger.info('Sending registration to %s:%s', self.hostname, self.port)
+		logger.debug('Sending registration to %s:%s', self.hostname, self.port)
 		register = gntp.GNTPRegister()
 		register.add_header('Application-Name', self.applicationName)
 		for notification in self.notifications:
@@ -146,7 +146,7 @@ class GrowlNotifier(object):
 			For now, only URL callbacks are supported. In the future, the
 			callback argument will also support a function
 		"""
-		logger.info('Sending notification [%s] to %s:%s', noteType, self.hostname, self.port)
+		logger.debug('Sending notification [%s] to %s:%s', noteType, self.hostname, self.port)
 		assert noteType in self.notifications
 		notice = gntp.GNTPNotice()
 		notice.add_header('Application-Name', self.applicationName)
@@ -214,7 +214,9 @@ class GrowlNotifier(object):
 		packet.validate()
 		data = packet.encode()
 
-		logger.debug('To : %s:%s <%s>\n%s', self.hostname, self.port, packet.__class__, data)
+		#logger.debug('To : %s:%s <%s>\n%s', self.hostname, self.port, packet.__class__, data)
+		#Less verbose
+		logger.debug('To : %s:%s <%s>', self.hostname, self.port, packet.__class__)
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.settimeout(self.socketTimeout)
@@ -226,9 +228,14 @@ class GrowlNotifier(object):
 		response = gntp.parse_gntp(recv_data)
 		s.close()
 
-		logger.debug('From : %s:%s <%s>\n%s', self.hostname, self.port, response.__class__, response)
+		#logger.debug('From : %s:%s <%s>\n%s', self.hostname, self.port, response.__class__, response)
+		#Less verbose
+		logger.debug('From : %s:%s <%s>', self.hostname, self.port, response.__class__)
 
 		if type(response) == gntp.GNTPOK:
+			return True
+		if response.error()[0] == '404' and 'has disabled' in response.error()[1]:
+			# Ignore message saying that user has disabled this class
 			return True
 		logger.error('Invalid response: %s', response.error())
 		return response.error()
@@ -236,5 +243,5 @@ class GrowlNotifier(object):
 if __name__ == '__main__':
 	# If we're running this module directly we're likely running it as a test
 	# so extra debugging is useful
-	logging.basicConfig(level=logging.INFO)
+	logging.basicConfig(level=logging.DEBUG)
 	mini('Testing mini notification')
