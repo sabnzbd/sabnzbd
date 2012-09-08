@@ -137,10 +137,7 @@ def register_growl():
     error = None
     host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
 
-    if host:
-        sys_name = '@' + sabnzbd.misc.hostname().lower()
-    else:
-        sys_name = ''
+    sys_name = hostname(host)
 
     # Clean up persistent data in GNTP to make re-registration work
     GNTPRegister.notifications = []
@@ -304,3 +301,18 @@ def send_notification_center(title, msg, gtype):
     else:
         output = 'Notifier app not found'
     return output.strip('*\n ')
+
+
+#------------------------------------------------------------------------------
+def hostname(host=True):
+    """ Return host's pretty name """
+    if sabnzbd.WIN32:
+        sys_name = os.environ.get('computername', 'unknown')
+    try:
+        sys_name = os.uname()[1]
+    except:
+        sys_name = 'unknown'
+    if host:
+        return '@%s' % sys_name.lower()
+    else:
+        return ''

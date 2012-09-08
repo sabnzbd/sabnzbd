@@ -1521,8 +1521,8 @@ def main():
         if sabnzbd.FOUNDATION:
             import sabnzbd.osxmenu
             sabnzbd.osxmenu.notify("SAB_Launched", None)
-        growler.send_notification('SABnzbd %s' % (sabnzbd.__version__),
-                             "http://%s:%s/sabnzbd" % (browserhost, cherryport), 'startup')
+        growler.send_notification('SABnzbd%s' % growler.hostname(),
+                                  T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
         # Now's the time to check for a new version
         check_latest_version()
     autorestarted = False
