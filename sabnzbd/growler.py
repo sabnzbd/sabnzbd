@@ -64,21 +64,21 @@ NOTIFICATION = {
 #------------------------------------------------------------------------------
 # Setup platform dependent Growl support
 #
-_GROWL_ICON = None  # Platform-dependant icon path
 _GROWL = None       # Instance of the Notifier after registration
 _GROWL_REG = False  # Succesful registration
 
 
 #------------------------------------------------------------------------------
-def get_icon(host):
-    if host is None:
-        icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
-        if not os.path.isfile(icon):
-            icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
-        if not os.path.isfile(icon):
-            icon = None
+def get_icon():
+    icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
+    if not os.path.isfile(icon):
+        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    if os.path.isfile(icon):
+        fp = open(icon, 'rb')
+        icon = fp.read()
+        fp.close
     else:
-        icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
+        icon = None
     return icon
 
 
@@ -148,9 +148,9 @@ def register_growl():
 
     growler = GrowlNotifier(
         applicationName = 'SABnzbd%s' % sys_name,
-        applicationIcon = get_icon(host or None),
+        applicationIcon = get_icon(),
         notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
-        hostname = host or None,
+        hostname = host or 'localhost',
         port = port or 23053,
         password = sabnzbd.cfg.growl_password() or None
     )
@@ -173,6 +173,7 @@ def register_growl():
     except:
         error = 'Unknown Growl registration error'
         logging.debug(error)
+        logging.info("Traceback: ", exc_info = True)
         del growler
         ret = None
 
@@ -200,9 +201,6 @@ def send_growl(title , msg, gtype):
                     noteType = Tx(NOTIFICATION.get(gtype, 'other')),
                     title = title,
                     description = unicoder(msg),
-                    #icon = options.icon,
-                    #sticky = options.sticky,
-                    #priority = options.priority
                 )
                 if ret is None or isinstance(ret, bool):
                     return None
