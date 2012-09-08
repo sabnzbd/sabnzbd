@@ -132,6 +132,9 @@ class GrowlNotifier(object):
 		response = self._send('notify', notice.encode())
 		if isinstance(response, gntp.GNTPOK):
 			return True
+		if response.error()[0] == '404' and 'has disabled' in response.error()[1]:
+			# Ignore message saying that user has disabled this class
+			return True
 		logger.error('Invalid response %s', response.error())
 		return response.error()
 
@@ -145,6 +148,9 @@ class GrowlNotifier(object):
 			sub.set_password(self.password, self.passwordHash)
 		response = self._send('subscribe', sub.encode())
 		if isinstance(response, gntp.GNTPOK):
+			return True
+		if response.error()[0] == '404' and 'has disabled' in response.error()[1]:
+			# Ignore message saying that user has disabled this class
 			return True
 		logger.error('Invalid response %s', response.error())
 		return response.error()
