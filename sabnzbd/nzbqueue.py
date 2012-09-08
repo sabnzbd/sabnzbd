@@ -170,6 +170,34 @@ class NzbQueue(TryList):
             sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
 
 
+    def send_back(self, nzo):
+        """ Send back job to queue after successful pre-check """
+        try:
+            nzb_path = globber(nzo.workpath, '*.gz')[0]
+        except:
+            logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
+            return
+        from sabnzbd.dirscanner import ProcessSingleFile
+        nzo_id = ProcessSingleFile(os.path.split(nzb_path)[1], nzb_path, reuse=True)[1][0]
+        self.replace_in_q(nzo, nzo_id)
+
+
+    @synchronized(NZBQUEUE_LOCK)
+    def replace_in_q(self, nzo, nzo_id):
+        """ Replace nzo by new in at the same spot in the queue, destroy nzo """
+        try:
+            new_nzo = self.get_nzo(nzo_id)
+            pos = self.__nzo_list.index(new_nzo)
+            targetpos = self.__nzo_list.index(nzo)
+            self.__nzo_list.pop(pos)
+            self.__nzo_list[targetpos] = new_nzo
+            del self.__nzo_table[nzo.nzo_id]
+            del nzo
+        except:
+            logging.error('Failed to restart NZB after pre-check (%s)', nzo.nzo_id)
+            logging.info("Traceback: ", exc_info = True)
+            return
+
     @synchronized(NZBQUEUE_LOCK)
     def save(self, save_nzo=None):
         """ Save queue, all nzo's or just the specified one """
@@ -297,8 +325,7 @@ class NzbQueue(TryList):
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:
-            sabnzbd.remove_data(nzo.nzo_id, nzo.workpath)
-            sabnzbd.proxy_postproc(nzo)
+            self.end_job(nzo)
             return ''
 
         # Reset try_lists
@@ -399,10 +426,10 @@ class NzbQueue(TryList):
             if nzf:
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
-                    keep_basic = nzo.finished_files
-                    if keep_basic:
-                        sabnzbd.proxy_postproc(nzo)
-                    self.remove(nzo_id, add_to_history = False, keep_basic=keep_basic)
+                    if nzo.finished_files:
+                        self.end_job(nzo)
+                    else:
+                        self.remove(nzo_id, add_to_history = False, keep_basic=False)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -719,6 +746,18 @@ class NzbQueue(TryList):
         # Notify assembler to call postprocessor
         if not nzo.deleted:
             nzo.deleted = True
+            if nzo.precheck:
+                # Check result
+                enough, ratio = nzo.check_quality()
+                if enough:
+                    # Enough data present, do real download
+                    workdir = nzo.downpath
+                    self.cleanup_nzo(nzo, keep_basic=True)
+                    self.send_back(nzo)
+                    return
+                else:
+                    # Not enough data, let postprocessor show it as failed
+                    nzo.save_attribs()
             Assembler.do.process((nzo, None))
 
 
