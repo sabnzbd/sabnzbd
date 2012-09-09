@@ -55,6 +55,7 @@ SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I) # Reject duplicate par2 files
+RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$') # Test reasonably sized extension at the end
 
 ################################################################################
 # Article                                                                      #
@@ -169,9 +170,7 @@ class NzbFile(TryList):
         self.filename = None
         self.type = None
 
-        match = re.search(SUBJECT_FN_MATCHER, subject)
-        if match:
-            self.filename = match.group(1).strip('"')
+        self.filename = name_extractor(subject)
 
         self.is_par2 = False
         self.vol = None
@@ -348,12 +347,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
             self.in_segments = True
 
         elif name == 'file' and self.in_nzb:
-            subject = attrs.get('subject', '')
-            match = re.search(SUBJECT_FN_MATCHER, subject)
-            if match:
-                self.filename = match.group(1).strip('"').strip()
-            else:
-                self.filename = subject.strip()
+            subject = attrs.get('subject', '').strip()
+            self.filename = subject
 
             if self.filter and RE_SAMPLE.search(subject):
                 logging.info('Skipping sample file %s', subject)
@@ -1566,3 +1561,14 @@ def analyse_par2(name):
         else:
             head = None
     return head, vol, block
+
+
+def name_extractor(subject):
+    """ Try to extract a file name from a subject line, return `subject` if in doubt
+    """
+    result = subject
+    for name in re.findall(SUBJECT_FN_MATCHER, subject):
+        name = name.strip(' "')
+        if name and RE_NORMAL_NAME.search(name):
+            result = name
+    return result
