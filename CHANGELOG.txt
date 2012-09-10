@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.4Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix failure to fetch more par2-files for posts with badly formatted subject lines
+- After successful pre-check, preserve a job's position in the queue
+- Restore SABnzbd icon for Growl
+- Fix "check new releases" option in Config skin
+- Separate DMG files for OSX Leopard/SL, Lion and MLion
+-------------------------------------------------------------------------------
  0.7.4Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - OSX Mountain Lion Notification Center support
