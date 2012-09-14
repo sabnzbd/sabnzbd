@@ -155,6 +155,7 @@ NzbFileMapper = (
     ('import_finished',              'import_finished'),
     ('md5sum',                       'md5sum'),
     ('valid',                        'valid'),
+    ('completed',                    'completed')
 )
 
 
@@ -190,6 +191,7 @@ class NzbFile(TryList):
         self.nzo = nzo
         self.nzf_id = sabnzbd.get_new_id("nzf", nzo.workpath)
         self.deleted = False
+        self.completed = False
 
         self.valid = False
         self.import_finished = False
@@ -870,7 +872,7 @@ class NzbObject(TryList):
                     ## initialparfile
                     else:
                         self.postpone_pars(nzf, head)
-                ## Is not a par2file or nothing todo
+                ## Is not a par2file or nothing to do
                 else:
                     pass
         ## No filename in seg 1? Probably not uu or yenc encoded
