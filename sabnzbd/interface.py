@@ -1982,7 +1982,7 @@ class ConfigScheduling(object):
 
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
-        days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek')])
+        days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
         action = kwargs.get('action')
         arguments = kwargs.get('arguments')
 
