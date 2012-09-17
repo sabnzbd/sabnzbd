@@ -125,7 +125,7 @@ def find_programs(curdir):
 def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
     """ Run a user postproc script, return console output and exit value
     """
-    command = [str(extern_proc), str(complete_dir), str(filename), \
+    command = [str(extern_proc), str(complete_dir), str(filename),
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
@@ -133,7 +133,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
 
-    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)', \
+    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)',
                  extern_proc, complete_dir, filename, nicename, msgid, cat, group, status)
 
     try:
@@ -258,8 +258,8 @@ def match_ts(file):
 
 
 def clean_up_joinables(names):
-    ''' Remove joinable files and their .1 backups
-    '''
+    """ Remove joinable files and their .1 backups
+    """
     for name in names:
         if os.path.exists(name):
             logging.debug("Deleting %s", name)
@@ -276,8 +276,8 @@ def clean_up_joinables(names):
                 pass
 
 def get_seq_number(name):
-    ''' Return sequence number if name as an int
-    '''
+    """ Return sequence number if name as an int
+    """
     head, tail = os.path.splitext(name)
     if tail == '.ts':
         match, set, num = match_ts(name)
@@ -297,7 +297,8 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
     # Create matching sets from the list of files
     joinable_sets = {}
-    set = match = num = None
+    joinable_set = None
+    set = num = None
     for joinable in joinables:
         head, tail = os.path.splitext(joinable)
         if tail == '.ts':
@@ -384,6 +385,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         When 'one_folder' is set, all files will be in a single folder
     """
     extracted_files = []
+    success = False
 
     rar_sets = {}
     for rar in rars:
@@ -438,7 +440,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 except OSError:
                     logging.warning(Ta('Deleting %s failed!'), latin1(rar))
 
-                brokenrar = '%s.1' % (rar)
+                brokenrar = '%s.1' % rar
 
                 if os.path.exists(brokenrar):
                     logging.info("Deleting %s", brokenrar)
@@ -457,6 +459,8 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     """
 
     fail = 0
+    new_files = None
+    rars = []
     if nzo.password:
         passwords = [nzo.password]
     else:
@@ -557,7 +561,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     if p.stdin:
         p.stdin.close()
 
-    nzo.set_action_line(T('Unpacking'), '00/%02d' % (numrars))
+    nzo.set_action_line(T('Unpacking'), '00/%02d' % numrars)
 
     # Loop over the output from rar!
     curr = 0
@@ -634,7 +638,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
                 proc.close()
             p.wait()
 
-            return (fail, (), ())
+            return fail, (), ()
 
     if proc:
         proc.close()
@@ -676,7 +680,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
     logging.info('%s', msg)
 
-    return (0, extracted, rarfiles)
+    return 0, extracted, rarfiles
 
 #------------------------------------------------------------------------------
 # (Un)Zip Functions
@@ -721,7 +725,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                 except OSError:
                     logging.warning(Ta('Deleting %s failed!'), latin1(_zip))
 
-                brokenzip = '%s.1' % (_zip)
+                brokenzip = '%s.1' % _zip
 
                 if os.path.exists(brokenzip):
                     logging.info("Deleting %s", brokenzip)
@@ -1099,7 +1103,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             elif line.startswith('Repairing:'):
                 chunks = line.split()
                 per = float(chunks[-1][:-1])
-                nzo.set_action_line(T('Repairing'), '%2d%%' % (per))
+                nzo.set_action_line(T('Repairing'), '%2d%%' % per)
                 nzo.status = Status.REPAIRING
 
             elif line.startswith('Repair complete'):
@@ -1169,7 +1173,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         logging.debug('Retry PAR2-joining with par2-classic')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
     else:
-        return (finished, readd, pars, datafiles, used_joinables)
+        return finished, readd, pars, datafiles, used_joinables
 
 #-------------------------------------------------------------------------------
 
@@ -1220,7 +1224,7 @@ def build_command(command):
         if need_shell:
             command = list2cmdline(command)
 
-    return (stup, need_shell, command, creationflags)
+    return stup, need_shell, command, creationflags
 
 # Sort the various RAR filename formats properly :\
 def rar_sort(a, b):
@@ -1288,7 +1292,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return (joinables, zips, rars, ts)
+    return joinables, zips, rars, ts
 
 
 def QuickCheck(set, nzo):
@@ -1369,7 +1373,6 @@ def sfv_check(sfv_path):
         failed.append(unicoder(sfv_path))
         return failed
     root = os.path.split(sfv_path)[0]
-    status = True
     for line in fp:
         line = line.strip('\n\r ')
         if line[0] != ';':
