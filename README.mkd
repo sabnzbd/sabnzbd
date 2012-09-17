@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 0.7.4Beta2
+Release Notes  -  SABnzbd 0.7.4Beta3
 ====================================
+
+## Fixes in 0.7.4Beta3
+
+- All three OSX build in one DMG again
+- Minor bugfixes
+
 
 ## Fixes in 0.7.4Beta2
 
