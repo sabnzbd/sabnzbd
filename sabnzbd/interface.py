@@ -1348,6 +1348,7 @@ class ConfigGeneral(object):
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
+        conf['my_lcldata'] = os.path.join(conf['my_lcldata'], DEF_ADMIN_DIR)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
