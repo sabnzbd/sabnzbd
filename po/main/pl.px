@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-09-01 11:31+0000\n"
+"POT-Creation-Date: 2012-09-10 17:12+0000\n"
 "PO-Revision-Date: 2012-08-03 13:54+0000\n"
 "Last-Translator: Jakub Okoński <jakub@okonski.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-02 04:53+0000\n"
-"X-Generator: Launchpad (build 15890)\n"
+"X-Launchpad-Export-Date: 2012-09-11 05:13+0000\n"
+"X-Generator: Launchpad (build 15924)\n"
 
 #: SABnzbd.py:302 [Error message]
 msgid "Failed to start web-interface"
@@ -51,7 +51,11 @@ msgstr "Nazwa hosta 0.0.0.0 wymaga adresu IPv6 do dostępu z zewnątrz"
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Wyłączono HTTPS z powodu braku plików CERT oraz KEY"
 
-#: SABnzbd.py:1656 # sabnzbd/osxmenu.py:772
+#: SABnzbd.py:1525
+msgid "SABnzbd %s started"
+msgstr ""
+
+#: SABnzbd.py:1667 # sabnzbd/osxmenu.py:775
 msgid "SABnzbd shutdown finished"
 msgstr "SABnabd został wyłączony"
 
@@ -103,7 +107,7 @@ msgstr "Nie udało się wczytać %s"
 msgid "Test Notification"
 msgstr "Powiadomienie testowe"
 
-#: sabnzbd/api.py:1495 # sabnzbd/osxmenu.py:192 # sabnzbd/skintext.py:69 [No value, used in dropdown menus]
+#: sabnzbd/api.py:1495 # sabnzbd/osxmenu.py:193 # sabnzbd/skintext.py:69 [No value, used in dropdown menus]
 #: sabnzbd/skintext.py:673 [Job details page, select no files]
 msgid "None"
 msgstr "Brak"
@@ -128,15 +132,15 @@ msgstr "nieznany"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
 
-#: sabnzbd/api.py:1831 [Single letter abbreviation of day]
+#: sabnzbd/api.py:1836 [Single letter abbreviation of day]
 msgid "d"
 msgstr "d"
 
-#: sabnzbd/api.py:1832 [Single letter abbreviation of hour]
+#: sabnzbd/api.py:1837 [Single letter abbreviation of hour]
 msgid "h"
 msgstr "g"
 
-#: sabnzbd/api.py:1833 [Single letter abbreviation of minute]
+#: sabnzbd/api.py:1838 [Single letter abbreviation of minute]
 msgid "m"
 msgstr "m"
 
@@ -156,7 +160,7 @@ msgstr "UWAGA: wstrzymane zadanie \"%s\" z powodu zaszyfrowanego pliku RAR"
 msgid "%s missing"
 msgstr "brakuje %s"
 
-#: sabnzbd/bpsmeter.py:230 [Warning message]
+#: sabnzbd/bpsmeter.py:233 [Warning message]
 msgid "Quota spent, pausing downloading"
 msgstr "Przekroczono limit, zatrzymywanie pobierania"
 
@@ -248,7 +252,7 @@ msgstr "Nie można odczytać %s"
 msgid "Cannot read Watched Folder %s"
 msgstr "Nie można przeczytać Obserwowanego Katalogu %s"
 
-#: sabnzbd/downloader.py:218 # sabnzbd/osxmenu.py:447 # sabnzbd/sabtray.py:81
+#: sabnzbd/downloader.py:218 # sabnzbd/osxmenu.py:449 # sabnzbd/sabtray.py:81
 #: sabnzbd/skintext.py:37 [PP status] # sabnzbd/skintext.py:175 # sabnzbd/skintext.py:802
 msgid "Paused"
 msgstr "Wstrzymano"
@@ -554,35 +558,35 @@ msgstr "Nie można otworzyć klucza rejestru \"%s\"."
 msgid "Failed to read registry keys for special folders"
 msgstr "Nie udało się odczytac kluczy rejestru dla katalogów specjalnych"
 
-#: sabnzbd/misc.py:794 [Error message]
+#: sabnzbd/misc.py:783 [Error message]
 msgid "Failed making (%s)"
 msgstr "Nie udało się utworzyć (%s)"
 
-#: sabnzbd/misc.py:829 [Error message] # sabnzbd/postproc.py:363
+#: sabnzbd/misc.py:818 [Error message] # sabnzbd/postproc.py:351
 msgid "Failed moving %s to %s"
 msgstr "Nie udało się przenieść %s do %s"
 
-#: sabnzbd/misc.py:953
+#: sabnzbd/misc.py:942
 msgid "Unusable NZB file"
 msgstr "Nieprzydatny plik NZB"
 
-#: sabnzbd/misc.py:964
+#: sabnzbd/misc.py:953
 msgid "Try again"
 msgstr "Spróbuj ponownie"
 
-#: sabnzbd/misc.py:964 # sabnzbd/misc.py:972
+#: sabnzbd/misc.py:953 # sabnzbd/misc.py:961
 msgid "URL Fetching failed; %s"
 msgstr "Pobieranie URL nie powiodło się; %s"
 
-#: sabnzbd/misc.py:1128 [Warning message]
+#: sabnzbd/misc.py:1117 [Warning message]
 msgid "pyopenssl module missing, please install for https access"
 msgstr "brak modułu pyopenssl, należy go zainstalować w celu dostępu https"
 
-#: sabnzbd/misc.py:1146 [Error message]
+#: sabnzbd/misc.py:1135 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Błąd tworzenie certyfikatu i klucza SSL"
 
-#: sabnzbd/misc.py:1325 [Error message]
+#: sabnzbd/misc.py:1314 [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Nie można zmienić uprawnień %s"
 
@@ -787,7 +791,7 @@ msgstr "Błąd importu modułu OpenSSL. Łaczenie bez SSL"
 msgid "Failed to update newzbin job %s"
 msgstr "Nie udało się zaktualizować zadania newzbin %s"
 
-#: sabnzbd/newzbin.py:140 # sabnzbd/nzbqueue.py:342
+#: sabnzbd/newzbin.py:140 # sabnzbd/nzbqueue.py:369
 msgid "NZB added to queue"
 msgstr "NZB dodany do kolejki"
 
@@ -831,189 +835,189 @@ msgstr "Znaleziono niekompatybilny plik kolejki, nie można kontynuować"
 msgid "Error loading %s, corrupt file detected"
 msgstr "Błąd ładowania %s, wykryto uszkodzony plik"
 
-#: sabnzbd/nzbqueue.py:247 [Error message]
+#: sabnzbd/nzbqueue.py:275 [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Bład podczas dodawania %s, usuwanie"
 
-#: sabnzbd/nzbqueue.py:707 [Warning message]
+#: sabnzbd/nzbqueue.py:734 [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Nieznane kodowanie"
 
-#: sabnzbd/nzbstuff.py:420 [Warning message]
+#: sabnzbd/nzbstuff.py:415 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Plik %s jest pusty,"
 
-#: sabnzbd/nzbstuff.py:452 [Warning message]
+#: sabnzbd/nzbstuff.py:447 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Nie udało się zaimportować %s plików z %s"
 
-#: sabnzbd/nzbstuff.py:681 [Warning message]
+#: sabnzbd/nzbstuff.py:676 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "Niekompletny plik NZB %s"
 
-#: sabnzbd/nzbstuff.py:683 [Warning message] # sabnzbd/nzbstuff.py:687 [Warning message]
+#: sabnzbd/nzbstuff.py:678 [Warning message] # sabnzbd/nzbstuff.py:682 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Nieprawidłowy plik NZB %s, pomijam (powód=%s, linia=%s)"
 
-#: sabnzbd/nzbstuff.py:702 [Warning message] # sabnzbd/nzbstuff.py:704 [Warning message]
+#: sabnzbd/nzbstuff.py:697 [Warning message] # sabnzbd/nzbstuff.py:699 [Warning message]
 msgid "Empty NZB file %s"
 msgstr "Pusty plik NZB %s"
 
-#: sabnzbd/nzbstuff.py:763 [Warning message]
+#: sabnzbd/nzbstuff.py:758 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignoruję zduplikowany NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:768 [Warning message]
+#: sabnzbd/nzbstuff.py:763 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Zatrzymuję zduplikowany NZB  \"%s\""
 
-#: sabnzbd/nzbstuff.py:967 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:962 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr "ZDUPLIKOWANY"
 
-#: sabnzbd/nzbstuff.py:969 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:964 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr "ZASZYFROWANY"
 
-#: sabnzbd/nzbstuff.py:971 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:966 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr "ZA DUŻY"
 
-#: sabnzbd/nzbstuff.py:973 [Queue indicator for incomplete NZB]
+#: sabnzbd/nzbstuff.py:968 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
 msgstr "NIEKOMPLETNY"
 
-#: sabnzbd/nzbstuff.py:977 [Queue indicator for waiting URL fetch]
+#: sabnzbd/nzbstuff.py:972 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
 msgstr "CZEKAM %s sek"
 
-#: sabnzbd/nzbstuff.py:1063
+#: sabnzbd/nzbstuff.py:1058
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Pobrano w %s ze średnią %sB/s"
 
-#: sabnzbd/nzbstuff.py:1069
+#: sabnzbd/nzbstuff.py:1064
 msgid "%s articles were malformed"
 msgstr "%s artykułów było uszkodzonych"
 
-#: sabnzbd/nzbstuff.py:1071
+#: sabnzbd/nzbstuff.py:1066
 msgid "%s articles were missing"
 msgstr "Brakowało %s artykułów"
 
-#: sabnzbd/nzbstuff.py:1073
+#: sabnzbd/nzbstuff.py:1068
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artykułów posiada niepasujące duplikaty"
 
-#: sabnzbd/nzbstuff.py:1105 [Error message]
+#: sabnzbd/nzbstuff.py:1100 [Error message]
 msgid "Error importing %s"
 msgstr "Błąd importu %s"
 
-#: sabnzbd/osxmenu.py:126 # sabnzbd/osxmenu.py:426 # sabnzbd/osxmenu.py:434
+#: sabnzbd/osxmenu.py:127 # sabnzbd/osxmenu.py:428 # sabnzbd/osxmenu.py:436
 #: sabnzbd/skintext.py:258 [Footer: indicator of warnings] # sabnzbd/skintext.py:685 # sabnzbd/skintext.py:814
 msgid "Warnings"
 msgstr "Ostrzeżenia"
 
-#: sabnzbd/osxmenu.py:137 # sabnzbd/osxmenu.py:470 # sabnzbd/sabtray.py:87
+#: sabnzbd/osxmenu.py:138 # sabnzbd/osxmenu.py:472 # sabnzbd/sabtray.py:87
 #: sabnzbd/skintext.py:804
 msgid "Idle"
 msgstr "Bezczynny"
 
-#: sabnzbd/osxmenu.py:144 # sabnzbd/skintext.py:262
+#: sabnzbd/osxmenu.py:145 # sabnzbd/skintext.py:262
 msgid "Configuration"
 msgstr "Konfiguracja"
 
-#: sabnzbd/osxmenu.py:153 # sabnzbd/skintext.py:116 [Main menu item] # sabnzbd/skintext.py:443
+#: sabnzbd/osxmenu.py:154 # sabnzbd/skintext.py:116 [Main menu item] # sabnzbd/skintext.py:443
 msgid "Queue"
 msgstr "Kolejka"
 
-#: sabnzbd/osxmenu.py:160 # sabnzbd/skintext.py:205 [Queue page button] # sabnzbd/skintext.py:696
+#: sabnzbd/osxmenu.py:161 # sabnzbd/skintext.py:205 [Queue page button] # sabnzbd/skintext.py:696
 msgid "Purge Queue"
 msgstr "Czyszczenie kolejki"
 
-#: sabnzbd/osxmenu.py:169 # sabnzbd/skintext.py:117 [Main menu item]
+#: sabnzbd/osxmenu.py:170 # sabnzbd/skintext.py:117 [Main menu item]
 msgid "History"
 msgstr "Historia"
 
-#: sabnzbd/osxmenu.py:176 # sabnzbd/skintext.py:218 [History page button] # sabnzbd/skintext.py:715
+#: sabnzbd/osxmenu.py:177 # sabnzbd/skintext.py:218 [History page button] # sabnzbd/skintext.py:715
 msgid "Purge History"
 msgstr "usunięcie historii"
 
-#: sabnzbd/osxmenu.py:188
+#: sabnzbd/osxmenu.py:189
 msgid "Limit Speed"
 msgstr "Ograniczenie prędkości"
 
-#: sabnzbd/osxmenu.py:208 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:209 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:152 # sabnzbd/skintext.py:201 [Queue page button] # sabnzbd/skintext.py:389 [Three way switch for duplicates]
 #: sabnzbd/skintext.py:496
 msgid "Pause"
 msgstr "Pauza"
 
-#: sabnzbd/osxmenu.py:214
+#: sabnzbd/osxmenu.py:215
 msgid "min."
 msgstr "min."
 
-#: sabnzbd/osxmenu.py:224 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:225 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:153 # sabnzbd/skintext.py:200 [Queue page button] # sabnzbd/skintext.py:495
 msgid "Resume"
 msgstr "Wznów"
 
-#: sabnzbd/osxmenu.py:234
+#: sabnzbd/osxmenu.py:235
 msgid "Get Newzbin Bookmarks"
 msgstr "Pobierz zakładki z Newzbin"
 
-#: sabnzbd/osxmenu.py:244 # sabnzbd/skintext.py:63 [#: Config->Scheduler]
+#: sabnzbd/osxmenu.py:245 # sabnzbd/skintext.py:63 [#: Config->Scheduler]
 msgid "Scan watched folder"
 msgstr "Przeszukaj obserwowany katalog"
 
-#: sabnzbd/osxmenu.py:257 # sabnzbd/osxmenu.py:618
+#: sabnzbd/osxmenu.py:258 # sabnzbd/osxmenu.py:620
 msgid "Complete Folder"
 msgstr "Folder zakończonych"
 
-#: sabnzbd/osxmenu.py:262 # sabnzbd/osxmenu.py:619
+#: sabnzbd/osxmenu.py:263 # sabnzbd/osxmenu.py:621
 msgid "Incomplete Folder"
 msgstr "Folder niezakończonych"
 
-#: sabnzbd/osxmenu.py:275 # sabnzbd/sabtray.py:61
+#: sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:61
 msgid "Troubleshoot"
 msgstr "Rozwiąż problem"
 
-#: sabnzbd/osxmenu.py:277 # sabnzbd/osxmenu.py:278 # sabnzbd/sabtray.py:61
+#: sabnzbd/osxmenu.py:278 # sabnzbd/osxmenu.py:279 # sabnzbd/sabtray.py:61
 #: sabnzbd/sabtray.py:63 # sabnzbd/sabtray.py:112 # sabnzbd/sabtray.py:121
 #: sabnzbd/sabtray.py:130 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:266
 #: sabnzbd/skintext.py:498
 msgid "Restart"
 msgstr "Uruchom ponownie"
 
-#: sabnzbd/osxmenu.py:279 # sabnzbd/sabtray.py:62
+#: sabnzbd/osxmenu.py:280 # sabnzbd/sabtray.py:62
 msgid "Restart without login"
 msgstr "Restart bez logowania"
 
-#: sabnzbd/osxmenu.py:292
+#: sabnzbd/osxmenu.py:293
 msgid "Quit"
 msgstr "Zakończ"
 
-#: sabnzbd/osxmenu.py:345
+#: sabnzbd/osxmenu.py:346
 msgid "Queue First 10 Items"
 msgstr "Zakolejkuj 10 pierwszych"
 
-#: sabnzbd/osxmenu.py:369 # sabnzbd/osxmenu.py:410
+#: sabnzbd/osxmenu.py:370 # sabnzbd/osxmenu.py:412
 msgid "Empty"
 msgstr "Brak"
 
-#: sabnzbd/osxmenu.py:386
+#: sabnzbd/osxmenu.py:388
 msgid "History Last 10 Items"
 msgstr "Historia ostatnich 10"
 
-#: sabnzbd/osxmenu.py:531
+#: sabnzbd/osxmenu.py:533
 msgid "New release available"
 msgstr "Dostępne jest nowe wydanie"
 
-#: sabnzbd/osxmenu.py:570
+#: sabnzbd/osxmenu.py:572
 msgid "Go to wizard"
 msgstr "Uruchom kreatora"
 
-#: sabnzbd/osxmenu.py:720 # sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:731
-#: sabnzbd/osxmenu.py:734 # sabnzbd/osxmenu.py:740 # sabnzbd/osxmenu.py:743
-#: sabnzbd/osxmenu.py:764
+#: sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:726 # sabnzbd/osxmenu.py:734
+#: sabnzbd/osxmenu.py:737 # sabnzbd/osxmenu.py:743 # sabnzbd/osxmenu.py:746
+#: sabnzbd/osxmenu.py:767
 msgid "Stopping..."
 msgstr "Zatrzymywanie..."
 
@@ -1213,108 +1217,108 @@ msgstr ""
 msgid "Failed to remove nzo from postproc queue (id)"
 msgstr "Nie udało sie usunąć nzo z kolejki przetwarzania (id)"
 
-#: sabnzbd/postproc.py:264
+#: sabnzbd/postproc.py:252
 msgid "Download might fail, only %s of required %s available"
 msgstr "Pobieranie może się nie udać, dostępne %s z wymaganych %s"
 
-#: sabnzbd/postproc.py:266
+#: sabnzbd/postproc.py:254
 msgid "Download failed - Out of your server's retention?"
 msgstr ""
 "Pobieranie nie powiodło się - Poza okresem przechowywania twojego serwera?"
 
-#: sabnzbd/postproc.py:324
+#: sabnzbd/postproc.py:312
 msgid "Cannot create final folder %s"
 msgstr "Nie można utworzyć końcowego katalogu %s"
 
-#: sabnzbd/postproc.py:346
+#: sabnzbd/postproc.py:334
 msgid "No post-processing because of failed verification"
 msgstr "Brak przetwarzania końcowego z powodu nieudanej weryfikacji"
 
-#: sabnzbd/postproc.py:354
+#: sabnzbd/postproc.py:342
 msgid "Moving"
 msgstr "Przenoszenie"
 
-#: sabnzbd/postproc.py:385
+#: sabnzbd/postproc.py:373
 msgid "Sent %s to queue"
 msgstr "Wysłano %s do kolejki"
 
-#: sabnzbd/postproc.py:404 [Error message]
+#: sabnzbd/postproc.py:392 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Błąd zmiany nazwy \"%s\" na \"%s\""
 
-#: sabnzbd/postproc.py:420
+#: sabnzbd/postproc.py:408
 msgid "Failed to move files"
 msgstr "Nie udało się przenieść plików"
 
-#: sabnzbd/postproc.py:428
+#: sabnzbd/postproc.py:416
 msgid "Running script"
 msgstr "Uruchamianie skryptu"
 
-#: sabnzbd/postproc.py:429
+#: sabnzbd/postproc.py:417
 msgid "Running user script %s"
 msgstr "Uruchamianie skryptu użytkownika %s"
 
-#: sabnzbd/postproc.py:438
+#: sabnzbd/postproc.py:426
 msgid "Ran %s"
 msgstr "Uruchomiono %s"
 
-#: sabnzbd/postproc.py:459
+#: sabnzbd/postproc.py:447
 msgid "More"
 msgstr "Więcej"
 
-#: sabnzbd/postproc.py:463
+#: sabnzbd/postproc.py:451
 msgid "View script output"
 msgstr "Zobacz komunikaty wyjścia skryptu"
 
-#: sabnzbd/postproc.py:477
+#: sabnzbd/postproc.py:465
 msgid "Download Completed"
 msgstr "Zakończono pobieranie"
 
-#: sabnzbd/postproc.py:480 # sabnzbd/postproc.py:489
+#: sabnzbd/postproc.py:468 # sabnzbd/postproc.py:477
 msgid "Download Failed"
 msgstr "Pobieranie nie powiodło się"
 
-#: sabnzbd/postproc.py:484 [Error message]
+#: sabnzbd/postproc.py:472 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Przetwarzanie końcowe nie powiodło się dla %s (%s)"
 
-#: sabnzbd/postproc.py:487
+#: sabnzbd/postproc.py:475
 msgid "see logfile"
 msgstr "sprawdź plik dziennika"
 
-#: sabnzbd/postproc.py:488
+#: sabnzbd/postproc.py:476
 msgid "PostProcessing was aborted (%s)"
 msgstr "Przetwarzanie zostało przerwane (%s)"
 
-#: sabnzbd/postproc.py:522 [Error message]
+#: sabnzbd/postproc.py:510 [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Czyszczenie %s nie powiodło się"
 
-#: sabnzbd/postproc.py:532 [Error message]
+#: sabnzbd/postproc.py:520 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Błąd usuwania katalogu roboczego (%s)"
 
-#: sabnzbd/postproc.py:545
+#: sabnzbd/postproc.py:533
 msgid "Post-processing"
 msgstr "Przetwarzanie końcowe"
 
-#: sabnzbd/postproc.py:584
+#: sabnzbd/postproc.py:573
 msgid "Trying SFV verification"
 msgstr "Próba weryfikacji SFV"
 
-#: sabnzbd/postproc.py:588
+#: sabnzbd/postproc.py:577
 msgid "Some files failed to verify against \"%s\""
 msgstr "Weryfikacja niektórych plików względem \"%s\" nie powiodła się"
 
-#: sabnzbd/postproc.py:594
+#: sabnzbd/postproc.py:583
 msgid "Verified successfully using SFV files"
 msgstr "Poprawnie zweryfikowano z użyciem plików SFV"
 
-#: sabnzbd/postproc.py:597
+#: sabnzbd/postproc.py:586
 msgid "[%s] No par2 sets"
 msgstr "[%s} Brak zestawów par2"
 
-#: sabnzbd/postproc.py:654 [Error message] # sabnzbd/postproc.py:729 [Error message]
+#: sabnzbd/postproc.py:643 [Error message] # sabnzbd/postproc.py:718 [Error message]
 msgid "Removing %s failed"
 msgstr "Usuwanie %s nie powiodło się"
 
