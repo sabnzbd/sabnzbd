@@ -94,3 +94,6 @@ os.system("rm %s>/dev/null" % fileImg)
 
 print 'Make image internet-enabled'
 os.system("hdiutil internet-enable %s" % fileDmg)
+
+print 'Copy GZ file'
+os.system('cp ~/project/osx/%s .' % fileOSr)

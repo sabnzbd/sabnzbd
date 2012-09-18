@@ -37,11 +37,10 @@ try:
     OSX_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8, 0]
     OSX_LION = not OSX_ML and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
     OSX_SL = not OSX_LION and not OSX_ML
+    class WindowsError (): pass
 except ImportError:
     py2app = None
-    setup = None
-    class WindowsError (): pass
-
+    OSX_ML = OSX_LION = OSX_SL = False
 
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
