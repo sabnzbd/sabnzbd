@@ -32,7 +32,11 @@ fileDmg = prod + '-osx.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
 builds = ('sl', 'lion', 'ml')
-build_folders = ('(snow)Leopard', 'Lion', 'MountainLion')
+build_folders = (
+        'OS X 10.5 and 10.6 (Leopards)',
+        'OS X 10.7 (Lion)',
+        'OS X 10.8 (Mountain Lion)'
+        )
 
 # Check presense of all builds
 build_paths = []
