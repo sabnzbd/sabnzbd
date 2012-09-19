@@ -308,10 +308,11 @@ def hostname(host=True):
     """ Return host's pretty name """
     if sabnzbd.WIN32:
         sys_name = os.environ.get('computername', 'unknown')
-    try:
-        sys_name = os.uname()[1]
-    except:
-        sys_name = 'unknown'
+    else:
+        try:
+            sys_name = os.uname()[1]
+        except:
+            sys_name = 'unknown'
     if host:
         return '@%s' % sys_name.lower()
     else:
