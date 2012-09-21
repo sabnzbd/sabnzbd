@@ -904,7 +904,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     logging.debug('Par2-classic = %s', classic)
 
     import sabnzbd.assembler
-    if (sabnzbd.assembler.GetMD5Hashes(parfile)[1] and not classic) or not PAR2C_COMMAND:
+    if (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
             command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
         else:

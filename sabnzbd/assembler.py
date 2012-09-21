@@ -205,18 +205,19 @@ def file_has_articles(nzf):
 # For a full description of the par2 specification, visit:
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
-def GetMD5Hashes(fname):
+def GetMD5Hashes(fname, force=False):
     """ Get the hash table from a PAR2 file
         Return as dictionary, indexed on names and True for utf8-encoded names
     """
-    new_encoding = False
+    new_encoding = True
     table = {}
-    if not flag_file(os.path.split(fname)[0], QCHECK_FILE):
+    if force or not flag_file(os.path.split(fname)[0], QCHECK_FILE):
         try:
             f = open(fname, 'rb')
         except:
             return table, new_encoding
 
+        new_encoding = False
         try:
             header = f.read(8)
             while header:
