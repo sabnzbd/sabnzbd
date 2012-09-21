@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
  0.7.4RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
+- Remove potential queue stalling when downloading extra par2 files
+- Make Windows version less eager to use par2-classic
 - Fixed DMG images
 - Add missing encoding directive to Plush and Classic skins
 -------------------------------------------------------------------------------

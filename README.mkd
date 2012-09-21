@@ -9,6 +9,7 @@ Release Notes  -  SABnzbd 0.7.4RC1
 - Scheduler: action can now run on multiple weekdays
 - Scheduler: add "remove failed jobs" action
 - After successful pre-check, preserve a job's position in the queue
+- Make Windows version less eager to use par2-classic
 - Support for HTTPS chain files (needed when you buy your own certificate)
 - Prevent jobs from showing up in queue and history simultaneously
 - Fix failure to fetch more par2-files for posts with badly formatted subject lines
