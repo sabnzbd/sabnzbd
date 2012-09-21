@@ -114,6 +114,7 @@ class Assembler(Thread):
                     if check_encrypted_rar(nzo, filepath):
                         logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
                         nzo.pause()
+                    nzf.completed = True
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
