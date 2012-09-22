@@ -422,6 +422,8 @@ def _api_history(name, output, kwargs):
     limit = kwargs.get('limit')
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
+    if not limit:
+        limit = cfg.history_limit()
 
     if name == 'delete':
         special = value.lower()
