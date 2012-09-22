@@ -74,9 +74,13 @@ def get_icon():
     if not os.path.isfile(icon):
         icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
     if os.path.isfile(icon):
-        fp = open(icon, 'rb')
-        icon = fp.read()
-        fp.close
+        if sabnzbd.WIN32 or sabnzbd.DARWIN:
+            fp = open(icon, 'rb')
+            icon = fp.read()
+            fp.close
+        else:
+            # Due to a bug in GNTP, need this work-around for Linux/Unix
+            icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
     else:
         icon = None
     return icon
