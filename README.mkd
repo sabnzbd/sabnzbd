@@ -16,7 +16,7 @@ Release Notes  -  SABnzbd 0.7.4RC1
 - Special option: rss_odd_titles (see Wiki)
 - Special option: 'overwrite_files' (See Wiki)
 - A number of small issues (see changelog)
-
+- Fix for third-party tools requesting too much history
 
 ## What's new in 0.7.0
 
