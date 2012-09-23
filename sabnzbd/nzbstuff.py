@@ -831,7 +831,8 @@ class NzbObject(TryList):
                 if head and lparset in head.lower():
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
-                    self.files.remove(xnzf)
+                    if not self.precheck:
+                        self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):
         """ Check if file is a par2 and build up par2 collection
