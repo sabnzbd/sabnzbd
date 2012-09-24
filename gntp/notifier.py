@@ -234,7 +234,7 @@ class GrowlNotifier(object):
 
 		if type(response) == gntp.GNTPOK:
 			return True
-		if response.error()[0] == '404' and 'has disabled' in response.error()[1]:
+		if response.error()[0] == '404' and 'disabled' in response.error()[1]:
 			# Ignore message saying that user has disabled this class
 			return True
 		logger.error('Invalid response: %s', response.error())
