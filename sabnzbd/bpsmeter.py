@@ -63,12 +63,12 @@ def this_month(t):
 
 
 _DAYS = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-def last_month_day(t=None):
+def last_month_day(tm):
     """ Return last day of this month """
-    t = t or time.localtime(t)
-    year, month = time.localtime(t)[:2]
+    year, month = tm[:2]
     day = _DAYS[month]
-    if day == 28 and (year % 4) == 0 and (year % 400) == 0:
+    # This simple formula for leap years is good enough
+    if day == 28 and (year % 4) == 0:
         day = 29
     return day
 
@@ -310,20 +310,21 @@ class BPSMeter(object):
         tm = time.localtime(t)
         if self.q_period == 'd':
             nx = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
-            if (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60):
+            if (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute):
                 # If today's moment has passed, it will happen tomorrow
                 t = time.mktime(nx) + 24 * 3600
                 tm = time.localtime(t)
         elif self.q_period == 'w':
-            if self.q_day < tm.tm_wday+1 or (self.q_day == tm.tm_wday+1 and (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60)):
+            if self.q_day < tm.tm_wday+1 or (self.q_day == tm.tm_wday+1 and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)):
                 tm = time.localtime(next_week(t))
             dif = abs(self.q_day - tm.tm_wday - 1)
             t = time.mktime(tm) + dif * 24 * 3600
             tm = time.localtime(t)
         elif self.q_period ==  'm':
-            if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour + tm.tm_min * 60) >= (self.q_hour + self.q_minute * 60)):
+            if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)):
                 tm = time.localtime(next_month(t))
-            tm = (tm[0], tm[1], self.q_day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
+            day = min(last_month_day(tm), self.q_day)
+            tm = (tm[0], tm[1], day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
         else:
             return
         tm = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
@@ -383,8 +384,14 @@ class BPSMeter(object):
             if m:
                 self.q_hour = int(m.group(1))
                 self.q_minute = int(m.group(2))
-            self.q_day = max(1, self.q_day)
-            self.q_day = min(7, self.q_day)
+            if self.q_period == 'w':
+                self.q_day = max(1, self.q_day)
+                self.q_day = min(7, self.q_day)
+            elif self.q_period == 'm':
+                self.q_day = max(1, self.q_day)
+                self.q_day = min(31, self.q_day)
+            else:
+                self.q_day = 1
             self.change_quota(allow_resume=False)
             return quota_handler, self.q_hour, self.q_minute
         else:
