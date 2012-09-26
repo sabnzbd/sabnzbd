@@ -249,6 +249,7 @@ allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
 wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 history_limit = OptionNumber('misc', 'history_limit', 50, 0)
+show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

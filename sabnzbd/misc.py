@@ -39,7 +39,7 @@ except:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE, Status
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -999,15 +999,37 @@ def get_filename(path):
     except:
         return ''
 
+
+def memory_usage():
+    try:
+        # Probably only works on Linux because it uses /proc/<pid>/statm
+        t = open('/proc/%d/statm' % os.getpid())
+        v = t.read().split()
+        t.close()
+        virt = int(_PAGE_SIZE * int(v[0]) / MEBI)
+        res = int(_PAGE_SIZE * int(v[1]) / MEBI)
+        return "V=%sM R=%sM" % (virt, res)
+    except:
+        return None
+
+try:
+    _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
+except:
+    _PAGE_SIZE = 0
+_HAVE_STATM = _PAGE_SIZE and memory_usage()
+
+
 def loadavg():
     """ Return 1, 5 and 15 minute load average of host or "" if not supported
     """
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        return ""
-    try:
-        return "%.2f | %.2f | %.2f" % os.getloadavg()
-    except:
-        return ""
+    p = ''
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        opt = cfg.show_sysload()
+        if opt:
+            p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            if opt > 1 and _HAVE_STATM:
+                p = '%s | %s' % (p, memory_usage())
+    return p
 
 
 def format_time_string(seconds, days=0):
