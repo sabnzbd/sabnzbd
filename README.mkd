@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.7.4RC1
+Release Notes  -  SABnzbd 0.7.4RC2
 ==================================
+
+## Fixes in 0.7.4RC2
+- Pre-check failed to consider extra par2 files
+- Fixed unjustified warning that can occur with OSX Growl 2.0
+- Show memory usage on Linux systems
+- Fix incorrect end-of-month quota reset
+- Fix UI refresh issue when using Safari on iOS6
 
 ## Fixes in 0.7.4RC1
 

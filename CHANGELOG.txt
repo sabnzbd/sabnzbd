@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.4RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Pre-check failed to consider extra par2 files
+- Fixed unjustified warning that can occur with OSX Growl 2.0
+- Show memory usage on Linux systems
+- Fix incorrect end-of-month quota reset
+- Fix UI refresh issue when using Safari on iOS6
+-------------------------------------------------------------------------------
  0.7.4RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Remove potential queue stalling when downloading extra par2 files
