@@ -779,18 +779,24 @@ class NzbQueue(TryList):
     def queue_info(self, for_cli=False, max_jobs=0):
         bytes_left = 0
         bytes = 0
+        q_size = 0
         pnfo_list = []
         n = 0
         for nzo in self.__nzo_list:
-            pnfo = nzo.gather_info(for_cli = for_cli)
-            if nzo.status != 'Paused':
-                bytes += pnfo[PNFO_BYTES_FIELD]
-                bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
-            pnfo_list.append(pnfo)
+            if not max_jobs or n < max_jobs:
+                pnfo = nzo.gather_info(for_cli = for_cli)
+                pnfo_list.append(pnfo)
+                if nzo.status != 'Paused':
+                    bytes += pnfo[PNFO_BYTES_FIELD]
+                    bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+                    q_size += 1
+            elif nzo.status != 'Paused':
+                b, b_left = nzo.total_and_remaining()
+                bytes += b
+                bytes_left += b_left
+                q_size += 1
             n += 1
-            if max_jobs and n >= max_jobs:
-                break
-        return (bytes, bytes_left, pnfo_list)
+        return (bytes, bytes_left, pnfo_list, q_size)
 
 
     @synchronized(NZBQUEUE_LOCK)

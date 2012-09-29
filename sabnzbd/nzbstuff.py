@@ -1241,6 +1241,15 @@ class NzbObject(TryList):
             bytes_left += nzf.bytes_left
         return bytes_left
 
+    def total_and_remaining(self):
+        """ Return total and remaining bytes """
+        bytes = 0
+        bytes_left = 0
+        for nzf in self.files:
+            bytes += nzf.bytes
+            bytes_left += nzf.bytes_left
+        return bytes, bytes_left
+
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
 

@@ -347,10 +347,7 @@ class SABnzbdDelegate(NSObject):
                 self.menu_queue.addItem_(menu_queue_item)
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
-                job_nb = 1
                 for pnfo in pnfo_list:
-                    if job_nb > 10:
-                        break
                     filename = unicoder(pnfo[PNFO_FILENAME_FIELD])
                     msgid = pnfo[PNFO_MSGID_FIELD]
                     bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
@@ -360,11 +357,10 @@ class SABnzbdDelegate(NSObject):
                     timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
 
                     job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
-                    job_nb += 1
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 
-                self.info = "%d nzb(s)\t( %d / %d MB )" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
+                self.info = "%d nzb(s)\t( %d / %d MB )" % (qnfo[QNFO_Q_SIZE_LIST_FIELD],(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
 
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Empty'), '', '')
