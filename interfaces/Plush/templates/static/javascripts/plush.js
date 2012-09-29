@@ -895,7 +895,7 @@ $("a","#multiops_inputs").click(function(e){
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
       url: "tapi",
-      data: {mode:'history', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+      data: {mode:'history', name:'delete', value:value, del_files:del_files, search: $('#historySearchBox').val(), apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
         $.plush.modalOpen=false;

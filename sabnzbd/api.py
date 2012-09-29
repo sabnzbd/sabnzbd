@@ -432,10 +432,10 @@ def _api_history(name, output, kwargs):
             history_db = cherrypy.thread_data.history_db
             if special in ('all', 'failed'):
                 if del_files:
-                    del_job_files(history_db.get_failed_paths())
-                history_db.remove_failed()
+                    del_job_files(history_db.get_failed_paths(search))
+                history_db.remove_failed(search)
             if special in ('all', 'completed'):
-                history_db.remove_completed()
+                history_db.remove_completed(search)
             return report(output)
         elif value:
             jobs = value.split(',')
