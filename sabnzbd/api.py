@@ -556,10 +556,13 @@ def _api_auth(name, output, kwargs):
     if not cfg.disable_key():
         auth = 'badkey'
         key = kwargs.get('key', '')
-        if key == cfg.nzb_key():
-            auth = 'nzbkey'
-        if key == cfg.api_key():
+        if not key:
             auth = 'apikey'
+        else:
+            if key == cfg.nzb_key():
+                auth = 'nzbkey'
+            if key == cfg.api_key():
+                auth = 'apikey'
     elif cfg.username() and cfg.password():
         auth = 'login'
     return report(output, keyword='auth', data=auth)
