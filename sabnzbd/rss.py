@@ -303,13 +303,7 @@ class RSSQueue(object):
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
-        if feed not in self.jobs:
-            self.jobs[feed] = {}
-        first = not bool(self.jobs[feed])
-
-        jobs = self.jobs[feed]
-
-        first = first and ignoreFirst
+        first = (feed not in self.jobs) and ignoreFirst
 
         # Add sabnzbd's custom User Agent
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
@@ -319,6 +313,8 @@ class RSSQueue(object):
             uri += '&dl=1'
 
         # Read the RSS feed
+        msg = None
+        entries = None
         if readout:
             uri = uri.replace(' ', '%20')
             logging.debug("Running feedparser on %s", uri)
@@ -343,6 +339,12 @@ class RSSQueue(object):
             if not entries:
                 msg = Ta('RSS Feed %s was empty') % uri
                 logging.info(msg)
+
+        if feed not in self.jobs:
+            self.jobs[feed] = {}
+        jobs = self.jobs[feed]
+        if readout:
+            if not entries:
                 return unicoder(msg)
         else:
             entries = jobs.keys()
