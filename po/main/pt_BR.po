@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-10 17:12+0000\n"
-"PO-Revision-Date: 2012-08-03 02:19+0000\n"
+"PO-Revision-Date: 2012-09-29 03:57+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-11 05:13+0000\n"
-"X-Generator: Launchpad (build 15924)\n"
+"X-Launchpad-Export-Date: 2012-09-30 05:05+0000\n"
+"X-Generator: Launchpad (build 16049)\n"
 
 #: SABnzbd.py:302 [Error message]
 msgid "Failed to start web-interface"
@@ -56,7 +56,7 @@ msgstr "HTTPS desabilitado pela falta de arquivos CERT e KEY"
 
 #: SABnzbd.py:1525
 msgid "SABnzbd %s started"
-msgstr ""
+msgstr "SABnzbd %s iniciado"
 
 #: SABnzbd.py:1667 # sabnzbd/osxmenu.py:775
 msgid "SABnzbd shutdown finished"
@@ -1518,7 +1518,7 @@ msgstr "Ler feeds RSS"
 
 #: sabnzbd/skintext.py:65 [Config->Scheduler]
 msgid "Remove failed jobs"
-msgstr ""
+msgstr "Remover tarefas com falha"
 
 #: sabnzbd/skintext.py:70 [Speed indicator kilobytes/sec]
 msgid "KB/s"
@@ -2254,11 +2254,11 @@ msgstr "Nome do arquivo ou caminho para a chave HTTPS."
 
 #: sabnzbd/skintext.py:302
 msgid "HTTPS Chain Certifcates"
-msgstr ""
+msgstr "Cadeia de Certificados HTTPS"
 
 #: sabnzbd/skintext.py:303
 msgid "File name or path to HTTPS Chain."
-msgstr ""
+msgstr "Nome de arquivo ou caminho da Cadeia HTTPS."
 
 #: sabnzbd/skintext.py:304
 msgid "Tuning"
@@ -2769,7 +2769,7 @@ msgstr "Checar semanalmente por nova versão do SABnzbd."
 
 #: sabnzbd/skintext.py:421 [Pick list for weekly test for new releases]
 msgid "Also test releases"
-msgstr ""
+msgstr "Também versões de testes"
 
 #: sabnzbd/skintext.py:422
 msgid "Replace Spaces in Foldername"
@@ -3208,19 +3208,20 @@ msgstr "Enviar as notificações a NotifyOSD."
 
 #: sabnzbd/skintext.py:557
 msgid "Notification Center"
-msgstr ""
+msgstr "Centro de Notificações"
 
 #: sabnzbd/skintext.py:558
 msgid "Send notifications to Notification Center"
-msgstr ""
+msgstr "Envia notificações para o Centro de Notificações"
 
 #: sabnzbd/skintext.py:559
 msgid "Notification classes"
-msgstr ""
+msgstr "Classes de notificação"
 
 #: sabnzbd/skintext.py:560
 msgid "Enable classes of messages to be reported (none, one or multiple)"
 msgstr ""
+"Habilita classes de mensagens a serem relatadas (nenhuma, uma, ou múltiplas)"
 
 #: sabnzbd/skintext.py:564
 msgid ""
