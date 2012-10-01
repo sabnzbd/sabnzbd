@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.7.4Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- New RSS feed should no longer be considered new after first, but empty readout.
+- Make "auth" call backward-compatible with 0.6.x releases.
+- Config->Notifications: email and growl server addresses should not be marked as "url" type.
+- OSX: fix top menu queue info so that it shows total queue size
+-------------------------------------------------------------------------------
  0.7.4RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Pre-check failed to consider extra par2 files
