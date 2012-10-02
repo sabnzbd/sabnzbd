@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
  0.7.4Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
+- Pre-queue script no longer got the show/season/episode information.
+- Prevent crash on startup when a fully downloaded job is still in download queue.
 - New RSS feed should no longer be considered new after first, but empty readout.
 - Make "auth" call backward-compatible with 0.6.x releases.
 - Config->Notifications: email and growl server addresses should not be marked as "url" type.
