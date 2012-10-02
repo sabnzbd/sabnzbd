@@ -1415,6 +1415,7 @@ def crc_check(path, target_crc):
 def analyse_show(name):
     """ Do a quick SeasonSort check and return basic facts """
     job = SeriesSorter(name, None, None)
+    job.match(force=True)
     if job.is_match():
         job.get_values()
     info = job.show_info
