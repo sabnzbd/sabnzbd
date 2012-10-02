@@ -741,7 +741,8 @@ class NzbQueue(TryList):
         """
         if self.actives(grabs=False) < 2 and cfg.autodisconnect():
             # This was the last job, close server connections
-            sabnzbd.downloader.Downloader.do.disconnect()
+            if sabnzbd.downloader.Downloader.do:
+                sabnzbd.downloader.Downloader.do.disconnect()
 
         # Notify assembler to call postprocessor
         if not nzo.deleted:
