@@ -64,6 +64,7 @@ class SABnzbdDelegate(NSObject):
     icons = {}
     status_bar = None
     osx_icon = True
+    history_db = None
 
     def awakeFromNib(self):
         #Status Bar iniatilize
@@ -345,10 +346,7 @@ class SABnzbdDelegate(NSObject):
                 self.menu_queue.addItem_(menu_queue_item)
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
-                job_nb = 1
                 for pnfo in pnfo_list:
-                    if job_nb > 10:
-                        break
                     filename = unicoder(pnfo[PNFO_FILENAME_FIELD])
                     msgid = pnfo[PNFO_MSGID_FIELD]
                     bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
@@ -358,11 +356,10 @@ class SABnzbdDelegate(NSObject):
                     timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
 
                     job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
-                    job_nb += 1
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 
-                self.info = "%d nzb(s)\t( %d / %d MB )" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
+                self.info = "%d nzb(s)\t( %d / %d MB )" % (qnfo[QNFO_Q_SIZE_LIST_FIELD],(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
 
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Empty'), '', '')
@@ -376,8 +373,9 @@ class SABnzbdDelegate(NSObject):
     def historyUpdate(self):
         try:
             # Fetch history items
-            history_db = sabnzbd.database.get_history_handle()
-            items, fetched_items, total_items = history_db.fetch_history(0,10,None)
+            if not self.history_db:
+                self.history_db = sabnzbd.database.get_history_handle()
+            items, fetched_items, total_items = self.history_db.fetch_history(0,10,None)
 
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = { NSForegroundColorAttributeName:NSColor.redColor(), NSFontAttributeName:NSFont.menuFontOfSize_(14.0) }
@@ -684,8 +682,9 @@ class SABnzbdDelegate(NSObject):
         if mode == "queue":
             NzbQueue.do.remove_all()
         elif mode == "history":
-            history_db = sabnzbd.database.get_history_handle()
-            history_db.remove_history()
+            if not self.history_db:
+                self.history_db = sabnzbd.database.get_history_handle()
+            self.history_db.remove_history()
 
     def pauseAction_(self, sender):
         minutes = int(sender.representedObject())
@@ -786,41 +785,3 @@ def notify(notificationName, message):
         nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
         nc.postNotificationName_object_(notificationName, message)
         del pool
-
-
-#------------------------------------------------------------------------------
-class OsxAwake(Thread):
-    """ Keep running 'caffeinate' as long as the 'stay_awake' flag is set
-    """
-    do = None
-    def __init__(self):
-        Thread.__init__(self)
-        self.stay_awake = False
-        self.__stop_now = False
-        self.__proc = None
-        logging.info('Starting caffeinate task')
-        OsxAwake.do = self
-
-    def run(self):
-        command = ['caffeinate', '-i', '-s', '-t300']
-        while not self.__stop_now:
-            if self.stay_awake:
-                self.stay_awake = False
-                logging.debug('Launching caffeinate')
-                self.__proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-                self.__proc.wait()
-                self.__proc = None
-            else:
-                time.sleep(30)
-
-    def stop(self):
-        logging.info('Stopping caffeinate task')
-        self.__stop_now = True
-        self.stay_awake = False
-        if self.__proc:
-            logging.debug('Stopping caffeinate')
-            try:
-                self.__proc.terminate()
-            except:
-                pass
-

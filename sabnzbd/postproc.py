@@ -35,7 +35,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
                          set_permissions
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import REPAIR_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
+from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
@@ -184,8 +184,8 @@ class PostProcessor(Thread):
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
 
             self.__busy = True
-            if process_job(nzo):
-                self.remove(nzo)
+            process_job(nzo)
+            self.remove(nzo)
             check_eoq = True
 
             ## Allow download to proceed
@@ -225,19 +225,6 @@ def process_job(nzo):
     filename = nzo.final_name
     msgid = nzo.msgid
 
-    if nzo.precheck:
-        # Check result
-        enough, ratio = nzo.check_quality()
-        if enough:
-            # Enough data present, do real download
-            workdir = nzo.downpath
-            sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=True)
-            sabnzbd.nzbqueue.NzbQueue.do.repair_job(workdir)
-            return True
-        else:
-            # Not enough data, flag as failed
-            nzo.save_attribs()
-
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
         nzo.set_pp(3)
@@ -254,6 +241,7 @@ def process_job(nzo):
         # if no files are present (except __admin__), fail the job
         if len(globber(workdir)) < 2:
             if nzo.precheck:
+                enough, ratio = nzo.check_quality()
                 req_ratio = float(cfg.req_completion_rate()) / 100.0
                 # Make sure that rounded ratio doesn't equal required ratio
                 # when it is actually below required
@@ -357,9 +345,9 @@ def process_job(nzo):
                         for file_ in files:
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
-                            new_path = get_unique_filename(new_path)
+                            ok, new_path = move_to_path(path, new_path)
                             newfiles.append(new_path)
-                            if not move_to_path(path, new_path, unique=False):
+                            if not ok:
                                 nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
                                 all_ok = False
                                 break
@@ -567,7 +555,8 @@ def parring(nzo, workdir):
 
         if re_add:
             logging.info('Readded %s to queue', filename)
-            nzo.priority = REPAIR_PRIORITY
+            if nzo.priority != TOP_PRIORITY:
+                nzo.priority = REPAIR_PRIORITY
             sabnzbd.nzbqueue.add_nzo(nzo)
             sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
@@ -575,7 +564,7 @@ def parring(nzo, workdir):
 
     if (par_error and not re_add) or not repair_sets:
         # See if alternative SFV check is possible
-        if cfg.sfv_check():
+        if cfg.sfv_check() and not (flag_file(workdir, VERIFIED_FILE) and not repair_sets):
             sfvs = globber(workdir, '*.sfv')
         else:
             sfvs = None

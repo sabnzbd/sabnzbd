@@ -12,8 +12,53 @@ using GNTP
 import gntp
 import socket
 import logging
+import platform
+
+__all__ = [
+	'mini',
+	'GrowlNotifier',
+]
 
 logger = logging.getLogger(__name__)
+
+
+def mini(description, applicationName='PythonMini', noteType="Message",
+			title="Mini Message", applicationIcon=None, hostname='localhost',
+			password=None, port=23053, sticky=False, priority=None,
+			callback=None, notificationIcon=None, identifier=None):
+	"""Single notification function
+
+	Simple notification function in one line. Has only one required parameter
+	and attempts to use reasonable defaults for everything else
+	:param string description: Notification message
+
+	.. warning::
+			For now, only URL callbacks are supported. In the future, the
+			callback argument will also support a function
+	"""
+	growl = GrowlNotifier(
+		applicationName=applicationName,
+		notifications=[noteType],
+		defaultNotifications=[noteType],
+		applicationIcon=applicationIcon,
+		hostname=hostname,
+		password=password,
+		port=port,
+	)
+	result = growl.register()
+	if result is not True:
+		return result
+
+	return growl.notify(
+		noteType=noteType,
+		title=title,
+		description=description,
+		icon=notificationIcon,
+		sticky=sticky,
+		priority=priority,
+		callback=callback,
+		identifier=identifier,
+	)
 
 
 class GrowlNotifier(object):
@@ -27,55 +72,35 @@ class GrowlNotifier(object):
 	:param string hostname: Remote host
 	:param integer port: Remote port
 	"""
-	applicationName = 'Python GNTP'
-	notifications = []
-	defaultNotifications = []
-	applicationIcon = None
+
 	passwordHash = 'MD5'
+	socketTimeout = 3
 
-	#GNTP Specific
-	password = None
-	hostname = 'localhost'
-	port = 23053
+	def __init__(self, applicationName='Python GNTP', notifications=[],
+			defaultNotifications=None, applicationIcon=None, hostname='localhost',
+			password=None, port=23053):
 
-	def __init__(self, applicationName=None, notifications=None, defaultNotifications=None, applicationIcon=None, hostname=None, password=None, port=None):
-		if applicationName:
-			self.applicationName = applicationName
-		assert self.applicationName, 'An application name is required.'
-
-		if notifications:
-			self.notifications = list(notifications)
-		assert self.notifications, 'A sequence of one or more notification names is required.'
-
-		if defaultNotifications is not None:
+		self.applicationName = applicationName
+		self.notifications = list(notifications)
+		if defaultNotifications:
 			self.defaultNotifications = list(defaultNotifications)
-		elif not self.defaultNotifications:
-			self.defaultNotifications = list(self.notifications)
+		else:
+			self.defaultNotifications = self.notifications
+		self.applicationIcon = applicationIcon
 
-		if applicationIcon is not None:
-			self.applicationIcon = self._checkIcon(applicationIcon)
-		elif self.applicationIcon is not None:
-			self.applicationIcon = self._checkIcon(self.applicationIcon)
-
-		#GNTP Specific
-		if password:
-			self.password = password
-
-		if hostname:
-			self.hostname = hostname
-		assert self.hostname, 'Requires valid hostname'
-
-		if port:
-			self.port = int(port)
-		assert isinstance(self.port, int), 'Requires valid port'
+		self.password = password
+		self.hostname = hostname
+		self.port = int(port)
 
 	def _checkIcon(self, data):
 		'''
 		Check the icon to see if it's valid
-		@param data:
-		@todo Consider checking for a valid URL
+
+		If it's a simple URL icon, then we return True. If it's a data icon
+		then we return False
 		'''
-		return data
+		logger.debug('Checking icon')
+		return data.startswith('http')
 
 	def register(self):
 		"""Send GNTP Registration
@@ -84,23 +109,26 @@ class GrowlNotifier(object):
 			Before sending notifications to Growl, you need to have
 			sent a registration message at least once
 		"""
-		logger.info('Sending registration to %s:%s', self.hostname, self.port)
+		logger.debug('Sending registration to %s:%s', self.hostname, self.port)
 		register = gntp.GNTPRegister()
 		register.add_header('Application-Name', self.applicationName)
 		for notification in self.notifications:
 			enabled = notification in self.defaultNotifications
 			register.add_notification(notification, enabled)
 		if self.applicationIcon:
-			register.add_header('Application-Icon', self.applicationIcon)
+			if self._checkIcon(self.applicationIcon):
+				register.add_header('Application-Icon', self.applicationIcon)
+			else:
+				id = register.add_resource(self.applicationIcon)
+				register.add_header('Application-Icon', id)
 		if self.password:
 			register.set_password(self.password, self.passwordHash)
-		response = self._send('register', register.encode())
-		if isinstance(response, gntp.GNTPOK):
-			return True
-		logger.error('Invalid response %s', response.error())
-		return response.error()
+		self.add_origin_info(register)
+		self.register_hook(register)
+		return self._send('register', register)
 
-	def notify(self, noteType, title, description, icon=None, sticky=False, priority=None):
+	def notify(self, noteType, title, description, icon=None, sticky=False,
+			priority=None, callback=None, identifier=None):
 		"""Send a GNTP notifications
 
 		.. warning::
@@ -112,8 +140,13 @@ class GrowlNotifier(object):
 		:param string icon: Icon URL path
 		:param boolean sticky: Sticky notification
 		:param integer priority: Message priority level from -2 to 2
+		:param string callback:  URL callback
+
+		.. warning::
+			For now, only URL callbacks are supported. In the future, the
+			callback argument will also support a function
 		"""
-		logger.info('Sending notification [%s] to %s:%s', noteType, self.hostname, self.port)
+		logger.debug('Sending notification [%s] to %s:%s', noteType, self.hostname, self.port)
 		assert noteType in self.notifications
 		notice = gntp.GNTPNotice()
 		notice.add_header('Application-Name', self.applicationName)
@@ -126,14 +159,23 @@ class GrowlNotifier(object):
 		if priority:
 			notice.add_header('Notification-Priority', priority)
 		if icon:
-			notice.add_header('Notification-Icon', self._checkIcon(icon))
+			if self._checkIcon(icon):
+				notice.add_header('Notification-Icon', icon)
+			else:
+				id = notice.add_resource(icon)
+				notice.add_header('Notification-Icon', id)
+
 		if description:
 			notice.add_header('Notification-Text', description)
-		response = self._send('notify', notice.encode())
-		if isinstance(response, gntp.GNTPOK):
-			return True
-		logger.error('Invalid response %s', response.error())
-		return response.error()
+		if callback:
+			notice.add_header('Notification-Callback-Target', callback)
+		if identifier:
+			notice.add_header('Notification-Coalescing-ID', identifier)
+
+		self.add_origin_info(notice)
+		self.notify_hook(notice)
+
+		return self._send('notify', notice)
 
 	def subscribe(self, id, name, port):
 		"""Send a Subscribe request to a remote machine"""
@@ -143,30 +185,63 @@ class GrowlNotifier(object):
 		sub.add_header('Subscriber-Port', port)
 		if self.password:
 			sub.set_password(self.password, self.passwordHash)
-		response = self._send('subscribe', sub.encode())
-		if isinstance(response, gntp.GNTPOK):
-			return True
-		logger.error('Invalid response %s', response.error())
-		return response.error()
 
-	def _send(self, type, data):
+		self.add_origin_info(sub)
+		self.subscribe_hook(sub)
+
+		return self._send('subscribe', sub)
+
+	def add_origin_info(self, packet):
+		"""Add optional Origin headers to message"""
+		packet.add_header('Origin-Machine-Name', platform.node())
+		packet.add_header('Origin-Software-Name', 'gntp.py')
+		packet.add_header('Origin-Software-Version', gntp.__version__)
+		packet.add_header('Origin-Platform-Name', platform.system())
+		packet.add_header('Origin-Platform-Version', platform.platform())
+
+	def register_hook(self, packet):
+		pass
+
+	def notify_hook(self, packet):
+		pass
+
+	def subscribe_hook(self, packet):
+		pass
+
+	def _send(self, messagetype, packet):
 		"""Send the GNTP Packet"""
-		#logger.debug('To : %s:%s <%s>\n%s', self.hostname, self.port, type, data)
-		#Less verbose please
-		logger.debug('To : %s:%s <%s>', self.hostname, self.port, type)
+
+		packet.validate()
+		data = packet.encode()
+
+		#logger.debug('To : %s:%s <%s>\n%s', self.hostname, self.port, packet.__class__, data)
+		#Less verbose
+		logger.debug('To : %s:%s <%s>', self.hostname, self.port, packet.__class__)
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.settimeout(self.socketTimeout)
 		s.connect((self.hostname, self.port))
-		s.send(data.encode('utf8', 'replace'))
-		try:
-			s.settimeout(10)
-		except:
-			pass
-		response = gntp.parse_gntp(s.recv(1024))
+		s.send(data)
+		recv_data = s.recv(1024)
+		while not recv_data.endswith("\r\n\r\n"):
+			recv_data += s.recv(1024)
+		response = gntp.parse_gntp(recv_data)
 		s.close()
 
 		#logger.debug('From : %s:%s <%s>\n%s', self.hostname, self.port, response.__class__, response)
-		#Less verbose please
+		#Less verbose
 		logger.debug('From : %s:%s <%s>', self.hostname, self.port, response.__class__)
 
-		return response
+		if type(response) == gntp.GNTPOK:
+			return True
+		if response.error()[0] == '404' and 'disabled' in response.error()[1]:
+			# Ignore message saying that user has disabled this class
+			return True
+		logger.error('Invalid response: %s', response.error())
+		return response.error()
+
+if __name__ == '__main__':
+	# If we're running this module directly we're likely running it as a test
+	# so extra debugging is useful
+	logging.basicConfig(level=logging.DEBUG)
+	mini('Testing mini notification')

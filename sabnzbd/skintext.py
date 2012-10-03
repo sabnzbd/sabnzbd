@@ -62,6 +62,7 @@ SKIN_TEXT = {
     'sch-resume_post'    : TT('Resume post-processing'), #:  #: Config->Scheduler
     'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
     'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
+    'sch-remove_failed'  : TT('Remove failed jobs'), #: Config->Scheduler
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
@@ -298,6 +299,8 @@ SKIN_TEXT = {
     'explain-https_cert' : TT('File name or path to HTTPS Certificate.'),
     'opt-https_key' : TT('HTTPS Key'),
     'explain-https_key' : TT('File name or path to HTTPS Key.'),
+    'opt-https_chain' : TT('HTTPS Chain Certifcates'),
+    'explain-https_chain' : TT('File name or path to HTTPS Chain.'),
     'tuning' : TT('Tuning'),
     'opt-refresh_rate' : TT('Queue auto refresh interval:'),
     'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),
@@ -555,6 +558,10 @@ SKIN_TEXT = {
     'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
     'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
+    'opt-ncenter_enable' : TT('Notification Center'),
+    'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
+    'opt-notify_classes' : TT('Notification classes'),
+    'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
 
 # Config->Newzbin

@@ -31,7 +31,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts
+from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, match_str
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder, xml_name
 
@@ -303,13 +303,7 @@ class RSSQueue(object):
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
-        if feed not in self.jobs:
-            self.jobs[feed] = {}
-        first = not bool(self.jobs[feed])
-
-        jobs = self.jobs[feed]
-
-        first = first and ignoreFirst
+        first = (feed not in self.jobs) and ignoreFirst
 
         # Add sabnzbd's custom User Agent
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
@@ -319,6 +313,8 @@ class RSSQueue(object):
             uri += '&dl=1'
 
         # Read the RSS feed
+        msg = None
+        entries = None
         if readout:
             uri = uri.replace(' ', '%20')
             logging.debug("Running feedparser on %s", uri)
@@ -343,6 +339,12 @@ class RSSQueue(object):
             if not entries:
                 msg = Ta('RSS Feed %s was empty') % uri
                 logging.info(msg)
+
+        if feed not in self.jobs:
+            self.jobs[feed] = {}
+        jobs = self.jobs[feed]
+        if readout:
+            if not entries:
                 return unicoder(msg)
         else:
             entries = jobs.keys()
@@ -656,12 +658,12 @@ def _get_link(uri, entry):
 def special_rss_site(url):
     """ Return True if url describes an RSS site with odd titles
     """
-    return cfg.rss_filenames() or 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url
+    return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
 _ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
 def encl_sites(url, link):
-    """ Return True if url or link match sites that use enclosures
+    """ Return True if url or link matches sites that use enclosures
     """
     for site in _ENCL_SITES:
         if site in url or (link and site in link):

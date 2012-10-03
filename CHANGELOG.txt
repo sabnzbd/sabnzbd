@@ -1,4 +1,63 @@
 -------------------------------------------------------------------------------
+ 0.7.4Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Pre-queue script no longer got the show/season/episode information.
+- Prevent crash on startup when a fully downloaded job is still in download queue.
+- New RSS feed should no longer be considered new after first, but empty readout.
+- Make "auth" call backward-compatible with 0.6.x releases.
+- Config->Notifications: email and growl server addresses should not be marked as "url" type.
+- OSX: fix top menu queue info so that it shows total queue size
+-------------------------------------------------------------------------------
+ 0.7.4RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Pre-check failed to consider extra par2 files
+- Fixed unjustified warning that can occur with OSX Growl 2.0
+- Show memory usage on Linux systems
+- Fix incorrect end-of-month quota reset
+- Fix UI refresh issue when using Safari on iOS6
+-------------------------------------------------------------------------------
+ 0.7.4RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Remove potential queue stalling when downloading extra par2 files
+- Make Windows version less eager to use par2-classic
+- Fixed DMG images
+- Add missing encoding directive to Plush and Classic skins
+- Prevent oversized data in API-call "history"
+-------------------------------------------------------------------------------
+ 0.7.4Beta3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- All three OSX build in one DMG again
+- Minor bugfixes
+-------------------------------------------------------------------------------
+ 0.7.4Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix failure to fetch more par2-files for posts with badly formatted subject lines
+- After successful pre-check, preserve a job's position in the queue
+- Restore SABnzbd icon for Growl
+- Fix "check new releases" option in Config skin
+- Separate DMG files for OSX Leopard/SL, Lion and MLion
+-------------------------------------------------------------------------------
+ 0.7.4Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- OSX Mountain Lion Notification Center support
+- OSX Mountain Lion improved "keep awake" support
+- OSX: separate builds: one for Mountain Lion and one for all others
+- OSX removed 64bit code
+- Scheduler: action can now run on multiple weekdays
+- Scheduler: add "remove failed jobs" action
+- Special option: rss_odd_titles (see Wiki)
+- Support for HTTPS chain files (needed when you buy your own certificate)
+- Prevent jobs from showing up in queue and history simultaneously
+- Add parameter 'pp_active' to history elements in qstatus API call
+- Fix some minor par2 handling bugs
+- Prevent potential crash when an actively downloading job is deleted from the queue
+- Special option: 'overwrite_files' (See Wiki)
+- Don't try an SFV check when a retried job was already successfully verified by par2
+- Enable compression of API call results
+- Log failed attempts to log in to the Web UI
+- A job with "forced" priority should keep that when fetching more par2 files
+- Updated translations
+-------------------------------------------------------------------------------
  0.7.3Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Rename Special "random_server_ip" to "randomize_server_ip" so that we

@@ -1,3 +1,4 @@
+import logging
 import cherrypy
 from cherrypy.lib import httpauth
 
@@ -9,10 +10,10 @@ def check_auth(users, encrypt=None, realm=None):
         ah = httpauth.parseAuthorization(cherrypy.request.headers['authorization'])
         if ah is None:
             raise cherrypy.HTTPError(400, 'Bad Request')
-        
+
         if not encrypt:
             encrypt = httpauth.DIGEST_AUTH_ENCODERS[httpauth.MD5]
-        
+
         if callable(users):
             try:
                 # backward compatibility
@@ -20,7 +21,7 @@ def check_auth(users, encrypt=None, realm=None):
 
                 if not isinstance(users, dict):
                     raise ValueError, "Authentication users must be a dictionary"
-                
+
                 # fetch the user password
                 password = users.get(ah["username"], None)
             except TypeError:
@@ -29,23 +30,26 @@ def check_auth(users, encrypt=None, realm=None):
         else:
             if not isinstance(users, dict):
                 raise ValueError, "Authentication users must be a dictionary"
-            
+
             # fetch the user password
             password = users.get(ah["username"], None)
-        
+
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
         if httpauth.checkResponse(ah, password, method=cherrypy.request.method,
                                   encrypt=encrypt, realm=realm):
             cherrypy.request.login = ah["username"]
             return True
-    
+
+        if ah.get('username') or ah.get('password'):
+            logging.info('Attempt to login with wrong credentials from %s',
+                         cherrypy.request.headers['Remote-Addr'])
         cherrypy.request.login = False
     return False
 
 def basic_auth(realm, users, encrypt=None):
     """If auth fails, raise 401 with a basic authentication header.
-    
+
     realm: a string containing the authentication realm.
     users: a dict of the form: {username: password} or a callable returning a dict.
     encrypt: callable used to encrypt the password returned from the user-agent.
@@ -53,23 +57,23 @@ def basic_auth(realm, users, encrypt=None):
     """
     if check_auth(users, encrypt):
         return
-    
+
     # inform the user-agent this path is protected
     cherrypy.response.headers['www-authenticate'] = httpauth.basicAuth(realm)
-    
-    raise cherrypy.HTTPError(401, "You are not authorized to access that resource") 
+
+    raise cherrypy.HTTPError(401, "You are not authorized to access that resource")
 
 def digest_auth(realm, users):
     """If auth fails, raise 401 with a digest authentication header.
-    
+
     realm: a string containing the authentication realm.
     users: a dict of the form: {username: password} or a callable returning a dict.
     """
     if check_auth(users, realm=realm):
         return
-    
+
     # inform the user-agent this path is protected
     cherrypy.response.headers['www-authenticate'] = httpauth.digestAuth(realm)
-    
-    raise cherrypy.HTTPError(401, "You are not authorized to access that resource") 
- 
+
+    raise cherrypy.HTTPError(401, "You are not authorized to access that resource")
+

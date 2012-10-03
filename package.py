@@ -34,12 +34,13 @@ except ImportError:
 try:
     import py2app
     from setuptools import setup
-    OSX_LION = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
-    OSX_SL = not OSX_LION and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 6, 0]
-    OSX_LEOPARD = not (OSX_LION or OSX_SL)
+    OSX_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8, 0]
+    OSX_LION = not OSX_ML and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
+    OSX_SL = not OSX_LION and not OSX_ML
+    class WindowsError (): pass
 except ImportError:
     py2app = None
-
+    OSX_ML = OSX_LION = OSX_SL = False
 
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
@@ -47,8 +48,8 @@ VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 my_version = 'unknown'
 my_baseline = 'unknown'
 
-def DeleteFiles(name):
-    ''' Delete one file or set of files from wild-card spec '''
+def delete_files(name):
+    """ Delete one file or set of files from wild-card spec """
     for f in glob.glob(name):
         try:
             if os.path.exists(f):
@@ -151,8 +152,7 @@ def PairList(src):
                         lst.append((path, flist))
         else:
             path, name = os.path.split(item)
-            items = []
-            items.append(name)
+            items = [name]
             lst.append((path, items))
     return lst
 
@@ -230,9 +230,9 @@ def Unix2Dos(name):
 
 
 def rename_file(folder, old, new):
+    oldpath = "%s/%s" % (folder, old)
+    newpath = "%s/%s" % (folder, new)
     try:
-        oldpath = "%s/%s" % (folder, old)
-        newpath = "%s/%s" % (folder, new)
         if os.path.exists(newpath):
             os.remove(newpath)
         os.rename(oldpath, newpath)
@@ -259,7 +259,7 @@ if os.name == 'nt':
         os.system('%s >%s' % (NSIS, log))
         if 'Unicode' not in open(log).read():
             msg = ''
-        DeleteFiles(log)
+        delete_files(log)
     if msg:
         print msg
         exit(1)
@@ -298,11 +298,14 @@ Win32TempName    = 'SABnzbd-windows.exe'
 fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
 fileSrc = prod + '-src.tar.gz'
-fileDmg = prod + '-osx.dmg'
-fileDmgLp = prod + '-osx-leopard.dmg'
+fileDmg_ml = prod + '-osx-mountainlion.dmg'
+fileDmg_lion = prod + '-osx-lion.dmg'
+fileDmg_sl = prod + '-osx-snowleopard.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
-
+if OSX_SL:   postfix = 'sl'
+if OSX_LION: postfix = 'lion'
+if OSX_ML:   postfix = 'ml'
 
 PatchVersion(release)
 
@@ -365,30 +368,10 @@ if target == 'app':
     # Check which Python flavour
     apple_py = 'ActiveState' not in sys.copyright
 
-    if OSX_LION:
-        # Check if Leopard build is present
-        leopard_build = '/project/leopard/%s' % str(my_version)
-        if not os.path.isdir(leopard_build):
-            print 'Leopard build not found at %s' % leopard_build
-            exit(1)
-
-        # Create sparseimage from template
-        os.system("unzip -o osx/image/template.sparseimage.zip")
-        os.rename('template.sparseimage', fileImg)
-
-        # mount sparseimage and modify volume label
-        os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
-
-        # Rename the volume
-        fp = open('mount.log', 'r')
-        data = fp.read()
-        fp.close()
-        os.remove('mount.log')
-        m = re.search(r'/dev/(\w+)\s+', data)
-        volume = 'SABnzbd-' + str(my_version)
-        os.system('disktool -n %s %s' % (m.group(1), volume))
-
     options['description'] = 'SABnzbd ' + str(my_version)
+
+    # Remove previous build result
+    os.system('rm -rf dist/ build/')
 
     # Create MO files
     os.system('python ./tools/make_mo.py')
@@ -429,18 +412,25 @@ if target == 'app':
         setup_requires=['py2app'],
     )
 
-    # copy unrar, 7zip & par2 binary to avoid striping
+    # Remove 64bit code
+    if not OSX_SL:
+        os.system("mv dist/SABnzbd.app dist/SABnzbd.app.temp")
+        os.system("ditto --arch i386 --arch ppc dist/SABnzbd.app.temp dist/SABnzbd.app/")
+        os.system("rm -rf dist/SABnzbd.app.temp")
+    
+    # copy unrar, 7zip & par2 binary
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
-    if OSX_LION:
-        os.system("cp -pR osx/unrar/unrar dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
-    else:
+    if OSX_SL:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
+        os.system("cp -pR osx/7zip/7za-leopard dist/SABnzbd.app/Contents/Resources/osx/7zip/7za >/dev/null")
+    else:
+        os.system("cp -pR osx/unrar/unrar dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
+        os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
-    os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
@@ -449,51 +439,38 @@ if target == 'app':
     py_ver = '%s.%s' % (sys.version_info[0], sys.version_info[1])
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/Cheetah -name '*.py' | xargs rm" % py_ver)
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/xml -name '*.py' | xargs rm" % py_ver)
-    os.remove('dist/SABnzbd.app/Contents/Resources/site.py')
+    os.system('rm dist/SABnzbd.app/Contents/Resources/site.py')
+    
+    # Add the SabNotifier app
+    if OSX_ML and os.path.exists('/project/sabnotifier/SABnzbd.app'):
+        os.system("cp -pR /project/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
+
+    # Add License files
+    os.mkdir("dist/SABnzbd.app/Contents/Resources/licenses/")
+    os.system("cp -p licenses/*.txt dist/SABnzbd.app/Contents/Resources/licenses/")
+    os.system("cp -p *.txt dist/SABnzbd.app/Contents/Resources/licenses/")
+
     os.system("sleep 5")
 
-    if OSX_LION:
-        # Sign the App if possible
-        authority = os.environ.get('SIGNING_AUTH')
-        if authority:
-            os.system('codesign -f -i "%s-lion" -s "%s" dist/SABnzbd.app' % (volume, authority))
-            os.system('codesign -f -i "%s-leopard" -s "%s" %s/dist/SABnzbd.app' % (volume, authority, leopard_build))
+    # Archive result to share
+    dest_path = '/Volumes/VMware Shared Folders/osx'
+    if not os.path.exists(dest_path):
+        dest_path = '$HOME/project/osx'
+    cpio_path = os.path.join(dest_path, prod) + '-' + postfix + '.cpio'
+    print 'Create CPIO file %s' % cpio_path
+    delete_files(cpio_path)
+    os.system('ditto -c -z dist/ "%s"' % cpio_path)
 
-        # copy app to mounted sparseimage
-        os.system('cp -r dist/SABnzbd.app "/Volumes/%s/OS X 10.6 and Above/" >/dev/null' % volume)
-
-        # Copy the Leopard build
-        os.system('cp -r %s/dist/SABnzbd.app "/Volumes/%s/OS X 10.5 and Below/" >/dev/null' % (leopard_build, volume))
-
+    if OSX_ML:
         print 'Create src %s' % fileOSr
+        delete_files(fileOSr)
         os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
                   '--exclude "*.sparseimage*" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
-                  './ >/dev/null' % (fileOSr) )
-
-        # Generate README.rtf
-        os.system("cp dist/SABnzbd.app/Contents/Resources/Credits.rtf /Volumes/%s/README.rtf" % volume)
-
-        #Unmount sparseimage
-        os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
-
-        os.system("sleep 5")
-        # Convert sparseimage to read only compressed dmg
-        if os.path.exists(fileDmg):
-            os.remove(fileDmg)
-        os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg, fileDmg))
-        # Remove sparseimage
-        os.system("rm %s>/dev/null" % (fileImg))
-
-        # Make image internet-enabled
-        os.system("hdiutil internet-enable %s" % fileDmg)
-    else:
-        dest = '/Volumes/VMware Shared Folders/leopard/%s' % str(my_version)
-        os.system('rm -rf "%s"' % dest)
-        os.makedirs('%s/dist' % dest)
-        os.system('cp -r dist/SABnzbd.app "%s/dist/" >/dev/null' % dest)
+                  './ >/dev/null' % os.path.join(dest_path, fileOSr) )
 
     os.system(GitRevertApp + VERSION_FILEAPP)
     os.system(GitRevertApp + VERSION_FILE)
+
 
 elif target in ('binary', 'installer'):
     if not py2exe:
@@ -536,10 +513,10 @@ elif target in ('binary', 'installer'):
             name, ext = os.path.splitext(file)
             if ext.lower() in ('.txt', '.cmd', '.mkd'):
                 Unix2Dos("dist/%s" % file)
-    DeleteFiles('dist/Sample-PostProc.sh')
-    DeleteFiles('dist/PKG-INFO')
+    delete_files('dist/Sample-PostProc.sh')
+    delete_files('dist/PKG-INFO')
 
-    DeleteFiles('*.ini')
+    delete_files('*.ini')
 
     ############################
     # Generate the windowed-app
@@ -576,14 +553,14 @@ elif target in ('binary', 'installer'):
 
     ############################
     # Remove unwanted system DLL files that Py2Exe copies when running on Win7
-    DeleteFiles(r'dist\lib\API-MS-Win-*.dll')
-    DeleteFiles(r'dist\lib\MSWSOCK.DLL')
-    DeleteFiles(r'dist\lib\POWRPROF.DLL')
-    DeleteFiles(r'dist\lib\KERNELBASE.dll')
+    delete_files(r'dist\lib\API-MS-Win-*.dll')
+    delete_files(r'dist\lib\MSWSOCK.DLL')
+    delete_files(r'dist\lib\POWRPROF.DLL')
+    delete_files(r'dist\lib\KERNELBASE.dll')
 
     ############################
     # Remove .git residue
-    DeleteFiles(r'dist\interfaces\Config\.git')
+    delete_files(r'dist\interfaces\Config\.git')
 
     ############################
     # Copy Curl if needed
@@ -601,15 +578,15 @@ elif target in ('binary', 'installer'):
 
     ############################
     if target == 'installer':
-        DeleteFiles(fileIns)
+        delete_files(fileIns)
         os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_VERSION=%s /DSAB_FILE=%s NSIS_Installer.nsi.tmp' % \
                   (prod, release, fileIns))
-        DeleteFiles('NSIS_Installer.nsi.tmp')
+        delete_files('NSIS_Installer.nsi.tmp')
         if not os.path.exists(fileIns):
             print 'Fatal error creating %s' % fileIns
             exit(1)
 
-    DeleteFiles(fileBin)
+    delete_files(fileBin)
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
     time.sleep(1.0)
@@ -687,4 +664,3 @@ else:
     CreateTar('srcdist', fileSrc, prod)
 
     os.system(GitRevertVersion)
-

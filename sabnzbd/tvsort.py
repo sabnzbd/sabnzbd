@@ -84,8 +84,8 @@ def move_to_parent_folder(workdir):
         for _file in files:
             path = os.path.join(root, _file)
             new_path = path.replace(workdir, dest)
-            new_path = get_unique_filename(new_path)
-            if not move_to_path(path, new_path, False):
+            ok, new_path = move_to_path(path, new_path)
+            if not ok:
                 return dest, False
 
     cleanup_empty_directories(workdir)

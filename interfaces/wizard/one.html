@@ -31,7 +31,7 @@ $T('wizard-explain-server')
   <div id="connections-tip" class="tips">$T('wizard-server-con-explain') $T('wizard-server-con-eg')</div>
   <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
   <br class="clear" />
-  <label><span class="label">$T('srv-ssl')</span>
+  <label for="srv-ssl"><!--#if $have_ssl then $T('srv-ssl') else '<span class="disabled-text">'+$T('srv-ssl')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#-->
   <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $have_ssl then '' else 'disabled'#--><!--#if $ssl == 1 then 'checked' else ''#-->></label>
   <div class="tips">$T('wizard-server-ssl-explain')</div>
   <br class="clear" />

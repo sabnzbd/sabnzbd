@@ -1,23 +1,36 @@
-Release Notes  -  SABnzbd 0.7.3
+Release Notes  -  SABnzbd 0.7.4
 ===============================
 
-## Fixes in 0.7.3
+## Highlights in 0.7.4
 
-- Prevent queue deadlock in case of fatally damaged par2 files
-- Try to keep OSX Mountain Lion awake as long as downloading and postprocessing run
-- Add RSS filter-enable checkboxes to Plush, Smpl and Classic skins
-- Fix problem with saving modified parameters of an already enabled server
-- Extend "check new release" option with test releases
-- Correct several errors in Sort function
-- Improve organization of Config->Servers
-- Make detection of samples less aggressive
-- Ignore pseudo NZB files that start with a period in the name
+- OSX Mountain Lion: Notification Center support
+- OSX Mountain Lion: improved "keep awake" support
+- Scheduler: action can now run on multiple weekdays
+- Fix: pre-check failed to consider extra par2 files
 
-The Special option "random_server_ip" has been renamed to "randomize_server_ip"
-and the default is now "Off".
-The reason is that this option kills the speed of some Usenet providers.
-If you really need this feature, you have to re-enable it.
+## Features
+- Support for HTTPS chain files (needed when you buy your own certificate)
+- Special option: rss_odd_titles, see [Wiki](http://wiki.sabnzbd.org/configure-special-0-7/ "Wiki")
+- Special option: 'overwrite_files', see [Wiki](http://wiki.sabnzbd.org/configure-special-0-7/ "Wiki")
+- Show memory usage on Linux systems
+- Scheduler: add "remove failed jobs" action
 
+## Bug fixes
+- After successful pre-check, preserve a job's position in the queue
+- Restore SABnzbd icon for Growl
+- Make Windows version less eager to use par2-classic
+- Prevent jobs from showing up in queue and history simultaneously
+- Fix failure to fetch more par2-files for posts with badly formatted subject lines
+- Fix for third-party tools requesting too much history
+- New RSS feed should no longer be considered new after first, but empty readout.
+- Make "auth" call backward-compatible with 0.6.x releases.
+- Config->Notifications: email and growl server addresses should not be marked as "url" type.
+- OSX: fix top menu queue info so that it shows total queue size
+- Fixed unjustified warning that can occur with OSX Growl 2.0
+- Pre-queue script no longer got the show/season/episode information.
+- Prevent crash on startup when a fully downloaded job is still in download queue.
+- Fix incorrect end-of-month quota reset
+- Fix UI refresh issue when using Safari on iOS6 (Safari bug)
 
 ## What's new in 0.7.0
 

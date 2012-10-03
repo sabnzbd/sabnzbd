@@ -24,11 +24,13 @@ import os.path
 import logging
 import socket
 import time
+import subprocess
 from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.constants import NOTIFY_KEYS
 from gntp import GNTPRegister
 from gntp.notifier import GrowlNotifier
 try:
@@ -51,33 +53,36 @@ except:
 #------------------------------------------------------------------------------
 # Define translatable message table
 TT = lambda x:x
-_NOTIFICATION = {
+NOTIFICATION = {
     'startup'  : TT('Startup/Shutdown'),        #: Message class for Growl server
     'download' : TT('Added NZB'),               #: Message class for Growl server
     'pp'       : TT('Post-processing started'), #: Message class for Growl server
     'complete' : TT('Job finished'),            #: Message class for Growl server
     'other'    : TT('Other Messages')           #: Message class for Growl server
 }
-_KEYS = ('startup', 'download', 'pp', 'complete', 'other')
 
 #------------------------------------------------------------------------------
 # Setup platform dependent Growl support
 #
-_GROWL_ICON = None  # Platform-dependant icon path
 _GROWL = None       # Instance of the Notifier after registration
 _GROWL_REG = False  # Succesful registration
 
 
 #------------------------------------------------------------------------------
-def get_icon(host):
-    if host is None:
-        icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
-        if not os.path.isfile(icon):
-            icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
-        if not os.path.isfile(icon):
-            icon = None
+def get_icon():
+    icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
+    if not os.path.isfile(icon):
+        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    if os.path.isfile(icon):
+        if sabnzbd.WIN32 or sabnzbd.DARWIN:
+            fp = open(icon, 'rb')
+            icon = fp.read()
+            fp.close
+        else:
+            # Due to a bug in GNTP, need this work-around for Linux/Unix
+            icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
     else:
-        icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
+        icon = None
     return icon
 
 
@@ -101,24 +106,24 @@ def send_notification(title , msg, gtype, wait=False):
     """ Send Notification message
         Return '' when OK, otherwise an error string
     """
-    msg1 = ''
-    msg2 = ''
-    if sabnzbd.cfg.growl_enable():
-        if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
-            return send_local_growl(title, msg, gtype)
-        else:
-            if wait:
-                msg1 = send_growl(title, msg, gtype)
+    res = []
+    if gtype in sabnzbd.cfg.notify_classes() or wait:
+        if sabnzbd.DARWIN_ML and sabnzbd.cfg.ncenter_enable():
+            res.append(send_notification_center(title, msg, gtype))
+        if sabnzbd.cfg.growl_enable():
+            if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
+                return send_local_growl(title, msg, gtype)
             else:
-                msg1 = 'ok'
-                Thread(target=send_growl, args=(title, msg, gtype)).start()
-                time.sleep(0.5)
-    if have_ntfosd():
-        msg2 = send_notify_osd(title, msg)
-    if msg1 and msg2:
-        return '%s / %s' % (msg1, msg2)
-    return msg1 or msg2
+                if wait:
+                    res.append(send_growl(title, msg, gtype))
+                else:
+                    res.append('ok')
+                    Thread(target=send_growl, args=(title, msg, gtype)).start()
+                    time.sleep(0.5)
+        if have_ntfosd():
+            res.append(send_notify_osd(title, msg))
 
+    return ' / '.join([r for r in res if r])
 
 #------------------------------------------------------------------------------
 def reset_growl():
@@ -136,10 +141,7 @@ def register_growl():
     error = None
     host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
 
-    if host:
-        sys_name = '@' + sabnzbd.misc.hostname().lower()
-    else:
-        sys_name = ''
+    sys_name = hostname(host)
 
     # Clean up persistent data in GNTP to make re-registration work
     GNTPRegister.notifications = []
@@ -147,9 +149,9 @@ def register_growl():
 
     growler = GrowlNotifier(
         applicationName = 'SABnzbd%s' % sys_name,
-        applicationIcon = get_icon(host or None),
-        notifications = [Tx(_NOTIFICATION[key]) for key in _KEYS],
-        hostname = host or None,
+        applicationIcon = get_icon(),
+        notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
+        hostname = host or 'localhost',
         port = port or 23053,
         password = sabnzbd.cfg.growl_password() or None
     )
@@ -172,6 +174,7 @@ def register_growl():
     except:
         error = 'Unknown Growl registration error'
         logging.debug(error)
+        logging.info("Traceback: ", exc_info = True)
         del growler
         ret = None
 
@@ -196,12 +199,9 @@ def send_growl(title , msg, gtype):
             logging.debug('Send to Growl: %s %s %s', gtype, latin1(title), latin1(msg))
             try:
                 ret = _GROWL.notify(
-                    noteType = Tx(_NOTIFICATION.get(gtype, 'other')),
+                    noteType = Tx(NOTIFICATION.get(gtype, 'other')),
                     title = title,
                     description = unicoder(msg),
-                    #icon = options.icon,
-                    #sticky = options.sticky,
-                    #priority = options.priority
                 )
                 if ret is None or isinstance(ret, bool):
                     return None
@@ -238,7 +238,7 @@ if _HAVE_CLASSIC_GROWL:
         """ Send to local Growl server, OSX-only """
         global _local_growl
         if not _local_growl:
-            notes = [Tx(_NOTIFICATION[key]) for key in _KEYS]
+            notes = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS]
             _local_growl = Growl.GrowlNotifier(
                 applicationName = 'SABnzbd',
                 applicationIcon = _OSX_ICON,
@@ -246,7 +246,7 @@ if _HAVE_CLASSIC_GROWL:
                 defaultNotifications = notes
                 )
             _local_growl.register()
-        _local_growl.notify(Tx(_NOTIFICATION.get(gtype, 'other')), title, msg)
+        _local_growl.notify(Tx(NOTIFICATION.get(gtype, 'other')), title, msg)
         return None
 
 
@@ -277,3 +277,47 @@ if _HAVE_NTFOSD:
                 return error
         else:
             return 'Not enabled'
+
+
+def ncenter_path():
+    """ Return path of Notification Center tool, if it exists """
+    tool = os.path.normpath(os.path.join(sabnzbd.DIR_PROG, '../Resources/SABnzbd.app/Contents/MacOS/SABnzbd'))
+    if os.path.exists(tool):
+        return tool
+    else:
+        return None
+
+def send_notification_center(title, msg, gtype):
+    """ Send message to Mountain Lion's Notification Center """
+    tool = ncenter_path()    
+    if tool:
+        try:
+            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other'))]
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+            output = proc.stdout.read()
+            proc.wait()
+            if 'Notification delivered' in output:
+                output = ''
+        except:
+            logging.info('Cannot run notifier "%s"', tool)
+            logging.debug("Traceback: ", exc_info = True)
+            output = 'Notifier tool crashed'
+    else:
+        output = 'Notifier app not found'
+    return output.strip('*\n ')
+
+
+#------------------------------------------------------------------------------
+def hostname(host=True):
+    """ Return host's pretty name """
+    if sabnzbd.WIN32:
+        sys_name = os.environ.get('computername', 'unknown')
+    else:
+        try:
+            sys_name = os.uname()[1]
+        except:
+            sys_name = 'unknown'
+    if host:
+        return '@%s' % sys_name.lower()
+    else:
+        return ''

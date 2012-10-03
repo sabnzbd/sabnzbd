@@ -132,7 +132,7 @@ def find_programs(curdir):
 def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
     """ Run a user postproc script, return console output and exit value
     """
-    command = [str(extern_proc), str(complete_dir), str(filename), \
+    command = [str(extern_proc), str(complete_dir), str(filename),
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
@@ -140,7 +140,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
 
-    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)', \
+    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)',
                  extern_proc, complete_dir, filename, nicename, msgid, cat, group, status)
 
     try:
@@ -275,8 +275,8 @@ def match_ts(file):
 
 
 def clean_up_joinables(names):
-    ''' Remove joinable files and their .1 backups
-    '''
+    """ Remove joinable files and their .1 backups
+    """
     for name in names:
         if os.path.exists(name):
             logging.debug("Deleting %s", name)
@@ -293,8 +293,8 @@ def clean_up_joinables(names):
                 pass
 
 def get_seq_number(name):
-    ''' Return sequence number if name as an int
-    '''
+    """ Return sequence number if name as an int
+    """
     head, tail = os.path.splitext(name)
     if tail == '.ts':
         match, set, num = match_ts(name)
@@ -314,7 +314,8 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
     # Create matching sets from the list of files
     joinable_sets = {}
-    set = match = num = None
+    joinable_set = None
+    set = num = None
     for joinable in joinables:
         head, tail = os.path.splitext(joinable)
         if tail == '.ts':
@@ -401,6 +402,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         When 'one_folder' is set, all files will be in a single folder
     """
     extracted_files = []
+    success = False
 
     rar_sets = {}
     for rar in rars:
@@ -455,7 +457,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 except OSError:
                     logging.warning(Ta('Deleting %s failed!'), latin1(rar))
 
-                brokenrar = '%s.1' % (rar)
+                brokenrar = '%s.1' % rar
 
                 if os.path.exists(brokenrar):
                     logging.info("Deleting %s", brokenrar)
@@ -474,6 +476,8 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     """
 
     fail = 0
+    new_files = None
+    rars = []
     if nzo.password:
         passwords = [nzo.password]
     else:
@@ -541,17 +545,23 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         action = 'e'
     else:
         action = 'x'
+    if cfg.overwrite_files():
+        overwrite = '-o+' # Enable overwrite
+        rename = '-o+'    # Dummy
+    else:
+        overwrite = '-o-' # Disable overwrite
+        rename = '-or'    # Auto renaming
     if sabnzbd.WIN32:
         # Use all flags
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', '-ai', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
                    '%s' % rarfile, '%s/' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
                    '%s' % rarfile, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
-        command = ['%s' % RAR_COMMAND, action, '-idp', '-o-', '-or', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
                    '%s' % rarfile, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
@@ -568,7 +578,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     if p.stdin:
         p.stdin.close()
 
-    nzo.set_action_line(T('Unpacking'), '00/%02d' % (numrars))
+    nzo.set_action_line(T('Unpacking'), '00/%02d' % numrars)
 
     # Loop over the output from rar!
     curr = 0
@@ -645,7 +655,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
                 proc.close()
             p.wait()
 
-            return (fail, (), ())
+            return fail, (), ()
 
     if proc:
         proc.close()
@@ -687,7 +697,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
     logging.info('%s', msg)
 
-    return (0, extracted, rarfiles)
+    return 0, extracted, rarfiles
 
 #------------------------------------------------------------------------------
 # (Un)Zip Functions
@@ -732,7 +742,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                 except OSError:
                     logging.warning(Ta('Deleting %s failed!'), latin1(_zip))
 
-                brokenzip = '%s.1' % (_zip)
+                brokenzip = '%s.1' % _zip
 
                 if os.path.exists(brokenzip):
                     logging.info("Deleting %s", brokenzip)
@@ -1068,7 +1078,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     logging.debug('Par2-classic = %s', classic)
 
     import sabnzbd.assembler
-    if (sabnzbd.assembler.GetMD5Hashes(parfile)[1] and not classic) or not PAR2C_COMMAND:
+    if (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
             command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
         else:
@@ -1085,6 +1095,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
 
+    lines = []
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -1125,8 +1136,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if line == '':
                 continue
 
-            # And off we go
-            if line.startswith('Invalid option specified'):
+            if 'Repairing:' not in line:
+                lines.append(line)
+
+            if 'The recovery file does not exist' in line:
+                logging.info('%s', line)
+                nzo.set_unpack_info('Repair', unicoder(line), set=setname)
+                nzo.status = Status.FAILED
+
+            elif line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
@@ -1230,7 +1248,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                         if extrapar_list:
                             new_nzf = extrapar_list.pop()
                             nzo.add_parfile(new_nzf)
-                            extrapars.remove(new_nzf)
+                            if new_nzf in extrapars: extrapars.remove(new_nzf)
                             added_blocks += block_size
 
                         else:
@@ -1259,7 +1277,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             elif line.startswith('Repairing:'):
                 chunks = line.split()
                 per = float(chunks[-1][:-1])
-                nzo.set_action_line(T('Repairing'), '%2d%%' % (per))
+                nzo.set_action_line(T('Repairing'), '%2d%%' % per)
                 nzo.status = Status.REPAIRING
 
             elif line.startswith('Repair complete'):
@@ -1323,11 +1341,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         else:
             raise WindowsError(err)
 
+    logging.debug('PAR2 output was\n%s', '\n'.join(lines))
+
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
     else:
-        return (finished, readd, pars, datafiles, used_joinables)
+        return finished, readd, pars, datafiles, used_joinables
 
 #-------------------------------------------------------------------------------
 
@@ -1378,7 +1398,7 @@ def build_command(command):
         if need_shell:
             command = list2cmdline(command)
 
-    return (stup, need_shell, command, creationflags)
+    return stup, need_shell, command, creationflags
 
 # Sort the various RAR filename formats properly :\
 def rar_sort(a, b):
@@ -1450,7 +1470,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return (joinables, zips, rars, sevens, ts)
+    return joinables, zips, rars, sevens, ts
 
 
 def QuickCheck(set, nzo):
@@ -1531,7 +1551,6 @@ def sfv_check(sfv_path):
         failed.append(unicoder(sfv_path))
         return failed
     root = os.path.split(sfv_path)[0]
-    status = True
     for line in fp:
         line = line.strip('\n\r ')
         if line[0] != ';':
@@ -1574,6 +1593,7 @@ def crc_check(path, target_crc):
 def analyse_show(name):
     """ Do a quick SeasonSort check and return basic facts """
     job = SeriesSorter(name, None, None)
+    job.match(force=True)
     if job.is_match():
         job.get_values()
     info = job.show_info

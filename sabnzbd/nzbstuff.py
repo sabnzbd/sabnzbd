@@ -55,6 +55,7 @@ SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I) # Reject duplicate par2 files
+RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$') # Test reasonably sized extension at the end
 
 ################################################################################
 # Article                                                                      #
@@ -154,6 +155,7 @@ NzbFileMapper = (
     ('import_finished',              'import_finished'),
     ('md5sum',                       'md5sum'),
     ('valid',                        'valid'),
+    ('completed',                    'completed')
 )
 
 
@@ -169,9 +171,7 @@ class NzbFile(TryList):
         self.filename = None
         self.type = None
 
-        match = re.search(SUBJECT_FN_MATCHER, subject)
-        if match:
-            self.filename = match.group(1).strip('"')
+        self.filename = name_extractor(subject)
 
         self.is_par2 = False
         self.vol = None
@@ -191,6 +191,7 @@ class NzbFile(TryList):
         self.nzo = nzo
         self.nzf_id = sabnzbd.get_new_id("nzf", nzo.workpath)
         self.deleted = False
+        self.completed = False
 
         self.valid = False
         self.import_finished = False
@@ -348,12 +349,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
             self.in_segments = True
 
         elif name == 'file' and self.in_nzb:
-            subject = attrs.get('subject', '')
-            match = re.search(SUBJECT_FN_MATCHER, subject)
-            if match:
-                self.filename = match.group(1).strip('"').strip()
-            else:
-                self.filename = subject.strip()
+            subject = attrs.get('subject', '').strip()
+            self.filename = subject
 
             if self.filter and RE_SAMPLE.search(subject):
                 logging.info('Skipping sample file %s', subject)
@@ -834,7 +831,8 @@ class NzbObject(TryList):
                 if head and lparset in head.lower():
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
-                    self.files.remove(xnzf)
+                    if not self.precheck:
+                        self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):
         """ Check if file is a par2 and build up par2 collection
@@ -875,7 +873,7 @@ class NzbObject(TryList):
                     ## initialparfile
                     else:
                         self.postpone_pars(nzf, head)
-                ## Is not a par2file or nothing todo
+                ## Is not a par2file or nothing to do
                 else:
                     pass
         ## No filename in seg 1? Probably not uu or yenc encoded
@@ -942,6 +940,7 @@ class NzbObject(TryList):
                 self.files_table[nzf.nzf_id] = nzf
                 self.bytes += nzf.bytes
                 nzf.filename = filename
+                nzf.completed = True
                 self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
                 logging.info('File %s added to job', filename)
@@ -1241,6 +1240,15 @@ class NzbObject(TryList):
         for nzf in self.files:
             bytes_left += nzf.bytes_left
         return bytes_left
+
+    def total_and_remaining(self):
+        """ Return total and remaining bytes """
+        bytes = 0
+        bytes_left = 0
+        for nzf in self.files:
+            bytes += nzf.bytes
+            bytes_left += nzf.bytes_left
+        return bytes, bytes_left
 
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
@@ -1565,3 +1573,14 @@ def analyse_par2(name):
         else:
             head = None
     return head, vol, block
+
+
+def name_extractor(subject):
+    """ Try to extract a file name from a subject line, return `subject` if in doubt
+    """
+    result = subject
+    for name in re.findall(SUBJECT_FN_MATCHER, subject):
+        name = name.strip(' "')
+        if name and RE_NORMAL_NAME.search(name):
+            result = name
+    return result

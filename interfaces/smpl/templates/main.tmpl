@@ -808,7 +808,7 @@ function lrb(url, extra, refresh)
   {
     method:'POST',
     sendContent:values,
-    headers: {"Content-Type":"application/x-www-form-urlencoded"}
+    headers: {"Content-Type":"application/x-www-form-urlencoded", "Cache-Control": "no-cache"}
 
   });
   d.addCallback(function(d)
@@ -840,7 +840,7 @@ function lrb(url, extra, refresh)
   {
     method:'POST',
     sendContent:values,
-    headers: {"Content-Type":"application/x-www-form-urlencoded"}
+    headers: {"Content-Type":"application/x-www-form-urlencoded", "Cache-Control": "no-cache"}
 
   });
   if (saveelement) {

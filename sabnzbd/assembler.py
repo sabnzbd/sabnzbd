@@ -88,13 +88,17 @@ class Assembler(Thread):
                     try:
                         filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
-                        # 28 == disk full => pause downloader
-                        if errno == 28:
-                            logging.error(Ta('Disk full! Forcing Pause'))
+                        if nzo.deleted:
+                            # Job was deleted, ignore error
+                            pass
                         else:
-                            logging.error(Ta('Disk error on creating file %s'), latin1(filepath))
-                        # Pause without saving
-                        sabnzbd.downloader.Downloader.do.pause(save=False)
+                            # 28 == disk full => pause downloader
+                            if errno == 28:
+                                logging.error(Ta('Disk full! Forcing Pause'))
+                            else:
+                                logging.error(Ta('Disk error on creating file %s'), latin1(filepath))
+                            # Pause without saving
+                            sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
                         logging.error('Fatal error in Assembler', exc_info = True)
                         break
@@ -110,6 +114,7 @@ class Assembler(Thread):
                     if check_encrypted_rar(nzo, filepath):
                         logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
                         nzo.pause()
+                    nzf.completed = True
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
@@ -201,18 +206,19 @@ def file_has_articles(nzf):
 # For a full description of the par2 specification, visit:
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
-def GetMD5Hashes(fname):
+def GetMD5Hashes(fname, force=False):
     """ Get the hash table from a PAR2 file
         Return as dictionary, indexed on names and True for utf8-encoded names
     """
-    new_encoding = False
+    new_encoding = True
     table = {}
-    if not flag_file(os.path.split(fname)[0], QCHECK_FILE):
+    if force or not flag_file(os.path.split(fname)[0], QCHECK_FILE):
         try:
             f = open(fname, 'rb')
         except:
             return table, new_encoding
 
+        new_encoding = False
         try:
             header = f.read(8)
             while header:

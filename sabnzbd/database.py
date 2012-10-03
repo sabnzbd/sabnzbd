@@ -51,6 +51,27 @@ def get_history_handle():
     return HistoryDB(_HISTORY_DB)
 
 
+def convert_search(search):
+    """ Convert classic wildcard to SQL wildcard """
+    if not search:
+        # Default value
+        search = ''
+    else:
+        # Allow * for wildcard matching and space
+        search = search.replace('*','%').replace(' ', '%')
+
+    # Allow ^ for start of string and $ for end of string
+    if search and search.startswith('^'):
+        search = search.replace('^','')
+        search += '%'
+    elif search and search.endswith('$'):
+        search = search.replace('$','')
+        search = '%' + search
+    else:
+        search = '%' + search + '%'
+    return search
+
+
 # Note: Add support for execute return values
 
 class HistoryDB(object):
@@ -141,19 +162,22 @@ class HistoryDB(object):
             logging.error(Ta('Failed to close database, see log'))
             logging.info("Traceback: ", exc_info = True)
 
-    def remove_completed(self):
-        return self.execute("""DELETE FROM history WHERE status = 'Completed'""", save=True)
+    def remove_completed(self, search=None):
+        search = convert_search(search)
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Completed'""", (search,), save=True)
 
-    def get_failed_paths(self):
+    def get_failed_paths(self, search=None):
         """ Return list of all storage paths of failed jobs (may contain non-existing or empty paths) """
-        fetch_ok = self.execute("""SELECT path FROM history WHERE status = 'Failed'""")
+        search = convert_search(search)
+        fetch_ok = self.execute("""SELECT path FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,))
         if fetch_ok:
             return [item.get('path') for item in self.c.fetchall()]
         else:
             return []
 
-    def remove_failed(self):
-        return self.execute("""DELETE FROM history WHERE status = 'Failed'""", save=True)
+    def remove_failed(self, search=None):
+        search = convert_search(search)
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,), save=True)
 
     def remove_history(self, jobs=None):
         if jobs is None:
@@ -180,22 +204,7 @@ class HistoryDB(object):
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
 
-        if not search:
-            # Default value
-            search = ''
-        else:
-            # Allow * for wildcard matching and space
-            search = search.replace('*','%').replace(' ', '%')
-
-        # Allow ^ for start of string and $ for end of string
-        if search and search.startswith('^'):
-            search = search.replace('^','')
-            search += '%'
-        elif search and search.endswith('$'):
-            search = search.replace('$','')
-            search = '%' + search
-        else:
-            search = '%' + search + '%'
+        search = convert_search(search)
 
         # Get the number of results
         if failed_only:

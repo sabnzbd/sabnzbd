@@ -39,7 +39,7 @@ except:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE, Status
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -717,17 +717,6 @@ def split_host(srv):
 
 
 #------------------------------------------------------------------------------
-def hostname():
-    """ Return host's pretty name """
-    if sabnzbd.WIN32:
-        return os.environ.get('computername', 'unknown')
-    try:
-        return os.uname()[1]
-    except:
-        return 'unknown'
-
-
-#------------------------------------------------------------------------------
 def check_mount(path):
     """ Return False if volume isn't mounted on Linux or OSX
         Retry 6 times with an interval of 1 sec.
@@ -797,13 +786,23 @@ def create_dirs(dirpath):
 
 
 @synchronized(DIR_LOCK)
-def move_to_path(path, new_path, unique=True):
-    """ Move a file to a new path, optionally give unique filename """
-    if unique:
-        new_path = get_unique_path(new_path, create_dir=False)
+def move_to_path(path, new_path):
+    """ Move a file to a new path, optionally give unique filename
+        Return (ok, new_path)
+    """
+    ok = True
+    overwrite = cfg.overwrite_files()
+    if overwrite and os.path.exists(new_path):
+        try:
+            os.remove(new_path)
+        except:
+            overwrite = False
+    if not overwrite:
+        new_path = get_unique_filename(new_path)
+
     if new_path:
-        logging.debug("Moving. Old path:%s new path:%s unique?:%s",
-                                                  path,new_path, unique)
+        logging.debug("Moving. Old path:%s new path:%s overwrite?:%s",
+                                                  path, new_path, overwrite)
         try:
             # First try cheap rename
             renamer(path, new_path)
@@ -818,8 +817,8 @@ def move_to_path(path, new_path, unique=True):
                 if not (cfg.marker_file() and cfg.marker_file() in path):
                     logging.error(Ta('Failed moving %s to %s'), path, new_path)
                     logging.info("Traceback: ", exc_info = True)
-                new_path = None
-    return new_path
+                ok = False
+    return ok, new_path
 
 
 @synchronized(DIR_LOCK)
@@ -1000,15 +999,37 @@ def get_filename(path):
     except:
         return ''
 
+
+def memory_usage():
+    try:
+        # Probably only works on Linux because it uses /proc/<pid>/statm
+        t = open('/proc/%d/statm' % os.getpid())
+        v = t.read().split()
+        t.close()
+        virt = int(_PAGE_SIZE * int(v[0]) / MEBI)
+        res = int(_PAGE_SIZE * int(v[1]) / MEBI)
+        return "V=%sM R=%sM" % (virt, res)
+    except:
+        return None
+
+try:
+    _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
+except:
+    _PAGE_SIZE = 0
+_HAVE_STATM = _PAGE_SIZE and memory_usage()
+
+
 def loadavg():
     """ Return 1, 5 and 15 minute load average of host or "" if not supported
     """
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        return ""
-    try:
-        return "%.2f | %.2f | %.2f" % os.getloadavg()
-    except:
-        return ""
+    p = ''
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        opt = cfg.show_sysload()
+        if opt:
+            p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            if opt > 1 and _HAVE_STATM:
+                p = '%s | %s' % (p, memory_usage())
+    return p
 
 
 def format_time_string(seconds, days=0):

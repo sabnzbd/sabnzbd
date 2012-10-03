@@ -1191,12 +1191,15 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
-              'randomize_server_ip', 'no_ipv6'
+              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive'
+              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload'
             )
+SPECIAL_LIST_LIST = \
+    ( 'rss_odd_titles',
+    )
 
 class ConfigSpecial(object):
     def __init__(self, web_dir, root, prim):
@@ -1215,6 +1218,7 @@ class ConfigSpecial(object):
 
         conf['switches'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_BOOL_LIST]
         conf['entries'] = [ (kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
+        conf['entries'].extend( [ (kw, config.get_config('misc', kw).get_string(), '') for kw in SPECIAL_LIST_LIST] )
 
         template = Template(file=os.path.join(self.__web_dir, 'config_special.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1225,7 +1229,7 @@ class ConfigSpecial(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST:
+        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
             item = config.get_config('misc', kw)
             value = kwargs.get(kw)
             msg = item.set(value)
@@ -1240,7 +1244,7 @@ class ConfigSpecial(object):
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
     'refresh_rate', 'cache_limit',
-    'enable_https', 'https_port', 'https_cert', 'https_key'
+    'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
 class ConfigGeneral(object):
@@ -1338,6 +1342,7 @@ class ConfigGeneral(object):
         conf['https_port'] = cfg.https_port()
         conf['https_cert'] = cfg.https_cert()
         conf['https_key'] = cfg.https_key()
+        conf['https_chain'] = cfg.https_chain()
         conf['enable_https'] = cfg.enable_https()
         conf['username'] = cfg.username()
         conf['password'] = cfg.password.get_stars()
@@ -1347,6 +1352,7 @@ class ConfigGeneral(object):
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
+        conf['my_lcldata'] = cfg.admin_dir.get_path()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1893,7 +1899,7 @@ class ConfigRss(object):
 
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
-                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan')
+                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan', 'remove_failed')
 
 class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):
@@ -1985,7 +1991,7 @@ class ConfigScheduling(object):
 
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
-        days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek')])
+        days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
         action = kwargs.get('action')
         arguments = kwargs.get('arguments')
 
@@ -2506,9 +2512,14 @@ def GetRssLog(feed):
     # Sort in the order the jobs came from the feed
     names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
 
-    done = [xml_name(jobs[job]['title']) for job in names if jobs[job]['status'] == 'D']
     good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
     bad  = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
+
+    # Sort in reverse order of time stamp for 'Done'
+    dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
+    dnames.sort(lambda x, y: jobs[y].get('timestamp', 0) - jobs[x].get('timestamp', 0))
+    done = [xml_name(jobs[job]['title']) for job in dnames]
+
 
     return done, good, bad
 
@@ -2593,7 +2604,7 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable')
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable', 'ncenter_enable')
 
 class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
@@ -2613,11 +2624,15 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
+        conf['have_ncenter'] = sabnzbd.DARWIN_ML and bool(sabnzbd.growler.ncenter_path())
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
         for kw in LIST_GROWL:
             conf[kw] = config.get_config('growl', kw).get_string()
+        conf['notify_list'] = NOTIFY_KEYS
+        conf['notify_classes'] = cfg.notify_classes.get_string()
+        conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2636,6 +2651,7 @@ class ConfigNotify(object):
             msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+        cfg.notify_classes.set(kwargs.get('notify_classes', ''))
 
         config.save_config()
         self.__lastmail = None

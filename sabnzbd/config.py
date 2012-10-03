@@ -139,7 +139,7 @@ class OptionNumber(Option):
                 else:
                     value = float(value)
             except ValueError:
-                value = 0
+                value = self._Option__default_val
             if self.__validation:
                 error, val = self.__validation(value)
                 self._Option__set(val)

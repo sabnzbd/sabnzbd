@@ -422,6 +422,8 @@ def _api_history(name, output, kwargs):
     limit = kwargs.get('limit')
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
+    if not limit:
+        limit = cfg.history_limit()
 
     if name == 'delete':
         special = value.lower()
@@ -430,10 +432,10 @@ def _api_history(name, output, kwargs):
             history_db = cherrypy.thread_data.history_db
             if special in ('all', 'failed'):
                 if del_files:
-                    del_job_files(history_db.get_failed_paths())
-                history_db.remove_failed()
+                    del_job_files(history_db.get_failed_paths(search))
+                history_db.remove_failed(search)
             if special in ('all', 'completed'):
-                history_db.remove_completed()
+                history_db.remove_completed(search)
             return report(output)
         elif value:
             jobs = value.split(',')
@@ -554,10 +556,13 @@ def _api_auth(name, output, kwargs):
     if not cfg.disable_key():
         auth = 'badkey'
         key = kwargs.get('key', '')
-        if key == cfg.nzb_key():
-            auth = 'nzbkey'
-        if key == cfg.api_key():
+        if not key:
             auth = 'apikey'
+        else:
+            if key == cfg.nzb_key():
+                auth = 'nzbkey'
+            if key == cfg.api_key():
+                auth = 'apikey'
     elif cfg.username() and cfg.password():
         auth = 'login'
     return report(output, keyword='auth', data=auth)
@@ -1272,6 +1277,7 @@ def qstatus_data():
 
     status = {
         "state" : state,
+        "pp_active" : not PostProcessor.do.empty(),
         "paused" : Downloader.do.paused,
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsnow / KIBI,
@@ -1673,9 +1679,11 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     # Aquire the db instance
     try:
         history_db = cherrypy.thread_data.history_db
+        close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet
         history_db = get_history_handle()
+        close_db = True
 
     # Fetch history items
     if not h_limit:
@@ -1740,6 +1748,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     total_items += full_queue_size
     fetched_items = len(items)
+
+    if close_db:
+        history_db.close()
 
     return (items, fetched_items, total_items)
 
@@ -1932,3 +1943,13 @@ def del_from_section(kwargs):
     else:
         return False
 
+
+#------------------------------------------------------------------------------
+def history_remove_failed():
+    """ Remove all failed jobs from history, including files """
+    logging.info('Scheduled removal of all failed jobs')
+    history_db = get_history_handle()
+    del_job_files(history_db.get_failed_paths())
+    history_db.remove_failed()
+    history_db.close()
+    del history_db

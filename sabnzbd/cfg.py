@@ -24,7 +24,7 @@ import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
                               DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
                               NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-                              DEF_ADMIN_DIR
+                              DEF_ADMIN_DIR, NOTIFY_KEYS
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
@@ -93,6 +93,7 @@ enable_tsjoin = OptionBool('misc', 'enable_tsjoin', True)
 enable_par_cleanup = OptionBool('misc', 'enable_par_cleanup', True)
 never_repair = OptionBool('misc', 'never_repair', False)
 ignore_unrar_dates = OptionBool('misc', 'ignore_unrar_dates', False)
+overwrite_files = OptionBool('misc', 'overwrite_files', False)
 
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
@@ -130,6 +131,7 @@ safe_postproc = OptionBool('misc', 'safe_postproc', True)
 pause_on_post_processing = OptionBool('misc', 'pause_on_post_processing', False)
 ampm = OptionBool('misc', 'ampm', False)
 rss_filenames = OptionBool('misc', 'rss_filenames', False)
+rss_odd_titles = OptionList('misc', 'rss_odd_titles', ['nzbindex.nl/', 'nzbindex.com/', 'nzbclub.com/'])
 
 schedules = OptionList('misc', 'schedlines')
 
@@ -207,6 +209,7 @@ log_new = OptionBool('logging', 'log_new', False)
 
 https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
+https_chain = OptionDir('misc','https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
@@ -229,8 +232,10 @@ no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
-growl_enable = OptionBool('growl', 'growl_enable', True)
+growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
 ntfosd_enable = OptionBool('growl', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN)
+notify_classes = OptionList('growl', 'notify_classes', NOTIFY_KEYS)
 
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')
@@ -239,11 +244,14 @@ quota_period = OptionStr('misc', 'quota_period', 'm')
 
 osx_menu = OptionBool('misc', 'osx_menu', True)
 osx_speed = OptionBool('misc', 'osx_speed', True)
+keep_awake = OptionBool('misc', 'keep_awake', True)
 win_menu = OptionBool('misc', 'win_menu', True)
 uniconfig = OptionBool('misc', 'uniconfig', True)
 allow_incomplete_nzb = OptionBool('misc', 'allow_incomplete_nzb', False)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
 wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
+history_limit = OptionNumber('misc', 'history_limit', 50, 0)
+show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
@@ -263,3 +271,4 @@ def set_root_folders(home, lcldata):
 def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())
     https_key.set_root(admin_dir.get_path())
+    https_chain.set_root(admin_dir.get_path())
