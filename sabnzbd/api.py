@@ -293,9 +293,11 @@ def _api_addfile(name, output, kwargs):
         #Side effect of next line is that attribute .value is created
         #which is needed to make add_nzbfile() work
         size = name.length
-    else:
+    elif hasattr(name, 'value'):
         size = len(name.value)
-    if name is not None and name.filename and size:
+    else:
+        size = 0
+    if name is not None and size and name.filename:
         cat = kwargs.get('cat')
         xcat = kwargs.get('xcat')
         if not cat and xcat:
