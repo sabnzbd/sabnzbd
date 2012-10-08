@@ -1107,7 +1107,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['mbdone_fmt'] = locale.format('%d', int(mb-mbleft), True)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
-        if not Downloader.do.paused and status != 'Paused' and status != 'Fetching' and not found_active:
+        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING) and not found_active:
             if status == Status.CHECKING:
                 slot['status'] = Status.CHECKING
             else:
@@ -1131,7 +1131,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if status in (Status.PAUSED, Status.CHECKING):
+        if Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED):
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1544,7 +1544,8 @@ def build_header(prim, webdir=''):
     if not color:
         color = ''
 
-    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__, 'paused': Downloader.do.paused,
+    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__,
+               'paused': Downloader.do.paused or Downloader.do.postproc,
                'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
                'uptime':uptime, 'color_scheme':color }
     speed_limit = Downloader.do.get_limit()
@@ -1595,13 +1596,13 @@ def build_header(prim, webdir=''):
     header['left_quota'] = to_units(BPSMeter.do.left)
 
     status = ''
-    if Downloader.do.paused:
+    if Downloader.do.paused or Downloader.do.postproc:
         status = Status.PAUSED
     elif bytespersec > 0:
         status = Status.DOWNLOADING
     else:
         status = 'Idle'
-    header['status'] = "%s" % status
+    header['status'] = status
 
     anfo  = ArticleCache.do.cache_info()
 
