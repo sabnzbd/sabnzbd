@@ -1375,20 +1375,21 @@ def sfv_check(sfv_path):
     root = os.path.split(sfv_path)[0]
     for line in fp:
         line = line.strip('\n\r ')
-        if line[0] != ';':
+        if line and line[0] != ';':
             x = line.rfind(' ')
-            filename = platform_encode(line[:x].strip())
-            checksum = line[x:].strip()
-            path = os.path.join(root, filename)
-            if os.path.exists(path):
-                if crc_check(path, checksum):
-                    logging.debug('File %s passed SFV check', path)
+            if x > 0:
+                filename = platform_encode(line[:x].strip())
+                checksum = line[x:].strip()
+                path = os.path.join(root, filename)
+                if os.path.exists(path):
+                    if crc_check(path, checksum):
+                        logging.debug('File %s passed SFV check', path)
+                    else:
+                        logging.info('File %s did not pass SFV check', latin1(path))
+                        failed.append(unicoder(filename))
                 else:
-                    logging.info('File %s did not pass SFV check', latin1(path))
+                    logging.info('File %s missing in SFV check', latin1(path))
                     failed.append(unicoder(filename))
-            else:
-                logging.info('File %s missing in SFV check', latin1(path))
-                failed.append(unicoder(filename))
     fp.close()
     return failed
 
