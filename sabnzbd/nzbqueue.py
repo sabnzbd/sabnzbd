@@ -178,8 +178,9 @@ class NzbQueue(TryList):
             logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
             return
         from sabnzbd.dirscanner import ProcessSingleFile
-        nzo_id = ProcessSingleFile(os.path.split(nzb_path)[1], nzb_path, reuse=True)[1][0]
-        self.replace_in_q(nzo, nzo_id)
+        res, nzo_ids = ProcessSingleFile(nzo.work_name + '.nzb', nzb_path, reuse=True)
+        if res == 0 and nzo_ids:
+            self.replace_in_q(nzo, nzo_ids[0])
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -189,8 +190,8 @@ class NzbQueue(TryList):
             new_nzo = self.get_nzo(nzo_id)
             pos = self.__nzo_list.index(new_nzo)
             targetpos = self.__nzo_list.index(nzo)
-            self.__nzo_list.pop(pos)
             self.__nzo_list[targetpos] = new_nzo
+            self.__nzo_list.pop(pos)
             del self.__nzo_table[nzo.nzo_id]
             del nzo
         except:
