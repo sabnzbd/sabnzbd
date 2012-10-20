@@ -1306,13 +1306,12 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
 
     for file in md5pack:
-        file = name_fixer(file)
         if sabnzbd.misc.on_cleanup_list(file, False):
             result = True
             continue
         found = False
         for nzf in nzf_list:
-            if file == name_fixer(nzf.filename):
+            if file == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)

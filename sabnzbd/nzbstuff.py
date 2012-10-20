@@ -1583,4 +1583,4 @@ def name_extractor(subject):
         name = name.strip(' "')
         if name and RE_NORMAL_NAME.search(name):
             result = name
-    return result
+    return platform_encode(result)
