@@ -54,7 +54,7 @@ from sabnzbd.newzbin import Bookmarks
 from sabnzbd.database import get_history_handle
 from sabnzbd.encoding import unicoder
 
-status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
+status_icons = {'idle':'../Resources/sab_idle.tiff','pause':'../Resources/sab_pause.tiff','clicked':'../Resources/sab_clicked.tiff'}
 start_time = NSDate.date()
 debug = 0
 
