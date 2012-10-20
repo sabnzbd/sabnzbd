@@ -166,7 +166,7 @@ class URLGrabber(Thread):
                             logging.error(msg)
                             misc.bad_fetch(future_nzo, clean_matrix_url(url), msg, retry=True)
                         continue
-                    category = _MATRIX_MAP.get(category, category)
+                    category = get_matrix_category(url, category)
 
                     if del_bookmark:
                         # No retries of nzbmatrix bookmark removals
@@ -426,3 +426,9 @@ _MATRIX_MAP = {
 '7'  : 'tv.sport/ent'
 }
 
+def get_matrix_category(url, category):
+    category = _MATRIX_MAP.get(category, category)
+    if 'nzbxxx.com' in url:
+        return 'XXX: ' + category
+    else:
+        return category
