@@ -128,6 +128,7 @@ pause_on_pwrar = OptionBool('misc', 'pause_on_pwrar', True)
 prio_sort_list = OptionList('misc', 'prio_sort_list')
 
 safe_postproc = OptionBool('misc', 'safe_postproc', True)
+empty_postproc = OptionBool('misc', 'empty_postproc', False)
 pause_on_post_processing = OptionBool('misc', 'pause_on_post_processing', False)
 ampm = OptionBool('misc', 'ampm', False)
 rss_filenames = OptionBool('misc', 'rss_filenames', False)

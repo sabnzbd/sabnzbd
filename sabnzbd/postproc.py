@@ -206,6 +206,8 @@ def process_job(nzo):
     par_error = False
     # keep track of any unpacking errors
     unpack_error = False
+    # Signal empty download, for when 'empty_postproc' is enabled
+    empty = False
     nzb_list = []
     # These need to be initialised incase of a crash
     workdir_complete = ''
@@ -252,13 +254,15 @@ def process_job(nzo):
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
+                empty = True
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
-            par_error = unpack_error = True
-            all_ok = False
+            all_ok = cfg.empty_postproc() and empty
+            if not all_ok:
+                par_error = unpack_error = True
 
         script = nzo.script
         cat = nzo.cat
@@ -392,7 +396,10 @@ def process_job(nzo):
                     logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
                     logging.info("Traceback: ", exc_info = True)
 
-            job_result = int(par_error) + int(unpack_error)*2
+            if empty:
+                job_result = -1
+            else:
+                job_result = int(par_error) + int(unpack_error)*2
 
             if cfg.ignore_samples() > 0:
                 remove_samples(workdir_complete)
