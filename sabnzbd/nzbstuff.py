@@ -1392,8 +1392,9 @@ class NzbObject(TryList):
 #-------------------------------------------------------------------------------
 
 def nzf_get_filename(nzf):
-    # Return filename, if the filename not set, try the
-    # the full subject line instead. Can produce non-ideal results
+    """ Return filename, if the filename not set, try the
+        the full subject line instead. Can produce non-ideal results
+    """
     name = nzf.filename
     if not name:
         name = nzf.subject
@@ -1402,8 +1403,31 @@ def nzf_get_filename(nzf):
     return name.lower()
 
 
+def get_ext_list():
+    """ Return priority extenstion list, with extensions starting with a period
+    """
+    exts = []
+    for ext in cfg.prio_sort_list():
+        ext = ext.strip()
+        if not ext.startswith('.'):
+            ext = '.' + ext
+        exts.append(ext)
+    return exts
+
+
+def ext_on_list(name, lst):
+    """ Return True if `name` contains any extension in `lst`
+    """
+    for ext in lst:
+        if name.rfind(ext) >= 0:
+            return True
+    return False
+
+
 def nzf_cmp_date(nzf1, nzf2):
-    # Compare files based on date, but give vol-par files preference
+    """ Compare files based on date, but give vol-par files preference.
+        Wrapper needed, because `cmp` function doesn't handle extra parms.
+    """
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
@@ -1430,6 +1454,16 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
         return 1
     if is_par2 and not is_par1:
         return -1
+
+    # Anything with a priority extention goes first
+    ext_list = get_ext_list()
+    if ext_list:
+        onlist1 = ext_on_list(name1, ext_list)
+        onlist2 = ext_on_list(name2, ext_list)
+        if onlist1 and not onlist2:
+            return -1
+        if onlist2 and not onlist1:
+            return 1
 
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)

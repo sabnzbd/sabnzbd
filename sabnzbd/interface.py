@@ -1195,7 +1195,7 @@ SPECIAL_VALUE_LIST = \
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload'
             )
 SPECIAL_LIST_LIST = \
-    ( 'rss_odd_titles',
+    ( 'rss_odd_titles', 'prio_sort_list'
     )
 
 class ConfigSpecial(object):

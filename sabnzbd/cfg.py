@@ -125,6 +125,7 @@ auto_sort = OptionBool('misc', 'auto_sort', False)
 folder_rename = OptionBool('misc', 'folder_rename', True)
 folder_max_length = OptionNumber('misc', 'folder_max_length', DEF_FOLDER_MAX, 20, 65000)
 pause_on_pwrar = OptionBool('misc', 'pause_on_pwrar', True)
+prio_sort_list = OptionList('misc', 'prio_sort_list')
 
 safe_postproc = OptionBool('misc', 'safe_postproc', True)
 pause_on_post_processing = OptionBool('misc', 'pause_on_post_processing', False)
