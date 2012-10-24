@@ -498,6 +498,10 @@
 </div><!-- /colmask -->
 
 <script>
+function urlencode(str) {
+  return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+}
+
 \$(document).ready(function(){
     \$('.editFeed').click(function(){
         var oldURI = \$(this).prev().val();
@@ -537,7 +541,7 @@
           url: "test_rss_feed",
           data: {feed: whichFeed, session: "$session" }
         }).done(function( msg ) {
-            location = '?feed=' + whichFeed;
+            location = '?feed=' + urlencode(whichFeed);
           // location.reload();
         });
     });
