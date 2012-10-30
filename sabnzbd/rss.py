@@ -619,7 +619,8 @@ def _get_link(uri, entry):
     link = None
     category = ''
     uri = uri.lower()
-    if 'newzbin.' in uri or 'newzxxx.' in uri or 'newzbin2.' in uri or 'newzxxx2.' in uri:
+    m = RE_NEWZBIN.search(uri)
+    if m and m.group(1) == 'newz' and m.group(2):
         link = entry.link
         if not (link and '/post/' in link.lower()):
             # Use alternative link
