@@ -558,7 +558,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2)\.[\w]+/browse/post/(\d+)', re.I)
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2|xxx2)\.[\w]+/browse/post/(\d+)', re.I)
 
 def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
@@ -619,7 +619,7 @@ def _get_link(uri, entry):
     link = None
     category = ''
     uri = uri.lower()
-    if 'newzbin.' in uri or 'newzxxx.'in uri or 'newzbin2.' in uri:
+    if 'newzbin.' in uri or 'newzxxx.' in uri or 'newzbin2.' in uri or 'newzxxx2.' in uri:
         link = entry.link
         if not (link and '/post/' in link.lower()):
             # Use alternative link
