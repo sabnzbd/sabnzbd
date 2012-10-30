@@ -1037,6 +1037,9 @@ def check_all_tasks():
     # Check one-shot pause
     sabnzbd.scheduler.pause_check()
 
+    # Check (and terminate) idle jobs
+    sabnzbd.nzbqueue.NzbQueue.do.stop_idle_jobs()
+
     return True
 
 

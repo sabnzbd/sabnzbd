@@ -827,6 +827,17 @@ class NzbQueue(TryList):
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
+    @synchronized(NZBQUEUE_LOCK)
+    def stop_idle_jobs(self):
+        """ Detect jobs that have zero files left and send them to post processing
+        """
+        empty = []
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
+                empty.append(nzo)
+        for nzo in empty:
+            self.end_job(nzo)
+
     def get_urls(self):
         """ Return list of future-types needing URL """
         lst = []
