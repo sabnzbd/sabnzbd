@@ -490,7 +490,7 @@ class RSSQueue(object):
                 try:
                     if feeds[feed].enable.get():
                         if not active:
-                            logging.info('Starting scheduled RSS read-out')
+                            logging.info("Starting scheduled RSS read-out for %s", feeds[feed].name)
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
@@ -504,7 +504,7 @@ class RSSQueue(object):
                     pass
             if active:
                 self.save()
-                logging.info('Finished scheduled RSS read-out')
+                logging.info("Finished scheduled RSS read-out for %s", feeds[feed].name)
 
 
     @synchronized(LOCK)
