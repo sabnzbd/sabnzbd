@@ -555,6 +555,8 @@ def parring(nzo, workdir):
 
     if repair_sets:
         for setname in repair_sets:
+            if cfg.ignore_samples() > 0 and 'sample' in setname.lower():
+                continue
             if not verified.get(setname, False):
                 logging.info("Running repair on set %s", setname)
                 parfile_nzf = par_table[setname]
