@@ -555,9 +555,16 @@ def parring(nzo, workdir):
         for set_ in repair_sets:
             logging.info("Running repair on set %s", set_)
             parfile_nzf = par_table[set_]
-            need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
-            if need_re_add:
-                re_add = True
+            if parfile_nzf:
+                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
+                if need_re_add:
+                    re_add = True
+                if res:
+                    # Remove par2 file to signal success
+                    nzo.partable[set_] = None
+            else:
+                # No par2: there never was any or the set is already verified/repaired
+                res = True
             par_error = par_error or not res
 
         if re_add:

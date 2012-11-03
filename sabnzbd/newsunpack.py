@@ -35,7 +35,8 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
                          flag_file
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from constants import Status, QCHECK_FILE
+from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
+load_data = save_data = None
 
 if sabnzbd.WIN32:
     try:
@@ -78,12 +79,17 @@ CURL_COMMAND = None
 def find_programs(curdir):
     """Find external programs
     """
+    global load_data, save_data
     def check(path, program):
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
         else:
             return None
+
+    # Another crazy Python import bug work-around
+    load_data = sabnzbd.load_data
+    save_data = sabnzbd.save_data
 
     if sabnzbd.DARWIN:
         try:
@@ -888,6 +894,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 
 _RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
+_RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
+
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
     if cfg.never_repair():
@@ -918,6 +926,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         if setname in joinable:
             command.append(joinable)
 
+    # Append the wildcard for this set
+    command.append('%s*' % os.path.join(os.path.split(parfile)[0], setname))
+
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
 
@@ -935,6 +946,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         # Set up our variables
         pars = []
         datafiles = []
+        renames = {}
 
         linebuf = ''
         finished = 0
@@ -1129,6 +1141,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 # Hit a bug in par2-tbb, retry with par2-classic
                 retry_classic = True
 
+            # File: "oldname.rar" - is a match for "newname.rar".
+            elif 'is a match for' in line:
+                m = _RE_IS_MATCH_FOR.search(line)
+                if m:
+                    old_name = m.group(1)
+                    new_name = m.group(2)
+                    logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
+                    renames[new_name] = old_name
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
@@ -1168,6 +1189,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             raise WindowsError(err)
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
+
+    # If successful, add renamed files to the collection
+    if finished and renames:
+        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        for name in previous or {}:
+            renames[name] = previous[name]
+        save_data(renames, RENAMES_FILE, nzo.workpath)
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')

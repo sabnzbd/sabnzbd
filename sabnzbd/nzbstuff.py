@@ -37,7 +37,7 @@ import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, \
-                              Status
+                              RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv, \
@@ -910,6 +910,15 @@ class NzbObject(TryList):
         """
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
+
+        # Substitute renamed files
+        renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
+        if renames:
+            for name in renames:
+                if name in files:
+                    files.remove(name)
+                    files.append(renames[name])
+
         # Looking for the longest name first, minimizes the chance on a mismatch
         files.sort(lambda x, y: len(y) - len(x))
 
