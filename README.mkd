@@ -1,5 +1,5 @@
-Release Notes  -  SABnzbd 0.7.5RC1
-==================================
+Release Notes  -  SABnzbd 0.7.5
+===============================
 
 ## Features
 - Update nzbmatrix category table (check your categories!)
@@ -9,9 +9,9 @@ Release Notes  -  SABnzbd 0.7.5RC1
 ## Bug fixes
 - Prevent stuck jobs at end of pre-check
 - Fix issues with accented and special characters in names of downloaded files
-- Adjust nzbmatrix category table
 - Fix problem with "Read" button when RSS feed name contains "&"
 - Prevent unusual SFV files from crashing post-processing
+- Added missing %dn formula to Generic Sort
 
 ## What's new in 0.7.0
 
