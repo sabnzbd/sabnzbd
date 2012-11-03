@@ -827,8 +827,7 @@ class NzbObject(TryList):
             # Move only when not current NZF and filename was extractable from subject
             if name and nzf is not xnzf:
                 head, vol, block = analyse_par2(name)
-                # When only subject is known, it's enough that that 'parset' is in subject
-                if head and lparset in head.lower():
+                if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
                     if not self.precheck:
@@ -1612,7 +1611,7 @@ def analyse_par2(name):
             vol = m.group(2)
             block = m.group(3)
         elif name.lower().find('.par2') > 0:
-            head = os.path.splitext(name)[0]
+            head = os.path.splitext(name)[0].strip()
         else:
             head = None
     return head, vol, block
@@ -1627,3 +1626,13 @@ def name_extractor(subject):
         if name and RE_NORMAL_NAME.search(name):
             result = name
     return platform_encode(result)
+
+
+def matcher(pattern, txt):
+    """ Return True if `pattern` is sufficiently equal to `txt`
+    """
+    if txt.endswith(pattern):
+        txt = txt[:txt.rfind(pattern)].strip()
+        return (not txt) or txt.endswith('"')
+    else:
+        return False

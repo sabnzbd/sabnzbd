@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, flag_file, \
+from sabnzbd.misc import exit_sab, cat_to_opts, \
                          get_admin_path, remove_all, globber
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
@@ -147,7 +147,13 @@ class NzbQueue(TryList):
 
 
     def repair_job(self, folder, new_nzb=None):
-        """ Reconstruct admin for a single job folder, optionally with new NZB """
+        """ Reconstruct admin for a single job folder, optionally with new NZB
+        """
+        def all_verified(path):
+            """ Return True when all sets have been successfully verified """
+            verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x':False}
+            return not bool([True for x in verified if not verified[x]])
+
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):
@@ -155,7 +161,7 @@ class NzbQueue(TryList):
         else:
             filename = ''
         if not filename:
-            if not flag_file(folder, VERIFIED_FILE):
+            if not all_verified(path):
                 filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))

@@ -31,7 +31,7 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, make_script_path, flag_file, \
+                         make_script_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
                          set_permissions
 from sabnzbd.tvsort import Sorter
@@ -540,6 +540,9 @@ def parring(nzo, workdir):
     growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
 
+    ## Get verification status of sets
+    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
+
     ## Collect the par files
     if nzo.partable:
         par_table = nzo.partable.copy()
@@ -551,58 +554,62 @@ def parring(nzo, workdir):
     par_error = False
 
     if repair_sets:
+        for setname in repair_sets:
+            if not verified.get(setname, False):
+                logging.info("Running repair on set %s", setname)
+                parfile_nzf = par_table[setname]
+                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
+                re_add = re_add or need_re_add
+                if not res and cfg.sfv_check():
+                    res = try_sfv_check(nzo, workdir, setname)
+                verified[setname] = res
+                par_error = par_error or not res
+    else:
+        logging.info("No par2 sets for %s", filename)
+        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
+        if cfg.sfv_check():
+            par_error = not try_sfv_check(nzo, workdir, '')
+            verified[''] = not par_error
 
-        for set_ in repair_sets:
-            logging.info("Running repair on set %s", set_)
-            parfile_nzf = par_table[set_]
-            if parfile_nzf:
-                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
-                if need_re_add:
-                    re_add = True
-                if res:
-                    # Remove par2 file to signal success
-                    nzo.partable[set_] = None
-            else:
-                # No par2: there never was any or the set is already verified/repaired
-                res = True
-            par_error = par_error or not res
+    if re_add:
+        logging.info('Readded %s to queue', filename)
+        if nzo.priority != TOP_PRIORITY:
+            nzo.priority = REPAIR_PRIORITY
+        sabnzbd.nzbqueue.add_nzo(nzo)
+        sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
-        if re_add:
-            logging.info('Readded %s to queue', filename)
-            if nzo.priority != TOP_PRIORITY:
-                nzo.priority = REPAIR_PRIORITY
-            sabnzbd.nzbqueue.add_nzo(nzo)
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()
+    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-        logging.info('Par2 check finished on %s', filename)
-
-    if (par_error and not re_add) or not repair_sets:
-        # See if alternative SFV check is possible
-        if cfg.sfv_check() and not (flag_file(workdir, VERIFIED_FILE) and not repair_sets):
-            sfvs = globber(workdir, '*.sfv')
-        else:
-            sfvs = None
-        if sfvs:
-            par_error = False
-            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
-            for sfv in sfvs:
-                failed = sfv_check(sfv)
-                if failed:
-                    msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
-                    msg += '; '
-                    msg += '; '.join(failed)
-                    nzo.set_unpack_info('Repair', msg)
-                    par_error = True
-            if not par_error:
-                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
-        elif not repair_sets:
-            logging.info("No par2 sets for %s", filename)
-            nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-
-    if not par_error:
-        flag_file(workdir, VERIFIED_FILE, create=True)
+    logging.info('Par2 check finished on %s', filename)
     return par_error, re_add
 
+
+def try_sfv_check(nzo, workdir, setname):
+    """ Attempt to verify set using SFV file
+        Return True if verified, False when failed
+        When setname is '', all SFV files will be used, otherwise only the matching one
+    """
+    # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
+    sfvs = globber(workdir, '*.sfv')
+    sfvs.sort(lambda x, y: len(x) - len(y))
+    par_error = False
+    found = False
+    for sfv in sfvs:
+        if setname in os.path.basename(sfv):
+            found = True
+            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            failed = sfv_check(sfv)
+            if failed:
+                msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                msg += '; '
+                msg += '; '.join(failed)
+                nzo.set_unpack_info('Repair', msg)
+                par_error = True
+            else:
+                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
+            if setname:
+                break
+    return found and not par_error
 
 
 #------------------------------------------------------------------------------
