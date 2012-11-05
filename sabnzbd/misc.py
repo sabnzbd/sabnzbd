@@ -1010,7 +1010,7 @@ def memory_usage():
         res = int(_PAGE_SIZE * int(v[1]) / MEBI)
         return "V=%sM R=%sM" % (virt, res)
     except:
-        return None
+        return ''
 
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
@@ -1026,7 +1026,10 @@ def loadavg():
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         opt = cfg.show_sysload()
         if opt:
-            p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            try:
+                p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            except:
+                pass
             if opt > 1 and _HAVE_STATM:
                 p = '%s | %s' % (p, memory_usage())
     return p
