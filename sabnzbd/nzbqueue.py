@@ -755,6 +755,7 @@ class NzbQueue(TryList):
         if not nzo.deleted:
             nzo.deleted = True
             if nzo.precheck:
+                nzo.save_attribs()
                 # Check result
                 enough, ratio = nzo.check_quality()
                 if enough:
@@ -765,7 +766,7 @@ class NzbQueue(TryList):
                     return
                 else:
                     # Not enough data, let postprocessor show it as failed
-                    nzo.save_attribs()
+                    pass
             Assembler.do.process((nzo, None))
 
 
