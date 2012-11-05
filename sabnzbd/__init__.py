@@ -302,9 +302,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     PostProcessor()
 
     NzbQueue()
-    NzbQueue.do.read_queue(repair)
 
     Assembler()
+
+    NzbQueue.do.read_queue(repair)
 
     Downloader(pause_downloader or paused)
 
