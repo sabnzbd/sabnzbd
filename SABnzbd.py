@@ -691,10 +691,7 @@ def is_sabnzbd_running(url):
     try:
         url = '%s&mode=version' % (url)
         ver = sabnzbd.newsunpack.get_from_url(url)
-        if ver and ver.strip(' \n\r\t') == sabnzbd.__version__:
-            return True
-        else:
-            return False
+        return True
     except:
         return False
 
@@ -714,7 +711,7 @@ def find_free_port(host, currentport):
 
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
-    """ Check for a running instance of sabnzbd(same version) on this port
+    """ Check for a running instance of sabnzbd on this port
         allow_browser==True|None will launch the browser, False will not.
     """
     if allow_browser is None:
