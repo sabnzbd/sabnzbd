@@ -590,7 +590,8 @@ def try_sfv_check(nzo, workdir, setname):
     """ Attempt to verify set using SFV file
         Return True if verified, False when failed
         When setname is '', all SFV files will be used, otherwise only the matching one
-    """
+        When setname is '' and no SFV files are found, True is returned
+        """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
     sfvs = globber(workdir, '*.sfv')
     sfvs.sort(lambda x, y: len(x) - len(y))
@@ -611,7 +612,7 @@ def try_sfv_check(nzo, workdir, setname):
                 nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
             if setname:
                 break
-    return found and not par_error
+    return (found or not setname) and not par_error
 
 
 #------------------------------------------------------------------------------
