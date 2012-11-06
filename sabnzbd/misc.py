@@ -1081,7 +1081,11 @@ def int_conv(value):
 # Diskfree
 if sabnzbd.WIN32:
     # windows diskfree
-    import win32api
+    try:
+        # Careful here, because win32api test hasn't been done yet!
+        import win32api
+    except:
+        pass
     def diskfree(_dir):
         """ Return amount of free diskspace in GBytes
         """
