@@ -28,6 +28,7 @@ import logging
 
 import sabnzbd
 from sabnzbd.constants import *
+import sabnzbd.cfg
 
 try:
     from OpenSSL import SSL
@@ -84,23 +85,32 @@ def request_server_info(server):
 
 
 def GetServerParms(host, port):
-    # Make sure port is numeric (unicode input not supported)
+    """ Return processed getaddrinfo() for server
+    """
     try:
         int(port)
     except:
-        # Could do with a warning here
         port = 119
+    opt = sabnzbd.cfg.ipv6_servers()
     try:
-        # Standard IPV4
-        return socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+        # Standard IPV4 or IPV6
+        ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
+            # IPv6 reachable and allowed, or forced by user
+            return ips
+        else:
+            # IPv6 unreachable or not allowed by user
+            return [ip for ip in ips if ':' not in ip[4][0]]
     except:
-        try:
-            # Try IPV6 explicitly
-            return socket.getaddrinfo(host, port, socket.AF_INET6,
-                                      socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
-        except:
-            # Nothing found!
-            return None
+        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
+            try:
+                # Try IPV6 explicitly
+                return socket.getaddrinfo(host, port, socket.AF_INET6,
+                                          socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+            except:
+                # Nothing found!
+                pass
+        return None
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
@@ -415,3 +425,25 @@ class SSLConnection(object):
                 return apply(self._ssl_conn.%s, args)
             finally:
                 self._lock.release()\n""" % (f, f)
+
+
+def test_ipv6():
+    """ Check if external IPv6 addresses are reachable """
+    # Use google.com to test IPv6 access
+    try:
+        info = socket.getaddrinfo('www.google.com', 80, socket.AF_INET6, socket.SOCK_STREAM,
+                                  socket.IPPROTO_IP, socket.AI_CANONNAME)
+    except socket.gaierror:
+        return False
+
+    try:
+        af, socktype, proto, canonname, sa = info[0]
+        sock = socket.socket(af, socktype, proto)
+        sock.settimeout(4)
+        sock.connect(sa[0:2])
+        sock.close()
+        return True
+    except socket.error:
+        return False
+
+_EXTERNAL_IPV6 = test_ipv6()
