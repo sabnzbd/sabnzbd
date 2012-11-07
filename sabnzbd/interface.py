@@ -84,6 +84,12 @@ def check_server(host, port):
         return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port))
 
 
+def check_access():
+    """ Check if external address is allowed """
+    referrer = cherrypy.request.remote.ip
+    return referrer in ('127.0.0.1', '::1') or referrer.startswith(cfg.local_range())
+
+
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
     """
@@ -158,6 +164,8 @@ def set_auth(conf):
 
 def check_session(kwargs):
     """ Check session key """
+    if not check_access():
+        return u'No access'
     key = kwargs.get('session')
     if not key:
         key = kwargs.get('apikey')
@@ -187,6 +195,9 @@ def check_apikey(kwargs, nokey=False):
 
     # For NZB upload calls, a separate key can be used
     nzbkey = kwargs.get('mode', '') in ('addid', 'addurl', 'addfile', 'addlocalfile')
+
+    if not nzbkey and not check_access():
+        return report(output, 'No access')
 
     # First check APIKEY, if OK that's sufficient
     if not (cfg.disable_key() or nokey):
@@ -249,6 +260,8 @@ class MainPage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if not check_access(): return Protected()
+
         if sabnzbd.OLD_QUEUE and not cfg.warned_old_queue():
             cfg.warned_old_queue.set(True)
             config.save_config()
@@ -293,6 +306,7 @@ class MainPage(object):
 
 
     def add_handler(self, kwargs):
+        if not check_access(): return Protected()
         id = kwargs.get('id', '')
         if not id:
             id = kwargs.get('url', '')
@@ -407,6 +421,7 @@ class MainPage(object):
     def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
         # No session key check, due to fixed URLs
+        if not check_access(): return Protected()
 
         name = kwargs.get('name')
         if name:
@@ -458,7 +473,7 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/files
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
-
+        if not check_access(): return Protected()
         nzo_id = None
         for a in args:
             if a.startswith('SABnzbd_nzo'):
@@ -629,6 +644,7 @@ class QueuePage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if not check_access(): return Protected()
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
@@ -845,6 +861,7 @@ class HistoryPage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if not check_access(): return Protected()
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         search = kwargs.get('search')
@@ -963,7 +980,7 @@ class HistoryPage(object):
     def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
         # No session key check, due to fixed URLs
-
+        if not check_access(): return Protected()
         name = kwargs.get('name')
         if name:
             history_db = cherrypy.thread_data.history_db
@@ -1009,6 +1026,7 @@ class ConfigPage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if not check_access(): return Protected()
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
@@ -1091,7 +1109,7 @@ class ConfigFolders(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1147,7 +1165,7 @@ class ConfigSwitches(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1207,7 +1225,7 @@ class ConfigSpecial(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1241,7 +1259,7 @@ class ConfigSpecial(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit',
+    'refresh_rate', 'cache_limit', 'local_range',
     'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
@@ -1276,7 +1294,7 @@ class ConfigGeneral(object):
             else:
                 return ''
 
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1349,6 +1367,7 @@ class ConfigGeneral(object):
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
+        conf['local_range'] = cfg.local_range()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
@@ -1457,7 +1476,7 @@ class ConfigServer(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1616,7 +1635,7 @@ class ConfigRss(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -1914,7 +1933,7 @@ class ConfigScheduling(object):
             days["7"] = T('Sunday')
             return days
 
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -2044,7 +2063,7 @@ class ConfigIndexers(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -2127,7 +2146,7 @@ class ConfigCats(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -2201,7 +2220,7 @@ class ConfigSorting(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
@@ -2254,6 +2273,7 @@ class Status(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if not check_access(): return Protected()
         header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
         header['logfile'] = sabnzbd.LOGFILE
@@ -2608,7 +2628,7 @@ class ConfigNotify(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.configlock():
+        if cfg.configlock() or not check_access():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
