@@ -23,6 +23,7 @@ import Queue
 import binascii
 import logging
 import re
+from time import sleep
 from threading import Thread
 try:
     import _yenc
@@ -72,6 +73,7 @@ class Decoder(Thread):
     def run(self):
         from sabnzbd.nzbqueue import NzbQueue
         while 1:
+            sleep(0.001)
             art_tup = self.queue.get()
             if not art_tup:
                 break
