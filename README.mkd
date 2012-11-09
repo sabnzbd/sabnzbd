@@ -1,17 +1,16 @@
-Release Notes  -  SABnzbd 0.7.5
-===============================
+Release Notes  -  SABnzbd 0.7.6Beta1
+====================================
 
 ## Features
-- Update nzbmatrix category table (check your categories!)
-- Add special options 'empty_postproc' and 'prio_sort_list' (See Wiki)
-- OSX: Retina compatible menu-bar icons
+- Properly handle par2-sets that were renamed after creation by the poster
 
 ## Bug fixes
-- Prevent stuck jobs at end of pre-check
-- Fix issues with accented and special characters in names of downloaded files
-- Fix problem with "Read" button when RSS feed name contains "&"
-- Prevent unusual SFV files from crashing post-processing
-- Added missing %dn formula to Generic Sort
+- Prevent blocking assembly of completed files, (this resulted in excessive CPU and memory usage)
+- Fix speed issues with some Usenet servers due to unreachable IPv6 addresses
+- Fix issues with SFV-base checks
+- Successfully pre-checked job lost its attributes when those were changed during check
+- No longer check version when looking for a running instance of SABnzbd
+  (this prevents unintended multiple instances).
 
 ## What's new in 0.7.0
 

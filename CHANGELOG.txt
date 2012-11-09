@@ -1,4 +1,15 @@
 -------------------------------------------------------------------------------
+ 0.7.6Beta1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Handle par2 sets that were renamed after creation
+- Prevent blocking assembly of completed files, ( this resulted in
+  excessive CPU and memory usage)
+- Fix speed issues with some Usenet servers due to unreachable IPv6 addresses
+- Fix issues with SFV-base checks
+- Prevent crash on Unix-Pythons that don't have the os.getloadavg() function
+- Successfully pre-checked job lost its attributes when those were changed during check
+- Remove version check when looking for a running instance of SABnzbd
+-------------------------------------------------------------------------------
  0.7.5Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Add missing %dn formula to Generic Sort
