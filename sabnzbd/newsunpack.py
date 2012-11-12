@@ -977,12 +977,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if 'Repairing:' not in line:
                 lines.append(line)
 
-            if 'The recovery file does not exist' in line:
-                logging.info('%s', line)
-                nzo.set_unpack_info('Repair', unicoder(line), set=setname)
-                nzo.status = Status.FAILED
-
-            elif line.startswith('Invalid option specified'):
+            if line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
@@ -1002,7 +997,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 start = time()
                 verified = 1
 
-            elif line.startswith('Main packet not found'):
+            elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 ## Initialparfile probably didn't decode properly,
                 logging.info(Ta('Main packet not found...'))
 
@@ -1021,8 +1016,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
                     logging.info("Found new par2file %s", nzf.filename)
 
+                    ## Move from extrapar list to files to be downloaded
                     nzo.add_parfile(nzf)
                     extrapars.remove(nzf)
+                    ## Now set new par2 file as primary par2
+                    nzo.partable[setname] = nzf
+                    nzf.extrapars= extrapars
+                    parfile_nzf = []
                     ## mark for readd
                     readd = True
                 else:

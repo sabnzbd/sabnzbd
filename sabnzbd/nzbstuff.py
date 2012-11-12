@@ -845,6 +845,9 @@ class NzbObject(TryList):
                 head, vol, block = analyse_par2(fn)
                 ## Is a par2file and repair mode activated
                 if head and (self.repair or cfg.allow_streaming()):
+                    ## Skip if mini-par2 is not complete
+                    if not block and nzf.bytes_left:
+                        return
                     nzf.set_par2(head, vol, block)
                     ## Already got a parfile for this set?
                     if head in self.partable:
