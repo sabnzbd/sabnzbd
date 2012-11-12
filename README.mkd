@@ -1,6 +1,10 @@
-Release Notes  -  SABnzbd 0.7.6Beta1
+Release Notes  -  SABnzbd 0.7.6Beta2
 ====================================
 
+## Beta 2
+- A damaged smallest par2 can block fetching of more par2 files
+
+## Beta 1
 ## Features
 - Properly handle par2-sets that were renamed after creation by the poster
 
