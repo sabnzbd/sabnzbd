@@ -1970,13 +1970,13 @@ class ConfigScheduling(object):
                     action = Ttemplate("sch-" + act) + ' ' + server
 
             if day_numbers == "1234567":
-              days_of_week = "Daily"
+                days_of_week = "Daily"
             elif day_numbers == "12345":
-              days_of_week = "Weekdays"
+                days_of_week = "Weekdays"
             elif day_numbers == "67":
-              days_of_week = "Weekends"
+                days_of_week = "Weekends"
             else:
-              days_of_week = ", ".join([day_names.get(i, "**") for i in day_numbers])
+                days_of_week = ", ".join([day_names.get(i, "**") for i in day_numbers])
             item = (snum, '%02d' % int(h), '%02d' % int(m), days_of_week, '%s %s' % (action, value))
 
             conf['taskinfo'].append(item)
