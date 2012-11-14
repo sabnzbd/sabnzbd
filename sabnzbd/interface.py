@@ -1944,7 +1944,7 @@ class ConfigScheduling(object):
         conf['schedlines'] = []
         snum = 1
         conf['taskinfo'] = []
-        for ev in scheduler.sort_schedules(forward=True):
+        for ev in scheduler.sort_schedules(all_events=False):
             line = ev[3]
             conf['schedlines'].append(line)
             try:
