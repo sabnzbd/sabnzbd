@@ -28,6 +28,7 @@ import signal
 import socket
 import platform
 import time
+import re
 
 try:
     import Cheetah
@@ -691,7 +692,7 @@ def is_sabnzbd_running(url):
     try:
         url = '%s&mode=version' % (url)
         ver = sabnzbd.newsunpack.get_from_url(url)
-        return True
+        return bool(ver and re.search(r'\d+\.\d+\.', ver))
     except:
         return False
 
