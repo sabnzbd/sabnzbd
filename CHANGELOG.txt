@@ -2,6 +2,8 @@
  0.7.6Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - A damaged smallest par2 can block fetching of more par2 files
+- Fix evaluation of schedules at startup
+- Make check for running SABnzbd instance more robust
 -------------------------------------------------------------------------------
  0.7.6Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------

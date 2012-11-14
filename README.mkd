@@ -2,7 +2,9 @@ Release Notes  -  SABnzbd 0.7.6Beta2
 ====================================
 
 ## Beta 2
-- A damaged smallest par2 can block fetching of more par2 files
+- A damaged base par2 file could block download of more par2 files
+- Fix evaluation of schedules at startup
+- Fix possible failing startup when running as a Windows Service
 
 ## Beta 1
 ## Features
