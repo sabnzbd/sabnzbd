@@ -33,7 +33,7 @@ from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          make_script_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
-                         set_permissions
+                         set_permissions, cleanup_empty_directories
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -375,10 +375,7 @@ def process_job(nzo):
                     nzb_list = None
                 if nzb_list:
                     nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
-                    try:
-                        remove_dir(tmp_workdir_complete)
-                    except:
-                        pass
+                    cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     cleanup_list(tmp_workdir_complete, False)
 
@@ -666,6 +663,11 @@ def cleanup_list(wdir, skip_nzb):
                     except:
                         logging.error(Ta('Removing %s failed'), path)
                         logging.info("Traceback: ", exc_info = True)
+        if files:
+            try:
+                remove_dir(wdir)
+            except:
+                pass
 
 
 def prefix(path, pre):
@@ -681,29 +683,24 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
     """
-    lst = []
-
-    try:
-        files = os.listdir(wdir)
-    except:
-        files = []
+    files = []
+    for root, dirs, names in os.walk(wdir):
+        for name in names:
+            files.append(os.path.join(root, name))
 
     for file_ in files:
         if os.path.splitext(file_)[1].lower() != '.nzb':
-            return lst
+            return None
 
-    # For a single NZB, use the current job name
+    # For multiple NZBs, cannot use the current job name
     if len(files) != 1:
         nzbname = None
 
     # Process all NZB files
     for file_ in files:
-        if file_.lower().endswith('.nzb'):
-            dirscanner.ProcessSingleFile(file_, os.path.join(wdir, file_), pp, script, cat,
-                                         priority=priority, keep=False, dup_check=False, nzbname=nzbname)
-            lst.append(file_)
-
-    return lst
+        dirscanner.ProcessSingleFile(os.path.split(file_)[1], file_, pp, script, cat,
+                                     priority=priority, keep=False, dup_check=False, nzbname=nzbname)
+    return files
 
 
 def one_file_or_folder(folder):
