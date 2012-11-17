@@ -184,6 +184,10 @@ def check_apikey(kwargs, nokey=False):
     """ Check api key or nzbkey
         Return None when OK, otherwise an error message
     """
+    def log_warning(txt):
+        txt = '%s %s' % (txt, cherrypy.request.headers.get('User-Agent', '??'))
+        logging.warning('%s', txt)
+
     output = kwargs.get('output')
     mode = kwargs.get('mode', '')
     callback = kwargs.get('callback')
@@ -204,14 +208,14 @@ def check_apikey(kwargs, nokey=False):
         key = kwargs.get('apikey')
         if not key:
             if not special:
-                logging.warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
+                log_warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)
         elif nzbkey and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
-            logging.warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
+            log_warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect', callback=callback)
 
     # No active APIKEY, check web credentials instead
@@ -220,7 +224,7 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if not special:
-                logging.warning(Ta('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
+                log_warning(Ta('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication', callback=callback)
     return None
 
@@ -411,7 +415,8 @@ class MainPage(object):
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        logging.debug('API-call from %s %s', cherrypy.request.remote.ip, kwargs)
+        logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
+                      cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
