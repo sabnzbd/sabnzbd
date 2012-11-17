@@ -1,22 +1,19 @@
-Release Notes  -  SABnzbd 0.7.6Beta2
-====================================
+Release Notes  -  SABnzbd 0.7.6
+===============================
 
-## Beta 2
-- A damaged base par2 file could block download of more par2 files
-- Fix evaluation of schedules at startup
-- Fix possible failing startup when running as a Windows Service
-
-## Beta 1
 ## Features
 - Properly handle par2-sets that were renamed after creation by the poster
+- Recursive scanning when re-queuing downloaded NZB files
 
 ## Bug fixes
 - Prevent blocking assembly of completed files, (this resulted in excessive CPU and memory usage)
 - Fix speed issues with some Usenet servers due to unreachable IPv6 addresses
 - Fix issues with SFV-base checks
 - Successfully pre-checked job lost its attributes when those were changed during check
-- No longer check version when looking for a running instance of SABnzbd
-  (this prevents unintended multiple instances).
+- No longer check version when looking for a running instance of SABnzbd (this prevents unintended multiple instances).
+- A damaged base par2 file could block download of more par2 files
+- Fix evaluation of schedules at startup
+- Fix possible failing startup when running as a Windows Service
 
 ## What's new in 0.7.0
 

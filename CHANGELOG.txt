@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.7.6Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Recursive scanning when re-queuing downloaded NZB files
+- Log "User-Agent" header of API calls
+-------------------------------------------------------------------------------
  0.7.6Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - A damaged smallest par2 can block fetching of more par2 files
