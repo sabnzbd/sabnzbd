@@ -489,8 +489,7 @@ class RSSQueue(object):
             for feed in feeds.keys():
                 try:
                     if feeds[feed].enable.get():
-                        if not active:
-                            logging.info('Starting scheduled RSS read-out')
+                        logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
@@ -504,7 +503,7 @@ class RSSQueue(object):
                     pass
             if active:
                 self.save()
-                logging.info('Finished scheduled RSS read-out')
+                logging.info('Finished scheduled RSS read-outs')
 
 
     @synchronized(LOCK)
@@ -558,7 +557,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2)\.[\w]+/browse/post/(\d+)', re.I)
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2|xxx2)\.[\w]+/browse/post/(\d+)', re.I)
 
 def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
@@ -619,7 +618,7 @@ def _get_link(uri, entry):
     link = None
     category = ''
     uri = uri.lower()
-    if 'newzbin.' in uri or 'newzxxx.'in uri or 'newzbin2.' in uri:
+    if 'newzbin.' in uri or 'newzxxx.' in uri or 'newzbin2.' in uri or 'newzxxx2.' in uri:
         link = entry.link
         if not (link and '/post/' in link.lower()):
             # Use alternative link

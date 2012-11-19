@@ -224,7 +224,10 @@ class OptionList(Option):
         error = None
         if value is not None:
             if not isinstance(value, list):
-                value = listquote.simplelist(value)
+                if '"' not in value and ',' not in value:
+                    value = value.split()
+                else:
+                    value = listquote.simplelist(value)
             if self.__validation:
                 error, value = self.__validation(value)
             if not error:

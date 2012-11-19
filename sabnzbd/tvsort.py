@@ -625,6 +625,9 @@ class GenericSorter(object):
         mapping.append(('%decade', self.movie_info['decade']))
         mapping.append(('%0decade', self.movie_info['decade_two']))
 
+        # Original dir name
+        mapping.append(('%dn', self.original_dirname))
+
         path = path_subst(sorter, mapping)
 
         for key, name in REPLACE_AFTER.iteritems():

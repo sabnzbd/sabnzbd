@@ -37,7 +37,7 @@ import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, \
-                              Status
+                              RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv, \
@@ -827,8 +827,7 @@ class NzbObject(TryList):
             # Move only when not current NZF and filename was extractable from subject
             if name and nzf is not xnzf:
                 head, vol, block = analyse_par2(name)
-                # When only subject is known, it's enough that that 'parset' is in subject
-                if head and lparset in head.lower():
+                if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
                     if not self.precheck:
@@ -846,6 +845,9 @@ class NzbObject(TryList):
                 head, vol, block = analyse_par2(fn)
                 ## Is a par2file and repair mode activated
                 if head and (self.repair or cfg.allow_streaming()):
+                    ## Skip if mini-par2 is not complete
+                    if not block and nzf.bytes_left:
+                        return
                     nzf.set_par2(head, vol, block)
                     ## Already got a parfile for this set?
                     if head in self.partable:
@@ -910,6 +912,15 @@ class NzbObject(TryList):
         """
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
+
+        # Substitute renamed files
+        renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
+        if renames:
+            for name in renames:
+                if name in files:
+                    files.remove(name)
+                    files.append(renames[name])
+
         # Looking for the longest name first, minimizes the chance on a mismatch
         files.sort(lambda x, y: len(y) - len(x))
 
@@ -1392,8 +1403,9 @@ class NzbObject(TryList):
 #-------------------------------------------------------------------------------
 
 def nzf_get_filename(nzf):
-    # Return filename, if the filename not set, try the
-    # the full subject line instead. Can produce non-ideal results
+    """ Return filename, if the filename not set, try the
+        the full subject line instead. Can produce non-ideal results
+    """
     name = nzf.filename
     if not name:
         name = nzf.subject
@@ -1402,8 +1414,31 @@ def nzf_get_filename(nzf):
     return name.lower()
 
 
+def get_ext_list():
+    """ Return priority extenstion list, with extensions starting with a period
+    """
+    exts = []
+    for ext in cfg.prio_sort_list():
+        ext = ext.strip()
+        if not ext.startswith('.'):
+            ext = '.' + ext
+        exts.append(ext)
+    return exts
+
+
+def ext_on_list(name, lst):
+    """ Return True if `name` contains any extension in `lst`
+    """
+    for ext in lst:
+        if name.rfind(ext) >= 0:
+            return True
+    return False
+
+
 def nzf_cmp_date(nzf1, nzf2):
-    # Compare files based on date, but give vol-par files preference
+    """ Compare files based on date, but give vol-par files preference.
+        Wrapper needed, because `cmp` function doesn't handle extra parms.
+    """
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
@@ -1430,6 +1465,16 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
         return 1
     if is_par2 and not is_par1:
         return -1
+
+    # Anything with a priority extention goes first
+    ext_list = get_ext_list()
+    if ext_list:
+        onlist1 = ext_on_list(name1, ext_list)
+        onlist2 = ext_on_list(name2, ext_list)
+        if onlist1 and not onlist2:
+            return -1
+        if onlist2 and not onlist1:
+            return 1
 
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)
@@ -1569,7 +1614,7 @@ def analyse_par2(name):
             vol = m.group(2)
             block = m.group(3)
         elif name.lower().find('.par2') > 0:
-            head = os.path.splitext(name)[0]
+            head = os.path.splitext(name)[0].strip()
         else:
             head = None
     return head, vol, block
@@ -1583,4 +1628,14 @@ def name_extractor(subject):
         name = name.strip(' "')
         if name and RE_NORMAL_NAME.search(name):
             result = name
-    return result
+    return platform_encode(result)
+
+
+def matcher(pattern, txt):
+    """ Return True if `pattern` is sufficiently equal to `txt`
+    """
+    if txt.endswith(pattern):
+        txt = txt[:txt.rfind(pattern)].strip()
+        return (not txt) or txt.endswith('"')
+    else:
+        return False

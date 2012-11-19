@@ -39,7 +39,7 @@ except:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, VERIFIED_FILE, Status, MEBI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -1010,7 +1010,7 @@ def memory_usage():
         res = int(_PAGE_SIZE * int(v[1]) / MEBI)
         return "V=%sM R=%sM" % (virt, res)
     except:
-        return None
+        return ''
 
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
@@ -1026,7 +1026,10 @@ def loadavg():
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         opt = cfg.show_sysload()
         if opt:
-            p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            try:
+                p = '%.2f | %.2f | %.2f' % os.getloadavg()
+            except:
+                pass
             if opt > 1 and _HAVE_STATM:
                 p = '%s | %s' % (p, memory_usage())
     return p
@@ -1078,7 +1081,11 @@ def int_conv(value):
 # Diskfree
 if sabnzbd.WIN32:
     # windows diskfree
-    import win32api
+    try:
+        # Careful here, because win32api test hasn't been done yet!
+        import win32api
+    except:
+        pass
     def diskfree(_dir):
         """ Return amount of free diskspace in GBytes
         """

@@ -223,43 +223,47 @@ def abort():
         __SCHED.running = False
 
 
-def sort_schedules(forward):
+def sort_schedules(all_events, now=None):
     """ Sort the schedules, based on order of happening from now
-        forward: assume expired daily event to occur tomorrow
+        `all_events=True`: Return an event for each active day
+        `all_events=False`: Return only first occurring event of the week
+        `now` : for testing: simulated localtime()
     """
 
+    day_min = 24 * 60
+    week_min = 7 * day_min
     events = []
-    now = time.localtime()
-    now_hm = int(now[3])*60 + int(now[4])
-    now = int(now[6])*24*60 + now_hm
+
+    now = now or time.localtime()
+    now_hm = now[3] * 60 + now[4]
+    now = now[6] * day_min + now_hm
 
     for schedule in cfg.schedules():
         parms = None
         try:
-            m, h, d, action, parms = schedule.split(None, 4)
+            m, h, dd, action, parms = schedule.split(None, 4)
         except:
             try:
-                m, h, d, action = schedule.split(None, 3)
+                m, h, dd, action = schedule.split(None, 3)
             except:
                 continue # Bad schedule, ignore
         action = action.strip()
-        try:
-            then = int(h)*60 + int(m)
-            if d == '*':
-                d = int(now/(24*60))
-                if forward and (then < now_hm): d = (d + 1) % 7
-            else:
-                d = int(d)-1
-            then = d*24*60 + then
-        except:
+        if dd == '*':
+            dd = '1234567'
+        if not dd.isdigit():
             continue # Bad schedule, ignore
+        for d in dd:
+            then = (int(d) - 1) * day_min + int(h) * 60 + int(m)
+            dif = then - now
+            if all_events and dif < 0:
+                # Expired event will occur again after a week
+                dif = dif + week_min
 
-        dif = then - now
-        if dif < 0: dif = dif + 7*24*60
+            events.append((dif, action, parms, schedule))
+            if not all_events:
+                break
 
-        events.append((dif, action, parms, schedule))
-
-    events.sort(lambda x, y: x[0]-y[0])
+    events.sort(lambda x, y: x[0] - y[0])
     return events
 
 
@@ -272,7 +276,7 @@ def analyse(was_paused=False):
     speedlimit = None
     servers = {}
 
-    for ev in sort_schedules(forward=False):
+    for ev in sort_schedules(all_events=True):
         logging.debug('Schedule check result = %s', ev)
         action = ev[1]
         try:

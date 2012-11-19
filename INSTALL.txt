@@ -1,4 +1,4 @@
-                                SABnzbd 0.7.4
+                                SABnzbd 0.7.6
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -60,7 +60,8 @@ Unix/Linux/OSX
 OSX Leopard/SnowLeopard
     Python 2.6              http://www.activestate.com
 
-OSX Lion                    Apple Python 2.7 (included in OSX)
+OSX Lion/MountainLion
+    Apple Python 2.7        Included in OSX (default)
 
 Windows
     Python-2.7.latest       http://www.activestate.com

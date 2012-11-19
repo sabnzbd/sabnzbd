@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, flag_file, \
+from sabnzbd.misc import exit_sab, cat_to_opts, \
                          get_admin_path, remove_all, globber
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
@@ -147,7 +147,13 @@ class NzbQueue(TryList):
 
 
     def repair_job(self, folder, new_nzb=None):
-        """ Reconstruct admin for a single job folder, optionally with new NZB """
+        """ Reconstruct admin for a single job folder, optionally with new NZB
+        """
+        def all_verified(path):
+            """ Return True when all sets have been successfully verified """
+            verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x':False}
+            return not bool([True for x in verified if not verified[x]])
+
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):
@@ -155,7 +161,7 @@ class NzbQueue(TryList):
         else:
             filename = ''
         if not filename:
-            if not flag_file(folder, VERIFIED_FILE):
+            if not all_verified(path):
                 filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
@@ -178,8 +184,9 @@ class NzbQueue(TryList):
             logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
             return
         from sabnzbd.dirscanner import ProcessSingleFile
-        nzo_id = ProcessSingleFile(os.path.split(nzb_path)[1], nzb_path, reuse=True)[1][0]
-        self.replace_in_q(nzo, nzo_id)
+        res, nzo_ids = ProcessSingleFile(nzo.work_name + '.nzb', nzb_path, reuse=True)
+        if res == 0 and nzo_ids:
+            self.replace_in_q(nzo, nzo_ids[0])
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -189,8 +196,8 @@ class NzbQueue(TryList):
             new_nzo = self.get_nzo(nzo_id)
             pos = self.__nzo_list.index(new_nzo)
             targetpos = self.__nzo_list.index(nzo)
-            self.__nzo_list.pop(pos)
             self.__nzo_list[targetpos] = new_nzo
+            self.__nzo_list.pop(pos)
             del self.__nzo_table[nzo.nzo_id]
             del nzo
         except:
@@ -748,6 +755,7 @@ class NzbQueue(TryList):
         if not nzo.deleted:
             nzo.deleted = True
             if nzo.precheck:
+                nzo.save_attribs()
                 # Check result
                 enough, ratio = nzo.check_quality()
                 if enough:
@@ -758,7 +766,7 @@ class NzbQueue(TryList):
                     return
                 else:
                     # Not enough data, let postprocessor show it as failed
-                    nzo.save_attribs()
+                    pass
             Assembler.do.process((nzo, None))
 
 
@@ -825,6 +833,17 @@ class NzbQueue(TryList):
         nzo.purge_data(keep_basic, del_files)
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
+
+    @synchronized(NZBQUEUE_LOCK)
+    def stop_idle_jobs(self):
+        """ Detect jobs that have zero files left and send them to post processing
+        """
+        empty = []
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
+                empty.append(nzo)
+        for nzo in empty:
+            self.end_job(nzo)
 
     def get_urls(self):
         """ Return list of future-types needing URL """

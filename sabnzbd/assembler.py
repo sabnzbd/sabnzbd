@@ -139,7 +139,7 @@ def _assemble(nzf, path, dupe):
     decodetable = nzf.decodetable
 
     for articlenum in decodetable:
-        sleep(0.01)
+        sleep(0.001)
         article = decodetable[articlenum]
 
         data = ArticleCache.do.load_article(article)

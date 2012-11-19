@@ -1,36 +1,19 @@
-Release Notes  -  SABnzbd 0.7.4
+Release Notes  -  SABnzbd 0.7.6
 ===============================
 
-## Highlights in 0.7.4
-
-- OSX Mountain Lion: Notification Center support
-- OSX Mountain Lion: improved "keep awake" support
-- Scheduler: action can now run on multiple weekdays
-- Fix: pre-check failed to consider extra par2 files
-
 ## Features
-- Support for HTTPS chain files (needed when you buy your own certificate)
-- Special option: rss_odd_titles, see [Wiki](http://wiki.sabnzbd.org/configure-special-0-7/ "Wiki")
-- Special option: 'overwrite_files', see [Wiki](http://wiki.sabnzbd.org/configure-special-0-7/ "Wiki")
-- Show memory usage on Linux systems
-- Scheduler: add "remove failed jobs" action
+- Properly handle par2-sets that were renamed after creation by the poster
+- Recursive scanning when re-queuing downloaded NZB files
 
 ## Bug fixes
-- After successful pre-check, preserve a job's position in the queue
-- Restore SABnzbd icon for Growl
-- Make Windows version less eager to use par2-classic
-- Prevent jobs from showing up in queue and history simultaneously
-- Fix failure to fetch more par2-files for posts with badly formatted subject lines
-- Fix for third-party tools requesting too much history
-- New RSS feed should no longer be considered new after first, but empty readout.
-- Make "auth" call backward-compatible with 0.6.x releases.
-- Config->Notifications: email and growl server addresses should not be marked as "url" type.
-- OSX: fix top menu queue info so that it shows total queue size
-- Fixed unjustified warning that can occur with OSX Growl 2.0
-- Pre-queue script no longer got the show/season/episode information.
-- Prevent crash on startup when a fully downloaded job is still in download queue.
-- Fix incorrect end-of-month quota reset
-- Fix UI refresh issue when using Safari on iOS6 (Safari bug)
+- Prevent blocking assembly of completed files, (this resulted in excessive CPU and memory usage)
+- Fix speed issues with some Usenet servers due to unreachable IPv6 addresses
+- Fix issues with SFV-base checks
+- Successfully pre-checked job lost its attributes when those were changed during check
+- No longer check version when looking for a running instance of SABnzbd (this prevents unintended multiple instances).
+- A damaged base par2 file could block download of more par2 files
+- Fix evaluation of schedules at startup
+- Fix possible failing startup when running as a Windows Service
 
 ## What's new in 0.7.0
 

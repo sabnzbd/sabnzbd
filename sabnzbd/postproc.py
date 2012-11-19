@@ -31,9 +31,9 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, make_script_path, flag_file, \
+                         make_script_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
-                         set_permissions
+                         set_permissions, cleanup_empty_directories
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -206,6 +206,8 @@ def process_job(nzo):
     par_error = False
     # keep track of any unpacking errors
     unpack_error = False
+    # Signal empty download, for when 'empty_postproc' is enabled
+    empty = False
     nzb_list = []
     # These need to be initialised incase of a crash
     workdir_complete = ''
@@ -252,13 +254,15 @@ def process_job(nzo):
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
                 emsg = T('Download failed - Out of your server\'s retention?')
+                empty = True
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
-            par_error = unpack_error = True
-            all_ok = False
+            all_ok = cfg.empty_postproc() and empty
+            if not all_ok:
+                par_error = unpack_error = True
 
         script = nzo.script
         cat = nzo.cat
@@ -371,10 +375,7 @@ def process_job(nzo):
                     nzb_list = None
                 if nzb_list:
                     nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
-                    try:
-                        remove_dir(tmp_workdir_complete)
-                    except:
-                        pass
+                    cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     cleanup_list(tmp_workdir_complete, False)
 
@@ -392,7 +393,10 @@ def process_job(nzo):
                     logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
                     logging.info("Traceback: ", exc_info = True)
 
-            job_result = int(par_error) + int(unpack_error)*2
+            if empty:
+                job_result = -1
+            else:
+                job_result = int(par_error) + int(unpack_error)*2
 
             if cfg.ignore_samples() > 0:
                 remove_samples(workdir_complete)
@@ -533,6 +537,9 @@ def parring(nzo, workdir):
     growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
 
+    ## Get verification status of sets
+    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
+
     ## Collect the par files
     if nzo.partable:
         par_table = nzo.partable.copy()
@@ -544,51 +551,65 @@ def parring(nzo, workdir):
     par_error = False
 
     if repair_sets:
+        for setname in repair_sets:
+            if cfg.ignore_samples() > 0 and 'sample' in setname.lower():
+                continue
+            if not verified.get(setname, False):
+                logging.info("Running repair on set %s", setname)
+                parfile_nzf = par_table[setname]
+                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
+                re_add = re_add or need_re_add
+                if not res and cfg.sfv_check():
+                    res = try_sfv_check(nzo, workdir, setname)
+                verified[setname] = res
+                par_error = par_error or not res
+    else:
+        logging.info("No par2 sets for %s", filename)
+        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
+        if cfg.sfv_check():
+            par_error = not try_sfv_check(nzo, workdir, '')
+            verified[''] = not par_error
 
-        for set_ in repair_sets:
-            logging.info("Running repair on set %s", set_)
-            parfile_nzf = par_table[set_]
-            need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
-            if need_re_add:
-                re_add = True
-            par_error = par_error or not res
+    if re_add:
+        logging.info('Readded %s to queue', filename)
+        if nzo.priority != TOP_PRIORITY:
+            nzo.priority = REPAIR_PRIORITY
+        sabnzbd.nzbqueue.add_nzo(nzo)
+        sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
-        if re_add:
-            logging.info('Readded %s to queue', filename)
-            if nzo.priority != TOP_PRIORITY:
-                nzo.priority = REPAIR_PRIORITY
-            sabnzbd.nzbqueue.add_nzo(nzo)
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()
+    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-        logging.info('Par2 check finished on %s', filename)
-
-    if (par_error and not re_add) or not repair_sets:
-        # See if alternative SFV check is possible
-        if cfg.sfv_check() and not (flag_file(workdir, VERIFIED_FILE) and not repair_sets):
-            sfvs = globber(workdir, '*.sfv')
-        else:
-            sfvs = None
-        if sfvs:
-            par_error = False
-            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
-            for sfv in sfvs:
-                failed = sfv_check(sfv)
-                if failed:
-                    msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
-                    msg += '; '
-                    msg += '; '.join(failed)
-                    nzo.set_unpack_info('Repair', msg)
-                    par_error = True
-            if not par_error:
-                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
-        elif not repair_sets:
-            logging.info("No par2 sets for %s", filename)
-            nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-
-    if not par_error:
-        flag_file(workdir, VERIFIED_FILE, create=True)
+    logging.info('Par2 check finished on %s', filename)
     return par_error, re_add
 
+
+def try_sfv_check(nzo, workdir, setname):
+    """ Attempt to verify set using SFV file
+        Return True if verified, False when failed
+        When setname is '', all SFV files will be used, otherwise only the matching one
+        When setname is '' and no SFV files are found, True is returned
+        """
+    # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
+    sfvs = globber(workdir, '*.sfv')
+    sfvs.sort(lambda x, y: len(x) - len(y))
+    par_error = False
+    found = False
+    for sfv in sfvs:
+        if setname in os.path.basename(sfv):
+            found = True
+            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            failed = sfv_check(sfv)
+            if failed:
+                msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                msg += '; '
+                msg += '; '.join(failed)
+                nzo.set_unpack_info('Repair', msg)
+                par_error = True
+            else:
+                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
+            if setname:
+                break
+    return (found or not setname) and not par_error
 
 
 #------------------------------------------------------------------------------
@@ -642,6 +663,11 @@ def cleanup_list(wdir, skip_nzb):
                     except:
                         logging.error(Ta('Removing %s failed'), path)
                         logging.info("Traceback: ", exc_info = True)
+        if files:
+            try:
+                remove_dir(wdir)
+            except:
+                pass
 
 
 def prefix(path, pre):
@@ -657,29 +683,24 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
     """
-    lst = []
-
-    try:
-        files = os.listdir(wdir)
-    except:
-        files = []
+    files = []
+    for root, dirs, names in os.walk(wdir):
+        for name in names:
+            files.append(os.path.join(root, name))
 
     for file_ in files:
         if os.path.splitext(file_)[1].lower() != '.nzb':
-            return lst
+            return None
 
-    # For a single NZB, use the current job name
+    # For multiple NZBs, cannot use the current job name
     if len(files) != 1:
         nzbname = None
 
     # Process all NZB files
     for file_ in files:
-        if file_.lower().endswith('.nzb'):
-            dirscanner.ProcessSingleFile(file_, os.path.join(wdir, file_), pp, script, cat,
-                                         priority=priority, keep=False, dup_check=False, nzbname=nzbname)
-            lst.append(file_)
-
-    return lst
+        dirscanner.ProcessSingleFile(os.path.split(file_)[1], file_, pp, script, cat,
+                                     priority=priority, keep=False, dup_check=False, nzbname=nzbname)
+    return files
 
 
 def one_file_or_folder(folder):

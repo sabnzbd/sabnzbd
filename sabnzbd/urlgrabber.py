@@ -166,7 +166,7 @@ class URLGrabber(Thread):
                             logging.error(msg)
                             misc.bad_fetch(future_nzo, clean_matrix_url(url), msg, retry=True)
                         continue
-                    category = _MATRIX_MAP.get(category, category)
+                    category = get_matrix_category(url, category)
 
                     if del_bookmark:
                         # No retries of nzbmatrix bookmark removals
@@ -398,13 +398,13 @@ _MATRIX_MAP = {
 '13' : 'games.xbox',
 '14' : 'games.xbox360',
 '56' : 'games.xbox360 (other)',
-'54' : 'movies.brrip',
-'2'  : 'movies.divx/xvid',
-'1'  : 'movies.dvd',
-'50' : 'movies.hd (image)',
+'1'  : 'movies.sd (image)',
+'2'  : 'movies.sd',
+'54' : 'movies.hd (remux)',
 '42' : 'movies.hd (x264)',
+'50' : 'movies.hd (image)',
 '4'  : 'movies.other',
-'24' : 'music.dvd',
+'24' : 'music.sd (image)',
 '23' : 'music.lossless',
 '22' : 'music.mp3, albums',
 '47' : 'music.mp3, singles',
@@ -418,7 +418,7 @@ _MATRIX_MAP = {
 '38' : 'other.iOS/iPhone',
 '40' : 'other.other',
 '26' : 'other.radio',
-'5'  : 'tv.dvd (image)',
+'5'  : 'tv.sd (image)',
 '57' : 'tv.hd (image)',
 '41' : 'tv.hd (x264)',
 '8'  : 'tv.other',
@@ -426,3 +426,9 @@ _MATRIX_MAP = {
 '7'  : 'tv.sport/ent'
 }
 
+def get_matrix_category(url, category):
+    category = _MATRIX_MAP.get(category, category)
+    if 'nzbxxx.com' in url:
+        return 'XXX: ' + category
+    else:
+        return category

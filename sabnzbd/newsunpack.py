@@ -35,7 +35,8 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
                          flag_file
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from constants import Status, QCHECK_FILE
+from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
+load_data = save_data = None
 
 if sabnzbd.WIN32:
     try:
@@ -81,12 +82,17 @@ CURL_COMMAND = None
 def find_programs(curdir):
     """Find external programs
     """
+    global load_data, save_data
     def check(path, program):
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
         else:
             return None
+
+    # Another crazy Python import bug work-around
+    load_data = sabnzbd.load_data
+    save_data = sabnzbd.save_data
 
     if sabnzbd.DARWIN:
         try:
@@ -1062,6 +1068,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 
 _RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
+_RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
+
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
     if cfg.never_repair():
@@ -1092,6 +1100,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         if setname in joinable:
             command.append(joinable)
 
+    # Append the wildcard for this set
+    command.append('%s*' % os.path.join(os.path.split(parfile)[0], setname))
+
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
 
@@ -1109,6 +1120,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         # Set up our variables
         pars = []
         datafiles = []
+        renames = {}
 
         linebuf = ''
         finished = 0
@@ -1139,12 +1151,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if 'Repairing:' not in line:
                 lines.append(line)
 
-            if 'The recovery file does not exist' in line:
-                logging.info('%s', line)
-                nzo.set_unpack_info('Repair', unicoder(line), set=setname)
-                nzo.status = Status.FAILED
-
-            elif line.startswith('Invalid option specified'):
+            if line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
@@ -1164,7 +1171,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 start = time()
                 verified = 1
 
-            elif line.startswith('Main packet not found'):
+            elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 ## Initialparfile probably didn't decode properly,
                 logging.info(Ta('Main packet not found...'))
 
@@ -1183,8 +1190,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
                     logging.info("Found new par2file %s", nzf.filename)
 
+                    ## Move from extrapar list to files to be downloaded
                     nzo.add_parfile(nzf)
                     extrapars.remove(nzf)
+                    ## Now set new par2 file as primary par2
+                    nzo.partable[setname] = nzf
+                    nzf.extrapars= extrapars
+                    parfile_nzf = []
                     ## mark for readd
                     readd = True
                 else:
@@ -1303,6 +1315,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 # Hit a bug in par2-tbb, retry with par2-classic
                 retry_classic = True
 
+            # File: "oldname.rar" - is a match for "newname.rar".
+            elif 'is a match for' in line:
+                m = _RE_IS_MATCH_FOR.search(line)
+                if m:
+                    old_name = m.group(1)
+                    new_name = m.group(2)
+                    logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
+                    renames[new_name] = old_name
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
@@ -1342,6 +1363,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             raise WindowsError(err)
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
+
+    # If successful, add renamed files to the collection
+    if finished and renames:
+        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        for name in previous or {}:
+            renames[name] = previous[name]
+        save_data(renames, RENAMES_FILE, nzo.workpath)
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
@@ -1484,13 +1512,12 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
 
     for file in md5pack:
-        file = name_fixer(file)
         if sabnzbd.misc.on_cleanup_list(file, False):
             result = True
             continue
         found = False
         for nzf in nzf_list:
-            if file == name_fixer(nzf.filename):
+            if file == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -1553,20 +1580,21 @@ def sfv_check(sfv_path):
     root = os.path.split(sfv_path)[0]
     for line in fp:
         line = line.strip('\n\r ')
-        if line[0] != ';':
+        if line and line[0] != ';':
             x = line.rfind(' ')
-            filename = platform_encode(line[:x].strip())
-            checksum = line[x:].strip()
-            path = os.path.join(root, filename)
-            if os.path.exists(path):
-                if crc_check(path, checksum):
-                    logging.debug('File %s passed SFV check', path)
+            if x > 0:
+                filename = platform_encode(line[:x].strip())
+                checksum = line[x:].strip()
+                path = os.path.join(root, filename)
+                if os.path.exists(path):
+                    if crc_check(path, checksum):
+                        logging.debug('File %s passed SFV check', path)
+                    else:
+                        logging.info('File %s did not pass SFV check', latin1(path))
+                        failed.append(unicoder(filename))
                 else:
-                    logging.info('File %s did not pass SFV check', latin1(path))
+                    logging.info('File %s missing in SFV check', latin1(path))
                     failed.append(unicoder(filename))
-            else:
-                logging.info('File %s missing in SFV check', latin1(path))
-                failed.append(unicoder(filename))
     fp.close()
     return failed
 
