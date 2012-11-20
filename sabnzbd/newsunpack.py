@@ -1141,6 +1141,17 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 # Hit a bug in par2-tbb, retry with par2-classic
                 retry_classic = True
 
+            elif ' cannot be renamed to ' in line:
+                if not classic and sabnzbd.WIN32:
+                    # Hit a bug in par2-tbb, retry with par2-classic
+                    retry_classic = True
+                else:
+                    msg = unicoder(line.strip())
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg, set=setname)
+                    nzo.status = Status.FAILED
+
             # File: "oldname.rar" - is a match for "newname.rar".
             elif 'is a match for' in line:
                 m = _RE_IS_MATCH_FOR.search(line)
