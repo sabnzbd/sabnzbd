@@ -559,7 +559,7 @@ def parring(nzo, workdir):
                 parfile_nzf = par_table[setname]
                 need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
                 re_add = re_add or need_re_add
-                if not res and cfg.sfv_check():
+                if not res and not need_re_add and cfg.sfv_check():
                     res = try_sfv_check(nzo, workdir, setname)
                 verified[setname] = res
                 par_error = par_error or not res
