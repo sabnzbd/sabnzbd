@@ -1089,12 +1089,14 @@ class ConfigPage(object):
 def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
+        path = platform_encode(path)
         path = os.path.join(cfg.download_dir.get_path(), path)
         remove_all(path, recursive=True)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
+        path = platform_encode(path)
         path = os.path.join(cfg.download_dir.get_path(), path)
         sabnzbd.nzbqueue.repair_job(path, None)
 
