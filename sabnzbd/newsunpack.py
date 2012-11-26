@@ -32,7 +32,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-                         flag_file
+                         flag_file, real_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -654,7 +654,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
             if m:
-                extracted.append(TRANS(m.group(2)))
+                extracted.append(real_path(extraction_path, TRANS(m.group(2))))
 
         if fail:
             if proc:

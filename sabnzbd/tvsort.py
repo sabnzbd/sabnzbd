@@ -440,7 +440,7 @@ class SeriesSorter(object):
                 except:
                     logging.error("Failed to rename: %s to %s", current_path, newpath)
                     logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, self.ext, self.filename_set)
+                rename_similar(current_path, self.ext, self.filename_set, ())
             else:
                 logging.debug('Current path already exists, skipping rename, %s', newpath)
         else:
@@ -690,7 +690,7 @@ class GenericSorter(object):
                 except:
                     logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
                     logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, ext, self.filename_set)
+                rename_similar(current_path, ext, self.filename_set, ())
 
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
@@ -699,8 +699,10 @@ class GenericSorter(object):
             # rename files marked as in a set
             if matched_files:
                 logging.debug("Renaming a series of generic files (%s)", matched_files)
+                renamed = matched_files.values()
                 for index, file in matched_files.iteritems():
                     filepath = os.path.join(current_path, file)
+                    renamed.append(filepath)
                     tmp, ext = os.path.splitext(file)
                     self.fname = tmp
                     name = '%s%s' % (self.filename_set, self.extra)
@@ -713,7 +715,7 @@ class GenericSorter(object):
                     except:
                         logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
                         logging.info("Traceback: ", exc_info = True)
-                    rename_similar(current_path, ext, self.filename_set)
+                rename_similar(current_path, ext, self.filename_set, renamed)
             else:
                 logging.debug("Movie files not in sequence %s", _files)
 
@@ -1094,10 +1096,11 @@ def strip_folders(path):
     return os.path.normpath('/'.join([strip_all(x) for x in f]))
 
 
-def rename_similar(folder, skip_ext, name):
+def rename_similar(folder, skip_ext, name, skipped_files):
     """ Rename all other files in the 'folder' hierarchy after 'name'
         and move them to the root of 'folder'.
         Files having extension 'skip_ext' will be moved, but not renamed.
+        Don't touch files in list `skipped_files`
     """
     logging.debug('Give files in set "%s" matching names.', name)
     folder = os.path.normpath(folder)
@@ -1106,6 +1109,8 @@ def rename_similar(folder, skip_ext, name):
     for root, dirs, files in os.walk(folder):
         for f in files:
             path = os.path.join(root, f)
+            if path in skipped_files:
+                continue
             org, ext = os.path.splitext(f)
             if ext.lower() == skip_ext:
                 # Move file, but do not rename
