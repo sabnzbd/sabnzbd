@@ -155,10 +155,10 @@
         <div class="col2"  style="display:block;">
         <!--#if 'amounts' in $servers[$server]#-->
             <b>$T('srv-bandwidth'):</b><br/>
-            $T('total'): $servers[$server]['amounts'][0]<br/>
-            $T('today'): $servers[$server]['amounts'][3]<br/>
-            $T('thisWeek'): $servers[$server]['amounts'][2]<br/>
-            $T('thisMonth'): $servers[$server]['amounts'][1]
+            $T('total'): $(servers[$server]['amounts'][0])B<br/>
+            $T('today'): $(servers[$server]['amounts'][3])B<br/>
+            $T('thisWeek'): $(servers[$server]['amounts'][2])B<br/>
+            $T('thisMonth'): $(servers[$server]['amounts'][1])B
         <!--#end if#-->
         </div>
     </div><!-- /section -->
