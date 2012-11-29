@@ -6,59 +6,6 @@
 <!--#set global $submenu="newzbin"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>Newzbin</h2>
-$T('explain-newzbin')<br/><br/>
-<form action="saveNewzbin" method="post" autocomplete="off">
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-<legend>$T('accountInfo')</legend>
-<strong>$T('opt-username_newzbin'):</strong><br>
-$T('explain-username_newzbin')<br>
-<input type="text" name="username_newzbin" value="$username_newzbin">
-<br>
-<br>
-<strong>$T('opt-password_newzbin'):</strong><br>
-$T('explain-password_newzbin')<br>
-<input type="password" name="password_newzbin" value="$password_newzbin">
-</fieldset>
-</div>
-
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-<legend>$T('newzbinBookmarks')</legend>
-<label><input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> <strong>$T('opt-newzbin_bookmarks'):</strong></label><br>
-$T('explain-newzbin_bookmarks')<br>
-<a href="getBookmarks?session=$session">$T('link-getBookmarks')</a>
-<br>
-<!--#if $bookmarks_list#-->
-  <a href="hideBookmarks?session=$session">$T('link-HideBM')</a>
-<!--#else#-->
-  <a href="showBookmarks?session=$session">$T('link-ShowBM')</a>
-<!--#end if#-->
-<br/>
-<br/>
-<label><input type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> <strong>$T('opt-newzbin_unbookmark'):</strong></label><br>
-$T('explain-newzbin_unbookmark')<br>
-<br/>
-<strong>$T('opt-bookmark_rate'):</strong><br>
-$T('explain-bookmark_rate')<br>
-<input type="text" name="bookmark_rate" value="$bookmark_rate">
-</fieldset>
-</div>
-<!--#if $bookmarks_list#-->
-  <fieldset class="EntryFieldSet">
-  <legend>$T('processedBM')</legend>
-  <!--#for $msgid in $bookmarks_list#-->
-    <a href="https://$newzbin_url/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
-  <!--#end for#-->
-  </fieldset>
-<!--#end if#-->
-<input type="hidden" name="session" value="$session">
-<p><input type="submit" value="$T('button-saveChanges')"></p>
-</form>
-
-<hr/>
-
 <h2>NzbMatrix</h2>
 $T('explain-nzbmatrix')<br/><br/>
 

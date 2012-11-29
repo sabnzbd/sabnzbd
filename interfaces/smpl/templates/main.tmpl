@@ -1152,9 +1152,6 @@ function loadingJSON(){
           <li><a class="config" onclick="javascript:timedPause()">$T("smpl-custom")</a></li>
 
   </ul>
-  <!--#if $varExists('newzbinDetails')#-->
-  <li><a onclick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
-  <!--#end if#-->
   <!--#if $have_quota#-->
   <li><a onclick="resetQuota()">$T('link-resetQuota')</a></li>
   <!--#end if#-->
@@ -1183,7 +1180,7 @@ function loadingJSON(){
   <div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
   <form action="addID" method="get">
-    <input type="text" style="width:218px;" name="id" value="$T('enterURL')<!--#if $varExists('newzbinDetails') then $T('enterID') else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
     <!--#if $cat_list#-->
       <select name="cat" >
         <optgroup label="$T('category')">
