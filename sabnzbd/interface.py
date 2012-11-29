@@ -415,8 +415,9 @@ class MainPage(object):
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
-                      cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+        if not kwargs.get('tickleme') or not cfg.web_watchdog():
+            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
+                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
@@ -1214,7 +1215,8 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
-              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc'
+              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
+              'web_watchdog'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
