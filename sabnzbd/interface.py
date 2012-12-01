@@ -886,9 +886,11 @@ class HistoryPage(object):
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
         #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
 
+        postfix = T('B') #: Abbreviation for bytes, as in GB
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-               to_units(grand), to_units(month), to_units(week), to_units(day)
+               to_units(grand, postfix=postfix), to_units(month, postfix=postfix), \
+               to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
 
