@@ -30,6 +30,12 @@ else:
 
 import sabnzbd
 
+_JUNKFOLDERS = (
+        'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
+        'system volume information', 'temporary internet files', # windows specific
+        '.fseventd', '.spotlight', '.trashes', '.vol', 'cachedmessages', 'caches', 'trash' # osx specific
+        )
+
 # this is for the drive letter code, it only works on windows
 if os.name == 'nt':
     from ctypes import windll
@@ -91,6 +97,7 @@ def folders_at_path(path, include_parent = False):
             if doit:
                 file_list.append({ 'name': unicoder(filename), 'path': unicoder(fpath) })
         file_list = filter(lambda entry: os.path.isdir(entry['path']), file_list)
+        file_list = filter(lambda entry: entry['name'].lower() not in _JUNKFOLDERS, file_list)
         file_list = sorted(file_list, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
     except:
         # No access, ignore
