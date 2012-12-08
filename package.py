@@ -382,7 +382,7 @@ if target == 'app':
     DATA_FILES = ['interfaces', 'locale', 'email', ('', glob.glob("osx/resources/*"))]
 
     NZBFILE = dict(
-            CFBundleTypeExtensions = [ "nzb","zip","rar" ],
+            CFBundleTypeExtensions = [ "nzb" ],
             CFBundleTypeIconFile = 'nzbfile.icns',
             CFBundleTypeMIMETypes = [ "text/nzb" ],
             CFBundleTypeName = 'NZB File',
