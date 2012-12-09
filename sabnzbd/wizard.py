@@ -41,7 +41,7 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':4, 'version':sabnzbd.__version__,
+                     'steps':3, 'version':sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
@@ -162,46 +162,19 @@ class Wizard(object):
             if not cfg.username() or not cfg.password():
                 sabnzbd.interface.set_auth(cherrypy.config)
 
-        # Create Indexers page
-        info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 3
-        info['newzbin_user'] = cfg.newzbin_username()
-        info['newzbin_pass'] = cfg.newzbin_password.get_stars()
-        info['newzbin_bookmarks'] = cfg.newzbin_bookmarks()
-        info['newzbin_url'] = cfg.newzbin_url()
-        info['matrix_user'] = cfg.matrix_username()
-        info['matrix_apikey'] = cfg.matrix_apikey()
-        info['T'] = Ttemplate
-        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
-                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
-        return template.respond()
-
-    @cherrypy.expose
-    def four(self, **kwargs):
-        """ Accept Indexers and show Restart screen """
-        if kwargs:
-            if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
-                cfg.newzbin_username.set(kwargs.get('newzbin_user',''))
-                cfg.newzbin_password.set(kwargs.get('newzbin_pass',''))
-            cfg.newzbin_bookmarks.set(kwargs.get('newzbin_bookmarks', '0'))
-            if 'matrix_user' in kwargs and 'matrix_apikey' in kwargs:
-                cfg.matrix_username.set(kwargs.get('matrix_user',''))
-                cfg.matrix_apikey.set(kwargs.get('matrix_apikey',''))
-
         config.save_config()
 
         # Show Restart screen
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Four')
-        info['number'] = 4
+        info['num'] = '&raquo; %s' % T('Step Three')
+        info['number'] = 3
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()
         info['T'] = Ttemplate
 
-        template = Template(file=os.path.join(self.__web_dir, 'four.html'),
+        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
