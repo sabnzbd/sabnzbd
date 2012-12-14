@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.7.7Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Windows/OSX: Update unrar to 4.20
+- Fix some issues with orphaned items
+- Generic sort didn't always rename media files in multi-part jobs properly
+- Optional web-ui watchdog
+- Always show RSS items in the same order as the original RSS feed
+- Remove unusable folders from folder selector (Plush skin)
+- Remove newzbin support
+-------------------------------------------------------------------------------
  0.7.6Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Recursive scanning when re-queuing downloaded NZB files
