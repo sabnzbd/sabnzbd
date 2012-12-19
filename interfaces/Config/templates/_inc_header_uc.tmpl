@@ -128,9 +128,11 @@
             <a href="${root}config/notify/">
                 <div #if $pane == "Email" then 'class="active"' else ""#>$T('cmenu-notif')</div>
             </a>
+            <!--#if 0#-->
             <a href="${root}config/indexers/">
                 <div #if $pane == "Index Sites" then 'class="active"' else ""#>$T('cmenu-newzbin')</div>
             </a>
+            <!--#end if#-->
             <a href="${root}config/categories/">
                 <div #if $pane == "Categories" then 'class="active"' else ""#>$T('cmenu-cat')</div>
             </a>

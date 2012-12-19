@@ -428,7 +428,7 @@ _MATRIX_MAP = {
 
 def get_matrix_category(url, category):
     category = _MATRIX_MAP.get(category, category)
-    if 'nzbxxx.com' in url:
+    if category and 'nzbxxx.com' in url:
         return 'XXX: ' + category
     else:
         return category

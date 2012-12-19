@@ -1133,7 +1133,9 @@ function loadingJSON(){
           <li><a class="config" href="$prefix/config/scheduling/" onclick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
           <li><a class="config" href="$prefix/config/rss/" onclick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
           <li><a class="config" href="$prefix/config/notify/" onclick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
+          <!--#if 0#-->
           <li><a class="config" href="$prefix/config/indexers/" onclick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
+          <!--#end if#-->
           <li><a class="config" href="$prefix/config/categories/" onclick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
           <li><a class="config" href="$prefix/config/sorting/" onclick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
         </ul>
@@ -1152,9 +1154,6 @@ function loadingJSON(){
           <li><a class="config" onclick="javascript:timedPause()">$T("smpl-custom")</a></li>
 
   </ul>
-  <!--#if $varExists('newzbinDetails')#-->
-  <li><a onclick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
-  <!--#end if#-->
   <!--#if $have_quota#-->
   <li><a onclick="resetQuota()">$T('link-resetQuota')</a></li>
   <!--#end if#-->
@@ -1183,7 +1182,7 @@ function loadingJSON(){
   <div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
   <form action="addID" method="get">
-    <input type="text" style="width:218px;" name="id" value="$T('enterURL')<!--#if $varExists('newzbinDetails') then $T('enterID') else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
     <!--#if $cat_list#-->
       <select name="cat" >
         <optgroup label="$T('category')">

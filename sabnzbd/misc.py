@@ -631,7 +631,7 @@ def from_units(val):
     else:
         return 0.0
 
-def to_units(val, spaces=0, dec_limit=2):
+def to_units(val, spaces=0, dec_limit=2, postfix=''):
     """ Convert number to K/M/G/T/P notation
         Add "spaces" if not ending in letter
         dig_limit==1 show single decimal for M and higher
@@ -660,8 +660,8 @@ def to_units(val, spaces=0, dec_limit=2):
     else:
         decimals = 0
 
-    format = '%%s%%.%sf %%s' % decimals
-    return format % (sign, val, unit)
+    format = '%%s%%.%sf %%s%%s' % decimals
+    return format % (sign, val, unit, postfix)
 
 #------------------------------------------------------------------------------
 def same_file(a, b):

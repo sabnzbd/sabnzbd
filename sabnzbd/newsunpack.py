@@ -1704,7 +1704,10 @@ def list2cmdline(lst):
 #------------------------------------------------------------------------------
 # Work-around for the failure of Python2.5 on Windows to support IPV6 with HTTPS
 
-def get_from_url(url):
+def get_from_url(url, timeout=None):
+    """ Retrieve URL and return content
+        `timeout` sets non-standard timeout and skips when on Windows
+    """
     if 'https:' in url and sabnzbd.WIN32 and sys.version_info < (2,6) and sabnzbd.newsunpack.CURL_COMMAND:
         command = [sabnzbd.newsunpack.CURL_COMMAND, "-k", url]
         stup, need_shell, command, creationflags = build_command(command)
@@ -1716,8 +1719,14 @@ def get_from_url(url):
         p.wait()
     else:
         import urllib2
-        s = urllib2.urlopen(url)
-        output = s.read()
+        try:
+            if timeout:
+                s = urllib2.urlopen(url, timeout=timeout)
+            else:
+                s = urllib2.urlopen(url)
+            output = s.read()
+        except:
+            output = None
     return output
 
 

@@ -348,6 +348,9 @@ class RSSQueue(object):
                 return unicoder(msg)
         else:
             entries = jobs.keys()
+            # Sort in the order the jobs came from the feed
+            entries.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
+
 
         order = 0
         # Filter out valid new links

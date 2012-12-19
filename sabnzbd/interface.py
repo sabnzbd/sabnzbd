@@ -415,8 +415,9 @@ class MainPage(object):
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
-                      cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+        if not kwargs.get('tickleme') or not cfg.web_watchdog():
+            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
+                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
@@ -885,9 +886,11 @@ class HistoryPage(object):
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
         #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
 
+        postfix = T('B') #: Abbreviation for bytes, as in GB
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-               to_units(grand), to_units(month), to_units(week), to_units(day)
+               to_units(grand, postfix=postfix), to_units(month, postfix=postfix), \
+               to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
 
@@ -1089,12 +1092,14 @@ class ConfigPage(object):
 def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
+        path = platform_encode(path)
         path = os.path.join(cfg.download_dir.get_path(), path)
         remove_all(path, recursive=True)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
+        path = platform_encode(path)
         path = os.path.join(cfg.download_dir.get_path(), path)
         sabnzbd.nzbqueue.repair_job(path, None)
 
@@ -1215,7 +1220,8 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
-              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc'
+              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
+              'web_watchdog'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
@@ -2017,6 +2023,8 @@ class ConfigScheduling(object):
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
+        if not days_of_week:
+            days_of_week = '1234567'
         action = kwargs.get('action')
         arguments = kwargs.get('arguments')
 

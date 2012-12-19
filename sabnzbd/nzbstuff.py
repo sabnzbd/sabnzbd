@@ -935,6 +935,7 @@ class NzbObject(TryList):
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
                     nzf.completed = True
+                    nzf.bytes_left = 0
                     self.handle_par2(nzf, file_done=True)
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
@@ -952,6 +953,7 @@ class NzbObject(TryList):
                 self.bytes += nzf.bytes
                 nzf.filename = filename
                 nzf.completed = True
+                nzf.bytes_left = 0
                 self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
                 logging.info('File %s added to job', filename)
@@ -1574,8 +1576,10 @@ def get_attrib_file(path, size):
         return [None for n in xrange(size)]
 
     for n in xrange(size):
-        line = f.readline().strip('\n ')
+        line = f.readline().strip('\r\n ')
         if line:
+            if line.lower() == 'none':
+                line = None
             try:
                 line = int(line)
             except:
