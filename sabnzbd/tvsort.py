@@ -425,11 +425,10 @@ class SeriesSorter(object):
         file, filepath, size = largest
         # >20MB
         if filepath and size > 20971520:
-            tmp, self.ext = os.path.splitext(file)
-            self.fname = tmp
+            self.fname, self.ext = os.path.splitext(os.path.split(file)[1])
             newname = "%s%s" % (self.filename_set, self.ext)
             # Replace %fn with the original filename
-            newname = newname.replace('%fn', tmp)
+            newname = newname.replace('%fn', self.fname)
             newpath = os.path.join(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace('%ext', self.ext)
@@ -679,10 +678,9 @@ class GenericSorter(object):
             else:
                 filepath = os.path.join(current_path, file)
             if os.path.exists(filepath):
-                tmp, ext = os.path.splitext(file)
-                self.fname = tmp
+                self.fname, ext = os.path.splitext(os.path.split(file)[1])
                 newname = "%s%s" % (self.filename_set, ext)
-                newname = newname.replace('%fn', tmp)
+                newname = newname.replace('%fn', self.fname)
                 newpath = os.path.join(current_path, newname)
                 try:
                     logging.debug("Rename: %s to %s", filepath, newpath)
@@ -703,10 +701,9 @@ class GenericSorter(object):
                 for index, file in matched_files.iteritems():
                     filepath = os.path.join(current_path, file)
                     renamed.append(filepath)
-                    tmp, ext = os.path.splitext(file)
-                    self.fname = tmp
+                    self.fname, ext = os.path.splitext(os.path.split(file)[1])
                     name = '%s%s' % (self.filename_set, self.extra)
-                    name = name.replace('%1', str(index)).replace('%fn', tmp)
+                    name = name.replace('%1', str(index)).replace('%fn', self.fname)
                     name = name + ext
                     newpath = os.path.join(current_path, name)
                     try:
@@ -891,10 +888,9 @@ class DateSorter(object):
                 size = os.stat(filepath).st_size
                 if size > cfg.movie_rename_limit.get_int():
                     if 'sample' not in file:
-                        tmp, ext = os.path.splitext(file)
-                        self.fname = tmp
+                        self.fname, ext = os.path.splitext(os.path.split(file)[1])
                         newname = "%s%s" % (self.filename_set, ext)
-                        newname = newname.replace('%fn', tmp)
+                        newname = newname.replace('%fn', self.fname)
                         newpath = os.path.join(current_path, newname)
                         if not os.path.exists(newpath):
                             try:
