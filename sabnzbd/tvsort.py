@@ -899,7 +899,7 @@ class DateSorter(object):
                             except:
                                 logging.error(Ta('Failed to rename: %s to %s'), current_path, newpath)
                                 logging.info("Traceback: ", exc_info = True)
-                            rename_similar(current_path, ext, self.filename_set)
+                            rename_similar(current_path, ext, self.filename_set, ())
                             break
 
 
