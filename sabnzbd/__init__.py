@@ -220,6 +220,13 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
         # New admin folder
         misc.remove_all(cfg.admin_dir.get_path(), '*.sab')
 
+    ### Optionally wait for "incomplete" to become online
+    if cfg.wait_for_dfolder():
+        wait_for_download_folder()
+    else:
+        cfg.download_dir.set(cfg.download_dir(), create=True)
+    cfg.download_dir.set_create(True)
+
     ### Set access rights for "incomplete" base folder
     misc.set_permissions(cfg.download_dir.get_path(), recursive=False)
 
@@ -1074,6 +1081,13 @@ def check_incomplete_vs_complete():
         else:
             cfg.download_dir.set('incomplete')
 
+
+def wait_for_download_folder():
+    """ Wait for download folder to become available """
+    while not cfg.download_dir.test_path():
+        logging.debug('Waiting for "incomplete" folder')
+        time.sleep(2.0)
+    
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def active_primaries():
