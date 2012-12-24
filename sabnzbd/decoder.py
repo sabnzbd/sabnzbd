@@ -135,12 +135,16 @@ class Decoder(Thread):
                         # Examine headers (for precheck) or body (for download)
                         # And look for DMCA clues (while skipping "X-" headers)
                         for line in lines:
-                            if not line.startswith('X-') and match_str(line.lower(), ('dmca', 'removed', 'cancel', 'blocked')):
-                                logging.info('Article removed from server (%s)', article)
+                            lline = line.lower()
+                            if 'message-id:' in lline:
+                                found = True
+                            if not line.startswith('X-') and match_str(lline, ('dmca', 'removed', 'cancel', 'blocked')):
                                 killed = True
                                 break
+                    if killed:
+                        logging.info('Article removed from server (%s)', article)
                     if nzo.precheck:
-                        if found or not killed:
+                        if found and not killed:
                             # Pre-check, proper article found, just register
                             logging.debug('Server has article %s', article)
                             register = True
@@ -148,7 +152,7 @@ class Decoder(Thread):
                         logme = Ta('Badly formed yEnc article in %s') % article
                         logging.info(logme)
 
-                    if not found:
+                    if not found or killed:
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
