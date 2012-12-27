@@ -83,6 +83,11 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
+                    <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-fail_hopeless')</span>
+                </div>
                 <div class="field-pair alt">
                     <label class="config" for="pre_check">$T('opt-pre_check')</label>
                     <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />

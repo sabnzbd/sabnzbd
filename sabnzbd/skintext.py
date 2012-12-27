@@ -458,6 +458,8 @@ SKIN_TEXT = {
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
+    'opt-fail_hopeless' : TT('Abort jobs that cannot be completed'),
+    'explain-fail_hopeless' : TT('When during download it becomes clear that too much data is missing, abort the job'),
 
 
 # Config->Server

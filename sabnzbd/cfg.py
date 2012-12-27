@@ -103,6 +103,7 @@ par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
 pre_check = OptionBool('misc', 'pre_check', False)
+fail_hopeless = OptionBool('misc', 'fail_hopeless', False)
 req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 200)
 
 newzbin_username = OptionStr('newzbin', 'username')

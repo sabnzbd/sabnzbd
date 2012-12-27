@@ -501,7 +501,8 @@ NzbObjectMapper = (
     ('oversized',                    'oversized'),     # Was detected as oversized
     ('create_group_folder',          'create_group_folder'),
     ('precheck',                     'precheck'),
-    ('incomplete',                   'incomplete')     # Was detected as incomplete
+    ('incomplete',                   'incomplete'),    # Was detected as incomplete
+    ('reuse',                        'reuse')
 )
 
 class NzbObject(TryList):
@@ -588,6 +589,7 @@ class NzbObject(TryList):
         self.oversized = False
         self.precheck = False
         self.incomplete = False
+        self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
             if self.precheck:
@@ -890,6 +892,13 @@ class NzbObject(TryList):
 
         if file_done:
             self.remove_nzf(nzf)
+            if not self.reuse and not self.precheck and cfg.fail_hopeless() and not self.check_quality(99)[0]:
+                #set the nzo status to return "Queued"
+                self.status = Status.QUEUED
+                self.set_download_report()
+                self.fail_msg = Ta('Terminated, cannot be completed')
+                logging.debug('Terminate job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+                return True, True, True
 
         if reset:
             self.reset_try_list()
@@ -1030,7 +1039,7 @@ class NzbObject(TryList):
         self.partable.pop(setname)
 
     __re_quick_par2_check = re.compile('\.par2\W*', re.I)
-    def check_quality(self):
+    def check_quality(self, req_ratio=0):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
@@ -1041,7 +1050,8 @@ class NzbObject(TryList):
         for nzf_id in self.files_table:
             nzf = self.files_table[nzf_id]
             assert isinstance(nzf, NzbFile)
-            short += nzf.bytes_left
+            if nzf.deleted:
+                short += nzf.bytes_left
             if self.__re_quick_par2_check.search(nzf.subject):
                 pars += nzf.bytes
                 anypars = True
@@ -1050,7 +1060,7 @@ class NzbObject(TryList):
         have = need + pars - short
         ratio = float(have) / float(max(1, need))
         if anypars:
-            enough = ratio * 100.0 >= float(cfg.req_completion_rate())
+            enough = ratio * 100.0 >= (req_ratio or float(cfg.req_completion_rate()))
         else:
             enough = have >= need
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
