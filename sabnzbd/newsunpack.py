@@ -1541,6 +1541,8 @@ def get_from_url(url, timeout=None):
         p.wait()
     else:
         import urllib2
+        if sys.version_info < (2, 6):
+            timeout = 0
         try:
             if timeout:
                 s = urllib2.urlopen(url, timeout=timeout)
