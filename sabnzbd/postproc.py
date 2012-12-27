@@ -470,6 +470,9 @@ def process_job(nzo):
         elif all_ok and isinstance(nzo.url, str):
             sabnzbd.proxy_rm_bookmark(nzo.url)
 
+        ## Force error for empty result
+        all_ok = all_ok and not empty
+
         ## Show final status in history
         if all_ok:
             growler.send_notification(T('Download Completed'), filename, 'complete')
