@@ -1084,15 +1084,18 @@ class NzbObject(TryList):
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps*1024, dec_limit=1))
             bad = self.nzo_info.get('bad_art_log', [])
             miss = self.nzo_info.get('missing_art_log', [])
+            killed = self.nzo_info.get('killed_art_log', [])
             dups = self.nzo_info.get('dup_art_log', [])
-            msg2 = msg3 = msg4 = ''
+            msg2 = msg3 = msg4 = msg5 = ''
             if bad:
                 msg2 = ('<br/>' + T('%s articles were malformed')) % len(bad)
             if miss:
                 msg3 = ('<br/>' + T('%s articles were missing')) % len(miss)
             if dups:
                 msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
-            msg = ''.join((msg1, msg2, msg3, msg4,))
+            if killed:
+                msg5 = ('<br/>' + T('%s articles were removed')) % len(killed)
+            msg = ''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
