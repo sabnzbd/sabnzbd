@@ -112,8 +112,14 @@ class Assembler(Thread):
                             logging.debug('Got md5pack for set %s', setname)
 
                     if check_encrypted_rar(nzo, filepath):
-                        logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
-                        nzo.pause()
+                        if cfg.pause_on_pwrar() == 1:
+                            logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            nzo.pause()
+                        else:
+                            logging.warning(Ta('WARNING: Aborted job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            nzo.fail_msg = T('Aborted, encryption detected')
+                            import sabnzbd.nzbqueue
+                            sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
                     nzf.completed = True
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
@@ -294,11 +300,11 @@ def is_cloaked(path, names):
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
-    if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
+    if  not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
             zf = RarFile(filepath, all_names=True)
             encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
-            if encrypted and int(nzo.encrypted) < 2:
+            if encrypted and int(nzo.encrypted) < 2 and not nzo.reuse:
                 nzo.encrypted = 1
             else:
                 encrypted = False

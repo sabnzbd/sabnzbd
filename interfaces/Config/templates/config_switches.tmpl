@@ -109,7 +109,11 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
-                    <input type="checkbox" name="pause_on_pwrar" id="pause_on_pwrar" value="1" <!--#if int($pause_on_pwrar) > 0 then 'checked="checked"' else ""#--> />
+                    <select name="pause_on_pwrar" id="pause_on_pwrar">
+                        <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('abort')</option>
+                    </select>
                     <span class="desc">$T('explain-pause_on_pwrar')</span>
                 </div>
                 <div class="field-pair alt">

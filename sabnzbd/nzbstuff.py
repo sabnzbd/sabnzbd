@@ -896,8 +896,8 @@ class NzbObject(TryList):
                 #set the nzo status to return "Queued"
                 self.status = Status.QUEUED
                 self.set_download_report()
-                self.fail_msg = Ta('Terminated, cannot be completed')
-                logging.debug('Terminate job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+                self.fail_msg = T('Aborted, cannot be completed')
+                logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 return True, True, True
 
         if reset:
