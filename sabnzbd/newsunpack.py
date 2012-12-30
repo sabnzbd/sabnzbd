@@ -1161,6 +1161,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
+            elif 'No details available for recoverable file' in line:
+                msg = unicoder(line.strip())
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
