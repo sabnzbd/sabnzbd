@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-12-01 10:03+0000\n"
+"POT-Creation-Date: 2012-12-28 13:21+0000\n"
 "PO-Revision-Date: 2012-10-13 17:23+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-02 04:51+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2012-12-29 05:12+0000\n"
+"X-Generator: Launchpad (build 16378)\n"
 
 #: SABnzbd.py:303 [Error message]
 msgid "Failed to start web-interface"
@@ -61,15 +61,72 @@ msgstr "SABnzbd %s pornit"
 msgid "SABnzbd shutdown finished"
 msgstr "Închidere SABnzbd terminată"
 
+#: sabnzbd/utils/servertests.py:35
+msgid "The hostname is not set."
+msgstr "Numele gazdei nu este setat."
+
+#: sabnzbd/utils/servertests.py:41
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
+
+#: sabnzbd/utils/servertests.py:74
+msgid "Password masked in ******, please re-enter"
+msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
+
+#: sabnzbd/utils/servertests.py:78
+msgid "Invalid server details"
+msgstr "Detalii server invalide"
+
+#: sabnzbd/utils/servertests.py:90
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
+"port diferit."
+
+#: sabnzbd/utils/servertests.py:92
+msgid "Timed out"
+msgstr "A depăşit timpul alocat"
+
+#: sabnzbd/utils/servertests.py:97
+msgid "Invalid server address."
+msgstr "Adresă server invalidă"
+
+#: sabnzbd/utils/servertests.py:101
+msgid "Server quit during login sequence."
+msgstr "Serverul a renunţat în timpul logării."
+
+#: sabnzbd/utils/servertests.py:123
+msgid "Server requires username and password."
+msgstr "Serverul necesită nume utilizator şi parolă"
+
+#: sabnzbd/utils/servertests.py:126
+msgid "Connection Successful!"
+msgstr "Conexiune Reuşită!"
+
+#: sabnzbd/utils/servertests.py:129
+msgid "Authentication failed, check username/password."
+msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
+
+#: sabnzbd/utils/servertests.py:132
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
+"din nou mai târziu"
+
+#: sabnzbd/utils/servertests.py:135
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
+
 #: sabnzbd/__init__.py:169 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."
 
-#: sabnzbd/__init__.py:475
+#: sabnzbd/__init__.py:482
 msgid "fetching msgid %s from www.newzbin2.es"
 msgstr "descarc msgid %s from www.newzbin2.es"
 
-#: sabnzbd/__init__.py:481 [Error message]
+#: sabnzbd/__init__.py:488 [Error message]
 msgid ""
 "Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
 "Username and Password are set"
@@ -77,40 +134,40 @@ msgstr ""
 "Eroare descărcare msgid %s de la  www.newzbin2.es - Vă rugăm asiguraţi-vă că "
 "Nume de Utilizator şi Parolă sunt setate"
 
-#: sabnzbd/__init__.py:493
+#: sabnzbd/__init__.py:500
 msgid "Trying to fetch NZB from %s"
 msgstr "Încerc să descarc NZB de la %s"
 
-#: sabnzbd/__init__.py:616 [Error message]
+#: sabnzbd/__init__.py:623 [Error message]
 msgid "Cannot create temp file for %s"
 msgstr "Nu pot crea fişier temporar pentru %s"
 
-#: sabnzbd/__init__.py:633 [Warning message] # sabnzbd/__init__.py:645 [Warning message]
+#: sabnzbd/__init__.py:640 [Warning message] # sabnzbd/__init__.py:652 [Warning message]
 msgid "Trying to set status of non-existing server %s"
 msgstr "Încerc să setez starea unui server nexistent %s"
 
-#: sabnzbd/__init__.py:786 [Warning message]
+#: sabnzbd/__init__.py:793 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
 
-#: sabnzbd/__init__.py:812 [Error message]
+#: sabnzbd/__init__.py:819 [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Eroare în tempfile.mkstemp"
 
-#: sabnzbd/__init__.py:842 [Error message] # sabnzbd/__init__.py:913 [Error message]
+#: sabnzbd/__init__.py:849 [Error message] # sabnzbd/__init__.py:920 [Error message]
 msgid "Saving %s failed"
 msgstr "Salvarea %s nereuşită"
 
-#: sabnzbd/__init__.py:872 [Error message] # sabnzbd/__init__.py:942 [Error message]
+#: sabnzbd/__init__.py:879 [Error message] # sabnzbd/__init__.py:949 [Error message]
 msgid "Loading %s failed"
 msgstr "Încărcarea %s nereuşită"
 
-#: sabnzbd/api.py:661 # sabnzbd/skintext.py:561
+#: sabnzbd/api.py:661 # sabnzbd/skintext.py:564
 msgid "Test Notification"
 msgstr "Notificări Test"
 
 #: sabnzbd/api.py:1502 # sabnzbd/osxmenu.py:193 # sabnzbd/skintext.py:69 [No value, used in dropdown menus]
-#: sabnzbd/skintext.py:673 [Job details page, select no files]
+#: sabnzbd/skintext.py:676 [Job details page, select no files]
 msgid "None"
 msgstr "Niciunul"
 
@@ -154,12 +211,20 @@ msgstr "Disc plin! Pauză Forţată"
 msgid "Disk error on creating file %s"
 msgstr "Eroare disc la crearea fişierului %s"
 
-#: sabnzbd/assembler.py:115 [Warning message]
+#: sabnzbd/assembler.py:116 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr ""
 "ATENŢIE: Sarcina \"%s\" întreruptă din cauza fişierelor RAR encriptate"
 
-#: sabnzbd/assembler.py:148
+#: sabnzbd/assembler.py:119 [Warning message]
+msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
+msgstr ""
+
+#: sabnzbd/assembler.py:120
+msgid "Aborted, encryption detected"
+msgstr ""
+
+#: sabnzbd/assembler.py:154
 msgid "%s missing"
 msgstr "%s lipsă"
 
@@ -175,35 +240,35 @@ msgstr "%s nu este o adresă email validă"
 msgid "Server address required"
 msgstr "Adresă server necesară"
 
-#: sabnzbd/config.py:208
+#: sabnzbd/config.py:216
 msgid "Cannot create %s folder %s"
 msgstr "Nu pot crea %s dosar %s"
 
-#: sabnzbd/config.py:762 [Error message] # sabnzbd/config.py:779 [Error message]
+#: sabnzbd/config.py:774 [Error message] # sabnzbd/config.py:791 [Error message]
 msgid "Cannot write to INI file %s"
 msgstr "Nu pot scrie în fişierul INI %s"
 
-#: sabnzbd/config.py:770 [Warning message]
+#: sabnzbd/config.py:782 [Warning message]
 msgid "Cannot create backup file for %s"
 msgstr "Nu pot crea copie de rezervă pentru %s"
 
-#: sabnzbd/config.py:902 [Error message]
+#: sabnzbd/config.py:914 [Error message]
 msgid "Incorrectly encoded password %s"
 msgstr "Parolă %s codificată greşit"
 
-#: sabnzbd/config.py:926
+#: sabnzbd/config.py:938
 msgid "%s is not a correct octal value"
 msgstr "%s nu este o valoare octală corectă"
 
-#: sabnzbd/config.py:935
+#: sabnzbd/config.py:947
 msgid "UNC path \"%s\" not allowed here"
 msgstr "cale UNC \"%s\" nu este premisă aici"
 
-#: sabnzbd/config.py:943
+#: sabnzbd/config.py:955
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
 
-#: sabnzbd/config.py:952
+#: sabnzbd/config.py:964
 msgid "Folder \"%s\" does not exist"
 msgstr "Dosarul \"%s\" nu există"
 
@@ -223,23 +288,23 @@ msgstr "Închidere bază de date nereuşită, vedeţi jurnal"
 msgid "Invalid stage logging in history for %s"
 msgstr "Jurnal istoric stagii invalid pentru %s"
 
-#: sabnzbd/decoder.py:105
+#: sabnzbd/decoder.py:106
 msgid "Decoding %s failed"
 msgstr "Decodarea %s nereuşită"
 
-#: sabnzbd/decoder.py:116
+#: sabnzbd/decoder.py:117
 msgid "CRC Error in %s (%s -> %s)"
 msgstr "Eroare CRC în %s (%s -> %s)"
 
-#: sabnzbd/decoder.py:148
+#: sabnzbd/decoder.py:154
 msgid "Badly formed yEnc article in %s"
 msgstr "Articoul yEnc invalid în %s"
 
-#: sabnzbd/decoder.py:158
+#: sabnzbd/decoder.py:164
 msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
-#: sabnzbd/decoder.py:217
+#: sabnzbd/decoder.py:226
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => lipsă de pe toate serverele, ignorare"
 
@@ -255,45 +320,45 @@ msgstr "Nu pot citi %s"
 msgid "Cannot read Watched Folder %s"
 msgstr "Nu pot citi Dosar Urnărire %s"
 
-#: sabnzbd/downloader.py:218 # sabnzbd/osxmenu.py:445 # sabnzbd/sabtray.py:81
-#: sabnzbd/skintext.py:37 [PP status] # sabnzbd/skintext.py:175 # sabnzbd/skintext.py:802
+#: sabnzbd/downloader.py:219 # sabnzbd/osxmenu.py:445 # sabnzbd/sabtray.py:81
+#: sabnzbd/skintext.py:37 [PP status] # sabnzbd/skintext.py:175 # sabnzbd/skintext.py:805
 msgid "Paused"
 msgstr "Întrerupt"
 
-#: sabnzbd/downloader.py:284 # sabnzbd/downloader.py:285 [Warning message]
+#: sabnzbd/downloader.py:285 # sabnzbd/downloader.py:286 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Serverul %s va fi ignorat pentru %s minute"
 
-#: sabnzbd/downloader.py:378 [Error message]
+#: sabnzbd/downloader.py:379 [Error message]
 msgid "Failed to initialize %s@%s:%s"
 msgstr "Iniţializare nereuşită %s@%s:%s"
 
-#: sabnzbd/downloader.py:510 # sabnzbd/downloader.py:511 [Error message]
+#: sabnzbd/downloader.py:511 # sabnzbd/downloader.py:512 [Error message]
 msgid "Too many connections to server %s:%s"
 msgstr "Prea multe conexiuni către serverul %s:%s"
 
-#: sabnzbd/downloader.py:518 # sabnzbd/downloader.py:520 [Error message]
+#: sabnzbd/downloader.py:519 # sabnzbd/downloader.py:521 [Error message]
 msgid "Probable account sharing"
 msgstr "Partajare cont probabilă"
 
-#: sabnzbd/downloader.py:525 # sabnzbd/downloader.py:526 [Error message]
+#: sabnzbd/downloader.py:526 # sabnzbd/downloader.py:527 [Error message]
 msgid "Failed login for server %s"
 msgstr "Autentificare nereuşită la serverul %s"
 
-#: sabnzbd/downloader.py:532 # sabnzbd/downloader.py:533 [Warning message]
-#: sabnzbd/downloader.py:542 # sabnzbd/downloader.py:543 [Error message]
+#: sabnzbd/downloader.py:533 # sabnzbd/downloader.py:534 [Warning message]
+#: sabnzbd/downloader.py:543 # sabnzbd/downloader.py:544 [Error message]
 msgid "Cannot connect to server %s [%s]"
 msgstr "Nu mă pot conecta la serverul %s [%s]"
 
-#: sabnzbd/downloader.py:557 [Error message]
+#: sabnzbd/downloader.py:558 [Error message]
 msgid "Connecting %s@%s:%s failed, message=%s"
 msgstr "Conectarea %s@%s:%s nereuşită, mesajul=%s"
 
-#: sabnzbd/downloader.py:596 # sabnzbd/downloader.py:599
+#: sabnzbd/downloader.py:597 # sabnzbd/downloader.py:600
 msgid "Server %s requires user/password"
 msgstr "Serverul %s necesită utilizator/parolă"
 
-#: sabnzbd/downloader.py:779
+#: sabnzbd/downloader.py:793
 msgid "Shutting down"
 msgstr "Închidere"
 
@@ -464,7 +529,7 @@ msgstr ""
 "secunde şi apoi faceţi clic pe butonul de mai jos.<br /><br /><strong><a "
 "href=\"..\">Reîmprospătează</a></strong><br />"
 
-#: sabnzbd/interface.py:1699 [Used as default Feed name in Config->RSS] # sabnzbd/skintext.py:504 [Config->RSS, tab header]
+#: sabnzbd/interface.py:1699 [Used as default Feed name in Config->RSS] # sabnzbd/skintext.py:507 [Config->RSS, tab header]
 msgid "Feed"
 msgstr "Flux"
 
@@ -526,7 +591,7 @@ msgstr "Sarcina \"%s\" a fost re-adăugată în coadă"
 msgid "Jobs marked with a '*' will not be automatically downloaded."
 msgstr "Sarcinile selectate cu '*' vor fi descărcate automat"
 
-#: sabnzbd/interface.py:2604 # sabnzbd/skintext.py:518 [Config->RSS section header]
+#: sabnzbd/interface.py:2604 # sabnzbd/skintext.py:521 [Config->RSS section header]
 msgid "Matched"
 msgstr "Potrivite"
 
@@ -534,7 +599,7 @@ msgstr "Potrivite"
 msgid "Not matched"
 msgstr "Nepotrivite"
 
-#: sabnzbd/interface.py:2605 # sabnzbd/skintext.py:520 [Config->RSS section header]
+#: sabnzbd/interface.py:2605 # sabnzbd/skintext.py:523 [Config->RSS section header]
 msgid "Downloaded"
 msgstr "Descărcate"
 
@@ -570,7 +635,7 @@ msgstr "Citire valoare registru pentru dosare speciale nereuşită"
 msgid "Failed making (%s)"
 msgstr "Facere nereuşită (%s)"
 
-#: sabnzbd/misc.py:818 [Error message] # sabnzbd/postproc.py:355
+#: sabnzbd/misc.py:818 [Error message] # sabnzbd/postproc.py:361
 msgid "Failed moving %s to %s"
 msgstr "Mutare %s în %s nereuşită"
 
@@ -857,73 +922,81 @@ msgstr "Fişierul %s este gol , ignorăm"
 msgid "Failed to import %s files from %s"
 msgstr "Importare %s a fişierelor de la %s nereuşită"
 
-#: sabnzbd/nzbstuff.py:678 [Warning message]
+#: sabnzbd/nzbstuff.py:680 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "Fişier NZB  incomplet %s"
 
-#: sabnzbd/nzbstuff.py:680 [Warning message] # sabnzbd/nzbstuff.py:684 [Warning message]
+#: sabnzbd/nzbstuff.py:682 [Warning message] # sabnzbd/nzbstuff.py:686 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Fişier NZB invalid %s, ignorăm (motiv=%s, line=%s)"
 
-#: sabnzbd/nzbstuff.py:699 [Warning message] # sabnzbd/nzbstuff.py:701 [Warning message]
+#: sabnzbd/nzbstuff.py:701 [Warning message] # sabnzbd/nzbstuff.py:703 [Warning message]
 msgid "Empty NZB file %s"
 msgstr "Fişier NZB gol %s"
 
-#: sabnzbd/nzbstuff.py:760 [Warning message]
+#: sabnzbd/nzbstuff.py:762 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorăm duplicat NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:765 [Warning message]
+#: sabnzbd/nzbstuff.py:767 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Întrerupem duplicat NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:978 [Queue indicator for duplicate job]
+#: sabnzbd/nzbstuff.py:899
+msgid "Aborted, cannot be completed"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:987 [Queue indicator for duplicate job]
 msgid "DUPLICATE"
 msgstr "DUPLICAT"
 
-#: sabnzbd/nzbstuff.py:980 [Queue indicator for encrypted job]
+#: sabnzbd/nzbstuff.py:989 [Queue indicator for encrypted job]
 msgid "ENCRYPTED"
 msgstr "ENCRIPTAT"
 
-#: sabnzbd/nzbstuff.py:982 [Queue indicator for oversized job]
+#: sabnzbd/nzbstuff.py:991 [Queue indicator for oversized job]
 msgid "TOO LARGE"
 msgstr "PREA MARE"
 
-#: sabnzbd/nzbstuff.py:984 [Queue indicator for incomplete NZB]
+#: sabnzbd/nzbstuff.py:993 [Queue indicator for incomplete NZB]
 msgid "INCOMPLETE"
 msgstr "INCOMPLET"
 
-#: sabnzbd/nzbstuff.py:988 [Queue indicator for waiting URL fetch]
+#: sabnzbd/nzbstuff.py:997 [Queue indicator for waiting URL fetch]
 msgid "WAIT %s sec"
 msgstr "AŞTEAPTĂ %s sec"
 
-#: sabnzbd/nzbstuff.py:1074
+#: sabnzbd/nzbstuff.py:1084
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Descărcat în %s cu o medie de %sB/s"
 
-#: sabnzbd/nzbstuff.py:1080
+#: sabnzbd/nzbstuff.py:1091
 msgid "%s articles were malformed"
 msgstr "%s articolele au fost incorecte"
 
-#: sabnzbd/nzbstuff.py:1082
+#: sabnzbd/nzbstuff.py:1093
 msgid "%s articles were missing"
 msgstr "%s articolele au fost lipsă"
 
-#: sabnzbd/nzbstuff.py:1084
+#: sabnzbd/nzbstuff.py:1095
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articolele au avut duplicate diferite"
 
-#: sabnzbd/nzbstuff.py:1116 [Error message]
+#: sabnzbd/nzbstuff.py:1097
+msgid "%s articles were removed"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:1129 [Error message]
 msgid "Error importing %s"
 msgstr "Eroare importare %s"
 
 #: sabnzbd/osxmenu.py:127 # sabnzbd/osxmenu.py:424 # sabnzbd/osxmenu.py:432
-#: sabnzbd/skintext.py:258 [Footer: indicator of warnings] # sabnzbd/skintext.py:685 # sabnzbd/skintext.py:814
+#: sabnzbd/skintext.py:258 [Footer: indicator of warnings] # sabnzbd/skintext.py:688 # sabnzbd/skintext.py:817
 msgid "Warnings"
 msgstr "Atenționări"
 
 #: sabnzbd/osxmenu.py:138 # sabnzbd/osxmenu.py:468 # sabnzbd/sabtray.py:87
-#: sabnzbd/skintext.py:804
+#: sabnzbd/skintext.py:807
 msgid "Idle"
 msgstr "Inactiv"
 
@@ -931,11 +1004,11 @@ msgstr "Inactiv"
 msgid "Configuration"
 msgstr "Configurare"
 
-#: sabnzbd/osxmenu.py:154 # sabnzbd/skintext.py:116 [Main menu item] # sabnzbd/skintext.py:443
+#: sabnzbd/osxmenu.py:154 # sabnzbd/skintext.py:116 [Main menu item] # sabnzbd/skintext.py:444
 msgid "Queue"
 msgstr "Coadă"
 
-#: sabnzbd/osxmenu.py:161 # sabnzbd/skintext.py:205 [Queue page button] # sabnzbd/skintext.py:696
+#: sabnzbd/osxmenu.py:161 # sabnzbd/skintext.py:205 [Queue page button] # sabnzbd/skintext.py:699
 msgid "Purge Queue"
 msgstr "Goleşte Coadă"
 
@@ -943,7 +1016,7 @@ msgstr "Goleşte Coadă"
 msgid "History"
 msgstr "Istoric"
 
-#: sabnzbd/osxmenu.py:177 # sabnzbd/skintext.py:218 [History page button] # sabnzbd/skintext.py:715
+#: sabnzbd/osxmenu.py:177 # sabnzbd/skintext.py:218 [History page button] # sabnzbd/skintext.py:718
 msgid "Purge History"
 msgstr "Şterge Istoricul"
 
@@ -953,7 +1026,7 @@ msgstr "Limitare de Viteză"
 
 #: sabnzbd/osxmenu.py:209 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
 #: sabnzbd/skintext.py:152 # sabnzbd/skintext.py:201 [Queue page button] # sabnzbd/skintext.py:389 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:496
+#: sabnzbd/skintext.py:499
 msgid "Pause"
 msgstr "Pauză"
 
@@ -962,7 +1035,7 @@ msgid "min."
 msgstr "min."
 
 #: sabnzbd/osxmenu.py:225 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
-#: sabnzbd/skintext.py:153 # sabnzbd/skintext.py:200 [Queue page button] # sabnzbd/skintext.py:495
+#: sabnzbd/skintext.py:153 # sabnzbd/skintext.py:200 [Queue page button] # sabnzbd/skintext.py:498
 msgid "Resume"
 msgstr "Reia"
 
@@ -989,7 +1062,7 @@ msgstr "Depanare"
 #: sabnzbd/osxmenu.py:278 # sabnzbd/osxmenu.py:279 # sabnzbd/sabtray.py:61
 #: sabnzbd/sabtray.py:63 # sabnzbd/sabtray.py:115 # sabnzbd/sabtray.py:124
 #: sabnzbd/sabtray.py:133 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:266
-#: sabnzbd/skintext.py:498
+#: sabnzbd/skintext.py:501
 msgid "Restart"
 msgstr "Repornește"
 
@@ -1230,107 +1303,107 @@ msgstr ""
 msgid "Failed to remove nzo from postproc queue (id)"
 msgstr "Ştergere nzo din coadă post-procesare nereuşită (id)"
 
-#: sabnzbd/postproc.py:254
+#: sabnzbd/postproc.py:260
 msgid "Download might fail, only %s of required %s available"
 msgstr "Descărcarea ar putea eşua, doar %s din %s disponibil"
 
-#: sabnzbd/postproc.py:256
+#: sabnzbd/postproc.py:262
 msgid "Download failed - Out of your server's retention?"
 msgstr "Descărcare nereuşită - Retenţie server depăşită ?"
 
-#: sabnzbd/postproc.py:316
+#: sabnzbd/postproc.py:322
 msgid "Cannot create final folder %s"
 msgstr "Nu pot crea dosar final %s"
 
-#: sabnzbd/postproc.py:338
+#: sabnzbd/postproc.py:344
 msgid "No post-processing because of failed verification"
 msgstr "Nici o post-procesare din cauza verificării nereuşite"
 
-#: sabnzbd/postproc.py:346
+#: sabnzbd/postproc.py:352
 msgid "Moving"
 msgstr "Mutare"
 
-#: sabnzbd/postproc.py:377
+#: sabnzbd/postproc.py:383
 msgid "Sent %s to queue"
 msgstr "Trimis %s în coadă"
 
-#: sabnzbd/postproc.py:393 [Error message]
+#: sabnzbd/postproc.py:399 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Eroare redenumire \"%s\" în \"%s\""
 
-#: sabnzbd/postproc.py:412
+#: sabnzbd/postproc.py:418
 msgid "Failed to move files"
 msgstr "Nu am putu muta fişier"
 
-#: sabnzbd/postproc.py:420
+#: sabnzbd/postproc.py:426
 msgid "Running script"
 msgstr "Rulare script"
 
-#: sabnzbd/postproc.py:421
+#: sabnzbd/postproc.py:427
 msgid "Running user script %s"
 msgstr "Rulare script utilizator %s"
 
-#: sabnzbd/postproc.py:430
+#: sabnzbd/postproc.py:436
 msgid "Ran %s"
 msgstr "Durată %s"
 
-#: sabnzbd/postproc.py:451
+#: sabnzbd/postproc.py:457
 msgid "More"
 msgstr "Mai mult"
 
-#: sabnzbd/postproc.py:455
+#: sabnzbd/postproc.py:461
 msgid "View script output"
 msgstr "Vezi rezultat script"
 
-#: sabnzbd/postproc.py:469
+#: sabnzbd/postproc.py:478
 msgid "Download Completed"
 msgstr "Descărcare terminată"
 
-#: sabnzbd/postproc.py:472 # sabnzbd/postproc.py:481
+#: sabnzbd/postproc.py:481 # sabnzbd/postproc.py:490
 msgid "Download Failed"
 msgstr "Descărcarea a eșuat"
 
-#: sabnzbd/postproc.py:476 [Error message]
+#: sabnzbd/postproc.py:485 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Post Procesare Nereuşită pentru %s (%s)"
 
-#: sabnzbd/postproc.py:479
+#: sabnzbd/postproc.py:488
 msgid "see logfile"
 msgstr "vezi fişier jurnal"
 
-#: sabnzbd/postproc.py:480
+#: sabnzbd/postproc.py:489
 msgid "PostProcessing was aborted (%s)"
 msgstr "Post-Procesarea a fost abandonată (%s)"
 
-#: sabnzbd/postproc.py:514 [Error message]
+#: sabnzbd/postproc.py:523 [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Ştergerea lui %s nereuşită."
 
-#: sabnzbd/postproc.py:524 [Error message]
+#: sabnzbd/postproc.py:533 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Eroare ştergere dosar curent (%s)"
 
-#: sabnzbd/postproc.py:537
+#: sabnzbd/postproc.py:546
 msgid "Post-processing"
 msgstr "Post-procesare"
 
-#: sabnzbd/postproc.py:568
+#: sabnzbd/postproc.py:577
 msgid "[%s] No par2 sets"
 msgstr "[%s] Niciun set par2"
 
-#: sabnzbd/postproc.py:600
+#: sabnzbd/postproc.py:609
 msgid "Trying SFV verification"
 msgstr "Încerc verificare SFV"
 
-#: sabnzbd/postproc.py:603
+#: sabnzbd/postproc.py:612
 msgid "Some files failed to verify against \"%s\""
 msgstr "Unele fişiere nu au fost verificate corect cu \"%s\""
 
-#: sabnzbd/postproc.py:609
+#: sabnzbd/postproc.py:618
 msgid "Verified successfully using SFV files"
 msgstr "Verificare reuşită cu fişierele SFV"
 
-#: sabnzbd/postproc.py:664 [Error message] # sabnzbd/postproc.py:739 [Error message]
+#: sabnzbd/postproc.py:673 [Error message] # sabnzbd/postproc.py:748 [Error message]
 msgid "Removing %s failed"
 msgstr "Ştergerea %s nereuşită"
 
@@ -1379,11 +1452,11 @@ msgid "Open complete folder"
 msgstr "Deschide dosar descărcări complete"
 
 #: sabnzbd/sabtray.py:65 # sabnzbd/sabtray.py:139 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
-#: sabnzbd/skintext.py:151 # sabnzbd/skintext.py:497
+#: sabnzbd/skintext.py:151 # sabnzbd/skintext.py:500
 msgid "Shutdown"
 msgstr "Închidere"
 
-#: sabnzbd/sabtray.py:84 # sabnzbd/skintext.py:774
+#: sabnzbd/sabtray.py:84 # sabnzbd/skintext.py:777
 msgid "Remaining"
 msgstr "Rămas"
 
@@ -1399,7 +1472,7 @@ msgstr "Acţiune necunoscută: %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Planificare pentru un server inexistent %s"
 
-#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:162 # sabnzbd/skintext.py:521 [Config->RSS button "download item"]
+#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:162 # sabnzbd/skintext.py:524 [Config->RSS button "download item"]
 msgid "Download"
 msgstr "Descarcă"
 
@@ -1427,7 +1500,7 @@ msgstr "Nereuşit"
 msgid "Completed"
 msgstr "Finalizat"
 
-#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:809
+#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:812
 msgid "Failed"
 msgstr "Nereuşit"
 
@@ -1463,7 +1536,7 @@ msgstr "Verificare Rapidă..."
 msgid "Verifying..."
 msgstr "Verificare..."
 
-#: sabnzbd/skintext.py:45 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:803
+#: sabnzbd/skintext.py:45 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:806
 msgid "Downloading"
 msgstr "Descărcare"
 
@@ -1475,15 +1548,15 @@ msgstr "Descarcă NZB"
 msgid "Checking"
 msgstr "Se verifică"
 
-#: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:489
+#: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:492
 msgid "Frequency"
 msgstr "Frecvenţă"
 
-#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:490 # sabnzbd/skintext.py:679 [Job details page, section header]
+#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:493 # sabnzbd/skintext.py:682 [Job details page, section header]
 msgid "Action"
 msgstr "Acțiune"
 
-#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:491
+#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:494
 msgid "Arguments"
 msgstr "Argumente"
 
@@ -1631,11 +1704,11 @@ msgstr "Salvează"
 msgid "Queued"
 msgstr "Pus în coadă"
 
-#: sabnzbd/skintext.py:110 [Generic "Delete" button, short form] # sabnzbd/skintext.py:517 [Config->RSS button "Delete filter"] # sabnzbd/skintext.py:595
+#: sabnzbd/skintext.py:110 [Generic "Delete" button, short form] # sabnzbd/skintext.py:520 [Config->RSS button "Delete filter"] # sabnzbd/skintext.py:598
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py:111 [Used in confirmation popups] # sabnzbd/skintext.py:720
+#: sabnzbd/skintext.py:111 [Used in confirmation popups] # sabnzbd/skintext.py:723
 msgid "Are you sure?"
 msgstr "Sunteţi sigur?"
 
@@ -1655,7 +1728,7 @@ msgstr "Configurare"
 msgid "Status"
 msgstr "Stare"
 
-#: sabnzbd/skintext.py:120 [Main menu item] # sabnzbd/skintext.py:841 [Wizard help link]
+#: sabnzbd/skintext.py:120 [Main menu item] # sabnzbd/skintext.py:844 [Wizard help link]
 msgid "Help"
 msgstr "Ajutor"
 
@@ -1671,7 +1744,7 @@ msgstr "Forum"
 msgid "IRC"
 msgstr "IRC"
 
-#: sabnzbd/skintext.py:124 [Main menu item] # sabnzbd/skintext.py:441
+#: sabnzbd/skintext.py:124 [Main menu item] # sabnzbd/skintext.py:442
 msgid "General"
 msgstr "General"
 
@@ -1679,7 +1752,7 @@ msgstr "General"
 msgid "Folders"
 msgstr "Directoare"
 
-#: sabnzbd/skintext.py:126 [Main menu item] # sabnzbd/skintext.py:661
+#: sabnzbd/skintext.py:126 [Main menu item] # sabnzbd/skintext.py:664
 msgid "Switches"
 msgstr "Comutatoare"
 
@@ -1687,7 +1760,7 @@ msgstr "Comutatoare"
 msgid "Servers"
 msgstr "Servere"
 
-#: sabnzbd/skintext.py:128 [Main menu item] # sabnzbd/skintext.py:719
+#: sabnzbd/skintext.py:128 [Main menu item] # sabnzbd/skintext.py:722
 msgid "Scheduling"
 msgstr "Planificare"
 
@@ -1695,7 +1768,7 @@ msgstr "Planificare"
 msgid "RSS"
 msgstr "RSS"
 
-#: sabnzbd/skintext.py:130 [Main menu item] # sabnzbd/skintext.py:527 [Main Config page] # sabnzbd/skintext.py:548 [Section header]
+#: sabnzbd/skintext.py:130 [Main menu item] # sabnzbd/skintext.py:530 [Main Config page] # sabnzbd/skintext.py:551 [Section header]
 msgid "Notifications"
 msgstr "Notificări"
 
@@ -1887,11 +1960,11 @@ msgstr "Limită de Viteză"
 msgid "Pause for"
 msgstr "Pauză timp de"
 
-#: sabnzbd/skintext.py:194 [Queue page table column header] # sabnzbd/skintext.py:509 [Config->RSS table column header]
+#: sabnzbd/skintext.py:194 [Queue page table column header] # sabnzbd/skintext.py:512 [Config->RSS table column header]
 msgid "Order"
 msgstr "Ordine"
 
-#: sabnzbd/skintext.py:195 [Queue page table column header] # sabnzbd/skintext.py:666 [Job details page]
+#: sabnzbd/skintext.py:195 [Queue page table column header] # sabnzbd/skintext.py:669 [Job details page]
 msgid "Name"
 msgstr "Nume"
 
@@ -1915,7 +1988,7 @@ msgstr "Şterge"
 msgid "Retry"
 msgstr "Reîncearcă"
 
-#: sabnzbd/skintext.py:203 [Queue end-of-queue selection box] # sabnzbd/skintext.py:782
+#: sabnzbd/skintext.py:203 [Queue end-of-queue selection box] # sabnzbd/skintext.py:785
 msgid "Actions"
 msgstr "Acțiuni"
 
@@ -1995,7 +2068,7 @@ msgstr "Arată Nereuşite"
 msgid "Show All"
 msgstr "Arată toate"
 
-#: sabnzbd/skintext.py:228 [History table header] # sabnzbd/skintext.py:447 [Size of the download quota] # sabnzbd/skintext.py:792
+#: sabnzbd/skintext.py:228 [History table header] # sabnzbd/skintext.py:448 [Size of the download quota] # sabnzbd/skintext.py:795
 msgid "Size"
 msgstr "Mărime"
 
@@ -2015,7 +2088,7 @@ msgstr "Şterge NZB-uri Complete"
 msgid "Optional Supplemental NZB"
 msgstr "NZB Suplimentar Opţional"
 
-#: sabnzbd/skintext.py:234 [Path as displayed in History details] # sabnzbd/skintext.py:723 # sabnzbd/skintext.py:793
+#: sabnzbd/skintext.py:234 [Path as displayed in History details] # sabnzbd/skintext.py:726 # sabnzbd/skintext.py:796
 msgid "Path"
 msgstr "Cale"
 
@@ -2055,7 +2128,7 @@ msgstr "+ Info"
 msgid "+ Debug"
 msgstr "+ Depanare"
 
-#: sabnzbd/skintext.py:247 [Status page tab header] # sabnzbd/skintext.py:472 [Server: amount of connections]
+#: sabnzbd/skintext.py:247 [Status page tab header] # sabnzbd/skintext.py:475 [Server: amount of connections]
 msgid "Connections"
 msgstr "Conexiuni"
 
@@ -2091,7 +2164,7 @@ msgstr "Set fişiere"
 msgid "When"
 msgstr "Când"
 
-#: sabnzbd/skintext.py:256 [Status page, table column header, type of message] # sabnzbd/skintext.py:510 [Config->RSS table column header]
+#: sabnzbd/skintext.py:256 [Status page, table column header, type of message] # sabnzbd/skintext.py:513 [Config->RSS table column header]
 msgid "Type"
 msgstr "Tip"
 
@@ -2619,12 +2692,13 @@ msgstr ""
 "Execută post-procesarea doar dacă sarcina a trecut toate verificările PAR2."
 
 #: sabnzbd/skintext.py:383
-msgid "Pause job when encrypted RAR is downloaded"
-msgstr "Întrerupe o sarcină când sunt descărcate fişiere RAR encriptate"
+msgid "Action when encrypted RAR is downloaded"
+msgstr ""
 
 #: sabnzbd/skintext.py:384
-msgid "You'll need to set a password and resume the job."
-msgstr "Veţi avea nevoie să setaţi o parolă şi să reluaţi sarcina."
+msgid ""
+"In case of \"Pause\", you'll need to set a password and resume the job."
+msgstr ""
 
 #: sabnzbd/skintext.py:385
 msgid "Detect Duplicate Downloads"
@@ -2638,7 +2712,7 @@ msgstr ""
 "Detectează fişierele NZB denumite la fel (necesită opţiunea copie de rezervă "
 "NZB) şi titluri duplicat în fluxuri RSS."
 
-#: sabnzbd/skintext.py:387 [Three way switch for duplicates] # sabnzbd/skintext.py:434
+#: sabnzbd/skintext.py:387 [Three way switch for duplicates] # sabnzbd/skintext.py:435
 msgid "Off"
 msgstr "Oprit"
 
@@ -2646,29 +2720,33 @@ msgstr "Oprit"
 msgid "Discard"
 msgstr "Ignoră"
 
-#: sabnzbd/skintext.py:390
+#: sabnzbd/skintext.py:390 [Three way switch for encrypted posts]
+msgid "Abort"
+msgstr ""
+
+#: sabnzbd/skintext.py:391
 msgid "Enable SFV-based checks"
 msgstr "Activează verficări SFV"
 
-#: sabnzbd/skintext.py:391
+#: sabnzbd/skintext.py:392
 msgid "Do an extra verification based on SFV files."
 msgstr "Fă o verificare extra bazată pe fişiere SFV"
 
-#: sabnzbd/skintext.py:392
+#: sabnzbd/skintext.py:393
 msgid "Check result of unpacking"
 msgstr "Verifică rezultatul dezarhivării"
 
-#: sabnzbd/skintext.py:393
+#: sabnzbd/skintext.py:394
 msgid "Check result of unpacking (needs to be off for some file systems)."
 msgstr ""
 "Verifică rezultatul dezarhivării ( trebuie să fie dezactivat pentru unele "
 "sisteme de fișiere )"
 
-#: sabnzbd/skintext.py:394
+#: sabnzbd/skintext.py:395
 msgid "Enable folder rename"
 msgstr "Activează redenumire dosar"
 
-#: sabnzbd/skintext.py:395
+#: sabnzbd/skintext.py:396
 msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
@@ -2676,203 +2754,203 @@ msgstr ""
 "Foloseşte nume temporare în timpul post procesării. Dezactivaţi când "
 "sistemul dvs. nu gestionează aceasta corect."
 
-#: sabnzbd/skintext.py:396
+#: sabnzbd/skintext.py:397
 msgid "Default Post-Processing"
 msgstr "Post-Procesare Implicită"
 
-#: sabnzbd/skintext.py:397
+#: sabnzbd/skintext.py:398
 msgid "Used when no post-processing is defined by the category."
 msgstr "Folosit când nu este definit nici o post-procesare de categorie."
 
-#: sabnzbd/skintext.py:398
+#: sabnzbd/skintext.py:399
 msgid "Default User Script"
 msgstr "Script Utilizator Implicit"
 
-#: sabnzbd/skintext.py:399
+#: sabnzbd/skintext.py:400
 msgid "Used when no user script is defined by the category."
 msgstr "Folosit când nu este definit nici un script  de categorie."
 
-#: sabnzbd/skintext.py:400
+#: sabnzbd/skintext.py:401
 msgid "Pre-queue user script"
 msgstr "Script utilizator Pre-Coadă"
 
-#: sabnzbd/skintext.py:401
+#: sabnzbd/skintext.py:402
 msgid "Used before an NZB enters the queue."
 msgstr "Folosit înainte ca un NZB să intre în coadă."
 
-#: sabnzbd/skintext.py:402
+#: sabnzbd/skintext.py:403
 msgid "Default Priority"
 msgstr "Prioritate Implicită"
 
-#: sabnzbd/skintext.py:403
+#: sabnzbd/skintext.py:404
 msgid "Used when no priority is defined by the category."
 msgstr "Folosit când nu este definit nici o prioritate de categorie."
 
-#: sabnzbd/skintext.py:404
+#: sabnzbd/skintext.py:405
 msgid "Enable MultiCore Par2"
 msgstr "Activează Par2 MultiCore"
 
-#: sabnzbd/skintext.py:405 # sabnzbd/skintext.py:407 # sabnzbd/skintext.py:409
-#: sabnzbd/skintext.py:411
+#: sabnzbd/skintext.py:406 # sabnzbd/skintext.py:408 # sabnzbd/skintext.py:410
+#: sabnzbd/skintext.py:412
 msgid "Read the Wiki Help on this!"
 msgstr "Citeşte Ajutorul Wiki despre asta !"
 
-#: sabnzbd/skintext.py:406
+#: sabnzbd/skintext.py:407
 msgid "Extra PAR2 Parameters"
 msgstr "Parametri Extra PAR2"
 
-#: sabnzbd/skintext.py:408
+#: sabnzbd/skintext.py:409
 msgid "Nice Parameters"
 msgstr "Parametri Nice"
 
-#: sabnzbd/skintext.py:410
+#: sabnzbd/skintext.py:411
 msgid "IONice Parameters"
 msgstr "Parametri IONice"
 
-#: sabnzbd/skintext.py:412
+#: sabnzbd/skintext.py:413
 msgid "Other Switches"
 msgstr "Alte Comutatoare"
 
-#: sabnzbd/skintext.py:413
+#: sabnzbd/skintext.py:414
 msgid "Disconnect on Empty Queue"
 msgstr "Deconectează când Coada e Goală"
 
-#: sabnzbd/skintext.py:414
+#: sabnzbd/skintext.py:415
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr ""
 "Deconectează de la serverul(ele) Usenet când coada e goală sau în pauză."
 
-#: sabnzbd/skintext.py:415
+#: sabnzbd/skintext.py:416
 msgid "Send Group"
 msgstr "Trimite Grup"
 
-#: sabnzbd/skintext.py:416
+#: sabnzbd/skintext.py:417
 msgid "Send group command before requesting articles."
 msgstr "Trimite comanda group înainte de a cere articole."
 
-#: sabnzbd/skintext.py:417
+#: sabnzbd/skintext.py:418
 msgid "Sort by Age"
 msgstr "Sortează după Vârstă"
 
-#: sabnzbd/skintext.py:418
+#: sabnzbd/skintext.py:419
 msgid "Automatically sort items by (average) age."
 msgstr "Sortează automat obiectele dupa vârstă (medie)."
 
-#: sabnzbd/skintext.py:419
+#: sabnzbd/skintext.py:420
 msgid "Check for New Release"
 msgstr "Verifică Versiuni Noi"
 
-#: sabnzbd/skintext.py:420
+#: sabnzbd/skintext.py:421
 msgid "Weekly check for new SABnzbd release."
 msgstr "Verificare săptămânală versiuni noi SABnzbd."
 
-#: sabnzbd/skintext.py:421 [Pick list for weekly test for new releases]
+#: sabnzbd/skintext.py:422 [Pick list for weekly test for new releases]
 msgid "Also test releases"
 msgstr "Testeaza şi versiuni de încercare"
 
-#: sabnzbd/skintext.py:422
+#: sabnzbd/skintext.py:423
 msgid "Replace Spaces in Foldername"
 msgstr "Înlocuieşte Spaţiile din Numele Dosarelor"
 
-#: sabnzbd/skintext.py:423
+#: sabnzbd/skintext.py:424
 msgid "Replace spaces with underscores in folder names."
 msgstr "Înlocuieşte spaţiile cu _ în numele dosarelor."
 
-#: sabnzbd/skintext.py:424
+#: sabnzbd/skintext.py:425
 msgid "Replace dots in Foldername"
 msgstr "Înlocuieşte punctele din Numele Dosarelor"
 
-#: sabnzbd/skintext.py:425
+#: sabnzbd/skintext.py:426
 msgid "Replace dots with spaces in folder names."
 msgstr "Înlocuieşte puntele cu spaţii în numele dosarelor."
 
-#: sabnzbd/skintext.py:426
+#: sabnzbd/skintext.py:427
 msgid "Replace Illegal Characters in Folder Names"
 msgstr "Înlocuieşte Caracterle Ilegale din Numele Dosarelor"
 
-#: sabnzbd/skintext.py:427
+#: sabnzbd/skintext.py:428
 msgid ""
 "Replace illegal characters in folder names by equivalents (otherwise remove)."
 msgstr ""
 "Înlocuieşte caracterele ilegale din numele dosarelor cu echivalente (altfel "
 "şterge)."
 
-#: sabnzbd/skintext.py:428
+#: sabnzbd/skintext.py:429
 msgid "Launch Browser on Startup"
 msgstr "Porneşte Navigator Web la Pornire"
 
-#: sabnzbd/skintext.py:429
+#: sabnzbd/skintext.py:430
 msgid "Launch the default web browser when starting SABnzbd."
 msgstr "Porneşte navigatorul web implicit când se porneşte SABnzbd."
 
-#: sabnzbd/skintext.py:430
+#: sabnzbd/skintext.py:431
 msgid "Pause Downloading During Post-Processing"
 msgstr "Întrerupe Descărcarea în Timpul Post-Procesare"
 
-#: sabnzbd/skintext.py:431
+#: sabnzbd/skintext.py:432
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
 msgstr ""
 "Întrerupe descărcare la începerea post procesării şi reporneşte când e "
 "terminată."
 
-#: sabnzbd/skintext.py:432
+#: sabnzbd/skintext.py:433
 msgid "Ignore Samples"
 msgstr "Ignoră Monstre"
 
-#: sabnzbd/skintext.py:433
+#: sabnzbd/skintext.py:434
 msgid "Filter out sample files (e.g. video samples)."
 msgstr "Ignoră fişiere monstră (de ex. monstre video)"
 
-#: sabnzbd/skintext.py:435
+#: sabnzbd/skintext.py:436
 msgid "Delete after download"
 msgstr "Şterge după descărcare"
 
-#: sabnzbd/skintext.py:436
+#: sabnzbd/skintext.py:437
 msgid "Do not download"
 msgstr "Nu descărca"
 
-#: sabnzbd/skintext.py:437
+#: sabnzbd/skintext.py:438
 msgid "SSL type"
 msgstr "Tip SSL"
 
-#: sabnzbd/skintext.py:438
+#: sabnzbd/skintext.py:439
 msgid "Use V23 unless your provider requires otherwise!"
 msgstr "Folosiţi V23 doar dacă furnizorul dumneavoastră necesită altfel!"
 
-#: sabnzbd/skintext.py:439
+#: sabnzbd/skintext.py:440
 msgid "Use 12 hour clock (AM/PM)"
 msgstr "Folosiţi sitemul 12 ore (AM/PM)"
 
-#: sabnzbd/skintext.py:440
+#: sabnzbd/skintext.py:441
 msgid "Show times in AM/PM notation (does not affect scheduler)."
 msgstr "Afişaţi timpii în notaţia AM/PM (nu afectează planificatorul)"
 
-#: sabnzbd/skintext.py:442
+#: sabnzbd/skintext.py:443
 msgid "Server"
 msgstr "Server"
 
-#: sabnzbd/skintext.py:444
+#: sabnzbd/skintext.py:445
 msgid "Post processing"
 msgstr "Post procesare"
 
-#: sabnzbd/skintext.py:445
+#: sabnzbd/skintext.py:446
 msgid "Naming"
 msgstr "Redenumire"
 
-#: sabnzbd/skintext.py:446
+#: sabnzbd/skintext.py:447
 msgid "Quota"
 msgstr "Cotă"
 
-#: sabnzbd/skintext.py:448
+#: sabnzbd/skintext.py:449
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Cât de mult poate fi descărcat în acestă lună (K/M/G)"
 
-#: sabnzbd/skintext.py:449 [Reset day of the download quota]
+#: sabnzbd/skintext.py:450 [Reset day of the download quota]
 msgid "Reset day"
 msgstr "Zi resetare"
 
-#: sabnzbd/skintext.py:450
+#: sabnzbd/skintext.py:451
 msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
@@ -2880,149 +2958,159 @@ msgstr ""
 "În ce zi a lunii sau săptămână (1=Luni) ISP dumneavoastră resetează cota? "
 "(Opțional cu hh:mm)"
 
-#: sabnzbd/skintext.py:451 [Auto-resume download on the reset day]
+#: sabnzbd/skintext.py:452 [Auto-resume download on the reset day]
 msgid "Auto resume"
 msgstr "Auto repornire"
 
-#: sabnzbd/skintext.py:452
+#: sabnzbd/skintext.py:453
 msgid "Should downloading resume after the quota is reset?"
 msgstr "Se reia descărcarea după resetarea cotei?"
 
-#: sabnzbd/skintext.py:453 [Does the quota get reset every day, week or month?]
+#: sabnzbd/skintext.py:454 [Does the quota get reset every day, week or month?]
 msgid "Quota period"
 msgstr "Perioadă Cotă"
 
-#: sabnzbd/skintext.py:454
+#: sabnzbd/skintext.py:455
 msgid "Does the quota get reset each day, week or month?"
 msgstr "Cota se resetează în fiecare zi, săptămână sau lună ?"
 
-#: sabnzbd/skintext.py:455
+#: sabnzbd/skintext.py:456
 msgid "Check before download"
 msgstr "Verifică înainte de descărcare"
 
-#: sabnzbd/skintext.py:456
+#: sabnzbd/skintext.py:457
 msgid "Try to predict successful completion before actual download (slower!)"
 msgstr ""
 "Încearcă să prezici decărcarea cu succes înaintea descărcării reale (mai "
 "lent!)"
 
-#: sabnzbd/skintext.py:457
+#: sabnzbd/skintext.py:458
 msgid "Maximum retries"
 msgstr "Număr Maxim reîncercări"
 
-#: sabnzbd/skintext.py:458
+#: sabnzbd/skintext.py:459
 msgid "Maximum number of retries per server"
 msgstr "Număr Maxim reîncercări pe server"
 
-#: sabnzbd/skintext.py:459
+#: sabnzbd/skintext.py:460
 msgid "Only for optional servers"
 msgstr "Doar pentru servere opționale"
 
-#: sabnzbd/skintext.py:460
+#: sabnzbd/skintext.py:461
 msgid "Apply maximum retries only to optional servers"
 msgstr "Aplică numărul maxim de reîncercări la serverele opționale"
 
-#: sabnzbd/skintext.py:464 [Caption]
+#: sabnzbd/skintext.py:462
+msgid "Abort jobs that cannot be completed"
+msgstr ""
+
+#: sabnzbd/skintext.py:463
+msgid ""
+"When during download it becomes clear that too much data is missing, abort "
+"the job"
+msgstr ""
+
+#: sabnzbd/skintext.py:467 [Caption]
 msgid "Server configuration"
 msgstr "Configurare Server"
 
-#: sabnzbd/skintext.py:465
+#: sabnzbd/skintext.py:468
 msgid "Server definition"
 msgstr "Definiţie Server"
 
-#: sabnzbd/skintext.py:466 [Caption] # sabnzbd/skintext.py:478 [Button: Add server]
+#: sabnzbd/skintext.py:469 [Caption] # sabnzbd/skintext.py:481 [Button: Add server]
 msgid "Add Server"
 msgstr "Adaugă Server"
 
-#: sabnzbd/skintext.py:467 [Server hostname or IP]
+#: sabnzbd/skintext.py:470 [Server hostname or IP]
 msgid "Host"
 msgstr "Gazdă"
 
-#: sabnzbd/skintext.py:468 [Server port]
+#: sabnzbd/skintext.py:471 [Server port]
 msgid "Port"
 msgstr "Port"
 
-#: sabnzbd/skintext.py:469 [Server username]
+#: sabnzbd/skintext.py:472 [Server username]
 msgid "Username"
 msgstr "Nume de Utilizator"
 
-#: sabnzbd/skintext.py:470 [Server password]
+#: sabnzbd/skintext.py:473 [Server password]
 msgid "Password"
 msgstr "Parolă"
 
-#: sabnzbd/skintext.py:471 [Server timeout]
+#: sabnzbd/skintext.py:474 [Server timeout]
 msgid "Timeout"
 msgstr "Timp Expirare"
 
-#: sabnzbd/skintext.py:473 [Server's retention time in days]
+#: sabnzbd/skintext.py:476 [Server's retention time in days]
 msgid "Retention time"
 msgstr "Timp Retenţie"
 
-#: sabnzbd/skintext.py:474 [Server SSL tickbox]
+#: sabnzbd/skintext.py:477 [Server SSL tickbox]
 msgid "SSL"
 msgstr "SSL"
 
-#: sabnzbd/skintext.py:475 [Backup server tickbox]
+#: sabnzbd/skintext.py:478 [Backup server tickbox]
 msgid "Backup server"
 msgstr "Server Secundar"
 
-#: sabnzbd/skintext.py:476 [Server optional tickbox] # sabnzbd/skintext.py:852 [As in "this item is optional"]
+#: sabnzbd/skintext.py:479 [Server optional tickbox] # sabnzbd/skintext.py:855 [As in "this item is optional"]
 msgid "Optional"
 msgstr "Opţional"
 
-#: sabnzbd/skintext.py:477 [Enable server tickbox]
+#: sabnzbd/skintext.py:480 [Enable server tickbox]
 msgid "Enable"
 msgstr "Activează"
 
-#: sabnzbd/skintext.py:479 [Button: Remove server]
+#: sabnzbd/skintext.py:482 [Button: Remove server]
 msgid "Remove Server"
 msgstr "Şterge Server"
 
-#: sabnzbd/skintext.py:480 [Button: Test server] # sabnzbd/skintext.py:854 [Wizard step]
+#: sabnzbd/skintext.py:483 [Button: Test server] # sabnzbd/skintext.py:857 [Wizard step]
 msgid "Test Server"
 msgstr "Test Server"
 
-#: sabnzbd/skintext.py:481 [Button: Clear server's byte counters]
+#: sabnzbd/skintext.py:484 [Button: Clear server's byte counters]
 msgid "Clear Counters"
 msgstr "Resetează Statistici"
 
-#: sabnzbd/skintext.py:482
+#: sabnzbd/skintext.py:485
 msgid "Testing server details..."
 msgstr "Testez detalii server..."
 
-#: sabnzbd/skintext.py:483
+#: sabnzbd/skintext.py:486
 msgid "Click below to test."
 msgstr "Clic mai jos pentru a testa."
 
-#: sabnzbd/skintext.py:484
+#: sabnzbd/skintext.py:487
 msgid "Bandwidth"
 msgstr "Descărcat"
 
-#: sabnzbd/skintext.py:487
+#: sabnzbd/skintext.py:490
 msgid "Scheduling configuration"
 msgstr "Configurare Planificator"
 
-#: sabnzbd/skintext.py:488 # sabnzbd/skintext.py:492
+#: sabnzbd/skintext.py:491 # sabnzbd/skintext.py:495
 msgid "Add Schedule"
 msgstr "Adaugă Planificare"
 
-#: sabnzbd/skintext.py:493
+#: sabnzbd/skintext.py:496
 msgid "Remove"
 msgstr "Șterge"
 
-#: sabnzbd/skintext.py:494
+#: sabnzbd/skintext.py:497
 msgid "Current Schedules"
 msgstr "Planificări Curente"
 
-#: sabnzbd/skintext.py:501
+#: sabnzbd/skintext.py:504
 msgid "RSS Configuration"
 msgstr "Configurare RSS"
 
-#: sabnzbd/skintext.py:502
+#: sabnzbd/skintext.py:505
 msgid "New Feed URL"
 msgstr "Flux URL Nou"
 
-#: sabnzbd/skintext.py:503
+#: sabnzbd/skintext.py:506
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
 "enabled and be automatically checked for new items.<br />When a feed is "
@@ -3034,196 +3122,196 @@ msgstr ""
 "lua doar obiectele noi şi nu cele deja existente, cu excepţia când apăsaţi "
 "\"Descărcare Forţată\"."
 
-#: sabnzbd/skintext.py:505 [Config->RSS button]
+#: sabnzbd/skintext.py:508 [Config->RSS button]
 msgid "Add Feed"
 msgstr "Adaugă flux"
 
-#: sabnzbd/skintext.py:506 [Config->RSS button]
+#: sabnzbd/skintext.py:509 [Config->RSS button]
 msgid "Delete Feed"
 msgstr "Șterge flux"
 
-#: sabnzbd/skintext.py:507 [Config->RSS button]
+#: sabnzbd/skintext.py:510 [Config->RSS button]
 msgid "Read Feed"
 msgstr "Citeşte Flux"
 
-#: sabnzbd/skintext.py:508 [Config->RSS button]
+#: sabnzbd/skintext.py:511 [Config->RSS button]
 msgid "Force Download"
 msgstr "Descărcare Forţată"
 
-#: sabnzbd/skintext.py:511 [Config->RSS table column header]
+#: sabnzbd/skintext.py:514 [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filtru"
 
-#: sabnzbd/skintext.py:512 [Config->RSS table column header]
+#: sabnzbd/skintext.py:515 [Config->RSS table column header]
 msgid "Skip"
 msgstr "Omite"
 
-#: sabnzbd/skintext.py:513 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:516 [Config->RSS filter-type selection menu]
 msgid "Accept"
 msgstr "Acceptă"
 
-#: sabnzbd/skintext.py:514 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:517 [Config->RSS filter-type selection menu]
 msgid "Reject"
 msgstr "Respinge"
 
-#: sabnzbd/skintext.py:515 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:518 [Config->RSS filter-type selection menu]
 msgid "Requires"
 msgstr "Necesită"
 
-#: sabnzbd/skintext.py:516 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:519 [Config->RSS filter-type selection menu]
 msgid "RequiresCat"
 msgstr "NecesităCategoria"
 
-#: sabnzbd/skintext.py:519 [Config->RSS section header]
+#: sabnzbd/skintext.py:522 [Config->RSS section header]
 msgid "Not Matched"
 msgstr "Nepotrivit"
 
-#: sabnzbd/skintext.py:522 [Tab title for Config->Feeds]
+#: sabnzbd/skintext.py:525 [Tab title for Config->Feeds]
 msgid "Feeds"
 msgstr "Fluxuri"
 
-#: sabnzbd/skintext.py:523 [Config->RSS button]
+#: sabnzbd/skintext.py:526 [Config->RSS button]
 msgid "Read All Feeds Now"
 msgstr "Citeşte Toate Fluxurile Acum"
 
-#: sabnzbd/skintext.py:524 [Tab title for Config->Feeds]
+#: sabnzbd/skintext.py:527 [Tab title for Config->Feeds]
 msgid "Settings"
 msgstr "Setări"
 
-#: sabnzbd/skintext.py:525 [Tab title for Config->Feeds]
+#: sabnzbd/skintext.py:528 [Tab title for Config->Feeds]
 msgid "Filters"
 msgstr "Filtre"
 
-#: sabnzbd/skintext.py:528 [Section header]
+#: sabnzbd/skintext.py:531 [Section header]
 msgid "Email Options"
 msgstr "Opţiuni Email"
 
-#: sabnzbd/skintext.py:529
+#: sabnzbd/skintext.py:532
 msgid "Email Notification On Job Completion"
 msgstr "Notificări Email Sarcină Terminată"
 
-#: sabnzbd/skintext.py:530 [When to send email]
+#: sabnzbd/skintext.py:533 [When to send email]
 msgid "Never"
 msgstr "Niciodată"
 
-#: sabnzbd/skintext.py:531 [When to send email]
+#: sabnzbd/skintext.py:534 [When to send email]
 msgid "Always"
 msgstr "Întotdeauna"
 
-#: sabnzbd/skintext.py:532 [When to send email]
+#: sabnzbd/skintext.py:535 [When to send email]
 msgid "Error-only"
 msgstr "Doar-erori"
 
-#: sabnzbd/skintext.py:533
+#: sabnzbd/skintext.py:536
 msgid "Disk Full Notifications"
 msgstr "Notificări Disc Plin"
 
-#: sabnzbd/skintext.py:534
+#: sabnzbd/skintext.py:537
 msgid "Send email when disk is full and SABnzbd is paused."
 msgstr "Trimite email când discul este plin şi SABnzbd este întrerupt."
 
-#: sabnzbd/skintext.py:535
+#: sabnzbd/skintext.py:538
 msgid "Send RSS notifications"
 msgstr "Trimite notificări RSS"
 
-#: sabnzbd/skintext.py:536
+#: sabnzbd/skintext.py:539
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr "Trimite email când un flux RSS adaugă sarcini în coadă."
 
-#: sabnzbd/skintext.py:537
+#: sabnzbd/skintext.py:540
 msgid "Email Account Settings"
 msgstr "Setări Cont Email"
 
-#: sabnzbd/skintext.py:538
+#: sabnzbd/skintext.py:541
 msgid "SMTP Server"
 msgstr "Server SMTP"
 
-#: sabnzbd/skintext.py:539
+#: sabnzbd/skintext.py:542
 msgid "Set your ISP's server for outgoing email."
 msgstr "Setează serverul dvs. ISP pentru trimitere email."
 
-#: sabnzbd/skintext.py:540
+#: sabnzbd/skintext.py:543
 msgid "Email Recipient"
 msgstr "Destinatar Email"
 
-#: sabnzbd/skintext.py:541
+#: sabnzbd/skintext.py:544
 msgid "Email address to send the email to."
 msgstr "Adresă de email către care se trimite email."
 
-#: sabnzbd/skintext.py:542
+#: sabnzbd/skintext.py:545
 msgid "Email Sender"
 msgstr "Expeditor Email"
 
-#: sabnzbd/skintext.py:543
+#: sabnzbd/skintext.py:546
 msgid "Who should we say sent the email?"
 msgstr "Cine ar trebui să spunem că a trimis email?"
 
-#: sabnzbd/skintext.py:544
+#: sabnzbd/skintext.py:547
 msgid "OPTIONAL Account Username"
 msgstr "Nume Cont OPŢIONAL"
 
-#: sabnzbd/skintext.py:545
+#: sabnzbd/skintext.py:548
 msgid "For authenticated email, account name."
 msgstr "Pentru email autentificat, nume cont."
 
-#: sabnzbd/skintext.py:546
+#: sabnzbd/skintext.py:549
 msgid "OPTIONAL Account Password"
 msgstr "Parolă Cont OPŢIONAL"
 
-#: sabnzbd/skintext.py:547
+#: sabnzbd/skintext.py:550
 msgid "For authenticated email, password."
 msgstr "Pentru email autentificat, parola."
 
-#: sabnzbd/skintext.py:549 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:552 [Don't translate "Growl"]
 msgid "Enable Growl"
 msgstr "Activează Growl"
 
-#: sabnzbd/skintext.py:550 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:553 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Trimite notificări Growl"
 
-#: sabnzbd/skintext.py:551 [Address of Growl server]
+#: sabnzbd/skintext.py:554 [Address of Growl server]
 msgid "Server address"
 msgstr "Adresă server"
 
-#: sabnzbd/skintext.py:552 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:555 [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Foloseşte doar pentru server Growl de la distanţă (gazdă:port)"
 
-#: sabnzbd/skintext.py:553 [Growl server password]
+#: sabnzbd/skintext.py:556 [Growl server password]
 msgid "Server password"
 msgstr "Parolă server"
 
-#: sabnzbd/skintext.py:554 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:557 [Don't translate "Growl"]
 msgid "Optional password for Growl server"
 msgstr "Parolă opţională server Growl"
 
-#: sabnzbd/skintext.py:555 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:558 [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Activează NotifyOSD"
 
-#: sabnzbd/skintext.py:556 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:559 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
 msgstr "Trimite notificări către NotifyOSD"
 
-#: sabnzbd/skintext.py:557
+#: sabnzbd/skintext.py:560
 msgid "Notification Center"
 msgstr "Centru Notificări"
 
-#: sabnzbd/skintext.py:558
+#: sabnzbd/skintext.py:561
 msgid "Send notifications to Notification Center"
 msgstr "Trimite notificări la Centru Notificări"
 
-#: sabnzbd/skintext.py:559
+#: sabnzbd/skintext.py:562
 msgid "Notification classes"
 msgstr "Clase notificări"
 
-#: sabnzbd/skintext.py:560
+#: sabnzbd/skintext.py:563
 msgid "Enable classes of messages to be reported (none, one or multiple)"
 msgstr ""
 "Activează clasă mesaje ce vor  fi raportate (niciunul, unul sau mai multe)"
 
-#: sabnzbd/skintext.py:564
+#: sabnzbd/skintext.py:567
 msgid ""
 "If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
 "your account info here.<br />This will unlock extra functionality."
@@ -3231,71 +3319,71 @@ msgstr ""
 "Dacă aveţi un cont la <strong>www.newzbin2.es</strong>, puteţi introduce "
 "informaţiile contului aici.<br />Aceasta va debloca funcţionalitate extra."
 
-#: sabnzbd/skintext.py:565
+#: sabnzbd/skintext.py:568
 msgid "Account info"
 msgstr "Info Cont"
 
-#: sabnzbd/skintext.py:566
+#: sabnzbd/skintext.py:569
 msgid "Newzbin Username"
 msgstr "Nume de Utilizator Newzbin"
 
-#: sabnzbd/skintext.py:567 # sabnzbd/skintext.py:583
+#: sabnzbd/skintext.py:570 # sabnzbd/skintext.py:586
 msgid "Set your account username here."
 msgstr "Setaţi numele de utilizator de cont aici."
 
-#: sabnzbd/skintext.py:568
+#: sabnzbd/skintext.py:571
 msgid "Newzbin Password"
 msgstr "Parolă Newzbin"
 
-#: sabnzbd/skintext.py:569
+#: sabnzbd/skintext.py:572
 msgid "Set your account password here."
 msgstr "Setaţi parola contului dvs. aici."
 
-#: sabnzbd/skintext.py:570
+#: sabnzbd/skintext.py:573
 msgid "Bookmark Processing"
 msgstr "Procesare Semne de Carte"
 
-#: sabnzbd/skintext.py:571
+#: sabnzbd/skintext.py:574
 msgid "Auto-Fetch Bookmarks"
 msgstr "Descărcare-Automată Semne de Carte"
 
-#: sabnzbd/skintext.py:572
+#: sabnzbd/skintext.py:575
 msgid "Automatically retrieve jobs from your bookmarks."
 msgstr "Descarcă automat semnele dvs. de carte"
 
-#: sabnzbd/skintext.py:573
+#: sabnzbd/skintext.py:576
 msgid "Get Bookmarks Now"
 msgstr "Ia Semne de Carte Acum"
 
-#: sabnzbd/skintext.py:574
+#: sabnzbd/skintext.py:577
 msgid "Hide Bookmarks"
 msgstr "Ascunde Semnele de Carte"
 
-#: sabnzbd/skintext.py:575
+#: sabnzbd/skintext.py:578
 msgid "Show Bookmarks"
 msgstr "Afișează Semnele de Carte"
 
-#: sabnzbd/skintext.py:576
+#: sabnzbd/skintext.py:579
 msgid "Un-Bookmark If Download Complete"
 msgstr "Şterge Semn Carte după Descărcare Finalizată"
 
-#: sabnzbd/skintext.py:577
+#: sabnzbd/skintext.py:580
 msgid "Remove from bookmark list when download is complete."
 msgstr "Şterge din lista dvs. de semne de carte după o descărcare finalizată"
 
-#: sabnzbd/skintext.py:578
+#: sabnzbd/skintext.py:581
 msgid "Checking Interval"
 msgstr "Interval Verificare"
 
-#: sabnzbd/skintext.py:579
+#: sabnzbd/skintext.py:582
 msgid "In minutes (at least 15 min)."
 msgstr "În minute (cel puţin 15 min)."
 
-#: sabnzbd/skintext.py:580
+#: sabnzbd/skintext.py:583
 msgid "Processed Bookmarks"
 msgstr "Semne de Carte Procesate"
 
-#: sabnzbd/skintext.py:581
+#: sabnzbd/skintext.py:584
 msgid ""
 "If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter "
 "your account info here.<br />This is required if you want to use the RSS "
@@ -3305,27 +3393,27 @@ msgstr ""
 "informatiile contului dvs. aici .<br />Acest lucru este necesar dacă doriţi "
 "să utilizaţi fluxurile RSS de pe acest site."
 
-#: sabnzbd/skintext.py:582
+#: sabnzbd/skintext.py:585
 msgid "NzbMatrix Username"
 msgstr "Nume de Utilizator NzbMatrix"
 
-#: sabnzbd/skintext.py:584
+#: sabnzbd/skintext.py:587
 msgid "NzbMatrix API key"
 msgstr "Cheia API NzbMatrix"
 
-#: sabnzbd/skintext.py:585
+#: sabnzbd/skintext.py:588
 msgid "Set the NzbMatrix API key here."
 msgstr "Setaţi cheia API NzbMatrix aici."
 
-#: sabnzbd/skintext.py:588
+#: sabnzbd/skintext.py:591
 msgid "User-defined categories"
 msgstr "Categorii definite de utilizator"
 
-#: sabnzbd/skintext.py:589
+#: sabnzbd/skintext.py:592
 msgid "Defines post-processing and storage."
 msgstr "Defineşte post-procesarea şi stocarea."
 
-#: sabnzbd/skintext.py:590
+#: sabnzbd/skintext.py:593
 msgid ""
 "Use the \"Groups / Indexer tags\" column to map groups and tags to your "
 "categories.<br/>Wildcards are supported. Use commas to seperate terms."
@@ -3334,249 +3422,249 @@ msgstr ""
 "categoriilor dvs. .<br/>Metacaracterele sunt acceptate. Utilizaţi virgule "
 "pentru a separa termeni."
 
-#: sabnzbd/skintext.py:591
+#: sabnzbd/skintext.py:594
 msgid ""
 "Ending the path with an asterisk * will prevent creation of job folders."
 msgstr ""
 "Finalizarea unei căi cu un asterix * va preveni crearea de dosare sarcini."
 
-#: sabnzbd/skintext.py:592
+#: sabnzbd/skintext.py:595
 msgid "Relative folders are based on"
 msgstr "Dosarele relative se bazează pe"
 
-#: sabnzbd/skintext.py:593
+#: sabnzbd/skintext.py:596
 msgid "Folder/Path"
 msgstr "Dosar/Cale"
 
-#: sabnzbd/skintext.py:594
+#: sabnzbd/skintext.py:597
 msgid "Groups / Indexer tags"
 msgstr "Grupuri / Taguri Indexer"
 
-#: sabnzbd/skintext.py:598
+#: sabnzbd/skintext.py:601
 msgid "Sorting configuration"
 msgstr "Configurare Sortare"
 
-#: sabnzbd/skintext.py:599
+#: sabnzbd/skintext.py:602
 msgid "Series Sorting"
 msgstr "Sortare Seriale"
 
-#: sabnzbd/skintext.py:600
+#: sabnzbd/skintext.py:603
 msgid "Enable TV Sorting"
 msgstr "Activează Sortare TV"
 
-#: sabnzbd/skintext.py:601
+#: sabnzbd/skintext.py:604
 msgid "Enable sorting and renaming of episodes."
 msgstr "Permite sortarea şi redenumirea de episoade."
 
-#: sabnzbd/skintext.py:602
+#: sabnzbd/skintext.py:605
 msgid "Pattern Key"
 msgstr "Model Cheie"
 
-#: sabnzbd/skintext.py:603
+#: sabnzbd/skintext.py:606
 msgid "Clear"
 msgstr "Şterge"
 
-#: sabnzbd/skintext.py:604
+#: sabnzbd/skintext.py:607
 msgid "Presets"
 msgstr "Presetări"
 
-#: sabnzbd/skintext.py:605
+#: sabnzbd/skintext.py:608
 msgid "Example"
 msgstr "Exemplu"
 
-#: sabnzbd/skintext.py:606
+#: sabnzbd/skintext.py:609
 msgid "Generic Sorting"
 msgstr "Sortare Generică"
 
-#: sabnzbd/skintext.py:607
+#: sabnzbd/skintext.py:610
 msgid "Enable Movie Sorting"
 msgstr "Activează Sortare Filme"
 
-#: sabnzbd/skintext.py:608
+#: sabnzbd/skintext.py:611
 msgid "Enable generic sorting and renaming of files."
 msgstr "Activează sortarea şi redenumirea generică a fişierelor."
 
-#: sabnzbd/skintext.py:609
+#: sabnzbd/skintext.py:612
 msgid "Keep loose downloads in extra folders"
 msgstr "Păstrează descărcările suplimentare în dosare extra"
 
-#: sabnzbd/skintext.py:610
+#: sabnzbd/skintext.py:613
 msgid "Enable if downloads are not put in their own folders."
 msgstr "Activează dacă descărcările nu sunt puse în dosarele lor."
 
-#: sabnzbd/skintext.py:611
+#: sabnzbd/skintext.py:614
 msgid "Affected Categories"
 msgstr "Categorii Afectate"
 
-#: sabnzbd/skintext.py:612
+#: sabnzbd/skintext.py:615
 msgid "Meaning"
 msgstr "Semnificaţie"
 
-#: sabnzbd/skintext.py:613
+#: sabnzbd/skintext.py:616
 msgid "Pattern"
 msgstr "Șablon"
 
-#: sabnzbd/skintext.py:614
+#: sabnzbd/skintext.py:617
 msgid "Result"
 msgstr "Rezultat"
 
-#: sabnzbd/skintext.py:615
+#: sabnzbd/skintext.py:618
 msgid "1x05 Season Folder"
 msgstr "1x05 Dosar Sezon"
 
-#: sabnzbd/skintext.py:616
+#: sabnzbd/skintext.py:619
 msgid "S01E05 Season Folder"
 msgstr "S01E05 Dosar Sezon"
 
-#: sabnzbd/skintext.py:617
+#: sabnzbd/skintext.py:620
 msgid "1x05 Episode Folder"
 msgstr "1x05 Dosar Episod"
 
-#: sabnzbd/skintext.py:618
+#: sabnzbd/skintext.py:621
 msgid "S01E05 Episode Folder"
 msgstr "S01E05 Dosar Episod"
 
-#: sabnzbd/skintext.py:619
+#: sabnzbd/skintext.py:622
 msgid "Title"
 msgstr "Titlu"
 
-#: sabnzbd/skintext.py:620
+#: sabnzbd/skintext.py:623
 msgid "Movie Name"
 msgstr "Nume Film"
 
-#: sabnzbd/skintext.py:621
+#: sabnzbd/skintext.py:624
 msgid "Movie.Name"
 msgstr "Nume.Film"
 
-#: sabnzbd/skintext.py:622
+#: sabnzbd/skintext.py:625
 msgid "Movie_Name"
 msgstr "Nume_Film"
 
-#: sabnzbd/skintext.py:623 # sabnzbd/skintext.py:624
+#: sabnzbd/skintext.py:626 # sabnzbd/skintext.py:627
 msgid "Show Name"
 msgstr "Nume Serial"
 
-#: sabnzbd/skintext.py:625
+#: sabnzbd/skintext.py:628
 msgid "Show.Name"
 msgstr "Nume.Serial"
 
-#: sabnzbd/skintext.py:626
+#: sabnzbd/skintext.py:629
 msgid "Show_Name"
 msgstr "Nume_Serial"
 
-#: sabnzbd/skintext.py:627
+#: sabnzbd/skintext.py:630
 msgid "Season Number"
 msgstr "Număr Sezon"
 
-#: sabnzbd/skintext.py:628
+#: sabnzbd/skintext.py:631
 msgid "Episode Number"
 msgstr "Număr Episod"
 
-#: sabnzbd/skintext.py:629 # sabnzbd/skintext.py:630
+#: sabnzbd/skintext.py:632 # sabnzbd/skintext.py:633
 msgid "Episode Name"
 msgstr "Nume Episod"
 
-#: sabnzbd/skintext.py:631
+#: sabnzbd/skintext.py:634
 msgid "Episode.Name"
 msgstr "Nume.Episod"
 
-#: sabnzbd/skintext.py:632
+#: sabnzbd/skintext.py:635
 msgid "Episode_Name"
 msgstr "Nume_Episod"
 
-#: sabnzbd/skintext.py:633
+#: sabnzbd/skintext.py:636
 msgid "File Extension"
 msgstr "Extensie fișier"
 
-#: sabnzbd/skintext.py:634
+#: sabnzbd/skintext.py:637
 msgid "Extension"
 msgstr "Extensie"
 
-#: sabnzbd/skintext.py:635
+#: sabnzbd/skintext.py:638
 msgid "Part Number"
 msgstr "Număr Parte"
 
-#: sabnzbd/skintext.py:636
+#: sabnzbd/skintext.py:639
 msgid "Decade"
 msgstr "Deceniu"
 
-#: sabnzbd/skintext.py:637
+#: sabnzbd/skintext.py:640
 msgid "Original Filename"
 msgstr "Nume de Fişier Original"
 
-#: sabnzbd/skintext.py:638
+#: sabnzbd/skintext.py:641
 msgid "Original Foldername"
 msgstr "Nume de Dosar Original"
 
-#: sabnzbd/skintext.py:639
+#: sabnzbd/skintext.py:642
 msgid "Lower Case"
 msgstr "Litere Mici"
 
-#: sabnzbd/skintext.py:640
+#: sabnzbd/skintext.py:643
 msgid "TEXT"
 msgstr "TEXT"
 
-#: sabnzbd/skintext.py:641
+#: sabnzbd/skintext.py:644
 msgid "text"
 msgstr "text"
 
-#: sabnzbd/skintext.py:642
+#: sabnzbd/skintext.py:645
 msgid "file"
 msgstr "fișier"
 
-#: sabnzbd/skintext.py:643
+#: sabnzbd/skintext.py:646
 msgid "folder"
 msgstr "dosar"
 
-#: sabnzbd/skintext.py:644
+#: sabnzbd/skintext.py:647
 msgid "Sort String"
 msgstr "Şir Caractere Sortare"
 
-#: sabnzbd/skintext.py:645
+#: sabnzbd/skintext.py:648
 msgid "Multi-part label"
 msgstr "Etichetă Multi-părţi"
 
-#: sabnzbd/skintext.py:646
+#: sabnzbd/skintext.py:649
 msgid "In folders"
 msgstr "În dosare"
 
-#: sabnzbd/skintext.py:647
+#: sabnzbd/skintext.py:650
 msgid "No folders"
 msgstr "Fără dosare"
 
-#: sabnzbd/skintext.py:648
+#: sabnzbd/skintext.py:651
 msgid "Date Sorting"
 msgstr "Sortare Dată"
 
-#: sabnzbd/skintext.py:649
+#: sabnzbd/skintext.py:652
 msgid "Enable Date Sorting"
 msgstr "Activează Sortare Dată"
 
-#: sabnzbd/skintext.py:650
+#: sabnzbd/skintext.py:653
 msgid "Enable sorting and renaming of date named files."
 msgstr "Activează sortarea şi redenumirea fişierelor denumite după dată."
 
-#: sabnzbd/skintext.py:651
+#: sabnzbd/skintext.py:654
 msgid "Show Name folder"
 msgstr "Arată Nume dosar"
 
-#: sabnzbd/skintext.py:652
+#: sabnzbd/skintext.py:655
 msgid "Year-Month Folders"
 msgstr "Dosar An-Lună"
 
-#: sabnzbd/skintext.py:653
+#: sabnzbd/skintext.py:656
 msgid "Daily Folders"
 msgstr "Dosare Zilnice"
 
-#: sabnzbd/skintext.py:654 [Note for title expression in Sorting that does case adjustment]
+#: sabnzbd/skintext.py:657 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
 msgstr "ajustare nume fişier"
 
-#: sabnzbd/skintext.py:655
+#: sabnzbd/skintext.py:658
 msgid "Processed Result"
 msgstr "Rezultat Procesat"
 
-#: sabnzbd/skintext.py:658
+#: sabnzbd/skintext.py:661
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -3588,312 +3676,312 @@ msgstr ""
 "a verifica mai întâi pagina Wiki , pentru că unele pot cauza probleme "
 "serioase .<br>Valorile originale sunt în paranteze ."
 
-#: sabnzbd/skintext.py:662
+#: sabnzbd/skintext.py:665
 msgid "Values"
 msgstr "Valori"
 
-#: sabnzbd/skintext.py:665 [Job details page]
+#: sabnzbd/skintext.py:668 [Job details page]
 msgid "Edit NZB Details"
 msgstr "Editează Detalii NZB"
 
-#: sabnzbd/skintext.py:667 [Job details page, delete button] # sabnzbd/skintext.py:781
+#: sabnzbd/skintext.py:670 [Job details page, delete button] # sabnzbd/skintext.py:784
 msgid "Delete"
 msgstr "Şterge"
 
-#: sabnzbd/skintext.py:668 [Job details page, move file to top]
+#: sabnzbd/skintext.py:671 [Job details page, move file to top]
 msgid "Top"
 msgstr "Vârf"
 
-#: sabnzbd/skintext.py:669 [Job details page, move file one place up]
+#: sabnzbd/skintext.py:672 [Job details page, move file one place up]
 msgid "Up"
 msgstr "Sus"
 
-#: sabnzbd/skintext.py:670 [Job details page, move file one place down]
+#: sabnzbd/skintext.py:673 [Job details page, move file one place down]
 msgid "Down"
 msgstr "Jos"
 
-#: sabnzbd/skintext.py:671 [Job details page, move file to bottom]
+#: sabnzbd/skintext.py:674 [Job details page, move file to bottom]
 msgid "Bottom"
 msgstr "Coadă"
 
-#: sabnzbd/skintext.py:672 [Job details page, select all files]
+#: sabnzbd/skintext.py:675 [Job details page, select all files]
 msgid "All"
 msgstr "Toate"
 
-#: sabnzbd/skintext.py:674 [Job details page, invert file selection]
+#: sabnzbd/skintext.py:677 [Job details page, invert file selection]
 msgid "Invert"
 msgstr "Inversează"
 
-#: sabnzbd/skintext.py:675 [Job details page, filename column header]
+#: sabnzbd/skintext.py:678 [Job details page, filename column header]
 msgid "Filename"
 msgstr "Nume de fișier"
 
-#: sabnzbd/skintext.py:676 [Job details page, subject column header]
+#: sabnzbd/skintext.py:679 [Job details page, subject column header]
 msgid "Subject"
 msgstr "Subiect"
 
-#: sabnzbd/skintext.py:677 [Job details page, file age column header] # sabnzbd/skintext.py:825
+#: sabnzbd/skintext.py:680 [Job details page, file age column header] # sabnzbd/skintext.py:828
 msgid "Age"
 msgstr "Vârsta"
 
-#: sabnzbd/skintext.py:678 [Job details page, section header]
+#: sabnzbd/skintext.py:681 [Job details page, section header]
 msgid "Selection"
 msgstr "Selecţie"
 
-#: sabnzbd/skintext.py:683
+#: sabnzbd/skintext.py:686
 msgid "Are you sure you want to delete"
 msgstr "Sigur doriți să ștergeți"
 
-#: sabnzbd/skintext.py:684 # sabnzbd/skintext.py:731
+#: sabnzbd/skintext.py:687 # sabnzbd/skintext.py:734
 msgid "Refresh"
 msgstr "Reîmprospătează"
 
-#: sabnzbd/skintext.py:686 # sabnzbd/skintext.py:732
+#: sabnzbd/skintext.py:689 # sabnzbd/skintext.py:735
 msgid "Options"
 msgstr "Opțiuni"
 
-#: sabnzbd/skintext.py:687
+#: sabnzbd/skintext.py:690
 msgid "Page"
 msgstr "Pagină"
 
-#: sabnzbd/skintext.py:688 # sabnzbd/skintext.py:726 # sabnzbd/skintext.py:798
+#: sabnzbd/skintext.py:691 # sabnzbd/skintext.py:729 # sabnzbd/skintext.py:801
 msgid "Prev"
 msgstr "Precedent"
 
-#: sabnzbd/skintext.py:689 # sabnzbd/skintext.py:727 # sabnzbd/skintext.py:799
-#: sabnzbd/skintext.py:831 [Button to go to next Wizard page]
+#: sabnzbd/skintext.py:692 # sabnzbd/skintext.py:730 # sabnzbd/skintext.py:802
+#: sabnzbd/skintext.py:834 [Button to go to next Wizard page]
 msgid "Next"
 msgstr "Următorul"
 
-#: sabnzbd/skintext.py:690 # sabnzbd/skintext.py:797
+#: sabnzbd/skintext.py:693 # sabnzbd/skintext.py:800
 msgid "First"
 msgstr "Primul"
 
-#: sabnzbd/skintext.py:691 # sabnzbd/skintext.py:800
+#: sabnzbd/skintext.py:694 # sabnzbd/skintext.py:803
 msgid "Last"
 msgstr "Ultimul"
 
-#: sabnzbd/skintext.py:692
+#: sabnzbd/skintext.py:695
 msgid "Close"
 msgstr "Închide"
 
-#: sabnzbd/skintext.py:693
+#: sabnzbd/skintext.py:696
 msgid "Set Pause Interval"
 msgstr "Setează Interval Pauză"
 
-#: sabnzbd/skintext.py:694 # sabnzbd/skintext.py:746
+#: sabnzbd/skintext.py:697 # sabnzbd/skintext.py:749
 msgid "Sort"
 msgstr "Sortează"
 
-#: sabnzbd/skintext.py:695 # sabnzbd/skintext.py:753
+#: sabnzbd/skintext.py:698 # sabnzbd/skintext.py:756
 msgid "Purge the Queue?"
 msgstr "Goliţi Coada?"
 
-#: sabnzbd/skintext.py:697
+#: sabnzbd/skintext.py:700
 msgid "Pause Interval"
 msgstr "Interval Pauză"
 
-#: sabnzbd/skintext.py:698 # sabnzbd/skintext.py:735
+#: sabnzbd/skintext.py:701 # sabnzbd/skintext.py:738
 msgid "Pause for 5 minutes"
 msgstr "Pauză timp de 5 minute"
 
-#: sabnzbd/skintext.py:699 # sabnzbd/skintext.py:736
+#: sabnzbd/skintext.py:702 # sabnzbd/skintext.py:739
 msgid "Pause for 15 minutes"
 msgstr "Pauză timp de 15 minute"
 
-#: sabnzbd/skintext.py:700 # sabnzbd/skintext.py:737
+#: sabnzbd/skintext.py:703 # sabnzbd/skintext.py:740
 msgid "Pause for 30 minutes"
 msgstr "Pauză timp de 30 minute"
 
-#: sabnzbd/skintext.py:701 # sabnzbd/skintext.py:738
+#: sabnzbd/skintext.py:704 # sabnzbd/skintext.py:741
 msgid "Pause for 1 hour"
 msgstr "Pauză timp de o oră"
 
-#: sabnzbd/skintext.py:702 # sabnzbd/skintext.py:739
+#: sabnzbd/skintext.py:705 # sabnzbd/skintext.py:742
 msgid "Pause for 3 hours"
 msgstr "Pauză timp de 3 ore"
 
-#: sabnzbd/skintext.py:703 # sabnzbd/skintext.py:740
+#: sabnzbd/skintext.py:706 # sabnzbd/skintext.py:743
 msgid "Pause for 6 hours"
 msgstr "Pauză timp de 6 ore"
 
-#: sabnzbd/skintext.py:704
+#: sabnzbd/skintext.py:707
 msgid "Pause for 12 hours"
 msgstr "Pauză timp de 12 ore"
 
-#: sabnzbd/skintext.py:705
+#: sabnzbd/skintext.py:708
 msgid "Pause for 24 hours"
 msgstr "Pauză timp de 24 ore"
 
-#: sabnzbd/skintext.py:706
+#: sabnzbd/skintext.py:709
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sortează după Vârstă <small>Cel mai Vechi&rarr;Cel mai Nou</small>"
 
-#: sabnzbd/skintext.py:707
+#: sabnzbd/skintext.py:710
 msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
 msgstr "Sortează după Vârstă <small>Cel mai Nou&rarr;Cel mai Vechi</small>"
 
-#: sabnzbd/skintext.py:708
+#: sabnzbd/skintext.py:711
 msgid "Sort by Name <small>A&rarr;Z</small>"
 msgstr "Sortează după Nume <small>A&rarr;Z</small>"
 
-#: sabnzbd/skintext.py:709
+#: sabnzbd/skintext.py:712
 msgid "Sort by Name <small>Z&rarr;A</small>"
 msgstr "Sortează după Nume <small>Z&rarr;A</small>"
 
-#: sabnzbd/skintext.py:710
+#: sabnzbd/skintext.py:713
 msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
 msgstr "Sortează după Mărime <small>Cel mai Mic&rarr;Cel mai Mare</small>"
 
-#: sabnzbd/skintext.py:711
+#: sabnzbd/skintext.py:714
 msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
 msgstr "Sortează după Mărime <small>Cel mai Mare&rarr;Cel mai Mic</small>"
 
-#: sabnzbd/skintext.py:712
+#: sabnzbd/skintext.py:715
 msgid "Rename"
 msgstr "Redenumește"
 
-#: sabnzbd/skintext.py:713
+#: sabnzbd/skintext.py:716
 msgid "Left"
 msgstr "Stânga"
 
-#: sabnzbd/skintext.py:714 # sabnzbd/skintext.py:728
+#: sabnzbd/skintext.py:717 # sabnzbd/skintext.py:731
 msgid "Purge the History?"
 msgstr "Goliţi Istoricul?"
 
-#: sabnzbd/skintext.py:718
+#: sabnzbd/skintext.py:721
 msgid "Changes have not been saved, and will be lost."
 msgstr "Modificările nu au fost salvate, şi vor fi pierdute."
 
-#: sabnzbd/skintext.py:721
+#: sabnzbd/skintext.py:724
 msgid "Open Source URL"
 msgstr "Deschide URL Sursă"
 
-#: sabnzbd/skintext.py:722
+#: sabnzbd/skintext.py:725
 msgid "Open Informational URL"
 msgstr "Dechide URL Informaţii"
 
-#: sabnzbd/skintext.py:724
+#: sabnzbd/skintext.py:727
 msgid "Storage"
 msgstr "Stocare"
 
-#: sabnzbd/skintext.py:725
+#: sabnzbd/skintext.py:728
 msgid "View Script Log"
 msgstr "Vezi Jurnal Script"
 
-#: sabnzbd/skintext.py:729
+#: sabnzbd/skintext.py:732
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Trebuie să activaţi JavaScript pentru ca Plush să funcţioneze!"
 
-#: sabnzbd/skintext.py:730
+#: sabnzbd/skintext.py:733
 msgid "Add NZB"
 msgstr "Adaugă NZB"
 
-#: sabnzbd/skintext.py:733
+#: sabnzbd/skintext.py:736
 msgid "Plush Options"
 msgstr "Opţiuni Plush"
 
-#: sabnzbd/skintext.py:734
+#: sabnzbd/skintext.py:737
 msgid "Update Available!"
 msgstr "Actualizare Disponibilă!"
 
-#: sabnzbd/skintext.py:741 # sabnzbd/skintext.py:801
+#: sabnzbd/skintext.py:744 # sabnzbd/skintext.py:804
 msgid "Pause for how many minutes?"
 msgstr "Pauză pentru câte minute?"
 
-#: sabnzbd/skintext.py:742
+#: sabnzbd/skintext.py:745
 msgid "Pause for..."
 msgstr "Pauză timp de..."
 
-#: sabnzbd/skintext.py:743
+#: sabnzbd/skintext.py:746
 msgid "Multi-Operations"
 msgstr "Operaţii-Multiple"
 
-#: sabnzbd/skintext.py:744
+#: sabnzbd/skintext.py:747
 msgid "Top Menu"
 msgstr "Meniu Top"
 
-#: sabnzbd/skintext.py:745
+#: sabnzbd/skintext.py:748
 msgid "On Finish"
 msgstr "La Terminare"
 
-#: sabnzbd/skintext.py:747
+#: sabnzbd/skintext.py:750
 msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
 msgstr "Sortează după Vârstă <small>(Cel mai Vechi&rarr;Cel mai Nou)</small>"
 
-#: sabnzbd/skintext.py:748
+#: sabnzbd/skintext.py:751
 msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
 msgstr "Sortează după Vârstă <small>(Cel mai Nou&rarr;Cel mai Vechi)</small>"
 
-#: sabnzbd/skintext.py:749
+#: sabnzbd/skintext.py:752
 msgid "Sort by Name <small>(A&rarr;Z)</small>"
 msgstr "Sortează după Nume <small>(A&rarr;Z)</small>"
 
-#: sabnzbd/skintext.py:750
+#: sabnzbd/skintext.py:753
 msgid "Sort by Name <small>(Z&rarr;A)</small>"
 msgstr "Sortează după Nume <small>(Z&rarr;A)</small>"
 
-#: sabnzbd/skintext.py:751
+#: sabnzbd/skintext.py:754
 msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
 msgstr "Sortează după Mărime <small>(Cel mai Mic&rarr;Cel mai Mare)</small>"
 
-#: sabnzbd/skintext.py:752
+#: sabnzbd/skintext.py:755
 msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
 msgstr "Sortează după Mărime <small>(Cel mai Mare&rarr;Cel mai Mic)</small>"
 
-#: sabnzbd/skintext.py:754
+#: sabnzbd/skintext.py:757
 msgid "Purge"
 msgstr "Șterge"
 
-#: sabnzbd/skintext.py:755
+#: sabnzbd/skintext.py:758
 msgid "left"
 msgstr "rămas"
 
-#: sabnzbd/skintext.py:756 [Used in speed menu. Split in two lines if too long.]
+#: sabnzbd/skintext.py:759 [Used in speed menu. Split in two lines if too long.]
 msgid "Max Speed"
 msgstr "Viteză Maximă"
 
-#: sabnzbd/skintext.py:757
+#: sabnzbd/skintext.py:760
 msgid "Range"
 msgstr "Interval"
 
-#: sabnzbd/skintext.py:758
+#: sabnzbd/skintext.py:761
 msgid "Reset"
 msgstr "Resetează"
 
-#: sabnzbd/skintext.py:759
+#: sabnzbd/skintext.py:762
 msgid "Apply to Selected"
 msgstr "Aplică la Selecţie"
 
-#: sabnzbd/skintext.py:760
+#: sabnzbd/skintext.py:763
 msgid "page"
 msgstr "pagină"
 
-#: sabnzbd/skintext.py:761
+#: sabnzbd/skintext.py:764
 msgid "Everything"
 msgstr "Tot"
 
-#: sabnzbd/skintext.py:762
+#: sabnzbd/skintext.py:765
 msgid "Disabled"
 msgstr "Dezactivat"
 
-#: sabnzbd/skintext.py:763
+#: sabnzbd/skintext.py:766
 msgid "Refresh Rate"
 msgstr "Rata de Reîmprospătare"
 
-#: sabnzbd/skintext.py:764
+#: sabnzbd/skintext.py:767
 msgid "Container Width"
 msgstr "Lăţime Container"
 
-#: sabnzbd/skintext.py:765
+#: sabnzbd/skintext.py:768
 msgid "Confirm Queue Deletions"
 msgstr "Confirmă Ştergere Coadă"
 
-#: sabnzbd/skintext.py:766
+#: sabnzbd/skintext.py:769
 msgid "Confirm History Deletions"
 msgstr "Confirmă Ştergere Istoric"
 
-#: sabnzbd/skintext.py:767
+#: sabnzbd/skintext.py:770
 msgid ""
 "This will prevent refreshing content when your mouse cursor is hovering over "
 "the queue."
@@ -3901,55 +3989,55 @@ msgstr ""
 "Acest lucru va preveni  reîmprospătarea când cursorul mouse-ului este "
 "deasupra coadei."
 
-#: sabnzbd/skintext.py:768
+#: sabnzbd/skintext.py:771
 msgid "Block Refreshes on Hover"
 msgstr "Blochează Reîmprospătarea Hover"
 
-#: sabnzbd/skintext.py:769 [Fetch from URL button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:772 [Fetch from URL button in "Add NZB" dialog box]
 msgid "Fetch"
 msgstr "Descarcă"
 
-#: sabnzbd/skintext.py:770 [Upload button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:773 [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Încarcă"
 
-#: sabnzbd/skintext.py:771
+#: sabnzbd/skintext.py:774
 msgid "Upload: .nzb .rar .zip .gz"
 msgstr "Încarcă: .nzb .rar .zip .gz"
 
-#: sabnzbd/skintext.py:772
+#: sabnzbd/skintext.py:775
 msgid "Optionally specify a filename"
 msgstr "Opţional specifică un nume de fişier"
 
-#: sabnzbd/skintext.py:773 # sabnzbd/skintext.py:823
+#: sabnzbd/skintext.py:776 # sabnzbd/skintext.py:826
 msgid "Progress"
 msgstr "Progres"
 
-#: sabnzbd/skintext.py:775
+#: sabnzbd/skintext.py:778
 msgid "Not enough disk space to complete downloads!"
 msgstr "Spaţiul liber insuficient pe disc pentru finalizarea descărcărilor !"
 
-#: sabnzbd/skintext.py:776
+#: sabnzbd/skintext.py:779
 msgid "Free Space"
 msgstr "Spațiu liber"
 
-#: sabnzbd/skintext.py:777
+#: sabnzbd/skintext.py:780
 msgid "Free (Temp)"
 msgstr "Gol (Temp)"
 
-#: sabnzbd/skintext.py:778
+#: sabnzbd/skintext.py:781
 msgid "IDLE"
 msgstr "INACTIV"
 
-#: sabnzbd/skintext.py:779
+#: sabnzbd/skintext.py:782
 msgid "Downloads"
 msgstr "Descărcări"
 
-#: sabnzbd/skintext.py:780
+#: sabnzbd/skintext.py:783
 msgid "Queue repair"
 msgstr "Coadă reparare"
 
-#: sabnzbd/skintext.py:783
+#: sabnzbd/skintext.py:786
 msgid ""
 "<strong>Read Feed</strong> will get the current feed content. <strong>Force "
 "Download</strong> will download all matching NZBs now."
@@ -3958,158 +4046,158 @@ msgstr ""
 "<strong>Descărcare Forţată</strong> va descărca toate NZB-urile "
 "corespunzătoare acum."
 
-#: sabnzbd/skintext.py:787
+#: sabnzbd/skintext.py:790
 msgid "Hour:Min"
 msgstr "Ore:Min"
 
-#: sabnzbd/skintext.py:788
+#: sabnzbd/skintext.py:791
 msgid "Delete Completed"
 msgstr "Ştergere Finalizată"
 
-#: sabnzbd/skintext.py:789
+#: sabnzbd/skintext.py:792
 msgid "Delete the all failed items from the history?"
 msgstr "Ştergeţi toate fişierele nereuşite din istoric?"
 
-#: sabnzbd/skintext.py:790
+#: sabnzbd/skintext.py:793
 msgid "Delete Failed"
 msgstr "Şterge Nereuşite"
 
-#: sabnzbd/skintext.py:791
+#: sabnzbd/skintext.py:794
 msgid "Links"
 msgstr "Legături"
 
-#: sabnzbd/skintext.py:794
+#: sabnzbd/skintext.py:797
 msgid "Showing %s to %s out of %s results"
 msgstr "Afişare %s până la %s din totalul %s rezultate"
 
-#: sabnzbd/skintext.py:795
+#: sabnzbd/skintext.py:798
 msgid "No results"
 msgstr "Fără rezultate"
 
-#: sabnzbd/skintext.py:796
+#: sabnzbd/skintext.py:799
 msgid "Showing one result"
 msgstr "Afişăm un rezultat"
 
-#: sabnzbd/skintext.py:805
+#: sabnzbd/skintext.py:808
 msgid "Email Sent!"
 msgstr "Email Trimis!"
 
-#: sabnzbd/skintext.py:806
+#: sabnzbd/skintext.py:809
 msgid "Notification Sent!"
 msgstr "Notificare Trimisă!"
 
-#: sabnzbd/skintext.py:807
+#: sabnzbd/skintext.py:810
 msgid "Saving.."
 msgstr "Salvăm.."
 
-#: sabnzbd/skintext.py:808
+#: sabnzbd/skintext.py:811
 msgid "Saved"
 msgstr "Salvat"
 
-#: sabnzbd/skintext.py:810
+#: sabnzbd/skintext.py:813
 msgid "Speed"
 msgstr "Viteză"
 
-#: sabnzbd/skintext.py:811
+#: sabnzbd/skintext.py:814
 msgid "Toggle Add NZB"
 msgstr "Comută Adaugă NZB"
 
-#: sabnzbd/skintext.py:812
+#: sabnzbd/skintext.py:815
 msgid "DualView1"
 msgstr "VedereDuală1"
 
-#: sabnzbd/skintext.py:813
+#: sabnzbd/skintext.py:816
 msgid "DualView2"
 msgstr "VedereDuală2"
 
-#: sabnzbd/skintext.py:815
+#: sabnzbd/skintext.py:818
 msgid "Custom"
 msgstr "Personalizat"
 
-#: sabnzbd/skintext.py:816
+#: sabnzbd/skintext.py:819
 msgid "Get Bookmarks"
 msgstr "Descarcă Semne de Carte"
 
-#: sabnzbd/skintext.py:817
+#: sabnzbd/skintext.py:820
 msgid "Are you sure you want to restart SABnzbd?"
 msgstr "Sunteţi sigur că doriţi să reporniţi SABnzbd?"
 
-#: sabnzbd/skintext.py:818
+#: sabnzbd/skintext.py:821
 msgid "Refresh rate"
 msgstr "Rată actualizare"
 
-#: sabnzbd/skintext.py:819
+#: sabnzbd/skintext.py:822
 msgid "Delete All"
 msgstr "Șterge tot"
 
-#: sabnzbd/skintext.py:820
+#: sabnzbd/skintext.py:823
 msgid "Hide Edit Options"
 msgstr "Ascunde Opţiuni Editare"
 
-#: sabnzbd/skintext.py:821
+#: sabnzbd/skintext.py:824
 msgid "Show Edit Options"
 msgstr "Arată Opţiuni Editare"
 
-#: sabnzbd/skintext.py:822
+#: sabnzbd/skintext.py:825
 msgid "Edit"
 msgstr "Editează"
 
-#: sabnzbd/skintext.py:824
+#: sabnzbd/skintext.py:827
 msgid "Timeleft"
 msgstr "Timp rămas"
 
-#: sabnzbd/skintext.py:828
+#: sabnzbd/skintext.py:831
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Vrăjitor Pornire-Rapidă SABnzbd"
 
-#: sabnzbd/skintext.py:829
+#: sabnzbd/skintext.py:832
 msgid "SABnzbd Version"
 msgstr "Versiune SABnzbd"
 
-#: sabnzbd/skintext.py:830 [Button to go to previous Wizard page]
+#: sabnzbd/skintext.py:833 [Button to go to previous Wizard page]
 msgid "Previous"
 msgstr "Precedent"
 
-#: sabnzbd/skintext.py:832 [Wizard step in which the web server is set]
+#: sabnzbd/skintext.py:835 [Wizard step in which the web server is set]
 msgid "Access"
 msgstr "Acces"
 
-#: sabnzbd/skintext.py:833
+#: sabnzbd/skintext.py:836
 msgid "I want SABnzbd to be viewable by any pc on my network."
 msgstr ""
 "Vreau SABnzbd să fie vizibil de către orice calculator din reţeaua mea."
 
-#: sabnzbd/skintext.py:834
+#: sabnzbd/skintext.py:837
 msgid "I want SABnzbd to be viewable from my pc only."
 msgstr "Vreau SABnzbd să fie vizibilă numai de pe PC-ul meu."
 
-#: sabnzbd/skintext.py:835
+#: sabnzbd/skintext.py:838
 msgid "Password protect access to SABnzbd (recommended)"
 msgstr "Acces SABnzbd protejat cu parolă (recomandat)"
 
-#: sabnzbd/skintext.py:836
+#: sabnzbd/skintext.py:839
 msgid "Enable HTTPS access to SABnzbd."
 msgstr "Permite acces HTTPS la SABnzbd."
 
-#: sabnzbd/skintext.py:837 [Wizard step]
+#: sabnzbd/skintext.py:840 [Wizard step]
 msgid "Misc"
 msgstr "Diverse"
 
-#: sabnzbd/skintext.py:838
+#: sabnzbd/skintext.py:841
 msgid ""
 "Launch my internet browser with the SABnzbd page when the program starts."
 msgstr "Lansează navigatorul meu web la pornirea SABnzbd ."
 
-#: sabnzbd/skintext.py:839
+#: sabnzbd/skintext.py:842
 msgid "Server Details"
 msgstr "Detalii Server"
 
-#: sabnzbd/skintext.py:840
+#: sabnzbd/skintext.py:843
 msgid "Please enter in the details of your primary usenet provider."
 msgstr ""
 "Vă rugăm să introduceţi detaliile furnizorului dvs principal de usenet."
 
-#: sabnzbd/skintext.py:842
+#: sabnzbd/skintext.py:845
 msgid ""
 "In order to download from usenet you will require access to a provider. Your "
 "ISP may provide you with access, however a premium provider is recommended."
@@ -4117,35 +4205,35 @@ msgstr ""
 "Pentru a descărca de pe usenet veţi avea nevoie de un furnizor.  ISP-ul dvs. "
 "vă poate oferi acces, totuşi un furnizor premium e recomandat."
 
-#: sabnzbd/skintext.py:843
+#: sabnzbd/skintext.py:846
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Nu aveţi un furnizor usenet? Vă recomandăm să încercaţi %s."
 
-#: sabnzbd/skintext.py:844
+#: sabnzbd/skintext.py:847
 msgid "The number of connections allowed by your provider"
 msgstr "Numărul de conexiuni permis de furnizor"
 
-#: sabnzbd/skintext.py:845 [Wizard: examples of amount of connections]
+#: sabnzbd/skintext.py:848 [Wizard: examples of amount of connections]
 msgid "E.g. 8 or 20"
 msgstr "De ex. 8 sau 20"
 
-#: sabnzbd/skintext.py:846
+#: sabnzbd/skintext.py:849
 msgid "Select only if your provider allows SSL connections."
 msgstr "Selectează doar dacă furnizorul dvs. permite conexiuni SSL."
 
-#: sabnzbd/skintext.py:847
+#: sabnzbd/skintext.py:850
 msgid "Click to test the entered details."
 msgstr "Clic pentru a testa detaliile introduse."
 
-#: sabnzbd/skintext.py:848
+#: sabnzbd/skintext.py:851
 msgid "This field is required."
 msgstr "Acest câmp este obligatoriu."
 
-#: sabnzbd/skintext.py:849
+#: sabnzbd/skintext.py:852
 msgid "Please enter a whole number."
 msgstr "Vă rugăm să introduceţi un număr întreg."
 
-#: sabnzbd/skintext.py:850
+#: sabnzbd/skintext.py:853
 msgid ""
 "If you are a member of newzbin or nzbmatrix, you may enter your username and "
 "password here so we can fetch their nzb's. This stage can be skipped if you "
@@ -4155,38 +4243,38 @@ msgstr ""
 "utilizator şi parola aici, astfel încât să putem descărca nzb-uri de la ei. "
 "Această etapă poate fi omisă dacă nu folosiţi serviciile lor."
 
-#: sabnzbd/skintext.py:851
+#: sabnzbd/skintext.py:854
 msgid "Automatically download bookmarked posts."
 msgstr "Descărcare automată a semnelor de carte"
 
-#: sabnzbd/skintext.py:853 [Abbreviation for "for example"]
+#: sabnzbd/skintext.py:856 [Abbreviation for "for example"]
 msgid "E.g."
 msgstr "De ex."
 
-#: sabnzbd/skintext.py:855 [Wizard step]
+#: sabnzbd/skintext.py:858 [Wizard step]
 msgid "Restarting SABnzbd..."
 msgstr "Repornim SABnzbd..."
 
-#: sabnzbd/skintext.py:856 [Wizard step]
+#: sabnzbd/skintext.py:859 [Wizard step]
 msgid "Setup is now complete!"
 msgstr "Instalarea este acum completă!"
 
-#: sabnzbd/skintext.py:857 [Wizard tip]
+#: sabnzbd/skintext.py:860 [Wizard tip]
 msgid "SABnzbd will now be running in the background."
 msgstr "SABnzbd va rula acum în fundal."
 
-#: sabnzbd/skintext.py:858 [Wizard tip]
+#: sabnzbd/skintext.py:861 [Wizard tip]
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr "Închidere a oricărei ferestrele browser/file NU va închide SABnzbd."
 
-#: sabnzbd/skintext.py:859 [Wizard tip]
+#: sabnzbd/skintext.py:862 [Wizard tip]
 msgid ""
 "After SABnzbd has finished restarting you will be able to access it at the "
 "following location: %s"
 msgstr ""
 "După repornire SABnzbd ,îl veţi putea acesa la următoarea locaţie: %s"
 
-#: sabnzbd/skintext.py:860 [Wizard tip]
+#: sabnzbd/skintext.py:863 [Wizard tip]
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4194,47 +4282,47 @@ msgstr ""
 "Este recomandat să faceţi clic dreapta şi să faceţi o scurtatură , pe care "
 "să o folosiţi pentru a accesa SABnzbd când rulează în fundal."
 
-#: sabnzbd/skintext.py:861 [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py:864 [Will be appended with a wiki-link, adjust word order accordingly]
 msgid "Further help can be found on our"
 msgstr "Ajutor suplimentar poate fi găsit pe pagina noastră"
 
-#: sabnzbd/skintext.py:862 [Wizard step]
+#: sabnzbd/skintext.py:865 [Wizard step]
 msgid "Go to SABnzbd"
 msgstr "Du-te la SABnzbd"
 
-#: sabnzbd/skintext.py:863 [Wizard step] # sabnzbd/wizard.py:86
+#: sabnzbd/skintext.py:866 [Wizard step] # sabnzbd/wizard.py:86
 msgid "Step One"
 msgstr "Pasul Unu"
 
-#: sabnzbd/skintext.py:864 [Wizard step] # sabnzbd/wizard.py:129
+#: sabnzbd/skintext.py:867 [Wizard step] # sabnzbd/wizard.py:129
 msgid "Step Two"
 msgstr "Pasul Doi"
 
-#: sabnzbd/skintext.py:865 [Wizard step] # sabnzbd/wizard.py:167
+#: sabnzbd/skintext.py:868 [Wizard step] # sabnzbd/wizard.py:169
 msgid "Step Three"
 msgstr "Pasul Trei"
 
-#: sabnzbd/skintext.py:866 [Wizard step] # sabnzbd/wizard.py:196
+#: sabnzbd/skintext.py:869 [Wizard step]
 msgid "Step Four"
 msgstr "Pasul Patru"
 
-#: sabnzbd/skintext.py:867 [Wizard step]
+#: sabnzbd/skintext.py:870 [Wizard step]
 msgid "Step Five"
 msgstr "Pasul Cinci"
 
-#: sabnzbd/skintext.py:868 [Wizard port number examples]
+#: sabnzbd/skintext.py:871 [Wizard port number examples]
 msgid "E.g. 119 or 563 for SSL"
 msgstr "De ex. 119 sau 563 pentru SSL"
 
-#: sabnzbd/skintext.py:869 [Wizard EXIT button on first page]
+#: sabnzbd/skintext.py:872 [Wizard EXIT button on first page]
 msgid "Exit SABnzbd"
 msgstr "Închide SABnzbd"
 
-#: sabnzbd/skintext.py:870 [Wizard START button on first page]
+#: sabnzbd/skintext.py:873 [Wizard START button on first page]
 msgid "Start Wizard"
 msgstr "Porneşte Vrăjitor"
 
-#: sabnzbd/skintext.py:873
+#: sabnzbd/skintext.py:876
 msgid ""
 "\n"
 "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
@@ -4254,11 +4342,11 @@ msgstr ""
 msgid "Error getting TV info (%s)"
 msgstr "Eroare obţinere info TV (%s)"
 
-#: sabnzbd/tvsort.py:691 [Error message] # sabnzbd/tvsort.py:716 [Error message] # sabnzbd/tvsort.py:904 [Error message]
+#: sabnzbd/tvsort.py:689 [Error message] # sabnzbd/tvsort.py:713 [Error message] # sabnzbd/tvsort.py:900 [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Redenumire:%s în %s nereuşită"
 
-#: sabnzbd/tvsort.py:1129 [Error message]
+#: sabnzbd/tvsort.py:1125 [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Redenumire fişiere similare : %s în %s nereuşită"
 
@@ -4278,63 +4366,6 @@ msgstr "Credenţiale invalide nzbmatrix"
 msgid "Problem accessing nzbmatrix server (%s)"
 msgstr "Probleme la accesarea server nzbmatrix (%s)"
 
-#: sabnzbd/utils/servertests.py:35
-msgid "The hostname is not set."
-msgstr "Numele gazdei nu este setat."
-
-#: sabnzbd/utils/servertests.py:41
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
-
-#: sabnzbd/utils/servertests.py:74
-msgid "Password masked in ******, please re-enter"
-msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
-
-#: sabnzbd/utils/servertests.py:78
-msgid "Invalid server details"
-msgstr "Detalii server invalide"
-
-#: sabnzbd/utils/servertests.py:90
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
-"port diferit."
-
-#: sabnzbd/utils/servertests.py:92
-msgid "Timed out"
-msgstr "A depăşit timpul alocat"
-
-#: sabnzbd/utils/servertests.py:97
-msgid "Invalid server address."
-msgstr "Adresă server invalidă"
-
-#: sabnzbd/utils/servertests.py:101
-msgid "Server quit during login sequence."
-msgstr "Serverul a renunţat în timpul logării."
-
-#: sabnzbd/utils/servertests.py:123
-msgid "Server requires username and password."
-msgstr "Serverul necesită nume utilizator şi parolă"
-
-#: sabnzbd/utils/servertests.py:126
-msgid "Connection Successful!"
-msgstr "Conexiune Reuşită!"
-
-#: sabnzbd/utils/servertests.py:129
-msgid "Authentication failed, check username/password."
-msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
-
-#: sabnzbd/utils/servertests.py:132
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
-"din nou mai târziu"
-
-#: sabnzbd/utils/servertests.py:135
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"
-
 #~ msgid ""
 #~ "Error Fetching msgid %s from www.newzbin.com - Please make sure your "
 #~ "Username and Password are set"
@@ -4350,6 +4381,12 @@ msgstr "Nu pot determina reultatul conexiunii (%s)"
 
 #~ msgid "Could not compile regex: %s"
 #~ msgstr "Nu am putut compila regex: %s"
+
+#~ msgid "You'll need to set a password and resume the job."
+#~ msgstr "Veţi avea nevoie să setaţi o parolă şi să reluaţi sarcina."
+
+#~ msgid "Pause job when encrypted RAR is downloaded"
+#~ msgstr "Întrerupe o sarcină când sunt descărcate fişiere RAR encriptate"
 
 #~ msgid ""
 #~ "If you have an account at <strong>www.newzbin.com</strong>, you can enter "
