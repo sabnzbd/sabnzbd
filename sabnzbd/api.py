@@ -52,7 +52,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, time_format, remove_all, \
-                         starts_with_path
+                         starts_with_path, cat_convert
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -346,7 +346,7 @@ def _api_addlocalfile(name, output, kwargs):
 
                 if get_ext(name) in ('.zip', '.rar'):
                     res = sabnzbd.dirscanner.ProcessArchiveFile(\
-                        fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
+                        fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                 elif get_ext(name) in ('.nzb', '.gz'):
                     res = sabnzbd.dirscanner.ProcessSingleFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)

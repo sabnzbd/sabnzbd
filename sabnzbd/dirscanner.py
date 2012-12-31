@@ -59,7 +59,8 @@ def CompareStat(tup1, tup2):
     return True
 
 
-def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=None, url=''):
+def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
+                       priority=None, url='', nzbname=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns (status, nzo_ids)
@@ -88,6 +89,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     status = 1
     names = zf.namelist()
     names.sort()
+    nzbcount = 0
     for name in names:
         name = name.lower()
         if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
@@ -95,7 +97,10 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             break
         elif name.endswith('.nzb'):
             status = 0
+            nzbcount += 1
     if status == 0:
+        if nzbcount != 1:
+            nzbname = None
         for name in names:
             if name.lower().endswith('.nzb'):
                 try:
@@ -108,7 +113,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 name = misc.sanitize_foldername(name)
                 if data:
                     try:
-                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, url=url, priority=priority)
+                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, url=url,
+                                                 priority=priority, nzbname=nzbname)
                     except:
                         nzo = None
                     if nzo:
