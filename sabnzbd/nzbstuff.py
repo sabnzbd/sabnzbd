@@ -897,6 +897,7 @@ class NzbObject(TryList):
                 self.status = Status.QUEUED
                 self.set_download_report()
                 self.fail_msg = T('Aborted, cannot be completed')
+                self.set_unpack_info('Download', self.fail_msg, unique=False)
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 return True, True, True
 
