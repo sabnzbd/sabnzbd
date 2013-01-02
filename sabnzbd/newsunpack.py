@@ -471,13 +471,15 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords = [nzo.password]
     else:
         passwords = []
+        # Append meta passwords, to prevent changing the original list
+        passwords.extend(nzo.meta.get('password', []))
         pw_file = cfg.password_file.get_path()
         if pw_file:
             try:
                 pwf = open(pw_file, 'r')
-                passwords = pwf.read().split('\n')
+                lines = pwf.read().split('\n')
                 # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+                passwords.extend([pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')])
                 pwf.close()
                 logging.info('Read the passwords file %s', pw_file)
             except IOError:

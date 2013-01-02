@@ -322,6 +322,11 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.in_group = False
         self.in_segments = False
         self.in_segment = False
+        self.in_head = False
+        self.in_meta = False
+        self.meta_type = ''
+        self.meta_types = {}
+        self.meta_content = []
         self.filename = ''
         self.avg_age = 0
         self.valids = 0
@@ -374,6 +379,16 @@ class NzbParser(xml.sax.handler.ContentHandler):
         elif name == 'groups' and self.in_nzb and self.in_file:
             self.in_groups = True
 
+        elif name == 'head' and self.in_nzb:
+            self.in_head = True
+
+        elif name == 'meta' and self.in_nzb and self.in_head:
+            self.in_meta = True
+            meta_type = attrs.get('type')
+            if meta_type:
+                self.meta_type = meta_type.lower()
+            self.meta_content = []
+
         elif name == 'nzb':
             self.in_nzb = True
 
@@ -382,6 +397,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
             self.group_name.append(content)
         elif self.in_segment:
             self.article_id.append(content)
+        elif self.in_meta:
+            self.meta_content.append(content)
 
     def endElement(self, name):
         if name == 'group' and self.in_group:
@@ -436,12 +453,24 @@ class NzbParser(xml.sax.handler.ContentHandler):
                     sabnzbd.remove_data(nzf.nzf_id, self.nzo.workpath)
                 self.skipped_files += 1
 
+        elif name == 'head':
+            self.in_head = False
+
+        elif name == 'meta':
+            self.in_meta = False
+            if self.meta_type:
+                if self.meta_type not in self.meta_types:
+                    self.meta_types[self.meta_type] = []
+                self.meta_types[self.meta_type].append(''.join(self.meta_content))
+
         elif name == 'nzb':
             self.in_nzb = False
 
     def endDocument(self):
         """ End of the file """
         self.nzo.groups = self.groups
+        self.nzo.meta = self.meta_types
+        logging.debug('META-DATA = %s', self.nzo.meta)
         files = max(1, self.valids)
         self.nzo.avg_stamp = self.avg_age / files
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
@@ -502,7 +531,8 @@ NzbObjectMapper = (
     ('create_group_folder',          'create_group_folder'),
     ('precheck',                     'precheck'),
     ('incomplete',                   'incomplete'),    # Was detected as incomplete
-    ('reuse',                        'reuse')
+    ('reuse',                        'reuse'),
+    ('meta',                         'meta')           # Meta-date from 1.1 type NZB
 )
 
 class NzbObject(TryList):
@@ -538,6 +568,7 @@ class NzbObject(TryList):
         self.work_name = work_name
         self.final_name = work_name
 
+        self.meta = {}
         self.created = False        # dirprefixes + work_name created
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
@@ -706,6 +737,13 @@ class NzbObject(TryList):
             else:
                 mylog(Ta('Empty NZB file %s'), filename)
             raise ValueError
+
+        if cat is None:
+            for metacat in self.meta.get('category', ()):
+                metacat = cat_convert(metacat)
+                if metacat:
+                    cat = metacat
+                    break
 
         if cat is None:
             for grp in self.groups:
@@ -1413,6 +1451,8 @@ class NzbObject(TryList):
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
+        if self.meta is None:
+            self.meta = {}
         TryList.__init__(self)
 
 
