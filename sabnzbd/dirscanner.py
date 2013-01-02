@@ -177,6 +177,9 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     except TypeError:
         # Duplicate, ignore
         nzo = None
+    except ValueError:
+        # Empty, but correct file
+        return -1, nzo_ids
     except:
         if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
             # Looks like an incomplete file, retry

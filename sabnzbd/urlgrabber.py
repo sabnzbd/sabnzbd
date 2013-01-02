@@ -207,6 +207,10 @@ class URLGrabber(Thread):
                         if res == -2:
                             logging.info('Incomplete NZB, retry after 5 min %s', url)
                             when = 300
+                        elif res == -1:
+                            # Error, but no reason to retry. Warning is already given
+                            NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
+                            continue
                         else:
                             logging.info('Unknown error fetching NZB, retry after 2 min %s', url)
                             when = 120
