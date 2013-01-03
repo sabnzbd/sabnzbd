@@ -1,4 +1,18 @@
 -------------------------------------------------------------------------------
+ 0.7.8Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix problem with %fn substitution in Sorting
+- Add special "wait_for_dfolder", enables waiting for external temp download folder
+- Work-around for servers that do not support STAT command
+- Removed articles are now listed seperately in download report
+- Add "abort" option to encryption detection
+- Fix missing Retry link for "Out of retention" jobs.
+- Option to abort download when it is clear that not enough data is available
+- Support "nzbname" parameter in addfile/addlocalfile api calls for
+  ZIP files with a single NZB
+- Support NZB-1.1 meta data "password" and "category"
+- Don't retry an empty but correct NZB from an indexer
+-------------------------------------------------------------------------------
  0.7.7Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Windows/OSX: Update unrar to 4.20
