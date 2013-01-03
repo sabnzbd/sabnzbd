@@ -7,7 +7,7 @@ Release Notes  -  SABnzbd 0.7.8
 - Option to abort download when it is clear that not enough data is available
   (For removed posts it will be faster than pre-download check)
 - Add "Abort" option for encryption detection
-- Removed articles are now listed seperately in download report
+- Removed articles are now listed separately in download report
 - Special option "wait_for_dfolder", enables waiting for external temp download folder at startup
 
 ## Bug fixes
