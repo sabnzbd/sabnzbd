@@ -300,7 +300,7 @@ def is_cloaked(path, names):
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
-    if  not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
+    if  not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
             zf = RarFile(filepath, all_names=True)
             encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
