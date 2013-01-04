@@ -234,6 +234,12 @@ def process_job(nzo):
         nzo.save_attribs()
         all_ok = False
 
+    if nzo.fail_msg: # Special case: aborted due to too many missing data
+        nzo.status = Status.FAILED
+        nzo.save_attribs()
+        all_ok = False
+        par_error = unpack_error = True
+
     try:
 
         # Get the folder containing the download result
@@ -241,7 +247,7 @@ def process_job(nzo):
         tmp_workdir_complete = None
 
         # if no files are present (except __admin__), fail the job
-        if len(globber(workdir)) < 2:
+        if all_ok and len(globber(workdir)) < 2:
             if nzo.precheck:
                 enough, ratio = nzo.check_quality()
                 req_ratio = float(cfg.req_completion_rate()) / 100.0
@@ -272,7 +278,7 @@ def process_job(nzo):
                      filename, flag_repair, flag_unpack, flag_delete, script, cat)
 
         ## Par processing, if enabled
-        if flag_repair:
+        if all_ok and flag_repair:
             par_error, re_add = parring(nzo, workdir)
             if re_add:
                 # Try to get more par files
@@ -414,7 +420,7 @@ def process_job(nzo):
 
             ## Run the user script
             script_path = make_script_path(script)
-            if all_ok and (not nzb_list) and script_path:
+            if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
                 #set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
@@ -463,6 +469,9 @@ def process_job(nzo):
             Bookmarks.do.del_bookmark(msgid)
         elif all_ok and isinstance(nzo.url, str):
             sabnzbd.proxy_rm_bookmark(nzo.url)
+
+        ## Force error for empty result
+        all_ok = all_ok and not empty
 
         ## Show final status in history
         if all_ok:

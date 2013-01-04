@@ -77,7 +77,8 @@ class Server(object):
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
         self.request = False # True if a getaddrinfo() request is pending
-        self.oddball = 'free.xsusenet.com' in host
+        self.have_body = 'free.xsusenet.com' not in host
+        self.have_stat = True # Assume server has "STAT", until proven otherwise
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
@@ -614,6 +615,19 @@ class Downloader(Thread):
                             NzbQueue.do.reset_all_try_lists()
                         msg = T('Server %s requires user/password') % ('%s:%s' % (nw.server.host, nw.server.port))
                         self.__reset_nw(nw, msg, quit=True)
+
+                    elif code == '500':
+                        if nzo.precheck:
+                            # Assume "STAT" command is not supported
+                            server.have_stat = False
+                            logging.debug('Server %s does not support STAT', server.host)
+                        else:
+                            # Assume "BODY" command is not supported
+                            server.have_body = False
+                            logging.debug('Server %s does not support BODY', server.host)
+                        nw.lines = []
+                        nw.data = ''
+                        self.__request_article(nw)
 
                 if done:
                     server.bad_cons = 0 # Succesful data, clear "bad" counter

@@ -322,6 +322,11 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.in_group = False
         self.in_segments = False
         self.in_segment = False
+        self.in_head = False
+        self.in_meta = False
+        self.meta_type = ''
+        self.meta_types = {}
+        self.meta_content = []
         self.filename = ''
         self.avg_age = 0
         self.valids = 0
@@ -374,6 +379,16 @@ class NzbParser(xml.sax.handler.ContentHandler):
         elif name == 'groups' and self.in_nzb and self.in_file:
             self.in_groups = True
 
+        elif name == 'head' and self.in_nzb:
+            self.in_head = True
+
+        elif name == 'meta' and self.in_nzb and self.in_head:
+            self.in_meta = True
+            meta_type = attrs.get('type')
+            if meta_type:
+                self.meta_type = meta_type.lower()
+            self.meta_content = []
+
         elif name == 'nzb':
             self.in_nzb = True
 
@@ -382,6 +397,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
             self.group_name.append(content)
         elif self.in_segment:
             self.article_id.append(content)
+        elif self.in_meta:
+            self.meta_content.append(content)
 
     def endElement(self, name):
         if name == 'group' and self.in_group:
@@ -436,12 +453,24 @@ class NzbParser(xml.sax.handler.ContentHandler):
                     sabnzbd.remove_data(nzf.nzf_id, self.nzo.workpath)
                 self.skipped_files += 1
 
+        elif name == 'head':
+            self.in_head = False
+
+        elif name == 'meta':
+            self.in_meta = False
+            if self.meta_type:
+                if self.meta_type not in self.meta_types:
+                    self.meta_types[self.meta_type] = []
+                self.meta_types[self.meta_type].append(''.join(self.meta_content))
+
         elif name == 'nzb':
             self.in_nzb = False
 
     def endDocument(self):
         """ End of the file """
         self.nzo.groups = self.groups
+        self.nzo.meta = self.meta_types
+        logging.debug('META-DATA = %s', self.nzo.meta)
         files = max(1, self.valids)
         self.nzo.avg_stamp = self.avg_age / files
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
@@ -501,7 +530,9 @@ NzbObjectMapper = (
     ('oversized',                    'oversized'),     # Was detected as oversized
     ('create_group_folder',          'create_group_folder'),
     ('precheck',                     'precheck'),
-    ('incomplete',                   'incomplete')     # Was detected as incomplete
+    ('incomplete',                   'incomplete'),    # Was detected as incomplete
+    ('reuse',                        'reuse'),
+    ('meta',                         'meta')           # Meta-date from 1.1 type NZB
 )
 
 class NzbObject(TryList):
@@ -537,6 +568,7 @@ class NzbObject(TryList):
         self.work_name = work_name
         self.final_name = work_name
 
+        self.meta = {}
         self.created = False        # dirprefixes + work_name created
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
@@ -588,6 +620,7 @@ class NzbObject(TryList):
         self.oversized = False
         self.precheck = False
         self.incomplete = False
+        self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
             if self.precheck:
@@ -695,11 +728,22 @@ class NzbObject(TryList):
 
         if not self.files and not reuse:
             self.purge_data(keep_basic=False)
-            if self.url:
-                logging.warning(Ta('Empty NZB file %s') + ' [%s]', filename, self.url)
+            if cfg.warn_empty_nzb():
+                mylog = logging.warning
             else:
-                logging.warning(Ta('Empty NZB file %s'), filename)
+                mylog = logging.info
+            if self.url:
+                mylog(Ta('Empty NZB file %s') + ' [%s]', filename, self.url)
+            else:
+                mylog(Ta('Empty NZB file %s'), filename)
             raise ValueError
+
+        if cat is None:
+            for metacat in self.meta.get('category', ()):
+                metacat = cat_convert(metacat)
+                if metacat:
+                    cat = metacat
+                    break
 
         if cat is None:
             for grp in self.groups:
@@ -890,6 +934,14 @@ class NzbObject(TryList):
 
         if file_done:
             self.remove_nzf(nzf)
+            if not self.reuse and not self.precheck and cfg.fail_hopeless() and not self.check_quality(99)[0]:
+                #set the nzo status to return "Queued"
+                self.status = Status.QUEUED
+                self.set_download_report()
+                self.fail_msg = T('Aborted, cannot be completed')
+                self.set_unpack_info('Download', self.fail_msg, unique=False)
+                logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+                return True, True, True
 
         if reset:
             self.reset_try_list()
@@ -1030,7 +1082,7 @@ class NzbObject(TryList):
         self.partable.pop(setname)
 
     __re_quick_par2_check = re.compile('\.par2\W*', re.I)
-    def check_quality(self):
+    def check_quality(self, req_ratio=0):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
@@ -1041,7 +1093,8 @@ class NzbObject(TryList):
         for nzf_id in self.files_table:
             nzf = self.files_table[nzf_id]
             assert isinstance(nzf, NzbFile)
-            short += nzf.bytes_left
+            if nzf.deleted:
+                short += nzf.bytes_left
             if self.__re_quick_par2_check.search(nzf.subject):
                 pars += nzf.bytes
                 anypars = True
@@ -1050,7 +1103,7 @@ class NzbObject(TryList):
         have = need + pars - short
         ratio = float(have) / float(max(1, need))
         if anypars:
-            enough = ratio * 100.0 >= float(cfg.req_completion_rate())
+            enough = ratio * 100.0 >= (req_ratio or float(cfg.req_completion_rate()))
         else:
             enough = have >= need
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
@@ -1074,15 +1127,18 @@ class NzbObject(TryList):
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps*1024, dec_limit=1))
             bad = self.nzo_info.get('bad_art_log', [])
             miss = self.nzo_info.get('missing_art_log', [])
+            killed = self.nzo_info.get('killed_art_log', [])
             dups = self.nzo_info.get('dup_art_log', [])
-            msg2 = msg3 = msg4 = ''
+            msg2 = msg3 = msg4 = msg5 = ''
             if bad:
                 msg2 = ('<br/>' + T('%s articles were malformed')) % len(bad)
             if miss:
                 msg3 = ('<br/>' + T('%s articles were missing')) % len(miss)
             if dups:
                 msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
-            msg = ''.join((msg1, msg2, msg3, msg4,))
+            if killed:
+                msg5 = ('<br/>' + T('%s articles were removed')) % len(killed)
+            msg = ''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
@@ -1395,6 +1451,8 @@ class NzbObject(TryList):
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
+        if self.meta is None:
+            self.meta = {}
         TryList.__init__(self)
 
 

@@ -84,6 +84,7 @@ class Decoder(Thread):
             article, lines = art_tup
             nzf = article.nzf
             nzo = nzf.nzo
+            art_id = article.article
 
             data = None
 
@@ -96,13 +97,13 @@ class Decoder(Thread):
                     if nzo.precheck:
                         raise BadYenc
                     register = True
-                    logging.debug("Decoding %s", article)
+                    logging.debug("Decoding %s", art_id)
 
                     data = decode(article, lines)
                     nzf.article_count += 1
                     found = True
                 except IOError, e:
-                    logme = Ta('Decoding %s failed') % article
+                    logme = Ta('Decoding %s failed') % art_id
                     logging.info(logme)
                     sabnzbd.downloader.Downloader.do.pause()
 
@@ -113,7 +114,7 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logme = Ta('CRC Error in %s (%s -> %s)') % (article, e.needcrc, e.gotcrc)
+                    logme = Ta('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
                     logging.info(logme)
 
                     data = e.data
@@ -135,27 +136,32 @@ class Decoder(Thread):
                         # Examine headers (for precheck) or body (for download)
                         # And look for DMCA clues (while skipping "X-" headers)
                         for line in lines:
-                            if not line.startswith('X-') and match_str(line.lower(), ('dmca', 'removed', 'cancel', 'blocked')):
-                                logging.info('Article removed from server (%s)', article)
+                            lline = line.lower()
+                            if 'message-id:' in lline:
+                                found = True
+                            if not line.startswith('X-') and match_str(lline, ('dmca', 'removed', 'cancel', 'blocked')):
                                 killed = True
                                 break
+                    if killed:
+                        logme = 'Article removed from server (%s)'
+                        logging.info(logme, art_id)
                     if nzo.precheck:
-                        if found or not killed:
+                        if found and not killed:
                             # Pre-check, proper article found, just register
-                            logging.debug('Server has article %s', article)
+                            logging.debug('Server has article %s', art_id)
                             register = True
                     elif not killed and not found:
-                        logme = Ta('Badly formed yEnc article in %s') % article
+                        logme = Ta('Badly formed yEnc article in %s') % art_id
                         logging.info(logme)
 
-                    if not found:
+                    if not found or killed:
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
 
                 except:
-                    logme = Ta('Unknown Error while decoding %s') % article
+                    logme = Ta('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info = True)
 
@@ -165,7 +171,10 @@ class Decoder(Thread):
                         logme = None
 
                 if logme:
-                    article.nzf.nzo.inc_log('bad_art_log', logme)
+                    if killed:
+                        article.nzf.nzo.inc_log('killed_art_log', art_id)
+                    else:
+                        article.nzf.nzo.inc_log('bad_art_log', art_id)
 
             else:
                 new_server_found = self.__search_new_server(article)

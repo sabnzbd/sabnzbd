@@ -1,15 +1,22 @@
-Release Notes  -  SABnzbd 0.7.7
+Release Notes  -  SABnzbd 0.7.8
 ===============================
 
 ## Features
-- Updated unrar to 4.20 (OSX/Windows)
-- Optional web-ui watchdog (diagnostic tool)
-- Removed account support for defunct indexers
+- Use "category" and "password" meta-data in NZB files
+  (Provided by some indexers)
+- Option to abort download when it is clear that not enough data is available
+  (For removed posts it will be faster than pre-download check)
+- Add "Abort" option for encryption detection
+- Removed articles are now listed separately in download report
+- Special option "wait_for_dfolder", enables waiting for external temp download folder at startup
 
 ## Bug fixes
-- Fix some issues with orphaned items
-- Generic sort didn't always rename media files in multi-part jobs properly
-- Always show RSS items in the same order as the original RSS feed
+- Fix problem with %fn substitution in Sorting
+- Pre-download check did not work with all servers
+- Fix missing Retry link for "Out of retention" jobs.
+- API function "addfile" now accepts "nzbname" parameter for ZIP/RAR files with one NZB.
+- Prevent retries when an NZB with just samples is retrieved from an indexer
+  (and you had the "do not download samples" option enabled).
 
 ## What's new in 0.7.0
 
@@ -39,7 +46,7 @@ Release Notes  -  SABnzbd 0.7.7
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2012 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2013 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
 ### IMPORTANT INFORMATION about release 0.7.x

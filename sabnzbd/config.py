@@ -186,6 +186,14 @@ class OptionDir(Option):
                 res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
         return path
 
+    def test_path(self):
+        """ Return True if path exists """
+        value = self.get()
+        if value:
+            return os.path.exists(sabnzbd.misc.real_path(self.__root, value))
+        else:
+            return False
+
     def set_root(self, root):
         """ Set new root, is assumed to be valid """
         self.__root = root
@@ -209,6 +217,10 @@ class OptionDir(Option):
             if not error:
                 self._Option__set(value)
         return error
+
+    def set_create(self, value):
+        """ Set auto-creation value """
+        self.__create = value
 
 
 class OptionList(Option):

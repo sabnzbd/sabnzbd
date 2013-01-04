@@ -1163,7 +1163,7 @@ SWITCH_LIST = \
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt', 'enable_7zip'
+             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip'
              )
 
 #------------------------------------------------------------------------------
@@ -1221,7 +1221,7 @@ SPECIAL_BOOL_LIST = \
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
-              'web_watchdog'
+              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',

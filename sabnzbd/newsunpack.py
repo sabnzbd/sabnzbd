@@ -488,13 +488,15 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords = [nzo.password]
     else:
         passwords = []
+        # Append meta passwords, to prevent changing the original list
+        passwords.extend(nzo.meta.get('password', []))
         pw_file = cfg.password_file.get_path()
         if pw_file:
             try:
                 pwf = open(pw_file, 'r')
-                passwords = pwf.read().split('\n')
+                lines = pwf.read().split('\n')
                 # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+                passwords.extend([pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')])
                 pwf.close()
                 logging.info('Read the passwords file %s', pw_file)
             except IOError:
@@ -1335,6 +1337,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
+            elif 'No details available for recoverable file' in line:
+                msg = unicoder(line.strip())
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
@@ -1719,6 +1728,8 @@ def get_from_url(url, timeout=None):
         p.wait()
     else:
         import urllib2
+        if sys.version_info < (2, 6):
+            timeout = 0
         try:
             if timeout:
                 s = urllib2.urlopen(url, timeout=timeout)

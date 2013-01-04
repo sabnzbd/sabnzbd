@@ -104,6 +104,7 @@ par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
 pre_check = OptionBool('misc', 'pre_check', False)
+fail_hopeless = OptionBool('misc', 'fail_hopeless', False)
 req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 200)
 
 newzbin_username = OptionStr('newzbin', 'username')
@@ -163,7 +164,7 @@ xxx_apikey = OptionStr('nzbxxx', 'apikey')
 configlock = OptionBool('misc', 'config_lock', 0)
 
 umask = OptionStr('misc', 'permissions', '', validation=validate_octal)
-download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
+download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
 download_free = OptionStr('misc', 'download_free')
 complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False, \
                          apply_umask=True, validation=validate_notempty)
@@ -177,6 +178,8 @@ dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 size_limit = OptionStr('misc', 'size_limit', '0')
 password_file = OptionDir('misc', 'password_file', '', create=False)
 fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
+wait_for_dfolder = OptionBool('misc', 'wait_for_dfolder', False)
+warn_empty_nzb = OptionBool('misc', 'warn_empty_nzb', True)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:

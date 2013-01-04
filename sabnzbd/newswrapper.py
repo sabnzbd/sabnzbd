@@ -320,11 +320,14 @@ class NewsWrapper(object):
     def body(self, precheck):
         self.timeout = time.time() + self.server.timeout
         if precheck:
-            command = 'STAT <%s>\r\n' % (self.article.article)
-        elif self.server.oddball:
-            command = 'ARTICLE <%s>\r\n' % (self.article.article)
-        else:
+            if self.server.have_stat:
+                command = 'STAT <%s>\r\n' % (self.article.article)
+            else:
+                command = 'HEAD <%s>\r\n' % (self.article.article)
+        elif self.server.have_body:
             command = 'BODY <%s>\r\n' % (self.article.article)
+        else:
+            command = 'ARTICLE <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
 
     def send_group(self, group):
@@ -433,17 +436,17 @@ def test_ipv6():
     try:
         info = socket.getaddrinfo('www.google.com', 80, socket.AF_INET6, socket.SOCK_STREAM,
                                   socket.IPPROTO_IP, socket.AI_CANONNAME)
-    except socket.gaierror:
+    except:
         return False
 
     try:
         af, socktype, proto, canonname, sa = info[0]
         sock = socket.socket(af, socktype, proto)
-        sock.settimeout(4)
+        sock.settimeout(6)
         sock.connect(sa[0:2])
         sock.close()
         return True
-    except socket.error:
+    except:
         return False
 
 _EXTERNAL_IPV6 = test_ipv6()
