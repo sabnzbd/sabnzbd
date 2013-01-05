@@ -83,7 +83,7 @@ table{border-spacing:0;}
 
 
 
-input, select {
+input, select, option {
 background-color:#232323;
 border-color:#3a3a3a;
 color:white;
