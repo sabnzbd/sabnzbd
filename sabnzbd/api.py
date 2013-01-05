@@ -443,7 +443,7 @@ def _api_history(name, output, kwargs):
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
-            return report(output)
+            return report(output, data=value)
         else:
             return report(output, _MSG_NO_VALUE)
     elif not name:
