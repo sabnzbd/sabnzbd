@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.9Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix fatal error in decoder when encountering a malformed article
+- Fix compatibility with free.xsusenet.com
+- Small fix in smpl-black CSS
+-------------------------------------------------------------------------------
  0.7.8Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix problem with %fn substitution in Sorting
