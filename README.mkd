@@ -1,7 +1,10 @@
-Release Notes  -  SABnzbd 0.7.8
+Release Notes  -  SABnzbd 0.7.9
 ===============================
 
-## Features
+## Bug fix 0.7.9
+- Fix fatal error when encountering a malformed article
+
+## Features (0.7.8)
 - Use "category" and "password" meta-data in NZB files
   (Provided by some indexers)
 - Option to abort download when it is clear that not enough data is available
@@ -10,7 +13,7 @@ Release Notes  -  SABnzbd 0.7.8
 - Removed articles are now listed separately in download report
 - Special option "wait_for_dfolder", enables waiting for external temp download folder at startup
 
-## Bug fixes
+## Bug fixes (0.7.8)
 - Fix problem with %fn substitution in Sorting
 - Pre-download check did not work with all servers
 - Fix missing Retry link for "Out of retention" jobs.
