@@ -246,7 +246,7 @@ def decode(article, data):
         if not ybegin:
             found = False
             try:
-                for i in xrange(10):
+                for i in xrange(min(40, len(data))):
                     if data[i].startswith('begin '):
                         nzf.filename = name_fixer(data[i].split(None, 2)[2])
                         nzf.type = 'uu'
@@ -310,7 +310,7 @@ def yCheck(data):
     yend = None
 
     ## Check head
-    for i in xrange(40):
+    for i in xrange(min(40, len(data))):
         try:
             if data[i].startswith('=ybegin '):
                 splits = 3
