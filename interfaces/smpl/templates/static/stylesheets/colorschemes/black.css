@@ -24,15 +24,15 @@ border-top: 1px dotted #222;
 }
 
 #progressBar {
-  background-color: #fff; 
-  border: 1px solid #000; 
+  background-color: #fff;
+  border: 1px solid #000;
 }
 #progressBartop {
-  background-color: #fff; 
-  border: 1px solid #ccc; 
+  background-color: #fff;
+  border: 1px solid #ccc;
 }
 #percentageBar {
-  background-color: #4B4545; 
+  background-color: #4B4545;
 }
 
 
@@ -83,7 +83,7 @@ table{border-spacing:0;}
 
 
 
-input, select {
+input, select, option {
 background-color:#232323;
 border-color:#3a3a3a;
 color:white;
