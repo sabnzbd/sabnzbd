@@ -85,6 +85,7 @@ class Decoder(Thread):
             nzf = article.nzf
             nzo = nzf.nzo
             art_id = article.article
+            killed = False
 
             data = None
 
