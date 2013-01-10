@@ -151,7 +151,7 @@ def init():
                                  kronos.method.sequential, [], None)
 
 
-    if cfg.newzbin_bookmarks():
+    if False: #cfg.newzbin_bookmarks():
         interval = cfg.bookmark_rate()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
