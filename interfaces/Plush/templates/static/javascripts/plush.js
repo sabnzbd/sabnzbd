@@ -1242,7 +1242,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
   SetQueueETAStats : function(speed,kbpersec,timeleft,eta) {
 
   // ETA/speed stats at top of queue
-  if (kbpersec < 1 || $.plush.paused) {
+  if (kbpersec < 100 && $.plush.paused) {
     $('#stats_eta').html('&mdash;');
     $('#stats_speed').html('&mdash;');
     $('#time-left').attr('title','&mdash;');  // Tooltip on "time left"
