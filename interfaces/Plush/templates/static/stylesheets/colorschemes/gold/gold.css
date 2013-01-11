@@ -401,12 +401,12 @@ body {
 .sprite_hv_download{ background-position: 0 -167px;  }
 .sprite_hv_error{ background-position: 0 -193px;  }
 .sprite_hv_filejoin{ background-position: 0 -219px;  }
-.sprite_hv_repair{ background-position: 0 -245px;  }
+.sprite_hv_unpack{ background-position: 0 -245px;  }
 .sprite_hv_report{ background-position: 0 -271px;  }
 .sprite_hv_script{ background-position: 0 -297px;  }
 .sprite_hv_star{ background-position: 0 -323px;  }
 .sprite_hv_stats{ background-position: 0 -349px;  }
-.sprite_hv_unpack{ background-position: 0 -375px;  }
+.sprite_hv_repair{ background-position: 0 -375px;  }
 .sprite_progress_done{ background-position: 0 -401px;  }  /* queue.tmpl */
 .sprite_progressbar_bg{ background-position: 0 -430px;  }
 .sprite_q_menu_pausefor{ background-position: 0 -459px;  }
