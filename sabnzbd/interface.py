@@ -185,7 +185,7 @@ def check_apikey(kwargs, nokey=False):
         Return None when OK, otherwise an error message
     """
     def log_warning(txt):
-        txt = '%s %s' % (txt, cherrypy.request.headers.get('User-Agent', '??'))
+        txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
         logging.warning('%s', txt)
 
     output = kwargs.get('output')
