@@ -566,6 +566,8 @@ def parring(nzo, workdir):
             if not verified.get(setname, False):
                 logging.info("Running repair on set %s", setname)
                 parfile_nzf = par_table[setname]
+                if not os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)):
+                    continue
                 need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
                 re_add = re_add or need_re_add
                 if not res and not need_re_add and cfg.sfv_check():
