@@ -166,6 +166,10 @@ def init():
         __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
                                  kronos.method.sequential, [], None)
 
+    logging.info('Setting schedule for midnight BPS reset')
+    __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
+                             kronos.method.sequential, [], None)
+
 
     # Subscribe to special schedule changes
     cfg.newzbin_bookmarks.callback(schedule_guard)
