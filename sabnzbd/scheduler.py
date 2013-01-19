@@ -136,6 +136,7 @@ def init():
         interval = cfg.rss_rate()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
+        sabnzbd.rss.next_run(time.time() + delay * 60)
         __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
                                       kronos.method.sequential, None, None)
         __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
