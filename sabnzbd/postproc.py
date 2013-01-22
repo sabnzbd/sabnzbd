@@ -443,7 +443,7 @@ def process_job(nzo):
         if (not nzb_list) and cfg.email_endjob():
             if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error)):
                 emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
-                               nzo.unpack_info, script, TRANS(script_log), script_ret)
+                               nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
 
         if script_output:
             # Can do this only now, otherwise it would show up in the email
@@ -491,11 +491,9 @@ def process_job(nzo):
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
-        info = nzo.unpack_info.copy()
-        info['fail'] = [nzo.fail_msg]
         if cfg.email_endjob():
             emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
-                           info, '', '', 0)
+                           nzo.fail_msg, nzo.unpack_info, '', '', 0)
 
 
     if all_ok:

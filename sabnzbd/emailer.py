@@ -187,12 +187,16 @@ def send_with_template(prefix, parm):
     return ret
 
 
-def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output, script_ret):
+def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret):
     """ Send end-of-job email """
 
     # Translate the stage names
     tr = sabnzbd.api.Ttemplate
-    xstages = {}
+    if not status and fail_msg:
+        xstages = {tr('stage-fail'): (fail_msg,)}
+    else:
+        xstages = {}
+    
     for stage in stages:
         lines = []
         for line in stages[stage]:
