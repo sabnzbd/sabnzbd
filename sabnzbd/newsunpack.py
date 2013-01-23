@@ -611,7 +611,20 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
             msg = ('[%s] ' + Ta('Unpacking failed, write error or disk is full?')) % setname
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: write error (%s)'), line[11:])
+            logging.error(Ta('ERROR: write error (%s)'), line[11:])
+            fail = 1
+
+        elif line.startswith('Cannot create'):
+            line2 = proc.readline()
+            if 'must not exceed 260' in line2:
+                nzo.fail_msg = T('Unpacking failed, path is too long')
+                msg = '[%s] %s: %s' % (Ta('Unpacking failed, path is too long'), setname, line[13:])
+                logging.error(Ta('ERROR: path too long (%s)'), line[13:])
+            else:
+                nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
+                msg = '[%s] %s: %s' % (Ta('Unpacking failed, write error or disk is full?'), setname, line[13:])
+                logging.error(Ta('ERROR: write error (%s)'), line[13:])
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
         elif line.startswith('ERROR: '):
