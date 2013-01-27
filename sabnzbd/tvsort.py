@@ -235,7 +235,7 @@ class SeriesSorter(object):
 
 
     def get_multi_ep_naming(self, one, two, extras):
-        ''' Returns a list of unique values joined into a string and seperated by - (ex:01-02-03-04) '''
+        ''' Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) '''
         extra_list = [one]
         extra2_list = [two]
         for extra in extras:
@@ -1009,7 +1009,7 @@ def replace_word(input, one, two):
 def get_descriptions(match, name):
     '''
     If present, get a description from the nzb name.
-    A description has to be after the matched item, seperated either
+    A description has to be after the matched item, separated either
     like ' - Description' or '_-_Description'
     '''
     if match:
