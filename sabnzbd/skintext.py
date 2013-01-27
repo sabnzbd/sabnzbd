@@ -594,7 +594,7 @@ SKIN_TEXT = {
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
-    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to seperate terms.'),
+    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
     'explain-catTags2' : TT('Ending the path with an asterisk * will prevent creation of job folders.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
