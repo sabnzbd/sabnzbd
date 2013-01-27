@@ -184,7 +184,7 @@ class NNTP(object):
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            # Windows must do the connection in a seperate thread due to non-blocking issues
+            # Windows must do the connection in a separate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()

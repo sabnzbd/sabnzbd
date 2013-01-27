@@ -237,7 +237,7 @@ class HistoryDB(object):
         fetched_items = len(items)
 
         # Unpack the single line stage log
-        # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+        # Stage Name is separated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
 
         return (items, fetched_items, total_items)
@@ -370,7 +370,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Get the dictionary containing the stages and their unpack process
     stages = decode_factory(nzo.unpack_info)
     # Pack the ditionary up into a single string
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
     for key, results in stages.iteritems():
         lines.append('%s:::%s' % (key, ';'.join(results)))
@@ -385,7 +385,7 @@ def unpack_history_info(item):
         Expands the single line stage_log from the DB
         into a python dictionary for use in the history display
     '''
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     if item['stage_log']:
         try:
             lines = item['stage_log'].split('\r\n')
