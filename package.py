@@ -448,14 +448,15 @@ if target == 'app':
 
     os.system("sleep 5")
 
-    # Archive result to share
-    dest_path = '/Volumes/VMware Shared Folders/osx'
-    if not os.path.exists(dest_path):
-        dest_path = '$HOME/project/osx'
-    cpio_path = os.path.join(dest_path, prod) + '-' + postfix + '.cpio'
-    print 'Create CPIO file %s' % cpio_path
-    delete_files(cpio_path)
-    os.system('ditto -c -z dist/ "%s"' % cpio_path)
+    # Archive result to share, if present
+    dest_path = os.environ.get('SHARE')
+    if dest_path and os.path.exists(dest_path):
+        cpio_path = os.path.join(dest_path, prod) + '-' + postfix + '.cpio'
+        print 'Create CPIO file %s' % cpio_path
+        delete_files(cpio_path)
+        os.system('ditto -c -z dist/ "%s"' % cpio_path)
+    else:
+        print 'No SHARE variable set, build result not copied'
 
     if OSX_ML:
         print 'Create src %s' % fileOSr
