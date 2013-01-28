@@ -461,7 +461,7 @@ if target == 'app':
     if OSX_ML:
         print 'Create src %s' % fileOSr
         delete_files(fileOSr)
-        os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+        os.system('tar -czf "%s" --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
                   '--exclude "*.sparseimage*" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
                   './ >/dev/null' % os.path.join(dest_path, fileOSr) )
 
