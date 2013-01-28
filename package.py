@@ -438,8 +438,8 @@ if target == 'app':
     os.system('rm dist/SABnzbd.app/Contents/Resources/site.py')
     
     # Add the SabNotifier app
-    if OSX_ML and os.path.exists('/project/sabnotifier/SABnzbd.app'):
-        os.system("cp -pR /project/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
+    if OSX_ML and os.path.exists(os.path.join(os.environ['HOME'], 'sabnotifier/SABnzbd.app')):
+        os.system("cp -pR $HOME/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
 
     # Add License files
     os.mkdir("dist/SABnzbd.app/Contents/Resources/licenses/")
