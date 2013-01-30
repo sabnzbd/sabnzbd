@@ -185,7 +185,7 @@ def check_apikey(kwargs, nokey=False):
         Return None when OK, otherwise an error message
     """
     def log_warning(txt):
-        txt = '%s %s' % (txt, cherrypy.request.headers.get('User-Agent', '??'))
+        txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
         logging.warning('%s', txt)
 
     output = kwargs.get('output')
@@ -1676,6 +1676,7 @@ class ConfigRss(object):
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed
         conf['rss'] = rss
+        conf['rss_next'] = time.strftime(time_format('%H:%M'),time.localtime(sabnzbd.rss.next_run()))
 
         if active_feed:
             readout = bool(self.__refresh_readout)

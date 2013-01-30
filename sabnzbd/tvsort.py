@@ -61,11 +61,12 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
                '(AW)', '(AR)', '(AL)', '(AF)')
 
 _RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
+_RE_ENDFN = re.compile(r'%fn[{}]*$', re.I)
 
-def endswith_ext(path):
-    """ Return True when path ends with '.%ext'
+def ends_in_file(path):
+    """ Return True when path ends with '.%ext' or '%fn'
     """
-    return _RE_ENDEXT.search(path) is not None
+    return bool(_RE_ENDEXT.search(path) or _RE_ENDFN.search(path))
 
 
 def move_to_parent_folder(workdir):
@@ -333,7 +334,7 @@ class SeriesSorter(object):
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
-        if endswith_ext(sorter):
+        if ends_in_file(sorter):
             extension = True
             sorter = sorter.replace('.%ext', '')
         else:
@@ -593,7 +594,7 @@ class GenericSorter(object):
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
-        if endswith_ext(sorter):
+        if ends_in_file(sorter):
             extension = True
             sorter = sorter.replace(".%ext", '')
         else:
@@ -804,7 +805,7 @@ class DateSorter(object):
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
-        if endswith_ext(sorter):
+        if ends_in_file(sorter):
             extension = True
             sorter = sorter.replace(".%ext", '')
         else:

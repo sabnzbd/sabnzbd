@@ -84,6 +84,16 @@ def run_method():
     else:
         return None
 
+def next_run(t=None):
+    global __RSS
+    if __RSS:
+        if t:
+            __RSS.next_run = t
+        else:
+            return __RSS.next_run
+    else:
+        return time.time()
+
 def save():
     global __RSS
     if __RSS: __RSS.save()
@@ -159,6 +169,8 @@ class RSSQueue(object):
                 return False
 
         self.jobs = {}
+        self.next_run = time.time()
+
         try:
             defined = config.get_rss().keys()
             feeds = sabnzbd.load_admin(RSS_FILE_NAME)
@@ -488,6 +500,8 @@ class RSSQueue(object):
         """
         if not sabnzbd.PAUSED_ALL:
             active = False
+            if self.next_run < time.time():
+                self.next_run = time.time() + cfg.rss_rate.get() * 60
             feeds = config.get_rss()
             for feed in feeds.keys():
                 try:

@@ -32,7 +32,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, latin1, platform_encode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-                         flag_file, real_path
+                         flag_file, real_path, globber
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -611,7 +611,20 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
             msg = ('[%s] ' + Ta('Unpacking failed, write error or disk is full?')) % setname
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: write error (%s)'), line[11:])
+            logging.error(Ta('ERROR: write error (%s)'), line[11:])
+            fail = 1
+
+        elif line.startswith('Cannot create'):
+            line2 = proc.readline()
+            if 'must not exceed 260' in line2:
+                nzo.fail_msg = T('Unpacking failed, path is too long')
+                msg = '[%s] %s: %s' % (Ta('Unpacking failed, path is too long'), setname, line[13:])
+                logging.error(Ta('ERROR: path too long (%s)'), line[13:])
+            else:
+                nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
+                msg = '[%s] %s: %s' % (Ta('Unpacking failed, write error or disk is full?'), setname, line[13:])
+                logging.error(Ta('ERROR: write error (%s)'), line[13:])
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
         elif line.startswith('ERROR: '):
@@ -783,8 +796,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
-    used_joinables = []
-    joinables = []
+    used_joinables = ()
+    joinables = ()
+    used_par2 = ()
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
@@ -808,8 +822,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
             joinables, zips, rars, ts = build_filelists(workdir, None, check_rar=False)
 
-            finished, readd, pars, datafiles, used_joinables = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                                          setname, joinables)
+            finished, readd, pars, datafiles, used_joinables, used_par2 = PAR_Verify(parfile, parfile_nzf, nzo,
+                                                                                     setname, joinables)
 
             if finished:
                 result = True
@@ -878,6 +892,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 if f in setpars:
                     deletables.append(os.path.join(workdir, f))
             deletables.extend(used_joinables)
+            deletables.extend(used_par2)
             for filepath in deletables:
                 if filepath in joinables:
                     joinables.remove(filepath)
@@ -897,6 +912,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 _RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
 _RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
+_RE_LOADING_PAR2 = re.compile('Loading "([^"]+)"\.')
+_RE_LOADED_PAR2 = re.compile('Loaded (\d+) new packets')
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
@@ -906,6 +923,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         cmd = 'r'
     retry_classic = False
     used_joinables = []
+    used_par2 = []
+    extra_par2_name = None
     #set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time()
@@ -929,7 +948,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             command.append(joinable)
 
     # Append the wildcard for this set
-    command.append('%s*' % os.path.join(os.path.split(parfile)[0], setname))
+    wildcard = '%s*' % os.path.join(os.path.split(parfile)[0], setname)
+    if len(globber(wildcard)) < 2:
+        # Support bizarre naming conventions
+        wildcard = os.path.join(os.path.split(parfile)[0], '*')
+    command.append(wildcard)
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
@@ -979,6 +1002,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
             if 'Repairing:' not in line:
                 lines.append(line)
 
+            if extra_par2_name and line.startswith('Loading:') and line.endswith('%'):
+                continue
+            if extra_par2_name and line.startswith('Loaded '):
+                m = _RE_LOADED_PAR2.search(line)
+                if m and int(m.group(1)) > 0:
+                    used_par2.append(os.path.join(nzo.downpath, extra_par2_name))
+                extra_par2_name = None
+                continue
+            extra_par2_name = None
+
             if line.startswith('Invalid option specified'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
@@ -998,6 +1031,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                               format_time_string(time() - start))
                 start = time()
                 verified = 1
+
+            elif line.startswith('Loading "'):
+                # Found an extra par2 file. Only the next line will tell whether it's usable
+                m = _RE_LOADING_PAR2.search(line)
+                if m and m.group(1).lower().endswith('.par2'):
+                    extra_par2_name = m.group(1)
 
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 ## Initialparfile probably didn't decode properly,
@@ -1221,7 +1260,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         logging.debug('Retry PAR2-joining with par2-classic')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
     else:
-        return finished, readd, pars, datafiles, used_joinables
+        return finished, readd, pars, datafiles, used_joinables, used_par2
 
 #-------------------------------------------------------------------------------
 

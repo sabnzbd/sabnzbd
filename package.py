@@ -438,8 +438,8 @@ if target == 'app':
     os.system('rm dist/SABnzbd.app/Contents/Resources/site.py')
     
     # Add the SabNotifier app
-    if OSX_ML and os.path.exists('/project/sabnotifier/SABnzbd.app'):
-        os.system("cp -pR /project/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
+    if OSX_ML and os.path.exists(os.path.join(os.environ['HOME'], 'sabnotifier/SABnzbd.app')):
+        os.system("cp -pR $HOME/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
 
     # Add License files
     os.mkdir("dist/SABnzbd.app/Contents/Resources/licenses/")
@@ -448,19 +448,20 @@ if target == 'app':
 
     os.system("sleep 5")
 
-    # Archive result to share
-    dest_path = '/Volumes/VMware Shared Folders/osx'
-    if not os.path.exists(dest_path):
-        dest_path = '$HOME/project/osx'
-    cpio_path = os.path.join(dest_path, prod) + '-' + postfix + '.cpio'
-    print 'Create CPIO file %s' % cpio_path
-    delete_files(cpio_path)
-    os.system('ditto -c -z dist/ "%s"' % cpio_path)
+    # Archive result to share, if present
+    dest_path = os.environ.get('SHARE')
+    if dest_path and os.path.exists(dest_path):
+        cpio_path = os.path.join(dest_path, prod) + '-' + postfix + '.cpio'
+        print 'Create CPIO file %s' % cpio_path
+        delete_files(cpio_path)
+        os.system('ditto -c -z dist/ "%s"' % cpio_path)
+    else:
+        print 'No SHARE variable set, build result not copied'
 
     if OSX_ML:
         print 'Create src %s' % fileOSr
         delete_files(fileOSr)
-        os.system('tar -czf %s --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
+        os.system('tar -czf "%s" --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '
                   '--exclude "*.sparseimage*" --exclude "dist" --exclude "build" --exclude "*.nsi" --exclude "win" --exclude "*.dmg" '
                   './ >/dev/null' % os.path.join(dest_path, fileOSr) )
 
