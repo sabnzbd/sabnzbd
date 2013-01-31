@@ -4,7 +4,7 @@
 - Fix problem with %fn substitution in Sorting
 - Add special "wait_for_dfolder", enables waiting for external temp download folder
 - Work-around for servers that do not support STAT command
-- Removed articles are now listed seperately in download report
+- Removed articles are now listed separately in download report
 - Add "abort" option to encryption detection
 - Fix missing Retry link for "Out of retention" jobs.
 - Option to abort download when it is clear that not enough data is available
