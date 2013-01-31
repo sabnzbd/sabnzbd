@@ -136,6 +136,7 @@ def init():
         interval = cfg.rss_rate()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
+        sabnzbd.rss.next_run(time.time() + delay * 60)
         __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
                                       kronos.method.sequential, None, None)
         __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
@@ -151,7 +152,7 @@ def init():
                                  kronos.method.sequential, [], None)
 
 
-    if cfg.newzbin_bookmarks():
+    if False: #cfg.newzbin_bookmarks():
         interval = cfg.bookmark_rate()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
@@ -165,6 +166,10 @@ def init():
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
         __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
                                  kronos.method.sequential, [], None)
+
+    logging.info('Setting schedule for midnight BPS reset')
+    __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
+                             kronos.method.sequential, [], None)
 
 
     # Subscribe to special schedule changes

@@ -39,9 +39,14 @@ build_folders = (
         )
 
 # Check presense of all builds
+sharepath = os.environ.get('SHARE')
+if not (sharepath and os.path.exists(sharepath)):
+    print 'Build share not defined or not found'
+    exit(1)
+
 build_paths = []
 for build in builds:
-    path = os.path.join(os.environ['HOME'], 'project/osx/%s-%s.cpio' % (prod, build))
+    path = os.path.join(sharepath,'%s-%s.cpio' % (prod, build))
     if os.path.exists(path):
         build_paths.append(path)
     else:
@@ -100,4 +105,4 @@ print 'Make image internet-enabled'
 os.system("hdiutil internet-enable %s" % fileDmg)
 
 print 'Copy GZ file'
-os.system('cp ~/project/osx/%s .' % fileOSr)
+os.system('cp "%s" .' % os.path.join(sharepath, fileOSr))

@@ -1,4 +1,23 @@
 -------------------------------------------------------------------------------
+ 0.7.10Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Disable obsolete newzbin bookmark readout
+- Show speed when downloading in Forced mode while paused
+- Plush History icons repair and unpack were swapped
+- Try to repair rar/par sets with obfuscated names
+- Reset "today" byte counters at midnight even when idle
+- Display next RSS scan moment in Cfg->RSS
+- An email about a failed should say that the download failed
+- Report errors coming from fully encrypted rar files
+- Accept NNTP error 400 without "too many connection" clues as a transient error.
+- Accept %fn (next to %fn.%ext) as end parameter in sorting strings.
+-------------------------------------------------------------------------------
+ 0.7.9Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix fatal error in decoder when encountering a malformed article
+- Fix compatibility with free.xsusenet.com
+- Small fix in smpl-black CSS
+-------------------------------------------------------------------------------
  0.7.8Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix problem with %fn substitution in Sorting

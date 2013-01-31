@@ -1,22 +1,18 @@
-Release Notes  -  SABnzbd 0.7.8
-===============================
+Release Notes  -  SABnzbd 0.7.10
+================================
 
 ## Features
-- Use "category" and "password" meta-data in NZB files
-  (Provided by some indexers)
-- Option to abort download when it is clear that not enough data is available
-  (For removed posts it will be faster than pre-download check)
-- Add "Abort" option for encryption detection
-- Removed articles are now listed separately in download report
-- Special option "wait_for_dfolder", enables waiting for external temp download folder at startup
+- Try to repair rar/par sets with obfuscated names
+- Display next RSS scan moment in Cfg->RSS
 
 ## Bug fixes
-- Fix problem with %fn substitution in Sorting
-- Pre-download check did not work with all servers
-- Fix missing Retry link for "Out of retention" jobs.
-- API function "addfile" now accepts "nzbname" parameter for ZIP/RAR files with one NZB.
-- Prevent retries when an NZB with just samples is retrieved from an indexer
-  (and you had the "do not download samples" option enabled).
+- Disable obsolete newzbin bookmark readout
+- Show speed when downloading in Forced mode while paused
+- Plush History icons repair and unpack were swapped
+- Reset "today" byte counters at midnight even when idle
+- An email about a failed should say that the download failed
+- Report errors coming from fully encrypted rar files
+- Accept %fn (as well as %fn.%ext) as end parameter in sorting strings.
 
 ## What's new in 0.7.0
 

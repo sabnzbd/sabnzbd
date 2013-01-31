@@ -398,10 +398,20 @@ class BPSMeter(object):
             return None, 0, 0
 
 
+    def midnight(self):
+        """ Midnight action: dummy update for all servers """
+        for server in self.day_total:
+            self.update(server)
+
+
 def quota_handler():
     """ To be called from scheduler """
     logging.debug('Checking quota')
     BPSMeter.do.reset_quota()
 
+
+def midnight_action():
+    if BPSMeter.do:
+        BPSMeter.do.midnight()
 
 BPSMeter()

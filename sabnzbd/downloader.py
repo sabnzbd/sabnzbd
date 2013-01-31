@@ -47,6 +47,8 @@ _PENALTY_SHARE   = 10   # Account sharing detected
 _PENALTY_TOOMANY = 10   # Too many connections
 _PENALTY_PERM    = 10   # Permanent error, like bad username/password
 _PENALTY_SHORT   = 1    # Minimal penalty when no_penalties is set
+_PENALTY_VERYSHORT = 0.1 # Error 400 without cause clues
+
 
 TIMER_LOCK = RLock()
 
@@ -519,8 +521,7 @@ class Downloader(Thread):
                             ecode = msg[:3]
                             display_msg = ' [%s]' % msg
                             logging.debug('Server login problem: %s, %s', ecode, msg)
-                            if ((ecode in ('502', '400')) and clues_too_many(msg)) or \
-                                (ecode == '481' and clues_too_many(msg)):
+                            if ecode in ('502', '481', '400') and clues_too_many(msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
@@ -552,6 +553,12 @@ class Downloader(Thread):
                                     penalty = _PENALTY_PERM
                                 else:
                                     penalty = _PENALTY_502
+                                block = True
+                            elif ecode == '400':
+                                # Temp connection problem?
+                                if server.active:
+                                    logging.debug('Unspecified error 400 from server %s', server.host)
+                                penalty = _PENALTY_VERYSHORT
                                 block = True
                             else:
                                 # Unknown error, just keep trying
