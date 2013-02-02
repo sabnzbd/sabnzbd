@@ -262,7 +262,10 @@ def decode(article, data):
             except IndexError:
                 raise BadYenc()
 
-            decoded_data = '\r\n'.join(data)
+            if found:
+                decoded_data = '\r\n'.join(data)
+            else:
+                raise BadYenc()
 
         #Deal with yenc encoded posts
         elif (ybegin and yend):
