@@ -105,7 +105,9 @@ class Decoder(Thread):
                     found = True
                 except IOError, e:
                     logme = Ta('Decoding %s failed') % art_id
-                    logging.info(logme)
+                    logging.warning(logme)
+                    logging.info("Traceback: ", exc_info = True)
+
                     sabnzbd.downloader.Downloader.do.pause()
 
                     article.fetcher = None
