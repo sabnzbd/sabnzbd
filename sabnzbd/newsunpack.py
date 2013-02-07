@@ -949,7 +949,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
     # Append the wildcard for this set
     wildcard = '%s*' % os.path.join(os.path.split(parfile)[0], setname)
-    if len(globber(wildcard)) < 2:
+    if len(globber(wildcard, None)) < 2:
         # Support bizarre naming conventions
         wildcard = os.path.join(os.path.split(parfile)[0], '*')
     command.append(wildcard)
