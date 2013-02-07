@@ -1136,6 +1136,55 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
   }, // end $.plush.RefreshQueue()
 
+  // ***************************************************************
+  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl
+
+  RefreshQueue : function(page) {
+
+  // Skip refreshing when modal is open, which destroys colorbox rel prev/next
+  if ($.plush.modalOpen)
+    return;
+
+  // no longer a need for a pending history refresh (associated with nzb deletions)
+  $.plush.pendingQueueRefresh = false;
+
+  // Deal with pagination for start/limit
+  if (typeof( page ) == 'undefined')
+    page = $.plush.queuecurpage;
+  else if (page != $.plush.queuecurpage)
+    $.plush.queuecurpage = page;
+
+  if ($('#queueSearchBox').val() )
+    var data = {start: 0, limit: 0, search: $('#queueSearchBox').val() };
+  else
+    var data = {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage};
+
+  $.ajax({
+    headers: {"Cache-Control": "no-cache"},
+    type: "POST",
+    url: "queue/",
+    data: data,
+    success: function(result){
+      if (!result) {
+        $('#manual_refresh_wrapper').addClass('refresh_skipped'); // Failed refresh notification
+        return;
+      }
+      $('.left_stats .initial-loading').hide();
+      $('#queue').html(result);
+
+      $('#queue-pagination span').removeClass('loading');
+    }
+  });
+
+  }, // end $.plush.RefreshQueue()
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
+
 
   // ***************************************************************
   //  $.plush.RefreshHistory() -- fetch HTML data from history.tmpl (AHAH)
