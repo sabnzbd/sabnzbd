@@ -6,6 +6,7 @@
 
   <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
     <div class="logo main_sprite_container sprite_topleft_queue"><h1><!--#if $active_lang in ('de', 'fr') then $T('menu-queue') else $T('menu-queue').upper()#--></h1></div>
+    <form id="queueSearchForm" action="#"><input id="queueSearchBox" type="text" size="8" class="listSearchBox main_sprite_container sprite_h_search" /></form>
     <div class="queue-buttons queue-buttons-pause lang-$active_lang main_sprite_container sprite_topright_queue">
       <ul>
         <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
@@ -190,7 +191,7 @@
           <option value="0">$T('showAllHis')</option>
           <option value="1">$T('showFailedHis')</option>
         </select></li>
-        <li><form id="historySearchForm" action="#"><input id="historySearchBox" type="text" size="8" class="main_sprite_container sprite_h_search" /></form></li>
+        <li><form id="historySearchForm" action="#"><input id="historySearchBox" type="text" size="8" class="listSearchBox main_sprite_container sprite_h_search" /></form></li>
       </ul>
     </div>
   </div>

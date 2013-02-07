@@ -539,19 +539,27 @@ body {
   width:350px;
 }
 
-#historySearchBox {
-  color:black;
-  width:120px;
-  border:0px;
+.listSearchBox {
+  color: black;
+  width: 120px;
+  border: 0px;
   margin: 7px 9px 1px 1px;
   padding-right:20px;
-  border:1px solid #444;
-background-color: #e5e5e5
-  /*background: url('images/sprite-main.png') no-repeat top right;
-  background-position: 0 -671px;*/
+  border: 1px solid #444;
+  background-color: #e5e5e5
 }
-#historySearchBox:hover,#historySearchBox:focus {
-  border:1px solid gray;
+.listSearchBox:hover,.listSearchBox:focus {
+  border: 1px solid gray;
+}
+
+#queueSearchForm {
+  display: block;
+  height: 0px;
+  text-align: right;
+  margin-right: 120px;
+}
+#queueSearchBox {
+  margin-top: 35px;
 }
 
 #hdr-queue {
