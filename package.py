@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2013 The SABnzbd Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -343,7 +343,7 @@ options = dict(
       name = 'SABnzbd',
       version = release,
       url = 'http://sourceforge.net/projects/sabnzbdplus',
-      author = 'The SABnzbd-Team',
+      author = 'The SABnzbd Team',
       author_email = 'team@sabnzbd.org',
       scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils', 'util'],
@@ -396,7 +396,7 @@ if target == 'app':
                'plist': {
                    'NSUIElement':1,
                    'CFBundleShortVersionString':release,
-                   'NSHumanReadableCopyright':'The SABnzbd-Team',
+                   'NSHumanReadableCopyright':'The SABnzbd Team',
                    'CFBundleIdentifier':'org.sabnzbd.team',
                    'CFBundleDocumentTypes':[NZBFILE],
                    },

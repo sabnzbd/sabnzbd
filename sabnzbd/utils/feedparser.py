@@ -11,7 +11,7 @@ Recommended: iconv_codec <http://cjkpython.i18n.org/>
 
 __version__ = "5.1.3"
 __license__ = """
-Copyright (c) 2010-2012 Kurt McKee <contactme@kurtmckee.org>
+Copyright (c) 2010-2013 Kurt McKee <contactme@kurtmckee.org>
 Copyright (c) 2002-2008 Mark Pilgrim
 All rights reserved.
 
