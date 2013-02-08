@@ -504,10 +504,7 @@ body {
   margin-top: 35px;
 }
 /* a window narrower than this doesn't have room for the search box, so hide it */
-@media screen and (max-width:1100px) { #queueSearchForm { display: none; } }
-
-/* a window this size can fit a smaller search box, so shrink it */
-@media screen and (max-width:1200px) { #queueSearchBox { width: 90px; background-position-x: 95px;} } } }
+@media screen and (max-width:900px) { #queueSearchForm { display: none; } }
 
 /* a window wider than this has enough room for a bigger box, so grow it to line up with histsearchbox below it */
 @media screen and (min-width:1190px) { #queueSearchBox { width: 121px; background-position-x: 125px;} }
@@ -687,7 +684,8 @@ body {
 .centerpiece {
   margin: auto;
   padding:13px 0 0 20px;
-  width:350px;
+  margin-left: 80px;
+  width:450px;
 }
 
 .sprite_sabnzbdplus_logo {
