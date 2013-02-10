@@ -411,16 +411,18 @@ class NzbQueue(TryList):
         self.save('x')
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove_all(self):
+    def remove_all(self, search=None):
+        if search: search = search.lower()
         lst = []
         for nzo_id in self.__nzo_table:
             lst.append(nzo_id)
         for nzo_id in lst:
-            nzo = self.__nzo_table.pop(nzo_id)
-            nzo.deleted = True
-            self.__nzo_list.remove(nzo)
-            sabnzbd.remove_data(nzo_id, nzo.workpath)
-            self.cleanup_nzo(nzo)
+            if (not search) or search in self.__nzo_table[nzo_id].final_name_pw_clean.lower():
+                nzo = self.__nzo_table.pop(nzo_id)
+                nzo.deleted = True
+                self.__nzo_list.remove(nzo)
+                sabnzbd.remove_data(nzo_id, nzo.workpath)
+                self.cleanup_nzo(nzo)
         del lst
         self.save()
 
@@ -785,26 +787,30 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def queue_info(self, for_cli=False, max_jobs=0):
+    def queue_info(self, for_cli=False, max_jobs=0, search=None):
+        """ Return list of queued jobs, optionally filtered by 'search'
+        """
+        if search: search = search.lower()
         bytes_left = 0
         bytes = 0
         q_size = 0
         pnfo_list = []
         n = 0
         for nzo in self.__nzo_list:
-            if not max_jobs or n < max_jobs:
-                pnfo = nzo.gather_info(for_cli = for_cli)
-                pnfo_list.append(pnfo)
-                if nzo.status != 'Paused':
-                    bytes += pnfo[PNFO_BYTES_FIELD]
-                    bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+            if (not search) or search in nzo.final_name_pw_clean.lower():
+                if not max_jobs or n < max_jobs:
+                    pnfo = nzo.gather_info(for_cli = for_cli)
+                    pnfo_list.append(pnfo)
+                    if nzo.status != 'Paused':
+                        bytes += pnfo[PNFO_BYTES_FIELD]
+                        bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+                        q_size += 1
+                elif nzo.status != 'Paused':
+                    b, b_left = nzo.total_and_remaining()
+                    bytes += b
+                    bytes_left += b_left
                     q_size += 1
-            elif nzo.status != 'Paused':
-                b, b_left = nzo.total_and_remaining()
-                bytes += b
-                bytes_left += b_left
-                q_size += 1
-            n += 1
+                n += 1
         return (bytes, bytes_left, pnfo_list, q_size)
 
 

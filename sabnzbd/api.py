@@ -155,7 +155,7 @@ def _api_queue(name, output, kwargs):
 def _api_queue_delete(output, value, kwargs):
     """ API: accepts output, value """
     if value.lower()=='all':
-        NzbQueue.do.remove_all()
+        NzbQueue.do.remove_all(kwargs.get('search'))
         return report(output)
     elif value:
         items = value.split(',')
@@ -194,7 +194,7 @@ def _api_queue_change_complete_action(output, value, kwargs):
 
 def _api_queue_purge(output, value, kwargs):
     """ API: accepts output """
-    NzbQueue.do.remove_all()
+    NzbQueue.do.remove_all(kwargs.get('search'))
     return report(output)
 
 
@@ -250,6 +250,7 @@ def _api_queue_default(output, value, kwargs):
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     trans = kwargs.get('trans')
+    search = kwargs.get('search')
 
     if output in ('xml', 'json'):
         if sort and sort != 'index':
@@ -260,7 +261,7 @@ def _api_queue_default(output, value, kwargs):
         history = bool(kwargs.get('history'))
 
         info, pnfo_list, bytespersec, verbose_list, dictn = \
-            build_queue(history=history, start=start, limit=limit, output=output, trans=trans)
+            build_queue(history=history, start=start, limit=limit, output=output, trans=trans, search=search)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
@@ -1002,7 +1003,8 @@ def handle_cat_api(output, kwargs):
 
 #------------------------------------------------------------------------------
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None):
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None,
+                search=None):
     if output:
         converter = unicoder
     else:
@@ -1015,7 +1017,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         dictn = []
     #build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim, webdir)
+    info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if cookie.has_key('queue_details'):
@@ -1531,7 +1533,7 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(prim, webdir=''):
+def build_header(prim, webdir='', search=None):
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1580,7 +1582,7 @@ def build_header(prim, webdir=''):
     header['uniconfig'] = cfg.uniconfig() and sabnzbd.WEB_DIRC
 
     bytespersec = BPSMeter.do.get_bps()
-    qnfo = NzbQueue.do.queue_info()
+    qnfo = NzbQueue.do.queue_info(search=search)
 
     bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
     bytes = qnfo[QNFO_BYTES_FIELD]

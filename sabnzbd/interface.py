@@ -272,7 +272,7 @@ class MainPage(object):
             return panic_old_queue()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
 
             if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
                 info['newzbinDetails'] = True
@@ -654,9 +654,12 @@ class QueuePage(object):
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
+        search = kwargs.get('search')
 
         info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
-                                                                                       self.__prim, self.__web_dir, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
+                                                                                       self.__prim, self.__web_dir, self.__verbose_list, \
+                                                                                       self.__dict__, start=start, limit=limit, \
+                                                                                       dummy2=dummy2, trans=True, search=search)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -678,7 +681,7 @@ class QueuePage(object):
     def purge(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        NzbQueue.do.remove_all()
+        NzbQueue.do.remove_all(kwargs.get('search'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
