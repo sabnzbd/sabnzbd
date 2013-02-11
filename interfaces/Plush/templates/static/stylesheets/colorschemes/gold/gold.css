@@ -539,20 +539,37 @@ body {
   width:350px;
 }
 
-#historySearchBox {
-  color:black;
-  width:120px;
-  border:0px;
+.listSearchBox {
+  color: black;
+  width: 120px;
+  border: 0px;
   margin: 7px 9px 1px 1px;
   padding-right:20px;
-  border:1px solid #444;
-background-color: #e5e5e5
-  /*background: url('images/sprite-main.png') no-repeat top right;
-  background-position: 0 -671px;*/
+  border: 1px solid #444;
+  background-color: #e5e5e5
 }
-#historySearchBox:hover,#historySearchBox:focus {
-  border:1px solid gray;
+.listSearchBox:hover,.listSearchBox:focus {
+  border: 1px solid gray;
 }
+
+#queueSearchForm {
+  display: block;
+  height: 0px;
+  text-align: right;
+  margin-right: 151px;
+}
+#queueSearchBox {
+  width: 121px;
+  margin-top: 35px;
+}
+/* a window narrower than this doesn't have room for the search box, so hide it */
+@media screen and (max-width:1100px) { #queueSearchForm { display: none; } }
+
+/* a window this size can fit a smaller search box, so shrink it */
+@media screen and (max-width:1200px) { #queueSearchBox { width: 90px; background-position-x: 95px;} } } }
+
+/* a window wider than this has enough room for a bigger box, so grow it to line up with histsearchbox below it */
+@media screen and (min-width:1190px) { #queueSearchBox { width: 121px; background-position-x: 125px;} }
 
 #hdr-queue {
   height: 67px;
