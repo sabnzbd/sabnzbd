@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.7.11Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Bad articles from some servers were accepted as valid data
+- Show warning when the decoder encounters I/O errors
+- Generic Sort failed to rename files when an extra folder level was present in the RAR files
+- Obfuscated file name support caused regular NZBs to verify slower
+-------------------------------------------------------------------------------
  0.7.10Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Disable obsolete newzbin bookmark readout

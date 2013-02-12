@@ -8,7 +8,7 @@ jQuery(function($){
   // ***************************************************************
   //  Plush defaults
 
-  refreshRate:          $.cookie('plushRefreshRate')     ? $.cookie('plushRefreshRate')  : 30, // refresh rate in seconds
+  refreshRate:          $.cookie('plushRefreshRate')     ? $.cookie('plushRefreshRate')  : 4, // refresh rate in seconds
   containerWidth:       $.cookie('plushContainerWidth')  ? $.cookie('plushContainerWidth')  : '100%', // width of all elements on page
   queuePerPage:         $.cookie('plushQueuePerPage')    ? $.cookie('plushQueuePerPage') : 5, // pagination - nzbs per page
   histPerPage:          $.cookie('plushHistPerPage')     ? $.cookie('plushHistPerPage')  : 5, // pagination - nzbs per page
@@ -16,7 +16,7 @@ jQuery(function($){
   confirmDeleteHistory: $.cookie('plushConfirmDeleteHistory') == 0 ? false : true, // confirm history nzb removal
   blockRefresh:         $.cookie('plushBlockRefresh') == 0 ? false : true, // prevent refreshing when hovering queue
   failedOnly:           $.cookie('plushFailedOnly') == 1 ? 1 : 0, // prevent refreshing when hovering queue
-  multiOps:             $.cookie('plushMultiOps') == 1 ? true : false, // is multi-operations menu visible in queue
+  multiOps:             $.cookie('plushMultiOps') == 0 ? false : true, // is multi-operations menu visible in queue
   noTopMenu:            $.cookie('plushNoTopMenu') == 1 ? false : true, // is top menu visible
   multiOpsChecks:       null,
 

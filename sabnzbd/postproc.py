@@ -390,14 +390,17 @@ def process_job(nzo):
         if not nzb_list:
             ## Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
-                if not all_ok:
+                if all_ok:
+                    try:
+                        newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
+                    except:
+                        logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
+                        logging.info('Traceback: ', exc_info = True)
+                        # Better disable sorting because filenames are all off now
+                        file_sorter.sort_file = None
+                else:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                try:
-                    collapse_folder(tmp_workdir_complete, workdir_complete)
-                except:
-                    logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
-                    logging.info("Traceback: ", exc_info = True)
 
             if empty:
                 job_result = -1
@@ -750,9 +753,10 @@ def remove_samples(path):
 
 
 #------------------------------------------------------------------------------
-def collapse_folder(oldpath, newpath):
+def rename_and_collapse_folder(oldpath, newpath, files):
     """ Rename folder, collapsing when there's just a single subfolder
         oldpath --> newpath OR oldpath/subfolder --> newpath
+        Modify list of filenames accordingly
     """
     orgpath = oldpath
     items = globber(oldpath)
@@ -763,11 +767,16 @@ def collapse_folder(oldpath, newpath):
             logging.info('Collapsing %s', os.path.join(newpath, folder))
             oldpath = folder_path
 
+    oldpath = os.path.normpath(oldpath)
+    newpath = os.path.normpath(newpath)
+    files = [os.path.normpath(f).replace(oldpath, newpath) for f in files]
+
     renamer(oldpath, newpath)
     try:
         remove_dir(orgpath)
     except:
         pass
+    return files
 
 
 #------------------------------------------------------------------------------

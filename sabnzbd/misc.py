@@ -73,8 +73,10 @@ def safe_lower(txt):
 #------------------------------------------------------------------------------
 def globber(path, pattern='*'):
     """ Do a glob.glob(), disabling the [] pattern in 'path' """
-    return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
-
+    if pattern:
+        return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
+    else:
+        return glob.glob(path.replace('[', '[[]'))
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):

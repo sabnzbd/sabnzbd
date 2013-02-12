@@ -403,9 +403,9 @@ class SeriesSorter(object):
 
         def to_filepath(f, current_path):
             if is_full_path(f):
-                filepath = f.replace('_UNPACK_', '')
+                filepath = os.path.normpath(f)
             else:
-                filepath = os.path.join(current_path, f)
+                filepath = os.path.normpath(os.path.join(current_path, f))
             return filepath
 
         # Create a generator of filepaths, ignore sample files and excluded files (vobs ect)
@@ -657,9 +657,9 @@ class GenericSorter(object):
         logging.debug("Renaming Generic file")
         def filter_files(_file, current_path):
             if is_full_path(_file):
-                filepath = _file.replace('_UNPACK_', '')
+                filepath = os.path.normpath(_file)
             else:
-                filepath = os.path.join(current_path, _file)
+                filepath = os.path.normpath(os.path.join(current_path, _file))
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
                 if size >= cfg.movie_rename_limit.get_int() and not RE_SAMPLE.search(_file) \
@@ -675,9 +675,9 @@ class GenericSorter(object):
         if length == 1:
             file = files[0]
             if is_full_path(file):
-                filepath = file.replace('_UNPACK_', '')
+                filepath = os.path.normpath(file)
             else:
-                filepath = os.path.join(current_path, file)
+                filepath = os.path.normpath(os.path.join(current_path, file))
             if os.path.exists(filepath):
                 self.fname, ext = os.path.splitext(os.path.split(file)[1])
                 newname = "%s%s" % (self.filename_set, ext)
@@ -881,9 +881,9 @@ class DateSorter(object):
         #find the master file to rename
         for file in files:
             if is_full_path(file):
-                filepath = file.replace('_UNPACK_', '')
+                filepath = os.path.normpath(file)
             else:
-                filepath = os.path.join(current_path, file)
+                filepath = os.path.normpath(os.path.join(current_path, file))
 
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
