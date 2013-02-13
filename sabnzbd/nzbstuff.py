@@ -934,7 +934,7 @@ class NzbObject(TryList):
 
         if file_done:
             self.remove_nzf(nzf)
-            if not self.reuse and not self.precheck and cfg.fail_hopeless() and not self.check_quality(99)[0]:
+            if not self.reuse and cfg.fail_hopeless() and not self.check_quality(99)[0]:
                 #set the nzo status to return "Queued"
                 self.status = Status.QUEUED
                 self.set_download_report()
