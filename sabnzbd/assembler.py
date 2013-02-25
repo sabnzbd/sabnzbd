@@ -291,8 +291,9 @@ def is_cloaked(path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(os.path.split(path)[1]).lower()
     for name in names:
-        name = unicoder(name.lower())
-        if fname == name or 'password' in name:
+        name = os.path.split(name.lower())[1]
+        name, ext = os.path.splitext(unicoder(name))
+        if (fname.startswith(name) and ext == '.rar') or 'password' in name:
             return True
     return False
 
