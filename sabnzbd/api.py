@@ -632,6 +632,12 @@ def _api_watched_now(name, output, kwargs):
     return report(output)
 
 
+def _api_resume_pp(name, output, kwargs):
+    """ API: accepts output """
+    PostProcessor.do.paused = False
+    return report(output)
+
+
 def _api_rss_now(name, output, kwargs):
     """ API: accepts output """
     # Run RSS scan async, because it can take a long time
@@ -795,6 +801,7 @@ _api_table = {
     'rescan'          : _api_rescan,
     'eval_sort'       : _api_eval_sort,
     'watched_now'     : _api_watched_now,
+    'resume_pp'       : _api_resume_pp,
     'rss_now'         : _api_rss_now,
     'browse'          : _api_browse,
     'reset_quota'     : _api_reset_quota,
@@ -1594,6 +1601,7 @@ def build_header(prim, webdir=''):
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
     header['left_quota'] = to_units(BPSMeter.do.left)
+    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
 
     status = ''
     if Downloader.do.paused or Downloader.do.postproc:

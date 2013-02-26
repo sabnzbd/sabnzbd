@@ -40,7 +40,7 @@ __SCHED = None  # Global pointer to Scheduler instance
 
 RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
-
+PP_PAUSE_EVENT = False
 
 def schedule_guard():
     """ Set flag for scheduler restart """
@@ -53,6 +53,8 @@ def pp_pause():
 def pp_resume():
     PostProcessor.do.paused = False
 
+def pp_pause_event():
+    return PP_PAUSE_EVENT
 
 def init():
     """ Create the scheduler and set all required events
@@ -275,6 +277,8 @@ def sort_schedules(all_events, now=None):
 def analyse(was_paused=False):
     """ Determine what pause/resume state we would have now.
     """
+    global PP_PAUSE_EVENT
+    PP_PAUSE_EVENT = False
     paused = None
     paused_all = False
     pause_post = False
@@ -292,13 +296,16 @@ def analyse(was_paused=False):
             paused = True
         elif action == 'pause_all':
             paused_all = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume':
             paused = False
             paused_all = False
         elif action == 'pause_post':
             pause_post = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume_post':
             pause_post = False
+            PP_PAUSE_EVENT = True
         elif action == 'speedlimit' and value!=None:
             speedlimit = int(ev[2])
         elif action == 'enable_server':
