@@ -329,6 +329,17 @@ jQuery(function($){
     });
   });
 
+  // Resume Post Processing
+  $('#resume_pp').click(function() {
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'resume_pp', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
   $('#multiops_toggle').click(function(){
     if( $('#multiops_bar').is(':visible') ) { // hide
       $('#multiops_bar').hide();
