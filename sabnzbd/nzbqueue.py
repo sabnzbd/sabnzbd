@@ -228,7 +228,7 @@ class NzbQueue(TryList):
             if save_nzo is None or nzo is save_nzo:
                 sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                 if not nzo.futuretype:
-                    nzo.save_attribs()
+                    nzo.save_to_disk()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -605,7 +605,7 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
-            nzo.save_attribs()
+            nzo.save_to_disk()
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
@@ -765,7 +765,7 @@ class NzbQueue(TryList):
         if not nzo.deleted:
             nzo.deleted = True
             if nzo.precheck:
-                nzo.save_attribs()
+                nzo.save_to_disk()
                 # Check result
                 enough, ratio = nzo.check_quality()
                 if enough:

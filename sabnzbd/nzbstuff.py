@@ -1023,6 +1023,7 @@ class NzbObject(TryList):
 
     def set_pp(self, value):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(value)
+        self.save_to_disk()
 
     @property
     def final_name_pw(self):
@@ -1055,7 +1056,7 @@ class NzbObject(TryList):
         if isinstance(name, str) or isinstance(name, unicode):
             name, self.password = scan_password(platform_encode(name))
             self.final_name = sanitize_foldername(name)
-            self.save_attribs()
+            self.save_to_disk()
 
     def pause(self):
         self.status = 'Paused'
@@ -1413,6 +1414,12 @@ class NzbObject(TryList):
     def repair_opts(self):
         return self.repair, self.unpack, self.delete
 
+    def save_to_disk(self):
+        """ Save job's admin to disk """
+        self.save_attribs()
+        if self.nzo_id:
+            sabnzbd.save_data(self, self.nzo_id, self.workpath)
+            
     def save_attribs(self):
         set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
 
