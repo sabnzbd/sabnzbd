@@ -1,1 +1,0 @@
-This CherryPy Rev 2138 patched with Rev 2272.
