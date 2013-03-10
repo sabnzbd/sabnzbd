@@ -70,7 +70,7 @@ number of requests and their responses, so we run a nested loop::
 
 __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'SizeCheckWrapper', 'KnownLengthRFile', 'ChunkedRFile',
-           'CP_fileobject',
+           'CP_fileobject', 'socket_errors_to_ignore',
            'MaxSizeExceeded', 'NoSSLError', 'FatalSSLAlert',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
