@@ -586,7 +586,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    if isinstance(nzbfile, str):
+    if isinstance(nzbfile, str) or isinstance(nzbfile, unicode):
         # File coming from queue repair
         filename = nzbfile
         keep = True
@@ -594,7 +594,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         # File coming from API/TAPI
         # Consider reception of Latin-1 names for non-Windows platforms
         # When an OSX/Unix server receives a file from Windows platform
-        filename = encoding.special_fixer(nzbfile.filename)
+        # CherryPy delivers filename as UTF-8 disguised as Unicode!
+        filename = nzbfile.filename.encode('cp1252').decode('utf-8')
+        filename = encoding.special_fixer(filename)
         keep = False
 
     if not sabnzbd.WIN32:
@@ -612,7 +614,15 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     else:
         try:
             f, path = tempfile.mkstemp(suffix=ext, text=False)
-            os.write(f, nzbfile.value)
+            # More CherryPy madness, sometimes content is in 'value', sometimes not.
+            if nzbfile.value:
+                os.write(f, nzbfile.value)
+            elif hasattr(nzbfile, 'file'):
+                # CherryPy 3.2.2 object
+                if hasattr(nzbfile.file, 'file'):
+                    os.write(f, nzbfile.file.file.read())
+                else:
+                    os.write(f, nzbfile.file.read())
             os.close(f)
         except:
             logging.error(Ta('Cannot create temp file for %s'), filename)

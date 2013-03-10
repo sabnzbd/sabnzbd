@@ -35,7 +35,7 @@ from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
                               REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status, QUEUE_FILE_TMPL
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -71,7 +71,15 @@ class NzbQueue(TryList):
         if repair < 2:
             # Read the queue from the saved files
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
-            if data:
+            if not data:
+                try:
+                    # Try previous queue file
+                    queue_vers, nzo_ids, dummy = sabnzbd.load_admin(QUEUE_FILE_TMPL % '9')
+                except:
+                    nzo_ids = []
+                if nzo_ids:
+                    logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+            else:
                 try:
                     queue_vers, nzo_ids, dummy = data
                     if not queue_vers == QUEUE_VERSION:
@@ -115,7 +123,7 @@ class NzbQueue(TryList):
 
 
     def scan_jobs(self, all=False, action=True):
-        """ Scan "incomplete" for mssing folders,
+        """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
             'action' is True, do the recovery action
             returns list of orphaned folders

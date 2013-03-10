@@ -41,7 +41,7 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv, \
-                         set_permissions
+                         set_permissions, format_time_string
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
@@ -361,8 +361,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 logging.info('Skipping sample file %s', subject)
             else:
                 self.in_file = True
-                if isinstance(subject, unicode):
-                    subject = subject.encode('latin-1', 'replace')
                 self.fileSubject = subject
                 try:
                     self.file_date = int(attrs.get('date'))
@@ -757,6 +755,9 @@ class NzbObject(TryList):
         # Pickup backed-up attributes when re-using
         if reuse:
             cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
+            cat = unicoder(cat)
+            script = unicoder(script)
+            name = unicoder(name)
             self.set_final_name_pw(name)
 
         # Determine category and find pp/script values
@@ -1039,9 +1040,9 @@ class NzbObject(TryList):
             if dif > 0:
                 prefix += Ta('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
         if self.password:
-            return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
+            return '%s%s / %s' % (prefix, self.final_name, self.password)
         else:
-            return '%s%s' % (name_fixer(prefix), self.final_name)
+            return '%s%s' % (prefix, self.final_name)
 
     @property
     def final_name_pw_clean(self):
@@ -1051,7 +1052,7 @@ class NzbObject(TryList):
             return self.final_name
 
     def set_final_name_pw(self, name):
-        if isinstance(name, str):
+        if isinstance(name, str) or isinstance(name, unicode):
             name, self.password = scan_password(platform_encode(name))
             self.final_name = sanitize_foldername(name)
             self.save_attribs()
@@ -1572,36 +1573,6 @@ def split_filename(name):
         return "", ""
     else:
         return name.strip(), ""
-
-
-def format_time_string(seconds, days=0):
-    """ Given seconds and days, return formatted day/hour/min/sec string
-    """
-    def unit(n, single):
-        if n == 1:
-            return n, Tx(single)
-        else:
-            return n, Tx(single + 's')
-    try:
-        seconds = int(seconds)
-    except ValueError:
-        seconds = 0
-
-    completestr = ''
-    if days:
-        completestr += '%s %s ' % unit(days, 'day')
-    if (seconds/3600) >= 1:
-        completestr += '%s %s ' % unit(seconds/3600, 'hour')
-        seconds -= (seconds/3600)*3600
-    if (seconds/60) >= 1:
-        completestr += '%s %s ' % unit(seconds/60, 'minute')
-        seconds -= (seconds/60)*60
-    if seconds > 0:
-        completestr += '%s %s ' % unit(seconds, 'second')
-    else:
-        completestr += '%s %s' % unit(0, 'second')
-
-    return completestr.strip()
 
 
 RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')

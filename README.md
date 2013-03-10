@@ -1,6 +1,11 @@
 SABnzbd - The automated Usenet download tool
 ============================================
 
+# WARNING
+This Unicode release is not compatible with 0.7.x queues!
+
+----
+
 SABnzbd is an Open Source Binary Newsreader written in Python.
 
 It's totally free, incredibly easy to use, and works practically everywhere.

@@ -94,8 +94,8 @@ class PostProcessor(Thread):
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(Ta('Failed to load postprocessing queue: Wrong version (need:%s, found:%s)'), POSTPROC_QUEUE_VERSION, version)
-            if isinstance(history_queue, list):
+                logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+            elif isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
             logging.info('Corrupt %s file, discarding', POSTPROC_QUEUE_FILE_NAME)

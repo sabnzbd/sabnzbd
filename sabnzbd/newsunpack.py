@@ -29,7 +29,7 @@ import binascii
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
-     reliable_unpack_names, unicoder, latin1, platform_encode
+     reliable_unpack_names, unicoder, latin1, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
                          flag_file, real_path, globber
@@ -1341,8 +1341,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
                 # Find out if a joinable file has been used for joining
+                uline = unicoder(line)
                 for jn in joinables:
-                    if line.find(os.path.split(jn)[1]) > 0:
+                    if uline.find(os.path.split(jn)[1]) > 0:
                         used_joinables.append(jn)
                         break
                 # Special case of joined RAR files, the "of" and "from" must both be RAR files
@@ -1454,6 +1455,10 @@ def fix_env():
 def build_command(command):
     """ Prepare list from running an external program
     """
+    for n in xrange(len(command)):
+        if isinstance(command[n], unicode):
+            command[n] = deunicode(command[n])
+
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()

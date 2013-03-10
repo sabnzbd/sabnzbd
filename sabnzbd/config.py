@@ -20,6 +20,7 @@ sabnzbd.config - Configuration Support
 """
 
 import os
+import re
 import logging
 import threading
 import shutil
@@ -683,19 +684,41 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        CFG = configobj.ConfigObj(path)
+        fp = open(path, 'r')
+        lines = fp.read().split('\n')
+        fp.close()
+
         try:
-            if int(CFG['__version__']) > int(CONFIG_VERSION):
-                return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
-        except (KeyError, ValueError):
-            CFG['__version__'] = CONFIG_VERSION
-    except configobj.ConfigObjError, strerror:
+            # First try UTF-8 encoding
+            CFG = configobj.ConfigObj(lines, default_encoding='utf-8', encoding='utf-8')
+        except UnicodeDecodeError:
+            # Failed, enable retry
+            CFG = {}
+
+        if not re.search(r'utf[ -]*8', CFG.get('__encoding__', ''), re.I):
+            # INI file is still in 8bit ASCII encoding, so try Latin-1 instead
+            CFG = configobj.ConfigObj(lines, default_encoding='cp1252', encoding='cp1252')
+
+    except (IOError, configobj.ConfigObjError, UnicodeEncodeError), strerror:
         if try_backup:
+            if isinstance(strerror, UnicodeEncodeError):
+                strerror = 'Character encoding of the file is inconsistent'
             return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
         else:
+            # Try backup file
             return _read_config(path, True)
 
-    CFG['__version__'] = CONFIG_VERSION
+    try:
+        version = sabnzbd.misc.int_conv(CFG['__version__'])
+        if version > int(CONFIG_VERSION):
+            return False, "Incorrect version number %s in %s" % (version, path)
+    except (KeyError, ValueError):
+        pass
+
+    CFG.filename = path
+    CFG.encoding = 'utf-8'
+    CFG['__encoding__'] = u'utf-8'
+    CFG['__version__'] = unicode(CONFIG_VERSION)
 
     if 'misc' in CFG:
         compatibility_fix(CFG['misc'])

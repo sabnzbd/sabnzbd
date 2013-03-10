@@ -356,9 +356,10 @@ class MainPage(object):
         if msg: return msg
 
         nzbfile = kwargs.get('nzbfile')
-        if nzbfile is not None and nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
-                                kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
+        if nzbfile is not None and nzbfile.filename:
+            if nzbfile.value or nzbfile.file:
+                sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
+                                    kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose

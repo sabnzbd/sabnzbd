@@ -83,7 +83,7 @@ class HistoryDB(object):
         else:
             create_table = False
         if sabnzbd.WIN32 and isinstance(db_path, str):
-            self.con = sqlite3.connect(db_path.decode('latin-1').encode('utf-8'))
+            self.con = sqlite3.connect(db_path.decode('cp1252').encode('utf-8'))
         else:
             self.con = sqlite3.connect(db_path)
         self.con.row_factory = dict_factory

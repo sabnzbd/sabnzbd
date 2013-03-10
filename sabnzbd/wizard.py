@@ -20,6 +20,7 @@ sabnzbd.wizard - Wizard Webinterface
 """
 
 import os
+import logging
 import cherrypy
 from Cheetah.Template import Template
 
@@ -50,9 +51,17 @@ class Wizard(object):
         info = self.info.copy()
         info['num'] = ''
         info['number'] = 0
-        info['lang'] = cfg.language()
+        lng = None
+        if sabnzbd.WIN32:
+            import util.apireg
+            lng = util.apireg.get_install_lng()
+            logging.debug('Installer language code "%s"', lng)
+        info['lang'] = lng or cfg.language()
         info['languages'] = list_languages()
         info['T'] = Ttemplate
+
+        set_language(info['lang'])
+        sabnzbd.api.clear_trans_cache()
 
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page

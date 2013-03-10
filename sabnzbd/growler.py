@@ -194,9 +194,11 @@ def send_growl(title , msg, gtype):
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
-            if not isinstance(msg, str) and not isinstance(msg, unicode):
+            if isinstance(msg, unicode):
+                msg = msg.decode('utf-8')
+            elif not isinstance(msg, str):
                 msg = str(msg)
-            logging.debug('Send to Growl: %s %s %s', gtype, latin1(title), latin1(msg))
+            logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
             try:
                 ret = _GROWL.notify(
                     noteType = Tx(NOTIFICATION.get(gtype, 'other')),
@@ -264,7 +266,7 @@ if _HAVE_NTFOSD:
             icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
             _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
             if _NTFOSD:
-                logging.info('Send to NotifyOSD: %s / %s', latin1(title), latin1(message))
+                logging.info('Send to NotifyOSD: %s / %s', title, message)
                 try:
                     note = pynotify.Notification(title, message, icon)
                     note.show()

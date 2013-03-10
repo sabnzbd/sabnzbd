@@ -20,6 +20,16 @@ if sys.version_info < (2, 5):
     print "Sorry, requires Python 2.5, 2.6 or 2.7."
     sys.exit(1)
 
+# Make sure UTF-8 is default 8bit encoding
+if not hasattr(sys,"setdefaultencoding"):
+    reload(sys)
+try:
+    sys.setdefaultencoding('utf-8')
+except:
+    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
+    print 'or find another way to force Python to use UTF-8 for string encoding.'
+    sys.exit(1)
+
 import logging
 import logging.handlers
 import os
@@ -63,6 +73,14 @@ except:
         else:
             SQLITE_DLL = False
 
+import locale, __builtin__
+try:
+    locale.setlocale(locale.LC_ALL, "")
+    __builtin__.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
+except:
+    # Work-around for Python-ports with bad "locale" support
+    __builtin__.__dict__['codepage'] = 'cp1252'
+
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
@@ -78,7 +96,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, latin1, deunicode
 import sabnzbd.growler as growler
 
 from threading import Thread
@@ -364,6 +382,7 @@ def CheckColor(color, web_dir):
 #------------------------------------------------------------------------------
 def fix_webname(name):
     if name:
+        name = deunicode(name)
         xname = name.title()
     else:
         xname = ''
@@ -417,8 +436,8 @@ def GetProfileInfo(vista_plus):
 
                 try:
                     # Conversion to 8bit ASCII required for CherryPy
-                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode('latin-1')
-                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode('latin-1')
+                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode(codepage)
+                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode(codepage)
                     ok = True
                 except:
                     # If unconvertible characters exist, use MSDOS name

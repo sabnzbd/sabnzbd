@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-CONFIG_VERSION = 19
+CONFIG_VERSION = 20
 
-QUEUE_VERSION = 9
-POSTPROC_QUEUE_VERSION = 1
+QUEUE_VERSION = 10
+POSTPROC_QUEUE_VERSION = 2
 
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
@@ -53,7 +53,7 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME  = 'totals%s.sab' % QUEUE_VERSION
+BYTES_FILE_NAME  = 'totals9.sab'
 QUEUE_FILE_TMPL  = 'queue%s.sab'
 QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION

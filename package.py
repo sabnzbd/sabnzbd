@@ -252,12 +252,12 @@ else:
     PanDoc = None
 
 if os.name == 'nt':
-    msg = 'Requires the standard version of NSIS'
+    msg = 'Requires the Unicode version of NSIS'
     NSIS = CheckPath('makensis')
     if NSIS:
         log = '%s.log' % NSIS
         os.system('%s >%s' % (NSIS, log))
-        if 'Unicode' not in open(log).read():
+        if 'Unicode' in open(log).read():
             msg = ''
         delete_files(log)
     if msg:

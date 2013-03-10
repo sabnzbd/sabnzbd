@@ -184,10 +184,8 @@ dst.write('\n')
 count = 0
 for line in src:
     count += 1
-    if 'Please, first check' in line:
-        pass
     m = RE_NSIS.search(line)
-    if m:
+    if m and 'MsgLangCode' not in line:
         dst.write('#: %s:%s\n' % (NSIS, count))
         text = m.group(1).replace('$\\"', '\\"').replace('$\\', '\\\\')
         dst.write('msgid %s\n' % text)

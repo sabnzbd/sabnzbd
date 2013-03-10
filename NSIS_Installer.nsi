@@ -25,6 +25,7 @@
 !include "LogicLib.nsh"
 !include "WinVer.nsh"
 !include "WinSxSQuery.nsh"
+!include "nsProcess.nsh"
 
 ;------------------------------------------------------------------
 ;
@@ -48,6 +49,7 @@
   Delete   "${idir}\email\email-pt_BR.tmpl"
   Delete   "${idir}\email\email-sr.tmpl"
   Delete   "${idir}\email\email-ru.tmpl"
+  Delete   "${idir}\email\email-zh_CN.tmpl"
   Delete   "${idir}\email\rss-de.tmpl"
   Delete   "${idir}\email\rss-en.tmpl"
   Delete   "${idir}\email\rss-nl.tmpl"
@@ -62,6 +64,7 @@
   Delete   "${idir}\email\rss-pt_BR.tmpl"
   Delete   "${idir}\email\rss-sr.tmpl"
   Delete   "${idir}\email\rss-ru.tmpl"
+  Delete   "${idir}\email\rss-zh_CN.tmpl"
   Delete   "${idir}\email\badfetch-da.tmpl"
   Delete   "${idir}\email\badfetch-de.tmpl"
   Delete   "${idir}\email\badfetch-en.tmpl"
@@ -76,6 +79,7 @@
   Delete   "${idir}\email\badfetch-es.tmpl"
   Delete   "${idir}\email\badfetch-pt_BR.tmpl"
   Delete   "${idir}\email\badfetch-ru.tmpl"
+  Delete   "${idir}\email\badfetch-zh_CN.tmpl"
   RMDir    "${idir}\email"
   RMDir /r "${idir}\locale"
   RMDir /r "${idir}\interfaces\Classic"
@@ -222,6 +226,9 @@
   !insertmacro MUI_LANGUAGE "Romanian"
   !insertmacro MUI_LANGUAGE "Spanish"
   !insertmacro MUI_LANGUAGE "PortugueseBR"
+  !insertmacro MUI_LANGUAGE "Serbian"
+  !insertmacro MUI_LANGUAGE "Russian"
+  !insertmacro MUI_LANGUAGE "SimpChinese"
 
 
 ;------------------------------------------------------------------
@@ -279,13 +286,13 @@ runtime_loop:
 ;make sure user terminates sabnzbd.exe or else abort
 ;
 loop:
-  StrCpy $0 "SABnzbd.exe"
-  KillProc::FindProcesses
-  StrCmp $0 "0" endcheck
-  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) /SD IDCANCEL IDOK loop IDCANCEL exitinstall
+  ${nsProcess::FindProcess} "SABnzbd.exe" $R0
+  StrCmp $R0 0 0 endcheck
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
   exitinstall:
+    ${nsProcess::Unload}
     Abort
-  endcheck:
+endcheck:
 
 FunctionEnd
 
@@ -311,6 +318,7 @@ File /r "dist\*"
 
 
 WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "" "$INSTDIR"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "Installer Language" "$(MsgLangCode)"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayName" "SABnzbd ${SAB_VERSION}"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "UninstallString" '"$INSTDIR\uninstall.exe"'
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayVersion" '${SAB_VERSION}'
@@ -360,29 +368,8 @@ UninstallText $(MsgUninstall)
 
 Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isnt running..if so shut it down
-
-  StrCpy $0 "sabnzbd.exe"
-  DetailPrint "Searching for processes called '$0'"
-  KillProc::FindProcesses
-  StrCmp $1 "-1" wooops
-  DetailPrint "-> Found $0 processes"
-
-  StrCmp $0 "0" completed
-  Sleep 1500
-
-  StrCpy $0 "sabnzbd.exe"
-  DetailPrint "Killing all processes called '$0'"
-  KillProc::KillProcesses
-  StrCmp $1 "-1" wooops
-  DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
-
-  Goto completed
-
-  wooops:
-  DetailPrint "-> Error: Something went wrong :-("
-  Abort
-
-  completed:
+  ${nsProcess::KillProcess} "SABnzbd.exe" $R0
+  ${nsProcess::Unload}
   DetailPrint "Process Killed"
 
 
@@ -456,6 +443,7 @@ SectionEnd
 
   LangString MsgRemoveOld2  ${LANG_ENGLISH} "Your settings and data will be preserved."
 
+  LangString MsgLangCode    ${LANG_ENGLISH} "en"
 
 Function un.onInit
   !insertmacro MUI_UNGETLANGUAGE
