@@ -1049,7 +1049,15 @@ class CP_fileobject(socket._fileobject):
                         buf.write(data)
                         del data  # explicit free
                         break
-                    assert n <= left, "recv(%d) returned %d bytes" % (left, n)
+                    ### START OF PATCH
+                    # assert n <= left, "recv(%d) returned %d bytes" % (left, n)
+                    if n > left:
+                        # Could happen with SSL transport. Differ extra data read to the next call
+                        buf.write(data[:left])
+                        self._rbuf.write(data[left:])
+                        del data
+                        break
+                    ### END OF PATCH
                     buf.write(data)
                     buf_len += n
                     del data  # explicit free
