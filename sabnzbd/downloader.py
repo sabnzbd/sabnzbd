@@ -525,7 +525,7 @@ class Downloader(Thread):
                                 # Cannot login, block this server
                                 if server.active:
                                     server.errormsg = Ta('Failed login for server %s') % display_msg
-                                    logging.error(Ta('Failed login for server %s'), '%s:%s' % (server.host, server.port))
+                                    logging.error(Ta('Failed login for server %s'), '%s:%s' % (server.id, server.port))
                                 penalty = _PENALTY_PERM
                                 block = True
                             elif ecode == '502':
