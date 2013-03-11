@@ -1,0 +1,115 @@
+# Russian translation for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-05-01 18:51+0000\n"
+"PO-Revision-Date: 2012-03-28 18:57+0000\n"
+"Last-Translator: Pavel Maryanov <Unknown>\n"
+"Language-Team: Russian <gnu@mx.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-05-02 05:52+0000\n"
+"X-Generator: Launchpad (build 15177)\n"
+
+#: NSIS_Installer.nsi:417
+msgid "Go to the SABnzbd Wiki"
+msgstr ""
+
+#: NSIS_Installer.nsi:419
+msgid "Show Release Notes"
+msgstr "Показать заметки о выпуске"
+
+#: NSIS_Installer.nsi:421
+msgid "Support the project, Donate!"
+msgstr "Поддержите проект. Сделайте пожертвование!"
+
+#: NSIS_Installer.nsi:423
+msgid "Please close \"SABnzbd.exe\" first"
+msgstr "Завершите сначала работу процесса SABnzbd.exe"
+
+#: NSIS_Installer.nsi:425
+msgid ""
+"                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+msgstr ""
+
+#: NSIS_Installer.nsi:427
+msgid "This will uninstall SABnzbd from your system"
+msgstr "Приложение SABnzbd будет удалено из вашей системы"
+
+#: NSIS_Installer.nsi:429
+msgid "Run at startup"
+msgstr "Запускать вместе с системой"
+
+#: NSIS_Installer.nsi:431
+msgid "Desktop Icon"
+msgstr "Значок на рабочем столе"
+
+#: NSIS_Installer.nsi:433
+msgid "NZB File association"
+msgstr "Ассоциировать с файлами NZB"
+
+#: NSIS_Installer.nsi:435
+msgid "Delete Program"
+msgstr "Удалить программу"
+
+#: NSIS_Installer.nsi:437
+msgid "Delete Settings"
+msgstr "Удалить параметры"
+
+#: NSIS_Installer.nsi:439
+msgid ""
+"This system requires the Microsoft runtime library VC90 to be installed "
+"first. Do you want to do that now?"
+msgstr ""
+"Для этой системы сначала необходимо установить библиотеку времени выполнения "
+"Microsoft VC90. Сделать это сейчас?"
+
+#: NSIS_Installer.nsi:441
+msgid "Downloading Microsoft runtime installer..."
+msgstr "Загрузка программы установки Microsoft..."
+
+#: NSIS_Installer.nsi:443
+msgid "Download error, retry?"
+msgstr "Ошибка загрузки. Повторить попытку?"
+
+#: NSIS_Installer.nsi:445
+msgid "Cannot install without runtime library, retry?"
+msgstr ""
+"Не удаётся выполнить установку без библиотеки времени выполнения. Повторить "
+"попытку?"
+
+#: NSIS_Installer.nsi:447
+msgid ""
+"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
+"the previous version or `Cancel` to cancel this upgrade."
+msgstr ""
+"Нельзя перезаписать существующее установленное приложение. \\n\\nЧтобы "
+"удалить предыдущую версию, нажмите кнопку «ОК». Чтобы отменить обновление, "
+"нажмите кнопку «Отмена»."
+
+#: NSIS_Installer.nsi:449
+msgid "Your settings and data will be preserved."
+msgstr "Ваши параметры и данные будут сохранены."
+
+#~ msgid "Start SABnzbd (hidden)"
+#~ msgstr "Запустить SABnzbd (в фоновом режиме)"
+
+#~ msgid ""
+#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#~ msgstr ""
+#~ "                  >>>> ВНИМАНИЕ! <<<<\\r\\n\\r\\nСначала прочтите заметки о "
+#~ "выпуске или посетите веб-сайт http://wiki.sabnzbd.org/introducing-0-6-0."
+
+#~ msgid "Delete Cache"
+#~ msgstr "РЈРґР°Р»РёС‚СЊ РєСЌС€"
+
+#~ msgid "Delete Logs"
+#~ msgstr "РЈРґР°Р»РёС‚СЊ РѕС‚С‡РµС‚С‹"
