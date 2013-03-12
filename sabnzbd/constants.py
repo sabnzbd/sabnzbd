@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-CONFIG_VERSION = 20
+CONFIG_VERSION = 19
 
 QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 2
@@ -53,13 +53,14 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME  = 'totals9.sab'
+BYTES_FILE_NAME_OLD  = 'totals9.sab'
+BYTES_FILE_NAME  = 'totals10.sab'
 QUEUE_FILE_TMPL  = 'queue%s.sab'
 QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
-SCAN_FILE_NAME    = 'watched_data.sab'
+SCAN_FILE_NAME    = 'watched_data2.sab'
 TERM_FLAG_FILE    = 'running.sab'
 FUTURE_Q_FOLDER   = 'future'
 JOB_ADMIN = '__ADMIN__'

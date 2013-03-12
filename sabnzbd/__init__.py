@@ -279,8 +279,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     sabnzbd.api.clear_trans_cache()
 
     ### Check for old queue (when a new queue is not present)
-    if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
-        OLD_QUEUE = bool(misc.globber(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?'))
+    if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
+        OLD_QUEUE = bool(misc.globber(cfg.admin_dir.get_path(), QUEUE_FILE_TMPL % '?'))
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 

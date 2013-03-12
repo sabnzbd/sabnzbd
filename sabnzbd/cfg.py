@@ -204,7 +204,7 @@ web_dir2 = OptionStr('misc', 'web_dir2')
 web_color = OptionStr('misc', 'web_color', '')
 web_color2 = OptionStr('misc', 'web_color2')
 cleanup_list = OptionList('misc', 'cleanup_list')
-warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
+warned_old_queue = OptionBool('misc', 'warned_old_queue9', False)
 
 log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
 log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)

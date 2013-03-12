@@ -133,8 +133,8 @@ def MSG_OTHER():
 
 def MSG_OLD_QUEUE():
     return Ta(r'''
-    SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
-    Both queue and history will be ignored and may get lost!<br><br>
+    SABnzbd detected a queue from an older release.<br><br>
+    You can convert the queue by clicking "Repair" in Status-&gt;"Queue Repair".<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
     Click OK to proceed to SABnzbd''') + \
     ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % Ta('OK'))
