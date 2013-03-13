@@ -542,7 +542,6 @@ class NzbObject(TryList):
 
         filename = platform_encode(filename)
         nzbname = platform_encode(nzbname)
-        nzbname = sanitize_foldername(nzbname)
 
         if pp is None:
             r = u = d = None
@@ -555,6 +554,8 @@ class NzbObject(TryList):
         else:
             work_name = filename
 
+        nzbname = sanitize_foldername(nzbname)
+
         # If non-future: create safe folder name stripped from ".nzb" and junk
         if nzb and work_name and work_name.lower().endswith('.nzb'):
             dname, ext = os.path.splitext(work_name) # Used for folder name for final unpack
@@ -562,6 +563,9 @@ class NzbObject(TryList):
                 work_name = dname
             work_name = sanitize_foldername(work_name)
         work_name, password = scan_password(work_name)
+        if not work_name:
+            # In case only /password was entered for nzbname
+            work_name = filename
 
         self.work_name = work_name
         self.final_name = work_name
@@ -1582,9 +1586,10 @@ def split_filename(name):
         return name.strip(), ""
 
 
-RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')
-RE_PASSWORD2 = re.compile(r'(.+){{([^{}]+)}}$')
-RE_PASSWORD3 = re.compile(r'(.+)\s+password\s*=\s*(.+)$', re.I)
+RE_PASSWORD1 = re.compile(r'([^/\\]*)[/\\](.+)')                    # name / PASSWORD
+RE_PASSWORD2 = re.compile(r'(.*){{([^{}]+)}}$')                     # name{{PASSWORD}}
+RE_PASSWORD3 = re.compile(r'(.*)\s+password\s*=\s*(.+)$', re.I)     # name password = PASSWORD
+RE_PASSWORD4 = re.compile(r'^(\s*)password\s*=\s*(.+)$', re.I)      # password = PASSWORD
 def scan_password(name):
     """ Get password (if any) from the title
     """
@@ -1596,6 +1601,8 @@ def scan_password(name):
         m = RE_PASSWORD2.search(name)
     if not m:
         m = RE_PASSWORD3.search(name)
+    if not m:
+        m = RE_PASSWORD4.search(name)
     if m:
         return m.group(1).strip('. '), m.group(2).strip()
     else:
