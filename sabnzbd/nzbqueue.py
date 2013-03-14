@@ -79,6 +79,7 @@ class NzbQueue(TryList):
                     nzo_ids = []
                 if nzo_ids:
                     logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+                    nzo_ids = []
             else:
                 try:
                     queue_vers, nzo_ids, dummy = data
