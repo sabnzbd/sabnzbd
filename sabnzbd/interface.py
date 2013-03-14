@@ -1388,7 +1388,9 @@ class ConfigGeneral(object):
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_range'] = cfg.local_range()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
-
+        conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
+        conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
+        
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
