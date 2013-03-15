@@ -351,6 +351,11 @@ class NzbQueue(TryList):
         if nzo.nzo_id:
             nzo.deleted = False
             priority = nzo.priority
+            if sabnzbd.scheduler.analyse(False, priority):
+                nzo.status = Status.PAUSED
+            else:
+                nzo.status = Status.QUEUED
+
             self.__nzo_table[nzo.nzo_id] = nzo
             if priority > HIGH_PRIORITY:
                 #Top and repair priority items are added to the top of the queue
@@ -606,6 +611,10 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
+            if sabnzbd.scheduler.analyse(False, priority):
+                nzo.status = Status.PAUSED
+            else:
+                nzo.status = Status.QUEUED
             nzo.save_to_disk()
 
             if nzo_id_pos1 != -1:

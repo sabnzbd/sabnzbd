@@ -293,8 +293,9 @@ def sort_schedules(all_events, now=None):
     return events
 
 
-def analyse(was_paused=False):
+def analyse(was_paused=False, priority=None):
     """ Determine what pause/resume state we would have now.
+        'priority': evaluate only effect for given priority, return True for paused
     """
     global PP_PAUSE_EVENT
     PP_PAUSE_EVENT = False
@@ -306,7 +307,8 @@ def analyse(was_paused=False):
     servers = {}
 
     for ev in sort_schedules(all_events=True):
-        logging.debug('Schedule check result = %s', ev)
+        if priority is None:
+            logging.debug('Schedule check result = %s', ev)
         action = ev[1]
         try:
             value = ev[2]
@@ -351,6 +353,17 @@ def analyse(was_paused=False):
             except:
                 logging.warning(Ta('Schedule for non-existing server %s'), value)
 
+    # Special case, a priority was passed, so evaluate only that and return state
+    if priority == LOW_PRIORITY:
+        return pause_low
+    if priority == NORMAL_PRIORITY:
+        return pause_normal
+    if priority == HIGH_PRIORITY:
+        return pause_high
+    if priority is not None:
+        return False
+
+    # Normal analysis
     if not was_paused:
         if paused_all:
             sabnzbd.pause_all()
@@ -358,19 +371,6 @@ def analyse(was_paused=False):
             sabnzbd.unpause_all()
         sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
-    if pause_low:
-        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(LOW_PRIORITY)
-    else:
-        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(LOW_PRIORITY)
-    if pause_normal:
-        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(NORMAL_PRIORITY)
-    else:
-        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(NORMAL_PRIORITY)
-    if pause_high:
-        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(HIGH_PRIORITY)
-    else:
-        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(HIGH_PRIORITY)
-                                                   
     PostProcessor.do.paused = pause_post
     if speedlimit:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
