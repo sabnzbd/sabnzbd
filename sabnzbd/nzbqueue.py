@@ -860,6 +860,19 @@ class NzbQueue(TryList):
         for nzo in empty:
             self.end_job(nzo)
 
+    @synchronized(NZBQUEUE_LOCK)
+    def pause_on_prio(self, priority):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.priority == priority:
+                nzo.pause()
+
+    @synchronized(NZBQUEUE_LOCK)
+    def resume_on_prio(self, priority):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.priority == priority:
+                # Don't use nzo.resume() to avoid resetting job warning flags
+                nzo.status = Status.QUEUED
+
     def get_urls(self):
         """ Return list of future-types needing URL """
         lst = []

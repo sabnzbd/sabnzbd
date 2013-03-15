@@ -34,6 +34,7 @@ import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.postproc import PostProcessor
+from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
 __SCHED = None  # Global pointer to Scheduler instance
@@ -120,6 +121,24 @@ def init():
             rss_planned = True
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
+        elif action_name == 'pause_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'pause_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'pause_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [HIGH_PRIORITY]
+        elif action_name == 'resume_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'resume_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'resume_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [HIGH_PRIORITY]
         else:
             logging.warning(Ta('Unknown action: %s'), action_name)
             continue
@@ -282,6 +301,7 @@ def analyse(was_paused=False):
     paused = None
     paused_all = False
     pause_post = False
+    pause_low = pause_normal = pause_high = False
     speedlimit = None
     servers = {}
 
@@ -306,8 +326,20 @@ def analyse(was_paused=False):
         elif action == 'resume_post':
             pause_post = False
             PP_PAUSE_EVENT = True
-        elif action == 'speedlimit' and value!=None:
+        elif action == 'speedlimit' and value != None:
             speedlimit = int(ev[2])
+        elif action == 'pause_all_low':
+            pause_low = True
+        elif action == 'pause_all_normal':
+            pause_normal = True
+        elif action == 'pause_all_high':
+            pause_high = True
+        elif action == 'resume_all_low':
+            pause_low = False
+        elif action == 'resume_all_normal':
+            pause_normal = False
+        elif action == 'resume_all_high':
+            pause_high = False
         elif action == 'enable_server':
             try:
                 servers[value] = 1
@@ -326,6 +358,19 @@ def analyse(was_paused=False):
             sabnzbd.unpause_all()
         sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
+    if pause_low:
+        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(LOW_PRIORITY)
+    else:
+        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(LOW_PRIORITY)
+    if pause_normal:
+        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(NORMAL_PRIORITY)
+    else:
+        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(NORMAL_PRIORITY)
+    if pause_high:
+        sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio(HIGH_PRIORITY)
+    else:
+        sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio(HIGH_PRIORITY)
+                                                   
     PostProcessor.do.paused = pause_post
     if speedlimit:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)

@@ -1063,7 +1063,7 @@ class NzbObject(TryList):
             self.save_to_disk()
 
     def pause(self):
-        self.status = 'Paused'
+        self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
         if self.nzo_id:
             sabnzbd.save_data(self, self.nzo_id, self.workpath)

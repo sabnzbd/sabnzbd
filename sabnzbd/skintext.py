@@ -63,6 +63,12 @@ SKIN_TEXT = {
     'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
     'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
     'sch-remove_failed'  : TT('Remove failed jobs'), #: Config->Scheduler
+    'sch-pause_all_low'  : TT('Pause low prioirty jobs'), #: Config->Scheduler
+    'sch-pause_all_normal':TT('Pause normal prioirty jobs'), #: Config->Scheduler
+    'sch-pause_all_high' : TT('Pause high prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_low' : TT('Resume low prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_normal':TT('Resume normal prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_high': TT('Resume high prioirty jobs'), #: Config->Scheduler
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
