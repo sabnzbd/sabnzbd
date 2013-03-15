@@ -32,6 +32,7 @@ import time
 import datetime
 import zlib
 import logging
+import sys
 
 import sabnzbd
 import sabnzbd.cfg
@@ -76,16 +77,17 @@ def convert_search(search):
 
 class HistoryDB(object):
     def __init__(self, db_path):
+        self.db_path = db_path
+        self.con = self.c = None
+        self.connect()
+
+    def connect(self):
         global _DONE_CLEANING
-        #Thread.__init__(self)
-        if not os.path.exists(db_path):
+        if not os.path.exists(self.db_path):
             create_table = True
         else:
             create_table = False
-        if sabnzbd.WIN32 and isinstance(db_path, str):
-            self.con = sqlite3.connect(db_path.decode('cp1252').encode('utf-8'))
-        else:
-            self.con = sqlite3.connect(db_path)
+        self.con = sqlite3.connect(self.db_path)
         self.con.row_factory = dict_factory
         self.c = self.con.cursor()
         if create_table:
@@ -96,7 +98,7 @@ class HistoryDB(object):
             # http://www.sqlite.org/lang_vacuum.html
             _DONE_CLEANING = True
             self.execute('VACUUM')
-
+        
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
         try:
@@ -108,13 +110,28 @@ class HistoryDB(object):
                 self.save()
             return True
         except:
-            logging.error(Ta('SQL Command Failed, see log'))
-            logging.debug("SQL: %s" , command)
-            logging.info("Traceback: ", exc_info = True)
-            try:
-                self.con.rollback()
-            except:
-                logging.debug("Rollback Failed:", exc_info = True)
+            error = str(sys.exc_value)
+            if 'readonly' in error:
+                logging.error(Ta('Cannot write to History database, check access rights!'))
+                # Report back success, because there's no recovery possible
+                return True
+            elif 'not a database' in error or 'malformed' in error:
+                logging.error(Ta('Damaged History database, created empty replacement'))
+                logging.info("Traceback: ", exc_info = True)
+                self.close()
+                try:
+                    os.remove(self.db_path)
+                except:
+                    pass
+                self.connect()
+            else:
+                logging.error(Ta('SQL Command Failed, see log'))
+                logging.debug("SQL: %s" , command)
+                logging.info("Traceback: ", exc_info = True)
+                try:
+                    self.con.rollback()
+                except:
+                    logging.debug("Rollback Failed:", exc_info = True)
             return False
 
     def create_history_db(self):
