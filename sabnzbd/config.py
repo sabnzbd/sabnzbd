@@ -802,8 +802,9 @@ def save_config(force=False):
         shutil.copyfile(filename, bakname)
     except:
         # Something wrong with the backup,
-        logging.warning(Ta('Cannot create backup file for %s'), bakname)
+        logging.error(Ta('Cannot create backup file for %s'), bakname)
         logging.info("Traceback: ", exc_info = True)
+        return res
 
     # Write new config file
     try:
@@ -813,6 +814,12 @@ def save_config(force=False):
     except:
         logging.error(Ta('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info = True)
+        try:
+            os.remove(filename)
+        except:
+            pass
+        # Restore INI file from backup
+        sabnzbd.misc.renamer(bakname, filename)
 
     return res
 
