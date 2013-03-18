@@ -579,12 +579,17 @@ class Part(Entity):
                 # No more data--illegal end of headers
                 raise EOFError("Illegal end of headers.")
             
-            if line == ntob('\r\n'):
+            ### PATCH
+            # Do not enforce strict adherence to CRLF rule
+            # This would break some (badly written) third-party tools
+            if line == ntob('\n'):
                 # Normal end of headers
                 break
             if not line.endswith(ntob('\r\n')):
-                raise ValueError("MIME requires CRLF terminators: %r" % line)
-            
+                #raise ValueError("MIME requires CRLF terminators: %r" % line)
+                line = line.replace(ntob('\n'), ntob('\r\n'))
+            ### END OF PATCH
+
             if line[0] in ntob(' \t'):
                 # It's a continuation line.
                 v = line.strip().decode('ISO-8859-1')
