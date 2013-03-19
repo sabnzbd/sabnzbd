@@ -582,7 +582,7 @@ class Part(Entity):
             ### PATCH
             # Do not enforce strict adherence to CRLF rule
             # This would break some (badly written) third-party tools
-            if line == ntob('\n'):
+            if line == ntob('\r\n') or line == ntob('\n'):
                 # Normal end of headers
                 break
             if not line.endswith(ntob('\r\n')):
