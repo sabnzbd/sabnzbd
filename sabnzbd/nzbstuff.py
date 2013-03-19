@@ -866,7 +866,9 @@ class NzbObject(TryList):
         self.reset_try_list()
 
     def postpone_pars(self, nzf, parset):
-        """ Move all vol-par files matching 'parset' to the extrapars table """
+        """ Move all vol-par files matching 'parset' to the extrapars table
+        """
+        postpone = cfg.quick_check() or not cfg.enable_all_par()
         self.partable[parset] = nzf
         self.extrapars[parset] = []
         nzf.extrapars = self.extrapars[parset]
@@ -879,7 +881,7 @@ class NzbObject(TryList):
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
-                    if not self.precheck:
+                    if postpone and not self.precheck:
                         self.files.remove(xnzf)
 
     def handle_par2(self, nzf, file_done):

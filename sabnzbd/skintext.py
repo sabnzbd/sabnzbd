@@ -372,6 +372,8 @@ SKIN_TEXT = {
     'processingSwitches' : TT('Processing Switches'),
     'opt-quick_check' : TT('Enable Quick Check'),
     'explain-quick_check' : TT('Skip par2 checking when files are 100% valid.'),
+    'opt-enable_all_par' : TT('Download all par2 files'),
+    'explain-enable_all_par' : TT('This prevents multiple repair runs. QuickCheck on: download all par2 files when needed. QuickCheck off: always download all par2 files.'),
     'opt-enable_unrar' : TT('Enable Unrar'),
     'explain-enable_unrar' : TT('Enable built-in unrar functionality.'),
     'opt-enable_unzip' : TT('Enable Unzip'),

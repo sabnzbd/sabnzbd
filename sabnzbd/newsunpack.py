@@ -985,6 +985,17 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         pars = setpars
         result = True
 
+    if not result and cfg.enable_all_par():
+        # Download all par2 files that haven't been downloaded yet
+        readd = False
+        for extrapar in parfile_nzf.extrapars[:]:
+            if extrapar in nzo.files:
+                nzo.add_parfile(extrapar)
+                parfile_nzf.extrapars.remove(extrapar)                
+                readd = True
+        if readd:
+            return readd, result
+
     if not result:
         flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
