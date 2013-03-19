@@ -462,6 +462,12 @@ class MainPage(object):
         retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def robots_txt(self):
+        """ Keep web crawlers out """
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        return 'User-agent: *\nDisallow: /\n'
+
 
 #------------------------------------------------------------------------------
 class NzoPage(object):
