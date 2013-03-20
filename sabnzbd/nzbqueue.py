@@ -571,7 +571,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_queue(self, field, reverse=None):
-        if isinstance(reverse, str):
+        if isinstance(reverse, str) or isinstance(reverse, unicode):
             if reverse.lower() == 'desc':
                 reverse = True
             else:
