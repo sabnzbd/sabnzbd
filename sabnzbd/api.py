@@ -235,9 +235,9 @@ def _api_queue_priority(output, value, kwargs):
 def _api_queue_sort(output, value, kwargs):
     """ API: accepts output, sort, dir """
     sort = kwargs.get('sort')
-    direction = kwargs.get('dir', '')
+    reverse = kwargs.get('dir', '') == 'desc'
     if sort:
-        sort_queue(sort, direction)
+        sort_queue(sort, reverse)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
