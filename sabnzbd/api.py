@@ -285,10 +285,10 @@ def _api_translate(name, output, kwargs):
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
     if hasattr(name, 'getvalue'):
         #Side effect of next line is that attribute .value is created
@@ -322,10 +322,10 @@ def _api_retry(name, output, kwargs):
     """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB) """
     value = kwargs.get('value')
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
 
     if retry_job(value, name):

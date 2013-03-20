@@ -470,7 +470,7 @@ def process_job(nzo):
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
             Bookmarks.do.del_bookmark(msgid)
-        elif all_ok and isinstance(nzo.url, str):
+        elif all_ok and isinstance(nzo.url, basestring):
             sabnzbd.proxy_rm_bookmark(nzo.url)
 
         ## Force error for empty result

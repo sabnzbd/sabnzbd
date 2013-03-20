@@ -160,7 +160,7 @@ LOCK = threading.RLock()
 class RSSQueue(object):
     def __init__(self):
         def check_str(p):
-            return p is None or p == '' or isinstance(p, str)
+            return p is None or p == '' or isinstance(p, basestring)
         def check_int(p):
             try:
                 int(p)
