@@ -658,10 +658,10 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
 
         elif 'ncrypted file' in line and 'CRC failed' in line:
             # unrar 4.x syntax
-            m = re.search('encrypted file (.+)\. Corrupt file', line)
+            m = re.search(r'encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
-                m = re.search('Encrypted file:  CRC failed in (.+) \(password', line)
+                m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
             if m:
                 filename = TRANS(m.group(1)).strip()
             else:
@@ -1100,10 +1100,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     return readd, result
 
 
-_RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
-_RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
-_RE_LOADING_PAR2 = re.compile('Loading "([^"]+)"\.')
-_RE_LOADED_PAR2 = re.compile('Loaded (\d+) new packets')
+_RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
+_RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
+_RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
+_RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
@@ -1638,7 +1638,7 @@ def unrar_check(rar):
             version = subprocess.Popen(rar, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
         except:
             return False
-        m = re.search("RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
+        m = re.search(r"RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
         if m:
             return (int(m.group(1)), int(m.group(2))) >= (3, 80)
     return False
