@@ -26,6 +26,7 @@ import subprocess
 import logging
 from time import time
 import binascii
+import shutil
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
@@ -289,7 +290,6 @@ def get_seq_number(name):
         match, set, num = match_ts(name)
     else:
         num = tail[1:]
-    assert isinstance(num, str)
     if num.isdigit():
         return int(num)
     else:
@@ -300,6 +300,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         when succesful, delete originals
     """
     newfiles = []
+    bufsize = 24*1024*1024
 
     # Create matching sets from the list of files
     joinable_sets = {}
@@ -330,6 +331,11 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 # done, go to next set
                 continue
 
+            # Only join when there is more than one file
+            size = len(current)
+            if size < 2:
+                continue
+
             # Prepare joined file
             filename = joinable_set
             if workdir_complete:
@@ -338,7 +344,6 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
             joined_file = open(filename, 'ab')
 
             # Join the segments
-            size = len(current)
             n = get_seq_number(current[0])
             seq_error = n > 1
             for joinable in current:
@@ -348,7 +353,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 logging.debug("Processing %s", joinable)
                 nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
                 f = open(joinable, 'rb')
-                joined_file.write(f.read())
+                shutil.copyfileobj(f, joined_file, bufsize)
                 f.close()
                 if delete:
                     logging.debug("Deleting %s", joinable)
