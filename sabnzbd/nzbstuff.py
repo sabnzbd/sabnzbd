@@ -60,13 +60,8 @@ RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$') # Test reasonably sized extension at 
 ################################################################################
 # Article                                                                      #
 ################################################################################
-ArticleMapper = (
-    # Pickle name  Internal name
-    ('article',   'article'),
-    ('art_id',    'art_id'),
-    ('bytes',     'bytes'),
-    ('partnum',   'partnum'),
-    ('nzf',       'nzf')
+ArticleSaver = (
+    'article', 'art_id' , 'bytes', 'partnum', 'nzf'
 )
 
 class Article(TryList):
@@ -104,20 +99,20 @@ class Article(TryList):
         return self.art_id
 
     def __getstate__(self):
-        """ Save to pickle file, translating attributes """
+        """ Save to pickle file, selecting attributes """
         dict_ = {}
-        for tup in ArticleMapper:
-            dict_[tup[0]] = self.__dict__[tup[1]]
+        for item in ArticleSaver:
+            dict_[item] = self.__dict__[item]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Load from pickle file, translating attributes """
-        for tup in ArticleMapper:
+        """ Load from pickle file, selecting attributes """
+        for item in ArticleSaver:
             try:
-                self.__dict__[tup[1]] = dict_[tup[0]]
+                self.__dict__[item] = dict_[item]
             except KeyError:
                 # Handle new attributes
-                self.__dict__[tup[1]] = None
+                self.__dict__[item] = None
         TryList.__init__(self)
         self.fetcher = None
         self.allow_fill_server = False
@@ -131,31 +126,11 @@ class Article(TryList):
 ################################################################################
 # NzbFile                                                                      #
 ################################################################################
-NzbFileMapper = (
-    # Pickle name                    Internal name
-    ('_NzbFile__date',               'date'),
-    ('_NzbFile__subject',            'subject'),
-    ('_NzbFile__filename',           'filename'),
-    ('_NzbFile__type',               'type'),
-    ('_NzbFile__ispar2file',         'is_par2'),
-    ('_NzbFile__vol',                'vol'),
-    ('_NzbFile__blocks',             'blocks'),
-    ('_NzbFile__setname',            'setname'),
-    ('_NzbFile__extrapars',          'extrapars'),
-    ('_NzbFile__initial_article',    'initial_article'),
-    ('_NzbFile__articles',           'articles'),
-    ('_NzbFile__decodetable',        'decodetable'),
-    ('_NzbFile__bytes',              'bytes'),
-    ('_NzbFile__bytes_left',         'bytes_left'),
-    ('_NzbFile__article_count',      'article_count'),
-    ('nzo',                          'nzo'),
-    ('nzf_id',                       'nzf_id'),
-    ('deleted',                      'deleted'),
-    ('valid',                        'valid'),
-    ('import_finished',              'import_finished'),
-    ('md5sum',                       'md5sum'),
-    ('valid',                        'valid'),
-    ('completed',                    'completed')
+NzbFileSaver = (
+    'date', 'subject', 'filename', 'type', 'is_par2', 'vol', 'blocks', 'setname',
+    'extrapars', 'initial_article', 'articles', 'decodetable', 'bytes', 'bytes_left',
+    'article_count', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished',
+    'md5sum', 'valid', 'completed'
 )
 
 
@@ -288,20 +263,20 @@ class NzbFile(TryList):
             pass
 
     def __getstate__(self):
-        """ Save to pickle file, translating attributes """
+        """ Save to pickle file, selecting attributes """
         dict_ = {}
-        for tup in NzbFileMapper:
-            dict_[tup[0]] = self.__dict__[tup[1]]
+        for item in NzbFileSaver:
+            dict_[item] = self.__dict__[item]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Load from pickle file, translating attributes """
-        for tup in NzbFileMapper:
+        """ Load from pickle file, selecting attributes """
+        for item in NzbFileSaver:
             try:
-                self.__dict__[tup[1]] = dict_[tup[0]]
+                self.__dict__[item] = dict_[item]
             except KeyError:
                 # Handle new attributes
-                self.__dict__[tup[1]] = None
+                self.__dict__[item] = None
         TryList.__init__(self)
 
     def __repr__(self):
@@ -480,57 +455,14 @@ class NzbParser(xml.sax.handler.ContentHandler):
 ################################################################################
 # NzbObject                                                                    #
 ################################################################################
-NzbObjectMapper = (
-    # Pickle name                    Internal name
-    ('_NzbObject__filename',         'filename'),       # Original NZB name
-    ('_NzbObject__dirname',          'work_name'),
-    ('_NzbObject__original_dirname', 'final_name'),
-    ('_NzbObject__created',          'created'),
-    ('_NzbObject__bytes',            'bytes'),
-    ('_NzbObject__bytes_downloaded', 'bytes_downloaded'),
-    ('_NzbObject__repair',           'repair'),
-    ('_NzbObject__unpack',           'unpack'),
-    ('_NzbObject__delete',           'delete'),
-    ('_NzbObject__script',           'script'),
-    ('_NzbObject__msgid',            'msgid'),
-    ('_NzbObject__cat',              'cat'),
-    ('_NzbObject__url',              'url'),
-    ('_NzbObject__group',            'groups'),
-    ('_NzbObject__avg_date',         'avg_date'),
-    ('_NzbObject__dirprefix',        'dirprefix'),
-    ('_NzbObject__partable',         'partable'),
-    ('_NzbObject__extrapars',        'extrapars'),
-    ('md5packs',                     'md5packs'),
-    ('_NzbObject__files',            'files'),
-    ('_NzbObject__files_table',      'files_table'),
-    ('_NzbObject__finished_files',   'finished_files'),
-    ('_NzbObject__status',           'status'),
-    ('_NzbObject__avg_bps_freq',     'avg_bps_freq'),
-    ('_NzbObject__avg_bps_total',    'avg_bps_total'),
-    ('_NzbObject__priority',         'priority'),
-    ('_NzbObject__dupe_table',       'dupe_table'),
-    ('saved_articles',               'saved_articles'),
-    ('nzo_id',                       'nzo_id'),
-    ('futuretype',                   'futuretype'),
-    ('deleted',                      'deleted'),
-    ('parsed',                       'parsed'),
-    ('action_line',                  'action_line'),
-    ('unpack_info',                  'unpack_info'),
-    ('fail_msg',                     'fail_msg'),
-    ('nzo_info',                     'nzo_info'),
-    ('extra1',                       'custom_name'),   # Job name set by API &nzbname
-    ('extra2',                       'password'),      # Password for rar files
-    ('extra3',                       'next_save'),     # Earliest next save time of NZO
-    ('extra4',                       'save_timeout'),  # Save timeout for this NZO
-    ('extra5',                       'new_caching'),   # New style caching
-    ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
-    ('duplicate',                    'duplicate'),     # Was detected as a duplicate
-    ('oversized',                    'oversized'),     # Was detected as oversized
-    ('create_group_folder',          'create_group_folder'),
-    ('precheck',                     'precheck'),
-    ('incomplete',                   'incomplete'),    # Was detected as incomplete
-    ('reuse',                        'reuse'),
-    ('meta',                         'meta')           # Meta-date from 1.1 type NZB
+NzbObjectSaver = (
+    'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'repair',
+    'unpack', 'delete', 'script', 'msgid', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
+    'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
+    'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
+    'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
+    'custom_name', 'password', 'next_save', 'save_timeout', 'new_caching', 'encrypted',
+    'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta'
 )
 
 class NzbObject(TryList):
@@ -1448,20 +1380,20 @@ class NzbObject(TryList):
                 nzf_ids.remove(nzf_id)
 
     def __getstate__(self):
-        """ Save to pickle file, translating attributes """
+        """ Save to pickle file, selecting attributes """
         dict_ = {}
-        for tup in NzbObjectMapper:
-            dict_[tup[0]] = self.__dict__[tup[1]]
+        for item in NzbObjectSaver:
+            dict_[item] = self.__dict__[item]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Load from pickle file, translating attributes """
-        for tup in NzbObjectMapper:
+        """ Load from pickle file, selecting attributes """
+        for item in NzbObjectSaver:
             try:
-                self.__dict__[tup[1]] = dict_[tup[0]]
+                self.__dict__[item] = dict_[item]
             except KeyError:
                 # Handle new attributes
-                self.__dict__[tup[1]] = None
+                self.__dict__[item] = None
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
