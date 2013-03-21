@@ -2,10 +2,15 @@ SABnzbd - The automated Usenet download tool
 ============================================
 
 # WARNING
+
+!!! CURRENTLY THIS BRANCH IS NOT STABLE, DUE TO THE TRANSITION TO UNICODE !!!
+
 This Unicode release is not compatible with 0.7.x queues!
 
 There is also an issue with upgrading of the "sabnzbd.ini" file.
 Make sure that you have a backup!
+
+Saved queues may not be compatible after updates.
 
 ----
 
