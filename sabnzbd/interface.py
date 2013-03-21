@@ -1690,7 +1690,7 @@ class ConfigRss(object):
 
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
-            rss[feed]['link'] = urllib.quote_plus(feed)
+            rss[feed]['link'] = urllib.quote_plus(feed.encode('utf-8'))
             rss[feed]['baselink'] = get_base_url(rss[feed]['uri'])
 
         active_feed = kwargs.get('feed', '')
