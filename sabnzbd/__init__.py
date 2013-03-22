@@ -1105,7 +1105,3 @@ def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
 def proxy_build_history():
     """ Proxy to let nzbqueue call api """
     return sabnzbd.api.build_history()
-
-def proxy_rm_bookmark(url):
-    """ Proxy to urlgrabber rm_bookmark """
-    return sabnzbd.urlgrabber.URLGrabber.do.rm_bookmark(url)
