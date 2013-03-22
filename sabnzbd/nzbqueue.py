@@ -496,6 +496,9 @@ class NzbQueue(TryList):
             # One or both jobs missing
             return (-1, 0)
 
+        if nzo1 == nzo2:
+            return (-1, 0)
+
         #get the priorities of the two items
         nzo1_priority = nzo1.priority
         nzo2_priority = nzo2.priority

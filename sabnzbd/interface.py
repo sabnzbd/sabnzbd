@@ -604,13 +604,22 @@ class NzoPage(object):
             NzbQueue.do.switch(nzo_id, index)
         if name != None:
             NzbQueue.do.change_name(nzo_id, special_fixer(name))
-        if cat != None:
-            NzbQueue.do.change_cat(nzo_id,cat)
-        if script != None:
-            NzbQueue.do.change_script(nzo_id,script)
-        if pp != None:
-            NzbQueue.do.change_opts(nzo_id,pp)
-        if priority != None and nzo and nzo.priority != int(priority):
+
+        if cat != None and nzo.cat != cat and not (nzo.cat == '*' and cat == 'Default'):
+            NzbQueue.do.change_cat(nzo_id, cat)
+            # Category changed, so make sure "Default" attributes aren't set again
+            if script == 'Default':
+                script = None
+            if priority == 'Default':
+                priority = None
+            if pp == 'Default':
+                pp = None
+            
+        if script is not None and nzo.script != script:
+            NzbQueue.do.change_script(nzo_id, script)
+        if pp is not None and nzo.pp != pp:
+            NzbQueue.do.change_opts(nzo_id, pp)
+        if priority is not None and nzo.priority != int(priority):
             NzbQueue.do.set_priority(nzo_id, priority)
 
         raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
