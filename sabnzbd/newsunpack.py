@@ -251,7 +251,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             nzo.set_action_line()
 
 
-    if rerun:
+    if rerun and (cfg.enable_recursive() or new_ts or new_joins):
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
                             xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
