@@ -346,14 +346,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     flagRepair, flagUnpack, flagDelete = nzo.repair_opts
     nzo_info = decode_factory(nzo.nzo_info)
 
-    # Get the url and newzbin msgid
-    report = decode_factory(nzo_info.get('msgid', ''))
-    if report:
-        url = format_source_url(report)
-    else:
-        url = decode_factory(nzo.url)
-
-    #group = nzo.group
+    url = decode_factory(nzo.url)
 
     completed = int(time.time())
     name = decode_factory(nzo.final_name)
@@ -393,7 +386,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
-    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path, \
+    return (completed, name, nzb_name, category, pp, script, '', url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
             fail_message, url_info, bytes,)
 

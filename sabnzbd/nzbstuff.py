@@ -49,7 +49,6 @@ from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name potterns
-RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
@@ -457,7 +456,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 ################################################################################
 NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'repair',
-    'unpack', 'delete', 'script', 'msgid', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
+    'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
@@ -466,7 +465,7 @@ NzbObjectSaver = (
 )
 
 class NzbObject(TryList):
-    def __init__(self, filename, msgid, pp, script, nzb = None,
+    def __init__(self, filename, pp, script, nzb = None,
                  futuretype = False, cat = None, url=None,
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
                  reuse=False, dup_check=True):
@@ -510,10 +509,9 @@ class NzbObject(TryList):
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
         self.script = script        # External script for this set
-        self.msgid = '0'            # Newzbin msgid
-        self.cat = cat              # Newzbin category
+        self.cat = cat              # Indexer category
         if url:
-            self.url = str(url)     # Either newzbin-id or source URL
+            self.url = str(url)     # Source URL
         else:
             self.url = filename
         self.groups = []
@@ -572,7 +570,7 @@ class NzbObject(TryList):
         else:
             self.nzo_info = {}
 
-        # Temporary store for custom foldername - needs to be stored because of url/newzbin fetching
+        # Temporary store for custom foldername - needs to be stored because of url fetching
         self.custom_name = nzbname
 
         self.password = password
@@ -585,10 +583,8 @@ class NzbObject(TryList):
 
         self.create_group_folder = cfg.create_group_folders()
 
-        # Remove leading msgid_dddd and trailing .nzb
-        self.work_name, self.msgid = split_filename(self.work_name)
-        if msgid:
-            self.msgid = msgid
+        # Remove trailing .nzb
+        self.work_name = split_filename(self.work_name)
 
         if nzb is None:
             # This is a slot for a future NZB, ready now
@@ -623,7 +619,7 @@ class NzbObject(TryList):
         self.created = True
 
         # Must create a lower level XML parser because we must
-        # disable the reading of the DTD file from newzbin.com
+        # disable the reading of the DTD file from an external website
         # by setting "feature_external_ges" to 0.
 
         if nzb and '<nzb' in nzb:
@@ -1309,7 +1305,7 @@ class NzbObject(TryList):
 
         return (self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name_pw, {},
-                self.msgid, self.cat, self.url,
+                '', self.cat, self.url,
                 bytes_left_all, self.bytes, avg_date,
                 finished_files, active_files, queued_files, self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', []))
@@ -1502,22 +1498,18 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
 #-------------------------------------------------------------------------------
 
 def split_filename(name):
-    """ Isolate newzbin msgid from filename and remove ".nzb"
-        Return (nice-name, msg-id)
+    """ Remove ".nzb"
     """
     name = name.strip()
     if name.find('://') < 0:
-        m = RE_NEWZBIN.match(name)
-        if (m):
-            return m.group(2).rstrip('.').strip(), m.group(1)
         m = RE_NORMAL.match(name)
         if (m):
-            return m.group(1).rstrip('.').strip(), ""
+            return m.group(1).rstrip('.').strip(), ''
         else:
-            return name.strip(), ""
-        return "", ""
+            return name.strip()
+        return ''
     else:
-        return name.strip(), ""
+        return name.strip()
 
 
 RE_PASSWORD1 = re.compile(r'([^/\\]*)[/\\](.+)')                    # name / PASSWORD

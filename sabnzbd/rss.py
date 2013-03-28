@@ -207,7 +207,6 @@ class RSSQueue(object):
                                 if item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'):
                                     item['status'] = 'X'
                                 if not isinstance(item.get('url'), unicode): item['url'] = ''
-                                item['url'] = item['url'].replace('www.newzbin.com', cfg.newzbin_url())
                                 if not check_str(item.get('cat')): item['cat'] = ''
                                 if not check_str(item.get('orgcat')): item['orgcat'] = ''
                                 if not check_str(item.get('pp')): item['pp'] = '3'
@@ -232,7 +231,7 @@ class RSSQueue(object):
         #               '*' added means: from the initial batch
         #               '-' added to 'D' means downloaded, but not displayed anymore
         #           title : Title
-        #           url : URL or MsgId
+        #           url : URL
         #           cat : category
         #           orgcat : category as read from feed
         #           pp : pp
@@ -570,8 +569,6 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx|bin2|xxx2)\.[\w]+/browse/post/(\d+)', re.I)
-
 def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
@@ -585,41 +582,23 @@ def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star
         nzbname = None
     else:
         nzbname = sanitize_foldername(title)
-    m = RE_NEWZBIN.search(link)
-    if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
-        if download:
-            jobs[link]['status'] = 'D'
-            jobs[link]['title'] = title
-            logging.info("Adding %s (%s) to queue", m.group(3), title)
-            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
-        else:
-            if star:
-                jobs[link]['status'] = flag + '*'
-            else:
-                jobs[link]['status'] = flag
-            jobs[link]['title'] = title
-            jobs[link]['url'] = m.group(3)
-            jobs[link]['cat'] = cat
-            jobs[link]['pp'] = pp
-            jobs[link]['script'] = script
-            jobs[link]['prio'] = str(priority)
+
+    if download:
+        jobs[link]['status'] = 'D'
+        jobs[link]['title'] = title
+        logging.info("Adding %s (%s) to queue", link, title)
+        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
-        if download:
-            jobs[link]['status'] = 'D'
-            jobs[link]['title'] = title
-            logging.info("Adding %s (%s) to queue", link, title)
-            sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        if star:
+            jobs[link]['status'] = flag + '*'
         else:
-            if star:
-                jobs[link]['status'] = flag + '*'
-            else:
-                jobs[link]['status'] = flag
-            jobs[link]['title'] = title
-            jobs[link]['url'] = link
-            jobs[link]['cat'] = cat
-            jobs[link]['pp'] = pp
-            jobs[link]['script'] = script
-            jobs[link]['prio'] = str(priority)
+            jobs[link]['status'] = flag
+        jobs[link]['title'] = title
+        jobs[link]['url'] = link
+        jobs[link]['cat'] = cat
+        jobs[link]['pp'] = pp
+        jobs[link]['script'] = script
+        jobs[link]['prio'] = str(priority)
 
     jobs[link]['time'] = time.time()
     jobs[link]['rule'] = rule
@@ -631,21 +610,16 @@ def _get_link(uri, entry):
     link = None
     category = ''
     uri = uri.lower()
-    if 'newzbin.' in uri or 'newzxxx.' in uri or 'newzbin2.' in uri or 'newzxxx2.' in uri:
-        link = entry.link
-        if not (link and '/post/' in link.lower()):
-            # Use alternative link
-            link = entry.links[0].href
-    else:
-        # Try standard link first
-        link = entry.link
-        if not link:
-            link = entry.links[0].href
-        if encl_sites(uri, link):
-            try:
-                link = entry.enclosures[0]['href']
-            except:
-                pass
+
+    # Try standard link first
+    link = entry.link
+    if not link:
+        link = entry.links[0].href
+    if encl_sites(uri, link):
+        try:
+            link = entry.enclosures[0]['href']
+        except:
+            pass
 
     if link and 'http' in link.lower():
         try:

@@ -27,7 +27,6 @@ import time
 
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.downloader
 import sabnzbd.dirscanner
 import sabnzbd.misc
@@ -173,15 +172,6 @@ def init():
                                  kronos.method.sequential, [], None)
 
 
-    if False: #cfg.newzbin_bookmarks():
-        interval = cfg.bookmark_rate()
-        delay = random.randint(0, interval-1)
-        logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
-        __SCHED.add_interval_task(Bookmarks.do.run, 'Bookmarks', delay*60, interval*60,
-                                  kronos.method.sequential, None, None)
-        __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
-
-
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
@@ -194,8 +184,6 @@ def init():
 
 
     # Subscribe to special schedule changes
-    cfg.newzbin_bookmarks.callback(schedule_guard)
-    cfg.bookmark_rate.callback(schedule_guard)
     cfg.rss_rate.callback(schedule_guard)
 
 

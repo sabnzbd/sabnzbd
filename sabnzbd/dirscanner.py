@@ -119,7 +119,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 name = misc.sanitize_foldername(name)
                 if data:
                     try:
-                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, url=url,
+                        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
                     except:
                         nzo = None
@@ -178,7 +178,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         name = misc.sanitize_foldername(name)
 
     try:
-        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
+        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
     except TypeError:
         # Duplicate, ignore

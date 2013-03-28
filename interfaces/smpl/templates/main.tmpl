@@ -755,11 +755,6 @@ function lrb(url, extra, refresh)
     d = doSimpleXMLHttpRequest('status/unblock_server?server='+host+':'+port+'&session='+session);
   }
 
-  function getBookmarks()
-  {
-    d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
-  }
-
   function resetQuota()
   {
     d = doSimpleXMLHttpRequest('tapi?mode=reset_quota&session='+session);
@@ -1133,9 +1128,6 @@ function loadingJSON(){
           <li><a class="config" href="$prefix/config/scheduling/" onclick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
           <li><a class="config" href="$prefix/config/rss/" onclick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
           <li><a class="config" href="$prefix/config/notify/" onclick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
-          <!--#if 0#-->
-          <li><a class="config" href="$prefix/config/indexers/" onclick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
-          <!--#end if#-->
           <li><a class="config" href="$prefix/config/categories/" onclick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
           <li><a class="config" href="$prefix/config/sorting/" onclick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
         </ul>
@@ -1182,7 +1174,7 @@ function loadingJSON(){
   <div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
   <form action="addID" method="get">
-    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL')" onblur="setForm(this, 'Enter URL')">
     <!--#if $cat_list#-->
       <select name="cat" >
         <optgroup label="$T('category')">

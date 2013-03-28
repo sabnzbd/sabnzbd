@@ -136,8 +136,8 @@ def wildcard_to_re(text):
 
 #------------------------------------------------------------------------------
 def cat_convert(cat):
-    """ Convert newzbin/nzbs.org category/group-name to user categories.
-        If no match found, but newzbin-cat equals user-cat, then return user-cat
+    """ Convert indexer's category/group-name to user categories.
+        If no match found, but indexer-cat equals user-cat, then return user-cat
         If no match found, return None
     """
     newcat = cat
@@ -147,12 +147,12 @@ def cat_convert(cat):
         cats = config.get_categories()
         for ucat in cats:
             try:
-                newzbin = cats[ucat].newzbin()
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin]
+                indexer = cats[ucat].newzbin()
+                if type(indexer) != type([]):
+                    indexer = [indexer]
             except:
-                newzbin = []
-            for name in newzbin:
+                indexer = []
+            for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
                         logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
@@ -945,8 +945,6 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
-    if isinstance(url, int) or url.isdigit():
-        url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
         #import sabnzbd.emailer
@@ -1286,10 +1284,7 @@ def format_source_url(url):
         prot = 'https'
     else:
         prot = 'http:'
-    if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
-    else:
-        return url
+    return url
 
 RE_URL = re.compile(r'://([^/]+)/')
 def get_base_url(url):

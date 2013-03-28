@@ -723,9 +723,6 @@ def _read_config(path, try_backup=False):
     if 'misc' in CFG:
         compatibility_fix(CFG['misc'])
 
-    if 'rss' in CFG:
-        newzbin_fix(CFG['rss'])
-
     # Use CFG data to set values for all static options
     for section in database:
         if section not in ('servers', 'categories', 'rss'):
@@ -1041,10 +1038,3 @@ def compatibility_fix(cf):
                 del cf[old]
             except KeyError:
                 pass
-
-def newzbin_fix(cf):
-    """ Replace old newzbin links """
-    for feed in cf:
-        item = cf[feed].get('uri')
-        if item and 'newzbin.com' in item:
-            cf[feed]['uri'] = item.replace('newzbin.com', 'newzbin2.es')

@@ -50,7 +50,6 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.newzbin import Bookmarks
 from sabnzbd.database import get_history_handle
 from sabnzbd.encoding import unicoder
 
@@ -230,16 +229,6 @@ class SABnzbdDelegate(NSObject):
 
         if (debug == 1) : NSLog("[osx] menu 13 resume added")
 
-        #Newzbin Item
-        self.newzbin_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Get Newzbin Bookmarks'), 'getNewzbinBookmarksAction:', '')
-        if self.isLeopard:
-            self.newzbin_menu_item.setHidden_(YES)
-        else:
-            self.newzbin_menu_item.setEnabled_(NO)
-        self.menu.addItem_(self.newzbin_menu_item)
-
-        if (debug == 1) : NSLog("[osx] menu 14 newzbin added")
-
         #Watched folder Item
         self.watched_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Scan watched folder'), 'watchedFolderAction:', '')
         if self.isLeopard:
@@ -316,7 +305,6 @@ class SABnzbdDelegate(NSObject):
                     self.pauseUpdate()
                     self.speedlimitUpdate()
                     self.versionUpdate()
-                    self.newzbinUpdate()
                     self.diskspaceUpdate()
                     self.watchedUpdate()
             else:
@@ -348,7 +336,6 @@ class SABnzbdDelegate(NSObject):
 
                 for pnfo in pnfo_list:
                     filename = unicoder(pnfo[PNFO_FILENAME_FIELD])
-                    msgid = pnfo[PNFO_MSGID_FIELD]
                     bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
                     bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
                     bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
@@ -546,21 +533,6 @@ class SABnzbdDelegate(NSObject):
         except :
             logging.info("[osx] watchedUpdate Exception %s" % (sys.exc_info()[0]))
 
-    def newzbinUpdate(self):
-        try:
-            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password():
-                if self.isLeopard:
-                    self.newzbin_menu_item.setHidden_(NO)
-                else:
-                    self.newzbin_menu_item.setEnabled_(YES)
-            else:
-                if self.isLeopard:
-                    self.newzbin_menu_item.setHidden_(YES)
-                else:
-                    self.newzbin_menu_item.setEnabled_(NO)
-        except :
-            logging.info("[osx] newzbinUpdate Exception %s" % (sys.exc_info()[0]))
-
     def serverUpdate(self):
         try:
             if not config.get_servers():
@@ -576,7 +548,6 @@ class SABnzbdDelegate(NSObject):
                 self.speed_menu_item.setHidden_(hide)
                 self.resume_menu_item.setHidden_(hide)
                 self.pause_menu_item.setHidden_(hide)
-                self.newzbin_menu_item.setHidden_(hide)
                 self.watched_menu_item.setHidden_(hide)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setHidden_(hide)
@@ -592,7 +563,6 @@ class SABnzbdDelegate(NSObject):
                 self.speed_menu_item.setEnabled_(alternate)
                 self.resume_menu_item.setEnabled_(alternate)
                 self.pause_menu_item.setEnabled_(alternate)
-                self.newzbin_menu_item.setEnabled_(alternate)
                 self.watched_menu_item.setEnabled_(alternate)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setEnabled_(alternate)
@@ -696,9 +666,6 @@ class SABnzbdDelegate(NSObject):
 
     def resumeAction_(self, sender):
         scheduler.plan_resume(0)
-
-    def getNewzbinBookmarksAction_(self, sender):
-        Bookmarks.do.run(force=True)
 
     def watchedFolderAction_(self, sender):
         sabnzbd.dirscanner.dirscan()

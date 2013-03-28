@@ -57,7 +57,6 @@ from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode,
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
 import sabnzbd.growler
@@ -474,7 +473,6 @@ def _api_get_files(name, output, kwargs):
         return report(output, _MSG_NO_VALUE)
 
 
-_RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
 def _api_addid(names, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     pp = kwargs.get('pp')
@@ -494,15 +492,9 @@ def _api_addid(names, output, kwargs):
         else:
             nzbname = ''
 
-        newzbin_url = _RE_NEWZBIN_URL.search(name.lower())
-
         if name:
             name = name.strip()
-        if name and (name.isdigit() or len(name)==5):
-            sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
-        elif newzbin_url:
-            sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority, nzbname)
-        elif name:
+        if name:
             sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
 
     if len(names) > 0:
@@ -580,9 +572,6 @@ def _api_auth(name, output, kwargs):
 
 def _api_newzbin(name, output, kwargs):
     """ API: accepts output """
-    if name == 'get_bookmarks':
-        Bookmarks.do.run(force=True)
-        return report(output)
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
@@ -662,7 +651,7 @@ def _api_test_email(name, output, kwargs):
     pack = {}
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
-    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
                                  os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
                                  123*MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
     if res == 'Email succeeded':
@@ -1039,9 +1028,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         info['queue_details'] = '0'
 
-    if cfg.newzbin_username() and cfg.newzbin_password():
-        info['newzbinDetails'] = True
-
     if cfg.refresh_rate() > 0:
         info['refresh_rate'] = str(cfg.refresh_rate())
     else:
@@ -1089,7 +1075,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         if not cat:
             cat = 'None'
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD]
         average_date = pnfo[PNFO_AVG_DATE_FIELD]
@@ -1113,7 +1098,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['script'] = script
         else:
             slot['script'] = 'None'
-        slot['msgid'] = msgid
         slot['filename'] = converter(filename)
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
@@ -1275,7 +1259,6 @@ def qstatus_data():
     bpsnow = BPSMeter.do.get_bps()
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
@@ -1284,7 +1267,6 @@ def qstatus_data():
                         "mb":bytes,
                         "mbleft":bytesleft,
                         "filename":unicoder(filename),
-                        "msgid":msgid,
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
     state = "IDLE"
@@ -1417,7 +1399,6 @@ def rss_qstatus():
     sum_bytesleft = 0
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         mbleft = (bytesleft / MEBI)
@@ -1434,11 +1415,7 @@ def rss_qstatus():
 
         item = Item()
         item.title = name
-        if msgid:
-            item.link    = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), msgid)
-        else:
-            item.link    = "http://%s:%s/sabnzbd/history" % ( \
-            cfg.cherryhost(), cfg.cherryport() )
+        item.link    = "http://%s:%s/sabnzbd/history" % ( cfg.cherryhost(), cfg.cherryport() )
         status_line  = []
         status_line.append('<tr>')
         #Total MB/MB left
@@ -1579,13 +1556,11 @@ def build_header(prim, webdir='', search=None):
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
     header['active_lang'] = cfg.language()
-    header['newzbin_url'] = cfg.newzbin_url()
     header['my_lcldata'] = sabnzbd.DIR_LCLDATA
     header['my_home'] = sabnzbd.DIR_HOME
 
 
     header['webdir'] = webdir
-    header['newzbin_url'] = cfg.newzbin_url()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
@@ -1784,7 +1759,7 @@ def format_history_for_queue():
 
     for item in history_items:
         slot = {'nzo_id':item['nzo_id'],
-                'msgid':item['report'], 'filename':xml_name(item['name']), 'loaded':False,
+                'bookmark':'', 'filename':xml_name(item['name']), 'loaded':False,
                 'stages':item['stage_log'], 'status':item['status'], 'bytes':item['bytes'],
                 'size':item['size']}
         slotinfo.append(slot)

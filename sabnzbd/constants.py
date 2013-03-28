@@ -59,7 +59,6 @@ QUEUE_FILE_TMPL  = 'queue%s.sab'
 QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
-BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data2.sab'
 TERM_FLAG_FILE    = 'running.sab'
 FUTURE_Q_FOLDER   = 'future'

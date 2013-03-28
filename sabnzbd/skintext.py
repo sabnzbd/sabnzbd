@@ -135,7 +135,6 @@ SKIN_TEXT = {
     'cmenu-rss' : TT('RSS'), #: Main menu item
     'cmenu-notif' : TT('Notifications'), #: Main menu item
     'cmenu-email' : TT('Email'), #: Main menu item
-    'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
     'cmenu-special' : TT('Special'), #: Main menu item
@@ -577,30 +576,6 @@ SKIN_TEXT = {
     'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
 
-# Config->Newzbin
-    'explain-newzbin' : TT('If you have an account at <strong>www.newzbin2.es</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
-    'accountInfo' : TT('Account info'),
-    'opt-username_newzbin' : TT('Newzbin Username'),
-    'explain-username_newzbin' : TT('Set your account username here.'),
-    'opt-password_newzbin' : TT('Newzbin Password'),
-    'explain-password_newzbin' : TT('Set your account password here.'),
-    'newzbinBookmarks' : TT('Bookmark Processing'),
-    'opt-newzbin_bookmarks' : TT('Auto-Fetch Bookmarks'),
-    'explain-newzbin_bookmarks' : TT('Automatically retrieve jobs from your bookmarks.'),
-    'link-getBookmarks' : TT('Get Bookmarks Now'),
-    'link-HideBM' : TT('Hide Bookmarks'),
-    'link-ShowBM' : TT('Show Bookmarks'),
-    'opt-newzbin_unbookmark' : TT('Un-Bookmark If Download Complete'),
-    'explain-newzbin_unbookmark' : TT('Remove from bookmark list when download is complete.'),
-    'opt-bookmark_rate' : TT('Checking Interval'),
-    'explain-bookmark_rate' : TT('In minutes (at least 15 min).'),
-    'processedBM' : TT('Processed Bookmarks'),
-    'explain-nzbmatrix' : TT('If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter your account info here.<br />This is required if you want to use the RSS feeds of this site.'),
-    'opt-username_matrix' : TT('NzbMatrix Username'),
-    'explain-username_matrix' : TT('Set your account username here.'),
-    'opt-apikey_matrix' : TT('NzbMatrix API key'),
-    'explain-apikey_matrix' : TT('Set the NzbMatrix API key here.'),
-
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
@@ -830,7 +805,6 @@ SKIN_TEXT = {
     'smpl-dualView2' : TT('DualView2'),
     'smpl-warnings' : TT('Warnings'),
     'smpl-custom' : TT('Custom'),
-    'smpl-getbookmarks' : TT('Get Bookmarks'),
     'smpl-restartOK?' : TT('Are you sure you want to restart SABnzbd?'),
     'smpl-refreshr' : TT('Refresh rate'),
     'smpl-purgeQueue' : TT('Delete All'),
@@ -864,8 +838,6 @@ SKIN_TEXT = {
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-server-required' :  TT('This field is required.'),
     'wizard-server-number' :  TT('Please enter a whole number.'),
-    'wizard-index-explain' :  TT('If you are a member of newzbin or nzbmatrix, you may enter your username and password here so we can fetch their nzb\'s. This stage can be skipped if you don\'t use either services.'),
-    'wizard-index-bookmark' :  TT('Automatically download bookmarked posts.'),
     'wizard-optional' :  TT('Optional'), #: As in "this item is optional"
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step

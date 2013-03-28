@@ -760,7 +760,7 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
 def copy_old_files(newpath):
     """ OSX only:
         If no INI file found but old one exists, copy it
-        When copying the INI, also copy rss, bookmarks and watched-data
+        When copying the INI, also copy rss and watched-data
     """
     if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
         if not os.path.exists(newpath):
@@ -779,10 +779,6 @@ def copy_old_files(newpath):
                 os.mkdir(newpath)
             try:
                 shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
-            except:
-                pass
-            try:
-                shutil.copy(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
             except:
                 pass
             try:

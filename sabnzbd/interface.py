@@ -38,7 +38,6 @@ from sabnzbd.misc import real_path, to_units, \
      cat_to_opts, int_conv, globber, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
                              platform_encode, latin1, encode_for_xml
@@ -274,9 +273,6 @@ class MainPage(object):
         if kwargs.get('skip_wizard') or config.get_servers():
             info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
 
-            if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
-                info['newzbinDetails'] = True
-
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
 
@@ -321,15 +317,8 @@ class MainPage(object):
         redirect = kwargs.get('redirect')
         nzbname = kwargs.get('nzbname')
 
-        RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
-        newzbin_url = RE_NEWZBIN_URL.search(id.lower())
-
         id = Strip(id)
-        if id and (id.isdigit() or len(id)==5):
-            sabnzbd.add_msgid(id, pp, script, cat, priority, nzbname)
-        elif newzbin_url:
-            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat, priority, nzbname)
-        elif id:
+        if id:
             sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
         if not redirect:
             redirect = self.__root
@@ -447,9 +436,7 @@ class MainPage(object):
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-        if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat)
-        elif url:
+        if url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
@@ -899,12 +886,6 @@ class HistoryPage(object):
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
 
-        if cfg.newzbin_username() and cfg.newzbin_password():
-            history['newzbinDetails'] = True
-
-        #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-        #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
-
         postfix = T('B') #: Abbreviation for bytes, as in GB
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
@@ -1024,9 +1005,7 @@ class HistoryPage(object):
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-        if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat)
-        elif url:
+        if url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
@@ -1041,7 +1020,6 @@ class ConfigPage(object):
         self.folders = ConfigFolders(web_dir, root+'folders/', prim)
         self.notify = ConfigNotify(web_dir, root+'notify/', prim)
         self.general = ConfigGeneral(web_dir, root+'general/', prim)
-        self.indexers = ConfigIndexers(web_dir, root+'indexers/', prim)
         self.rss = ConfigRss(web_dir, root+'rss/', prim)
         self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
         self.server = ConfigServer(web_dir, root+'server/', prim)
@@ -1932,9 +1910,7 @@ class ConfigRss(object):
             script = att.get('script')
             prio = att.get('prio')
 
-            if url and url.isdigit():
-                sabnzbd.add_msgid(url, pp, script, cat, prio, nzbname)
-            elif url:
+            if url:
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
@@ -2100,88 +2076,6 @@ class ConfigScheduling(object):
         scheduler.restart(force=True)
         raise dcRaiser(self.__root, kwargs)
 
-#------------------------------------------------------------------------------
-class ConfigIndexers(object):
-    def __init__(self, web_dir, root, prim):
-        self.__root = root
-        self.__web_dir = web_dir
-        self.__prim = prim
-        self.__bookmarks = []
-
-    @cherrypy.expose
-    def index(self, **kwargs):
-        if cfg.configlock() or not check_access():
-            return Protected()
-
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
-
-        conf['username_newzbin'] = cfg.newzbin_username()
-        conf['password_newzbin'] = cfg.newzbin_password.get_stars()
-        conf['newzbin_bookmarks'] = int(cfg.newzbin_bookmarks())
-        conf['newzbin_unbookmark'] = int(cfg.newzbin_unbookmark())
-        conf['bookmark_rate'] = cfg.bookmark_rate()
-
-        conf['bookmarks_list'] = self.__bookmarks
-
-        conf['matrix_username'] = cfg.matrix_username()
-        conf['matrix_apikey'] = cfg.matrix_apikey()
-        conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
-
-        template = Template(file=os.path.join(self.__web_dir, 'config_indexers.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
-        return template.respond()
-
-    @cherrypy.expose
-    def saveNewzbin(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
-        cfg.newzbin_username.set(kwargs.get('username_newzbin'))
-        cfg.newzbin_password.set(kwargs.get('password_newzbin'))
-        cfg.newzbin_bookmarks.set(kwargs.get('newzbin_bookmarks'))
-        cfg.newzbin_unbookmark.set(kwargs.get('newzbin_unbookmark'))
-        cfg.bookmark_rate.set(kwargs.get('bookmark_rate'))
-
-        cfg.matrix_username.set(kwargs.get('matrix_username'))
-        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
-        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
-
-        config.save_config()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def saveMatrix(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
-        cfg.matrix_username.set(kwargs.get('matrix_username'))
-        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
-        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
-
-        config.save_config()
-        raise dcRaiser(self.__root, kwargs)
-
-
-    @cherrypy.expose
-    def getBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        Bookmarks.do.run(force=True)
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def showBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        self.__bookmarks = Bookmarks.do.bookmarksList()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def hideBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        self.__bookmarks = []
-        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 
@@ -2197,9 +2091,6 @@ class ConfigCats(object):
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
-
-        if cfg.newzbin_username() and cfg.newzbin_password():
-            conf['newzbinDetails'] = True
 
         conf['script_list'] = list_scripts(default=True)
 
@@ -2553,10 +2444,6 @@ def GetRssLog(feed):
     def make_item(job):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
-        if url.isdigit():
-            title = '<a href="https://%s/browse/post/%s/" target="_blank">%s</a>' % (cfg.newzbin_url(), url, title)
-        else:
-            title = title
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
@@ -2756,9 +2643,7 @@ def rss_history(url, limit=50, search=None):
         elif history['completed'] < youngest:
             youngest = history['completed']
 
-        if history['report']:
-            item.link = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), history['report'])
-        elif history['url_info']:
+        if history['url_info']:
             item.link = history['url_info']
         else:
             item.link = url

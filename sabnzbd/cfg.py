@@ -109,13 +109,6 @@ pre_check = OptionBool('misc', 'pre_check', False)
 fail_hopeless = OptionBool('misc', 'fail_hopeless', False)
 req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 200)
 
-newzbin_username = OptionStr('newzbin', 'username')
-newzbin_password = OptionPassword('newzbin', 'password')
-newzbin_bookmarks = OptionBool('newzbin', 'bookmarks', False)
-newzbin_unbookmark = OptionBool('newzbin', 'unbookmark', True)
-bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
-newzbin_url = OptionStr('newzbin', 'url', 'www.newzbin2.es')
-
 top_only = OptionBool('misc', 'top_only', False)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
 queue_complete = OptionStr('misc', 'queue_complete')
@@ -156,12 +149,6 @@ movie_categories = OptionList('misc', 'movie_categories', ['movies'])
 enable_date_sorting = OptionBool('misc', 'enable_date_sorting', False)
 date_sort_string = OptionStr('misc', 'date_sort_string')
 date_categories = OptionStr('misc', 'date_categories', ['tv'])
-
-matrix_username = OptionStr('nzbmatrix', 'username')
-matrix_apikey = OptionStr('nzbmatrix', 'apikey')
-matrix_del_bookmark = OptionBool('nzbmatrix', 'del_bookmark', True)
-xxx_username = OptionStr('nzbxxx', 'username')
-xxx_apikey = OptionStr('nzbxxx', 'apikey')
 
 configlock = OptionBool('misc', 'config_lock', 0)
 

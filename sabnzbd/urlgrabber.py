@@ -82,7 +82,6 @@ class URLGrabber(Thread):
             url = url.replace(' ', '')
 
             try:
-                del_bookmark = not future_nzo
                 if future_nzo:
                     # If nzo entry deleted, give up
                     try:

@@ -38,7 +38,6 @@ from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader
@@ -225,7 +224,6 @@ def process_job(nzo):
 
     # Get the NZB name
     filename = nzo.final_name
-    msgid = nzo.msgid
 
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
@@ -429,7 +427,7 @@ def process_job(nzo):
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
-                                                             msgid, dirname, cat, nzo.group, job_result)
+                                                             dirname, cat, nzo.group, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
@@ -445,7 +443,7 @@ def process_job(nzo):
         ## Email the results
         if (not nzb_list) and cfg.email_endjob():
             if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error)):
-                emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+                emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                                nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
 
         if script_output:
@@ -489,7 +487,7 @@ def process_job(nzo):
         par_error = True
         all_ok = False
         if cfg.email_endjob():
-            emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+            emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
 
 

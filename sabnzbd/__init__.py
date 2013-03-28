@@ -74,7 +74,6 @@ from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader
 from sabnzbd.assembler import Assembler
-from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 import sabnzbd.misc as misc
 import sabnzbd.powersup as powersup
 from sabnzbd.dirscanner import DirScanner,  ProcessArchiveFile, ProcessSingleFile
@@ -300,7 +299,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Initialize threads
     ###
 
-    Bookmarks()
     rss.init()
 
     paused = BPSMeter.do.read()
@@ -316,8 +314,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     Downloader(pause_downloader or paused)
 
     DirScanner()
-
-    MSGIDGrabber()
 
     URLGrabber()
 
@@ -351,8 +347,6 @@ def start():
         logging.debug('Starting dirscanner')
         DirScanner.do.start()
 
-        MSGIDGrabber.do.start()
-
         logging.debug('Starting urlgrabber')
         URLGrabber.do.start()
 
@@ -367,19 +361,10 @@ def halt():
 
         rss.stop()
 
-        Bookmarks.do.save()
-
         logging.debug('Stopping URLGrabber')
         URLGrabber.do.stop()
         try:
             URLGrabber.do.join()
-        except:
-            pass
-
-        logging.debug('Stopping Newzbin-Grabber')
-        MSGIDGrabber.do.stop()
-        try:
-            MSGIDGrabber.do.join()
         except:
             pass
 
@@ -465,23 +450,6 @@ def guard_fsys_type():
     """ Callback for change of file system naming type """
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
-def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
-    """ Add NZB based on newzbin report number, attributes optional
-    """
-    if pp and pp=="-1": pp = None
-    if script and script.lower()=='default': script = None
-    if cat and cat.lower()=='default': cat = None
-
-    if cfg.newzbin_username() and cfg.newzbin_password():
-        logging.info('Fetching msgid %s from www.newzbin2.es', msgid)
-        msg = T('fetching msgid %s from www.newzbin2.es') % msgid
-
-        future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
-
-        MSGIDGrabber.do.grab(msgid, future_nzo)
-    else:
-        logging.error(Ta('Error Fetching msgid %s from www.newzbin2.es - Please make sure your Username and Password are set'), msgid)
-
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on a URL, attributes optional
@@ -503,7 +471,6 @@ def save_state(flag=False):
     NzbQueue.do.save()
     BPSMeter.do.save()
     rss.save()
-    Bookmarks.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
     #if flag:
@@ -1039,9 +1006,6 @@ def check_all_tasks():
     if not URLGrabber.do.isAlive():
         logging.info('Restarting crashed urlgrabber')
         URLGrabber.do.__init__()
-    if not MSGIDGrabber.do.isAlive():
-        logging.info('Restarting crashed newzbin')
-        MSGIDGrabber.do.__init__()
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
