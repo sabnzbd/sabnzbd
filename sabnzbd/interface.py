@@ -83,11 +83,13 @@ def check_server(host, port):
         return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port))
 
 
-def check_access():
-    """ Check if external address is allowed """
+def check_access(access_type=4):
+    """ Check if external address is allowed given `access_type`
+        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
+    """
     referrer = cherrypy.request.remote.ip
-    return referrer in ('127.0.0.1', '::1') or referrer.startswith(cfg.local_range())
-
+    return referrer in ('127.0.0.1', '::1') or referrer.startswith(cfg.local_range()) or \
+           access_type <= cfg.inet_exposure()
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
@@ -189,17 +191,21 @@ def check_apikey(kwargs, nokey=False):
 
     output = kwargs.get('output')
     mode = kwargs.get('mode', '')
+    name = kwargs.get('name', '')
     callback = kwargs.get('callback')
 
     # Don't give a visible warning: these commands are used by some
     # external utilities to detect if username/password is required
     # The cfg item can suppress all visible warnings
     special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
+    
+    # Lookup required access level
+    req_access = sabnzbd.api.api_level(mode, name)
 
-    # For NZB upload calls, a separate key can be used
-    nzbkey = kwargs.get('mode', '') in ('addid', 'addurl', 'addfile', 'addlocalfile')
-
-    if not nzbkey and not check_access():
+    if req_access == 1 and check_access(1):
+        # NZB-only actions
+        pass
+    elif not check_access(req_access):
         return report(output, 'No access')
 
     # First check APIKEY, if OK that's sufficient
@@ -209,7 +215,7 @@ def check_apikey(kwargs, nokey=False):
             if not special:
                 log_warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)
-        elif nzbkey and key == cfg.nzb_key():
+        elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
@@ -1271,7 +1277,7 @@ class ConfigSpecial(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit', 'local_range',
+    'refresh_rate', 'cache_limit', 'local_range', 'inet_exposure',
     'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
@@ -1381,6 +1387,7 @@ class ConfigGeneral(object):
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_range'] = cfg.local_range()
+        conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
         conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'

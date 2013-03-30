@@ -72,6 +72,22 @@
                     <span class="desc">$T('explain-language')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="local_range">$T('opt-local_range')</label>
+                    <input type="text" name="local_range" id="local_range" value="$local_range" size="30" />
+                    <span class="desc">$T('explain-local_range')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
+                        <select name="inet_exposure" id="inet_exposure" id="inet_exposure" class="select">
+                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected" class="selected"' else ""#-->>$T('inet-local')</option>
+                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected" class="selected"' else ""#-->>$T('inet-nzb')</option>
+                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected" class="selected"' else ""#-->>$T('inet-api')</option>
+                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected" class="selected"' else ""#-->>$T('inet-fullapi')</option>
+                            <option value="4" <!--#if $inet_exposure == 3 then 'selected="selected" class="selected"' else ""#-->>$T('inet-ui')</option>
+                        </select>
+                    <span class="desc">$T('explain-inet_exposure')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>
                     <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if int($disable_api_key) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-disableApikey')</span>

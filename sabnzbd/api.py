@@ -96,7 +96,7 @@ def api_handler(kwargs):
 
     if isinstance(mode, list): mode = mode[0]
     if isinstance(output, list): output = output[0]
-    response = _api_table.get(mode, _api_undefined)(name, output, kwargs)
+    response = _api_table.get(mode, (_api_undefined, 3))[0](name, output, kwargs)
     if output == 'json' and callback:
         response = '%s(%s)' % (callback, response)
     return response
@@ -780,76 +780,87 @@ def _api_config_undefined(output, kwargs):
 
 #------------------------------------------------------------------------------
 _api_table = {
-    'get_config'      : _api_get_config,
-    'set_config'      : _api_set_config,
-    'del_config'      : _api_del_config,
-    'qstatus'         : _api_qstatus,
-    'queue'           : _api_queue,
-    'options'         : _api_options,
-    'translate'       : _api_translate,
-    'addfile'         : _api_addfile,
-    'retry'           : _api_retry,
-    'addlocalfile'    : _api_addlocalfile,
-    'switch'          : _api_switch,
-    'change_cat'      : _api_change_cat,
-    'change_script'   : _api_change_script,
-    'change_opts'     : _api_change_opts,
-    'fullstatus'      : _api_fullstatus,
-    'history'         : _api_history,
-    'get_files'       : _api_get_files,
-    'addurl'          : _api_addid,
-    'addid'           : _api_addid,
-    'pause'           : _api_pause,
-    'resume'          : _api_resume,
-    'shutdown'        : _api_shutdown,
-    'warnings'        : _api_warnings,
-    'config'          : _api_config,
-    'get_cats'        : _api_get_cats,
-    'get_scripts'     : _api_get_scripts,
-    'version'         : _api_version,
-    'auth'            : _api_auth,
-    'newzbin'         : _api_newzbin,
-    'restart'         : _api_restart,
-    'restart_repair'  : _api_restart_repair,
-    'disconnect'      : _api_disconnect,
-    'osx_icon'        : _api_osx_icon,
-    'rescan'          : _api_rescan,
-    'eval_sort'       : _api_eval_sort,
-    'watched_now'     : _api_watched_now,
-    'resume_pp'       : _api_resume_pp,
-    'rss_now'         : _api_rss_now,
-    'browse'          : _api_browse,
-    'reset_quota'     : _api_reset_quota,
-    'test_email'      : _api_test_email,
-    'test_notif'      : _api_test_notif,
-    'test_growl'      : _api_test_growl,
-    'test_osd'        : _api_test_osd,
-    'test_prowl'      : _api_test_prowl,
+    'get_config'      : (_api_get_config, 3),
+    'set_config'      : (_api_set_config, 3),
+    'del_config'      : (_api_del_config, 3),
+    'qstatus'         : (_api_qstatus, 2),
+    'queue'           : (_api_queue, 2),
+    'options'         : (_api_options, 2),
+    'translate'       : (_api_translate, 2),
+    'addfile'         : (_api_addfile, 1),
+    'retry'           : (_api_retry, 2),
+    'addlocalfile'    : (_api_addlocalfile, 1),
+    'switch'          : (_api_switch, 2),
+    'change_cat'      : (_api_change_cat, 2),
+    'change_script'   : (_api_change_script, 2),
+    'change_opts'     : (_api_change_opts, 2),
+    'fullstatus'      : (_api_fullstatus, 2),
+    'history'         : (_api_history, 2),
+    'get_files'       : (_api_get_files, 2),
+    'addurl'          : (_api_addid, 1),
+    'addid'           : (_api_addid, 1),
+    'pause'           : (_api_pause, 2),
+    'resume'          : (_api_resume, 2),
+    'shutdown'        : (_api_shutdown, 3),
+    'warnings'        : (_api_warnings, 2),
+    'config'          : (_api_config, 2),
+    'get_cats'        : (_api_get_cats, 2),
+    'get_scripts'     : (_api_get_scripts, 2),
+    'version'         : (_api_version, 1),
+    'auth'            : (_api_auth, 1),
+    'newzbin'         : (_api_newzbin, 2),
+    'restart'         : (_api_restart, 3),
+    'restart_repair'  : (_api_restart_repair, 2),
+    'disconnect'      : (_api_disconnect, 2),
+    'osx_icon'        : (_api_osx_icon, 3),
+    'rescan'          : (_api_rescan, 2),
+    'eval_sort'       : (_api_eval_sort, 2),
+    'watched_now'     : (_api_watched_now, 2),
+    'resume_pp'       : (_api_resume_pp, 2),
+    'rss_now'         : (_api_rss_now, 2),
+    'browse'          : (_api_browse, 2),
+    'reset_quota'     : (_api_reset_quota, 2),
+    'test_email'      : (_api_test_email, 2),
+    'test_notif'      : (_api_test_notif, 2)
+    'test_growl'      : (_api_test_growl, 2),
+    'test_osd'        : (_api_test_osd, 2),
+    'test_prowl'      : (_api_test_prowl, 2)
 }
 
 _api_queue_table = {
-    'delete'                  : _api_queue_delete,
-    'delete_nzf'              : _api_queue_delete_nzf,
-    'rename'                  : _api_queue_rename,
-    'change_complete_action'  : _api_queue_change_complete_action,
-    'purge'                   : _api_queue_purge,
-    'pause'                   : _api_queue_pause,
-    'resume'                  : _api_queue_resume,
-    'priority'                : _api_queue_priority,
-    'sort'                    : _api_queue_sort
+    'delete'                  : (_api_queue_delete, 2),
+    'delete_nzf'              : (_api_queue_delete_nzf, 2),
+    'rename'                  : (_api_queue_rename, 2),
+    'change_complete_action'  : (_api_queue_change_complete_action, 2),
+    'purge'                   : (_api_queue_purge, 2),
+    'pause'                   : (_api_queue_pause, 2) ,
+    'resume'                  : (_api_queue_resume, 2),
+    'priority'                : (_api_queue_priority, 2),
+    'sort'                    : (_api_queue_sort, 2)
 }
 
 _api_config_table = {
-    'speedlimit'       : _api_config_speedlimit,
-    'set_speedlimit'   : _api_config_speedlimit,
-    'get_speedlimit'   : _api_config_get_speedlimit,
-    'set_colorscheme'  : _api_config_set_colorscheme,
-    'set_pause'        : _api_config_set_pause,
-    'set_apikey'       : _api_config_set_apikey,
-    'set_nzbkey'       : _api_config_set_nzbkey,
-    'test_server'      : _api_config_test_server
+    'speedlimit'       : (_api_config_speedlimit, 2),
+    'set_speedlimit'   : (_api_config_speedlimit, 2),
+    'get_speedlimit'   : (_api_config_get_speedlimit, 2),
+    'set_colorscheme'  : (_api_config_set_colorscheme, 2),
+    'set_pause'        : (_api_config_set_pause, 2),
+    'set_apikey'       : (_api_config_set_apikey, 3),
+    'set_nzbkey'       : (_api_config_set_nzbkey, 3),
+    'test_server'      : (_api_config_test_server, 2)
 }
 
+
+#------------------------------------------------------------------------------
+def api_level(cmd, name):
+    """ Return access level required for this API call """
+    if cmd in _api_table:
+        return _api_table[cmd][1]
+    if name == 'queue' and cmd in _api_queue_table:
+        return _api_queue_table[cmd][1]
+    if name == 'config' and cmd in _api_config_table:
+        return _api_config_table[cmd][1]
+    return 4
 
 #------------------------------------------------------------------------------
 def report(output, error=None, keyword='value', data=None, callback=None, compat=False):

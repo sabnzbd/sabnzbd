@@ -339,6 +339,15 @@ SKIN_TEXT = {
     'explain-disableApikeyWarn' : TT('USE AT YOUR OWN RISK!'),
     'qr-code' : TT('QR Code'), #: Button to show QR code of APIKEY
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
+    'opt-local_range' : TT('Local network range'),
+    'explain-local_range' : TT('All local network addresses start with this prefix (often "192.168.1.")'),
+    'opt-inet_exposure' : TT('External internet access'),
+    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network'),
+    'inet-local' : TT('No access'), # Selection value for external access
+    'inet-nzb' : TT('Add NZB files '), # Selection value for external access
+    'inet-api' : TT('API (no Config)'), # Selection value for external access
+    'inet-fullapi' : TT('Full API'), # Selection value for external access
+    'inet-ui' : TT('Full Web interface'), # Selection value for external access
 
 # Config->Folders
     'folderConfig' : TT('Folder configuration'),

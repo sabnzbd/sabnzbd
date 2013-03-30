@@ -46,19 +46,21 @@ modified = False            # Signals a change in option dictionary
 
 class Option(object):
     """ Basic option class, basic fields """
-    def __init__(self, section, keyword, default_val=None, add=True):
+    def __init__(self, section, keyword, default_val=None, add=True, protect=False):
         """ Basic option
             section     : single section or comma-separated list of sections
                           a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
             keyword     : keyword in the (last) section
             default_val : value returned when no value has been set
             callback    : procedure to call when value is succesfully changed
+            protect     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(',')
         self.__keyword = keyword
         self.__default_val = default_val
         self.__value = None
         self.__callback = None
+        self.__protect = protect
 
         # Add myself to the config dictionary
         if add:
@@ -90,6 +92,8 @@ class Option(object):
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
+        if self.__protect:
+            return False
         try:
             return self.set(dict['value'])
         except KeyError:
@@ -124,8 +128,8 @@ class Option(object):
 
 class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
-    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
+    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False):
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
@@ -155,8 +159,8 @@ class OptionNumber(Option):
 
 class OptionBool(Option):
     """ Boolean option class """
-    def __init__(self, section, keyword, default_val=False, add=True):
-        Option.__init__(self, section, keyword, int(default_val), add=add)
+    def __init__(self, section, keyword, default_val=False, add=True, protect=False):
+        Option.__init__(self, section, keyword, int(default_val), add=add, protect=protect)
 
     def set(self, value):
         if value is None:
@@ -262,8 +266,8 @@ class OptionList(Option):
 
 class OptionStr(Option):
     """ String class """
-    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
+    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True, protect=False):
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__validation = validation
         self.__strip = strip
 
