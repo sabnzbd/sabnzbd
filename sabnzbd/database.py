@@ -103,9 +103,9 @@ class HistoryDB(object):
         version = self.c.fetchone()['user_version']
         if version < 1:
             # Add any missing columns added since first DB version
+            self.execute('PRAGMA user_version = 1;')
             self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
             self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
-            self.execute('PRAGMA user_version = 1;')
         
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
