@@ -98,6 +98,14 @@ class HistoryDB(object):
             # http://www.sqlite.org/lang_vacuum.html
             _DONE_CLEANING = True
             self.execute('VACUUM')
+            
+        self.execute('PRAGMA user_version;')
+        version = self.c.fetchone()['user_version']
+        if version < 1:
+            # Add any missing columns added since first DB version
+            self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
+            self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+            self.execute('PRAGMA user_version = 1;')
         
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
@@ -133,6 +141,7 @@ class HistoryDB(object):
                 except:
                     logging.debug("Rollback Failed:", exc_info = True)
             return False
+    
 
     def create_history_db(self):
         self.execute("""
@@ -160,7 +169,9 @@ class HistoryDB(object):
             "fail_message" TEXT,
             "url_info" TEXT,
             "bytes" INTEGER,
-            "meta" TEXT
+            "meta" TEXT,
+            "series" TEXT,
+            "md5sum" TEXT
         )
         """)
 
@@ -215,8 +226,8 @@ class HistoryDB(object):
 
         if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
         url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-        downloaded, completeness, fail_message, url_info, bytes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
+        downloaded, completeness, fail_message, url_info, bytes, series, md5sum)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
@@ -258,6 +269,32 @@ class HistoryDB(object):
         items = [unpack_history_info(item) for item in items]
 
         return (items, fetched_items, total_items)
+
+
+    def have_episode(self, series, season, episode):
+        """ Check whether History contains this series episode """
+        total = 0
+        series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
+        if series and season and episode:
+            pattern = '%s/%s/%s' % (series, season, episode)
+            res = self.execute('select count(*) from History WHERE series = ? AND STATUS != "Failed"', (pattern,))
+            if res:
+                try:
+                    total = self.c.fetchone().get('count(*)')
+                except AttributeError:
+                    pass
+        return total > 0
+
+    def have_md5sum(self, md5sum):
+        """ Check whether this md5sum already in History """
+        total = 0
+        res = self.execute('select count(*) from History WHERE md5sum = ? AND STATUS != "Failed"', (md5sum,))
+        if res:
+            try:
+                total = self.c.fetchone().get('count(*)')
+            except AttributeError:
+                pass
+        return total > 0
 
     def get_history_size(self):
         """
@@ -386,9 +423,16 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
+    # Encode series info in now unused `record` field.
+    seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+    if seriesname and season and episode:
+        series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
+    else:
+        series = u''
+
     return (completed, name, nzb_name, category, pp, script, '', url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
-            fail_message, url_info, bytes,)
+            fail_message, url_info, bytes, series, nzo.md5sum)
 
 def unpack_history_info(item):
     '''

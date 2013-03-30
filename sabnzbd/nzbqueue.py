@@ -129,6 +129,7 @@ class NzbQueue(TryList):
             'action' is True, do the recovery action
             returns list of orphaned folders
         """
+        from sabnzbd.api import build_history
         result = []
         # Folders from the download queue
         if all:
@@ -137,7 +138,7 @@ class NzbQueue(TryList):
             registered = [nzo.work_name for nzo in self.__nzo_list]
 
         # Retryable folders from History
-        items = sabnzbd.proxy_build_history()[0]
+        items = build_history()[0]
         # Anything waiting or active or retryable is a known item
         registered.extend([platform_encode(os.path.basename(item['path'])) \
                            for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])

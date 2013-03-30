@@ -31,6 +31,12 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+try:
+    import hashlib
+    new_md5 = hashlib.md5
+except:
+    import md5
+    new_md5 = md5.new
 
 # SABnzbd modules
 import sabnzbd
@@ -45,6 +51,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
+from sabnzbd.database import get_history_handle
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
@@ -307,6 +314,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.skipped_files = 0
         self.nzf_list = []
         self.groups = []
+        self.md5 = new_md5()
         self.filter = remove_samples
         self.now = time.time()
 
@@ -382,6 +390,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         elif name == 'segment' and self.in_segment:
             partnum = self.article_nr
             segm = str(''.join(self.article_id))
+            self.md5.update(segm)
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
                     msg = 'Duplicate part %s, but different ID-s (%s // %s)' % (partnum, self.article_db[partnum][0], segm)
@@ -446,6 +455,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         files = max(1, self.valids)
         self.nzo.avg_stamp = self.avg_age / files
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
+        self.nzo.md5sum = self.md5.hexdigest()
         if self.skipped_files:
             logging.warning(Ta('Failed to import %s files from %s'),
                             self.skipped_files, self.nzo.filename)
@@ -461,7 +471,8 @@ NzbObjectSaver = (
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'new_caching', 'encrypted',
-    'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta'
+    'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
+    'md5sum'
 )
 
 class NzbObject(TryList):
@@ -580,6 +591,7 @@ class NzbObject(TryList):
         self.encrypted = 0
         self.wait = None
         self.pp_active = False  # Signals active post-processing (not saved)
+        self.md5sum = None
 
         self.create_group_folder = cfg.create_group_folders()
 
@@ -601,9 +613,6 @@ class NzbObject(TryList):
         # Determine "incomplete" folder
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
         adir = os.path.join(wdir, JOB_ADMIN)
-
-        # Duplicate checking, needs to be done before the backup
-        duplicate = (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename)
 
         if reuse:
             remove_all(adir, 'SABnzbd_nz?_*')
@@ -655,6 +664,12 @@ class NzbObject(TryList):
 
             sabnzbd.backup_nzb(filename, nzb)
             sabnzbd.save_compressed(adir, filename, nzb)
+
+        # Check against identical checksum or series/season/episode
+        if (not reuse) and nzb and dup_check:
+            duplicate = self.has_duplicates()
+        else:
+            duplicate = 0
 
         if not self.files and not reuse:
             self.purge_data(keep_basic=False)
@@ -733,7 +748,7 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        if duplicate and cfg.no_dupes() == 1:
+        if duplicate == 1:
             logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data(keep_basic=False)
             raise TypeError
@@ -1374,6 +1389,26 @@ class NzbObject(TryList):
                     nzf_ids.remove(nzf_id)
             else:
                 nzf_ids.remove(nzf_id)
+
+    def has_duplicates(self):
+        """ Return True when this NZB or episode is already in the History
+        """
+        no_dupes = cfg.no_dupes()
+        no_series_dupes = cfg.no_series_dupes()
+        if not no_dupes and not no_series_dupes:
+            return 0
+
+        res = 0
+        history_db = get_history_handle()
+        if no_series_dupes:
+            series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
+            if history_db.have_episode(series, season, episode):
+                res = no_series_dupes
+        if not res and no_dupes:
+            if history_db.have_md5sum(self.md5sum):
+                res = no_dupes
+        history_db.close()
+        return res
 
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """

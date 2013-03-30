@@ -1705,7 +1705,9 @@ def analyse_show(name):
     if job.is_match():
         job.get_values()
     info = job.show_info
-    return info.get('show_name', ''), \
+    show_name = info.get('show_name', '').replace('.', ' ').replace('_', ' ')
+    show_name = show_name.replace('  ', ' ')
+    return show_name, \
            info.get('season_num', ''), \
            info.get('episode_num', ''), \
            info.get('ep_name', '')

@@ -1067,7 +1067,3 @@ def active_primaries():
 
 def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
     return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
-
-def proxy_build_history():
-    """ Proxy to let nzbqueue call api """
-    return sabnzbd.api.build_history()

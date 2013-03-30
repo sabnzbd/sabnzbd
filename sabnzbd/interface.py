@@ -1167,7 +1167,7 @@ SWITCH_LIST = \
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
-             'enable_recursive'
+             'enable_recursive', 'no_series_dupes'
              )
 
 #------------------------------------------------------------------------------

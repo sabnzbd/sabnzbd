@@ -117,6 +117,8 @@ queue_complete_pers = OptionBool('misc', 'queue_complete_pers', False)
 replace_spaces = OptionBool('misc', 'replace_spaces', False)
 replace_dots = OptionBool('misc', 'replace_dots', False)
 no_dupes = OptionNumber('misc', 'no_dupes', 0)
+no_series_dupes = OptionNumber('misc', 'no_series_dupes', 0)
+
 ignore_samples = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
 create_group_folders = OptionBool('misc', 'create_group_folders', False)
 auto_sort = OptionBool('misc', 'auto_sort', False)
