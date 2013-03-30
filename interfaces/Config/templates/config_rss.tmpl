@@ -153,6 +153,8 @@
                   <option value="M"> $T('rss-must')</option>
                   <option value="R"> $T('rss-reject')</option>
                   <option value="C"> $T('rss-mustcat')</option>
+                  <option value=">"> $T('rss-atleast')</option>
+                  <option value="<"> $T('rss-atmost')</option>
                 </select>
               </td>
               <td>
@@ -223,6 +225,8 @@
                   <option value="M"> $T('rss-must')</option>
                   <option value="R"> $T('rss-reject')</option>
                   <option value="C"> $T('rss-mustcat')</option>
+                  <option value=">"> $T('rss-atleast')</option>
+                  <option value="<"> $T('rss-atmost')</option>
                 </select>
               </td>
               <td>
@@ -297,6 +301,8 @@
                       <option value="M" <!--#if $filter[3] == "M" then 'selected="selected"' else ""#-->> $T('rss-must')</option>
                       <option value="R" <!--#if $filter[3] == "R" then 'selected="selected"' else ""#-->> $T('rss-reject')</option>
                       <option value="C" <!--#if $filter[3] == "C" then 'selected="selected"' else ""#-->> $T('rss-mustcat')</option>
+                      <option value=">" <!--#if $filter[3] == ">" then 'selected="selected"' else ""#-->> $T('rss-atleast')</option>
+                      <option value="<" <!--#if $filter[3] == "<" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
                     </select>
                   </td>
                   <td>
@@ -390,6 +396,7 @@
                     <th>$T('rss-skip')</th>
                     <th>$T('rss-filter')</th>
                     <th>$T('sort-title')</th>
+                    <th>$T('size')</th>
                   </tr>
                 </thead>
               <!--#end if#-->
@@ -408,6 +415,7 @@
                     <span>$job[3]</span>
                   </td>
                   <td>$job[1]</td>
+                  <td>$job[5]</td>
               </tr>
             <!--#end for#-->
             </table>
@@ -434,6 +442,7 @@
                     <th>$T('rss-skip')</th>
                     <th>$T('rss-filter')</th>
                     <th>$T('sort-title')</th>
+                    <th>$T('size')</th>
                   </tr>
                 </thead>
               <!--#end if#-->
@@ -452,6 +461,7 @@
                     <span>$job[3]</span>
                   </td>
                   <td>$job[1]</td>
+                  <td>$job[5]</td>
               </tr>
             <!--#end for#-->
             </table>

@@ -31,7 +31,8 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, match_str
+from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, \
+                         match_str, from_units
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder, xml_name
 
@@ -213,6 +214,7 @@ class RSSQueue(object):
                                 if not check_str(item.get('script')): item['script'] = 'None'
                                 if not check_str(item.get('prio')): item['prio'] = '-100'
                                 if not check_int(item.get('rule', 0)): item['rule'] = 0
+                                if not check_int(item.get('size', 0L)): item['size'] = 0L
                                 if not isinstance(item.get('time'), float): item['time'] = time.time()
                                 if not check_int(item.get('order', 0)): item.get['order'] = 0
                                 self.jobs[feed][link] = item
@@ -239,6 +241,7 @@ class RSSQueue(object):
         #           prio : priority
         #           time : timestamp (used for time-based clean-up)
         #           order : order in the RSS feed
+        #           size : size in bytes
 
         self.shutdown = False
 
@@ -308,7 +311,10 @@ class RSSQueue(object):
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
-            regexes.append(convert_filter(filter[4]))
+            if filter[3] in ('<', '>'):
+                regexes.append(filter[4])
+            else:
+                regexes.append(convert_filter(filter[4]))
             rePrios.append(filter[5])
             reEnabled.append(filter[6] != '0')
         regcount = len(regexes)
@@ -370,10 +376,11 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category = _get_link(uri, entry)
+                    link, category, size = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
                     category = u''
+                    size = 0L
                     logging.info(Ta('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info = True)
                     return T('Incompatible feed')
@@ -384,6 +391,7 @@ class RSSQueue(object):
                 if category in ('', '*'):
                     category = None
                 title = jobs[link].get('title', '')
+                size = jobs[link].get('size', 0L)
 
             if link:
                 # Make sure spaces are quoted in the URL
@@ -410,6 +418,7 @@ class RSSQueue(object):
                     n = 0
 
                     # Match against all filters until an postive or negative match
+                    logging.debug('Size %s for %s', size, title)
                     for n in xrange(regcount):
                         if reEnabled[n]:
                             if category and reTypes[n] == 'C':
@@ -418,6 +427,16 @@ class RSSQueue(object):
                                     logging.debug("Filter rejected on rule %d", n)
                                     result = False
                                     break
+                            elif reTypes[n] == '<' and size and from_units(regexes[n]) < size:
+                                # "Size at most" : too large
+                                logging.debug('Filter rejected on rule %d', n)
+                                result = False
+                                break
+                            elif reTypes[n] == '>' and size and from_units(regexes[n]) > size:
+                                # "Size at least" : too small
+                                logging.debug('Filter rejected on rule %d', n)
+                                result = False
+                                break
                             else:
                                 if regexes[n]:
                                     found = re.search(regexes[n], title)
@@ -473,12 +492,12 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, 'G', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, 'G', category, myCat, myPP, myScript,
                                     act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, 'B', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, 'B', category, myCat, myPP, myScript,
                                     False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
@@ -569,7 +588,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star, order,
+def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '': script = None
@@ -578,6 +597,7 @@ def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star
     jobs[link] = {}
     jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
+    jobs[link]['size'] = size
     if special_rss_site(link):
         nzbname = None
     else:
@@ -603,13 +623,28 @@ def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star
     jobs[link]['time'] = time.time()
     jobs[link]['rule'] = rule
 
+
+_RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
+_RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
+
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry
-        Returns (link, category)
+        Returns (link, category, size)
     """
     link = None
     category = ''
+    size = 0L
     uri = uri.lower()
+
+    # Try to find size in Description
+    try:
+        desc = entry.description.replace('\n',' ')
+        m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
+        if m:
+            size = from_units(m.group(1))
+            logging.debug('Found size %s for %s', size, uri)
+    except:
+        pass
 
     # Try standard link first
     link = entry.link
@@ -635,10 +670,10 @@ def _get_link(uri, entry):
                         category = entry.description
                     except:
                         category = ''
-        return link, category
+        return link, category, size
     else:
         logging.warning(Ta('Empty RSS entry found (%s)'), link)
-        return None, ''
+        return None, '', 0L
 
 
 def special_rss_site(url):
