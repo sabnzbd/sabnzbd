@@ -353,8 +353,6 @@ class NzbQueue(TryList):
             priority = nzo.priority
             if sabnzbd.scheduler.analyse(False, priority):
                 nzo.status = Status.PAUSED
-            else:
-                nzo.status = Status.QUEUED
 
             self.__nzo_table[nzo.nzo_id] = nzo
             if priority > HIGH_PRIORITY:
@@ -614,9 +612,10 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
-            if sabnzbd.scheduler.analyse(False, priority):
+            if sabnzbd.scheduler.analyse(False, priority) and \
+               nzo.status in (Status.CHECKING, Status.DOWNLOADING, Status.QUEUED):
                 nzo.status = Status.PAUSED
-            else:
+            elif nzo.status == Status.PAUSED:
                 nzo.status = Status.QUEUED
             nzo.save_to_disk()
 
