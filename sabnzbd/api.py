@@ -96,7 +96,7 @@ def api_handler(kwargs):
 
     if isinstance(mode, list): mode = mode[0]
     if isinstance(output, list): output = output[0]
-    response = _api_table.get(mode, (_api_undefined, 3))[0](name, output, kwargs)
+    response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
     if output == 'json' and callback:
         response = '%s(%s)' % (callback, response)
     return response
@@ -148,7 +148,7 @@ def _api_qstatus(name, output, kwargs):
 def _api_queue(name, output, kwargs):
     """ API: Dispatcher for mode=queue """
     value = kwargs.get('value', '')
-    return _api_queue_table.get(name, _api_queue_default)(output, value, kwargs)
+    return _api_queue_table.get(name, (_api_queue_default, 2))[0](output, value, kwargs)
 
 
 def _api_queue_delete(output, value, kwargs):
@@ -704,8 +704,8 @@ def _api_browse(name, output, kwargs):
 
 #------------------------------------------------------------------------------
 def _api_config(name, output, kwargs):
-    """ API: Dispather for "config" """
-    return _api_config_table.get(name, _api_config_undefined)(output, kwargs)
+    """ API: Dispatcher for "config" """
+    return _api_config_table.get(name, (_api_config_undefined, 2))[0](output, kwargs)
 
 
 def _api_config_speedlimit(output, kwargs):
