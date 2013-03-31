@@ -32,6 +32,7 @@ import time
 import datetime
 import zlib
 import logging
+import sys
 
 import sabnzbd
 import sabnzbd.cfg
@@ -76,16 +77,17 @@ def convert_search(search):
 
 class HistoryDB(object):
     def __init__(self, db_path):
+        self.db_path = db_path
+        self.con = self.c = None
+        self.connect()
+
+    def connect(self):
         global _DONE_CLEANING
-        #Thread.__init__(self)
-        if not os.path.exists(db_path):
+        if not os.path.exists(self.db_path):
             create_table = True
         else:
             create_table = False
-        if sabnzbd.WIN32 and isinstance(db_path, str):
-            self.con = sqlite3.connect(db_path.decode('latin-1').encode('utf-8'))
-        else:
-            self.con = sqlite3.connect(db_path)
+        self.con = sqlite3.connect(self.db_path)
         self.con.row_factory = dict_factory
         self.c = self.con.cursor()
         if create_table:
@@ -96,7 +98,15 @@ class HistoryDB(object):
             # http://www.sqlite.org/lang_vacuum.html
             _DONE_CLEANING = True
             self.execute('VACUUM')
-
+            
+        self.execute('PRAGMA user_version;')
+        version = self.c.fetchone()['user_version']
+        if version < 1:
+            # Add any missing columns added since first DB version
+            self.execute('PRAGMA user_version = 1;')
+            self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
+            self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+        
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
         try:
@@ -108,14 +118,30 @@ class HistoryDB(object):
                 self.save()
             return True
         except:
-            logging.error(Ta('SQL Command Failed, see log'))
-            logging.debug("SQL: %s" , command)
-            logging.info("Traceback: ", exc_info = True)
-            try:
-                self.con.rollback()
-            except:
-                logging.debug("Rollback Failed:", exc_info = True)
+            error = str(sys.exc_value)
+            if 'readonly' in error:
+                logging.error(Ta('Cannot write to History database, check access rights!'))
+                # Report back success, because there's no recovery possible
+                return True
+            elif 'not a database' in error or 'malformed' in error:
+                logging.error(Ta('Damaged History database, created empty replacement'))
+                logging.info("Traceback: ", exc_info = True)
+                self.close()
+                try:
+                    os.remove(self.db_path)
+                except:
+                    pass
+                self.connect()
+            else:
+                logging.error(Ta('SQL Command Failed, see log'))
+                logging.debug("SQL: %s" , command)
+                logging.info("Traceback: ", exc_info = True)
+                try:
+                    self.con.rollback()
+                except:
+                    logging.debug("Rollback Failed:", exc_info = True)
             return False
+    
 
     def create_history_db(self):
         self.execute("""
@@ -143,7 +169,9 @@ class HistoryDB(object):
             "fail_message" TEXT,
             "url_info" TEXT,
             "bytes" INTEGER,
-            "meta" TEXT
+            "meta" TEXT,
+            "series" TEXT,
+            "md5sum" TEXT
         )
         """)
 
@@ -198,8 +226,8 @@ class HistoryDB(object):
 
         if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
         url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-        downloaded, completeness, fail_message, url_info, bytes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
+        downloaded, completeness, fail_message, url_info, bytes, series, md5sum)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
@@ -237,10 +265,36 @@ class HistoryDB(object):
         fetched_items = len(items)
 
         # Unpack the single line stage log
-        # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+        # Stage Name is separated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
 
         return (items, fetched_items, total_items)
+
+
+    def have_episode(self, series, season, episode):
+        """ Check whether History contains this series episode """
+        total = 0
+        series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
+        if series and season and episode:
+            pattern = '%s/%s/%s' % (series, season, episode)
+            res = self.execute('select count(*) from History WHERE series = ? AND STATUS != "Failed"', (pattern,))
+            if res:
+                try:
+                    total = self.c.fetchone().get('count(*)')
+                except AttributeError:
+                    pass
+        return total > 0
+
+    def have_md5sum(self, md5sum):
+        """ Check whether this md5sum already in History """
+        total = 0
+        res = self.execute('select count(*) from History WHERE md5sum = ? AND STATUS != "Failed"', (md5sum,))
+        if res:
+            try:
+                total = self.c.fetchone().get('count(*)')
+            except AttributeError:
+                pass
+        return total > 0
 
     def get_history_size(self):
         """
@@ -329,14 +383,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     flagRepair, flagUnpack, flagDelete = nzo.repair_opts
     nzo_info = decode_factory(nzo.nzo_info)
 
-    # Get the url and newzbin msgid
-    report = decode_factory(nzo_info.get('msgid', ''))
-    if report:
-        url = format_source_url(report)
-    else:
-        url = decode_factory(nzo.url)
-
-    #group = nzo.group
+    url = decode_factory(nzo.url)
 
     completed = int(time.time())
     name = decode_factory(nzo.final_name)
@@ -370,22 +417,29 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Get the dictionary containing the stages and their unpack process
     stages = decode_factory(nzo.unpack_info)
     # Pack the ditionary up into a single string
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
     for key, results in stages.iteritems():
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
-    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path, \
+    # Encode series info in now unused `record` field.
+    seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+    if seriesname and season and episode:
+        series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
+    else:
+        series = u''
+
+    return (completed, name, nzb_name, category, pp, script, '', url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
-            fail_message, url_info, bytes,)
+            fail_message, url_info, bytes, series, nzo.md5sum)
 
 def unpack_history_info(item):
     '''
         Expands the single line stage_log from the DB
         into a python dictionary for use in the history display
     '''
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     if item['stage_log']:
         try:
             lines = item['stage_log'].split('\r\n')

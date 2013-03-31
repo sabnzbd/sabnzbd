@@ -63,6 +63,19 @@ SKIN_TEXT = {
     'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
     'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
     'sch-remove_failed'  : TT('Remove failed jobs'), #: Config->Scheduler
+    'sch-pause_all_low'  : TT('Pause low prioirty jobs'), #: Config->Scheduler
+    'sch-pause_all_normal':TT('Pause normal prioirty jobs'), #: Config->Scheduler
+    'sch-pause_all_high' : TT('Pause high prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_low' : TT('Resume low prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_normal':TT('Resume normal prioirty jobs'), #: Config->Scheduler
+    'sch-resume_all_high': TT('Resume high prioirty jobs'), #: Config->Scheduler
+
+    'prowl-off'          : TT('Off'), #: Prowl priority
+    'prowl-very-low'     : TT('Very Low'), #: Prowl priority
+    'prowl-moderate'     : TT('Moderate'), #: Prowl priority
+    'prowl-normal'       : TT('Normal'), #: Prowl priority
+    'prowl-high'         : TT('High'), #: Prowl priority
+    'prowl-emergency'    : TT('Emergency'), #: Prowl priority
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
@@ -129,7 +142,6 @@ SKIN_TEXT = {
     'cmenu-rss' : TT('RSS'), #: Main menu item
     'cmenu-notif' : TT('Notifications'), #: Main menu item
     'cmenu-email' : TT('Email'), #: Main menu item
-    'cmenu-newzbin' : TT('Index Sites'), #: Main menu item
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
     'cmenu-special' : TT('Special'), #: Main menu item
@@ -306,8 +318,10 @@ SKIN_TEXT = {
     'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),
     'opt-rss_rate' : TT('RSS Checking Interval'),
     'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
-    'opt-bandwidth_limit' : TT('Download Speed Limit'),
-    'explain-bandwidth_limit' : TT('Download rate limit (in KB/s - kilobytes per second).'),
+    'opt-bandwidth_max' : TT('Maximum line speed'),
+    'explain-bandwidth_max' : TT('Highest possible linespeed in Bytes/second, e.g. 2M.'),
+    'opt-bandwidth_perc' : TT('Percentage of line speed'),
+    'explain-bandwidth_perc' : TT('Which percentage of the linespeed should SABnzbd use, e.g. 50'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
     'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'),
     'opt-cleanup_list' : TT('Cleanup List'),
@@ -325,6 +339,15 @@ SKIN_TEXT = {
     'explain-disableApikeyWarn' : TT('USE AT YOUR OWN RISK!'),
     'qr-code' : TT('QR Code'), #: Button to show QR code of APIKEY
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
+    'opt-local_range' : TT('Local network range'),
+    'explain-local_range' : TT('All local network addresses start with this prefix (often "192.168.1.")'),
+    'opt-inet_exposure' : TT('External internet access'),
+    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network'),
+    'inet-local' : TT('No access'), # Selection value for external access
+    'inet-nzb' : TT('Add NZB files '), # Selection value for external access
+    'inet-api' : TT('API (no Config)'), # Selection value for external access
+    'inet-fullapi' : TT('Full API'), # Selection value for external access
+    'inet-ui' : TT('Full Web interface'), # Selection value for external access
 
 # Config->Folders
     'folderConfig' : TT('Folder configuration'),
@@ -364,10 +387,16 @@ SKIN_TEXT = {
     'processingSwitches' : TT('Processing Switches'),
     'opt-quick_check' : TT('Enable Quick Check'),
     'explain-quick_check' : TT('Skip par2 checking when files are 100% valid.'),
+    'opt-enable_all_par' : TT('Download all par2 files'),
+    'explain-enable_all_par' : TT('This prevents multiple repair runs. QuickCheck on: download all par2 files when needed. QuickCheck off: always download all par2 files.'),
     'opt-enable_unrar' : TT('Enable Unrar'),
     'explain-enable_unrar' : TT('Enable built-in unrar functionality.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'explain-enable_unzip' : TT('Enable built-in unzip functionality.'),
+    'opt-enable_7zip' : TT('Enable 7zip'),
+    'explain-enable_7zip' : TT('Enable built-in 7zip functionality.'),
+    'opt-enable_recursive' : TT('Enable recursive unpacking'),
+    'explain-enable_recursive' : TT('Unpack archives (rar, zip, 7z) within archives.'),
     'opt-enable_filejoin' : TT('Enable Filejoin'),
     'explain-enable_filejoin' : TT('Join files ending in .001, .002 etc. into one file.'),
     'opt-enable_tsjoin' : TT('Enable TS Joining'),
@@ -383,7 +412,9 @@ SKIN_TEXT = {
     'opt-pause_on_pwrar' : TT('Action when encrypted RAR is downloaded'),
     'explain-pause_on_pwrar' : TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Detect Duplicate Downloads'),
-    'explain-no_dupes' : TT('Detect identically named NZB files (requires NZB backup option) and duplicate titles across RSS feeds.'),
+    'explain-no_dupes' : TT('Detect identical NZB files (based on NZB content)'),
+    'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
+    'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode")'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
@@ -548,7 +579,7 @@ SKIN_TEXT = {
     'explain-email_account' : TT('For authenticated email, account name.'),
     'opt-email_pwd' : TT('OPTIONAL Account Password'),
     'explain-email_pwd' : TT('For authenticated email, password.'),
-    'growlSettings' : TT('Notifications'), #: Section header
+    'growlSettings' : TT('Growl'), #: Header Growl section
     'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
     'explain-growl_enable' : TT('Send notifications to Growl'), #: Don't translate "Growl"
     'opt-growl_server' : TT('Server address'), #: Address of Growl server
@@ -562,35 +593,18 @@ SKIN_TEXT = {
     'opt-notify_classes' : TT('Notification classes'),
     'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
-
-# Config->Newzbin
-    'explain-newzbin' : TT('If you have an account at <strong>www.newzbin2.es</strong>, you can enter your account info here.<br />This will unlock extra functionality.'),
-    'accountInfo' : TT('Account info'),
-    'opt-username_newzbin' : TT('Newzbin Username'),
-    'explain-username_newzbin' : TT('Set your account username here.'),
-    'opt-password_newzbin' : TT('Newzbin Password'),
-    'explain-password_newzbin' : TT('Set your account password here.'),
-    'newzbinBookmarks' : TT('Bookmark Processing'),
-    'opt-newzbin_bookmarks' : TT('Auto-Fetch Bookmarks'),
-    'explain-newzbin_bookmarks' : TT('Automatically retrieve jobs from your bookmarks.'),
-    'link-getBookmarks' : TT('Get Bookmarks Now'),
-    'link-HideBM' : TT('Hide Bookmarks'),
-    'link-ShowBM' : TT('Show Bookmarks'),
-    'opt-newzbin_unbookmark' : TT('Un-Bookmark If Download Complete'),
-    'explain-newzbin_unbookmark' : TT('Remove from bookmark list when download is complete.'),
-    'opt-bookmark_rate' : TT('Checking Interval'),
-    'explain-bookmark_rate' : TT('In minutes (at least 15 min).'),
-    'processedBM' : TT('Processed Bookmarks'),
-    'explain-nzbmatrix' : TT('If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter your account info here.<br />This is required if you want to use the RSS feeds of this site.'),
-    'opt-username_matrix' : TT('NzbMatrix Username'),
-    'explain-username_matrix' : TT('Set your account username here.'),
-    'opt-apikey_matrix' : TT('NzbMatrix API key'),
-    'explain-apikey_matrix' : TT('Set the NzbMatrix API key here.'),
+    'section-NC' : TT('Notification Center'), #: Header for OSX Notfication Center section
+    'section-OSD' : TT('NotifyOSD'), #: Header for Ubuntu's NotifyOSD notifications section
+    'section-Prowl' : TT('Prowl'), #: Header for Prowl notification section
+    'opt-prowl_enable' : TT('Enable Prowl notifications'), #: Prowl settings
+    'explain-prowl_enable' : TT('Requires a Prowl account'), #: Prowl settings
+    'opt-prowl_apikey' : TT('API key for Prowl'), #: Prowl settings
+    'explain-prowl_apikey' : TT('Personal API key for Prowl (required)'), #: Prowl settings
 
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
-    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to seperate terms.'),
+    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
     'explain-catTags2' : TT('Ending the path with an asterisk * will prevent creation of job folders.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
@@ -816,7 +830,6 @@ SKIN_TEXT = {
     'smpl-dualView2' : TT('DualView2'),
     'smpl-warnings' : TT('Warnings'),
     'smpl-custom' : TT('Custom'),
-    'smpl-getbookmarks' : TT('Get Bookmarks'),
     'smpl-restartOK?' : TT('Are you sure you want to restart SABnzbd?'),
     'smpl-refreshr' : TT('Refresh rate'),
     'smpl-purgeQueue' : TT('Delete All'),
@@ -850,8 +863,6 @@ SKIN_TEXT = {
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-server-required' :  TT('This field is required.'),
     'wizard-server-number' :  TT('Please enter a whole number.'),
-    'wizard-index-explain' :  TT('If you are a member of newzbin or nzbmatrix, you may enter your username and password here so we can fetch their nzb\'s. This stage can be skipped if you don\'t use either services.'),
-    'wizard-index-bookmark' :  TT('Automatically download bookmarked posts.'),
     'wizard-optional' :  TT('Optional'), #: As in "this item is optional"
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
@@ -871,6 +882,8 @@ SKIN_TEXT = {
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
+    'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
+    'wizard-bandwidth-error' : TT('Enter a speed (e.g. 5M)'), #: Wizard tell user to enter a max bandwidth
 
 #Special
     'yourRights' : TT('''

@@ -20,6 +20,16 @@ if sys.version_info < (2, 5):
     print "Sorry, requires Python 2.5, 2.6 or 2.7."
     sys.exit(1)
 
+# Make sure UTF-8 is default 8bit encoding
+if not hasattr(sys,"setdefaultencoding"):
+    reload(sys)
+try:
+    sys.setdefaultencoding('utf-8')
+except:
+    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
+    print 'or find another way to force Python to use UTF-8 for string encoding.'
+    sys.exit(1)
+
 import logging
 import logging.handlers
 import os
@@ -63,6 +73,14 @@ except:
         else:
             SQLITE_DLL = False
 
+import locale, __builtin__
+try:
+    locale.setlocale(locale.LC_ALL, "")
+    __builtin__.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
+except:
+    # Work-around for Python-ports with bad "locale" support
+    __builtin__.__dict__['codepage'] = 'cp1252'
+
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
@@ -78,7 +96,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, latin1, deunicode
 import sabnzbd.growler as growler
 
 from threading import Thread
@@ -190,6 +208,11 @@ class guiHandler(logging.Handler):
         """
         Emit a record by adding it to our private queue
         """
+        if record.levelname == 'WARNING':
+            sabnzbd.LAST_WARNING = record.msg
+        else:
+            sabnzbd.LAST_ERROR = record.msg
+
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
@@ -364,6 +387,7 @@ def CheckColor(color, web_dir):
 #------------------------------------------------------------------------------
 def fix_webname(name):
     if name:
+        name = deunicode(name)
         xname = name.title()
     else:
         xname = ''
@@ -417,8 +441,8 @@ def GetProfileInfo(vista_plus):
 
                 try:
                     # Conversion to 8bit ASCII required for CherryPy
-                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode('latin-1')
-                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode('latin-1')
+                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode(codepage)
+                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode(codepage)
                     ok = True
                 except:
                     # If unconvertible characters exist, use MSDOS name
@@ -483,7 +507,12 @@ def print_modules():
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.warning(Ta('unzip binary... NOT found!'))
+        if sabnzbd.cfg.enable_unzip(): logging.warning(Ta('unzip binary... NOT found!'))
+
+    if sabnzbd.newsunpack.SEVEN_COMMAND:
+        logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
+    else:
+        if sabnzbd.cfg.enable_7zip(): logging.warning(Ta('7za binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -736,7 +765,7 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
 def copy_old_files(newpath):
     """ OSX only:
         If no INI file found but old one exists, copy it
-        When copying the INI, also copy rss, bookmarks and watched-data
+        When copying the INI, also copy rss and watched-data
     """
     if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
         if not os.path.exists(newpath):
@@ -755,10 +784,6 @@ def copy_old_files(newpath):
                 os.mkdir(newpath)
             try:
                 shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
-            except:
-                pass
-            try:
-                shutil.copy(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
             except:
                 pass
             try:
@@ -1565,6 +1590,15 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = timer5 = 0
     while not sabnzbd.SABSTOP:
+        if sabnzbd.LAST_WARNING:
+            msg = sabnzbd.LAST_WARNING
+            sabnzbd.LAST_WARNING = None
+            sabnzbd.growler.send_notification(T('Warning'), msg, 'warning')
+        if sabnzbd.LAST_ERROR:
+            msg = sabnzbd.LAST_ERROR
+            sabnzbd.LAST_ERROR = None
+            sabnzbd.growler.send_notification(T('Error'), msg, 'error')
+
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
                                                     sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)

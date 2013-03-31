@@ -30,6 +30,7 @@ import threading
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
@@ -83,6 +84,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             zf = RarFile(path)
         except:
             return -1, []
+    elif is_sevenfile(path):
+        try:
+            zf = SevenZip(path)
+        except:
+            return -1, []
     else:
         return 1, []
 
@@ -113,7 +119,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 name = misc.sanitize_foldername(name)
                 if data:
                     try:
-                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, url=url,
+                        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
                     except:
                         nzo = None
@@ -172,7 +178,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         name = misc.sanitize_foldername(name)
 
     try:
-        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
+        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
     except TypeError:
         # Duplicate, ignore
@@ -302,7 +308,7 @@ class DirScanner(threading.Thread):
                     continue
 
                 ext = os.path.splitext(path)[1].lower()
-                candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
+                candidate = ext in ('.nzb', '.gz') or ext in VALID_ARCHIVES
                 if candidate:
                     try:
                         stat_tuple = os.stat(path)
@@ -339,8 +345,8 @@ class DirScanner(threading.Thread):
                     if not stable:
                         continue
 
-                    # Handle ZIP files, but only when containing just NZB files
-                    if ext in ('.zip', '.rar') :
+                    # Handle archive files, but only when containing just NZB files
+                    if ext in VALID_ARCHIVES:
                         res, nzo_ids = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
                         if res == -1:
                             self.suspected[path] = stat_tuple

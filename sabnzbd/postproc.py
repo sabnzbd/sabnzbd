@@ -38,7 +38,6 @@ from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader
@@ -94,8 +93,8 @@ class PostProcessor(Thread):
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(Ta('Failed to load postprocessing queue: Wrong version (need:%s, found:%s)'), POSTPROC_QUEUE_VERSION, version)
-            if isinstance(history_queue, list):
+                logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+            elif isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
             logging.info('Corrupt %s file, discarding', POSTPROC_QUEUE_FILE_NAME)
@@ -225,7 +224,6 @@ def process_job(nzo):
 
     # Get the NZB name
     filename = nzo.final_name
-    msgid = nzo.msgid
 
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
@@ -259,7 +257,7 @@ def process_job(nzo):
                 emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
-                emsg = T('Download failed - Out of your server\'s retention?')
+                emsg = T('Download failed - No longer on your server(s)')
                 empty = True
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
@@ -338,7 +336,7 @@ def process_job(nzo):
                     #set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), ())
+                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
@@ -429,7 +427,7 @@ def process_job(nzo):
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
-                                                             msgid, dirname, cat, nzo.group, job_result)
+                                                             dirname, cat, nzo.group, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
@@ -445,7 +443,7 @@ def process_job(nzo):
         ## Email the results
         if (not nzb_list) and cfg.email_endjob():
             if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error)):
-                emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+                emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                                nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
 
         if script_output:
@@ -467,12 +465,6 @@ def process_job(nzo):
         if all_ok:
             cleanup_list(workdir_complete, False)
 
-        ## Remove newzbin bookmark, if any
-        if msgid and all_ok:
-            Bookmarks.do.del_bookmark(msgid)
-        elif all_ok and isinstance(nzo.url, str):
-            sabnzbd.proxy_rm_bookmark(nzo.url)
-
         ## Force error for empty result
         all_ok = all_ok and not empty
 
@@ -481,7 +473,7 @@ def process_job(nzo):
             growler.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = Status.COMPLETED
         else:
-            growler.send_notification(T('Download Failed'), filename, 'complete')
+            growler.send_notification(T('Download Failed'), filename, 'failed')
             nzo.status = Status.FAILED
 
     except:
@@ -490,12 +482,12 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        growler.send_notification(T('Download Failed'), filename, 'complete')
+        growler.send_notification(T('Download Failed'), filename, 'failed')
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
         if cfg.email_endjob():
-            emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+            emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
 
 

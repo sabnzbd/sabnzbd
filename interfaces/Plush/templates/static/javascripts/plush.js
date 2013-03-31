@@ -240,7 +240,7 @@ jQuery(function($){
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
       url: "tapi",
-      data: {mode:'queue', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+      data: {mode:'queue', name:'delete', value:value, del_files:del_files, search: $('#queueSearchBox').val(), apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
         $.plush.modalOpen=false;
@@ -325,6 +325,17 @@ jQuery(function($){
       type: "POST",
       url: "tapi",
       data: {mode:'watched_now', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
+  // Resume Post Processing
+  $('#resume_pp').click(function() {
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'resume_pp', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
   });
@@ -477,6 +488,13 @@ jQuery(function($){
   //  $.plush.InitQueue() - Queue Events
 
   InitQueue : function() {
+
+  // Search
+  $('#queueSearchForm').submit(function(){
+    $.plush.queuecurpage = 0; // default 1st page
+    $.plush.RefreshQueue();
+    return false;
+  });
 
   // Pause/resume toggle (queue)
   $('#pause_resume').click(function(event) {
@@ -1085,7 +1103,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
 
   // ***************************************************************
-  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl (AHAH)
+  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl
 
   RefreshQueue : function(page) {
 
@@ -1107,34 +1125,53 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
   // Refresh state notification
   $('#manual_refresh_wrapper').removeClass('refresh_skipped').addClass('refreshing');
 
+  if ($('#queueSearchBox').val() )
+    var data = {start: 0, limit: 0, search: $('#queueSearchBox').val() };
+  else
+    var data = {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage};
+
   // Fetch updated content from queue.tmpl
   $.ajax({
     headers: {"Cache-Control": "no-cache"},
     type: "POST",
     url: "queue/",
-    data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
+    data: data,
     success: function(result){
       if (!result) {
         $('#manual_refresh_wrapper').addClass('refresh_skipped'); // Failed refresh notification
         return;
       }
 
-  $('.left_stats .initial-loading').hide();
-  $('#queue').html(result);               // Replace queue contents with queue.tmpl
+      $('.left_stats .initial-loading').hide();
+      $('#queue').html(result);               // Replace queue contents with queue.tmpl
 
-  if ($.plush.multiOps) // add checkboxes
-    $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
-  if ($.plush.multiOpsChecks) // checkbox state persistence
-    for (var nzo_id in $.plush.multiOpsChecks)
-      $('#'+nzo_id+' .multiops').prop('checked',true);
+      if ($.plush.multiOps) // add checkboxes
+        $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+      if ($.plush.multiOpsChecks) // checkbox state persistence
+        for (var nzo_id in $.plush.multiOpsChecks)
+          $('#'+nzo_id+' .multiops').prop('checked',true);
 
-
-  $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
-  $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
-}
-});
+      $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
+      $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
+    }
+  });
 
   }, // end $.plush.RefreshQueue()
+
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
 
 
   // ***************************************************************

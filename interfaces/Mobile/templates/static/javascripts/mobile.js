@@ -799,20 +799,6 @@ $(function(){
     $('.addnzb_response_clone').remove();
   });
 
-  $('#fetch_newzbin_bookmarks').click(function(){
-    $.ajax({
-      type: "POST",
-      url: "tapi",
-      data: { mode:'newzbin', name:'get_bookmarks', apikey: $.mobile.apikey },
-      success: function(resp){
-        $('#addnzb_response').clone().addClass('addnzb_response_clone')
-          .children('.addnzb_response_text').html(resp)
-          .parent().insertAfter('#addnzb_response').fadeIn('slow');
-        $.mobile.LoadQueue();
-      }
-    });
-  });
-
   // clear warnings
   $('#warnings_clear').click(function(){
     if (confirm( $(this).attr('rel') )){

@@ -35,7 +35,7 @@ from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
                               REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status, QUEUE_FILE_TMPL
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -71,7 +71,16 @@ class NzbQueue(TryList):
         if repair < 2:
             # Read the queue from the saved files
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
-            if data:
+            if not data:
+                try:
+                    # Try previous queue file
+                    queue_vers, nzo_ids, dummy = sabnzbd.load_admin(QUEUE_FILE_TMPL % '9')
+                except:
+                    nzo_ids = []
+                if nzo_ids:
+                    logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+                    nzo_ids = []
+            else:
                 try:
                     queue_vers, nzo_ids, dummy = data
                     if not queue_vers == QUEUE_VERSION:
@@ -115,11 +124,12 @@ class NzbQueue(TryList):
 
 
     def scan_jobs(self, all=False, action=True):
-        """ Scan "incomplete" for mssing folders,
+        """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
             'action' is True, do the recovery action
             returns list of orphaned folders
         """
+        from sabnzbd.api import build_history
         result = []
         # Folders from the download queue
         if all:
@@ -128,7 +138,7 @@ class NzbQueue(TryList):
             registered = [nzo.work_name for nzo in self.__nzo_list]
 
         # Retryable folders from History
-        items = sabnzbd.proxy_build_history()[0]
+        items = build_history()[0]
         # Anything waiting or active or retryable is a known item
         registered.extend([platform_encode(os.path.basename(item['path'])) \
                            for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])
@@ -168,7 +178,7 @@ class NzbQueue(TryList):
                 sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
             else:
                 logging.debug('Repair job %s without stored NZB', latin1(name))
-                nzo = NzbObject(name, 0, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
+                nzo = NzbObject(name, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
@@ -220,7 +230,7 @@ class NzbQueue(TryList):
             if save_nzo is None or nzo is save_nzo:
                 sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                 if not nzo.futuretype:
-                    nzo.save_attribs()
+                    nzo.save_to_disk()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -231,12 +241,12 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status=Status.GRABBING)
+        future_nzo = NzbObject(msg, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status=Status.GRABBING)
         self.add(future_nzo)
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
+    def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
         """ Refresh a placeholder nzo with an actual nzo """
         assert isinstance(future, NzbObject)
         if nzo_info is None:
@@ -261,7 +271,7 @@ class NzbQueue(TryList):
                 old_prio = future.priority
 
                 try:
-                    future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
+                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
                     self.save(future)
                 except ValueError:
@@ -342,6 +352,9 @@ class NzbQueue(TryList):
         if nzo.nzo_id:
             nzo.deleted = False
             priority = nzo.priority
+            if sabnzbd.scheduler.analyse(False, priority):
+                nzo.status = Status.PAUSED
+
             self.__nzo_table[nzo.nzo_id] = nzo
             if priority > HIGH_PRIORITY:
                 #Top and repair priority items are added to the top of the queue
@@ -411,16 +424,18 @@ class NzbQueue(TryList):
         self.save('x')
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove_all(self):
+    def remove_all(self, search=None):
+        if search: search = search.lower()
         lst = []
         for nzo_id in self.__nzo_table:
             lst.append(nzo_id)
         for nzo_id in lst:
-            nzo = self.__nzo_table.pop(nzo_id)
-            nzo.deleted = True
-            self.__nzo_list.remove(nzo)
-            sabnzbd.remove_data(nzo_id, nzo.workpath)
-            self.cleanup_nzo(nzo)
+            if (not search) or search in self.__nzo_table[nzo_id].final_name_pw_clean.lower():
+                nzo = self.__nzo_table.pop(nzo_id)
+                nzo.deleted = True
+                self.__nzo_list.remove(nzo)
+                sabnzbd.remove_data(nzo_id, nzo.workpath)
+                self.cleanup_nzo(nzo)
         del lst
         self.save()
 
@@ -478,6 +493,9 @@ class NzbQueue(TryList):
             nzo2 = self.__nzo_table[item_id_2]
         except KeyError:
             # One or both jobs missing
+            return (-1, 0)
+
+        if nzo1 == nzo2:
             return (-1, 0)
 
         #get the priorities of the two items
@@ -555,7 +573,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_queue(self, field, reverse=None):
-        if isinstance(reverse, str):
+        if isinstance(reverse, basestring):
             if reverse.lower() == 'desc':
                 reverse = True
             else:
@@ -595,7 +613,12 @@ class NzbQueue(TryList):
                 return nzo_id_pos1
 
             nzo.priority = priority
-            nzo.save_attribs()
+            if sabnzbd.scheduler.analyse(False, priority) and \
+               nzo.status in (Status.CHECKING, Status.DOWNLOADING, Status.QUEUED):
+                nzo.status = Status.PAUSED
+            elif nzo.status == Status.PAUSED:
+                nzo.status = Status.QUEUED
+            nzo.save_to_disk()
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
@@ -755,7 +778,7 @@ class NzbQueue(TryList):
         if not nzo.deleted:
             nzo.deleted = True
             if nzo.precheck:
-                nzo.save_attribs()
+                nzo.save_to_disk()
                 # Check result
                 enough, ratio = nzo.check_quality()
                 if enough:
@@ -785,26 +808,30 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def queue_info(self, for_cli=False, max_jobs=0):
+    def queue_info(self, for_cli=False, max_jobs=0, search=None):
+        """ Return list of queued jobs, optionally filtered by 'search'
+        """
+        if search: search = search.lower()
         bytes_left = 0
         bytes = 0
         q_size = 0
         pnfo_list = []
         n = 0
         for nzo in self.__nzo_list:
-            if not max_jobs or n < max_jobs:
-                pnfo = nzo.gather_info(for_cli = for_cli)
-                pnfo_list.append(pnfo)
-                if nzo.status != 'Paused':
-                    bytes += pnfo[PNFO_BYTES_FIELD]
-                    bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+            if (not search) or search in nzo.final_name_pw_clean.lower():
+                if not max_jobs or n < max_jobs:
+                    pnfo = nzo.gather_info(for_cli = for_cli)
+                    pnfo_list.append(pnfo)
+                    if nzo.status != 'Paused':
+                        bytes += pnfo[PNFO_BYTES_FIELD]
+                        bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+                        q_size += 1
+                elif nzo.status != 'Paused':
+                    b, b_left = nzo.total_and_remaining()
+                    bytes += b
+                    bytes_left += b_left
                     q_size += 1
-            elif nzo.status != 'Paused':
-                b, b_left = nzo.total_and_remaining()
-                bytes += b
-                bytes_left += b_left
-                q_size += 1
-            n += 1
+                n += 1
         return (bytes, bytes_left, pnfo_list, q_size)
 
 
@@ -845,6 +872,19 @@ class NzbQueue(TryList):
         for nzo in empty:
             self.end_job(nzo)
 
+    @synchronized(NZBQUEUE_LOCK)
+    def pause_on_prio(self, priority):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.priority == priority:
+                nzo.pause()
+
+    @synchronized(NZBQUEUE_LOCK)
+    def resume_on_prio(self, priority):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.priority == priority:
+                # Don't use nzo.resume() to avoid resetting job warning flags
+                nzo.status = Status.QUEUED
+
     def get_urls(self):
         """ Return list of future-types needing URL """
         lst = []
@@ -854,16 +894,6 @@ class NzbQueue(TryList):
                 url = nzo.url
                 if nzo.futuretype and url.lower().startswith('http'):
                     lst.append((url, nzo))
-        return lst
-
-    def get_msgids(self):
-        """ Return list of future-types needing msgid """
-        lst = []
-        for nzo_id in self.__nzo_table:
-            nzo = self.__nzo_table[nzo_id]
-            msgid = nzo.url
-            if nzo.futuretype and (msgid.isdigit() or len(msgid)==5):
-                lst.append((msgid, nzo))
         return lst
 
     def __repr__(self):
@@ -886,7 +916,7 @@ def _nzo_date_cmp(nzo1, nzo2):
     return cmp(avg_date1, avg_date2)
 
 def _nzo_name_cmp(nzo1, nzo2):
-    return cmp(nzo1.filename, nzo2.filename)
+    return cmp(nzo1.filename.lower(), nzo2.filename.lower())
 
 def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.bytes, nzo2.bytes)
@@ -927,10 +957,10 @@ def add_nzo(nzo):
     return NzbQueue.do.add(nzo)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
+def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
     if nzo_info is None:
         nzo_info = {}
-    NzbQueue.do.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
+    NzbQueue.do.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 @synchronized_CV
 def set_priority(nzo_ids, priority):

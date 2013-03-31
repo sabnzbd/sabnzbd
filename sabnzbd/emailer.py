@@ -187,7 +187,7 @@ def send_with_template(prefix, parm):
     return ret
 
 
-def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret):
+def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret):
     """ Send end-of-job email """
 
     # Translate the stage names
@@ -210,7 +210,7 @@ def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, 
     parm['status'] = status
     parm['name'] = filename
     parm['path'] = path
-    parm['msgid'] = str(msgid)
+    parm['msgid'] = ''
     parm['stages'] = xstages
     parm['script'] = script
     parm['script_output'] = script_output

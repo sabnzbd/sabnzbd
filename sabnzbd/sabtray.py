@@ -55,18 +55,38 @@ class SABTrayThread(SysTrayIconThread):
         self.counter = 0
         text = "SABnzbd"
 
+        self.set_texts()
         menu_options = (
-            (T('Show interface'), None, self.browse),
-            (T('Open complete folder'), None, self.opencomplete),
-            (T('Troubleshoot'), None, ((T('Restart'), None, self.restart),
-                                      (T('Restart without login'), None, self.nologin),
-                                      (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost))),
-            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
-            (T('Shutdown'), None, self.shutdown),
+            (self.txt_show_int, None, self.browse),
+            (self.txt_open_comp, None, self.opencomplete),
+            (self.txt_trouble, None, ((self.txt_restart, None, self.restart),
+                                      (self.txt_restart_nl, None, self.nologin),
+                                      (self.txt_restart + ' - 127.0.0.1:8080', None, self.defhost))),
+            (self.txt_pause + '/' + self.txt_resume, None, self.pauseresume),
+            (self.txt_shutdown, None, self.shutdown),
         )
 
         SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
 
+    def set_texts(self):
+        def fix(txt):
+            if trans:
+                return Tx(txt)
+            else:
+                return txt
+
+        trans = str(get_codepage()) == str(sabnzbd.lang.CODEPAGE)
+        self.txt_show_int = fix(TT('Show interface'))
+        self.txt_open_comp = fix(TT('Open complete folder'))
+        self.txt_trouble = fix(TT('Troubleshoot'))
+        self.txt_pause = fix(TT('Pause'))
+        self.txt_shutdown = fix(TT('Shutdown'))
+        self.txt_resume = fix(TT('Resume'))
+        self.txt_restart = fix(TT('Restart'))
+        self.txt_restart_nl = fix(TT('Restart without login'))
+        self.txt_idle = fix(TT('Idle'))
+        self.txt_paused = fix(TT('Paused'))
+        self.txt_remaining = fix(TT('Remaining'))
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
@@ -78,13 +98,13 @@ class SABTrayThread(SysTrayIconThread):
             speed = to_units(bpsnow, dec_limit=1)
 
             if self.sabpaused:
-                self.hover_text = T('Paused')
+                self.hover_text = self.txt_paused
                 self.icon = self.sabicons['pause']
             elif bytes_left > 0:
-                self.hover_text = "%sB/s %s: %sB (%s)" % (speed, T('Remaining'), mb_left, time_left)
+                self.hover_text = "%sB/s %s: %sB (%s)" % (speed, self.txt_remaining, mb_left, time_left)
                 self.icon = self.sabicons['green']
             else:
-                self.hover_text = T('Idle')
+                self.hover_text = self.txt_idle
                 self.icon = self.sabicons['default']
 
             self.refresh_icon()
@@ -112,7 +132,7 @@ class SABTrayThread(SysTrayIconThread):
 
     # menu handler
     def restart(self, icon):
-        self.hover_text = T('Restart')
+        self.hover_text = self.txt_restart
         sabnzbd.halt()
         cherrypy.engine.restart()
 
@@ -121,7 +141,7 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
-        self.hover_text = T('Restart')
+        self.hover_text = self.txt_restart
         sabnzbd.halt()
         cherrypy.engine.restart()
 
@@ -130,13 +150,13 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.cfg.cherryhost.set('127.0.0.1')
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
-        self.hover_text = T('Restart')
+        self.hover_text = self.txt_restart
         sabnzbd.halt()
         cherrypy.engine.restart()
 
     # menu handler - adapted from interface.py
     def shutdown(self, icon):
-        self.hover_text = T('Shutdown')
+        self.hover_text = self.txt_shutdown
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
@@ -151,3 +171,9 @@ class SABTrayThread(SysTrayIconThread):
         scheduler.plan_resume(0)
         sabnzbd.unpause_all()
 
+
+def get_codepage():
+    import locale
+    lang, code = locale.getlocale()
+    logging.debug('SysTray uses codepage %s', code)
+    return code

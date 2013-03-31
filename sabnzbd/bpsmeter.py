@@ -24,7 +24,8 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME
+from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD
+from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 
 DAY = float(24*60*60)
@@ -97,6 +98,21 @@ def next_month(t):
     return time.mktime(ntime)
 
 
+def fix_keys(data):
+    """ Convert keys of each dictionary in tuple 'data' to unicode """
+    new_data = []
+    if isinstance(data, list):
+        for n in xrange(len(data)):
+            if isinstance(data[n], dict):
+                new = {}
+                for key in data[n]:
+                    new[unicoder(key)] = data[n][key]
+            else:
+                new = data[n]
+            new_data.append(new)
+    return new_data
+
+
 class BPSMeter(object):
     do = None
 
@@ -161,6 +177,9 @@ class BPSMeter(object):
         quota = self.left = cfg.quota_size.get_float() # Quota for this period
         self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
+        if not data:
+            data = sabnzbd.load_admin(BYTES_FILE_NAME_OLD)
+            data = fix_keys(data)
         try:
             self.last_update, self.grand_total, \
             self.day_total, self.week_total, self.month_total, \

@@ -136,8 +136,8 @@ def wildcard_to_re(text):
 
 #------------------------------------------------------------------------------
 def cat_convert(cat):
-    """ Convert newzbin/nzbs.org category/group-name to user categories.
-        If no match found, but newzbin-cat equals user-cat, then return user-cat
+    """ Convert indexer's category/group-name to user categories.
+        If no match found, but indexer-cat equals user-cat, then return user-cat
         If no match found, return None
     """
     newcat = cat
@@ -147,12 +147,12 @@ def cat_convert(cat):
         cats = config.get_categories()
         for ucat in cats:
             try:
-                newzbin = cats[ucat].newzbin()
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin]
+                indexer = cats[ucat].newzbin()
+                if type(indexer) != type([]):
+                    indexer = [indexer]
             except:
-                newzbin = []
-            for name in newzbin:
+                indexer = []
+            for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
                         logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
@@ -222,8 +222,8 @@ def sanitize_filename(name):
 
 FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
 FL_LEGAL   = CH_LEGAL +   "-''"
-uFL_ILLEGAL = FL_ILLEGAL.decode('latin-1')
-uFL_LEGAL   = FL_LEGAL.decode('latin-1')
+uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
+uFL_LEGAL   = FL_LEGAL.decode('cp1252')
 
 def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
@@ -405,20 +405,7 @@ def get_user_shellfolders():
     try:
         for i in range(0, _winreg.QueryInfoKey(key)[1]):
             name, value, val_type = _winreg.EnumValue(key, i)
-            try:
-                values[name] = value.encode('latin-1')
-            except UnicodeEncodeError:
-                try:
-                    # If the path name cannot be converted to latin-1 (contains high ASCII value strings)
-                    # then try and use the short name
-                    import win32api
-                    # Need to make sure the path actually exists, otherwise ignore
-                    if os.path.exists(value):
-                        values[name] = win32api.GetShortPathName(value)
-                except:
-                    # probably a pywintypes.error error such as folder does not exist
-                    logging.error("Traceback: ", exc_info = True)
-                    values[name] = 'c:\\'
+            values[name] = value
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
@@ -958,8 +945,6 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
-    if isinstance(url, int) or url.isdigit():
-        url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
         #import sabnzbd.emailer
@@ -1039,35 +1024,30 @@ def loadavg():
 
 def format_time_string(seconds, days=0):
     """ Return a formatted and translated time string """
+
+    def unit(single, n):
+        if n == 1:
+            return sabnzbd.api.Ttemplate(single)
+        else:
+            return sabnzbd.api.Ttemplate(single + 's')
+
     seconds = int_conv(seconds)
     completestr = []
     if days:
-        completestr.append('%s %s' % (days, s_returner('day', days)))
+        completestr.append('%s %s' % (days, unit('day', days)))
     if (seconds/3600) >= 1:
-        completestr.append('%s %s' % (seconds/3600, s_returner('hour', (seconds/3600))))
+        completestr.append('%s %s' % (seconds/3600, unit('hour', (seconds/3600))))
         seconds -= (seconds/3600)*3600
     if (seconds/60) >= 1:
-        completestr.append('%s %s' % (seconds/60, s_returner('minute',(seconds/60))))
+        completestr.append('%s %s' % (seconds/60, unit('minute',(seconds/60))))
         seconds -= (seconds/60)*60
     if seconds > 0:
-        completestr.append('%s %s' % (seconds, s_returner('second', seconds)))
+        completestr.append('%s %s' % (seconds, unit('second', seconds)))
     elif not completestr:
-        completestr.append('0 %s' % s_returner('second', 0))
+        completestr.append('0 %s' % unit('second', 0))
 
-    p = ' '.join(completestr)
-    if isinstance(p, unicode):
-        return p.encode('latin-1')
-    else:
-        return p
+    return ' '.join(completestr)
 
-
-def s_returner(item, value):
-    """ Return a plural form of 'item', based on 'value' (english only)
-    """
-    if value == 1:
-        return Tx(item)
-    else:
-        return Tx(item + 's')
 
 def int_conv(value):
     """ Safe conversion to int (can handle None)
@@ -1304,10 +1284,7 @@ def format_source_url(url):
         prot = 'https'
     else:
         prot = 'http:'
-    if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
-    else:
-        return url
+    return url
 
 RE_URL = re.compile(r'://([^/]+)/')
 def get_base_url(url):

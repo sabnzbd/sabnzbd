@@ -252,12 +252,12 @@ else:
     PanDoc = None
 
 if os.name == 'nt':
-    msg = 'Requires the standard version of NSIS'
+    msg = 'Requires the Unicode version of NSIS'
     NSIS = CheckPath('makensis')
     if NSIS:
         log = '%s.log' % NSIS
         os.system('%s >%s' % (NSIS, log))
-        if 'Unicode' not in open(log).read():
+        if 'Unicode' in open(log).read():
             msg = ''
         delete_files(log)
     if msg:
@@ -335,6 +335,7 @@ data_files = [
          'win/par2/',
          'win/unzip/',
          'win/unrar/',
+         'win/7zip/',
          'icons/'
        ]
 
@@ -417,7 +418,7 @@ if target == 'app':
         os.system("ditto --arch i386 --arch ppc dist/SABnzbd.app.temp dist/SABnzbd.app/")
         os.system("rm -rf dist/SABnzbd.app.temp")
     
-    # copy unrar & par2 binary
+    # copy unrar, 7zip & par2 binary
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
@@ -425,8 +426,11 @@ if target == 'app':
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
     if OSX_SL:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
+        os.system("cp -pR osx/7zip/7za-leopard dist/SABnzbd.app/Contents/Resources/osx/7zip/7za >/dev/null")
     else:
         os.system("cp -pR osx/unrar/unrar dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
+        os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
+    os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
     os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
