@@ -548,6 +548,8 @@ SKIN_TEXT = {
     'rss-reject' : TT('Reject'), #: Config->RSS filter-type selection menu
     'rss-must' : TT('Requires'), #: Config->RSS filter-type selection menu
     'rss-mustcat' : TT('RequiresCat'), #: Config->RSS filter-type selection menu
+    'rss-atleast' : TT('At least'), #: Config->RSS filter-type selection menu
+    'rss-atmost' : TT('At most'), #: Config->RSS filter-type selection menu
     'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header

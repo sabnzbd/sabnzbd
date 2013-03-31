@@ -2451,6 +2451,11 @@ def GetRssLog(feed):
     def make_item(job):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
+        size = job.get('size')
+        if size:
+            size = to_units(size).replace(' ', '&nbsp;')
+        else:
+            size = '?'
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
@@ -2459,7 +2464,8 @@ def GetRssLog(feed):
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
-               nzbname
+               nzbname, \
+               size
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
