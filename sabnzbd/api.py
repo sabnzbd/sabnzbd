@@ -651,17 +651,35 @@ def _api_test_email(name, output, kwargs):
     pack = {}
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
-    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                 123*MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
+                                 123*MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
     if res == 'Email succeeded':
         res = None
     return report(output, error=res)
 
 def _api_test_notif(name, output, kwargs):
-    """ API: send a test notification, return result """
+    """ API: send a test to Notification Center, return result """
     logging.info("Sending test notification")
-    res = sabnzbd.growler.send_notification('SABnzbd', T('Test Notification'), 'other', wait=True)
+    res = sabnzbd.growler.send_notification_center('SABnzbd', T('Test Notification'), 'other')
+    return report(output, error=res)
+
+def _api_test_growl(name, output, kwargs):
+    """ API: send a test Growl notification, return result """
+    logging.info("Sending Growl notification")
+    res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other')
+    return report(output, error=res)
+
+def _api_test_osd(name, output, kwargs):
+    """ API: send a test OSD notification, return result """
+    logging.info("Sending OSD notification")
+    res = sabnzbd.growler.send_notify_osd('SABnzbd', T('Test Notification'))
+    return report(output, error=res)
+
+def _api_test_prowl(name, output, kwargs):
+    """ API: send a test Prowl notification, return result """
+    logging.info("Sending Prowl notification")
+    res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True)
     return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
@@ -804,6 +822,9 @@ _api_table = {
     'reset_quota'     : _api_reset_quota,
     'test_email'      : _api_test_email,
     'test_notif'      : _api_test_notif,
+    'test_growl'      : _api_test_growl,
+    'test_osd'        : _api_test_osd,
+    'test_prowl'      : _api_test_prowl,
 }
 
 _api_queue_table = {

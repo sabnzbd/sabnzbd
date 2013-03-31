@@ -473,7 +473,7 @@ def process_job(nzo):
             growler.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = Status.COMPLETED
         else:
-            growler.send_notification(T('Download Failed'), filename, 'complete')
+            growler.send_notification(T('Download Failed'), filename, 'failed')
             nzo.status = Status.FAILED
 
     except:
@@ -482,7 +482,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        growler.send_notification(T('Download Failed'), filename, 'complete')
+        growler.send_notification(T('Download Failed'), filename, 'failed')
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False

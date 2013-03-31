@@ -24,7 +24,7 @@ import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
                               DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
                               NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-                              DEF_ADMIN_DIR, NOTIFY_KEYS
+                              DEF_ADMIN_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
@@ -227,12 +227,60 @@ max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
 no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
+# [ncenter]
+ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN)
+ncenter_prio_startup = OptionNumber('ncenter', 'ncenter_prio_startup', -3)
+ncenter_prio_download = OptionNumber('ncenter', 'ncenter_prio_download', 0)
+ncenter_prio_pp = OptionNumber('ncenter', 'ncenter_prio_pp', 0)
+ncenter_prio_complete = OptionNumber('ncenter', 'ncenter_prio_complete', 1)
+ncenter_prio_failed = OptionNumber('ncenter', 'ncenter_prio_failed', 1)
+ncenter_prio_disk_full = OptionNumber('ncenter', 'ncenter_prio_disk_full', 1)
+ncenter_prio_warning = OptionNumber('ncenter', 'ncenter_prio_warning', 0)
+ncenter_prio_error = OptionNumber('ncenter', 'ncenter_prio_error', 0)
+ncenter_prio_queue_done = OptionNumber('ncenter', 'ncenter_prio_queue_done', 1)
+ncenter_prio_other = OptionNumber('ncenter', 'ncenter_prio_other', 0)
+
+# [ntfosd]
+ntfosd_enable = OptionBool('ntfosd', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ntfosd_prio_startup = OptionNumber('ntfosd', 'ntfosd_prio_startup', -3)
+ntfosd_prio_download = OptionNumber('ntfosd', 'ntfosd_prio_download', 0)
+ntfosd_prio_pp = OptionNumber('ntfosd', 'ntfosd_prio_pp', 0)
+ntfosd_prio_complete = OptionNumber('ntfosd', 'ntfosd_prio_complete', 1)
+ntfosd_prio_failed = OptionNumber('ntfosd', 'ntfosd_prio_failed', 1)
+ntfosd_prio_disk_full = OptionNumber('ntfosd', 'ntfosd_prio_disk_full', 1)
+ntfosd_prio_warning = OptionNumber('ntfosd', 'ntfosd_prio_warning', 0)
+ntfosd_prio_error = OptionNumber('ntfosd', 'ntfosd_prio_error', 0)
+ntfosd_prio_queue_done = OptionNumber('ntfosd', 'ntfosd_prio_queue_done', 1)
+ntfosd_prio_other = OptionNumber('ntfosd', 'ntfosd_prio_other', 0)
+
+# [growl]
+growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
-growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
-ntfosd_enable = OptionBool('growl', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
-ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN)
-notify_classes = OptionList('growl', 'notify_classes', NOTIFY_KEYS)
+growl_prio_startup = OptionNumber('growl', 'growl_prio_startup', -3)
+growl_prio_download = OptionNumber('growl', 'growl_prio_download', 0)
+growl_prio_pp = OptionNumber('growl', 'growl_prio_pp', 0)
+growl_prio_complete = OptionNumber('growl', 'growl_prio_complete', 1)
+growl_prio_failed = OptionNumber('growl', 'growl_prio_failed', 1)
+growl_prio_disk_full = OptionNumber('growl', 'growl_prio_disk_full', 1)
+growl_prio_warning = OptionNumber('growl', 'growl_prio_warning', 0)
+growl_prio_error = OptionNumber('growl', 'growl_prio_error', 0)
+growl_prio_queue_done = OptionNumber('growl', 'growl_prio_queue_done', 1)
+growl_prio_other = OptionNumber('growl', 'growl_prio_other', 0)
+
+# [prowl]
+prowl_enable = OptionBool('prowl', 'prowl_enable', False)
+prowl_apikey = OptionStr('prowl', 'prowl_apikey')
+prowl_prio_startup = OptionNumber('prowl', 'prowl_prio_startup', -3)
+prowl_prio_download = OptionNumber('prowl', 'prowl_prio_download', -3)
+prowl_prio_pp = OptionNumber('prowl', 'prowl_prio_pp', -3)
+prowl_prio_complete = OptionNumber('prowl', 'prowl_prio_complete', 0)
+prowl_prio_failed = OptionNumber('prowl', 'prowl_prio_failed', 1)
+prowl_prio_disk_full = OptionNumber('prowl', 'prowl_prio_disk_full', 1)
+prowl_prio_warning = OptionNumber('prowl', 'prowl_prio_warning', -3)
+prowl_prio_error = OptionNumber('prowl', 'prowl_prio_error', -3)
+prowl_prio_queue_done = OptionNumber('prowl', 'prowl_prio_queue_done', 0)
+prowl_prio_other = OptionNumber('prowl', 'prowl_prio_other', -3)
 
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')

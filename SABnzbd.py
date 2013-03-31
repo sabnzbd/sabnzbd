@@ -208,6 +208,11 @@ class guiHandler(logging.Handler):
         """
         Emit a record by adding it to our private queue
         """
+        if record.levelname == 'WARNING':
+            sabnzbd.LAST_WARNING = record.msg
+        else:
+            sabnzbd.LAST_ERROR = record.msg
+
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
@@ -1585,6 +1590,15 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = timer5 = 0
     while not sabnzbd.SABSTOP:
+        if sabnzbd.LAST_WARNING:
+            msg = sabnzbd.LAST_WARNING
+            sabnzbd.LAST_WARNING = None
+            sabnzbd.growler.send_notification(T('Warning'), msg, 'warning')
+        if sabnzbd.LAST_ERROR:
+            msg = sabnzbd.LAST_ERROR
+            sabnzbd.LAST_ERROR = None
+            sabnzbd.growler.send_notification(T('Error'), msg, 'error')
+
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
                                                     sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)

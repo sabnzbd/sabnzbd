@@ -137,6 +137,8 @@ OLD_QUEUE = False
 SCHED_RESTART = False # Set when restarted through scheduler
 WINTRAY = None # Thread for the Windows SysTray icon
 WEBUI_READY = False
+LAST_WARNING = None
+LAST_ERROR = None
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False

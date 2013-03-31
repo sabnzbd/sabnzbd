@@ -70,6 +70,13 @@ SKIN_TEXT = {
     'sch-resume_all_normal':TT('Resume normal prioirty jobs'), #: Config->Scheduler
     'sch-resume_all_high': TT('Resume high prioirty jobs'), #: Config->Scheduler
 
+    'prowl-off'          : TT('Off'), #: Prowl priority
+    'prowl-very-low'     : TT('Very Low'), #: Prowl priority
+    'prowl-moderate'     : TT('Moderate'), #: Prowl priority
+    'prowl-normal'       : TT('Normal'), #: Prowl priority
+    'prowl-high'         : TT('High'), #: Prowl priority
+    'prowl-emergency'    : TT('Emergency'), #: Prowl priority
+
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
     'none' : TT('None'), #: No value, used in dropdown menus
@@ -561,7 +568,7 @@ SKIN_TEXT = {
     'explain-email_account' : TT('For authenticated email, account name.'),
     'opt-email_pwd' : TT('OPTIONAL Account Password'),
     'explain-email_pwd' : TT('For authenticated email, password.'),
-    'growlSettings' : TT('Notifications'), #: Section header
+    'growlSettings' : TT('Growl'), #: Header Growl section
     'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
     'explain-growl_enable' : TT('Send notifications to Growl'), #: Don't translate "Growl"
     'opt-growl_server' : TT('Server address'), #: Address of Growl server
@@ -575,6 +582,13 @@ SKIN_TEXT = {
     'opt-notify_classes' : TT('Notification classes'),
     'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
+    'section-NC' : TT('Notification Center'), #: Header for OSX Notfication Center section
+    'section-OSD' : TT('NotifyOSD'), #: Header for Ubuntu's NotifyOSD notifications section
+    'section-Prowl' : TT('Prowl'), #: Header for Prowl notification section
+    'opt-prowl_enable' : TT('Enable Prowl notifications'), #: Prowl settings
+    'explain-prowl_enable' : TT('Requires a Prowl account'), #: Prowl settings
+    'opt-prowl_apikey' : TT('API key for Prowl'), #: Prowl settings
+    'explain-prowl_apikey' : TT('Personal API key for Prowl (required)'), #: Prowl settings
 
 # Config->Cat
     'configCat' : TT('User-defined categories'),
