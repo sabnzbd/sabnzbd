@@ -821,7 +821,7 @@ _api_table = {
     'browse'          : (_api_browse, 2),
     'reset_quota'     : (_api_reset_quota, 2),
     'test_email'      : (_api_test_email, 2),
-    'test_notif'      : (_api_test_notif, 2)
+    'test_notif'      : (_api_test_notif, 2),
     'test_growl'      : (_api_test_growl, 2),
     'test_osd'        : (_api_test_osd, 2),
     'test_prowl'      : (_api_test_prowl, 2)
