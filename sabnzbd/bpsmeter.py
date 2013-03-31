@@ -101,14 +101,15 @@ def next_month(t):
 def fix_keys(data):
     """ Convert keys of each dictionary in tuple 'data' to unicode """
     new_data = []
-    for n in xrange(len(data)):
-        if isinstance(data[n], dict):
-            new = {}
-            for key in data[n]:
-                new[unicoder(key)] = data[n][key]
-        else:
-            new = data[n]
-        new_data.append(new)
+    if isinstance(data, list):
+        for n in xrange(len(data)):
+            if isinstance(data[n], dict):
+                new = {}
+                for key in data[n]:
+                    new[unicoder(key)] = data[n][key]
+            else:
+                new = data[n]
+            new_data.append(new)
     return new_data
 
 
