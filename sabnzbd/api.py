@@ -154,13 +154,13 @@ def _api_queue(name, output, kwargs):
 def _api_queue_delete(output, value, kwargs):
     """ API: accepts output, value """
     if value.lower()=='all':
-        NzbQueue.do.remove_all(kwargs.get('search'))
-        return report(output)
+        removed = NzbQueue.do.remove_all(kwargs.get('search'))
+        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
     elif value:
         items = value.split(',')
         del_files = int_conv(kwargs.get('del_files'))
-        NzbQueue.do.remove_multiple(items, del_files)
-        return report(output)
+        removed = NzbQueue.do.remove_multiple(items, del_files)
+        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -169,8 +169,8 @@ def _api_queue_delete_nzf(output, value, kwargs):
     """ API: accepts value(=nzo_id), value2(=nzf_id) """
     value2 = kwargs.get('value2')
     if value and value2:
-        NzbQueue.do.remove_nzf(value, value2)
-        return report(output)
+        removed = NzbQueue.do.remove_nzf(value, value2)
+        return report(output, keyword='', data={'status':bool(removed), 'nzf_ids' : removed})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -179,8 +179,8 @@ def _api_queue_rename(output, value, kwargs):
     """ API: accepts output, value(=old name), value2(=new name) """
     value2 = kwargs.get('value2')
     if value and value2:
-        NzbQueue.do.change_name(value, special_fixer(value2))
-        return report(output)
+        ret = NzbQueue.do.change_name(value, special_fixer(value2))
+        return report(output, keyword='', data={'status':ret})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -193,24 +193,24 @@ def _api_queue_change_complete_action(output, value, kwargs):
 
 def _api_queue_purge(output, value, kwargs):
     """ API: accepts output """
-    NzbQueue.do.remove_all(kwargs.get('search'))
-    return report(output)
+    removed = NzbQueue.do.remove_all(kwargs.get('search'))
+    return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
 
 
 def _api_queue_pause(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        NzbQueue.do.pause_multiple_nzo(items)
-    return report(output)
+        handled = NzbQueue.do.pause_multiple_nzo(items)
+    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
 
 
 def _api_queue_resume(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        NzbQueue.do.resume_multiple_nzo(items)
-    return report(output)
+        handled = NzbQueue.do.resume_multiple_nzo(items)
+    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
 
 
 def _api_queue_priority(output, value, kwargs):

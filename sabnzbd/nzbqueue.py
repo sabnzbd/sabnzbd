@@ -326,6 +326,9 @@ class NzbQueue(TryList):
             else:
                 # Reset url fetch wait time
                 nzo.wait = None
+            return True
+        else:
+            return False
 
     @synchronized(NZBQUEUE_LOCK)
     def get_nzo(self, nzo_id):
@@ -414,71 +417,90 @@ class NzbQueue(TryList):
 
             if save:
                 self.save(nzo)
+        else:
+            nzo_id = None
+        return nzo_id
 
 
     @synchronized(NZBQUEUE_LOCK)
     def remove_multiple(self, nzo_ids, del_files=False):
+        removed = []
         for nzo_id in nzo_ids:
-            self.remove(nzo_id, add_to_history = False, save = False, keep_basic=not del_files, del_files=del_files)
+            if self.remove(nzo_id, add_to_history = False, save = False, keep_basic=not del_files, del_files=del_files):
+                removed.append(nzo_id)
         # Save with invalid nzo_id, to that only queue file is saved
         self.save('x')
+        return removed
 
     @synchronized(NZBQUEUE_LOCK)
     def remove_all(self, search=None):
         if search: search = search.lower()
-        lst = []
-        for nzo_id in self.__nzo_table:
-            lst.append(nzo_id)
-        for nzo_id in lst:
+        removed = []
+        for nzo_id in self.__nzo_table.keys():
             if (not search) or search in self.__nzo_table[nzo_id].final_name_pw_clean.lower():
                 nzo = self.__nzo_table.pop(nzo_id)
                 nzo.deleted = True
                 self.__nzo_list.remove(nzo)
                 sabnzbd.remove_data(nzo_id, nzo.workpath)
                 self.cleanup_nzo(nzo)
-        del lst
+                removed.append(nzo_id)
         self.save()
+        return removed
 
     @synchronized(NZBQUEUE_LOCK)
     def remove_nzf(self, nzo_id, nzf_id):
+        removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzf = nzo.get_nzf_by_id(nzf_id)
 
             if nzf:
+                removed.append(nzf_id)
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
                     if nzo.finished_files:
                         self.end_job(nzo)
                     else:
                         self.remove(nzo_id, add_to_history = False, keep_basic=False)
-
+        return removed
 
     @synchronized(NZBQUEUE_LOCK)
     def pause_multiple_nzo(self, nzo_ids):
+        handled = []
         for nzo_id in nzo_ids:
             self.pause_nzo(nzo_id)
+            handled.append(nzo_id)
+        return handled
 
     @synchronized(NZBQUEUE_LOCK)
     def pause_nzo(self, nzo_id):
+        handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.pause()
             logging.debug("Paused nzo: %s", nzo_id)
+            handled.append(nzo_id)
+        return handled
 
     @synchronized(NZBQUEUE_LOCK)
     def resume_multiple_nzo(self, nzo_ids):
+        handled = []
         for nzo_id in nzo_ids:
             self.resume_nzo(nzo_id)
+            handled.append(nzo_id)
+        return handled
 
     @synchronized(NZBQUEUE_LOCK)
     def resume_nzo(self, nzo_id):
+        handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.resume()
             nzo.reset_all_try_lists()
             logging.debug("Resumed nzo: %s", nzo_id)
+            handled.append(nzo_id)
         self.reset_try_list()
+        return handled
 
     @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
