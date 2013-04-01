@@ -1445,6 +1445,7 @@ class ConfigGeneral(object):
         bandwidth_perc = kwargs.get('bandwidth_perc')
         if bandwidth_perc != None:
             cfg.bandwidth_perc.set(bandwidth_perc)
+        bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
             logging.warning(Ta('You must set a maximum bandwidth before you can set a bandwidth limit'))
 
