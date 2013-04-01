@@ -704,8 +704,8 @@ class NzbObject(TryList):
             cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
             cat = unicoder(cat)
             script = unicoder(script)
-            name = unicoder(name)
-            self.set_final_name_pw(name)
+            if name:
+                self.set_final_name_pw(unicoder(name))
 
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
