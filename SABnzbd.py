@@ -209,9 +209,9 @@ class guiHandler(logging.Handler):
         Emit a record by adding it to our private queue
         """
         if record.levelname == 'WARNING':
-            sabnzbd.LAST_WARNING = record.msg
+            sabnzbd.LAST_WARNING = record.msg % record.args
         else:
-            sabnzbd.LAST_ERROR = record.msg
+            sabnzbd.LAST_ERROR = record.msg % record.args
 
         if len(self.store) >= self.size:
             # Loose the oldest record
