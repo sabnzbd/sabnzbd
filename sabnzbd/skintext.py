@@ -160,34 +160,33 @@ SKIN_TEXT = {
 # Main page
     'addNewJobs' : TT('Add new downloads'),
     'shutdownOK?' : TT('Are you sure you want to shutdown SABnzbd?'),
-    'link-shutdown' : TT('Shutdown'),
-    'link-pause' : TT('Pause'),
-    'link-resume' : TT('Resume'),
-    'button-add' : TT('Add'),
-    'add' : TT('Add'),
-    'reportId' : TT('Report-id'),
-    'addFile' : TT('Add File'),
-    'category' : TT('Category'),
-    'pp' : TT('Processing'),
+    'link-shutdown' : TT('Shutdown'), #: Shutdown SABnzbd
+    'link-pause' : TT('Pause'), #: Pause downloading
+    'link-resume' : TT('Resume'), #: Resume downloading
+    'button-add' : TT('Add'), #: Add NZB to queue (button)
+    'add' : TT('Add'),  #: Add NZB to queue (header)
+    'addFile' : TT('Add File'), #: Add NZB file to queue (header
+    'category' : TT('Category'), #: Job category
+    'pp' : TT('Processing'), 
     'script' : TT('Script'),
     'priority' : TT('Priority'),
-    'pp-none' : TT('Download'),
-    'pp-repair' : TT('+Repair'),
-    'pp-unpack' : TT('+Unpack'),
-    'pp-delete' : TT('+Delete'),
-    'pp-n' : TT('&nbsp;'),
-    'pp-r' : TT('R'),
-    'pp-u' : TT('U'),
-    'pp-d' : TT('D'),
-    'pr-force' : TT('Force'),
-    'pr-repair' : TT('Repair'),
-    'pr-normal' : TT('Normal'),
-    'pr-high' : TT('High'),
-    'pr-low' : TT('Low'),
-    'pr-paused' : TT('Paused'),
-    'pr-stop' : TT('Stop'),
-    'enterURL' : TT('Enter URL'),
-    'enterID' : TT('&nbsp;or Report ID'),
+    'pp-none' : TT('Download'), #: Post processing pick list
+    'pp-repair' : TT('+Repair'), #: Post processing pick list
+    'pp-unpack' : TT('+Unpack'), #: Post processing pick list
+    'pp-delete' : TT('+Delete'), #: Post processing pick list
+    'pp-n' : TT('&nbsp;'),  #: Part of Post processing pick list: abbreviation for "Download"
+    'pp-r' : TT('R'),  #: Post processing pick list: abbreviation for "+Repair"
+    'pp-u' : TT('U'),  #: Post processing pick list: abbreviation for "+Unpack"
+    'pp-d' : TT('D'),  #: Post processing pick list: abbreviation for "+Delete"
+    'pr-force' : TT('Force'), #: Priority pick list
+    'pr-repair' : TT('Repair'), #: Priority pick list
+    'pr-normal' : TT('Normal'), #: Priority pick list
+    'pr-high' : TT('High'), #: Priority pick list
+    'pr-low' : TT('Low'), #: Priority pick list
+    'pr-paused' : TT('Paused'), #: Priority pick list
+    'pr-stop' : TT('Stop'), #: Priority pick list
+    'enterURL' : TT('Enter URL'), #: Add NZB Dialog
+    'enterID' : TT('&nbsp;or Report ID'), #: Add NZB Dialog
 
 # Queue page
     'link-sortByName' : TT('Sort by name'), #: Queue page button
@@ -518,18 +517,18 @@ SKIN_TEXT = {
     'srv-bandwidth' : TT('Bandwidth'),
 
 # Config->Scheduling
-    'configSchedule' : TT('Scheduling configuration'),
-    'addSchedule' : TT('Add Schedule'),
-    'sch-frequency' : TT('Frequency'),
-    'sch-action' : TT('Action'),
-    'sch-arguments' : TT('Arguments'),
-    'button-addSchedule' : TT('Add Schedule'),
-    'button-delSchedule' : TT('Remove'),
-    'currentSchedules' : TT('Current Schedules'),
-    'sch-resume' : TT('Resume'),
-    'sch-pause' : TT('Pause'),
-    'sch-shutdown' : TT('Shutdown'),
-    'sch-restart' : TT('Restart'),
+    'configSchedule' : TT('Scheduling configuration'), #:Config->Scheduling
+    'addSchedule' : TT('Add Schedule'), #:Config->Scheduling
+    'sch-frequency' : TT('Frequency'), #:Config->Scheduling
+    'sch-action' : TT('Action'), #:Config->Scheduling
+    'sch-arguments' : TT('Arguments'), #:Config->Scheduling
+    'button-addSchedule' : TT('Add Schedule'), #:Config->Scheduling
+    'button-delSchedule' : TT('Remove'), #:Config->Scheduling
+    'currentSchedules' : TT('Current Schedules'), #:Config->Scheduling
+    'sch-resume' : TT('Resume'), #:Config->Scheduling
+    'sch-pause' : TT('Pause'), #:Config->Scheduling
+    'sch-shutdown' : TT('Shutdown'), #:Config->Scheduling
+    'sch-restart' : TT('Restart'), #:Config->Scheduling
 
 # Config->RSS
     'configRSS' : TT('RSS Configuration'),
@@ -560,6 +559,7 @@ SKIN_TEXT = {
     'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
     'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
+# Config->Notifications
     'configEmail' : TT('Notifications'), #: Main Config page
     'emailOptions' : TT('Email Options'), #: Section header
     'opt-email_endjob' : TT('Email Notification On Job Completion'),
@@ -611,7 +611,7 @@ SKIN_TEXT = {
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
     'catTags' : TT('Groups / Indexer tags'),
-    'button-delCat' : TT('X'),
+    'button-delCat' : TT('X'), #: Small delete button
 
 # Config->Sorting
     'configSort' : TT('Sorting configuration'),

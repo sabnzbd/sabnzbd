@@ -257,7 +257,7 @@ def process_job(nzo):
                 emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
-                emsg = T('Download failed - No longer on your server(s)')
+                emsg = T('Download failed - Not on your server(s)')
                 empty = True
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
