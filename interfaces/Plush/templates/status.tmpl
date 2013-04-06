@@ -85,6 +85,9 @@
 
 
   <div id="tabs-connections">
+  <a href="refresh_conn?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
+  <a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
+  <hr>
   <!--#if $servers#-->
     <!--#set $count=0#-->
     <!--#for $server in $servers#-->
@@ -116,7 +119,6 @@
   <!--#else#-->
     <p>$T('none')</p>
   <!--#end if#-->
-<a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
   </div>
 
 </div>

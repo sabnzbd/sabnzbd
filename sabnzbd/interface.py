@@ -2300,6 +2300,13 @@ class Status(object):
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
+    def refresh_conn(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        # No real action, just reload the page
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
     def showlog(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
