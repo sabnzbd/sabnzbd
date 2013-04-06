@@ -1190,6 +1190,7 @@ class ConfigSwitches(object):
         conf['have_unrar'] = bool(sabnzbd.newsunpack.RAR_COMMAND)
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf['cleanup_list'] = cfg.cleanup_list.get_string()
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw)()
@@ -1212,6 +1213,11 @@ class ConfigSwitches(object):
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
+
+        cleanup_list = kwargs.get('cleanup_list')
+        if cleanup_list and sabnzbd.WIN32:
+            cleanup_list = cleanup_list.lower()
+        cfg.cleanup_list.set(cleanup_list)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

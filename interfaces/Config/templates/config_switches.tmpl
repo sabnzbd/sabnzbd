@@ -254,6 +254,11 @@
                     <input type="text" name="ionice" id="ionice" value="$ionice" size="20" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ionice')</span>
                 </div>
+                <div class="field-pair alt">
+                    <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
+                    <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50"/>
+                    <span class="desc">$T('explain-cleanup_list')</span>
+                </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
                 </div>

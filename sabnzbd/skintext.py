@@ -324,7 +324,7 @@ SKIN_TEXT = {
     'opt-cache_limitstr' : TT('Article Cache Limit'),
     'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'),
     'opt-cleanup_list' : TT('Cleanup List'),
-    'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>.nfo</b> or <b>.nfo, .sfv</b>'),
+    'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>'),
     'button-saveChanges' : TT('Save Changes'),
     'opt-language' : TT('Language'),
     'explain-language' : TT('Select a web interface language.'),
