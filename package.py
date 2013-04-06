@@ -462,7 +462,7 @@ if target == 'app':
     else:
         print 'No SHARE variable set, build result not copied'
 
-    if OSX_ML:
+    if OSX_ML and dest_path:
         print 'Create src %s' % fileOSr
         delete_files(fileOSr)
         os.system('tar -czf "%s" --exclude ".git*" --exclude "sab*.zip" --exclude "SAB*.tar.gz" --exclude "*.cmd" --exclude "*.pyc" '

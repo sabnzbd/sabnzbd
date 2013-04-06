@@ -1703,7 +1703,11 @@ def main():
     sys.stdout.flush()
     sabnzbd.pid_file()
     if getattr(sys, 'frozen', None) == 'macosx_app':
-        AppHelper.stopEventLoop()
+        try:
+            AppHelper.stopEventLoop()
+        except:
+            # Failing AppHelper libary!
+            os._exit(0)
     else:
         growler.send_notification('SABnzbd',T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
