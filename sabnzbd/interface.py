@@ -1749,7 +1749,9 @@ class ConfigRss(object):
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
-        if cfg and Strip(kwargs.get('uri')):
+        uri = Strip(kwargs.get('uri'))
+        if cfg and uri:
+            kwargs['uri'] = uri
             cfg.set_dict(kwargs)
             config.save_config()
 
@@ -1766,7 +1768,9 @@ class ConfigRss(object):
             cfg = None
         if 'enable' not in kwargs:
             kwargs['enable'] = 0
-        if cfg and Strip(kwargs.get('uri')):
+        uri = Strip(kwargs.get('uri'))
+        if cfg and uri:
+            kwargs['uri'] = uri
             cfg.set_dict(kwargs)
             config.save_config()
 
@@ -1802,6 +1806,8 @@ class ConfigRss(object):
             except KeyError:
                 cfg = None
             if (not cfg) and uri:
+                kwargs['feed'] = feed
+                kwargs['uri'] = uri
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
