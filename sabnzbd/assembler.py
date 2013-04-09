@@ -292,8 +292,12 @@ def is_cloaked(path, names):
     fname = unicoder(os.path.split(path)[1]).lower()
     for name in names:
         name = os.path.split(name.lower())[1]
-        name, ext = os.path.splitext(unicoder(name))
-        if (fname.startswith(name) and ext == '.rar') or 'password' in name:
+        ext = os.path.splitext(unicoder(name))[1]
+        if (ext == '.rar' and fname == name):
+            logging.debug('File %s is probably encrypted due to RAR with same name inside this RAR', fname)
+            return True
+        elif 'password' in name:
+            logging.debug('RAR %s is probably encrypted: "password" in filename %s', fname, name)
             return True
     return False
 
