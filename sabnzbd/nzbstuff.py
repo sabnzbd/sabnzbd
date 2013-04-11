@@ -1539,7 +1539,7 @@ def split_filename(name):
     if name.find('://') < 0:
         m = RE_NORMAL.match(name)
         if (m):
-            return m.group(1).rstrip('.').strip(), ''
+            return m.group(1).rstrip('.').strip()
         else:
             return name.strip()
         return ''
