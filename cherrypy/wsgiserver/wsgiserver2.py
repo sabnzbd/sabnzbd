@@ -75,7 +75,7 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class']
+           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class', 'redirect_url']
 
 import os
 try:
@@ -93,6 +93,8 @@ try:
 except ImportError:
     import StringIO
 DEFAULT_BUFFER_SIZE = -1
+
+REDIRECT_URL = None  # Application can write it's HTTP-->HTTPS redirection URL here
 
 _fileobject_uses_str_type = isinstance(socket._fileobject(None)._rbuf, basestring)
 
@@ -145,6 +147,13 @@ FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
 
 import errno
+
+def redirect_url(url=None):
+    global REDIRECT_URL
+    if url:
+        REDIRECT_URL = url
+    return REDIRECT_URL
+
 
 def plat_specific_errors(*errnames):
     """Return error numbers for all errors in errnames on this platform.
@@ -843,8 +852,11 @@ class HTTPRequest(object):
                status + CRLF,
                "Content-Length: %s\r\n" % len(msg),
                "Content-Type: text/plain\r\n"]
-        
-        if status[:3] in ("413", "414"):
+
+        if status[:3] == "301":
+            # Redirect
+            buf.append("Location: %s\r\n" % msg)
+        elif status[:3] in ("413", "414"):
             # Request Entity Too Large / Request-URI Too Long
             self.close_connection = True
             if self.response_protocol == 'HTTP/1.1':
@@ -1347,9 +1359,12 @@ class HTTPConnection(object):
             if req and not req.sent_headers:
                 # Unwrap our wfile
                 self.wfile = CP_fileobject(self.socket._sock, "wb", self.wbufsize)
-                req.simple_response("400 Bad Request",
-                    "The client sent a plain HTTP request, but "
-                    "this server only speaks HTTPS on this port.")
+                if REDIRECT_URL:
+                    req.simple_response("301 Moved Permanently", REDIRECT_URL)
+                else:
+                    req.simple_response("400 Bad Request",
+                        "The client sent a plain HTTP request, but "
+                        "this server only speaks HTTPS on this port.")
                 self.linger = True
         except Exception:
             e = sys.exc_info()[1]
