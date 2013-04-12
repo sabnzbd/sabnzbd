@@ -115,12 +115,18 @@ class NzbQueue(TryList):
         if repair:
             self.scan_jobs(not folders)
             # Handle any lost future jobs
-            for path in globber(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
-                path, nzo_id = os.path.split(path)
+            for item in globber(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+                path, nzo_id = os.path.split(item)
                 if nzo_id not in self.__nzo_table:
-                    nzo = sabnzbd.load_data(nzo_id, path, remove=True)
-                    if nzo:
-                        self.add(nzo, save=True)
+                    if nzo_id.startswith('SABnzbd_nzo'):
+                        nzo = sabnzbd.load_data(nzo_id, path, remove=True)
+                        if nzo:
+                            self.add(nzo, save=True)
+                    else:
+                        try:
+                            os.remove(item)
+                        except:
+                            pass
 
 
     def scan_jobs(self, all=False, action=True):
