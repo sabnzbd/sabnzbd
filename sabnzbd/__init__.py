@@ -170,6 +170,7 @@ def sig_handler(signum = None, frame = None):
         logging.warning(Ta('Signal %s caught, saving and exiting...'), signum)
     try:
         save_state(flag=True)
+        sabnzbd.zconfig.remove_server()
     finally:
         if sabnzbd.WIN32:
             from util.apireg import del_connection_info
@@ -360,6 +361,8 @@ def halt():
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
         __SHUTTING_DOWN__ = True
+
+        sabnzbd.zconfig.remove_server()
 
         rss.stop()
 

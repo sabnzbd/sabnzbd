@@ -98,6 +98,7 @@ import sabnzbd.cfg
 import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, latin1, deunicode
 import sabnzbd.growler as growler
+import sabnzbd.zconfig
 
 from threading import Thread
 
@@ -1531,12 +1532,12 @@ def main():
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+    sabnzbd.zconfig.set_bonjour(cherryhost, cherryport)
 
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
-    cherrypy.wsgiserver.REDIRECT_URL = browser_url
 
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
