@@ -121,6 +121,8 @@ STOP_PRIORITY = -4
 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
 
+IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
+
 #(MATCHER, [EXTRA,MATCHERS])
 series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
                       [ r'^[-\.]+([sS]|[\d])+x(\d+)',

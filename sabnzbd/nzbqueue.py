@@ -35,7 +35,8 @@ from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
                               LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
                               REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status, QUEUE_FILE_TMPL
+                              PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status, QUEUE_FILE_TMPL, \
+                              IGNORED_FOLDERS
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -151,7 +152,8 @@ class NzbQueue(TryList):
 
         # Repair unregistered folders
         for folder in globber(cfg.download_dir.get_path()):
-            if os.path.isdir(folder) and os.path.basename(folder) not in registered:
+            name = os.path.basename(folder)
+            if os.path.isdir(folder) and name not in registered and name not in IGNORED_FOLDERS:
                 if action:
                     logging.info('Repairing job %s', folder)
                     self.repair_job(folder)
