@@ -174,6 +174,8 @@ class HistoryDB(object):
             "md5sum" TEXT
         )
         """)
+        self.execute('PRAGMA user_version = 1;')
+        
 
     def save(self):
         try:
