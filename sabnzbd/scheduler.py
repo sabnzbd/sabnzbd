@@ -120,6 +120,12 @@ def init():
             rss_planned = True
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
+        elif action_name == 'enable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [True]
+        elif action_name == 'disable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [False]
         elif action_name == 'pause_all_low':
             action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [LOW_PRIORITY]
@@ -292,6 +298,7 @@ def analyse(was_paused=False, priority=None):
     pause_post = False
     pause_low = pause_normal = pause_high = False
     speedlimit = None
+    quota = True
     servers = {}
 
     for ev in sort_schedules(all_events=True):
@@ -330,6 +337,10 @@ def analyse(was_paused=False, priority=None):
             pause_normal = False
         elif action == 'resume_all_high':
             pause_high = False
+        elif action == 'enable_quota':
+            quota = True
+        elif action == 'disable_quota':
+            quota = False
         elif action == 'enable_server':
             try:
                 servers[value] = 1
@@ -362,6 +373,9 @@ def analyse(was_paused=False, priority=None):
     PostProcessor.do.paused = pause_post
     if speedlimit:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
+
+    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)
+
     for serv in servers:
         try:
             item = config.get_config('servers', serv)

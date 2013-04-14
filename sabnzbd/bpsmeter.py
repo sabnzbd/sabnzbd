@@ -138,6 +138,7 @@ class BPSMeter(object):
         self.q_time = 0L            # Next reset time for quota
         self.q_hour = 0                   # Quota reset hour
         self.q_minute = 0                 # Quota reset minute
+        self.quota_enabled = True         # Scheduled quota enable/disable
         BPSMeter.do = self
 
 
@@ -243,7 +244,7 @@ class BPSMeter(object):
             self.grand_total[server] += amount
 
             # Quota check
-            if self.have_quota:
+            if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
                     from sabnzbd.downloader import Downloader
@@ -379,10 +380,8 @@ class BPSMeter(object):
             self.quota = self.left = 0L
         self.update(0)
         self.next_reset()
-        if self.left > 0.5:
-            from sabnzbd.downloader import Downloader
-            if allow_resume and cfg.quota_resume() and Downloader.do and Downloader.do.paused:
-                Downloader.do.resume()
+        if self.left > 0.5 and allow_resume:
+            self.resume()
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
@@ -416,6 +415,20 @@ class BPSMeter(object):
         else:
             return None, 0, 0
 
+    def set_status(self, status, action=True):
+        """ Disable/enable quota management
+        """
+        self.quota_enabled = status
+        if action and not status:
+            self.resume()
+
+    def resume(self):
+        """ Resume downloading
+        """
+        from sabnzbd.downloader import Downloader
+        if cfg.quota_resume() and Downloader.do and Downloader.do.paused:
+            Downloader.do.resume()
+            
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """

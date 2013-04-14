@@ -1952,6 +1952,7 @@ _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedl
                   'pause_post', 'resume_post', 'scan_folder', 'rss_scan', 'remove_failed',
                   'pause_all_low', 'pause_all_normal', 'pause_all_high',
                   'resume_all_low', 'resume_all_normal', 'resume_all_high',
+                  'enable_quota', 'disable_quota'
                   )
 
 class ConfigScheduling(object):
