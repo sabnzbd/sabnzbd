@@ -62,7 +62,7 @@ def set_bonjour(host=None, port=None):
     global _HOST_PORT, _BONJOUR_OBJECT
 
     if not _HAVE_BONJOUR or not cfg.enable_bonjour():
-        logging.debug('No Bonjour/ZeroConfig support installed')
+        logging.info('No Bonjour/ZeroConfig support installed')
         return
 
     if host is None and port is None:
@@ -88,7 +88,7 @@ def set_bonjour(host=None, port=None):
     cherrypy.wsgiserver.redirect_url("https://%s%s:%s/sabnzbd" % (name, suffix, port))
     refObject = pybonjour.DNSServiceRegister(
         interfaceIndex = scope,
-        name = 'SABnzbd on %s' % name,
+        name = 'SABnzbd on %s:%s' % (name, port),
         regtype = '_http._tcp',
         domain = domain,
         host = zhost,
