@@ -107,6 +107,11 @@ class URLGrabber(Thread):
                 except:
                     ret = None
 
+                new_url = dereferring(url, fn)
+                if new_url:
+                    self.add(new_url, future_nzo)
+                    continue
+                    
                 if fn:
                     for hdr in fn.headers:
                         try:
@@ -243,3 +248,17 @@ def _analyse(fn, url):
 
     return fn, fn.msg, False, 0, data
 
+
+_RE_DEREFER = re.compile(r'content=".*url=([^"]+)">')
+def dereferring(url, fn):
+    """ Find out if we're being diverted to another location.
+        If so, return new url else None
+    """
+    if 'derefer.me' in url:
+        data = fn.read()
+        for line in data.split('\n'):
+            if '<meta' in line:
+                m = _RE_DEREFER.search(data)
+                if m:
+                    return m.group(1)
+    return None
