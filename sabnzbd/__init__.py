@@ -567,7 +567,11 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         # Consider reception of Latin-1 names for non-Windows platforms
         # When an OSX/Unix server receives a file from Windows platform
         # CherryPy delivers filename as UTF-8 disguised as Unicode!
-        filename = nzbfile.filename.encode('cp1252').decode('utf-8')
+        try:
+            filename = nzbfile.filename.encode('cp1252').decode('utf-8')
+        except:
+            # Correct encoding afterall!
+            filename = nzbfile.filename
         filename = encoding.special_fixer(filename)
         keep = False
 
