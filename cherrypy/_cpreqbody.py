@@ -592,11 +592,18 @@ class Part(Entity):
 
             if line[0] in ntob(' \t'):
                 # It's a continuation line.
-                v = line.strip().decode('ISO-8859-1')
+                try:
+                    v = line.strip().decode('utf-8')
+                except UnicodeDecodeError:
+                    v = line.strip().decode('ISO-8859-1')
             else:
                 k, v = line.split(ntob(":"), 1)
-                k = k.strip().decode('ISO-8859-1')
-                v = v.strip().decode('ISO-8859-1')
+                try:
+                    k = k.strip().decode('utf-8')
+                    v = v.strip().decode('utf-8')
+                except UnicodeDecodeError:
+                    k = k.strip().decode('ISO-8859-1')
+                    v = v.strip().decode('ISO-8859-1')
             
             existing = headers.get(k)
             if existing:
