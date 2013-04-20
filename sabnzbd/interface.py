@@ -2213,7 +2213,7 @@ class ConfigSorting(object):
 
         for kw in SORT_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)

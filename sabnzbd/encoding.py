@@ -58,7 +58,7 @@ def reliable_unpack_names():
 def platform_encode(p):
     """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1
     """
-    if p is None or isinstance(p, unicode):
+    if p is None or isinstance(p, unicode) or isinstance(p, list):
         return p
     else:
         try:
