@@ -429,7 +429,7 @@ def process_job(nzo):
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
-                                                             msgid, dirname, cat, nzo.group, job_result)
+                                                             msgid, dirname, cat, nzo.group, job_result, nzo.nzo_id)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
