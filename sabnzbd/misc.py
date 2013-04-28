@@ -327,7 +327,7 @@ def real_path(loc, path):
         path = ''
     if path:
         if not sabnzbd.WIN32 and path.startswith('~/'):
-            path = path.replace('~', sabnzbd.DIR_HOME, 1)
+            path = path.replace('~', os.environ.get('HOME', sabnzbd.DIR_HOME), 1)
         if sabnzbd.WIN32:
             path = path.replace('/', '\\')
             if len(path) > 1 and path[0].isalpha() and path[1] == ':':
