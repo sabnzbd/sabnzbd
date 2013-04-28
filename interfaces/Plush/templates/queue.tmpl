@@ -19,10 +19,10 @@
   stats += '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
   <!--#end if#-->
   <!--#if $diskspace1 == $diskspace2#-->
-  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
+  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1_norm$T('B')</strong>&nbsp;$T('Plush-freeSpace')';
   <!--#else#-->
   stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
-    +'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
+    +'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2_norm$T('B')</strong>&nbsp;$T('Plush-freeSpace')';
   <!--#end if#-->
   $.plush.SetQueueStats(stats);
 });

@@ -1577,9 +1577,14 @@ def build_header(prim, webdir='', search=None):
     if speed_limit <= 0:
         speed_limit = ''
 
+    free1 = diskfree(cfg.download_dir.get_path())
+    free2 = diskfree(cfg.complete_dir.get_path())
+
     header['helpuri'] = 'http://wiki.sabnzbd.org/'
-    header['diskspace1'] = "%.2f" % diskfree(cfg.download_dir.get_path())
-    header['diskspace2'] = "%.2f" % diskfree(cfg.complete_dir.get_path())
+    header['diskspace1'] = "%.2f" % free1
+    header['diskspace2'] = "%.2f" % free2
+    header['diskspace1_norm'] = to_units(free1 * GIGI)
+    header['diskspace2_norm'] = to_units(free2 * GIGI)
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.download_dir.get_path())
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
     header['loadavg'] = loadavg()

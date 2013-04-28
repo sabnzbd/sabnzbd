@@ -85,6 +85,7 @@ SKIN_TEXT = {
     'KBs' : TT('KB/s'), #: Speed indicator kilobytes/sec
     'MB' : TT('MB'), #: Megabytes
     'GB' : TT('GB'), #: Gigabytes
+    'B' : TT('B'), #: Bytes (used as postfix, as in "GB", "TB")
     'hour' : TT('hour'), #: One hour
     'hours' : TT('hours'), #: Multiple hours
     'minute' : TT('min'), #: One minute
