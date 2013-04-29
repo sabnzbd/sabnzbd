@@ -425,12 +425,12 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
-    # Encode series info in now unused `record` field.
-    seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
-    if seriesname and season and episode:
-        series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
-    else:
-        series = u''
+    # Analyse series info only when job is finished
+    series = u''
+    if postproc_time:
+        seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+        if seriesname and season and episode:
+            series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
 
     return (completed, name, nzb_name, category, pp, script, '', url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
