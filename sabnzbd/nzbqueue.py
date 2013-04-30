@@ -28,7 +28,7 @@ import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, \
-                         get_admin_path, remove_all, globber
+                         get_admin_path, remove_all, globber, globber_full
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
@@ -116,7 +116,7 @@ class NzbQueue(TryList):
         if repair:
             self.scan_jobs(not folders)
             # Handle any lost future jobs
-            for item in globber(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
                 path, nzo_id = os.path.split(item)
                 if nzo_id not in self.__nzo_table:
                     if nzo_id.startswith('SABnzbd_nzo'):
@@ -151,7 +151,7 @@ class NzbQueue(TryList):
                            for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])
 
         # Repair unregistered folders
-        for folder in globber(cfg.download_dir.get_path()):
+        for folder in globber_full(cfg.download_dir.get_path()):
             name = os.path.basename(folder)
             if os.path.isdir(folder) and name not in registered and name not in IGNORED_FOLDERS:
                 if action:
@@ -180,7 +180,7 @@ class NzbQueue(TryList):
             filename = ''
         if not filename:
             if not all_verified(path):
-                filename = globber(path, '*.gz')
+                filename = globber_full(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
                 sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
@@ -197,7 +197,7 @@ class NzbQueue(TryList):
     def send_back(self, nzo):
         """ Send back job to queue after successful pre-check """
         try:
-            nzb_path = globber(nzo.workpath, '*.gz')[0]
+            nzb_path = globber_full(nzo.workpath, '*.gz')[0]
         except:
             logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
             return

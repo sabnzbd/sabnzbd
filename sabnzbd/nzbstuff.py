@@ -46,8 +46,8 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
-                         sanitize_filename, globber, sanitize_foldername, int_conv, \
-                         set_permissions, format_time_string
+                         sanitize_filename, globber_full, sanitize_foldername, int_conv, \
+                         set_permissions, format_time_string, long_path
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
@@ -611,7 +611,7 @@ class NzbObject(TryList):
             self.final_name = self.final_name.replace(' ','_')
 
         # Determine "incomplete" folder
-        wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
+        wdir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         adir = os.path.join(wdir, JOB_ADMIN)
 
         if reuse:
@@ -913,7 +913,7 @@ class NzbObject(TryList):
         """ Check if downloaded files already exits, for these set NZF to complete
         """
         # Get a list of already present files
-        files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
+        files = [os.path.basename(f) for f in globber_full(wdir) if os.path.isfile(f)]
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
@@ -1213,12 +1213,12 @@ class NzbObject(TryList):
     @property
     def workpath(self):
         """ Return the full path for my job-admin folder (or old style cache) """
-        return get_admin_path(self.new_caching, self.work_name, self.futuretype)
+        return long_path(get_admin_path(self.new_caching, self.work_name, self.futuretype))
 
     @property
     def downpath(self):
         """ Return the full path for my download folder """
-        return os.path.join(cfg.download_dir.get_path(), self.work_name)
+        return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
 
     @property
     def group(self):
@@ -1368,7 +1368,7 @@ class NzbObject(TryList):
         self.save_attribs()
         if self.nzo_id:
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
-            
+
     def save_attribs(self):
         set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
 

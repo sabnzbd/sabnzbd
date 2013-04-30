@@ -35,7 +35,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, globber, remove_all, get_base_url
+     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
@@ -1302,9 +1302,8 @@ class ConfigGeneral(object):
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
             for color in globber(dd):
-                col = os.path.basename(color).replace('.css','')
-                if col != "_svn" and col != ".svn":
-                    lst.append(col)
+                col = color.replace('.css','')
+                lst.append(col)
             return lst
 
         def add_color(dir, color):
@@ -1335,7 +1334,7 @@ class ConfigGeneral(object):
 
         wlist = []
         wlist2 = ['None']
-        interfaces = globber(sabnzbd.DIR_INTERFACES)
+        interfaces = globber_full(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
             if k.endswith(DEF_STDINTF):
                 interfaces.remove(k)
@@ -1347,7 +1346,7 @@ class ConfigGeneral(object):
                 break
         for web in interfaces:
             rweb = os.path.basename(web)
-            if rweb != '.svn' and rweb != '_svn' and os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
+            if os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:

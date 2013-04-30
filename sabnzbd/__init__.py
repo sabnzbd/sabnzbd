@@ -527,7 +527,7 @@ def save_compressed(folder, filename, data):
     # Need to go to the save folder to
     # prevent the pathname being embedded in the GZ file
     here = os.getcwd()
-    os.chdir(folder)
+    os.chdir(misc.short_path(folder))
 
     if filename.endswith('.nzb'):
         filename += '.gz'
@@ -1065,7 +1065,7 @@ def wait_for_download_folder():
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
-    
+
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def active_primaries():

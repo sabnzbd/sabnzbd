@@ -96,7 +96,7 @@ class Assembler(Thread):
                             if errno == 28:
                                 logging.error(Ta('Disk full! Forcing Pause'))
                             else:
-                                logging.error(Ta('Disk error on creating file %s'), latin1(filepath))
+                                logging.error(T('Disk error on creating file %s'), filepath)
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:

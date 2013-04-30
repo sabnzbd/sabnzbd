@@ -29,7 +29,7 @@ import threading
 import subprocess
 import socket
 import time
-import glob
+import fnmatch
 import stat
 try:
     socket.ssl
@@ -71,12 +71,16 @@ def safe_lower(txt):
         return ''
 
 #------------------------------------------------------------------------------
-def globber(path, pattern='*'):
-    """ Do a glob.glob(), disabling the [] pattern in 'path' """
-    if pattern:
-        return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
-    else:
-        return glob.glob(path.replace('[', '[[]'))
+def globber(path, pattern=u'*'):
+    """ Return matching base file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+
+def globber_full(path, pattern=u'*'):
+    """ Return matching full file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
@@ -781,6 +785,7 @@ def move_to_path(path, new_path):
     """
     ok = True
     overwrite = cfg.overwrite_files()
+    new_path = os.path.abspath(new_path)
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
@@ -1251,9 +1256,9 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
     """ Remove folder and all its content (optionally recursive)
     """
     if os.path.exists(path):
-        files = globber(path, pattern)
+        files = globber_full(path, pattern)
         if pattern == '*' and not sabnzbd.WIN32:
-            files.extend(globber(path, '.*'))
+            files.extend(globber_full(path, '.*'))
 
         for f in files:
             if os.path.isfile(f):
@@ -1352,3 +1357,45 @@ def set_permissions(path, recursive=True):
                 set_chmod(path, umask, report)
         else:
             set_chmod(path, umask_file, report)
+
+
+def short_path(path, always=True):
+    """ For Windows, return shortended ASCII path, for others same path
+        When `always` is off, only return a short path when size is below 260
+    """
+    if sabnzbd.WIN32:
+        import win32api
+        path = os.path.normpath(path)
+        if always or len(path) > 259:
+            # First make the path "long"
+            path = long_path(path)
+            if os.path.exists(path):
+                # Existing path can always be shortened
+                path = win32api.GetShortPathName(path)
+            else:
+                # For new path, shorten only existing part (recursive)
+                path1, name = os.path.split(path)
+                path = os.path.join(short_path(path1, always), name)
+            path = clip_path(path)
+    return path
+
+
+def clip_path(path):
+    """ Remove \\?\ or \\?\UNC\ prefix from Windows path
+    """
+    if sabnzbd.WIN32 and path and '?' in path:
+        path = path.replace(u'\\\\?\\UNC\\', u'\\\\').replace(u'\\\\?\\', u'')
+    return path
+
+
+def long_path(path):
+    """ For Windows, convert to long style path; others, return same path
+    """
+    if sabnzbd.WIN32 and path and not path.startswith(u'\\\\?\\'):
+        if path.startswith('\\\\'):
+            # Special form for UNC paths
+            path = path.replace(u'\\\\', u'\\\\?\\UNC\\', 1)
+        else:
+            # Normal form for local paths
+            path = u'\\\\?\\' + path
+    return path

@@ -31,8 +31,8 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         make_script_path, \
-                         on_cleanup_list, renamer, remove_dir, remove_all, globber, \
+                         make_script_path, short_path, long_path, clip_path, \
+                         on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
                          set_permissions, cleanup_empty_directories
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
@@ -303,6 +303,7 @@ def process_job(nzo):
                     catdir = catdir.strip('*')
                     one_folder = True
                 complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
+            complete_dir = long_path(complete_dir)
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
             file_sorter = Sorter(cat)
@@ -336,7 +337,7 @@ def process_job(nzo):
                     #set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                    unpack_error, newfiles = unpack_magic(nzo, short_path(workdir), short_path(tmp_workdir_complete), flag_delete, one_folder, (), (), (), (), ())
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
@@ -399,6 +400,7 @@ def process_job(nzo):
                 else:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                    workdir_complete = workdir_complete
 
             if empty:
                 job_result = -1
@@ -426,7 +428,7 @@ def process_job(nzo):
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
+                script_log, script_ret = external_processing(short_path(script_path, False), short_path(workdir_complete, False), nzo.filename,
                                                              dirname, cat, nzo.group, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
@@ -487,7 +489,7 @@ def process_job(nzo):
         par_error = True
         all_ok = False
         if cfg.email_endjob():
-            emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+            emailer.endjob(dirname, cat, all_ok, clip_path(workdir_complete), nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
 
 
@@ -504,7 +506,7 @@ def process_job(nzo):
     history_db = database.get_history_handle()
     # Add the nzo to the database. Only the path, script and time taken is passed
     # Other information is obtained from the nzo
-    history_db.add_history_db(nzo, workdir_complete, nzo.downpath, postproc_time, script_log, script_line)
+    history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
     # The connection is only used once, so close it here
     history_db.close()
 
@@ -561,7 +563,7 @@ def parring(nzo, workdir):
                 parfile_nzf = par_table[setname]
                 if not os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)):
                     continue
-                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
+                need_re_add, res = par2_repair(parfile_nzf, nzo, short_path(workdir), setname)
                 re_add = re_add or need_re_add
                 if not res and not need_re_add and cfg.sfv_check():
                     res = try_sfv_check(nzo, workdir, setname)
@@ -594,7 +596,7 @@ def try_sfv_check(nzo, workdir, setname):
         When setname is '' and no SFV files are found, True is returned
         """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
-    sfvs = globber(workdir, '*.sfv')
+    sfvs = globber_full(workdir, '*.sfv')
     sfvs.sort(lambda x, y: len(x) - len(y))
     par_error = False
     found = False
@@ -753,8 +755,8 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     orgpath = oldpath
     items = globber(oldpath)
     if len(items) == 1:
-        folder_path = items[0]
-        folder = os.path.split(folder_path)[1]
+        folder = items[0]
+        folder_path = os.path.join(oldpath, folder)
         if os.path.isdir(folder_path) and folder not in ('VIDEO_TS', 'AUDIO_TS'):
             logging.info('Collapsing %s', os.path.join(newpath, folder))
             oldpath = folder_path
