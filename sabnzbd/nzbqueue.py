@@ -88,12 +88,12 @@ class NzbQueue(TryList):
                         nzo_ids = []
                         logging.error(Ta('Incompatible queuefile found, cannot proceed'))
                         if not repair:
-                            panic_queue(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
+                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                             exit_sab(2)
                 except ValueError:
                     nzo_ids = []
                     logging.error(Ta('Error loading %s, corrupt file detected'),
-                                  os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
+                                  os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                     if not repair:
                         return
 
@@ -102,11 +102,11 @@ class NzbQueue(TryList):
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
             # Try as normal job
-            path = get_admin_path(bool(folder), folder, False)
+            path = get_admin_path(folder, False)
             nzo = sabnzbd.load_data(_id, path, remove=False)
             if not nzo:
                 # Try as future job
-                path = get_admin_path(bool(folder), folder, True)
+                path = get_admin_path(folder, True)
                 nzo = sabnzbd.load_data(_id, path)
             if nzo:
                 self.add(nzo, save=False, quiet=True)
@@ -231,10 +231,7 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list:
-            if nzo.new_caching:
-                nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
-            else:
-                nzo_ids.append(nzo.nzo_id)
+            nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
             if save_nzo is None or nzo is save_nzo:
                 sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                 if not nzo.futuretype:

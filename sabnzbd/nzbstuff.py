@@ -470,7 +470,7 @@ NzbObjectSaver = (
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
-    'custom_name', 'password', 'next_save', 'save_timeout', 'new_caching', 'encrypted',
+    'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
     'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
     'md5sum'
 )
@@ -587,7 +587,6 @@ class NzbObject(TryList):
         self.password = password
         self.next_save = None
         self.save_timeout = None
-        self.new_caching = True
         self.encrypted = 0
         self.wait = None
         self.pp_active = False  # Signals active post-processing (not saved)
@@ -1214,7 +1213,7 @@ class NzbObject(TryList):
     @property
     def workpath(self):
         """ Return the full path for my job-admin folder (or old style cache) """
-        return long_path(get_admin_path(self.new_caching, self.work_name, self.futuretype))
+        return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
     def downpath(self):
@@ -1241,7 +1240,7 @@ class NzbObject(TryList):
         for nzf in self.finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        if self.new_caching and not self.futuretype:
+        if not self.futuretype:
             if keep_basic:
                 remove_all(wpath, 'SABnzbd_nz?_*')
                 remove_all(wpath, 'SABnzbd_article_*')

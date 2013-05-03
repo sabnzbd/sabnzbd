@@ -216,9 +216,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     ### Clean-up, if requested
     if clean_up:
-        # Old cache folder
-        misc.remove_all(cfg.cache_dir.get_path(), '*.sab')
-        misc.remove_all(cfg.cache_dir.get_path(), 'SABnzbd_*')
         # New admin folder
         misc.remove_all(cfg.admin_dir.get_path(), '*.sab')
 
@@ -247,7 +244,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.web_color.callback(guard_restart)
     cfg.web_color2.callback(guard_restart)
     cfg.log_dir.callback(guard_restart)
-    cfg.cache_dir.callback(guard_restart)
     cfg.https_port.callback(guard_restart)
     cfg.https_cert.callback(guard_restart)
     cfg.https_key.callback(guard_restart)
@@ -909,12 +905,8 @@ def load_admin(_id, remove=False, do_pickle=True):
     logging.info("Loading data for %s from %s", _id, path)
 
     if not os.path.exists(path):
-        logging.info("%s missing, trying old cache", path)
-        path = os.path.join(cfg.cache_dir.get_path(), _id)
-        if not os.path.exists(path):
-            logging.info("%s missing", path)
-            return None
-        remove = True
+        logging.info("%s missing", path)
+        return None
 
     try:
         f = open(path, 'rb')

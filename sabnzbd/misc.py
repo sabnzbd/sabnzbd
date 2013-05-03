@@ -906,17 +906,14 @@ def make_script_path(script):
     return s_path
 
 
-def get_admin_path(newstyle, name, future):
+def get_admin_path(name, future):
     """ Return news-style full path to job-admin folder of names job
         or else the old cache path
     """
-    if newstyle:
-        if future:
-            return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
-        else:
-            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+    if future:
+        return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return cfg.cache_dir.get_path()
+        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 def bad_fetch(nzo, url, msg='', retry=False, content=False):
     """ Create History entry for failed URL Fetch
