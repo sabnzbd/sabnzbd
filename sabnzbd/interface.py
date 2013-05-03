@@ -34,7 +34,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, \
-     diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
+     diskfree, sanitize_foldername, time_format, HAVE_AMPM, long_path, \
      cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
@@ -198,7 +198,7 @@ def check_apikey(kwargs, nokey=False):
     # external utilities to detect if username/password is required
     # The cfg item can suppress all visible warnings
     special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
-    
+
     # Lookup required access level
     req_access = sabnzbd.api.api_level(mode, name)
 
@@ -607,7 +607,7 @@ class NzoPage(object):
                 priority = None
             if pp == 'Default':
                 pp = None
-            
+
         if script is not None and nzo.script != script:
             NzbQueue.do.change_script(nzo_id, script)
         if pp is not None and nzo.pp != pp:
@@ -1096,14 +1096,14 @@ def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(cfg.download_dir.get_path(), path)
+        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         remove_all(path, recursive=True)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(cfg.download_dir.get_path(), path)
+        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         sabnzbd.nzbqueue.repair_job(path, None)
 
 
@@ -1396,7 +1396,7 @@ class ConfigGeneral(object):
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
         conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
-        
+
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()

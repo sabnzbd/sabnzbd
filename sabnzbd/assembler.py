@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer, \
-                         set_permissions, flag_file
+                         set_permissions, flag_file, long_path
 from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -81,7 +81,7 @@ class Assembler(Thread):
 
                 dupe = nzo.check_for_dupe(nzf)
 
-                filepath = get_filepath(cfg.download_dir.get_path(), nzo, filename)
+                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)

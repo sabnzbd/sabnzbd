@@ -979,7 +979,11 @@ def validate_no_unc(root, value, default):
 
 
 def validate_safedir(root, value, default):
-    """ Allow only when queues are empty and no UNC """
+    """ Allow only when queues are empty and no UNC
+        On Windows path should be 80 max
+    """
+    if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) > 80:
+        return Ta('Error: Path length should be below 80.'), None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:

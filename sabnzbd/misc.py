@@ -873,6 +873,27 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
+def trim_win_path(path):
+    """ Make sure Windows path stays below 125 by trimming last part """
+    if sabnzbd.WIN32 and len(path) > 125:
+        path, folder = os.path.split(path)
+        maxlen = 125 - len(path)
+        if len(folder) > maxlen:
+            folder = folder[:maxlen]
+        path = os.path.join(path, folder)
+    return path
+
+
+def check_win_maxpath(folder):
+    """ Return False if any file path in folder exceeds the Windows maximum
+    """
+    if sabnzbd.WIN32:
+        for p in os.listdir(folder):
+            if len(os.path.join(folder, p)) > 259:
+                return False
+    return True
+
+
 def make_script_path(script):
     """ Return full script path, if any valid script exists, else None """
     s_path = None
