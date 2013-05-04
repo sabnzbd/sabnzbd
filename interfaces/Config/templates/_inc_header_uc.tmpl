@@ -70,13 +70,21 @@
                 });
 
                 \$('#fullform').ajaxForm({
+                    datatype: 'json',
                     beforeSubmit: function () {
                         \$('.saveButton').each(function () {
                             \$(this).attr("disabled", "disabled").attr("value", "$T('smpl-saving')");
                         });
                     },
-                    success: function () {
-                        setTimeout(config_success, 1000);
+                    success: function (json) {
+                        if (json.error) {
+                           \$('#config_err_msg').text(json.error);
+                           setTimeout(config_failure, 1000);
+                           }
+                        else {
+                           \$('#config_err_msg').text(" ");
+                           setTimeout(config_success, 1000);
+                           }
                     },
                     error: function () {
                         setTimeout(config_failure, 1000);

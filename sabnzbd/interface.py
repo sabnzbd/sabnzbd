@@ -71,16 +71,16 @@ FILTER = LatinFilter
 
 #------------------------------------------------------------------------------
 #
-def check_server(host, port):
+def check_server(host, port, ajax):
     """ Check if server address resolves properly """
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'))
+        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'), ajax)
 
     if GetServerParms(host, int_conv(port)):
         return ""
     else:
-        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port))
+        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
 
 def check_access(access_type=4):
@@ -1151,11 +1151,15 @@ class ConfigFolders(object):
                 else:
                     msg = config.get_config('misc', kw).set(value)
                 if msg:
-                    return badParameterResponse(msg)
+                    #return sabnzbd.api.report('json', error=msg)
+                    return badParameterResponse(msg, kwargs.get('ajax'))
 
         sabnzbd.check_incomplete_vs_complete()
         config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        if kwargs.get('ajax'):
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
 
 SWITCH_LIST = \
@@ -1599,9 +1603,10 @@ def handle_server(kwargs, root=None, new_svr=False):
     msg = check_session(kwargs)
     if msg: return msg
 
+    ajax = kwargs.get('ajax')
     host = kwargs.get('host', '').strip()
     if not host:
-        return badParameterResponse(T('Server address required'))
+        return badParameterResponse(T('Server address required'), ajax)
 
     port = kwargs.get('port', '').strip()
     if not port:
@@ -1615,7 +1620,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs['connections'] = '1'
 
     if kwargs.get('enable') == '1':
-        msg = check_server(host, port)
+        msg = check_server(host, port, ajax)
         if msg:
             return msg
 
@@ -1646,7 +1651,10 @@ def handle_server(kwargs, root=None, new_svr=False):
     config.save_config()
     Downloader.do.update_server(old_server, server)
     if root:
-        raise dcRaiser(root, kwargs)
+        if ajax:
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(root, kwargs)
 
 
 def handle_server_test(kwargs, root):
@@ -2380,10 +2388,13 @@ class Status(object):
 def Protected():
     return badParameterResponse("Configuration is locked")
 
-def badParameterResponse(msg):
+def badParameterResponse(msg, ajax=None):
     """Return a html page with error message and a 'back' button
     """
-    return '''
+    if ajax:
+        return sabnzbd.api.report('json', error=msg)
+    else:
+        return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
@@ -2644,31 +2655,35 @@ class ConfigNotify(object):
     def saveEmail(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        ajax = kwargs.get('ajax')
 
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_GROWL:
             msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_NCENTER:
             msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_NTFOSD:
             msg = config.get_config('ntfosd', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_PROWL:
             msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 
         config.save_config()
         self.__lastmail = None
-        raise dcRaiser(self.__root, kwargs)
+        if ajax:
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def testmail(self, **kwargs):

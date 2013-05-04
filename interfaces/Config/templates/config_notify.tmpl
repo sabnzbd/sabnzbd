@@ -5,6 +5,7 @@
 <div class="colmask">
     <form action="saveEmail" method="post" name="fullform" id="fullform" novalidate>
     <input type="hidden" id="session" name="session" value="$session" />
+    <input type="hidden" id="ajax" name="ajax" value=1 />
     <div class="section">
         <div class="col2">
             <h3>$T('cmenu-email')</h3>
@@ -63,6 +64,7 @@
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
                     <input type="button" value="$T('link-testEmail')" id="test_email" rel="$T('askTestEmail')" />
                     <span id="testmail-result" class="icon path darkred">&nbsp;</span>
+                    <span id="config_err_msg" class="icon path darkred">&nbsp;</span>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
