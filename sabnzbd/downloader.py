@@ -496,6 +496,10 @@ class Downloader(Thread):
                     BPSMeter.do.update(server.id, bytes)
 
                     if nzo:
+                        if server.id in nzo.servercount:
+                            nzo.servercount[server.id] += bytes
+                        else:
+                            nzo.servercount[server.id] = bytes
                         nzo.bytes_downloaded += bytes
                         nzo.update_avg_kbs(BPSMeter.do.get_bps())
 

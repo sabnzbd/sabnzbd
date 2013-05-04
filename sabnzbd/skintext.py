@@ -29,6 +29,7 @@ SKIN_TEXT = {
     'stage-unpack'       : TT('Unpack'), #: PP phase "unpack"
     'stage-script'       : TT('Script'), #: PP phase "script"
     'stage-source'       : TT('Source'), #: PP Source of the NZB (path or URL)
+    'stage-servers'      : TT('Servers'), #: PP Distribution over servers
     'stage-fail'         : TT('Failure'), #: PP Failure message
 
     'post-Completed'     : TT('Completed'), #: PP status

@@ -81,7 +81,7 @@
           <!--#end for#-->
         <!--#end if#-->
       <!--#else#-->
-        <!--#if $stage.name != "Source"#-->
+        <!--#if $stage.name != "Source" and $stage.name != "Servers"#-->
           <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
         <!--#end if#-->
       <!--#end if#-->

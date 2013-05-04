@@ -472,7 +472,7 @@ NzbObjectSaver = (
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
     'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
-    'md5sum'
+    'md5sum', 'servercount'
 )
 
 class NzbObject(TryList):
@@ -513,6 +513,7 @@ class NzbObject(TryList):
         self.final_name = work_name
 
         self.meta = {}
+        self.servercount = {}       # Dict to keep bytes per server
         self.created = False        # dirprefixes + work_name created
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
@@ -1093,6 +1094,9 @@ class NzbObject(TryList):
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
+            if len(self.servercount) > 1:
+                msgs = [ '%s=%sB' % (server, to_units(self.servercount[server])) for server in self.servercount ]
+                self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     def inc_log(self, log, txt):
         """ Append string txt to nzo_info element "log"
@@ -1430,6 +1434,8 @@ class NzbObject(TryList):
         self.wait = None
         if self.meta is None:
             self.meta = {}
+        if self.servercount is None:
+            self.servercount = {}
         TryList.__init__(self)
 
 
