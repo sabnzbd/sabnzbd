@@ -763,36 +763,6 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     return False
 
 
-def copy_old_files(newpath):
-    """ OSX only:
-        If no INI file found but old one exists, copy it
-        When copying the INI, also copy rss and watched-data
-    """
-    if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
-        if not os.path.exists(newpath):
-            os.mkdir(newpath)
-        oldpath = os.environ['HOME'] + "/.sabnzbd"
-        oldini = os.path.join(oldpath, DEF_INI_FILE)
-        if os.path.exists(oldini):
-            import shutil
-            try:
-                shutil.copy(oldini, newpath)
-            except:
-                pass
-            oldpath = os.path.join(oldpath, DEF_CACHE_DIR)
-            newpath = os.path.join(newpath, DEF_CACHE_DIR)
-            if not os.path.exists(newpath):
-                os.mkdir(newpath)
-            try:
-                shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
-            except:
-                pass
-            try:
-                shutil.copy(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
-            except:
-                pass
-
-
 def evaluate_inipath(path):
     """ Derive INI file path from a partial path.
         Full file path: if file does not exist the name must contain a dot
@@ -1088,8 +1058,6 @@ def main():
         inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
         if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak'):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
-            if sabnzbd.DARWIN:
-                copy_old_files(sabnzbd.DIR_LCLDATA)
 
     # If INI file at non-std location, then use program dir as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
