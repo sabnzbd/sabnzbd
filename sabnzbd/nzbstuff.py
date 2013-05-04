@@ -1063,6 +1063,7 @@ class NzbObject(TryList):
 
 
     def set_download_report(self):
+        import sabnzbd.api
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
             #get the deltatime since the download started
             avg_bps = self.avg_bps_total / self.avg_bps_freq
@@ -1077,20 +1078,22 @@ class NzbObject(TryList):
             complete_time = format_time_string(seconds, timecompleted.days)
 
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps*1024, dec_limit=1))
+            msg1 += u'<br/>' + T('Age') + ': ' + sabnzbd.api.calc_age(self.avg_date, True)
+
             bad = self.nzo_info.get('bad_art_log', [])
             miss = self.nzo_info.get('missing_art_log', [])
             killed = self.nzo_info.get('killed_art_log', [])
             dups = self.nzo_info.get('dup_art_log', [])
             msg2 = msg3 = msg4 = msg5 = ''
             if bad:
-                msg2 = ('<br/>' + T('%s articles were malformed')) % len(bad)
+                msg2 = (u'<br/>' + T('%s articles were malformed')) % len(bad)
             if miss:
-                msg3 = ('<br/>' + T('%s articles were missing')) % len(miss)
+                msg3 = (u'<br/>' + T('%s articles were missing')) % len(miss)
             if dups:
-                msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
+                msg4 = (u'<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
             if killed:
-                msg5 = ('<br/>' + T('%s articles were removed')) % len(killed)
-            msg = ''.join((msg1, msg2, msg3, msg4, msg5, ))
+                msg5 = (u'<br/>' + T('%s articles were removed')) % len(killed)
+            msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
