@@ -290,10 +290,11 @@ def ParseFilePacket(f, header):
 def is_cloaked(path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(os.path.split(path)[1]).lower()
+    fname = os.path.splitext(fname)[0]
     for name in names:
         name = os.path.split(name.lower())[1]
-        ext = os.path.splitext(unicoder(name))[1]
-        if (ext == '.rar' and fname == name):
+        name, ext = os.path.splitext(unicoder(name))
+        if (ext == u'.rar' and fname == name):
             logging.debug('File %s is probably encrypted due to RAR with same name inside this RAR', fname)
             return True
         elif 'password' in name:
