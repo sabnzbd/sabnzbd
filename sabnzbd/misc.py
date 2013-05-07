@@ -74,12 +74,18 @@ def safe_lower(txt):
 def globber(path, pattern=u'*'):
     """ Return matching base file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
-    return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    if os.path.exists(path):
+        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    else:
+        return []
 
 def globber_full(path, pattern=u'*'):
     """ Return matching full file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
-    return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    if os.path.exists(path):
+        return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    else:
+        return []
 
 
 #------------------------------------------------------------------------------
