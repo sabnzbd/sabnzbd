@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from distutils.core import setup
+from sabnzbd.version import __version__
 
 import glob
 import sys
@@ -286,6 +287,9 @@ if target not in ('source', 'binary', 'installer', 'app'):
 
 # Derive release name from path
 base, release = os.path.split(os.getcwd())
+# I don't know why you'd determine this from the path
+# there's a version.py right over in sabnzbd/
+release = __version__
 
 prod = 'SABnzbd-' + release
 Win32ServiceName = 'SABnzbd-service.exe'
