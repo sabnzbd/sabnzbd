@@ -18,6 +18,7 @@
 
 from distutils.core import setup
 from sabnzbd.version import __version__
+from distutils.sysconfig import get_python_lib
 
 import glob
 import sys
@@ -42,6 +43,8 @@ try:
 except ImportError:
     py2app = None
     OSX_ML = OSX_LION = OSX_SL = False
+
+SITE_PACKAGES = get_python_lib()
 
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
@@ -437,8 +440,8 @@ if target == 'app':
         os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
-    os.system("cp -pR /Library/Python/2.7/site-packages/yenc.py* dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
-    os.system("cp -pR /Library/Python/2.7/site-packages/_yenc.so dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
+    os.system("cp -pR "+SITE_PACKAGES+"/yenc.py* dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
+    os.system("cp -pR "+SITE_PACKAGES+"/_yenc.so dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
     os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
