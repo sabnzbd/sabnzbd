@@ -428,6 +428,7 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/7zip>/dev/null")
     if OSX_SL:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
         os.system("cp -pR osx/7zip/7za-leopard dist/SABnzbd.app/Contents/Resources/osx/7zip/7za >/dev/null")
@@ -436,6 +437,8 @@ if target == 'app':
         os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
+    os.system("cp -pR /Library/Python/2.7/site-packages/yenc.py* dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
+    os.system("cp -pR /Library/Python/2.7/site-packages/_yenc.so dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
     os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
