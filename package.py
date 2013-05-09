@@ -421,6 +421,7 @@ if target == 'app':
     # copy unrar, 7zip & par2 binary
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
