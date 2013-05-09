@@ -1,4 +1,10 @@
-#Compiled python
+# Don't track my personal stuff...
+sabnzbd.ini
+logs/
+admin/
+nzb/
+
+# Compiled python
 *.py[co]
 
 # Working folders for Win build
