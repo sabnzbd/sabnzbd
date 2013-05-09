@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from distutils.core import setup
+from sabnzbd.version import __version__
+from distutils.sysconfig import get_python_lib
 
 import glob
 import sys
@@ -41,6 +43,8 @@ try:
 except ImportError:
     py2app = None
     OSX_ML = OSX_LION = OSX_SL = False
+
+SITE_PACKAGES = get_python_lib()
 
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
@@ -286,6 +290,9 @@ if target not in ('source', 'binary', 'installer', 'app'):
 
 # Derive release name from path
 base, release = os.path.split(os.getcwd())
+# I don't know why you'd determine this from the path
+# there's a version.py right over in sabnzbd/
+release = __version__
 
 prod = 'SABnzbd-' + release
 Win32ServiceName = 'SABnzbd-service.exe'
@@ -425,6 +432,7 @@ if target == 'app':
     os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/license.txt dist/SABnzbd.app/Contents/Resources/osx/unrar/ >/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/7zip>/dev/null")
     if OSX_SL:
         os.system("cp -pR osx/unrar/unrar-leopard dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar >/dev/null")
         os.system("cp -pR osx/7zip/7za-leopard dist/SABnzbd.app/Contents/Resources/osx/7zip/7za >/dev/null")
@@ -433,6 +441,8 @@ if target == 'app':
         os.system("cp -pR osx/7zip/7za dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp -pR osx/7zip/License.txt dist/SABnzbd.app/Contents/Resources/osx/7zip/ >/dev/null")
     os.system("cp icons/sabnzbd.ico dist/SABnzbd.app/Contents/Resources >/dev/null")
+    os.system("cp -pR "+SITE_PACKAGES+"/yenc.py* dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
+    os.system("cp -pR "+SITE_PACKAGES+"/_yenc.so dist/SABnzbd.app/Contents/Resources/lib/python2.7/>/dev/null")
     os.system("pandoc -f markdown -t rtf -s -o dist/SABnzbd.app/Contents/Resources/Credits.rtf README.mkd >/dev/null")
     os.system("find dist/SABnzbd.app -name .git | xargs rm -rf")
 
