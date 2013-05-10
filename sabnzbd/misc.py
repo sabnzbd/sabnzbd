@@ -42,7 +42,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, latin1, special_fixer, gUTF
 import sabnzbd.growler as growler
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
@@ -83,7 +83,12 @@ def globber_full(path, pattern=u'*'):
     """ Return matching full file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+        try:
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+        except UnicodeDecodeError:
+            # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
+            path = path.encode('utf-8')
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
     else:
         return []
 
@@ -1423,3 +1428,16 @@ def long_path(path):
             # Normal form for local paths
             path = u'\\\\?\\' + path
     return path
+
+
+def fix_unix_encoding(folder):
+    """ Fix bad name encoding for Unix systems """
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and gUTF:
+        for root, dirs, files in os.walk(folder.encode('utf-8')):
+            for name in files:
+                new_name = special_fixer(name).encode('utf-8')
+                if name != new_name:
+                    try:
+                        os.rename(os.path.join(root, name), os.path.join(root, new_name))
+                    except:
+                        logging.info('Cannot correct name of %s', os.path.join(root, name))

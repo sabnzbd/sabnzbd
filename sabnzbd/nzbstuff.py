@@ -47,7 +47,8 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber_full, sanitize_foldername, int_conv, \
-                         set_permissions, format_time_string, long_path, trim_win_path
+                         set_permissions, format_time_string, long_path, trim_win_path, \
+                         fix_unix_encoding
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
@@ -913,6 +914,8 @@ class NzbObject(TryList):
     def check_existing_files(self, wdir):
         """ Check if downloaded files already exits, for these set NZF to complete
         """
+        fix_unix_encoding(wdir)
+        
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber_full(wdir) if os.path.isfile(f)]
 
@@ -920,7 +923,7 @@ class NzbObject(TryList):
         renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
         if renames:
             for name in renames:
-                if name in files:
+                if name in files or renames[name] in files:
                     files.remove(name)
                     files.append(renames[name])
 
@@ -934,7 +937,7 @@ class NzbObject(TryList):
         # Flag files from NZB that already exist as finished
         for filename in files[:]:
             for nzf in nzfs:
-                subject = sanitize_filename(latin1(nzf.subject))
+                subject = sanitize_filename(name_extractor(nzf.subject))
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
                     nzf.completed = True

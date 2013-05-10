@@ -33,7 +33,7 @@ from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          make_script_path, short_path, long_path, clip_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
-                         set_permissions, cleanup_empty_directories, check_win_maxpath
+                         set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -295,6 +295,7 @@ def process_job(nzo):
         marker_file = None
 
         if all_ok:
+            fix_unix_encoding(workdir)
             one_folder = False
             ## Determine class directory
             if cfg.create_group_folders():
@@ -575,7 +576,7 @@ def parring(nzo, workdir):
     else:
         logging.info("No par2 sets for %s", filename)
         nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-        if cfg.sfv_check():
+        if cfg.sfv_check() and not verified.get(setname, False):
             par_error = not try_sfv_check(nzo, workdir, '')
             verified[''] = not par_error
 
