@@ -576,7 +576,7 @@ def parring(nzo, workdir):
     else:
         logging.info("No par2 sets for %s", filename)
         nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-        if cfg.sfv_check() and not verified.get(setname, False):
+        if cfg.sfv_check() and not verified.get('', False):
             par_error = not try_sfv_check(nzo, workdir, '')
             verified[''] = not par_error
 
