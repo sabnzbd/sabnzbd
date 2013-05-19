@@ -64,6 +64,7 @@ class SABnzbdDelegate(NSObject):
     status_bar = None
     osx_icon = True
     history_db = None
+    isLeopard = 0
 
     def awakeFromNib(self):
         #Status Bar iniatilize
