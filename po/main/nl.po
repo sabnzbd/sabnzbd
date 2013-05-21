@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-01-24 09:42+0000\n"
-"PO-Revision-Date: 2012-12-29 10:29+0000\n"
+"PO-Revision-Date: 2013-03-25 10:29+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-25 05:43+0000\n"
-"X-Generator: Launchpad (build 16445)\n"
+"X-Launchpad-Export-Date: 2013-03-26 05:02+0000\n"
+"X-Generator: Launchpad (build 16540)\n"
 
 #: SABnzbd.py:303 [Error message]
 msgid "Failed to start web-interface"
@@ -691,11 +691,11 @@ msgstr "ERROR: schrijf fout (%s)"
 
 #: sabnzbd/newsunpack.py:620 # sabnzbd/newsunpack.py:621
 msgid "Unpacking failed, path is too long"
-msgstr ""
+msgstr "Uitpakken mislukt, bestandspad is te lang"
 
 #: sabnzbd/newsunpack.py:622 [Error message]
 msgid "ERROR: path too long (%s)"
-msgstr ""
+msgstr "FOUT: bestandspad is te lang (%s)"
 
 #: sabnzbd/newsunpack.py:631
 msgid "Unpacking failed, see log"
@@ -3241,11 +3241,11 @@ msgstr "Zend meldingen naar NotifyOSD"
 
 #: sabnzbd/skintext.py:560
 msgid "Notification Center"
-msgstr "Notification Center"
+msgstr "Berichtencentrum"
 
 #: sabnzbd/skintext.py:561
 msgid "Send notifications to Notification Center"
-msgstr "Stuur berichten naar Notification Center"
+msgstr "Stuur berichten naar het Berichtencentrum"
 
 #: sabnzbd/skintext.py:562
 msgid "Notification classes"
