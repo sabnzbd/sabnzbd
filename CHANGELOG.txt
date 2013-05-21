@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.7.12Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix issue in encryption detection
+- Don't try to "join" a single X.000 file
+- Fix memory overflow caused by very large files to be joined
+- Make name sorting of the queue case-insensitive
+- Save data to disk after changing job password or other attributes
+- Add "resume_pp" entry to Plush pull-down menu when pause_pp event is scheduled
+- Deploy "abort when completion not possible" method also in pre-download check
+-------------------------------------------------------------------------------
  0.7.11Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Bad articles from some servers were accepted as valid data

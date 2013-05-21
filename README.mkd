@@ -1,11 +1,14 @@
-Release Notes  -  SABnzbd 0.7.11
+Release Notes  -  SABnzbd 0.7.12
 ================================
 
 
 ## Bug fixes
-- Obfuscated file name support causes regular multi-set NZBs to verify (much) slower
-- Bad articles from some servers are accepted as valid data
-- Generic Sort fails to rename files when an extra folder level is present in the RAR files
+- Fix issues in encryption detection
+- Don't try to "join" a single X.000 file
+- Fix memory overflow when joining very large files
+- Make name sorting of the queue case-insensitive
+- Save job data to disk after changing job password or other attributes
+- Deploy "abort when completion not possible" method also in pre-download check
 
 ## What's new in 0.7.0
 
