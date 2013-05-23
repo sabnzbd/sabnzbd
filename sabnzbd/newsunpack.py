@@ -1205,7 +1205,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 continue
             extra_par2_name = None
 
-            if line.startswith('Invalid option specified'):
+            if line.startswith('Invalid option specified') or line.startswith('Cannot specify recovery file count'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
