@@ -794,7 +794,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 # PAR2 Functions
 #------------------------------------------------------------------------------
 
-def par2_repair(parfile_nzf, nzo, workdir, setname):
+def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     #set the current nzo status to "Repairing". Used in History
 
@@ -828,7 +828,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             joinables, zips, rars, ts = build_filelists(workdir, None, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables, used_par2 = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                                                     setname, joinables)
+                                                                                     setname, joinables, single=single)
 
             if finished:
                 result = True
@@ -920,7 +920,7 @@ _RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
 _RE_LOADING_PAR2 = re.compile('Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile('Loaded (\d+) new packets')
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
+def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
     """ Run par2 on par-set """
     if cfg.never_repair():
         cmd = 'v'
@@ -954,7 +954,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
     # Append the wildcard for this set
     wildcard = '%s*' % os.path.join(os.path.split(parfile)[0], setname)
-    if len(globber(wildcard, None)) < 2:
+    if single or len(globber(wildcard, None)) < 2:
         # Support bizarre naming conventions
         wildcard = os.path.join(os.path.split(parfile)[0], '*')
     command.append(wildcard)
@@ -1263,7 +1263,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
-        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
+        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
     else:
         return finished, readd, pars, datafiles, used_joinables, used_par2
 

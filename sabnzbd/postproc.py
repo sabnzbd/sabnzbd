@@ -559,6 +559,7 @@ def parring(nzo, workdir):
 
     re_add = False
     par_error = False
+    single = len(repair_sets) == 1
 
     if repair_sets:
         for setname in repair_sets:
@@ -569,7 +570,7 @@ def parring(nzo, workdir):
                 parfile_nzf = par_table[setname]
                 if not os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)):
                     continue
-                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
+                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
                 re_add = re_add or need_re_add
                 if not res and not need_re_add and cfg.sfv_check():
                     res = try_sfv_check(nzo, workdir, setname)
