@@ -311,7 +311,7 @@ class RSSQueue(object):
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
-            if filter[3] in ('<', '>'):
+            if filter[3] in ('<', '>', 'F'):
                 regexes.append(filter[4])
             else:
                 regexes.append(convert_filter(filter[4]))
@@ -416,6 +416,12 @@ class RSSQueue(object):
                     myScript = defScript
                     myPrio = defPrio
                     n = 0
+                    if 'F' in reTypes:
+                        season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
+                        season = int(season)
+                        episode = int(episode)
+                    else:
+                        season = episode = 0
 
                     # Match against all filters until an postive or negative match
                     logging.debug('Size %s for %s', size, title)
@@ -435,6 +441,11 @@ class RSSQueue(object):
                             elif reTypes[n] == '>' and size and from_units(regexes[n]) > size:
                                 # "Size at least" : too small
                                 logging.debug('Filter rejected on rule %d', n)
+                                result = False
+                                break
+                            elif reTypes[n] == 'F' and not ep_match(season, episode, regexes[n]):
+                                # "Starting from SxxEyy", too early episode
+                                logging.debug('Filter requirement match on rule %d', n)
                                 result = False
                                 break
                             else:
@@ -690,3 +701,15 @@ def encl_sites(url, link):
         if site in url or (link and site in link):
             return True
     return False
+
+
+_RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
+def ep_match(season, episode, expr):
+    """ Return True if season, episode is at or above expected """
+    m = _RE_SP.search(expr)
+    if m:
+        req_season = int(m.group(1))
+        req_episode = int(m.group(2))
+        return season > req_season or (season == req_season and episode >= req_episode)
+    else:
+        return True

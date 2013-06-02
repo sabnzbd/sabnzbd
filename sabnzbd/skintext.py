@@ -553,6 +553,7 @@ SKIN_TEXT = {
     'rss-mustcat' : TT('RequiresCat'), #: Config->RSS filter-type selection menu
     'rss-atleast' : TT('At least'), #: Config->RSS filter-type selection menu
     'rss-atmost' : TT('At most'), #: Config->RSS filter-type selection menu
+    'rss-from' : TT('From SxxEyy'), #: Config->RSS filter-type selection menu "From Season/Episode"
     'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
