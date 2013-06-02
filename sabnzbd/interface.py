@@ -1235,7 +1235,7 @@ SPECIAL_BOOL_LIST = \
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
-              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour'
+              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour', 'script_can_fail'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',

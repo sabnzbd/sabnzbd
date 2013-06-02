@@ -84,6 +84,7 @@ news_items = OptionBool('misc', 'news_items', True)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
+script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)

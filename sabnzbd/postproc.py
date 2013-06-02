@@ -446,9 +446,17 @@ def process_job(nzo):
                 script_line = ""
                 script_ret = 0
 
+        ## Maybe bad script result should fail job
+        if script_ret and cfg.script_can_fail():
+            script_error = True
+            all_ok = False
+            nzo.fail_msg = T('Script exit code is %s') % script_ret
+        else:
+            script_error = False
+
         ## Email the results
         if (not nzb_list) and cfg.email_endjob():
-            if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error)):
+            if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
                 emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                                nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
 
