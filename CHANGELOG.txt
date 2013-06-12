@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.7.13Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Another encryption detection fix
+- Special option "enable_recursion" to control recursive unpacking
+- When post has just one par2 set, use wildcard so that all files are used
+- Accept partial par2 file when only one is available
+-------------------------------------------------------------------------------
  0.7.12Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix issue in encryption detection

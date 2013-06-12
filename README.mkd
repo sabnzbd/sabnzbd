@@ -1,14 +1,14 @@
-Release Notes  -  SABnzbd 0.7.12
+Release Notes  -  SABnzbd 0.7.13
 ================================
 
 
 ## Bug fixes
-- Fix issues in encryption detection
-- Don't try to "join" a single X.000 file
-- Fix memory overflow when joining very large files
-- Make name sorting of the queue case-insensitive
-- Save job data to disk after changing job password or other attributes
-- Deploy "abort when completion not possible" method also in pre-download check
+- Another encryption detection fix
+- When post has just one par2 set, use wildcard so that all files are used
+
+## Features
+- Special option "enable_recursion" to control recursive unpacking
+
 
 ## What's new in 0.7.0
 
