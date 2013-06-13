@@ -5,6 +5,7 @@ Release Notes  -  SABnzbd 0.7.13
 ## Bug fixes
 - Another encryption detection fix
 - When post has just one par2 set, use wildcard so that all files are used
+- "addurl" api-call did not always accept nzbname parameter
 
 ## Features
 - Special option "enable_recursion" to control recursive unpacking

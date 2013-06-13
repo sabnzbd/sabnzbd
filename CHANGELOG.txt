@@ -5,6 +5,7 @@
 - Special option "enable_recursion" to control recursive unpacking
 - When post has just one par2 set, use wildcard so that all files are used
 - Accept partial par2 file when only one is available
+- Accept "nzbname" parameter in api-call "add url" even when a ZIP file is retrieved.
 -------------------------------------------------------------------------------
  0.7.12Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
