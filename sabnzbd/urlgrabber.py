@@ -194,7 +194,8 @@ class URLGrabber(Thread):
                         self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
-                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority, url=future_nzo.url, keep=False)[0] == 0:
+                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority,
+                                                     nzbname=nzbname, url=future_nzo.url, keep=False)[0] == 0:
                         NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     else:
                         # Not a supported filetype, not an nzb (text/html ect)
