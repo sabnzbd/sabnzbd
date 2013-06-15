@@ -174,7 +174,7 @@
   ;Show all languages, despite user's codepage
   !define MUI_LANGDLL_ALLLANGUAGES
 
-  !define MUI_ICON "interfaces/Classic/templates/static/images/favicon.ico"
+  !define MUI_ICON "interfaces/Config/templates/staticcfg/ico/favicon.ico"
 
 
 ;--------------------------------

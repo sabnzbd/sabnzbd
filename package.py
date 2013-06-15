@@ -326,7 +326,6 @@ data_files = [
          'licenses/',
          'locale/',
          'email/',
-         'interfaces/Classic/',
          'interfaces/smpl/',
          'interfaces/Plush/',
          'interfaces/Mobile/',
