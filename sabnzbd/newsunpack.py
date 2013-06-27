@@ -654,6 +654,18 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 2
 
+        elif 'is not RAR archive' in line:
+            # Unrecognizable RAR file
+            m = re.search('(.+) is not RAR archive', line)
+            if m:
+                filename = TRANS(m.group(1)).strip()
+            else:
+                filename = '???'
+            nzo.fail_msg = T('Unusable RAR file')
+            msg = ('[%s][%s] '+ Ta('Unusable RAR file')) % (setname, latin1(filename))
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            fail = 1
+
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
             if m:
@@ -1372,10 +1384,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
-    if check_rar:
-        rars = [f for f in filelist if RAR_RE.search(f) and is_rarfile(f)]
-    else:
-        rars = [f for f in filelist if RAR_RE.search(f)]
+    rars = [f for f in filelist if RAR_RE.search(f)]
 
     ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 
