@@ -1435,6 +1435,7 @@ def rss_qstatus():
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
 
 
         if mb == mbleft:
@@ -1448,6 +1449,7 @@ def rss_qstatus():
         item = Item()
         item.title = name
         item.link    = "http://%s:%s/sabnzbd/history" % ( cfg.cherryhost(), cfg.cherryport() )
+        item.guid = nzo_id
         status_line  = []
         status_line.append('<tr>')
         #Total MB/MB left
