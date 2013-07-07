@@ -1,14 +1,11 @@
-Release Notes  -  SABnzbd 0.7.13
+Release Notes  -  SABnzbd 0.7.14
 ================================
 
 
 ## Bug fixes
-- Another encryption detection fix
-- When post has just one par2 set, use wildcard so that all files are used
-- "addurl" api-call did not always accept nzbname parameter
-
-## Features
-- Special option "enable_recursion" to control recursive unpacking
+- Missing mini-par2 sometimes prevents the other par2 files from being downloaded
+- When unrar reports invalid RAR files, show a proper error message
+- Fix special case of unjustified encryption warning
 
 
 ## What's new in 0.7.0

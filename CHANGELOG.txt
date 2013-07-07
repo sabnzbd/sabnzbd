@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.14Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Another encryption detection fix (special case)
+- Missing mini-par2 sometimes prevents the other par2 files from being downloaded.
+- Make sure even invalid RAR files are fed to unrar and handle its reporting.
+-------------------------------------------------------------------------------
  0.7.13Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Another encryption detection fix
