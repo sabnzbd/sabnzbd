@@ -2728,6 +2728,7 @@ def rss_history(url, limit=50, search=None):
             item.link = history['url_info']
         else:
             item.link = url
+            item.guid = history['nzo_id']
 
         stageLine = []
         for stage in history['stage_log']:
