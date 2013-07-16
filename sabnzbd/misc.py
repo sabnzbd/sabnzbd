@@ -238,6 +238,11 @@ def sanitize_foldername(name):
         illegal = FL_ILLEGAL
         legal   = FL_LEGAL
 
+    if cfg.sanitize_safe():
+        # Remove all bad Windows chars too
+        illegal += r'\/<>?*|"'
+        legal   += r'++{}!@#`'
+
     repl = cfg.replace_illegal()
     lst = []
     for ch in name.strip():
