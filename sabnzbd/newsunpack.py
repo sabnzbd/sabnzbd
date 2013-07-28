@@ -1370,12 +1370,14 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
 
     if workdir and not filelist:
         for root, dirs, files in os.walk(workdir):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
 
     if check_rar:
         joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not is_rarfile(f)]
