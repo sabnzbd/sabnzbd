@@ -1563,12 +1563,14 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
 
     if workdir and not filelist:
         for root, dirs, files in os.walk(workdir):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
 
     sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
     sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
