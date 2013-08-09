@@ -534,12 +534,19 @@ class NzoPage(object):
                 cat = pnfo[PNFO_EXTRA_FIELD1]
                 if not cat:
                     cat = 'None'
-                filename = xml_name(nzo.final_name_pw_clean)
+                filename_pw = xml_name(nzo.final_name_pw_clean)
+                filename = xml_name(nzo.final_name)
+                if nzo.password:
+                    password = xml_name(nzo.password)
+                else:
+                    password = ''
                 priority = pnfo[PNFO_PRIORITY_FIELD]
 
                 slot['nzo_id'] =  str(nzo_id)
                 slot['cat'] = cat
-                slot['filename'] = filename
+                slot['filename'] = filename_pw
+                slot['filename_clean'] = filename
+                slot['password'] = password or ''
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
@@ -587,6 +594,7 @@ class NzoPage(object):
     def save_details(self, nzo_id, args, kwargs):
         index = kwargs.get('index', None)
         name = kwargs.get('name', None)
+        password = kwargs.get('password', None)
         pp = kwargs.get('pp', None)
         script = kwargs.get('script', None)
         cat = kwargs.get('cat', None)
@@ -596,7 +604,7 @@ class NzoPage(object):
         if index != None:
             NzbQueue.do.switch(nzo_id, index)
         if name != None:
-            NzbQueue.do.change_name(nzo_id, special_fixer(name))
+            NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
 
         if cat != None and nzo.cat != cat and not (nzo.cat == '*' and cat == 'Default'):
             NzbQueue.do.change_cat(nzo_id, cat)
