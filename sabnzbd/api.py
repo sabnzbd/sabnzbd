@@ -177,10 +177,11 @@ def _api_queue_delete_nzf(output, value, kwargs):
 
 
 def _api_queue_rename(output, value, kwargs):
-    """ API: accepts output, value(=old name), value2(=new name) """
+    """ API: accepts output, value(=old name), value2(=new name), value3(=password) """
     value2 = kwargs.get('value2')
+    value3 = kwargs.get('value3')
     if value and value2:
-        NzbQueue.do.change_name(value, special_fixer(value2))
+        NzbQueue.do.change_name(value, special_fixer(value2), special_fixer(value3))
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)

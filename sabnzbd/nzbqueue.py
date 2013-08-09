@@ -308,11 +308,11 @@ class NzbQueue(TryList):
                 self.set_priority(nzo_id, prio)
 
     @synchronized(NZBQUEUE_LOCK)
-    def change_name(self, nzo_id, name):
+    def change_name(self, nzo_id, name, password=None):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             if not nzo.futuretype:
-                nzo.set_final_name_pw(name)
+                nzo.set_final_name_pw(name, password)
             else:
                 # Reset url fetch wait time
                 nzo.wait = None
