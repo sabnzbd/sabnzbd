@@ -20,7 +20,7 @@ sabnzbd.decoder - article decoder
 """
 
 import Queue
-import binascii
+import zlib
 import logging
 import re
 from time import sleep
@@ -287,7 +287,7 @@ def decode(article, data):
                     j = '=%c' % (i + 64)
                     data = data.replace(j, chr(i))
                 decoded_data = data.translate(YDEC_TRANS)
-                crc = binascii.crc32(decoded_data)
+                crc = zlib.crc32(decoded_data)
                 partcrc = '%08X' % (crc & 2**32L - 1)
 
             if ypart:
