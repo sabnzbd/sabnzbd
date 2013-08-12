@@ -52,7 +52,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, time_format, remove_all, \
-                         starts_with_path, cat_convert
+                         starts_with_path, cat_convert, job_admin_dir
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1756,7 +1756,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                                  path not in retry_folders and \
                                  starts_with_path(path, cfg.download_dir.get_path()) and \
                                  os.path.exists(path)) and \
-                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
+                                 not bool(globber(job_admin_dir(path), 'SABnzbd_n*')) \
                                  )
         if item['retry']:
             retry_folders.append(path)

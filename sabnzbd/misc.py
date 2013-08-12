@@ -39,7 +39,7 @@ except:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, JOB_ADMIN_OLD, GIGI, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
@@ -268,7 +268,7 @@ def sanitize_foldername(name):
 #------------------------------------------------------------------------------
 def flag_file(path, flag, create=False):
     """ Create verify flag file or return True if it already exists """
-    path = os.path.join(path, JOB_ADMIN)
+    path = job_admin_dir(path)
     path = os.path.join(path, flag)
     if create:
         try:
@@ -906,7 +906,7 @@ def get_admin_path(newstyle, name, future):
         if future:
             return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
         else:
-            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+            return job_admin_dir(os.path.join(cfg.download_dir.get_path(), name))
     else:
         return cfg.cache_dir.get_path()
 
@@ -1380,3 +1380,20 @@ def set_permissions(path, recursive=True):
                 set_chmod(path, umask, report)
         else:
             set_chmod(path, umask_file, report)
+
+
+def job_admin_dir(folder):
+    """ Return appropriate admin folder name """
+    oldpath = os.path.join(folder, JOB_ADMIN_OLD)
+    newpath = os.path.join(folder, JOB_ADMIN)
+    if not os.path.isdir(oldpath):
+        return newpath
+    if os.path.isdir(oldpath):
+        if sabnzbd.WIN32:
+            # Avoid renames when on Windows, just use old name
+            return oldpath
+        else:
+            logging.debug('Rename old admin path to new admin path: %s to %s', oldpath, newpath)
+            renamer(oldpath, newpath)
+            return newpath
+    return newpath

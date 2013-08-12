@@ -36,7 +36,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          set_permissions, cleanup_empty_directories
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
-     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
+     POSTPROC_QUEUE_VERSION, sample_match, Status, VERIFIED_FILE, JOB_ADMIN, JOB_ADMIN_OLD
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
@@ -351,7 +351,7 @@ def process_job(nzo):
                 nzo.status = Status.MOVING
                 nzo.set_action_line(T('Moving'), '...')
                 for root, dirs, files in os.walk(workdir):
-                    if not root.endswith(JOB_ADMIN):
+                    if not root.endswith(JOB_ADMIN) and not root.endswith(JOB_ADMIN_OLD):
                         for file_ in files:
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
