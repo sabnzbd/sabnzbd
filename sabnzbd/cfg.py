@@ -80,7 +80,6 @@ email_dir     = OptionDir('misc', 'email_dir', create=True)
 email_rss     = OptionBool('misc', 'email_rss', False)
 
 version_check = OptionNumber('misc', 'check_new_rel', 1)
-news_items = OptionBool('misc', 'news_items', True)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')

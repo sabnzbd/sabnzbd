@@ -1058,7 +1058,6 @@ class ConfigPage(object):
         for svr in config.get_servers():
             new[svr] = {}
         conf['servers'] = new
-        conf['news_items'] = cfg.news_items()
 
         conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
 
