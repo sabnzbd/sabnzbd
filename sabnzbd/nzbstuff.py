@@ -34,14 +34,14 @@ except ImportError:
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, \
+from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
                               HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, \
                               RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
                          sanitize_filename, globber, sanitize_foldername, int_conv, \
-                         set_permissions, job_admin_dir
+                         set_permissions
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
@@ -670,7 +670,7 @@ class NzbObject(TryList):
 
         # Determine "incomplete" folder
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
-        adir = job_admin_dir(wdir)
+        adir = os.path.join(wdir, JOB_ADMIN)
 
         # Duplicate checking, needs to be done before the backup
         duplicate = (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename)
@@ -681,7 +681,7 @@ class NzbObject(TryList):
         else:
             wdir = get_unique_path(wdir, create_dir=True)
             set_permissions(wdir)
-            adir = job_admin_dir(wdir)
+            adir = os.path.join(wdir, JOB_ADMIN)
 
         if not os.path.exists(adir):
             os.mkdir(adir)
