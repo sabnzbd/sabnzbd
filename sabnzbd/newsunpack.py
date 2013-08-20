@@ -1157,7 +1157,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     else:
         # Normal case, everything is named after set
         wildcard = os.path.join(parfolder, setname + '*')
-    command.append(wildcard)
+
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        command.append(wildcard)
+    else:
+        # For Unix systems, remove folders, due to bug in some par2cmdline versions
+        flist = [item for item in globber(wildcard, None) if os.path.isfile(item)]
+        command.extend(flist)
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
