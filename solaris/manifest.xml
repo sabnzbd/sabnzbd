@@ -28,7 +28,7 @@
           <loctext xml:lang='C'>SABnzbd</loctext>
         </common_name>
         <documentation>
-          <doc_link name='sabnzbd' uri='http://idonotknow.com/'/>
+          <doc_link name='sabnzbd' uri='http://sabnzbd.org/'/>
         </documentation>
       </template>
     </instance>
