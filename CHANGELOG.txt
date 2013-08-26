@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.7.15Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix false encryption alarms for some posts
+- Add "password" dialog to Plush's job details page
+- Add special "sanitize_safe" to remove bad Windows characters on other platforms
+- Remove "news" section from Config skin
+- Fix for faulty par2cmdline on some embbeded Unix systems
+- Add GUID fields to the History RSS feed.
+-------------------------------------------------------------------------------
  0.7.14Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Another encryption detection fix (special case)

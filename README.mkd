@@ -1,11 +1,15 @@
-Release Notes  -  SABnzbd 0.7.14
+Release Notes  -  SABnzbd 0.7.15
 ================================
 
 
 ## Bug fixes
-- Missing mini-par2 sometimes prevents the other par2 files from being downloaded
-- When unrar reports invalid RAR files, show a proper error message
-- Fix special case of unjustified encryption warning
+- Fix false encryption alarms for some posts
+- Fix for faulty par2cmdline on some embbeded Unix systems
+
+## Features
+- Add "password" box to Plush's job details page
+- Add special "sanitize_safe" to remove unsupported Windows characters on other platforms.
+  This solves issues when using NAS shares from Windows.
 
 
 ## What's new in 0.7.0
