@@ -1,4 +1,4 @@
-Release Notes  -  SABnzbd 0.7.15
+Release Notes  -  SABnzbd 0.7.16
 ================================
 
 
