@@ -1,32 +1,19 @@
-Release Notes  -  SABnzbd 0.7.11
-================================
+Release Notes  -  SABnzbd 0.8.0Alpha1
+=====================================
 
+## What's new in 0.8.0
 
-## Bug fixes
-- Obfuscated file name support causes regular multi-set NZBs to verify (much) slower
-- Bad articles from some servers are accepted as valid data
-- Generic Sort fails to rename files when an extra folder level is present in the RAR files
-
-## What's new in 0.7.0
-
-- Download quota management
-- Windows: simple system tray menu
-- Multi-platform Growl support
-- NotifyOSD support for Linux distros that have it
-- Option to set maximum number of retries for servers (prevents deadlock)
-- Pre-download check to estimate completeness (reliability is limited)
-- Prevent partial downloading of par2 files that are not needed yet
-- Config->Special for settings previously only available in the sabnzbd.ini file
-- For Usenet servers with multiple IP addresses, pick a random one per connection
-- Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue
-- Allow jobs still  waiting for post-processing to be deleted too
-- More persistent retries for unreliable indexers
-- Single Configuration skin for all others skins (there is an option for the old style)
-- Config->Special for settings that were previously only changeable in the sabnzbd.ini file
-- Add Spanish, Portuguese (Brazil) and Polish translations
-- Individual RSS filter toggle
-- Unified OSX DMG
-
+- Full Unicode support with Chinese and Russian translations
+- Improved Notifications (including Prowl)
+- Duplicate detection for series
+- Bonjour/ZeroConfig support
+- More filters in RSS
+- 7zip support
+- Option to save repair time by downloading all par2 files
+- Support for long paths in Windows (above 260)
+- Improved security for external access
+- Lots of small improvements and bug fixes
+- The "Classic" skin is gone
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
@@ -38,27 +25,21 @@ Release Notes  -  SABnzbd 0.7.11
   (c) Copyright 2007-2013 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
-### IMPORTANT INFORMATION about release 0.7.x
-<http://wiki.sabnzbd.org/introducing-0-7-0>
+### IMPORTANT INFORMATION about release 0.8.0
+<http://wiki.sabnzbd.org/introducing-0-8-0>
 
 ### Known problems and solutions
 - Read the file "ISSUES.txt"
 
-### Upgrading from 0.6.x
+### Upgrading from 0.7.x and older
+- Finish queue
 - Stop SABnzbd
 - Install new version
 - Start SABnzbd
 
-### Upgrading from 0.5.x
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd.
-
-The organization of the download queue is different from 0.5.x.
-0.7.x will finish downloading an existing queue, but you
-cannot go back to an older version without losing your queue.
+The organization of the download queue is different from older versions.
+0.8.x will not see the existing queue, but you can go to
+Status->QueueRepair and "Repair" the old queue.
 Also, your sabnzbd.ini file will be upgraded, making it
-incompatible with release 0.5.x
+incompatible with releases older than 0.7.9
 
-### Upgrading from 0.4.x
-Download your current queue before upgrading.
