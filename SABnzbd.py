@@ -707,7 +707,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
     """
     if not (sabnzbd.cfg.no_ipv6() and '::1' in host):
         http_server = _cpwsgi_server.CPWSGIServer()
-        http_server.bind_addr = (host, port)
+        http_server.bind_addr = (host, str(port))
         if cert and key:
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
@@ -1415,7 +1415,7 @@ def main():
                  )
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
-                            'server.socket_port': cherryport,
+                            'server.socket_port': str(cherryport),
                             'log.screen': cherrylogtoscreen,
                             'engine.autoreload_frequency' : 100,
                             'engine.autoreload_on' : False,
