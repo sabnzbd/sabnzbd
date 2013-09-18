@@ -96,7 +96,7 @@ def special_fixer(p):
         Also takes care of the situation where a non-Windows/UTF-8 system
         receives a latin-1 encoded name.
     """
-    if isinstance(p, unicode):
+    if not p or isinstance(p, unicode):
         return p
     try:
         # First see if it isn't just UTF-8
