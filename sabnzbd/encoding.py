@@ -119,7 +119,10 @@ def special_fixer(p):
                 return p
             except:
                 # Now assume it's latin-1
-                return p.decode('Latin-1').encode('utf-8')
+                try:
+                    return p.decode('Latin-1').encode('utf-8')
+                except:
+                    return p
         else:
             return p
 
