@@ -1139,7 +1139,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED):
+        if (Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED)) \
+           and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
