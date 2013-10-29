@@ -318,7 +318,8 @@ def send_notification_center(title, msg, gtype):
     tool = ncenter_path()    
     if tool:
         try:
-            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other'))]
+            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other')),
+                       '-sender', 'org.sabnzbd.team']
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
             output = proc.stdout.read()
             proc.wait()
