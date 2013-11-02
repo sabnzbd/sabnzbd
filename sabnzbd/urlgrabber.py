@@ -147,6 +147,12 @@ class URLGrabber(Thread):
                             filename = value
                             if not filename.endswith('.nzb'):
                                 filename += '.nzb'
+                        elif item == 'x-dnzb-propername':
+                            nzo_info['propername'] = value
+                        elif item == 'x-dnzb-episodename':
+                            nzo_info['episodename'] = value
+                        elif item == 'x-dnzb-year':
+                            nzo_info['year'] = value
                         elif item in ('content-length',):
                             length = misc.int_conv(value)
 

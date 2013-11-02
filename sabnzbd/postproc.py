@@ -307,7 +307,10 @@ def process_job(nzo):
                 complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
-            file_sorter = Sorter(cat)
+            if cfg.enable_meta():
+                file_sorter = Sorter(nzo, cat)
+            else:
+                file_sorter = Sorter(None, cat)
             complete_dir = file_sorter.detect(dirname, complete_dir)
             if file_sorter.sort_file:
                 one_folder = False
