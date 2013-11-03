@@ -616,7 +616,7 @@ else:
         os.mkdir(root)
 
     # Set data files
-    data_files.extend(['po/', 'cherrypy/', 'gntp/'])
+    data_files.extend(['po/', 'cherrypy/', 'gntp/', 'solaris/'])
     options['data_files'] = PairList(data_files)
     options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 
