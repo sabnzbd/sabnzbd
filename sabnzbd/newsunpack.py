@@ -634,8 +634,11 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
-        elif 'ncrypted file' in line and 'CRC failed' in line:
-            # unrar 4.x syntax
+        elif 'ncrypted file' in line: 
+            # unrar 3.x: "Encrypted file: CRC failed in oLKQfrcNVivzdzSG22a2xo7t001.part1.rar (password incorrect ?)"
+            # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+            # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+            
             m = re.search('encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
