@@ -481,7 +481,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
                 # Remove empty lines and space-only passwords and remove surrounding spaces
                 passwords.extend([pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')])
                 pwf.close()
-                logging.info('Read the passwords file %s', pw_file)
+                logging.info('Read the passwords file %s with %s separate passwords', pw_file, len(passwords) )
             except IOError:
                 logging.info('Failed to read the passwords file %s', pw_file)
 
