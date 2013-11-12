@@ -435,16 +435,13 @@ class SeriesSorter(object):
             newpath = os.path.join(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace('%ext', self.ext)
-            if not os.path.exists(newpath):
-                try:
-                    logging.debug("Rename: %s to %s", filepath, newpath)
-                    renamer(filepath, newpath)
-                except:
-                    logging.error("Failed to rename: %s to %s", current_path, newpath)
-                    logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, self.ext, self.filename_set, ())
-            else:
-                logging.debug('Current path already exists, skipping rename, %s', newpath)
+            try:
+                logging.debug("Rename: %s to %s", filepath, newpath)
+                renamer(filepath, newpath)
+            except:
+                logging.error("Failed to rename: %s to %s", current_path, newpath)
+                logging.info("Traceback: ", exc_info = True)
+            rename_similar(current_path, self.ext, self.filename_set, ())
         else:
             logging.debug('Nothing to rename, %s', files)
 
