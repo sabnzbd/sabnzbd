@@ -7,6 +7,7 @@ Active team:
     ShyPike <shypike@sabnzbd.org>
     inpheaux <inpheaux@sabnzbd.org>
     zoggy <zoggy@sabnzbd.org>
+    OZnzb-dev <sabdev@oznzb.com>
 Sleeping members
     sw1tch <switch@sabnzbd.org>
     pairofdimes <pairofdimes@sabnzbd.org>

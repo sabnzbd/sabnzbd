@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+ 0.7.17Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add OZnzb features need to be enabled in config ->switches
+- Add integration with OZnzb indexer enhanced functionality, allows user access to ratings and reporting directly from SABnzbd interface.
+- Add automatic feedback to OZnzb on failed downloads (if enabled)
+-------------------------------------------------------------------------------
  0.7.16Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix Config->Special UI crash

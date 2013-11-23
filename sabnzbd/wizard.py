@@ -41,7 +41,7 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':3, 'version':sabnzbd.__version__,
+                     'steps':4, 'version':sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
@@ -151,7 +151,7 @@ class Wizard(object):
 
     @cherrypy.expose
     def three(self, **kwargs):
-        """ Accept webserver parms and show Indexers page """
+        """ Accept webserver parms and show Indexer page """
         if kwargs:
             if 'access' in kwargs:
                 cfg.cherryhost.set(kwargs['access'])
@@ -161,20 +161,39 @@ class Wizard(object):
             cfg.password.set(kwargs.get('web_pass', ''))
             if not cfg.username() or not cfg.password():
                 sabnzbd.interface.set_auth(cherrypy.config)
+        config.save_config()
+        
+        # Create indexer page
+        info = self.info.copy()
+        info['num'] = '&raquo; %s' % T('Step Three')
+        info['number'] = 3
+        info['T'] = Ttemplate
 
+        info['rating_enable'] = cfg.rating_enable()
+        info['rating_api_key'] = cfg.rating_api_key()
+        
+        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
+                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
+        return template.respond()
+
+    @cherrypy.expose
+    def four(self, **kwargs):
+        if kwargs:
+            cfg.rating_enable.set(kwargs.get('rating_enable', 0))
+            cfg.rating_api_key.set(kwargs.get('rating_api_key', ''))
         config.save_config()
 
         # Show Restart screen
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 3
+        info['num'] = '&raquo; %s' % T('Step Four')
+        info['number'] = 4
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()
         info['T'] = Ttemplate
 
-        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
+        template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 

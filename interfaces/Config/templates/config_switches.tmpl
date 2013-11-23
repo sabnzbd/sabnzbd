@@ -305,6 +305,33 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('swtag-indexing')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="rating_enable">$T('opt-rating_enable')</label>
+                    <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if int($rating_enable) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-rating_enable')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
+                    <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" size="35" />
+                    <span class="desc">$T('explain-rating_api_key')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="rating_feedback">$T('opt-rating_feedback')</label>
+                    <input type="checkbox" name="rating_feedback" id="rating_feedback" value="1" <!--#if int($rating_feedback) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-rating_feedback')</span>
+                </div>
+                <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
     <div class="padding alt">
         <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
         <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />

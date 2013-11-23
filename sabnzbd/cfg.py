@@ -113,6 +113,11 @@ newzbin_unbookmark = OptionBool('newzbin', 'unbookmark', True)
 bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
 newzbin_url = OptionStr('newzbin', 'url', 'www.newzbin2.es')
 
+rating_enable = OptionBool('misc', 'rating_enable', False)
+rating_host = OptionStr('misc', 'rating_host', 'www.oznzb.com')
+rating_api_key = OptionStr('misc', 'rating_api_key')
+rating_feedback = OptionBool('misc', 'rating_feedback', True)
+
 top_only = OptionBool('misc', 'top_only', False)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
 queue_complete = OptionStr('misc', 'queue_complete')

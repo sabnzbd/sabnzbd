@@ -31,6 +31,7 @@ import socket
 import time
 import glob
 import stat
+import Queue
 try:
     socket.ssl
     _HAVE_SSL = True
@@ -44,6 +45,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
 import sabnzbd.growler as growler
+from collections import OrderedDict
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -1380,3 +1382,13 @@ def set_permissions(path, recursive=True):
                 set_chmod(path, umask, report)
         else:
             set_chmod(path, umask_file, report)
+
+#------------------------------------------------------------------------------
+# A queue which ignores duplicates but maintains ordering
+class OrderedSetQueue(Queue.Queue):
+    def _init(self, maxsize):
+        self.queue = OrderedDict()
+    def _put(self, item):
+        self.queue[item] = None
+    def _get(self):
+        return self.queue.popitem()[0]
