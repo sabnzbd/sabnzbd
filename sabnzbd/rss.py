@@ -32,7 +32,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, \
-                         match_str, from_units
+                         match_str, from_units, int_conv
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder, xml_name
 
@@ -418,8 +418,8 @@ class RSSQueue(object):
                     n = 0
                     if 'F' in reTypes:
                         season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
-                        season = int(season)
-                        episode = int(episode)
+                        season = int_conv(season)
+                        episode = int_conv(episode)
                     else:
                         season = episode = 0
 
