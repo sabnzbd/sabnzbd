@@ -277,6 +277,9 @@ class Downloader(Thread):
                 return True
         return False
 
+    def nzo_servers(self, nzo):
+        return filter(nzo.server_in_try_list, self.servers)
+        
     def maybe_block_server(self, server):
         from sabnzbd.nzbqueue import NzbQueue
         if server.optional and server.active and (server.bad_cons/server.threads) > 3:

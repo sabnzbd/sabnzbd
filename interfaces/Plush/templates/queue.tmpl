@@ -55,9 +55,26 @@
     <% # <!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active %>
   </td>
 
-  <td class="download-title">
+  <td class="download-title" <!--#if $rating_enable#-->style="width:35%"<!--#end if#-->>
     <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age<br/><!--#if $slot.missing#-->$T('missingArt'): $slot.missing<!--#end if#-->">$slot.filename.replace('.', '.&#8203;').replace('_', '_&#8203;')</a>
   </td>
+
+  <!--#if $rating_enable#-->
+    <!--#if $slot.has_rating#-->
+      <td>
+        <div class="rating_stars_block_c">
+          <div class="rating_stars">
+            <div class="rating_icon_vision"></div><span class="avg_rate" value="$slot.rating_avg_video"></span>
+          </div>
+          <div class="rating_stars">
+            <div class="rating_icon_sound"></div><span class="avg_rate" value="$slot.rating_avg_audio"></span>
+          </div>
+        </div>
+      </td>
+    <!--#else#-->
+      <td></td>
+    <!--#end if#-->
+  <!--#end if#-->
 
   <td>
     <div class="main_sprite_container sprite_progressbar_bg">

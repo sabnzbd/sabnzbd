@@ -101,6 +101,14 @@ SKIN_TEXT = {
     'homePage' : TT('Home page'), #: Home page of the SABnzbd project
     'source' : TT('Source'), #: Where to find the SABnzbd sourcecode
     'or' : TT('or'), #: Used in "IRC or IRC-Webaccess"
+    'host' : TT('Host'),
+    'comment' : TT('Comment'),
+    'send' : TT('Send'),
+    'cancel' : TT('Cancel'),
+    'other' : TT('Other'),
+    'report' : TT('Report'),
+    'video' : TT('Video'),
+    'audio' : TT('Audio'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -232,8 +240,11 @@ SKIN_TEXT = {
     'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
     'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
     'msg-path' : TT('Path'), #: Path as displayed in History details
-
-
+    'spam' : TT('Virus/spam'),
+    'encrypted' : TT('Passworded'),
+    'expired' : TT('Out of retention'),
+    'otherProblem' : TT('Other problem'),
+    
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
     'askTestEmail' : TT('This will send a test email to your account.'),
@@ -271,6 +282,7 @@ SKIN_TEXT = {
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
+    'oznzb' : TT('OZnzb'),
 
 # Config->General
     'generalConfig' : TT('General configuration'),
@@ -445,6 +457,7 @@ SKIN_TEXT = {
     'swtag-pp' : TT('Post processing'),
     'swtag-naming' : TT('Naming'),
     'swtag-quota' : TT('Quota'),
+    'swtag-indexing' : TT('Indexing'),
     'opt-quota_size' : TT('Size'), #: Size of the download quota
     'explain-quota_size' : TT('How much can be downloaded this month (K/M/G)'),
     'opt-quota_day' : TT('Reset day'), #: Reset day of the download quota
@@ -461,7 +474,13 @@ SKIN_TEXT = {
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless' : TT('When during download it becomes clear that too much data is missing, abort the job'),
-
+    'opt-rating_enable' : TT('Enable OZnzb Integration'),
+    'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
+    'opt-rating_api_key' : TT('Site API Key'),
+    'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
+    'tip-rating_api_key' : TT('Refer to https://www.oznzb.com/profile'),
+    'opt-rating_feedback' : TT('Automatic Feedback'),
+    'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
 
 # Config->Server
     'configServer' : TT('Server configuration'), #: Caption
@@ -871,6 +890,7 @@ SKIN_TEXT = {
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
+    'wizard-create-account' : TT('If you do not have an account it can be created at '), 
 
 #Special
     'yourRights' : TT('''

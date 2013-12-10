@@ -136,3 +136,12 @@ color:black;
 
 .feedEnabled{color:green;}
 .feedDisabled{color:red;}
+
+.rating_overall {
+  margin:0px 5px 3px 0px;
+}
+
+.rating_item {
+  float:left;
+  margin:5px 15px 5px 5px;
+}

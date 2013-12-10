@@ -1,34 +1,38 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <script type="text/javascript" src="static/javascript/jquery.js"></script>
 <script type="text/javascript" src="static/javascript/restart.js"></script>
-<br/><br/>
-<h4 id="restarting" class="align-center">$T('wizard-restarting')</h4>
-<h4 id="complete" class="align-center success hidden">$T('wizard-complete')</h4>
-<br />
-<br/>
-<div id="tips" class="hidden">
-$T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
-<!--#set $tip3 = $T('wizard-tip3') % ''#-->
-$tip3<br/><br/>
-<div class="quoteBlock">
-<!--#set $i = 0#-->
-<!--#for $url in $urls#-->
-  <!--#set $i = $i+1#-->
-  <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
-<!--#end for#-->
-</div><br/>
-$T('wizard-tip4')
-<br/><br/>
-$T('wizard-tip-wiki') <a href="$helpuri">wiki</a>
+<form action="./four" method="post" autocomplete="off">
+<div class="indented bigger">
+  <h3>Indexer</h3>
+  <div>$T('explain-rating_enable')</div>
+  <div>$T('wizard-create-account')<a href="https://www.oznzb.com/register" target="_blank">https://www.oznzb.com/register</a>.</div>
+  <br class="clear" />
+  <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if $rating_enable == 1 then 'checked="checked"' else ''#-->> <label for="rating_enable">$T('opt-rating_enable')</label><br />
+  <br class="clear" />
+  <div>
+    <label class="label">$T('opt-rating_api_key')</label><input type="text" size="35" value="$rating_api_key" name="rating_api_key" id="rating_api_key">
+    <div class="tips">$T('tip-rating_api_key')</div>
+  </div>
+  <br class="clear" />
 </div>
+
 </div>
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
-  <tr class="align-center">
-    <td><input type="hidden" name="session" id="apikey" value="$session"><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="$T('wizard-goto')" disabled="disabled"/></td>
+  <tr>
+    <td><input class="bigbutton" type="button" onclick="document.location ='./two'" value="&lsaquo; $T('wizard-previous')" /></td>
+    <td>
+      <div class="align-center">
+        <!--#for $step in xrange($steps)#-->
+          <!--#set $step = $step + 1#-->
+            <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
+        <!--#end for#-->
+      </div>
+    </td>
+    <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
   </tr>
 </table>
 </div>
-
+</form>
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

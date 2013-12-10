@@ -45,6 +45,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
+from sabnzbd.rating import Rating
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
@@ -750,7 +751,7 @@ class NzbObject(TryList):
                 cat = cat_convert(grp)
                 if cat:
                     break
-
+        
         if cfg.create_group_folders():
             self.dirprefix.append(self.group)
 
@@ -1262,6 +1263,19 @@ class NzbObject(TryList):
                         self.files[pos+1] = nzf
                         self.files[pos] = tmp_nzf
 
+    # Determine if rating information (including site identifier so rating can be updated)
+    # is present in metadata and if so store it
+    def update_rating(self):
+        try:
+            def _get_first_meta(type):
+                values = self.meta.get('x-rating-' + type, None)
+                return values[0] if values else None
+            rating_types = ['id', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown']
+            rs = map(_get_first_meta, rating_types)
+            Rating.do.add_rating(rs[0], self.nzo_id, rs[1], rs[2], rs[3], rs[4], rs[5], rs[6])
+        except:
+            pass
+                           
     ## end nzo.Mutators #######################################################
     ###########################################################################
     @property

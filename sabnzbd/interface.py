@@ -39,6 +39,7 @@ from sabnzbd.misc import real_path, to_units, \
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
+from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
                              platform_encode, latin1, encode_for_xml
@@ -878,7 +879,8 @@ class HistoryPage(object):
         self.__verbose_list = []
         self.__failed_only = False
         self.__prim = prim
-
+        self.__edit_rating = None
+        
     @cherrypy.expose
     def index(self, **kwargs):
         if not check_access(): return Protected()
@@ -894,6 +896,8 @@ class HistoryPage(object):
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
 
+        history['rating_enable'] = bool(cfg.rating_enable())
+
         if cfg.newzbin_username() and cfg.newzbin_password():
             history['newzbinDetails'] = True
 
@@ -908,6 +912,12 @@ class HistoryPage(object):
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
 
+        for line in history['lines']:
+            if self.__edit_rating is not None and line.get('nzo_id') == self.__edit_rating:
+                line['edit_rating'] = True 
+            else:
+                line['edit_rating'] = '' 
+        
         if search:
             history['search'] = escape(search)
         else:
@@ -1026,6 +1036,29 @@ class HistoryPage(object):
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def show_edit_rating(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        self.__edit_rating = kwargs.get('job');
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def action_edit_rating(self, **kwargs):
+        flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED}    
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            if kwargs.get('send'):
+                video = kwargs.get('video') if kwargs.get('video') != "-" else None 
+                audio = kwargs.get('audio') if kwargs.get('audio') != "-" else None                
+                flag = flag_map.get(kwargs.get('rating_flag'))
+                detail = kwargs.get('expired_host') if kwargs.get('expired_host') != '<Host>' else None
+                Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail) 
+        except:
+            pass
+        self.__edit_rating = None;
+        raise queueRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 class ConfigPage(object):
@@ -1176,7 +1209,8 @@ SWITCH_LIST = \
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless'
+             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless',
+             'rating_enable', 'rating_api_key', 'rating_host', 'rating_feedback'
              )
 
 #------------------------------------------------------------------------------

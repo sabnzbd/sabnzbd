@@ -39,6 +39,7 @@ from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
+from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader
@@ -478,6 +479,15 @@ def process_job(nzo):
 
         ## Force error for empty result
         all_ok = all_ok and not empty
+
+        ## Update indexer with results
+        if nzo.encrypted > 0:
+            Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYTPTED)
+        if empty:
+            hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
+            if not hosts: hosts = [None]
+            for host in hosts:
+                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
 
         ## Show final status in history
         if all_ok:
