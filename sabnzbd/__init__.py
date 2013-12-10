@@ -1067,12 +1067,15 @@ def check_all_tasks():
     return True
 
 
-def pid_file(pid_path=None, port=0):
+def pid_file(pid_path=None, pid_file= None, port=0):
     """ Create or remove pid file
     """
     global DIR_PID
-    if not sabnzbd.WIN32 and pid_path and pid_path.startswith('/'):
-        DIR_PID = os.path.join(pid_path, 'sabnzbd-%s.pid' % port)
+    if not sabnzbd.WIN32:
+        if pid_path and pid_path.startswith('/'):
+            DIR_PID = os.path.join(pid_path, 'sabnzbd-%s.pid' % port)
+        elif pid_file and pid_file.startswith('/'):
+            DIR_PID = pid_file
 
     if DIR_PID:
         try:
