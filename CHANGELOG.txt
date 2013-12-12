@@ -1,9 +1,17 @@
 -------------------------------------------------------------------------------
- 0.7.17Final by The SABnzbd-Team
+ 0.7.17Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
+- Add command line option --pidfile
+- Another fix for false encryption reports
+- Fix issue with OSX Mavericks Notification Center
+- Add support for 'x-dnzb-propername', 'x-dnzb-episodename', 'x-dnzb-year'
+  in meta-data of NZB. To be used in TV Sorting
 - Add OZnzb features need to be enabled in config ->switches
 - Add integration with OZnzb indexer enhanced functionality, allows user access to ratings and reporting directly from SABnzbd interface.
 - Add automatic feedback to OZnzb on failed downloads (if enabled)
+- Add X-DNZB-Failure and X-DNZB-Details support
+- Fix issue with passwords embedded in file names
+- Updated translations
 -------------------------------------------------------------------------------
  0.7.16Final by The SABnzbd-Team
 -------------------------------------------------------------------------------

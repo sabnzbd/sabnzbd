@@ -1,12 +1,39 @@
-Release Notes  -  SABnzbd 0.7.17
-================================
+Release Notes  -  SABnzbd 0.7.17Beta1
+=====================================
 
 
 ## Features
 
-- Add OZnzb new features need to be enabled in config ->switches
-- Add integration with OZnzb indexer enhanced functionality, allows user access to ratings and reporting directly from SABnzbd interface.
-- Add automatic feedback to OZnzb on failed downloads (if enabled)
+- Support for more meta-data in NZB files (to be used in TV Sort)
+- Optional integration with the OZnzb indexer, allows user access to ratings and reporting directly from SABnzbd interface.
+- Optional automatic feedback to OZnzb on failed downloads
+- Commandline option --pidfile to set your own PID-file name/path (Unix and OSX)
+- Basic support for X-DNZB-Failure and X-DNZB-Details headers, sent by some indexers
+
+## Bug fixes
+- Fix false encryption alarms for some posts
+- Fix issue with OSX Mavericks Notification Center support
+- Fix issue with passwords embedded in file names
+
+## What's new in 0.7.0
+
+- Download quota management
+- Windows: simple system tray menu
+- Multi-platform Growl support
+- NotifyOSD support for Linux distros that have it
+- Option to set maximum number of retries for servers (prevents deadlock)
+- Pre-download check to estimate completeness (reliability is limited)
+- Prevent partial downloading of par2 files that are not needed yet
+- Config->Special for settings previously only available in the sabnzbd.ini file
+- For Usenet servers with multiple IP addresses, pick a random one per connection
+- Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue
+- Allow jobs still  waiting for post-processing to be deleted too
+- More persistent retries for unreliable indexers
+- Single Configuration skin for all others skins (there is an option for the old style)
+- Config->Special for settings that were previously only changeable in the sabnzbd.ini file
+- Add Spanish, Portuguese (Brazil) and Polish translations
+- Individual RSS filter toggle
+- Unified OSX DMG
 
 
 ## About
