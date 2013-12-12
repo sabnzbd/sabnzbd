@@ -365,7 +365,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     downloaded = nzo.bytes_downloaded
     completeness = 0
     fail_message = decode_factory(nzo.fail_msg)
-    url_info = nzo_info.get('more_info', '')
+    url_info = nzo_info.get('details', '') or nzo_info.get('more_info', '')
 
     # Get the dictionary containing the stages and their unpack process
     stages = decode_factory(nzo.unpack_info)
