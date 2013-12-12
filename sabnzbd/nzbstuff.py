@@ -1563,27 +1563,36 @@ def split_filename(name):
         return name.strip()
 
 
-RE_PASSWORD1 = re.compile(r'([^/\\]*)[/\\](.+)')                    # name / PASSWORD
-RE_PASSWORD2 = re.compile(r'(.*){{([^{}]+)}}$')                     # name{{PASSWORD}}
-RE_PASSWORD3 = re.compile(r'(.*)\s+password\s*=\s*(.+)$', re.I)     # name password = PASSWORD
-RE_PASSWORD4 = re.compile(r'^(\s*)password\s*=\s*(.+)$', re.I)      # password = PASSWORD
 def scan_password(name):
     """ Get password (if any) from the title
     """
     if 'http://' in name or 'https://' in name:
         return name, None
 
-    m = RE_PASSWORD1.search(name)
-    if not m:
-        m = RE_PASSWORD2.search(name)
-    if not m:
-        m = RE_PASSWORD3.search(name)
-    if not m:
-        m = RE_PASSWORD4.search(name)
-    if m:
-        return m.group(1).strip('. '), m.group(2).strip()
-    else:
-        return name.strip('. '), None
+    braces = name.find('{{')
+    if braces < 0:
+        braces = len(name)
+    slash = name.find('/')
+
+    # Look for name/password, but make sure that '/' comes before any {{
+    if slash >= 0 and slash < braces and not 'password=' in name:
+        return name[:slash].strip('. '), name[slash+1:]
+        
+    # Look for "name password=password"
+    pw = name.find('password=')
+    if pw >= 0:
+        return name[:pw].strip('. '), name[pw+9:]
+
+    # Look for name{{password}}
+    if braces < len(name) and name.endswith('}}'):
+        return name[:braces].strip('. '), name[braces+2:len(name)-2]
+
+    # Look again for name/password
+    if slash >= 0:
+        return name[:slash].strip('. '), name[slash+1:]
+
+    # No password found
+    return name, None
 
 
 def get_attrib_file(path, size):
