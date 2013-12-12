@@ -135,6 +135,10 @@ class URLGrabber(Thread):
                             nzo_info['episodename'] = value
                         elif item == 'x-dnzb-year':
                             nzo_info['year'] = value
+                        elif item == 'x-dnzb-failure':
+                            nzo_info['failure'] = value
+                        elif item == 'x-dnzb-details':
+                            nzo_info['details'] = value
                         elif item in ('content-length',):
                             length = misc.int_conv(value)
 

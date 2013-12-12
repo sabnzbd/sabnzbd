@@ -136,11 +136,11 @@ def find_programs(curdir):
         sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
 #------------------------------------------------------------------------------
-def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status):
+def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
     """ Run a user postproc script, return console output and exit value
     """
     command = [str(extern_proc), str(complete_dir), str(filename),
-               str(nicename), '', str(cat), str(group), str(status)]
+               str(nicename), '', str(cat), str(group), str(status), str(failure_url)]
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
@@ -148,7 +148,7 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     env = fix_env()
 
     logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)',
-                 extern_proc, complete_dir, filename, nicename, '', cat, group, status)
+                 extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
 
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,

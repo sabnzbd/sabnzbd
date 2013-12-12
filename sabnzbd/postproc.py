@@ -435,9 +435,16 @@ def process_job(nzo):
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
+<<<<<<< HEAD
                 script_log, script_ret = external_processing(short_path(script_path, False), short_path(workdir_complete, False), nzo.filename,
                                                              dirname, cat, nzo.group, job_result)
                 script_line = get_last_line(script_log)
+=======
+                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
+                                                             msgid, dirname, cat, nzo.group, job_result,
+                                                             nzo.nzo_info.get('failure', ''))
+                script_line = get_last_line(script_log) 
+>>>>>>> f68de5d... Add some basic support for X-DNZB-Failure and X-DNZB-Details headers coming from indexers.
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
