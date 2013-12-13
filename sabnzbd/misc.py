@@ -1595,6 +1595,7 @@ class OrderedDict(dict):
 # A queue which ignores duplicates but maintains ordering
 class OrderedSetQueue(Queue.Queue):
     def _init(self, maxsize):
+        self.maxsize = maxsize
         self.queue = OrderedDict()
     def _put(self, item):
         self.queue[item] = None
