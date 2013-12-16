@@ -25,7 +25,6 @@ import time
 import logging
 import copy
 import socket
-import random
 try:
     socket.ssl
     _HAVE_SSL = True
@@ -179,7 +178,7 @@ class Rating(Thread):
 
     @synchronized(RATING_LOCK)
     def update_auto_flag(self, nzo_id, flag, flag_detail = None):
-        if not flag or not cfg.rating_feeback():
+        if not flag or not cfg.rating_feedback():
             return
         logging.debug('Updating auto flag (%s: %s)', nzo_id, flag)
         if nzo_id not in self.nzo_indexer_map:
@@ -194,7 +193,7 @@ class Rating(Thread):
     @synchronized(RATING_LOCK)
     def get_rating_by_nzo(self, nzo_id):
         if nzo_id not in self.nzo_indexer_map:
-             return None
+            return None
         return copy.copy(self.ratings[self.nzo_indexer_map[nzo_id]])
 
     @synchronized(RATING_LOCK)
@@ -208,11 +207,11 @@ class Rating(Thread):
             return {'m': 'rp', 'auto': auto}
         if val == Rating.FLAG_EXPIRED:
             expired_host = flag_detail if flag_detail and len(flag_detail) > 0 else 'Other'
-            return {'m': 'rpr', 'pr': expired_host, 'auto': auto};            
+            return {'m': 'rpr', 'pr': expired_host, 'auto': auto}            
         if (val == Rating.FLAG_OTHER) and flag_detail and len(flag_detail) > 0:
-            return {'m': 'o', 'r': flag_detail};
+            return {'m': 'o', 'r': flag_detail}
         if (val == Rating.FLAG_COMMENT) and flag_detail and len(flag_detail) > 0:
-            return {'m': 'rc', 'r': flag_detail};
+            return {'m': 'rc', 'r': flag_detail}
         
     def _send_rating(self, indexer_id): 
         logging.debug('Updating indexer rating (%s)', indexer_id)
@@ -250,7 +249,7 @@ class Rating(Thread):
                     _warn('Ratings server unauthorized user')
                     return False
                 elif response.status != httplib.OK:
-                    _warn('Ratings server failed to process request (%s, %s)' % response.status, response.reason)
+                    _warn('Ratings server failed to process request (%s, %s)' % (response.status, response.reason))
                     return False
 
             rating.changed = 0
