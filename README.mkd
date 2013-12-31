@@ -1,6 +1,8 @@
-Release Notes  -  SABnzbd 0.7.17Beta2
+Release Notes  -  SABnzbd 0.7.17Beta3
 =====================================
 
+## Solved since Beta1/2
+- passwords embedded in file names were not passed properly to unrar
 
 ## Features
 
@@ -9,6 +11,7 @@ Release Notes  -  SABnzbd 0.7.17Beta2
 - Optional automatic feedback to OZnzb on failed downloads
 - Commandline option --pidfile to set your own PID-file name/path (Unix and OSX)
 - Basic support for X-DNZB-Failure and X-DNZB-Details headers, sent by some indexers
+- Upgrade embedded unrar to 5.01
 
 ## Bug fixes
 - Fix false encryption alarms for some posts
