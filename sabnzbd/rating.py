@@ -252,7 +252,7 @@ class Rating(Thread):
                     _warn('Ratings server failed to process request (%s, %s)' % (response.status, response.reason))
                     return False
 
-            rating.changed = 0
+            self.ratings[indexer_id].changed = self.ratings[indexer_id].changed & ~rating.changed
             _reset_warn()
             return True
         except:
