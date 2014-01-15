@@ -557,7 +557,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
 
     ############################################################################
 
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         action = 'e'
     else:
         action = 'x'
@@ -805,7 +805,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 def ZIP_Extract(zipfile, extraction_path, one_folder):
     """ Unzip single zip set 'zipfile' to 'extraction_path'
     """
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         option = '-j'  # Unpack without folders
     else:
         option = '-qq' # Dummy option
