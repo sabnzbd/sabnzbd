@@ -94,6 +94,7 @@ enable_par_cleanup = OptionBool('misc', 'enable_par_cleanup', True)
 never_repair = OptionBool('misc', 'never_repair', False)
 ignore_unrar_dates = OptionBool('misc', 'ignore_unrar_dates', False)
 overwrite_files = OptionBool('misc', 'overwrite_files', False)
+flat_unpack = OptionBool('misc', 'flat_unpack', False)
 
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
