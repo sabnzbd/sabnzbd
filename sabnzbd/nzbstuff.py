@@ -545,7 +545,6 @@ class NzbObject(TryList):
 
         filename = platform_encode(filename)
         nzbname = platform_encode(nzbname)
-        nzbname = sanitize_foldername(nzbname)
 
         if pp is None:
             r = u = d = None
@@ -563,8 +562,8 @@ class NzbObject(TryList):
             dname, ext = os.path.splitext(work_name) # Used for folder name for final unpack
             if ext.lower() == '.nzb':
                 work_name = dname
-            work_name = sanitize_foldername(work_name)
         work_name, password = scan_password(work_name)
+        work_name = sanitize_foldername(work_name)
 
         self.work_name = work_name
         self.final_name = work_name
