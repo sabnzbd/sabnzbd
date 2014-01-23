@@ -485,7 +485,7 @@ def process_job(nzo):
 
         ## Update indexer with results
         if nzo.encrypted > 0:
-            Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYTPTED)
+            Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
         if empty:
             hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
             if not hosts: hosts = [None]

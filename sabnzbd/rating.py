@@ -65,7 +65,7 @@ class NzbRating(object):
         self.user_flag = {}
         self.auto_flag = {}
         self.changed = 0
-        
+
 class Rating(Thread):
     VERSION = 1
 
@@ -78,7 +78,7 @@ class Rating(Thread):
     FLAG_EXPIRED = 3
     FLAG_OTHER = 4
     FLAG_COMMENT = 5
- 
+
     CHANGED_USER_VIDEO = 0x01
     CHANGED_USER_AUDIO = 0x02
     CHANGED_USER_VOTE = 0x04
@@ -86,7 +86,7 @@ class Rating(Thread):
     CHANGED_AUTO_FLAG = 0x10
 
     do = None
-    
+
     def __init__(self):
         Rating.do = self
         self.shutdown = False
@@ -103,7 +103,7 @@ class Rating(Thread):
         if not _HAVE_SSL:
             logging.warning('Ratings server requires secure connection')
             self.stop()
-        
+
     def stop(self):
         self.shutdown = True
         self.queue.put(None) # Unblock queue
@@ -111,7 +111,8 @@ class Rating(Thread):
     def run(self):
         self.shutdown = False
         while not self.shutdown:
-            time.sleep(0.5)
+            time.sleep(1)
+            if not cfg.rating_enable(): continue
             indexer_id = self.queue.get()
             try:
                 if indexer_id and not self._send_rating(indexer_id):
@@ -122,7 +123,7 @@ class Rating(Thread):
             except:
                 pass
         logging.debug('Stopping ratings')
-             
+
     @synchronized(RATING_LOCK)
     def save(self):
         if self.ratings and self.nzo_indexer_map:
@@ -162,7 +163,7 @@ class Rating(Thread):
             rating.changed = rating.changed | Rating.CHANGED_USER_VIDEO
         if audio:
             rating.user_audio = int(audio)
-            rating.avg_audio = int((rating.avg_audio_cnt * rating.avg_audio + rating.user_audio) / (rating.avg_audio_cnt + 1))  
+            rating.avg_audio = int((rating.avg_audio_cnt * rating.avg_audio + rating.user_audio) / (rating.avg_audio_cnt + 1))
             rating.changed = rating.changed | Rating.CHANGED_USER_AUDIO
         if flag:
             rating.user_flag = { 'val': int(flag), 'detail': flag_detail }
@@ -171,21 +172,18 @@ class Rating(Thread):
             rating.user_vote = int(vote)
             rating.changed = rating.changed | Rating.CHANGED_USER_VOTE
             if rating.user_vote == Rating.VOTE_UP:
-                rating.avg_vote_up += 1 
+                rating.avg_vote_up += 1
             else:
-                rating.avg_vote_down += 1        
+                rating.avg_vote_down += 1
         self.queue.put(indexer_id)
 
     @synchronized(RATING_LOCK)
     def update_auto_flag(self, nzo_id, flag, flag_detail = None):
-        if not flag or not cfg.rating_feedback():
+        if not flag or not cfg.rating_enable() or not cfg.rating_feedback() or (nzo_id not in self.nzo_indexer_map):
             return
         logging.debug('Updating auto flag (%s: %s)', nzo_id, flag)
-        if nzo_id not in self.nzo_indexer_map:
-            logging.warning('indexer id (%s) not found for ratings file', nzo_id)
-            return
         indexer_id = self.nzo_indexer_map[nzo_id]
-        rating = self.ratings[indexer_id]    
+        rating = self.ratings[indexer_id]
         rating.auto_flag = { 'val': int(flag), 'detail': flag_detail }
         rating.changed = rating.changed | Rating.CHANGED_AUTO_FLAG
         self.queue.put(indexer_id)
@@ -207,20 +205,20 @@ class Rating(Thread):
             return {'m': 'rp', 'auto': auto}
         if val == Rating.FLAG_EXPIRED:
             expired_host = flag_detail if flag_detail and len(flag_detail) > 0 else 'Other'
-            return {'m': 'rpr', 'pr': expired_host, 'auto': auto}            
+            return {'m': 'rpr', 'pr': expired_host, 'auto': auto}
         if (val == Rating.FLAG_OTHER) and flag_detail and len(flag_detail) > 0:
             return {'m': 'o', 'r': flag_detail}
         if (val == Rating.FLAG_COMMENT) and flag_detail and len(flag_detail) > 0:
             return {'m': 'rc', 'r': flag_detail}
-        
-    def _send_rating(self, indexer_id): 
+
+    def _send_rating(self, indexer_id):
         logging.debug('Updating indexer rating (%s)', indexer_id)
 
         api_key = cfg.rating_api_key()
         rating_host = cfg.rating_host()
         if not api_key or not rating_host:
             return False
-        
+
         requests = []
         _headers = {'User-agent' : 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
         rating = self._get_rating_by_indexer(indexer_id) # Requesting info here ensures always have latest information even on retry
@@ -235,11 +233,11 @@ class Rating(Thread):
             requests.append(self._flag_request(rating.user_flag.get('val'), rating.user_flag.get('detail'), 0))
         if rating.changed & Rating.CHANGED_AUTO_FLAG:
             requests.append(self._flag_request(rating.auto_flag.get('val'), rating.auto_flag.get('detail'), 1))
-        
+
         try:
             conn = httplib.HTTPSConnection(rating_host)
-            for request in filter(lambda r: r is not None, requests):    
-                request['apikey'] = api_key 
+            for request in filter(lambda r: r is not None, requests):
+                request['apikey'] = api_key
                 request['i'] =  indexer_id
                 conn.request('POST', RATING_URL, urllib.urlencode(request), headers = _headers)
 
