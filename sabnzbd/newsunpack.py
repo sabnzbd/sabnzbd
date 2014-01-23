@@ -493,20 +493,24 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     new_files = None
     rars = []
     if nzo.password:
+        logging.info('Got a password set by user')
         passwords = [nzo.password]
     else:
         passwords = []
         # Append meta passwords, to prevent changing the original list
         passwords.extend(nzo.meta.get('password', []))
+        if passwords:
+            logging.info('Read %s passwords from meta data in NZB', len(passwords))
         pw_file = cfg.password_file.get_path()
         if pw_file:
             try:
                 pwf = open(pw_file, 'r')
                 lines = pwf.read().split('\n')
                 # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords.extend([pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')])
+                pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+                passwords.extend(pws)
                 pwf.close()
-                logging.info('Read the passwords file %s', pw_file)
+                logging.info('Read %s passwords from file %s', len(pws), pw_file)
             except IOError:
                 logging.info('Failed to read the passwords file %s', pw_file)
 
