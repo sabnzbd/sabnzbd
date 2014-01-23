@@ -1040,14 +1040,14 @@ class NzbObject(TryList):
             if dif > 0:
                 prefix += Ta('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
         if self.password:
-            return '%s%s / %s' % (name_fixer(prefix), self.final_name, self.password)
+            return '%s%s/%s' % (name_fixer(prefix), self.final_name, self.password)
         else:
             return '%s%s' % (name_fixer(prefix), self.final_name)
 
     @property
     def final_name_pw_clean(self):
         if self.password:
-            return '%s / %s' % (self.final_name, self.password)
+            return '%s/%s' % (self.final_name, self.password)
         else:
             return self.final_name
 
