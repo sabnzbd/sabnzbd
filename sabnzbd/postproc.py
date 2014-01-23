@@ -159,12 +159,14 @@ class PostProcessor(Thread):
                 continue
 
             try:
-                nzo = self.queue.get(timeout=3)
+                nzo = self.queue.get(timeout=1)
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
                     handle_empty_queue()
-                continue
+                    continue
+                else:
+                    nzo = self.queue.get()
 
             ## Stop job
             if not nzo:
