@@ -1191,6 +1191,26 @@ def main():
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
+
+    try:
+	s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s_ipv4.connect(("google.com",80))
+	logging.info('IP address = %s', s_ipv4.getsockname()[0])
+	s_ipv4.close()
+    except:
+	logging.info('could not determine IP address')
+	pass
+
+    try:
+	s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+	s_ipv6.connect(("ipv6.google.com",80))
+	logging.info('IPv6 address = %s', s_ipv6.getsockname()[0])
+	s_ipv6.close()
+    except:
+	logging.info('could not determine IPv6 address')
+	pass
+
+
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
         logging.info('[osx] IO priority setting')
