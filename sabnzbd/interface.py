@@ -1060,7 +1060,7 @@ class ConfigPage(object):
         else:
             yield T('Initiating restart...<br />')
             sabnzbd.halt()
-            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
+            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 seconds and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
             cherrypy.engine.restart()
 
     @cherrypy.expose
@@ -1072,7 +1072,7 @@ class ConfigPage(object):
             sabnzbd.request_repair()
             yield T('Initiating restart...<br />')
             sabnzbd.halt()
-            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
+            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 seconds and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
             cherrypy.engine.restart()
 
     @cherrypy.expose
