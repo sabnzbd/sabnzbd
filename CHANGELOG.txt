@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.7.17RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix bug in rating system
+- Fix multiple encryption password issues
+- Allow Default category to be picked in Multi-Ops
+- Allow "force" prio to be picked in NZO page
+- Prevent PP queue timeout construction from keeping the CPU awake.
+- Special option "flat_unpack"
+-------------------------------------------------------------------------------
  0.7.17Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix regression errors in Beta1

@@ -1,8 +1,11 @@
-Release Notes  -  SABnzbd 0.7.17Beta3
-=====================================
+Release Notes  -  SABnzbd 0.7.17RC1
+===================================
 
-## Solved since Beta1/2
-- passwords embedded in file names were not passed properly to unrar
+## Solved since Beta3
+- Fix bug in rating system
+- Fix multiple encryption password issues
+- Allow Default category to be picked in Multi-Ops
+- Special option "flat_unpack" (will not create extra folders)
 
 ## Features
 
