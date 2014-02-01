@@ -130,9 +130,9 @@ class PostProcessor(Thread):
 
     def stop(self):
         """ Stop thread after finishing running job """
+        self.__stop = True
         self.queue.put(None)
         self.save()
-        self.__stop = True
 
     def empty(self):
         """ Return True if pp queue is empty """
