@@ -46,7 +46,6 @@ REPLACE_AFTER = {
     '..': '.',
     '__': '_',
     '  ': ' ',
-    '//': '/',
     ' .%ext': '.%ext'
 }
 
@@ -950,7 +949,7 @@ def get_titles(nzo, match, name, titleing=False):
     if not title:
         if match:
             name = name[:match.start()]
-    
+
         # Replace .US. with (US)
         if cfg.tv_sort_countries() == 1:
             for rep in COUNTRY_REP:
@@ -969,16 +968,16 @@ def get_titles(nzo, match, name, titleing=False):
                 dotted_country = '.%s.' % (rep.strip('()'))
                 # Remove .US.
                 name = replace_word(name, dotted_country, '.')
-    
+
         title = name.replace('.', ' ').replace('_', ' ')
         title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
         if titleing:
             title = titler(title) # title the show name so it is in a consistant letter case
-    
+
             #title applied uppercase to 's Python bug?
             title = title.replace("'S", "'s")
-    
+
             # Replace titled country names, (Us) with (US) and so on
             if cfg.tv_sort_countries() == 1:
                 for rep in COUNTRY_REP:
@@ -987,17 +986,17 @@ def get_titles(nzo, match, name, titleing=False):
             elif cfg.tv_sort_countries() == 2:
                 for rep in COUNTRY_REP:
                     title = title.replace(titler(rep), '').strip()
-    
+
             # Make sure some words such as 'and' or 'of' stay lowercased.
             for x in LOWERCASE:
                 xtitled = titler(x)
                 title = replace_word(title, xtitled, x)
-    
+
             # Make sure some words such as 'III' or 'IV' stay uppercased.
             for x in UPPERCASE:
                 xtitled = titler(x)
                 title = replace_word(title, xtitled, x)
-    
+
             # Make sure the first letter of the title is always uppercase
             if title:
                 title = titler(title[0]) + title[1:]
@@ -1090,6 +1089,7 @@ def strip_folders(path):
     """ Return 'path' without leading and trailing spaces and underscores in each element
         For Windows, also remove leading and trailing dots
     """
+    unc = sabnzbd.WIN32 and (path.startswith('//') or path.startswith('\\\\'))
     f = path.strip('/').split('/')
 
     # For path beginning with a slash, insert empty element to prevent loss
@@ -1108,7 +1108,11 @@ def strip_folders(path):
         x = x.strip()
         return x
 
-    return os.path.normpath('/'.join([strip_all(x) for x in f]))
+    path = os.path.normpath('/'.join([strip_all(x) for x in f]))
+    if unc:
+        return '\\' + path
+    else:
+        return path
 
 
 def rename_similar(folder, skip_ext, name, skipped_files):
