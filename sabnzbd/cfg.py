@@ -267,6 +267,7 @@ wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 history_limit = OptionNumber('misc', 'history_limit', 50, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
+warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

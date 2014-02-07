@@ -802,12 +802,12 @@ class NzbObject(TryList):
             self.priority = LOW_PRIORITY
 
         if duplicate and cfg.no_dupes() == 1:
-            logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
+            if cfg.warn_dupl_jobs(): logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data(keep_basic=False)
             raise TypeError
 
         if duplicate or self.priority == DUP_PRIORITY:
-            logging.warning(Ta('Pausing duplicate NZB "%s"'), filename)
+            if cfg.warn_dupl_jobs(): logging.warning(Ta('Pausing duplicate NZB "%s"'), filename)
             self.duplicate = True
             self.pause()
             self.priority = NORMAL_PRIORITY
