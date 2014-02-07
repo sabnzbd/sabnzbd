@@ -304,6 +304,7 @@ history_limit = OptionNumber('misc', 'history_limit', 50, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
 enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
+warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
