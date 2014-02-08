@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.17RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Support UNC paths in Sort expressions (Windows)
+- URL in the queue should not show up "sanitized"
+- Fix shutdown issue in PP queue
+- Allow "Force" to be set as priority in files overview
+- Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
+-------------------------------------------------------------------------------
  0.7.17RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix bug in rating system

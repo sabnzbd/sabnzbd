@@ -1,11 +1,11 @@
-Release Notes  -  SABnzbd 0.7.17RC1
+Release Notes  -  SABnzbd 0.7.17RC2
 ===================================
 
-## Solved since Beta3
-- Fix bug in rating system
-- Fix multiple encryption password issues
-- Allow Default category to be picked in Multi-Ops
-- Special option "flat_unpack" (will not create extra folders)
+## Solved since RC1
+- Support UNC paths in Sort expressions (Windows)
+- URL in the queue should not show up "sanitized"
+- Fix shutdown issue in PP queue
+- Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
 
 ## Features
 
