@@ -829,6 +829,11 @@ function lrb(url, extra, refresh)
     var elementt;
     if (element) elementt = document.getElementById(element);
     values = getFormValues(elementt);
+    if (elementt) {
+      elementt.onchange=function(){
+        saveelement.value = "$T('button-saveChanges')"
+      }
+    }
 
   var url = ''+extra;
   var d = doXHR(url+append,
