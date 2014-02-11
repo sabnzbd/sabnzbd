@@ -607,7 +607,7 @@ class NzoPage(object):
             NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
 
         if cat != None and nzo.cat != cat and not (nzo.cat == '*' and cat == 'Default'):
-            NzbQueue.do.change_cat(nzo_id, cat)
+            NzbQueue.do.change_cat(nzo_id, cat, priority)
             # Category changed, so make sure "Default" attributes aren't set again
             if script == 'Default':
                 script = None

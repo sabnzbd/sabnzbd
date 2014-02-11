@@ -314,13 +314,14 @@ class NzbQueue(TryList):
                 self.__nzo_table[nzo_id].script = script
 
     @synchronized(NZBQUEUE_LOCK)
-    def change_cat(self, nzo_ids, cat):
+    def change_cat(self, nzo_ids, cat, explicit_priority=None):
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
                 nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
                 nzo.set_pp(pp)
-                self.set_priority(nzo_id, prio)
+                if explicit_priority is None:
+                    self.set_priority(nzo_id, prio)
 
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name, password=None):
