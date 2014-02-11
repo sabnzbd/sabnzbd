@@ -613,7 +613,7 @@ class NzoPage(object):
         if name != None:
             NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
         if cat != None:
-            NzbQueue.do.change_cat(nzo_id,cat)
+            NzbQueue.do.change_cat(nzo_id, cat, priority)
         if script != None:
             NzbQueue.do.change_script(nzo_id,script)
         if pp != None:
