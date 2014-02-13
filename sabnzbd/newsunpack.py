@@ -97,7 +97,7 @@ def find_programs(curdir):
 
     if sabnzbd.DARWIN:
         try:
-            os_version = subprocess.Popen("sw_vers -productVersion", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+            os_version = run_simple('sw_vers -productVersion')
             #par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
             if int(os_version.split('.')[1]) >= 6:
                 sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
@@ -1664,7 +1664,7 @@ def unrar_check(rar):
     """ Return True if correct version of unrar is found """
     if rar:
         try:
-            version = subprocess.Popen(rar, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+            version = run_simple(rar)
         except:
             return False
         m = re.search(r"RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
@@ -1892,3 +1892,13 @@ class SevenZip(object):
     def close(self):
         """ Close file """
         pass
+
+
+#------------------------------------------------------------------------------
+def run_simple(cmd):
+    """ Run simple external command and return output
+    """
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    txt = p.stdout.read()
+    p.wait()
+    return txt
