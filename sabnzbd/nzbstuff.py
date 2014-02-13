@@ -1054,12 +1054,11 @@ class NzbObject(TryList):
 
     def set_final_name_pw(self, name, password=None):
         if isinstance(name, str):
-            if password:
+            if password is not None:
                 name = platform_encode(name)
                 self.password = platform_encode(password)
             else:
-                name, password = scan_password(platform_encode(name))
-                self.password = self.password or password
+                name, self.password = scan_password(platform_encode(name))
             self.final_name = sanitize_foldername(name)
             self.save_to_disk()
 
