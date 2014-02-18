@@ -175,6 +175,9 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     if name:
         name, cat = name_to_cat(name, catdir)
         # The name is used as the name of the folder, so sanitize it using folder specific santization
+        if not nzbname:
+            # Prevent embedded password from being damaged by sanitize and trimming
+            nzbname = os.path.split(name)[1]
         name = misc.sanitize_foldername(name)
 
     try:
