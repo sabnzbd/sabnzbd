@@ -544,7 +544,7 @@ class NzoPage(object):
                 filename_pw = xml_name(nzo.final_name_pw_clean)
                 filename = xml_name(nzo.final_name)
                 if nzo.password:
-                    password = xml_name(nzo.password)
+                    password = xml_name(nzo.password).replace('"', '&quot;')
                 else:
                     password = ''
                 priority = pnfo[PNFO_PRIORITY_FIELD]
