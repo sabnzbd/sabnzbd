@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-12-10 20:31+0000\n"
-"PO-Revision-Date: 2013-01-24 17:32+0000\n"
+"PO-Revision-Date: 2014-01-31 16:50+0000\n"
 "Last-Translator: Fox Ace <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-12-11 06:17+0000\n"
-"X-Generator: Launchpad (build 16869)\n"
+"X-Launchpad-Export-Date: 2014-02-01 06:43+0000\n"
+"X-Generator: Launchpad (build 16916)\n"
 
 #: SABnzbd.py:304 [Error message]
 msgid "Failed to start web-interface"
@@ -717,7 +717,7 @@ msgstr "ERREUR : %s"
 
 #: sabnzbd/newsunpack.py:664 # sabnzbd/newsunpack.py:665
 msgid "Unusable RAR file"
-msgstr ""
+msgstr "Fichier RAR inutilisable"
 
 #: sabnzbd/newsunpack.py:705
 msgid "Missing expected file: %s => unrar error?"
@@ -1670,31 +1670,31 @@ msgstr "Hôte"
 
 #: sabnzbd/skintext.py:105
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: sabnzbd/skintext.py:106
 msgid "Send"
-msgstr ""
+msgstr "Envoyé"
 
 #: sabnzbd/skintext.py:107
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: sabnzbd/skintext.py:108
 msgid "Other"
-msgstr ""
+msgstr "Autre"
 
 #: sabnzbd/skintext.py:109
 msgid "Report"
-msgstr ""
+msgstr "Signaler"
 
 #: sabnzbd/skintext.py:110
 msgid "Video"
-msgstr ""
+msgstr "Vidéo"
 
 #: sabnzbd/skintext.py:111
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: sabnzbd/skintext.py:114 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -2098,19 +2098,19 @@ msgstr "Chemin d'accès"
 
 #: sabnzbd/skintext.py:243
 msgid "Virus/spam"
-msgstr ""
+msgstr "Virus/spam"
 
 #: sabnzbd/skintext.py:244
 msgid "Passworded"
-msgstr ""
+msgstr "Protégé par un mot de passe"
 
 #: sabnzbd/skintext.py:245
 msgid "Out of retention"
-msgstr ""
+msgstr "En dehors de la rétention"
 
 #: sabnzbd/skintext.py:246
 msgid "Other problem"
-msgstr ""
+msgstr "Autre problème"
 
 #: sabnzbd/skintext.py:249 [Status page button]
 msgid "Force Disconnect"
@@ -2248,7 +2248,7 @@ msgstr "Secours"
 
 #: sabnzbd/skintext.py:285
 msgid "OZnzb"
-msgstr ""
+msgstr "OZnzb"
 
 #: sabnzbd/skintext.py:288
 msgid "General configuration"
@@ -2982,7 +2982,7 @@ msgstr "Quota"
 
 #: sabnzbd/skintext.py:460
 msgid "Indexing"
-msgstr ""
+msgstr "Indexation"
 
 #: sabnzbd/skintext.py:462
 msgid "How much can be downloaded this month (K/M/G)"
@@ -3056,36 +3056,43 @@ msgstr ""
 
 #: sabnzbd/skintext.py:477
 msgid "Enable OZnzb Integration"
-msgstr ""
+msgstr "Activer l'intégration de OZnzb"
 
 #: sabnzbd/skintext.py:478
 msgid ""
 "Enhanced functionality including ratings and extra status information is "
 "available when connected to OZnzb indexer."
 msgstr ""
+"Cette fonctionnalité améliorée qui comprend des notes et des informations "
+"d'état supplémentaire est disponible lorsque vous êtes connecté à OZnzb "
+"indexeur."
 
 #: sabnzbd/skintext.py:479
 msgid "Site API Key"
-msgstr ""
+msgstr "Clé API du site"
 
 #: sabnzbd/skintext.py:480
 msgid ""
 "This key provides identity to indexer. Refer to "
 "https://www.oznzb.com/profile."
 msgstr ""
+"Cette clé fournit l'identité de l'indexeur. Reportez-vous à "
+"https://www.oznzb.com/profile."
 
 #: sabnzbd/skintext.py:481
 msgid "Refer to https://www.oznzb.com/profile"
-msgstr ""
+msgstr "Reportez-vous à https://www.oznzb.com/profile"
 
 #: sabnzbd/skintext.py:482
 msgid "Automatic Feedback"
-msgstr ""
+msgstr "Commentaires automatique"
 
 #: sabnzbd/skintext.py:483
 msgid ""
 "Send automatically calculated validation results for downloads to indexer."
 msgstr ""
+"Envoyer les résultats de la validation calculées automatiquement pour les "
+"téléchargements à l'indexeur."
 
 #: sabnzbd/skintext.py:486 [Caption]
 msgid "Server configuration"
@@ -4417,7 +4424,7 @@ msgstr "Démarrer l'Assistant"
 
 #: sabnzbd/skintext.py:893
 msgid "If you do not have an account it can be created at "
-msgstr ""
+msgstr "Si vous n'avez pas un compte, il peut être créé sur "
 
 #: sabnzbd/skintext.py:896
 msgid ""
