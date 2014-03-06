@@ -265,6 +265,7 @@ def print_help():
     else:
         print "  -d  --daemon             Fork daemon process"
         print "      --pid <path>         Create a PID file in the listed folder (full path)"
+        print "      --pidfile <path>     Create a PID file with the given name (full path)"
     print
     print "      --force              Discard web-port timeout (see Wiki!)"
     print "  -h  --help               Print this message"
@@ -839,7 +840,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates', 'no_ipv6',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console', 'pidfile=',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -931,6 +932,7 @@ def main():
     no_login = False
     re_argv = [sys.argv[0]]
     pid_path = None
+    pid_file = None
     new_instance = False
     force_sessions = False
     osx_console = False
@@ -1011,6 +1013,10 @@ def main():
             no_login = True
         elif opt in ('--pid',):
             pid_path = arg
+            re_argv.append(opt)
+            re_argv.append(arg)
+        elif opt in ('--pidfile',):
+            pid_file = arg
             re_argv.append(opt)
             re_argv.append(arg)
         elif opt in ('--new',):
@@ -1579,8 +1585,8 @@ def main():
             # Write URL directly to registry
             set_connection_info(api_url)
 
-    if pid_path:
-        sabnzbd.pid_file(pid_path, cherryport)
+    if pid_path or pid_file:
+        sabnzbd.pid_file(pid_path, pid_file, cherryport)
 
     # Start all SABnzbd tasks
     logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
