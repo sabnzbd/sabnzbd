@@ -1788,7 +1788,10 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         if item['retry']:
             retry_folders.append(path)
 
-        rating = Rating.do.get_rating_by_nzo(item['nzo_id'])
+        if Rating.do:
+            rating = Rating.do.get_rating_by_nzo(item['nzo_id'])
+        else:
+            rating = None
         item['has_rating'] = rating is not None
         if rating:
             item['rating_avg_video'] = rating.avg_video
