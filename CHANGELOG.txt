@@ -6,6 +6,12 @@
 - Fix shutdown issue in PP queue
 - Allow "Force" to be set as priority in files overview
 - Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
+- Fix problem with "sanitize" in "renamer"
+- Add (partial) RAR5 support
+- Fix some more password-in-filename issues
+- Prevent unwanted change of queue order after editing job details
+- Add password entry boxes in smpl and Classic skins
+- Prevent unrar zombies on some systems
 -------------------------------------------------------------------------------
  0.7.17RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------

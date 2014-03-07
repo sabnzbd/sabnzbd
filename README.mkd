@@ -6,6 +6,10 @@ Release Notes  -  SABnzbd 0.7.17RC2
 - URL in the queue should not show up "sanitized"
 - Fix shutdown issue in PP queue
 - Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
+- Add (partial) RAR5 support
+- Fix some more password-in-filename issues
+- Add password entry boxes in smpl and Classic skins
+
 
 ## Features
 
