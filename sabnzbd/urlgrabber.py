@@ -102,6 +102,7 @@ class URLGrabber(Thread):
                 length = 0
                 gzipped = False
                 nzo_info = {}
+                wait = 0
                 try:
                     fn = urllib2.urlopen(req)
                 except:
@@ -141,11 +142,21 @@ class URLGrabber(Thread):
                             nzo_info['details'] = value
                         elif item in ('content-length',):
                             length = misc.int_conv(value)
+                        elif item == 'retry-after':
+                            # For NZBFinder
+                            wait = misc.int_conv(value)
 
                         if not filename and "filename=" in value:
                             filename = value[value.index("filename=") + 9:].strip(';').strip('"')
 
-                fn, msg, retry, wait, data = _analyse(fn, url)
+                if wait:
+                    # For sites that have a rate-limiting attribute
+                    msg = ''
+                    retry = True
+                    fn = None
+                else:
+                    fn, msg, retry, wait, data = _analyse(fn, url)
+
                 if not fn:
                     if retry:
                         logging.info('Retry URL %s', url)
