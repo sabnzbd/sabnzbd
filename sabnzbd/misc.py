@@ -1248,6 +1248,10 @@ def ip_extract():
 
 def renamer(old, new):
     """ Rename file/folder with retries for Win32 """
+    # Sanitize last part of new name
+    path, name = os.path.split(new)
+    new = os.path.join(path, sanitize_foldername(name))
+
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
