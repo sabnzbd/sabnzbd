@@ -127,6 +127,7 @@ class URLGrabber(Thread):
                 category = None
                 length = 0
                 nzo_info = {}
+                wait = 0
                 try:
                     fn, header = opener.retrieve(url)
                 except:
@@ -159,6 +160,9 @@ class URLGrabber(Thread):
                             nzo_info['details'] = value
                         elif item in ('content-length',):
                             length = misc.int_conv(value)
+                        elif item == 'retry-after':
+                            # For NZBFinder
+                            wait = misc.int_conv(value)
 
                         if not filename:
                             for item in tup:
@@ -183,7 +187,13 @@ class URLGrabber(Thread):
                         continue
 
                 else:
-                    fn, msg, retry, wait = _analyse_others(fn, url)
+                    if wait:
+                        # For sites that have a rate-limiting attribute
+                        msg = ''
+                        retry = True
+                        fn = None
+                    else:
+                        fn, msg, retry, wait = _analyse_others(fn, url, retry)
                     if not fn:
                         if retry:
                             logging.info('Retry URL %s', url)
