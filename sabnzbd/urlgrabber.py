@@ -193,7 +193,7 @@ class URLGrabber(Thread):
                         retry = True
                         fn = None
                     else:
-                        fn, msg, retry, wait = _analyse_others(fn, url, retry)
+                        fn, msg, retry, wait = _analyse_others(fn, url)
                     if not fn:
                         if retry:
                             logging.info('Retry URL %s', url)
