@@ -1,29 +1,26 @@
-Release Notes  -  SABnzbd 0.7.17RC2
-===================================
-
-## Solved since RC1
-- Support UNC paths in Sort expressions (Windows)
-- URL in the queue should not show up "sanitized"
-- Fix shutdown issue in PP queue
-- Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
-- Add (partial) RAR5 support
-- Fix some more password-in-filename issues
-- Add password entry boxes in smpl and Classic skins
-
+Release Notes  -  SABnzbd 0.7.17
+================================
 
 ## Features
 
+- Upgrade embedded unrar to 5.01 and (partially) support RAR5 format
 - Support for more meta-data in NZB files (to be used in TV Sort)
 - Optional integration with the OZnzb indexer, allows user access to ratings and reporting directly from SABnzbd interface.
 - Optional automatic feedback to OZnzb on failed downloads
 - Commandline option --pidfile to set your own PID-file name/path (Unix and OSX)
 - Basic support for X-DNZB-Failure and X-DNZB-Details headers, sent by some indexers
-- Upgrade embedded unrar to 5.01
+- Support rate-limiting by (a number of) indexers
+- Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
+- Special option "flat_unpack" to ignore folders inside archives
 
 ## Bug fixes
 - Fix false encryption alarms for some posts
 - Fix issue with OSX Mavericks Notification Center support
-- Fix issue with passwords embedded in file names
+- Fix issues with passwords embedded in file names
+- Support UNC paths in Sort expressions (Windows)
+- Add password entry boxes in smpl and Classic skins
+- Prevent unwanted change of queue order after editing job details
+- Allow Default category to be picked in Multi-Ops
 
 ## What's new in 0.7.0
 

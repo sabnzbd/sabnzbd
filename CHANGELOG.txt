@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.7.17Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Implement "retry-after" header to support rate-limiting
+- Update OSX image to show Mavericks support
+-------------------------------------------------------------------------------
  0.7.17RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Support UNC paths in Sort expressions (Windows)
