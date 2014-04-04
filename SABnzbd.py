@@ -1324,6 +1324,18 @@ def main():
     sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(),  web_dir2)
     sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
+    # unwanted_extensions:
+    # clean up the list, so for example convert .EXe to exe:  
+    templist = []
+    for extension in sabnzbd.cfg.unwanted_extensions():
+        extension_cleanlower = extension.lower().split('.')[-1].encode('ascii', 'ignore')       # and hard-encode to pure ascii
+        templist.append(extension_cleanlower)
+    # ... and put it back into the global variable:
+    sabnzbd.cfg.unwanted_extensions.set(templist)
+    logging.debug('Unwanted extensions are %s',templist)
+
+
+
     if fork and not sabnzbd.WIN32:
         daemonize()
 
