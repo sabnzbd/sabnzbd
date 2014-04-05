@@ -636,6 +636,12 @@ def _api_resume_pp(name, output, kwargs):
     return report(output)
 
 
+def _api_pause_pp(name, output, kwargs):
+    """ API: accepts output """
+    PostProcessor.do.paused = True
+    return report(output)
+
+
 def _api_rss_now(name, output, kwargs):
     """ API: accepts output """
     # Run RSS scan async, because it can take a long time
@@ -818,6 +824,7 @@ _api_table = {
     'eval_sort'       : (_api_eval_sort, 2),
     'watched_now'     : (_api_watched_now, 2),
     'resume_pp'       : (_api_resume_pp, 2),
+    'pause_pp'        : (_api_pause_pp, 2),
     'rss_now'         : (_api_rss_now, 2),
     'browse'          : (_api_browse, 2),
     'reset_quota'     : (_api_reset_quota, 2),
