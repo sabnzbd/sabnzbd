@@ -268,6 +268,8 @@ history_limit = OptionNumber('misc', 'history_limit', 50, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
+new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', True)
+
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

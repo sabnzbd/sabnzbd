@@ -241,7 +241,8 @@ def process_job(nzo):
         nzo.status = Status.FAILED
         nzo.save_attribs()
         all_ok = False
-        par_error = unpack_error = True
+        par_error = True
+        unpack_error = 1
 
     try:
 
@@ -271,7 +272,8 @@ def process_job(nzo):
             flag_repair = flag_unpack = False
             all_ok = cfg.empty_postproc() and empty
             if not all_ok:
-                par_error = unpack_error = True
+                par_error = True
+                unpack_error = 1
 
         script = nzo.script
         cat = nzo.cat
@@ -411,7 +413,7 @@ def process_job(nzo):
             if empty:
                 job_result = -1
             else:
-                job_result = int(par_error) + int(unpack_error)*2
+                job_result = int(par_error) + int(bool(unpack_error))*2
 
             if cfg.ignore_samples() > 0:
                 remove_samples(workdir_complete)
@@ -437,7 +439,7 @@ def process_job(nzo):
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
                                                              msgid, dirname, cat, nzo.group, job_result,
                                                              nzo.nzo_info.get('failure', ''))
-                script_line = get_last_line(script_log) 
+                script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
@@ -549,6 +551,10 @@ def process_job(nzo):
         except:
             logging.error(Ta('Error removing workdir (%s)'), workdir)
             logging.info("Traceback: ", exc_info = True)
+
+    # Use automatic retry link on par2 errors and encrypted/bad RARs
+    if par_error or unpack_error in (2, 3):
+        try_alt_nzb(nzo)
 
     return True
 
@@ -832,3 +838,9 @@ def remove_from_list(name, lst):
                 logging.debug('Popping %s', lst[n])
                 lst.pop(n)
                 return
+
+def try_alt_nzb(nzo):
+    """ Try to get a new NZB if available """
+    url = nzo.nzo_info.get('failure')
+    if url and cfg.new_nzb_on_failure():
+        sabnzbd.add_url(url, nzo.pp, nzo.script, nzo.cat, nzo.priority)
