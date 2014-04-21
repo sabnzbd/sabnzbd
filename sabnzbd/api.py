@@ -660,7 +660,8 @@ def _api_test_email(name, output, kwargs):
     pack['unpack'] = ['action 1', 'action 2']
     res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
                                  os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
-                                 123*MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+                                 123*MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+                                 test=kwargs)
     if res == 'Email succeeded':
         res = None
     return report(output, error=res)

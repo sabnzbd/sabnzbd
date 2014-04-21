@@ -107,6 +107,22 @@
                 });
 
             });
+	    
+	    /*
+	     * takes the inputs-elements found in the current selector
+	     * and extracts the values into the provided data-object.
+	     */
+	    \$.fn.extractFormDataTo = function(target)
+	    {
+		var inputs = \$("input[type != 'submit'][type != 'button']", this);
+
+		// could use .serializeArray() but that omits unchecked items
+		inputs.each(function (i,elem) {
+		    target[elem.name] = elem.value;
+		});
+
+		return this;
+	    }
 
         </script>
 
