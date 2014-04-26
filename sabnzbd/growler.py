@@ -102,25 +102,39 @@ def have_ntfosd():
 
 
 #------------------------------------------------------------------------------
-def send_notification(title , msg, gtype, wait=False):
+def send_notification(title , msg, gtype, wait=False, test=None):
     """ Send Notification message
         Return '' when OK, otherwise an error string
     """
     res = []
     if gtype in sabnzbd.cfg.notify_classes() or wait:
-        if sabnzbd.DARWIN_ML and sabnzbd.cfg.ncenter_enable():
+
+        # support testing values from UI
+        if (test):
+            ncenter_enable = test.get('ncenter_enable') == 'true'
+            ntfosd_enable  = test.get('ntfosd_enable') == 'true'
+            growl_enable   = test.get('growl_enable') == 'true'
+            growl_server   = test.get('growl_server') or None
+        else:
+            ncenter_enable = sabnzbd.cfg.ncenter_enable()
+            ntfosd_enable  = sabnzbd.cfg.ntfosd_enable()
+            growl_enable   = sabnzbd.cfg.growl_enable()
+            growl_server   = sabnzbd.cfg.growl_server()
+            
+        if sabnzbd.DARWIN_ML and ncenter_enable:
             res.append(send_notification_center(title, msg, gtype))
-        if sabnzbd.cfg.growl_enable():
-            if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
+        if growl_enable:
+            if _HAVE_CLASSIC_GROWL and not growl_server:
                 return send_local_growl(title, msg, gtype)
             else:
                 if wait:
-                    res.append(send_growl(title, msg, gtype))
+                    # we only test with wait=True
+                    res.append(send_growl(title, msg, gtype, test))
                 else:
                     res.append('ok')
                     Thread(target=send_growl, args=(title, msg, gtype)).start()
                     time.sleep(0.5)
-        if have_ntfosd():
+        if ntfosd_enable and have_ntfosd():
             res.append(send_notify_osd(title, msg))
 
     return ' / '.join([r for r in res if r])
@@ -135,11 +149,19 @@ def reset_growl():
 
 
 #------------------------------------------------------------------------------
-def register_growl():
+def register_growl(test=None):
     """ Register this app with Growl
     """
     error = None
-    host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
+
+    if (test):
+        growl_server   = test.get('growl_server')
+        growl_password = test.get('growl_password')
+    else:
+        growl_server   = sabnzbd.cfg.growl_server()
+        growl_password = sabnzbd.cfg.growl_password()
+    
+    host, port = sabnzbd.misc.split_host(growl_server)
 
     sys_name = hostname(host)
 
@@ -153,7 +175,7 @@ def register_growl():
         notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
         hostname = host or 'localhost',
         port = port or 23053,
-        password = sabnzbd.cfg.growl_password() or None
+        password = growl_password or None
     )
 
     try:
@@ -182,15 +204,19 @@ def register_growl():
 
 
 #------------------------------------------------------------------------------
-def send_growl(title , msg, gtype):
+def send_growl(title , msg, gtype, test=None):
     """ Send Growl message
     """
     global _GROWL, _GROWL_REG
 
     for n in (0, 1):
         if not _GROWL_REG: _GROWL = None
+
+        if test:
+            reset_growl()
+            
         if not _GROWL:
-            _GROWL, error = register_growl()
+            _GROWL, error = register_growl(test)
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
@@ -204,22 +230,27 @@ def send_growl(title , msg, gtype):
                     description = unicoder(msg),
                 )
                 if ret is None or isinstance(ret, bool):
-                    return None
+                    result = None
                 elif ret[0] == '401':
                     _GROWL = False
                 else:
                     logging.debug('Growl error %s', ret)
-                    return 'Growl error %s', ret
+                    result = 'Growl error %s', ret
             except socket.error, err:
                 error = 'Growl error %s' % err
                 logging.debug(error)
-                return error
+                result = error
             except:
                 error = 'Growl error (unknown)'
                 logging.debug(error)
-                return error
+                result = error
         else:
-            return error
+            result = error
+
+        if test:
+            reset_growl()
+            
+        return result
     return None
 
 #------------------------------------------------------------------------------
