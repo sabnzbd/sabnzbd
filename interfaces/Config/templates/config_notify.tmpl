@@ -40,7 +40,7 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="section">
+    <div class="section" id="email">
         <div class="col2">
             <h3>$T('emailAccount')</h3>
         </div><!-- /col2 -->
@@ -139,10 +139,12 @@
     \$('#email_dir').fileBrowser({ title: 'Select $T('opt-email_dir')' });
     \$('#test_email').click(function () {
         if (confirm(\$('#test_email').attr('rel'))) {
+	    var data = { mode: 'test_email', apikey: '$session', output: 'json' };
+	    \$("#email").extractFormDataTo(data);
             \$.ajax({
                 type: "GET",
                 url: "../../tapi",
-                data: {mode: 'test_email', apikey: '$session', output: 'json' },
+                data: data,
                 beforeSend: function () {
                     \$('#test_email').attr("disabled", "disabled");
                     \$('#testmail-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
