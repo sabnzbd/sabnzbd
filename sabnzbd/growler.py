@@ -328,7 +328,7 @@ def send_notification_center(title, msg, gtype):
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
             output = proc.stdout.read()
             proc.wait()
-            if 'Notification delivered' in output:
+            if 'Notification delivered' in output or 'Removing previously' in output:
                 output = ''
         except:
             logging.info('Cannot run notifier "%s"', tool)
