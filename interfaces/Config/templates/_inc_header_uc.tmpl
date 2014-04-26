@@ -110,7 +110,11 @@
 
 		// could use .serializeArray() but that omits unchecked items
 		inputs.each(function (i,elem) {
-		    target[elem.name] = elem.value;
+	            if (elem.type == "checkbox") {
+	                target[elem.name] = elem.checked;
+	            } else {
+		        target[elem.name] = elem.value;
+	            }
 		});
 
 		return this;
