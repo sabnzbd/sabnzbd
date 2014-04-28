@@ -212,6 +212,9 @@ web_color2 = OptionStr('misc', 'web_color2')
 cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
 
+unwanted_extensions = OptionList('misc', 'unwanted_extensions')
+action_on_unwanted_extensions = OptionNumber('misc', 'action_on_unwanted_extensions', 0)
+
 log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
 log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
 log_level = OptionNumber('logging', 'log_level', 1, -1, 2)
