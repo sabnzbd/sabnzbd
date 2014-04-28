@@ -1210,7 +1210,8 @@ SWITCH_LIST = \
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless',
-             'rating_enable', 'rating_api_key', 'rating_host', 'rating_feedback'
+             'rating_enable', 'rating_api_key', 'rating_host', 'rating_feedback',
+             'unwanted_extensions', 'action_on_unwanted_extensions'
              )
 
 #------------------------------------------------------------------------------
@@ -1233,6 +1234,7 @@ class ConfigSwitches(object):
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw)()
+        conf['unwanted_extensions'] = cfg.unwanted_extensions.get_string()
 
         conf['script_list'] = list_scripts() or ['None']
         conf['have_ampm'] = HAVE_AMPM
@@ -1249,6 +1251,8 @@ class ConfigSwitches(object):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
             value = platform_encode(kwargs.get(kw))
+            if kw == 'unwanted_extensions' and value:
+                value = value.lower().replace('.', '')
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)

@@ -244,7 +244,7 @@ SKIN_TEXT = {
     'encrypted' : TT('Passworded'),
     'expired' : TT('Out of retention'),
     'otherProblem' : TT('Other problem'),
-    
+
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
     'askTestEmail' : TT('This will send a test email to your account.'),
@@ -396,6 +396,10 @@ SKIN_TEXT = {
     'explain-pause_on_pwrar' : TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Detect Duplicate Downloads'),
     'explain-no_dupes' : TT('Detect identically named NZB files (requires NZB backup option) and duplicate titles across RSS feeds.'),
+    'opt-action_on_unwanted_extensions' : TT('Action when unwanted extension detected'),
+    'explain-action_on_unwanted_extensions' : TT('Action when an unwanted extension is detected in RAR files'),
+    'opt-unwanted_extensions' : TT('Unwanted extensions'),
+    'explain-unwanted_extensions' : TT('List all unwanted extensions'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
@@ -890,7 +894,7 @@ SKIN_TEXT = {
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
-    'wizard-create-account' : TT('If you do not have an account it can be created at '), 
+    'wizard-create-account' : TT('If you do not have an account it can be created at '),
 
 #Special
     'yourRights' : TT('''

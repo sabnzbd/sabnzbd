@@ -533,7 +533,8 @@ NzbObjectMapper = (
     ('precheck',                     'precheck'),
     ('incomplete',                   'incomplete'),    # Was detected as incomplete
     ('reuse',                        'reuse'),
-    ('meta',                         'meta')           # Meta-date from 1.1 type NZB
+    ('meta',                         'meta'),          # Meta-date from 1.1 type NZB
+    ('unwanted_ext',                 'unwanted_ext')
 )
 
 class NzbObject(TryList):
@@ -621,6 +622,7 @@ class NzbObject(TryList):
         self.oversized = False
         self.precheck = False
         self.incomplete = False
+        self.unwanted_ext = False
         self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
@@ -1036,6 +1038,8 @@ class NzbObject(TryList):
             prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
         if self.incomplete and self.status == 'Paused':
             prefix += Ta('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
+        if self.unwanted_ext and self.status == 'Paused':
+            prefix += Ta('UNWANTED') + ' / ' #: Queue indicator for unwanted extensions
         if isinstance(self.wait, float):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
@@ -1073,10 +1077,11 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
-        # If user resumes after warning, reset duplicate/oversized/incomplete indicators
+        # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
         self.duplicate = False
         self.oversized = False
         self.incomplete = False
+        self.unwanted_ext = False
 
     def add_parfile(self, parfile):
         if parfile not in self.files:

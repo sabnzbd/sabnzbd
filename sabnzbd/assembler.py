@@ -124,15 +124,16 @@ class Assembler(Thread):
 
                     unwanted = rar_contains_unwanted_file(nzo, filepath)
                     if unwanted:
-                            logging.warning(Ta('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), latin1(nzo.final_name), unwanted)
-                            if cfg.action_on_unwanted_extensions() == 1:
-                                logging.debug('Unwanted extension ... pausing')
-                                nzo.pause()
-                            if cfg.action_on_unwanted_extensions() == 2:
-                                logging.debug('Unwanted extension ... aborting')
-                                nzo.fail_msg = T('Aborted, unwanted extension detected')
-                                import sabnzbd.nzbqueue
-                                sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                        logging.warning(Ta('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), latin1(nzo.final_name), unwanted)
+                        if cfg.action_on_unwanted_extensions() == 1:
+                            logging.debug('Unwanted extension ... pausing')
+                            nzo.unwanted_ext = True
+                            nzo.pause()
+                        if cfg.action_on_unwanted_extensions() == 2:
+                            logging.debug('Unwanted extension ... aborting')
+                            nzo.fail_msg = T('Aborted, unwanted extension detected')
+                            import sabnzbd.nzbqueue
+                            sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
 
                     nzf.completed = True
@@ -351,9 +352,9 @@ def rar_contains_unwanted_file(nzo, filepath):
             #logging.debug('files in rar file: %s', zf.namelist())
             for somefile in zf.namelist() :
                 logging.debug('file in rar file: %s', somefile)
-                if os.path.splitext(somefile)[1].lower() in cfg.unwanted_extensions():
-                    logging.debug('Unwanted file %s',somefile)
-                    unwanted = somefile
+                if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
+                    logging.debug('Unwanted file %s', somefile)
+                    unwanted = True
                     zf.close()
         except:
             logging.debug('RAR file %s cannot be inspected.', filepath)
