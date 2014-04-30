@@ -559,6 +559,14 @@ SKIN_TEXT = {
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
     'opt-ncenter_enable' : TT('Notification Center'),
     'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
+    'opt-pushover_enable' : TT('Enable Pushover'), #: Don't translate "Pushover"
+    'explain-pushover_enable' : TT('Send notifications to Pushover'), #: Don't translate "Pushover"
+    'opt-pushover_token' : TT('API Token'), #: API Token for application
+    'explain-pushover_token' : TT('API Token for Pushover application (https://pushover.net/apps/clone/sabnzbd)'), #: Don't translate "Pushover"
+    'opt-pushover_userkey' : TT('User Key'), #: Pushover user key
+    'explain-pushover_userkey' : TT('Pushover User Key'), #: Don't translate "Pushover"
+    'opt-pushover_device' : TT('Device'), #: Pushover device
+    'explain-pushover_device' : TT('Optional specific device to send to'),
     'opt-notify_classes' : TT('Notification classes'),
     'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),

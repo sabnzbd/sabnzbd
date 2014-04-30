@@ -111,7 +111,7 @@
     </fieldset>
   </div><!-- /component-group2 -->
 
-<!--#if $have_growl or $have_ntfosd#-->
+<!--#if $have_growl or $have_ntfosd or $have_pushover#-->
     <div id="core-component-group3" class="component-group clearfix">
     <div class="component-group-desc">
       <h3>$T('growlSettings')</h3>
@@ -152,6 +152,45 @@
         <label class="nocheck clearfix">
           <span class="component-title">&nbsp;</span>
           <span class="component-desc">$T('explain-growl_password')</span>
+        </label>
+      </div>
+    <!--#end if#-->
+    <!--#if $have_pushover#-->
+      <div class="field-pair">
+        <input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if $pushover_enable != "0" then "checked=1" else ""#--> />
+        <label class="clearfix" for="pushover_enable">
+          <span class="component-title">$T('opt-pushover_enable')</span>
+          <span class="component-desc">$T('explain-pushover_enable')</span>
+        </label>
+      </div>
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="pushover_token">
+          <span class="component-title">$T('opt-pushover_token')</span>
+          <input type="text" name="pushover_token" id="pushover_token" value="$pushover_token"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-pushover_token')</span>
+        </label>
+      </div>
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="pushover_userkey">
+          <span class="component-title">$T('opt-pushover_userkey')</span>
+          <input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-pushover_userkey')</span>
+        </label>
+      </div>
+      <div class="field-pair">
+        <label class="nocheck clearfix" for="pushover_device">
+          <span class="component-title">$T('opt-pushover_device')</span>
+          <input type="text" name="pushover_device" id="pushover_device" value="$pushover_device"/>
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-pushover_device')</span>
         </label>
       </div>
     <!--#end if#-->

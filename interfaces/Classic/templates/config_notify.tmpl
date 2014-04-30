@@ -54,7 +54,7 @@ $T('explain-email_pwd')<br>
 <input type="password" size="35" name="email_pwd" value="$email_pwd">
 </fieldset>
 
-<!--#if $have_growl or $have_ntfosd#-->
+<!--#if $have_growl or $have_ntfosd or $have_pushover#-->
   <fieldset class="EntryFieldSet">
   <legend>$T('growlSettings')</legend>
 <!--#if $have_ntfosd#-->
@@ -76,6 +76,27 @@ $T('explain-email_pwd')<br>
   <strong>$T('opt-growl_password'):</strong><br>
   $T('explain-growl_password')<br>
   <input type="password" size="35" name="growl_password" value="$growl_password">
+  </fieldset>
+<!--#end if#-->
+<!--#if $have_pushover#-->
+  <label><input type="checkbox" name="pushover_enable" value="1" <!--#if $pushover_enable != "0" then "checked=1" else ""#--> /> <strong>$T('opt-pushover_enable'):</strong></label><br>
+  $T('explain-pushover_enable')
+  <br/>
+  <br/>
+  <strong>$T('opt-pushover_token'):</strong><br>
+  $T('explain-pushover_token')<br>
+  <input type="text" size="35" name="pushover_token" value="$pushover_token">
+  <br>
+  <br>
+  <strong>$T('opt-pushover_userkey'):</strong><br>
+  $T('explain-pushover_userkey')<br>
+  <input type="text" size="35" name="pushover_userkey" value="$pushover_userkey">
+  </fieldset>
+  <br>
+  <br>
+  <strong>$T('opt-pushover_device'):</strong><br>
+  $T('explain-pushover_device')<br>
+  <input type="text" size="20" name="pushover_device" value="$pushover_device">
   </fieldset>
 <!--#end if#-->
 <!--#end if#-->

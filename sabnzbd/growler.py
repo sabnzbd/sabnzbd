@@ -26,6 +26,7 @@ import socket
 import time
 import subprocess
 from threading import Thread
+import httplib, urllib
 
 import sabnzbd
 import sabnzbd.cfg
@@ -122,6 +123,8 @@ def send_notification(title , msg, gtype, wait=False):
                     time.sleep(0.5)
         if have_ntfosd():
             res.append(send_notify_osd(title, msg))
+        if sabnzbd.cfg.pushover_enable():
+            res.append(send_pushover(title, msg))
 
     return ' / '.join([r for r in res if r])
 
@@ -305,6 +308,34 @@ def send_notification_center(title, msg, gtype):
     else:
         output = 'Notifier app not found'
     return output.strip('*\n ')
+
+
+#------------------------------------------------------------------------------
+# Pushover Support
+#
+def send_pushover(title, message):
+	""" Send a message to Pushover """
+	if sabnzbd.cfg.pushover_enable() and sabnzbd.cfg.pushover_token() and sabnzbd.cfg.pushover_userkey():
+		logging.info('Send to Pushover: %s / %s', latin1(title), latin1(message))
+		try:
+			conn = httplib.HTTPSConnection("api.pushover.net:443")
+			conn.request("POST", "/1/messages.json", urllib.urlencode({
+				"token": sabnzbd.cfg.pushover_token(),
+				"user": sabnzbd.cfg.pushover_userkey(),
+				"device": sabnzbd.cfg.pushover_device(),
+				"title": title,
+				"message": message
+			}), { "Content-type": "application/x-www-form-urlencoded" })
+			res = conn.getresponse()
+			if res.status != 200:
+				logging.error("Bad response from Pushover (%s): %s", res.status, res.read())
+		except:
+			error = 'Error sending to Pushover'
+			logging.error(error)
+			return error
+	else:
+		logging.debug("Pushover parameters not set")
+		return 'Not enabled'
 
 
 #------------------------------------------------------------------------------
