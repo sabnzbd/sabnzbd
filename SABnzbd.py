@@ -1332,9 +1332,13 @@ def main():
     # Save the INI file
     config.save_config(force=True)
 
-    if sabnzbd.WIN32 and sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
-        import sabnzbd.sabtray
-        sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+    if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
+        if sabnzbd.WIN32:
+            import sabnzbd.sabtray
+            sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+        if sabnzbd.LINUX_POWER:
+            import sabnzbd.sabtraylinux
+            sabnzbd.LINUXTRAY = systraythread = sabnzbd.sabtraylinux.StatusIcon()
 
     print_modules()
 
