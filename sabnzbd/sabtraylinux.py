@@ -62,15 +62,11 @@ class StatusIcon(Thread):
             logging.debug('language file not loaded, waiting')
 
         self.sabpaused = False
-
         self.statusicon = gtk.StatusIcon()
-
-        self.icon=self.sabicons['default']
+        self.icon = self.sabicons['default']
         self.refresh_icon()
-
-        self.tooltip="SABnzbd"
+        self.tooltip = "SABnzbd"
         self.refresh_tooltip()
-        
         self.statusicon.connect("popup-menu", self.right_click_event)
 
         gtk.gdk.threads_init()
@@ -83,7 +79,7 @@ class StatusIcon(Thread):
     def refresh_tooltip(self):
         self.statusicon.set_tooltip(self.tooltip)
 
-    #run this every updatefreq ms
+    # run this every updatefreq ms
     def run(self):
         self.sabpaused, bytes_left, bpsnow, time_left = api.fast_queue()
         mb_left = to_units(bytes_left, dec_limit=1)
@@ -103,8 +99,8 @@ class StatusIcon(Thread):
         self.refresh_tooltip()
         return 1
          
-    #menu
-    def right_click_event(self,icon, button, time):
+    # menu
+    def right_click_event(self,icon,button,time):
         menu = gtk.Menu()
 
         maddnzb = gtk.MenuItem(T("Add NZB"))
@@ -115,8 +111,8 @@ class StatusIcon(Thread):
             mpauseresume = gtk.MenuItem(T("Resume"))
         else:
             mpauseresume = gtk.MenuItem(T("Pause"))
-        mrestart     = gtk.MenuItem(T("Restart"))
-        mshutdown    = gtk.MenuItem(T("Shutdown"))
+        mrestart = gtk.MenuItem(T("Restart"))
+        mshutdown = gtk.MenuItem(T("Shutdown"))
         
         maddnzb.connect("activate",self.addnzb)
         mshowinterface.connect("activate",self.browse)
@@ -136,9 +132,9 @@ class StatusIcon(Thread):
         menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.statusicon)
     
     # menu handlers
-    def addnzb(self, icon):
+    def addnzb(self,icon):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                        buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+                                       buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
         dialog.set_select_multiple(True)
         
         filter = gtk.FileFilter()
@@ -148,16 +144,17 @@ class StatusIcon(Thread):
         filter.add_pattern("*.zip")
         filter.add_pattern("*.rar")
         dialog.add_filter(filter)
+
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             for filename in dialog.get_filenames():
                 add_local(filename)
         dialog.destroy()
 
-    def opencomplete(self, icon):
+    def opencomplete(self,icon):
         subprocess.Popen(["xdg-open", cfg.complete_dir.get_path()])
 
-    def browse(self, icon):
+    def browse(self,icon):
         launch_a_browser(sabnzbd.BROWSER_URL, True)
                                                 
     def pauseresume(self,icon):
@@ -184,5 +181,3 @@ class StatusIcon(Thread):
     def resume(self):
         scheduler.plan_resume(0)
         sabnzbd.unpause_all()
-
-

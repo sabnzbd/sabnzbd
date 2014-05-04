@@ -1338,7 +1338,7 @@ def main():
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         if sabnzbd.LINUX_POWER:
             import sabnzbd.sabtraylinux
-            sabnzbd.LINUXTRAY = systraythread = sabnzbd.sabtraylinux.StatusIcon()
+            sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
 
     print_modules()
 
