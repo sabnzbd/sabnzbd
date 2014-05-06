@@ -36,7 +36,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
                               DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, \
+                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
                               RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, format_source_url, \
@@ -676,7 +676,8 @@ class NzbObject(TryList):
         adir = os.path.join(wdir, JOB_ADMIN)
 
         # Duplicate checking, needs to be done before the backup
-        duplicate = (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename)
+        duplicate = (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename) \
+                    and priority != REPAIR_PRIORITY
 
         if reuse:
             remove_all(adir, 'SABnzbd_nz?_*')
