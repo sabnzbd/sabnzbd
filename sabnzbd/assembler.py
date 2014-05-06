@@ -50,7 +50,7 @@ from sabnzbd.encoding import unicoder, is_utf8
 class Assembler(Thread):
     do = None # Link to the instance of this method
 
-    def __init__ (self, queue = None):
+    def __init__(self, queue=None):
         Thread.__init__(self)
 
         if queue:
@@ -101,7 +101,7 @@ class Assembler(Thread):
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
-                        logging.error('Fatal error in Assembler', exc_info = True)
+                        logging.error('Fatal error in Assembler', exc_info=True)
                         break
 
                     nzf.remove_admin()
@@ -122,7 +122,7 @@ class Assembler(Thread):
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
-                    unwanted = rar_contains_unwanted_file(nzo, filepath)
+                    unwanted = rar_contains_unwanted_file(filepath)
                     if unwanted:
                         logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted)
                         logging.debug(T('Unwanted extension is in rar file %s'), filepath)
@@ -256,7 +256,7 @@ def GetMD5Hashes(fname, force=False):
             table = {}
         except:
             logging.debug('QuickCheck parser crashed in file %s', fname)
-            logging.info('Traceback: ', exc_info = True)
+            logging.info('Traceback: ', exc_info=True)
             table = {}
 
         f.close()
@@ -339,12 +339,12 @@ def check_encrypted_rar(nzo, filepath):
     return encrypted
 
 
-def rar_contains_unwanted_file(nzo, filepath):
+def rar_contains_unwanted_file(filepath):
     # checks for unwanted extensions in the rar file 'filepath'
     # ... unwanted extensions are defined in global variable cfg.unwanted_extensions()
     # returns False if no unwanted extensions are found in the rar file
     # returns name of file if unwanted extension is found in the rar file
-    unwanted = False
+    unwanted = None
     if is_rarfile(filepath):
         #logging.debug('rar file to check: %s',filepath)
         #logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
@@ -355,7 +355,7 @@ def rar_contains_unwanted_file(nzo, filepath):
                 logging.debug('file in rar file: %s', somefile)
                 if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
                     logging.debug('Unwanted file %s', somefile)
-                    unwanted = True
+                    unwanted = somefile
                     zf.close()
         except:
             logging.debug('RAR file %s cannot be inspected.', filepath)
