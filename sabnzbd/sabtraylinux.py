@@ -22,6 +22,7 @@ sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 try:
     import gtk,gobject
 except:
+    import logging
     logging.warning("pygtk not found. No systray.")
 
 import os
