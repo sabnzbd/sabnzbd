@@ -478,6 +478,10 @@ def print_modules():
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
+        versionline = os.popen(sabnzbd.newsunpack.RAR_COMMAND).readlines()[1]	# the second line contains "UNRAR 4.20 freeware ... "
+        rarversionfullname = versionline.split('   ')[0]
+        rarversionnumberonly = versionline.split(' ')[1]	# to be used as a number ...
+        logging.info("unrar binary version is: %s", rarversionfullname)
     else:
         logging.warning(Ta('unrar binary... NOT found'))
 
