@@ -540,7 +540,7 @@ def checkrarfile(filename):
     elif chunk.find(sig5) >= 0:
         return "Rar5 format"
     elif chunk.find(sig) >= 0:
-        return "yes RAR format"
+        return "probably RAR format"
     else:
         return "not RAR format"
 
