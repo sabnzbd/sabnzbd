@@ -1336,9 +1336,12 @@ def main():
         if sabnzbd.WIN32:
             import sabnzbd.sabtray
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
-        if sabnzbd.LINUX_POWER:
-            import sabnzbd.sabtraylinux
-            sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+        if sabnzbd.LINUX_POWER and os.environ.get('DISPLAY'):
+            try:
+                import gtk, sabnzbd.sabtraylinux
+                sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+            except:
+                logging.info("pygtk2 not found. No systray.")
 
     print_modules()
 
