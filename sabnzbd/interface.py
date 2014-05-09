@@ -1055,7 +1055,6 @@ class ConfigPage(object):
         for svr in config.get_servers():
             new[svr] = {}
         conf['servers'] = new
-        conf['news_items'] = cfg.news_items()
 
         conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
 
@@ -1240,7 +1239,7 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
             ( 'start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
-              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
+              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour', 'script_can_fail',
