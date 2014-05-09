@@ -49,7 +49,7 @@ class StatusIcon(Thread):
 
     def __init__(self):
         self.mythread = Thread(target=self.dowork)
-        self.mythread.start()  
+        self.mythread.start()
 
     def dowork(self):
         # Wait for translated texts to be loaded
@@ -80,7 +80,7 @@ class StatusIcon(Thread):
         self.sabpaused, bytes_left, bpsnow, time_left = api.fast_queue()
         mb_left = to_units(bytes_left, dec_limit=1)
         speed = to_units(bpsnow, dec_limit=1)
-            
+
         if self.sabpaused:
             self.tooltip = T('Paused')
             self.icon = self.sabicons['pause']
@@ -94,7 +94,7 @@ class StatusIcon(Thread):
         self.refresh_icon()
         self.refresh_tooltip()
         return 1
-         
+
     # menu
     def right_click_event(self,icon,button,time):
         menu = gtk.Menu()
@@ -109,14 +109,14 @@ class StatusIcon(Thread):
             mpauseresume = gtk.MenuItem(T("Pause"))
         mrestart = gtk.MenuItem(T("Restart"))
         mshutdown = gtk.MenuItem(T("Shutdown"))
-        
+
         maddnzb.connect("activate",self.addnzb)
         mshowinterface.connect("activate",self.browse)
         mopencomplete.connect("activate",self.opencomplete)
         mpauseresume.connect("activate",self.pauseresume)
         mrestart.connect("activate",self.restart)
         mshutdown.connect("activate", self.shutdown)
-       
+
         menu.append(maddnzb)
         menu.append(mshowinterface)
         menu.append(mopencomplete)
@@ -126,13 +126,13 @@ class StatusIcon(Thread):
 
         menu.show_all()
         menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.statusicon)
-    
+
     # menu handlers
     def addnzb(self,icon):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                                        buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
         dialog.set_select_multiple(True)
-        
+
         filter = gtk.FileFilter()
         filter.set_name("*.nbz,*.nbz.gz,*.zip,*.rar")
         filter.add_pattern("*.nzb*")
@@ -152,7 +152,7 @@ class StatusIcon(Thread):
 
     def browse(self,icon):
         launch_a_browser(sabnzbd.BROWSER_URL, True)
-                                                
+
     def pauseresume(self,icon):
         if self.sabpaused:
             self.resume()
