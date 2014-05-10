@@ -33,9 +33,9 @@ fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
 builds = ('sl', 'lion', 'ml')
 build_folders = (
-        'OS X 10.5 and 10.6 (Leopards)',
-        'OS X 10.7 (Lion)',
-        'OS X 10.8 (Mountain Lion)'
+        '10.5 (Leopard) 10.6 (S-Leopard)',
+        '10.7 (Lion)',
+        '10.8 (M-Lion) 10.9 (Mavericks)'
         )
 
 # Check presense of all builds
