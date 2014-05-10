@@ -497,15 +497,14 @@ class NzbObject(TryList):
         else:
             work_name = filename
 
-        nzbname = sanitize_foldername(nzbname)
-
         # If non-future: create safe folder name stripped from ".nzb" and junk
         if nzb and work_name and work_name.lower().endswith('.nzb'):
             dname, ext = os.path.splitext(work_name) # Used for folder name for final unpack
             if ext.lower() == '.nzb':
                 work_name = dname
-            work_name = sanitize_foldername(work_name)
         work_name, password = scan_password(work_name)
+        if nzb and work_name:
+            work_name = sanitize_foldername(work_name)
         if not work_name:
             # In case only /password was entered for nzbname
             work_name = filename
