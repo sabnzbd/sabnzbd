@@ -126,6 +126,20 @@
                     <span class="desc">$T('explain-pause_on_pwrar')</span>
                 </div>
                 <div class="field-pair alt">
+                    <label class="config" for="action_on_unwanted_extensions">$T('opt-action_on_unwanted_extensions')</label>
+                    <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
+                        <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('abort')</option>
+                    </select>
+                    <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
+                    <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions" size="50"/>
+                    <span class="desc">$T('explain-unwanted_extensions')</span>
+                </div>
+                <div class="field-pair alt">
                     <label class="config" for="top_only">$T('opt-top_only')</label>
                     <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-top_only')</span>
