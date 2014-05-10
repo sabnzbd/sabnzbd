@@ -74,7 +74,7 @@ NOTIFICATION = {
 #
 _GROWL = None       # Instance of the Notifier after registration
 _GROWL_REG = False  # Succesful registration
-
+_GROWL_DATA = (None, None)    # Address and password
 
 #------------------------------------------------------------------------------
 def get_icon():
@@ -141,7 +141,7 @@ def send_notification(title , msg, gtype):
             time.sleep(0.5)
     
     # NTFOSD
-    if have_ntfosd() and check_classes(gtype, 'ntfosd'):
+    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
 
 
@@ -155,11 +155,11 @@ def reset_growl():
 
 
 #------------------------------------------------------------------------------
-def register_growl():
+def register_growl(growl_server, growl_password):
     """ Register this app with Growl
     """
     error = None
-    host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
+    host, port = sabnzbd.misc.split_host(growl_server or '')
 
     sys_name = hostname(host)
 
@@ -173,7 +173,7 @@ def register_growl():
         notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
         hostname = host or 'localhost',
         port = port or 23053,
-        password = sabnzbd.cfg.growl_password() or None
+        password = growl_password or None
     )
 
     try:
@@ -202,15 +202,25 @@ def register_growl():
 
 
 #------------------------------------------------------------------------------
-def send_growl(title , msg, gtype):
+def send_growl(title , msg, gtype, test=None):
     """ Send Growl message
     """
-    global _GROWL, _GROWL_REG
+    global _GROWL, _GROWL_REG, _GROWL_DATA
+
+    # support testing values from UI
+    if test:
+        growl_server   = test.get('growl_server') or None
+        growl_password = test.get('growl_password') or None
+    else:
+        growl_server   = sabnzbd.cfg.growl_server()
+        growl_password = sabnzbd.cfg.growl_password()
 
     for n in (0, 1):
         if not _GROWL_REG: _GROWL = None
+        if (growl_server, growl_password) != _GROWL_DATA:
+            reset_growl()
         if not _GROWL:
-            _GROWL, error = register_growl()
+            _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
@@ -284,23 +294,20 @@ def send_notify_osd(title, message):
         return T('Not available') #: Function is not available on this OS
 
     error = 'NotifyOSD not working'
-    if sabnzbd.cfg.ntfosd_enable():
-        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
-        _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
-        if _NTFOSD:
-            logging.info('Send to NotifyOSD: %s / %s', title, message)
-            try:
-                note = pynotify.Notification(title, message, icon)
-                note.show()
-            except:
-                # Apparently not implemented on this system
-                logging.info(error)
-                return error
-            return None
-        else:
+    icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
+    if _NTFOSD:
+        logging.info('Send to NotifyOSD: %s / %s', title, message)
+        try:
+            note = pynotify.Notification(title, message, icon)
+            note.show()
+        except:
+            # Apparently not implemented on this system
+            logging.info(error)
             return error
+        return None
     else:
-        return T('Not enabled') #: Function is not enabled
+        return error
 
 
 def ncenter_path():
@@ -350,10 +357,13 @@ def hostname(host=True):
         return ''
 
 #------------------------------------------------------------------------------
-def send_prowl(title, msg, gtype, force=False):
+def send_prowl(title, msg, gtype, force=False, test=None):
     """ Send message to Prowl """
-    
-    apikey = sabnzbd.cfg.prowl_apikey()
+
+    if test:
+        apikey = test.get('prowl_apikey')
+    else:
+        apikey = sabnzbd.cfg.prowl_apikey()
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     title = urllib2.quote(title.encode('utf8'))
     msg = urllib2.quote(msg.encode('utf8'))

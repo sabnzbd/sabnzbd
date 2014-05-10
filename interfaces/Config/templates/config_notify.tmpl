@@ -69,7 +69,7 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="section">
+    <div class="section" id="growl">
         <div class="col2">
             <h3>$T('growlSettings')</h3>
         </div><!-- /col2 -->
@@ -256,7 +256,7 @@
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="section">
+    <div class="section" id="prowl">
         <div class="col2">
             <h3>$T('section-Prowl')</h3>
         </div><!-- /col2 -->
@@ -449,10 +449,12 @@
         });
     });
     \$('#test_prowl').click(function () {
+        var data = { mode: 'test_prowl', apikey: '$session', output: 'json' };
+	\$("#prowl").extractFormDataTo(data);
         \$.ajax({
             type: "GET",
             url: "../../tapi",
-            data: {mode: 'test_prowl', apikey: '$session', output: 'json' },
+            data: data,
             beforeSend: function () {
                 \$('#test_prowl').attr("disabled", "disabled");
                 \$('#testprowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
@@ -471,10 +473,12 @@
         });
     });
     \$('#test_growl').click(function () {
+        var data = { mode: 'test_growl', apikey: '$session', output: 'json' };
+	\$("#growl").extractFormDataTo(data);
         \$.ajax({
             type: "GET",
             url: "../../tapi",
-            data: {mode: 'test_growl', apikey: '$session', output: 'json' },
+            data: data,
             beforeSend: function () {
                 \$('#test_growl').attr("disabled", "disabled");
                 \$('#testgrowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');

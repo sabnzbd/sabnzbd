@@ -675,7 +675,7 @@ def _api_test_notif(name, output, kwargs):
 def _api_test_growl(name, output, kwargs):
     """ API: send a test Growl notification, return result """
     logging.info("Sending Growl notification")
-    res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other')
+    res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
     return report(output, error=res)
 
 def _api_test_osd(name, output, kwargs):
@@ -687,7 +687,7 @@ def _api_test_osd(name, output, kwargs):
 def _api_test_prowl(name, output, kwargs):
     """ API: send a test Prowl notification, return result """
     logging.info("Sending Prowl notification")
-    res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True)
+    res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
