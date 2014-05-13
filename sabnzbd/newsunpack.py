@@ -199,6 +199,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     rerun = False
     newfiles = []
     error = False
+    new_joins = new_rars = new_zips = new_ts = None
 
     if cfg.enable_filejoin():
         new_joins = [jn for jn in xjoinables if jn not in joinables]
