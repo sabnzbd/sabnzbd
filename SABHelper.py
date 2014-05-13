@@ -16,21 +16,23 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,5):
-    print "Sorry, requires Python 2.5 or higher."
-    sys.exit(1)
+if sys.version_info < (2, 5):
+    sys.exit("Sorry, requires Python 2.5, 2.6 or 2.7.")
 
-import os
 import time
 import subprocess
 
 #------------------------------------------------------------------------------
 try:
-    import win32api, win32file
-    import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
+    import win32api
+    import win32file
+    import win32serviceutil
+    import win32evtlogutil
+    import win32event
+    import win32service
+    import pywintypes
 except ImportError:
-    print "Sorry, requires Python module PyWin32."
-    sys.exit(1)
+    sys.exit("Sorry, requires Python module PyWin32.")
 
 from util.mailslot import MailSlot
 from util.apireg import del_connection_info, set_connection_info
@@ -38,6 +40,7 @@ from util.apireg import del_connection_info, set_connection_info
 #------------------------------------------------------------------------------
 
 WIN_SERVICE = None
+
 
 #------------------------------------------------------------------------------
 def HandleCommandLine(allow_service=True):
@@ -78,13 +81,13 @@ def main():
             elif msg.startswith('api '):
                 active = True
                 counter = 0
-                cmd, url = msg.split()
+                cmd, url = msg.split()  # @UnusedVariable
                 if url:
                     set_connection_info(url.strip(), user=False)
 
         if active:
             counter += 1
-            if counter > 120: # 120 seconds
+            if counter > 120:  # seconds
                 counter = 0
                 start_sab()
 
@@ -95,12 +98,13 @@ def main():
             mail.disconnect()
             return ''
 
-
 #####################################################################
 #
 # Windows Service Support
 #
-import servicemanager
+import servicemanager  # @UnresolvedImport
+
+
 class SABHelper(win32serviceutil.ServiceFramework):
     """ Win32 Service Handler """
 
@@ -141,7 +145,6 @@ class SABHelper(win32serviceutil.ServiceFramework):
                                     servicemanager.EVENTLOG_ERROR_TYPE,
                                     (self._svc_name_, unicode(msg)),
                                     unicode(text))
-
 
 
 #####################################################################
