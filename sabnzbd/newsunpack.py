@@ -521,9 +521,12 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
 
 def checkrarfile(filename):
     # check if filename is a rar file, and returns as text the findings
-    file = open(filename, 'rb')
-    chunk = file.read(100)	# read first 100 bytes
-    file.close()
+    try:
+        file = open(filename, 'rb')
+        chunk = file.read(100)	# read first 100 bytes
+        file.close()
+    except:
+        return "<no file>"
 
     # rar5 signature: 0x52 0x61 0x72 0x21 0x1A 0x07 0x01 0x00
     # rar4 signature: 0x52 0x61 0x72 0x21 0x1A 0x07 0x00
@@ -536,13 +539,13 @@ def checkrarfile(filename):
     sig5 = chr(0x52) + chr(0x61) + chr(0x72) + chr(0x21) + chr(0x1A) + chr(0x07) + chr(0x01) + chr(0x00)
 
     if chunk.find(sig4) >= 0:
-        return "Rar4 or lower"
+        return "rar4 (or lower) signature"
     elif chunk.find(sig5) >= 0:
-        return "Rar5 format"
+        return "rar5 signature"
     elif chunk.find(sig) >= 0:
-        return "probably RAR format"
+        return "rar signature"
     else:
-        return "not RAR format"
+        return "no valid rar signature"
 
 def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile' to 'extraction_path'
@@ -596,7 +599,8 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    logging.debug("Type of rar file is %s", checkrarfile(rarfile))
+    logging.debug("Analyzing rar file ... %s found", checkrarfile(rarfile))
+
     logging.debug("Running unrar %s", command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
