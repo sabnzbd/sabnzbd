@@ -51,4 +51,4 @@ Our many other commandline options are explained in depth [here](http://wiki.sab
 
 ## About Our Repo
 
-We're going to be attempting to follow the [gitflow model](http://nvie.com/posts/a-successful-git-branching-model/), so you can consider "master" to be whatever our present stable release build is (presently 0.6.x) and "develop" to be whatever our next build will be (presently 0.7.x). Once we transition from unstable to stable dev builds we'll create release branches, and encourage you to follow along and help us test.
+We're going to be attempting to follow the [gitflow model](http://nvie.com/posts/a-successful-git-branching-model/), so you can consider "master" to be whatever our present stable release build is (presently 0.7.x) and "develop" to be whatever our next build will be (presently 0.8.x). Once we transition from unstable to stable dev builds we'll create release branches, and encourage you to follow along and help us test.
