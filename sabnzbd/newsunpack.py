@@ -191,7 +191,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     rerun = False
     newfiles = []
-    error = False
+    error = 0
     new_joins = new_rars = new_zips = new_ts = None
 
     if cfg.enable_filejoin():
@@ -222,7 +222,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             rerun = True
             logging.info('Unzip starting on %s', workdir)
             if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
-                error = True
+                error = 1
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line()
 
@@ -464,7 +464,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                     except OSError:
                         logging.warning(Ta('Deleting %s failed!'), latin1(brokenrar))
 
-    return not success, extracted_files
+    return fail, extracted_files
 
 
 def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
@@ -523,7 +523,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
 
 def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile' to 'extraction_path'
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time()
 
@@ -618,7 +618,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             msg = ('[%s] '+Ta('ERROR: CRC failed in "%s"')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             logging.warning(Ta('ERROR: CRC failed in "%s"'), latin1(setname))
-            fail = 1
+            fail = 3
 
         elif line.startswith('Write error'):
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
@@ -676,7 +676,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.fail_msg = T('Unusable RAR file')
             msg = ('[%s][%s] '+ Ta('Unusable RAR file')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            fail = 1
+            fail = 3
 
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
