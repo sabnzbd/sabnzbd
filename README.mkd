@@ -1,26 +1,21 @@
-Release Notes  -  SABnzbd 0.7.17
-================================
+Release Notes  -  SABnzbd 0.7.18RC1
+===================================
 
 ## Features
 
-- Upgrade embedded unrar to 5.01 and (partially) support RAR5 format
-- Support for more meta-data in NZB files (to be used in TV Sort)
-- Optional integration with the OZnzb indexer, allows user access to ratings and reporting directly from SABnzbd interface.
-- Optional automatic feedback to OZnzb on failed downloads
-- Commandline option --pidfile to set your own PID-file name/path (Unix and OSX)
-- Basic support for X-DNZB-Failure and X-DNZB-Details headers, sent by some indexers
-- Support rate-limiting by (a number of) indexers
-- Special option "warn_dupl_jobs" to suppress/enable warnings for duplicate jobs
-- Special option "flat_unpack" to ignore folders inside archives
+- Support for X-Failure header
+- Support for detecting unwanted extensions inside RAR files
+- Using priority Force will override duplicate detection
+- Add "pause_pp" to the API
 
 ## Bug fixes
-- Fix false encryption alarms for some posts
-- Fix issue with OSX Mavericks Notification Center support
-- Fix issues with passwords embedded in file names
-- Support UNC paths in Sort expressions (Windows)
-- Add password entry boxes in smpl and Classic skins
-- Prevent unwanted change of queue order after editing job details
-- Allow Default category to be picked in Multi-Ops
+- Also remove colons ":" with option sanitize_safe
+- Notification: Respect NotifyOSD-preference and allow testing of values from UI
+- Prevent pseudo error message when testing "Notification Center"
+- Testing email based on values in UI instead of stored config
+- Don't trim file names when renaming them (so revert to old behavior)
+- Fix potential crash when unpacking due to unset variable
+- Pause/abort on encryption failed when pre-check was active
 
 ## What's new in 0.7.0
 
