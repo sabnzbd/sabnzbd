@@ -1241,6 +1241,7 @@ def renamer(old, new):
     # but do not trim size
     new = os.path.join(path, sanitize_foldername(name, False))
 
+    logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
@@ -1248,6 +1249,7 @@ def renamer(old, new):
                 os.rename(old, new)
                 return
             except WindowsError, err:
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err[0] == 32:
                     logging.debug('Retry rename %s to %s', old, new)
                     retries -= 1
