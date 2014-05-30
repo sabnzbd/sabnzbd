@@ -303,7 +303,7 @@ def ParseFilePacket(f, header):
     return nothing
 
 
-RE_SUBS = re.compile(r'\W+subs(?![a-z])', re.I)
+RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
 def is_cloaked(path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(os.path.split(path)[1]).lower()
