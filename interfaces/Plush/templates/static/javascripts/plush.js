@@ -169,33 +169,33 @@ jQuery(function($){
   // Refresh rate
   $("#refreshRate-option").val($.plush.refreshRate).change( function() {
     $.plush.refreshRate = $("#refreshRate-option").val();
-    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365, path: '/'  });
+    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365 });
     $.plush.Refresh();
   });
 
   // Container width
   $("#containerWidth-option").val($.plush.containerWidth).change( function() {
     $.plush.containerWidth = $("#containerWidth-option").val();
-    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365, path: '/' });
+    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365 });
     $('#master-width').css('width',$.plush.containerWidth);
   }).trigger('change');
 
   // Confirm Queue Deletions toggle
   $("#confirmDeleteQueue").prop('checked', $.plush.confirmDeleteQueue ).change( function() {
     $.plush.confirmDeleteQueue = $("#confirmDeleteQueue").prop('checked');
-    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365 });
   });
 
   // Confirm History Deletions toggle
   $("#confirmDeleteHistory").prop('checked', $.plush.confirmDeleteHistory ).change( function() {
     $.plush.confirmDeleteHistory = $("#confirmDeleteHistory").prop('checked');
-    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365 });
   });
 
   // Block Refreshes on Hover toggle
   $("#blockRefresh").prop('checked', $.plush.blockRefresh ).change( function() {
     $.plush.blockRefresh = $("#blockRefresh").prop('checked');
-    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
   });
 
   // Sabnzbd restart
@@ -352,7 +352,7 @@ jQuery(function($){
       $.plush.multiOpsChecks = new Array();
       $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
     }
-    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365 });
   });
   if ($.plush.multiOps)
     $('#multiops_toggle').trigger('click');
@@ -365,7 +365,7 @@ jQuery(function($){
       $('#topmenu_bar').show();
       $.plush.noTopMenu = false;
     }
-    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365 });
   });
   if ($.plush.noTopMenu)
     $('#topmenu_toggle').trigger('click');
@@ -528,7 +528,7 @@ jQuery(function($){
   $("#queue-pagination-perpage").change(function(event){
     $.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
     $.plush.queuePerPage = $(event.target).val();
-    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365, path: '/'  });
+    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365 });
     $.plush.queueforcerepagination = true;
     $.plush.RefreshQueue();
   });
@@ -955,7 +955,7 @@ $("a","#multiops_inputs").click(function(e){
   $("#history-pagination-perpage").change(function(event){
     $.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
     $.plush.histPerPage = $(event.target).val();
-    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365, path: '/'  });
+    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365 });
     $.plush.histforcerepagination = true;
     if ($.plush.histPerPage=="1")
       $("#history-pagination").html(''); // pagination rebuild not triggered on blank history (disabled)
@@ -1040,7 +1040,7 @@ $("a","#multiops_inputs").click(function(e){
   // show all / show failed
   $('#failed_only').change(function(){
     $.plush.failedOnly = $("#failed_only").val();
-    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365, path: '/'  });
+    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365 });
     $.plush.RefreshHistory();
   }).val($.plush.failedOnly);
 
