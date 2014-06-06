@@ -602,6 +602,8 @@ class NzoPage(object):
         index = kwargs.get('index', None)
         name = kwargs.get('name', None)
         password = kwargs.get('password', None)
+        if password == "":
+            password = None
         pp = kwargs.get('pp', None)
         script = kwargs.get('script', None)
         cat = kwargs.get('cat', None)
