@@ -347,6 +347,10 @@ class RSSQueue(object):
                 msg = Ta('Do not have valid authentication for feed %s') % feed
                 logging.info(msg)
                 return unicoder(msg)
+            if status >= 500 and status <=599:
+                msg = Ta('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
+                logging.info(msg)
+                return unicoder(msg)
 
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
