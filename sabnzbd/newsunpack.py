@@ -326,16 +326,13 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
     # Create matching sets from the list of files
     joinable_sets = {}
     joinable_set = None
-    set = num = None
     for joinable in joinables:
         head, tail = os.path.splitext(joinable)
         if tail == '.ts':
-            match, set, num = match_ts(joinable)
-        if not set:
-            set = head
-        if set not in joinable_sets:
-            joinable_sets[set] = []
-        joinable_sets[set].append(joinable)
+            head = match_ts(joinable)[1]
+        if head not in joinable_sets:
+            joinable_sets[head] = []
+        joinable_sets[head].append(joinable)
     logging.debug("joinable_sets: %s", joinable_sets)
 
     try:
