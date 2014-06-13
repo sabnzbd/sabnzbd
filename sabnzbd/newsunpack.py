@@ -1154,10 +1154,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         command = [str(PAR2C_COMMAND), cmd, parfile]
         classic = True
 
-    for joinable in joinables:
-        if setname in joinable:
-            command.append(joinable)
-
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
