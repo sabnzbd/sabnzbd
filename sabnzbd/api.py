@@ -786,8 +786,22 @@ def _api_config_undefined(output, kwargs):
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
+def _api_server_stats(name, output, kwargs):
+    """ API: accepts output """
+    sum_t, sum_m, sum_w, sum_d = BPSMeter.do.get_sums()
+    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d}
+
+    stats['servers'] = {}
+    for svr in config.get_servers():
+        t, m, w, d = BPSMeter.do.amounts(svr)
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+
+    return report(output, keyword='', data=stats)
+
+
 #------------------------------------------------------------------------------
 _api_table = {
+    'server_stats'    : (_api_server_stats, 2),
     'get_config'      : (_api_get_config, 3),
     'set_config'      : (_api_set_config, 3),
     'del_config'      : (_api_del_config, 3),
