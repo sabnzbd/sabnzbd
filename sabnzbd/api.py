@@ -790,8 +790,22 @@ def _api_config_undefined(output, kwargs):
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
+def _api_bandwidth(name, output, kwargs):
+    """ API: accepts output """
+    sum_t, sum_m, sum_w, sum_d = BPSMeter.do.get_sums()
+    bw = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d}
+
+    bw['servers'] = {}
+    for svr in config.get_servers():
+       t, m, w, d = BPSMeter.do.amounts(svr)
+       bw['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+
+    return report(output, keyword='bandwidth', data=bw)
+
+
 #------------------------------------------------------------------------------
 _api_table = {
+    'bandwidth'       : _api_bandwidth,
     'get_config'      : _api_get_config,
     'set_config'      : _api_set_config,
     'del_config'      : _api_del_config,
