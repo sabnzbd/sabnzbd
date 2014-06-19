@@ -943,7 +943,7 @@ def get_titles(nzo, match, name, titleing=False):
     a lot of little hacks to make it better and for more control
     '''
     if nzo:
-        title = latin1(nzo.nzo_info.get('propername') or nzo.meta.get('propername', (None,))[0])
+        title = nzo.nzo_info.get('propername') or nzo.meta.get('propername', (None,))[0]
     else:
         title = ''
     if not title:
