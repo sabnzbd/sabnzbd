@@ -564,6 +564,8 @@ class NzbObject(TryList):
             if ext.lower() == '.nzb':
                 work_name = dname
         work_name, password = scan_password(work_name)
+        if not work_name:
+            work_name = filename
         if nzb and work_name:
             work_name = sanitize_foldername(work_name)
 
