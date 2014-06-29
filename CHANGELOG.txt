@@ -15,7 +15,7 @@
 - Fix potential crash when unpacking due to unset variable
 - Fix problem of cookie interference with other apps
 - Add API function server_stats
-- Support password embedding in file detail page
+- Support password embedding in file detail page and AddNZB dialog
 - Pause/Remove posts when unwanted extensions are detected (like .exe)
 - Fix issue with some RAR file sets leading to Windows "87" error
 - Handle 5xx RSS feed error messages
