@@ -13,6 +13,12 @@
 - Also remove colons ":" with option sanitize_safe
 - Update DMG template
 - Fix potential crash when unpacking due to unset variable
+- Fix problem of cookie interference with other apps
+- Add API function server_stats
+- Support password embedding in file detail page
+- Pause/Remove posts when unwanted extensions are detected (like .exe)
+- Fix issue with some RAR file sets leading to Windows "87" error
+- Handle 5xx RSS feed error messages
 -------------------------------------------------------------------------------
  0.7.17Final by The SABnzbd-Team
 -------------------------------------------------------------------------------

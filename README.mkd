@@ -3,10 +3,10 @@ Release Notes  -  SABnzbd 0.7.18RC1
 
 ## Features
 
-- Support for X-Failure header
+- Support for X-Failure header (leading to an alternative NZB)
 - Support for detecting unwanted extensions inside RAR files
 - Using priority Force will override duplicate detection
-- Add "pause_pp" to the API
+- Add "pause_pp" and "server_stats" to the API
 
 ## Bug fixes
 - Also remove colons ":" with option sanitize_safe
@@ -16,6 +16,7 @@ Release Notes  -  SABnzbd 0.7.18RC1
 - Don't trim file names when renaming them (so revert to old behavior)
 - Fix potential crash when unpacking due to unset variable
 - Pause/abort on encryption failed when pre-check was active
+- Allow "embedded" passwords in job titles again
 
 ## What's new in 0.7.0
 
