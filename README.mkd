@@ -1,5 +1,5 @@
-Release Notes  -  SABnzbd 0.7.18RC1
-===================================
+Release Notes  -  SABnzbd 0.7.18
+================================
 
 ## Features
 
