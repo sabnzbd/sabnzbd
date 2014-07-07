@@ -1538,7 +1538,6 @@ def main():
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
-    cherrypy.wsgiserver.REDIRECT_URL = browser_url
 
     sabnzbd.BROWSER_URL = browser_url
     if not autorestarted:
