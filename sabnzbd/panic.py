@@ -279,10 +279,12 @@ def error_page_404(status, message, traceback, version):
     <head>
       <script type="text/javascript">
       <!--
-      location.href = "%s"
+      var full = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + '/sabnzbd/' ;
+      location.href = full
       //-->
       </script>
     </head>
     <body><br/></body>
 </html>
-''' % cherrypy.wsgiserver.REDIRECT_URL
+'''
+
