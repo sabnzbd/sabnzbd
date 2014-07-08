@@ -115,9 +115,9 @@ class URLGrabber(Thread):
                 else:
                     logging.info('Grabbing URL %s', url)
                 if '.nzbsrus.' in url:
-                    opener = urllib.URLopener({})
+                    opener = urllib.URLopener()
                 else:
-                    opener = urllib.FancyURLopener({})
+                    opener = urllib.FancyURLopener()
                 opener.prompt_user_passwd = None
                 opener.addheaders = []
                 opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
