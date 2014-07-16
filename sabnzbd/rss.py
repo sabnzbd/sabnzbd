@@ -399,11 +399,7 @@ class RSSQueue(object):
 
             if link:
                 # Make sure spaces are quoted in the URL
-                if 'nzbclub.com' in link:
-                    link, path = os.path.split(link.strip())
-                    link = '%s/%s' % (link, urllib.quote(path))
-                else:
-                    link = link.strip().replace(' ','%20')
+                link = link.strip().replace(' ','%20')
 
                 newlinks.append(link)
 
