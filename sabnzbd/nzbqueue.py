@@ -947,7 +947,7 @@ def _nzo_date_cmp(nzo1, nzo2):
     return cmp(avg_date1, avg_date2)
 
 def _nzo_name_cmp(nzo1, nzo2):
-    return cmp(nzo1.filename.lower(), nzo2.filename.lower())
+    return cmp(nzo1.final_name.lower(), nzo2.final_name.lower())
 
 def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.bytes, nzo2.bytes)
