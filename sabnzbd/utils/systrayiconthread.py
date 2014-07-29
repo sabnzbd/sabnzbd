@@ -8,6 +8,7 @@
 import os
 import sys
 
+import pywintypes
 import win32api
 import win32con
 import win32gui_struct
@@ -173,17 +174,21 @@ class SysTrayIconThread(Thread):
         self.create_menu(menu, self.menu_options)
         #win32gui.SetMenuDefaultItem(menu, 1000, 0)
 
-        pos = win32gui.GetCursorPos()
-        # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
-        win32gui.SetForegroundWindow(self.hwnd)
-        win32gui.TrackPopupMenu(menu,
-                                win32con.TPM_LEFTALIGN,
-                                pos[0],
-                                pos[1],
-                                0,
-                                self.hwnd,
-                                None)
-        win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
+        try:
+            pos = win32gui.GetCursorPos()
+            # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
+            win32gui.SetForegroundWindow(self.hwnd)
+            win32gui.TrackPopupMenu(menu,
+                                    win32con.TPM_LEFTALIGN,
+                                    pos[0],
+                                    pos[1],
+                                    0,
+                                    self.hwnd,
+                                    None)
+            win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
+        except pywintypes.error:
+            # Weird PyWin/win32gui bug, just ignore it for now
+            logging.debug('win32gui problem, cannot show SysTray menu')
 
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:
