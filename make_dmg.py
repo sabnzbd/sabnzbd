@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ if not (sharepath and os.path.exists(sharepath)):
 
 build_paths = []
 for build in builds:
-    path = os.path.join(sharepath,'%s-%s.cpio' % (prod, build))
+    path = os.path.join(sharepath, '%s-%s.cpio' % (prod, build))
     if os.path.exists(path):
         build_paths.append(path)
     else:
