@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,7 +37,9 @@ try:
     OSX_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8, 0]
     OSX_LION = not OSX_ML and [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 7, 0]
     OSX_SL = not OSX_LION and not OSX_ML
-    class WindowsError (): pass
+
+    class WindowsError ():
+        pass
 except ImportError:
     py2app = None
     OSX_ML = OSX_LION = OSX_SL = False
@@ -47,6 +49,7 @@ VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 
 my_version = 'unknown'
 my_baseline = 'unknown'
+
 
 def delete_files(name):
     """ Delete one file or set of files from wild-card spec """
@@ -58,6 +61,7 @@ def delete_files(name):
             print "Cannot remove file %s" % f
             exit(1)
 
+
 def CheckPath(name):
     if os.name == 'nt':
         sep = ';'
@@ -67,9 +71,9 @@ def CheckPath(name):
         ext = ''
 
     for path in os.environ['PATH'].split(sep):
-        full = os.path.join(path, name+ext)
+        full = os.path.join(path, name + ext)
         if os.path.exists(full):
-            return name+ext
+            return name + ext
     print "Sorry, cannot find %s%s in the path" % (name, ext)
     return None
 
@@ -129,6 +133,7 @@ def PatchVersion(name):
     except:
         print "WARNING: cannot patch " + VERSION_FILE
 
+
 def PairList(src):
     """ Given a list of files and dirnames,
         return a list of (destn-dir, sourcelist) tuples.
@@ -141,13 +146,13 @@ def PairList(src):
     lst = []
     for item in src:
         if item.endswith('/'):
-            for root, dirs, files in os.walk(item.rstrip('/\\')):
+            for root, _dirs, files in os.walk(item.rstrip('/\\')):
                 path = root.replace('\\', '/')
                 if path.find('.git') < 0:
                     flist = []
-                    for file in files:
-                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or '~' in file):
-                            flist.append(os.path.join(root, file).replace('\\','/'))
+                    for entry in files:
+                        if not (entry.endswith('.bak') or entry.endswith('.pyc') or entry.endswith('.pyo') or '~' in file):
+                            flist.append(os.path.join(root, entry).replace('\\', '/'))
                     if flist:
                         lst.append((path, flist))
         else:
@@ -161,28 +166,29 @@ def CreateTar(folder, fname, release):
     """ Create tar.gz file for source distro """
     tar = tarfile.open(fname, "w:gz")
 
-    for root, dirs, files in os.walk(folder):
-        for _file in files:
-            uroot = root.replace('\\','/')
-            if (uroot.find('/win') < 0) and (uroot.find('licenses/Python') < 0) and not _file.endswith('.git'):
-                path = os.path.join(root, _file)
-                fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
+    for root, _dirs, files in os.walk(folder):
+        for entry in files:
+            uroot = root.replace('\\', '/')
+            if (uroot.find('/win') < 0) and (uroot.find('licenses/Python') < 0) and not entry.endswith('.git'):
+                path = os.path.join(root, entry)
+                fpath = path.replace('srcdist\\', release + '/').replace('\\', '/')
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'make_mo.py', 'msgfmt.py'): # One day add: 'setup.py'
-                    # Force Linux/OSX scripts as excutable
+                if entry in ('SABnzbd.py', 'Sample-PostProc.sh', 'make_mo.py', 'msgfmt.py'):  # One day add: 'setup.py'
+                    # Force Linux/OSX scripts as executable
                     tarinfo.mode = 0755
                 else:
                     tarinfo.mode = 0644
-                f= open(path, "rb")
+                f = open(path, "rb")
                 tar.addfile(tarinfo, f)
                 f.close()
     tar.close()
 
+
 def Dos2Unix(name):
     """ Read file, remove \r and write back """
-    base, ext = os.path.splitext(name)
+    _base, ext = os.path.splitext(name)
     if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd'):
         return
 
@@ -206,7 +212,7 @@ def Dos2Unix(name):
 
 def Unix2Dos(name):
     """ Read file, remove \r, replace \n by \r\n and write back """
-    base, ext = os.path.splitext(name)
+    _base, ext = os.path.splitext(name)
     if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd', '.mkd'):
         return
 
@@ -266,8 +272,8 @@ if os.name == 'nt':
 else:
     NSIS = '-'
 
-GitRevertApp =  Git + ' checkout -- '
-GitRevertVersion =  GitRevertApp + ' ' + VERSION_FILE
+GitRevertApp = Git + ' checkout -- '
+GitRevertVersion = GitRevertApp + ' ' + VERSION_FILE
 GitVersion = Git + ' log -1'
 GitStatus = Git + ' status'
 
@@ -291,9 +297,9 @@ prod = 'SABnzbd-' + release
 Win32ServiceName = 'SABnzbd-service.exe'
 Win32ServiceHelpName = 'SABnzbd-helper.exe'
 Win32ConsoleName = 'SABnzbd-console.exe'
-Win32WindowName  = 'SABnzbd.exe'
-Win32HelperName  = 'SABHelper.exe'
-Win32TempName    = 'SABnzbd-windows.exe'
+Win32WindowName = 'SABnzbd.exe'
+Win32HelperName = 'SABHelper.exe'
+Win32TempName = 'SABnzbd-windows.exe'
 
 fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
@@ -303,9 +309,12 @@ fileDmg_lion = prod + '-osx-lion.dmg'
 fileDmg_sl = prod + '-osx-snowleopard.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
-if OSX_SL:   postfix = 'sl'
-if OSX_LION: postfix = 'lion'
-if OSX_ML:   postfix = 'ml'
+if OSX_SL:
+    postfix = 'sl'
+if OSX_LION:
+    postfix = 'lion'
+if OSX_ML:
+    postfix = 'ml'
 
 PatchVersion(release)
 
@@ -339,16 +348,16 @@ data_files = [
        ]
 
 options = dict(
-      name = 'SABnzbd',
-      version = release,
-      url = 'http://sourceforge.net/projects/sabnzbdplus',
-      author = 'The SABnzbd-Team',
-      author_email = 'team@sabnzbd.org',
-      scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
-      packages = ['sabnzbd', 'sabnzbd.utils', 'util'],
-      platforms = ['posix'],
-      license = 'GNU General Public License 2 (GPL2) or later',
-      data_files = []
+      name='SABnzbd',
+      version=release,
+      url='http://sourceforge.net/projects/sabnzbdplus',
+      author='The SABnzbd-Team',
+      author_email='team@sabnzbd.org',
+      scripts=['SABnzbd.py', 'SABHelper.py'],  # One day, add  'setup.py'
+      packages=['sabnzbd', 'sabnzbd.utils', 'util'],
+      platforms=['posix'],
+      license='GNU General Public License 2 (GPL2) or later',
+      data_files=[]
 
 )
 
@@ -382,27 +391,27 @@ if target == 'app':
     DATA_FILES = ['interfaces', 'locale', 'email', ('', glob.glob("osx/resources/*"))]
 
     NZBFILE = dict(
-            CFBundleTypeExtensions = [ "nzb" ],
-            CFBundleTypeIconFile = 'nzbfile.icns',
-            CFBundleTypeMIMETypes = [ "text/nzb" ],
-            CFBundleTypeName = 'NZB File',
-            CFBundleTypeRole = 'Viewer',
-            LSTypeIsPackage = 0,
-            NSPersistentStoreTypeKey = 'Binary',
+            CFBundleTypeExtensions=[ "nzb" ],
+            CFBundleTypeIconFile='nzbfile.icns',
+            CFBundleTypeMIMETypes=[ "text/nzb" ],
+            CFBundleTypeName='NZB File',
+            CFBundleTypeRole='Viewer',
+            LSTypeIsPackage=0,
+            NSPersistentStoreTypeKey='Binary',
     )
     OPTIONS = {'argv_emulation': not apple_py,
                'iconfile': 'osx/resources/sabnzbdplus.icns',
                'plist': {
-                   'NSUIElement':1,
-                   'CFBundleShortVersionString':release,
-                   'NSHumanReadableCopyright':'The SABnzbd-Team',
-                   'CFBundleIdentifier':'org.sabnzbd.team',
-                   'CFBundleDocumentTypes':[NZBFILE],
+                   'NSUIElement': 1,
+                   'CFBundleShortVersionString': release,
+                   'NSHumanReadableCopyright': 'The SABnzbd-Team',
+                   'CFBundleIdentifier': 'org.sabnzbd.team',
+                   'CFBundleDocumentTypes': [NZBFILE],
                    },
                'packages': "email,xml,Cheetah",
                'excludes': ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
                             "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"]
-              }
+               }
 
     setup(
         app=APP,
@@ -416,7 +425,7 @@ if target == 'app':
         os.system("mv dist/SABnzbd.app dist/SABnzbd.app.temp")
         os.system("ditto --arch i386 --arch ppc dist/SABnzbd.app.temp dist/SABnzbd.app/")
         os.system("rm -rf dist/SABnzbd.app.temp")
-    
+
     # copy unrar, 7zip & par2 binary
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
@@ -440,7 +449,7 @@ if target == 'app':
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/Cheetah -name '*.py' | xargs rm" % py_ver)
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/xml -name '*.py' | xargs rm" % py_ver)
     os.system('rm dist/SABnzbd.app/Contents/Resources/site.py')
-    
+
     # Add the SabNotifier app
     if OSX_ML and os.path.exists(os.path.join(os.environ['HOME'], 'sabnotifier/SABnzbd.app')):
         os.system("cp -pR $HOME/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")
@@ -486,17 +495,16 @@ elif target in ('binary', 'installer'):
     options['description'] = 'SABnzbd ' + str(my_version)
 
     sys.argv[1] = 'py2exe'
-    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "icons/sabnzbd.ico")] } ]
+    program = [ {'script': 'SABnzbd.py', 'icon_resources': [(0, "icons/sabnzbd.ico")] } ]
     options['options'] = {"py2exe":
-                              {
-                                "bundle_files": 3,
+                              { "bundle_files": 3,
                                 "packages": "email,xml,Cheetah,win32file",
                                 "excludes": ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
                                              "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"],
                                 "optimize": 2,
                                 "compressed": 0
-                              }
-                         }
+                                }
+                          }
     options['zipfile'] = 'lib/sabnzbd.zip'
 
     options['scripts'] = ['SABnzbd.py']
@@ -507,13 +515,12 @@ elif target in ('binary', 'installer'):
     setup(**options)
     rename_file('dist', Win32WindowName, Win32ConsoleName)
 
-
     # Make sure that all TXT and CMD files are DOS format
     for tup in options['data_files']:
-        for file in tup[1]:
-            name, ext = os.path.splitext(file)
+        for dfile in tup[1]:
+            name, ext = os.path.splitext(dfile)
             if ext.lower() in ('.txt', '.cmd', '.mkd'):
-                Unix2Dos("dist/%s" % file)
+                Unix2Dos("dist/%s" % dfile)
     delete_files('dist/Sample-PostProc.sh')
     delete_files('dist/PKG-INFO')
 
@@ -527,10 +534,9 @@ elif target in ('binary', 'installer'):
     setup(**options)
     rename_file('dist', Win32WindowName, Win32TempName)
 
-
     ############################
     # Generate the service-app
-    options['service'] = [{'modules':["SABnzbd"], 'cmdline_style':'custom'}]
+    options['service'] = [{'modules': ["SABnzbd"], 'cmdline_style':'custom'}]
     del options['windows']
     setup(**options)
     rename_file('dist', Win32WindowName, Win32ServiceName)
@@ -538,19 +544,17 @@ elif target in ('binary', 'installer'):
     # Give the Windows app its proper name
     rename_file('dist', Win32TempName, Win32WindowName)
 
-
     ############################
     # Generate the Helper service-app
     options['scripts'] = ['SABHelper.py']
     options['zipfile'] = 'lib/sabhelper.zip'
-    options['service'] = [{'modules':["SABHelper"], 'cmdline_style':'custom'}]
+    options['service'] = [{'modules': ["SABHelper"], 'cmdline_style':'custom'}]
     options['packages'] = ['util']
     options['data_files'] = []
     options['options']['py2exe']['packages'] = "win32file"
 
     setup(**options)
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)
-
 
     ############################
     # Remove unwanted system DLL files that Py2Exe copies when running on Win7
@@ -605,7 +609,7 @@ elif target in ('binary', 'installer'):
 else:
     # Prepare Source distribution package.
     # Make sure all source files are Unix format
-    import shutil
+    import shutil  # @Reimport
 
     # Create MO files
     os.system('python tools/make_mo.py all')
@@ -621,37 +625,37 @@ else:
     options['data_files'].append(('tools', ['tools/make_mo.py', 'tools/msgfmt.py']))
 
     # Copy the data files
-    for set in options['data_files']:
-        dest, src = set
+    for entry in options['data_files']:
+        dest, src = entry
         ndir = root + '/' + dest
         ndir = os.path.normpath(os.path.abspath(ndir))
         if not os.path.exists(ndir):
             os.makedirs(ndir)
-        for file in src:
-            shutil.copy2(file, ndir)
-            Dos2Unix(ndir + '/' + os.path.basename(file))
+        for dfile in src:
+            shutil.copy2(dfile, ndir)
+            Dos2Unix(ndir + '/' + os.path.basename(dfile))
 
     # Copy the script files
     for name in options['scripts']:
-        file = os.path.normpath(os.path.abspath(name))
-        shutil.copy2(file, root)
-        base = os.path.basename(file)
+        sfile = os.path.normpath(os.path.abspath(name))
+        shutil.copy2(sfile, root)
+        base = os.path.basename(sfile)
         fullname = os.path.normpath(os.path.abspath(root + '/' + base))
         Dos2Unix(fullname)
 
     # Copy all content of the packages (but skip backups and pre-compiled stuff)
     for unit in options['packages']:
-        unitpath = unit.replace('.','/')
+        unitpath = unit.replace('.', '/')
         dest = os.path.normpath(os.path.abspath(root + '/' + unitpath))
         if not os.path.exists(dest):
             os.makedirs(dest)
         for name in glob.glob("%s/*.*" % unitpath):
-            file = os.path.normpath(os.path.abspath(name))
-            front, ext = os.path.splitext(file)
-            base = os.path.basename(file)
+            pfile = os.path.normpath(os.path.abspath(name))
+            front, ext = os.path.splitext(pfile)
+            base = os.path.basename(pfile)
             fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
             if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and '~' not in ext:
-                shutil.copy2(file, dest)
+                shutil.copy2(pfile, dest)
                 Dos2Unix(fullname)
 
     ############################
