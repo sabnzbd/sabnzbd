@@ -757,9 +757,9 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   var last1, last2;
   $("#multiops_select_range").click(function(){
-    if (last1 && last2 && last1 < last2)
+    if (last1 >= 0 && last2 >= 0 && last1 < last2)
       $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).prop('checked', true).trigger('change');
-    else if (last1 && last2)
+    else if (last1 >= 0 && last2 >= 0)
       $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).prop('checked', true).trigger('change');
   });
   $("#multiops_select_invert").click(function(){
@@ -772,7 +772,7 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   $("#queue").delegate('.multiops','change',function(event) {
     // range event interaction
-    if (last1) last2 = last1;
+    if (last1 >= 0) last2 = last1;
     last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 
   // checkbox state persistence

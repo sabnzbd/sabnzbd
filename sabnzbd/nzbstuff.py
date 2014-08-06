@@ -566,7 +566,7 @@ class NzbObject(TryList):
         self.oversized = False
         self.precheck = False
         self.incomplete = False
-        self.unwanted_ext = False
+        self.unwanted_ext = 0
         self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
@@ -1034,7 +1034,9 @@ class NzbObject(TryList):
         self.duplicate = False
         self.oversized = False
         self.incomplete = False
-        self.unwanted_ext = False
+        if self.unwanted_ext:
+            # If user resumes after "unwanted" warning, no more auto-pauses
+            self.unwanted_ext = 2
 
     def add_parfile(self, parfile):
         if parfile not in self.files:
