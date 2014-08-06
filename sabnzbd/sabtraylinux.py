@@ -66,6 +66,7 @@ class StatusIcon(Thread):
         self.statusicon.connect("popup-menu", self.right_click_event)
 
         gtk.gdk.threads_init()
+        gtk.gdk.threads_enter()
         gobject.timeout_add(self.updatefreq, self.run)
         gtk.main()
 
