@@ -13,3 +13,12 @@
 .checkbox-days p{margin: 0 0 5px 0}
 .checkbox-days input {vertical-align:middle; margin-top: -1px;}
 .checkbox-days label{padding-left: 20px}
+.rating-filter {float: left}
+.rating-filter p {margin: 0 0 5px 0}
+.rating-filter select {vertical-align:middle}
+.rating-filter input {vertical-align:middle; margin-top:-1px}
+.rating-filter label {display:inline-block; padding-left:0px; width:100px}
+.rating-filter input[type="checkbox"] {display:inline}
+.rating-filter input[type="checkbox"] + label {padding-left:20px; width:auto}
+.rating-filter p > span:first-child {float:left; width:130px}
+.rating-filter .desc {display:block; margin:0px; padding-left:103px}

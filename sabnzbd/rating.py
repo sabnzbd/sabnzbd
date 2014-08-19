@@ -66,8 +66,20 @@ class NzbRating(object):
         self.auto_flag = {}
         self.changed = 0
 
+class NzbRatingV2(NzbRating):
+    def __init__(self):
+        super(NzbRatingV2, self).__init__()
+        self.avg_spam_cnt = 0
+        self.avg_spam_confirm = False
+        self.avg_encrypted_cnt = 0
+        self.avg_encrypted_confirm = False
+        
+    def to_v2(self, rating):
+        self.__dict__.update(rating.__dict__)
+        return self
+    
 class Rating(Thread):
-    VERSION = 1
+    VERSION = 2
 
     VOTE_UP = 1
     VOTE_DOWN = 2
@@ -91,8 +103,11 @@ class Rating(Thread):
         Rating.do = self
         self.shutdown = False
         self.queue = OrderedSetQueue()
-        try:
+        try:            
             (self.version, self.ratings, self.nzo_indexer_map) = sabnzbd.load_admin("Rating.sab")
+            if self.version == 1:
+                self.ratings = {k: NzbRatingV2().to_v2(v) for k, v in self.ratings.iteritems()}
+                self.version = 2
             if (self.version != Rating.VERSION):
                 raise Exception()
         except:
@@ -131,19 +146,23 @@ class Rating(Thread):
 
     # The same file may be uploaded multiple times creating a new nzo_id each time
     @synchronized(RATING_LOCK)
-    def add_rating(self, indexer_id, nzo_id, video, video_cnt, audio, audio_cnt, vote_up, vote_down):
-        if indexer_id and nzo_id and (video or audio or vote_up or vote_down):
-            logging.debug('Add rating (%s, %s: %s, %s, %s, %s)', indexer_id, nzo_id, video, audio, vote_up, vote_down)
+    def add_rating(self, indexer_id, nzo_id, fields):
+        if indexer_id and nzo_id and (len(fields) == 10):
+            logging.debug('Add rating (%s, %s: %s, %s, %s, %s)', indexer_id, nzo_id, fields['video'], fields['audio'], fields['voteup'], fields['votedown'])
             try:
-                rating = self.ratings.get(indexer_id, NzbRating())
-                if video and video_cnt:
-                    rating.avg_video = int(float(video))
-                    rating.avg_video_cnt = int(float(video_cnt))
-                if audio and audio_cnt:
-                    rating.avg_audio = int(float(audio))
-                    rating.avg_audio_cnt = int(float(audio_cnt))
-                if vote_up: rating.avg_vote_up = int(float(vote_up))
-                if vote_down: rating.avg_vote_down = int(float(vote_down))
+                rating = self.ratings.get(indexer_id, NzbRatingV2())
+                if fields['video'] and fields['videocnt']:
+                    rating.avg_video = int(float(fields['video']))
+                    rating.avg_video_cnt = int(float(fields['videocnt']))
+                if fields['audio'] and fields['audiocnt']:
+                    rating.avg_audio = int(float(fields['audio']))
+                    rating.avg_audio_cnt = int(float(fields['audiocnt']))
+                if fields['voteup']: rating.avg_vote_up = int(float(fields['voteup']))
+                if fields['votedown']: rating.avg_vote_down = int(float(fields['votedown']))
+                if fields['spam']: rating.avg_spam_cnt = int(float(fields['spam']))
+                if fields['confirmed-spam']: rating.avg_spam_confirm = (fields['confirmed-spam'].lower() == 'yes')
+                if fields['passworded']: rating.avg_encrypted_cnt = int(float(fields['passworded']))                
+                if fields['confirmed-passworded']: rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
                 self.ratings[indexer_id] = rating
                 self.nzo_indexer_map[nzo_id] = indexer_id
             except:
