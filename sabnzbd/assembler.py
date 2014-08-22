@@ -145,7 +145,7 @@ class Assembler(Thread):
 
 def _assemble(nzf, path, dupe):
     if os.path.exists(path):
-        unique_path = get_unique_path(path, create_dir = False)
+        unique_path = get_unique_filename(path)
         if dupe:
             path = unique_path
         else:
