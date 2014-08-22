@@ -126,9 +126,9 @@ class Assembler(Thread):
                     if unwanted:
                         logging.warning(Ta('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), latin1(nzo.final_name), unwanted)
                         logging.debug(Ta('Unwanted extension is in rar file %s'), filepath)
-                        if cfg.action_on_unwanted_extensions() == 1:
+                        if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                             logging.debug('Unwanted extension ... pausing')
-                            nzo.unwanted_ext = True
+                            nzo.unwanted_ext = 1
                             nzo.pause()
                         if cfg.action_on_unwanted_extensions() == 2:
                             logging.debug('Unwanted extension ... aborting')
