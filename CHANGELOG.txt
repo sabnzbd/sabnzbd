@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.7.19RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- More oznzb filtering
+- Fix OSX notification center problem
+- Fix sort order of RSS feeds
+- Prevent multiple pauses in "unwanted extensions" option
+- Change renaming scheme for duplicate files
+- Fix sorting of the queue
+-------------------------------------------------------------------------------
  0.7.18 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Update translations

@@ -1,22 +1,16 @@
-Release Notes  -  SABnzbd 0.7.18
-================================
+Release Notes  -  SABnzbd 0.7.19RC1
+===================================
 
 ## Features
 
-- Support for X-Failure header (leading to an alternative NZB)
-- Support for detecting unwanted extensions inside RAR files
-- Using priority Force will override duplicate detection
-- Add "pause_pp" and "server_stats" to the API
+- Extened filtering for oznzb.com
 
 ## Bug fixes
-- Also remove colons ":" with option sanitize_safe
-- Notification: Respect NotifyOSD-preference and allow testing of values from UI
-- Prevent pseudo error message when testing "Notification Center"
-- Testing email based on values in UI instead of stored config
-- Don't trim file names when renaming them (so revert to old behavior)
-- Fix potential crash when unpacking due to unset variable
-- Pause/abort on encryption failed when pre-check was active
-- Allow "embedded" passwords in job titles again
+- Fix OSX notification center problem
+- Fix sort order of RSS feeds
+- Prevent multiple pauses in "unwanted extensions" option
+- Change renaming scheme for duplicate files
+- Fix sorting of the queue
 
 ## What's new in 0.7.0
 
