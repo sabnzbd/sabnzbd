@@ -1289,11 +1289,13 @@ class NzbObject(TryList):
                 return values[0] if values else None
             rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
                             'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
-            fields = {k: _get_first_meta(k) for k in rating_types}
+            fields = {}
+            for k in rating_types:
+                fields[k] = _get_first_meta(k)
             Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, fields)
         except:
             pass
-                           
+
     ## end nzo.Mutators #######################################################
     ###########################################################################
     @property

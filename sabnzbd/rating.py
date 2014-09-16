@@ -103,10 +103,13 @@ class Rating(Thread):
         Rating.do = self
         self.shutdown = False
         self.queue = OrderedSetQueue()
-        try:            
+        try:
             (self.version, self.ratings, self.nzo_indexer_map) = sabnzbd.load_admin("Rating.sab")
             if self.version == 1:
-                self.ratings = {k: NzbRatingV2().to_v2(v) for k, v in self.ratings.iteritems()}
+                ratings = {}
+                for k, v in self.ratings.iteritems():
+                    ratings[k] = NzbRatingV2().to_v2(v)
+                self.ratings = ratings
                 self.version = 2
             if (self.version != Rating.VERSION):
                 raise Exception()
