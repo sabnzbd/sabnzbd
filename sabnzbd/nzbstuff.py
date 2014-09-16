@@ -534,7 +534,8 @@ NzbObjectMapper = (
     ('incomplete',                   'incomplete'),    # Was detected as incomplete
     ('reuse',                        'reuse'),
     ('meta',                         'meta'),          # Meta-date from 1.1 type NZB
-    ('unwanted_ext',                 'unwanted_ext')
+    ('unwanted_ext',                 'unwanted_ext'),
+    ('rating_filtered',              'rating_filtered') # Has passed through ratings filter
 )
 
 class NzbObject(TryList):
@@ -625,6 +626,7 @@ class NzbObject(TryList):
         self.precheck = False
         self.incomplete = False
         self.unwanted_ext = 0
+        self.rating_filtered = 0
         self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
@@ -1043,6 +1045,8 @@ class NzbObject(TryList):
             prefix += Ta('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
         if self.unwanted_ext and self.status == 'Paused':
             prefix += Ta('UNWANTED') + ' / ' #: Queue indicator for unwanted extensions
+        if self.rating_filtered and self.status == 'Paused':
+            prefix += Ta('FILTERED') + ' / ' #: Queue indicator for filtered
         if isinstance(self.wait, float):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
@@ -1080,6 +1084,9 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
+        if self.rating_filtered:
+            # If user resumes after filtered warning, no more auto-pauses
+            self.rating_filtered = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
         self.duplicate = False
         self.oversized = False
@@ -1280,9 +1287,10 @@ class NzbObject(TryList):
             def _get_first_meta(type):
                 values = self.meta.get('x-rating-' + type, None)
                 return values[0] if values else None
-            rating_types = ['id', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown']
-            rs = map(_get_first_meta, rating_types)
-            Rating.do.add_rating(rs[0], self.nzo_id, rs[1], rs[2], rs[3], rs[4], rs[5], rs[6])
+            rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
+                            'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
+            fields = {k: _get_first_meta(k) for k in rating_types}
+            Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, fields)
         except:
             pass
                            
