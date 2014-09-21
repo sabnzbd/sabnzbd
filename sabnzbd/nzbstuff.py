@@ -831,6 +831,33 @@ class NzbObject(TryList):
         else:
             self.files.sort(cmp=nzf_cmp_name)
 
+        # In the hunt for Unwanted Extensions:
+        # The file with the unwanted extension often is in the first or the last rar file
+        # So put the last rar immediatly after the first rar file so that it gets detected early
+        if cfg.unwanted_extensions() != "" and not cfg.auto_sort():
+            # ... only useful if there are unwanted extensions defined and there is no sorting on date
+            logging.debug('Unwanted Extension: putting last rar after first rar')
+            nzfposcounter = firstrarpos = lastrarpos = 0
+            for nzf in self.files:
+                nzfposcounter += 1
+                if '.rar' in str(nzf):
+                    # a NZF found with '.rar' in the name
+                    if firstrarpos == 0:
+                        # this is the first .rar found, so remember this position
+                        firstrarpos = nzfposcounter
+                    lastrarpos = nzfposcounter
+                    lastrarnzf = nzf    # The NZF itself
+
+            if firstrarpos != lastrarpos:
+                # at least two different .rar's found
+                logging.debug('Unwanted Extension: First rar at %s, Last rar at %s',firstrarpos, lastrarpos)
+                logging.debug('Unwanted Extension: Last rar is %s', str(lastrarnzf))
+                try:
+                    self.files.remove(lastrarnzf)        # first remove. NB: remove() does searches for lastrarnzf
+                    self.files.insert(firstrarpos,lastrarnzf)    # ... and only then add after position firstrarpos
+                except:
+                    logging.debug('The lastrar swap did not go well')
+
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
 
