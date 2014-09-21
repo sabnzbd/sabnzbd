@@ -834,7 +834,7 @@ class NzbObject(TryList):
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
         # So put the last rar immediatly after the first rar file so that it gets detected early
-        if cfg.unwanted_extensions() != "" and not cfg.auto_sort():
+        if cfg.unwanted_extensions() != [] and not cfg.auto_sort():
             # ... only useful if there are unwanted extensions defined and there is no sorting on date
             logging.debug('Unwanted Extension: putting last rar after first rar')
             nzfposcounter = firstrarpos = lastrarpos = 0
