@@ -31,7 +31,7 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         make_script_path, \
+                         make_script_path, sanitize_and_trim_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all, globber, \
                          set_permissions, cleanup_empty_directories
 from sabnzbd.tvsort import Sorter
@@ -320,6 +320,8 @@ def process_job(nzo):
             complete_dir = file_sorter.detect(dirname, complete_dir)
             if file_sorter.sort_file:
                 one_folder = False
+
+            complete_dir = sanitize_and_trim_path(complete_dir)
 
             if one_folder:
                 workdir_complete = create_dirs(complete_dir)
