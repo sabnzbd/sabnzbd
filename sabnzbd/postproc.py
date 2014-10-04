@@ -632,7 +632,7 @@ def try_sfv_check(nzo, workdir, setname):
     par_error = False
     found = False
     for sfv in sfvs:
-        if setname in os.path.basename(sfv):
+        if setname.lower() in os.path.basename(sfv).lower():
             found = True
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
             failed = sfv_check(sfv)
