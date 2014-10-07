@@ -30,6 +30,7 @@ import gzip
 import subprocess
 import time
 import cherrypy
+import sys
 from threading import RLock, Lock, Condition, Thread
 try:
     import sleepless
@@ -919,7 +920,8 @@ def load_admin(_id, remove=False, do_pickle=True):
         if remove:
             os.remove(path)
     except:
-        logging.error(Ta('Loading %s failed'), path)
+        excepterror = str(sys.exc_info()[0])
+        logging.error(Ta('Loading %s failed with error %s'), path, excepterror)
         logging.info("Traceback: ", exc_info = True)
         return None
 
