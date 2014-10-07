@@ -20,6 +20,15 @@
 import os
 import sys
 import re
+import platform
+
+OSX_MAV = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 9, 0]
+
+# Check if signing is possible
+authority = os.environ.get('SIGNING_AUTH')
+if authority and not OSX_MAV:
+    print 'Signing is only possible on OSX Mavericks (10.9.x) or higher'
+    exit(1)
 
 if len(sys.argv) < 2:
     print 'Usage: %s <release>' % os.path.split(sys.argv[0])[1]
@@ -41,7 +50,7 @@ build_folders = (
 # Check presense of all builds
 sharepath = os.environ.get('SHARE')
 if not (sharepath and os.path.exists(sharepath)):
-    print 'Build share not defined or not found'
+    print 'Build share not defined or not found. Path expected in env variable SHARE'
     exit(1)
 
 build_paths = []
@@ -68,8 +77,6 @@ os.remove('mount.log')
 m = re.search(r'/dev/(\w+)\s+', data)
 volume = 'SABnzbd-' + str(release)
 os.system('diskutil rename %s %s' % (m.group(1), volume))
-
-authority = os.environ.get('SIGNING_AUTH')
 
 # Unpack build into image and sign if possible
 for build in xrange(len(builds)):
@@ -106,3 +113,7 @@ os.system("hdiutil internet-enable %s" % fileDmg)
 
 print 'Copy GZ file'
 os.system('cp "%s" .' % os.path.join(sharepath, fileOSr))
+
+if not authority:
+    print "Images are not signed!"
+print
