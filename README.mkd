@@ -1,9 +1,10 @@
-Release Notes  -  SABnzbd 0.7.19RC1
+Release Notes  -  SABnzbd 0.7.19RC2
 ===================================
 
 ## Features
 
-- Extened filtering for oznzb.com
+- Extended filtering for oznzb.com
+- Upgrade to unrar 5.11 (OSX and Windows)
 
 ## Bug fixes
 - Fix OSX notification center problem
@@ -11,6 +12,7 @@ Release Notes  -  SABnzbd 0.7.19RC1
 - Prevent multiple pauses in "unwanted extensions" option
 - Change renaming scheme for duplicate files
 - Fix sorting of the queue
+- Prevent removal of embedded passwords in filenames by trimming option
 
 ## What's new in 0.7.0
 

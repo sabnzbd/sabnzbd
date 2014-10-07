@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+ 0.7.19RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Make matching of SFV file against RAR-sets case-insensitive
+- Make sure final destination path is always sanitized and trimmed
+- Improve "check for unwanted extensions"
+- Upgrade unrar to version 5.11 (OSX and Windows)
+- Limit article cache to 1G to prevent a memory size bug in the _yenc module
+- Fix a number of problems with embedded passwords and folder size trimming
+- Allow "float" timestamps in RSS feeds
+-------------------------------------------------------------------------------
  0.7.19RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - More oznzb filtering
