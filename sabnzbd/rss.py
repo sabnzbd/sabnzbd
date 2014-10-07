@@ -588,7 +588,7 @@ def _HandleLink(jobs, link, title, flag, orgcat, cat, pp, script, download, star
     if special_rss_site(link):
         nzbname = None
     else:
-        nzbname = sanitize_foldername(title)
+        nzbname = title
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         if download:

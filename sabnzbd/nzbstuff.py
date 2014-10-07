@@ -567,7 +567,7 @@ class NzbObject(TryList):
         work_name, password = scan_password(work_name)
         if not work_name:
             work_name = filename
-        if nzb and work_name:
+        if nzb and work_name and not reuse:
             work_name = sanitize_foldername(work_name)
 
         self.work_name = work_name

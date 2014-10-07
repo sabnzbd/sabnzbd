@@ -2587,7 +2587,7 @@ def GetRssLog(feed):
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
-            nzbname = xml_name(sanitize_foldername(job.get('title', '')))
+            nzbname = xml_name(job.get('title', ''))
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
