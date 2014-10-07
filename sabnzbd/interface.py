@@ -2522,7 +2522,7 @@ def GetRssLog(feed):
 
     # Sort in reverse order of time stamp for 'Done'
     dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
-    dnames.sort(lambda x, y: jobs[y].get('time', 0) - jobs[x].get('time', 0))
+    dnames.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
     done = [xml_name(jobs[job]['title']) for job in dnames]
 
 
