@@ -167,10 +167,6 @@ class URLGrabber(Thread):
 
                 if not filename:
                     filename = os.path.basename(url) + '.nzb'
-                # Sanitize and trim name, preserving the extension
-                filename, ext = os.path.splitext(filename)
-                filename = misc.sanitize_foldername(filename)
-                filename += '.' + misc.sanitize_foldername(ext)
 
                 pp = future_nzo.pp
                 script = future_nzo.script

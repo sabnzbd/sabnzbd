@@ -116,7 +116,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     return -1, []
                 name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
-                name = misc.sanitize_foldername(name)
                 if data:
                     try:
                         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
@@ -178,7 +177,6 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         if not nzbname:
             # Prevent embedded password from being damaged by sanitize and trimming
             nzbname = os.path.split(name)[1]
-        name = misc.sanitize_foldername(name)
 
     try:
         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,

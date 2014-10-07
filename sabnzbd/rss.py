@@ -612,7 +612,7 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     if special_rss_site(link):
         nzbname = None
     else:
-        nzbname = sanitize_foldername(title)
+        nzbname = title
 
     if download:
         jobs[link]['status'] = 'D'
