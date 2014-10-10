@@ -1,0 +1,116 @@
+# Finnish translation for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-14 18:42+0000\n"
+"PO-Revision-Date: 2013-02-19 15:24+0000\n"
+"Last-Translator: Matti Ylönen <Unknown>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2013-02-20 05:14+0000\n"
+"X-Generator: Launchpad (build 16491)\n"
+
+#: NSIS_Installer.nsi:425
+msgid "Go to the SABnzbd Wiki"
+msgstr "Siirry SABnzbd wikiin"
+
+#: NSIS_Installer.nsi:427
+msgid "Show Release Notes"
+msgstr "Näytä julkaisutiedot"
+
+#: NSIS_Installer.nsi:429
+msgid "Support the project, Donate!"
+msgstr "Tue projektia, lahjoita!"
+
+#: NSIS_Installer.nsi:431
+msgid "Please close \"SABnzbd.exe\" first"
+msgstr "Ole hyvä ja sulje \"SABnzbd.exe\" ensin"
+
+#: NSIS_Installer.nsi:433
+msgid ""
+"                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+msgstr ""
+"                  >>>> VAROITUS <<<<\\r\\n\\r\\nOle hyvä ja tarkista "
+"julkaisutiedot tai käy osoitteessa http://wiki.sabnzbd.org/introducing-0-7-0 "
+"!"
+
+#: NSIS_Installer.nsi:435
+msgid "This will uninstall SABnzbd from your system"
+msgstr "Tämä poistaa SABnzbd:n tietokoneestasi"
+
+#: NSIS_Installer.nsi:437
+msgid "Run at startup"
+msgstr "Suorita käynnistyksen yhteydessä"
+
+#: NSIS_Installer.nsi:439
+msgid "Desktop Icon"
+msgstr "Työpöydän kuvake"
+
+#: NSIS_Installer.nsi:441
+msgid "NZB File association"
+msgstr "NZB tiedostosidos"
+
+#: NSIS_Installer.nsi:443
+msgid "Delete Program"
+msgstr "Poista sovellus"
+
+#: NSIS_Installer.nsi:445
+msgid "Delete Settings"
+msgstr "Poista asetukset"
+
+#: NSIS_Installer.nsi:447
+msgid ""
+"This system requires the Microsoft runtime library VC90 to be installed "
+"first. Do you want to do that now?"
+msgstr ""
+"Tämä järjestelmä vaatii, että Microsoft runtime kirjasto VC90 täytyy asentaa "
+"ensin. Haluatko asentaa sen nyt?"
+
+#: NSIS_Installer.nsi:449
+msgid "Downloading Microsoft runtime installer..."
+msgstr "Ladataan Microsoft runtime asennusta..."
+
+#: NSIS_Installer.nsi:451
+msgid "Download error, retry?"
+msgstr "Latausvirhe, yritä uudelleen?"
+
+#: NSIS_Installer.nsi:453
+msgid "Cannot install without runtime library, retry?"
+msgstr "Ei voida asentaa ilman runtime kirjastoa, yritä uudelleen?"
+
+#: NSIS_Installer.nsi:455
+msgid ""
+"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
+"the previous version or `Cancel` to cancel this upgrade."
+msgstr ""
+"Et voi asentaa tätä vanhan asennuksen päälle. \\n\\nPaina `OK` poistaaksesi "
+"edellisen version tai paina `Peruuta` peruuttaaksesi tämän päivityksen."
+
+#: NSIS_Installer.nsi:457
+msgid "Your settings and data will be preserved."
+msgstr "Asetuksiasi ja tietojasi ei poisteta."
+
+#~ msgid ""
+#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#~ msgstr ""
+#~ "                  >>>> VAROITUS <<<<\\r\\n\\r\\nOle hyvä ja tarkista "
+#~ "julkaisutiedot tai mene osoitteeseen http://wiki.sabnzbd.org/introducing-0-6-"
+#~ "0 !"
+
+#~ msgid "Start SABnzbd (hidden)"
+#~ msgstr "Aloita SABnzbd (piilotettuna)"
+
+#~ msgid "Delete Cache"
+#~ msgstr "Poista välimuisti"
+
+#~ msgid "Delete Logs"
+#~ msgstr "Poista lokit"

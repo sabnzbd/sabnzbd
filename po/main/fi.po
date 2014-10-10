@@ -1,0 +1,4536 @@
+# Finnish translation for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-07-02 18:06+0000\n"
+"PO-Revision-Date: 2014-04-19 08:54+0000\n"
+"Last-Translator: Matti Ylönen <Unknown>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-07-03 05:53+0000\n"
+"X-Generator: Launchpad (build 17082)\n"
+
+#: SABnzbd.py:304 [Error message]
+msgid "Failed to start web-interface"
+msgstr "Web-käyttöliittymän käynnistys epäonnistui"
+
+#: SABnzbd.py:342 [Warning message]
+msgid "Cannot find web template: %s, trying standard template"
+msgstr "Web-mallia %s ei löydy, yritetään käyttää oletusmallia"
+
+#: SABnzbd.py:467 [Error message]
+msgid "_yenc module... NOT found!"
+msgstr "_yenc moduulia... EI löydy!"
+
+#: SABnzbd.py:474 [Error message]
+msgid "par2 binary... NOT found!"
+msgstr "par2 ohjelmaa... EI löydy!"
+
+#: SABnzbd.py:482 [Warning message]
+msgid "unrar binary... NOT found"
+msgstr "unrar ohjelmaa... EI löydy!"
+
+#: SABnzbd.py:487 [Warning message]
+msgid "unzip binary... NOT found!"
+msgstr "unzip ohjelmaa... EI löydy!"
+
+#: SABnzbd.py:640 [Warning message]
+msgid ""
+"Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
+"access"
+msgstr ""
+"Huomioithan, että 0.0.0.0 isäntänimi vaatii IPv6 osoitteen jotta pääset "
+"ulkoverkkoon"
+
+#: SABnzbd.py:1389 [Warning message]
+msgid "Disabled HTTPS because of missing CERT and KEY files"
+msgstr "HTTPS poistettu käytöstä puuttuvien CERT ja KEY tiedostojen vuoksi"
+
+#: SABnzbd.py:1550
+msgid "SABnzbd %s started"
+msgstr "SABnzbd %s käynnistetty"
+
+#: SABnzbd.py:1701 # sabnzbd/osxmenu.py:771
+msgid "SABnzbd shutdown finished"
+msgstr "SABnzbd sammutus valmis"
+
+#: sabnzbd/__init__.py:170 [Warning message]
+msgid "Signal %s caught, saving and exiting..."
+msgstr "Signaali %s kaapattu, tallennetaan ja lopetetaan..."
+
+#: sabnzbd/__init__.py:494
+msgid "fetching msgid %s from www.newzbin2.es"
+msgstr "noudetaan viesti-id %s osoitteesta www.newzbin2.es"
+
+#: sabnzbd/__init__.py:500 [Error message]
+msgid ""
+"Error Fetching msgid %s from www.newzbin2.es - Please make sure your "
+"Username and Password are set"
+msgstr ""
+"Virhe noudettaessa viesti-id %s osoitteesta www.newzbin2.es - Varmista, että "
+"käyttäjänimi ja salasana ovat oikein"
+
+#: sabnzbd/__init__.py:512
+msgid "Trying to fetch NZB from %s"
+msgstr "Yritetään noutaa NZB osoitteesta %s"
+
+#: sabnzbd/__init__.py:636 [Error message]
+msgid "Cannot create temp file for %s"
+msgstr "Väliaikaistiedostoa ei voida luoda kohteelle %s"
+
+#: sabnzbd/__init__.py:653 [Warning message] # sabnzbd/__init__.py:665 [Warning message]
+msgid "Trying to set status of non-existing server %s"
+msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
+
+#: sabnzbd/__init__.py:806 [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Levytilaa ei ole tarpeeksi, pakotetaan KESKEYTYS"
+
+#: sabnzbd/__init__.py:832 [Error message]
+msgid "Failure in tempfile.mkstemp"
+msgstr "Virhe tiedostossa tempfile.mkstemp"
+
+#: sabnzbd/__init__.py:862 [Error message] # sabnzbd/__init__.py:933 [Error message]
+msgid "Saving %s failed"
+msgstr "%s tallentaminen epäonnistui"
+
+#: sabnzbd/__init__.py:892 [Error message] # sabnzbd/__init__.py:962 [Error message]
+msgid "Loading %s failed"
+msgstr "%s lataaminen epäonnistui"
+
+#: sabnzbd/api.py:694 # sabnzbd/skintext.py:587
+msgid "Test Notification"
+msgstr "Testaa huomautusta"
+
+#: sabnzbd/api.py:1562 # sabnzbd/osxmenu.py:193 # sabnzbd/skintext.py:69 [No value, used in dropdown menus]
+#: sabnzbd/skintext.py:699 [Job details page, select no files]
+msgid "None"
+msgstr "Ei mitään"
+
+#: sabnzbd/api.py:1564 # sabnzbd/interface.py:99 # sabnzbd/skintext.py:68 [Default value, used in dropdown menus]
+msgid "Default"
+msgstr "Oletus"
+
+#: sabnzbd/api.py:1624 # sabnzbd/interface.py:2402
+msgid "WARNING:"
+msgstr "VAROITUS:"
+
+#: sabnzbd/api.py:1624 # sabnzbd/interface.py:2402 # sabnzbd/interface.py:2502
+msgid "ERROR:"
+msgstr "VIRHE:"
+
+#: sabnzbd/api.py:1690
+msgid "unknown"
+msgstr "tuntematon"
+
+#: sabnzbd/api.py:1713 [Error message]
+msgid "Failed to compile regex for search term: %s"
+msgstr "Regex käännös epäonnistui hakutermille: %s"
+
+#: sabnzbd/api.py:1919 [Single letter abbreviation of day]
+msgid "d"
+msgstr "pv"
+
+#: sabnzbd/api.py:1920 [Single letter abbreviation of hour]
+msgid "h"
+msgstr "t"
+
+#: sabnzbd/api.py:1921 [Single letter abbreviation of minute]
+msgid "m"
+msgstr "m"
+
+#: sabnzbd/assembler.py:98 [Error message]
+msgid "Disk full! Forcing Pause"
+msgstr "Levy täynnä! Pakotetaan keskeytys"
+
+#: sabnzbd/assembler.py:100 [Error message]
+msgid "Disk error on creating file %s"
+msgstr "Levyvirhe luotaessa tiedostoa %s"
+
+#: sabnzbd/assembler.py:117 [Warning message]
+msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
+msgstr "VAROITUS: Keskeytetty työ \"%s\" salatun RAR tiedoston vuoksi"
+
+#: sabnzbd/assembler.py:120 [Warning message]
+msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
+msgstr "VAROITUS: Keskeytettiin työ \"%s\" salatun RAR arkiston vuoksi"
+
+#: sabnzbd/assembler.py:121
+msgid "Aborted, encryption detected"
+msgstr "Keskeytty, salattu arkisto tunnistettu"
+
+#: sabnzbd/assembler.py:127 [Warning message]
+msgid ""
+"WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgstr ""
+
+#: sabnzbd/assembler.py:128
+msgid "Unwanted extension is in rar file %s"
+msgstr ""
+
+#: sabnzbd/assembler.py:135
+msgid "Aborted, unwanted extension detected"
+msgstr ""
+
+#: sabnzbd/assembler.py:171
+msgid "%s missing"
+msgstr "%s puuttuu"
+
+#: sabnzbd/bpsmeter.py:233 [Warning message]
+msgid "Quota spent, pausing downloading"
+msgstr "Latausrajoitus saavutettu, keskeytetään lataukset"
+
+#: sabnzbd/cfg.py:46
+msgid "%s is not a valid email address"
+msgstr "%s ei ole kelvollinen sähköpostiosoite"
+
+#: sabnzbd/cfg.py:54 # sabnzbd/interface.py:1637
+msgid "Server address required"
+msgstr "Palvelimen osoite vaaditaan"
+
+#: sabnzbd/config.py:216
+msgid "Cannot create %s folder %s"
+msgstr "Ei voitu luoda %s kansiota %s"
+
+#: sabnzbd/config.py:774 [Error message] # sabnzbd/config.py:791 [Error message]
+msgid "Cannot write to INI file %s"
+msgstr "Ei voitu kirjoittaa INI tiedostoa %s"
+
+#: sabnzbd/config.py:782 [Warning message]
+msgid "Cannot create backup file for %s"
+msgstr "Ei voitu luoda varmuuskopiota %s :lle"
+
+#: sabnzbd/config.py:914 [Error message]
+msgid "Incorrectly encoded password %s"
+msgstr "Virheellisesti koodattu salasana %s"
+
+#: sabnzbd/config.py:938
+msgid "%s is not a correct octal value"
+msgstr "%s ei ole oikea oktaalinen arvo"
+
+#: sabnzbd/config.py:947
+msgid "UNC path \"%s\" not allowed here"
+msgstr "TUNT polku \"%s\" ei ole sallittu"
+
+#: sabnzbd/config.py:955
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
+
+#: sabnzbd/config.py:964
+msgid "Folder \"%s\" does not exist"
+msgstr "Kansiota \"%s\" ei ole olemassa"
+
+#: sabnzbd/database.py:111 [Error message]
+msgid "SQL Command Failed, see log"
+msgstr "SQL komento epäonnistui, katso loki"
+
+#: sabnzbd/database.py:154 [Error message]
+msgid "SQL Commit Failed, see log"
+msgstr "SQL muutos epäonnistui, katso loki"
+
+#: sabnzbd/database.py:162 [Error message]
+msgid "Failed to close database, see log"
+msgstr "Tietokannan sulkeminen epäonnistui, katso loki"
+
+#: sabnzbd/database.py:393 [Error message] # sabnzbd/database.py:410 [Error message]
+msgid "Invalid stage logging in history for %s"
+msgstr "Virheellinen tila lokihistoriassa kohteelle %s"
+
+#: sabnzbd/decoder.py:107
+msgid "Decoding %s failed"
+msgstr "%s dekoodaus epäonnistui"
+
+#: sabnzbd/decoder.py:120
+msgid "CRC Error in %s (%s -> %s)"
+msgstr "CRC virhe tiedostossa %s (%s -> %s)"
+
+#: sabnzbd/decoder.py:157
+msgid "Badly formed yEnc article in %s"
+msgstr "Huonosti muotoiltu yEnc artikkeli %s"
+
+#: sabnzbd/decoder.py:167
+msgid "Unknown Error while decoding %s"
+msgstr "Tuntematon virhe dekoodattaessa %s"
+
+#: sabnzbd/decoder.py:229
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => puuttuu kaikilta palvelimilta, hylätään"
+
+#: sabnzbd/dirscanner.py:127 [Error message] # sabnzbd/dirscanner.py:200 [Error message]
+msgid "Error removing %s"
+msgstr "Virhe poistettaessa %s"
+
+#: sabnzbd/dirscanner.py:165 [Warning message]
+msgid "Cannot read %s"
+msgstr "Ei voida lukea %s"
+
+#: sabnzbd/dirscanner.py:300 [Error message] # sabnzbd/dirscanner.py:383 [Error message]
+msgid "Cannot read Watched Folder %s"
+msgstr "Vahdittua kansiota %s ei voida lukea"
+
+#: sabnzbd/downloader.py:221 # sabnzbd/osxmenu.py:445 # sabnzbd/sabtray.py:81
+#: sabnzbd/skintext.py:37 [PP status] # sabnzbd/skintext.py:183 # sabnzbd/skintext.py:828
+msgid "Paused"
+msgstr "Keskeytetty"
+
+#: sabnzbd/downloader.py:290 # sabnzbd/downloader.py:291 [Warning message]
+msgid "Server %s will be ignored for %s minutes"
+msgstr "Palvelin %s ohitetaan %s minuutiksi"
+
+#: sabnzbd/downloader.py:384 [Error message]
+msgid "Failed to initialize %s@%s:%s"
+msgstr "Virhe initialisoidessa %s@%s:%s"
+
+#: sabnzbd/downloader.py:515 # sabnzbd/downloader.py:516 [Error message]
+msgid "Too many connections to server %s:%s"
+msgstr "Liikaa yhteyksiä palvelimelle %s:%s"
+
+#: sabnzbd/downloader.py:523 # sabnzbd/downloader.py:525 [Error message]
+msgid "Probable account sharing"
+msgstr "Mahdollinen tilin jakaminen"
+
+#: sabnzbd/downloader.py:530 # sabnzbd/downloader.py:531 [Error message]
+msgid "Failed login for server %s"
+msgstr "Kirjautuminen palvelimelle %s epäonnistui"
+
+#: sabnzbd/downloader.py:537 # sabnzbd/downloader.py:538 [Warning message]
+#: sabnzbd/downloader.py:553 # sabnzbd/downloader.py:554 [Error message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Palvelimeen %s ei voida yhdistää [%s]"
+
+#: sabnzbd/downloader.py:568 [Error message]
+msgid "Connecting %s@%s:%s failed, message=%s"
+msgstr "Virhe yhdistäessä %s@%s:%s, viesti=%s"
+
+#: sabnzbd/downloader.py:607 # sabnzbd/downloader.py:610
+msgid "Server %s requires user/password"
+msgstr "Palvelin %s vaatii käyttäjänimen/salasanan"
+
+#: sabnzbd/downloader.py:803
+msgid "Shutting down"
+msgstr "Sammutetaan"
+
+#: sabnzbd/emailer.py:96 # sabnzbd/emailer.py:98
+msgid "Failed to connect to mail server"
+msgstr "Postipalvelimeen yhdistäminen epäonnistui"
+
+#: sabnzbd/emailer.py:110
+msgid "Failed to initiate TLS connection"
+msgstr "TLS yhteyden aloittaminen epäonnistui"
+
+#: sabnzbd/emailer.py:117
+msgid "Failed to authenticate to mail server"
+msgstr "Postipalvelimen varmennus epäonnistui"
+
+#: sabnzbd/emailer.py:131
+msgid "Failed to send e-mail"
+msgstr "Sähköpostin lähetys epäonnistui"
+
+#: sabnzbd/emailer.py:136
+msgid "Failed to close mail connection"
+msgstr "Sähköpostiyhteyden sulkeminen epäonnistui"
+
+#: sabnzbd/emailer.py:142
+msgid "Email succeeded"
+msgstr "Sähköpostitus onnistui"
+
+#: sabnzbd/emailer.py:172 [Error message]
+msgid "Cannot find email templates in %s"
+msgstr "Sähköpostipohjia ei löydy hakemistosta %s"
+
+#: sabnzbd/emailer.py:203
+msgid "No recipients given, no email sent"
+msgstr "Vastaanottajaa ei määritelty, sähköpostia ei lähetetty"
+
+#: sabnzbd/emailer.py:205
+msgid "Invalid encoding of email template %s"
+msgstr "Virheellinen koodaus sähköpostipohjassa %s"
+
+#: sabnzbd/emailer.py:208
+msgid "No email templates found"
+msgstr "Sähköpostipohjia ei löydy"
+
+#: sabnzbd/emailer.py:271
+msgid ""
+"To: %s\n"
+"From: %s\n"
+"Date: %s\n"
+"Subject: SABnzbd reports Disk Full\n"
+"\n"
+"Hi,\n"
+"\n"
+"SABnzbd has stopped downloading, because the disk is almost full.\n"
+"Please make room and resume SABnzbd manually.\n"
+"\n"
+msgstr ""
+"To: %s\n"
+"From: %s\n"
+"Date: %s\n"
+"Subject: SABnzbd raportoi levy täynnä\n"
+"\n"
+"Hei,\n"
+"\n"
+"SABnzbd on lopettanut lataamasta, koska levy on lähes täynnä.\n"
+"Ole hyvä ja tee lisää tilaa ja jatka SABnzbd käsin.\n"
+"\n"
+
+#: sabnzbd/growler.py:57 [Message class for Growl server]
+msgid "Startup/Shutdown"
+msgstr "Käynnistys/Sammutus"
+
+#: sabnzbd/growler.py:58 [Message class for Growl server]
+msgid "Added NZB"
+msgstr "Lisätty NZB"
+
+#: sabnzbd/growler.py:59 [Message class for Growl server]
+msgid "Post-processing started"
+msgstr "Jälkikäsittely aloitettu"
+
+#: sabnzbd/growler.py:60 [Message class for Growl server]
+msgid "Job finished"
+msgstr "Työ valmistunut"
+
+#: sabnzbd/growler.py:61 [Message class for Growl server]
+msgid "Other Messages"
+msgstr "Muut viestit"
+
+#: sabnzbd/interface.py:80
+msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
+msgstr "Varoitus: LOCALHOST on hämärä, käytä numeerista IP-osoitetta."
+
+#: sabnzbd/interface.py:85
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Palvelimen osoite \"%s:%s\" ei ole kelvollinen."
+
+#: sabnzbd/interface.py:175 [Warning message]
+msgid "Missing Session key"
+msgstr "Istuntoavain puuttuu"
+
+#: sabnzbd/interface.py:176
+msgid "Error: Session Key Required"
+msgstr "Virhe: Istuntoavain vaaditaan"
+
+#: sabnzbd/interface.py:178 [Warning message] # sabnzbd/interface.py:179
+msgid "Error: Session Key Incorrect"
+msgstr "Virhe: Istuntoavain on virheellinen"
+
+#: sabnzbd/interface.py:212
+msgid ""
+"API Key missing, please enter the api key from Config->General into your 3rd "
+"party program:"
+msgstr ""
+"API avain puuttuu, ole hyvä ja syötä Asetukset->Yleiset löytyvä api avain "
+"käyttämääsi kolmannen osapuolen ohjelmaan:"
+
+#: sabnzbd/interface.py:219
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
+"käyttämääsi kolmannen osapuolen ohjelmaan:"
+
+#: sabnzbd/interface.py:228
+msgid ""
+"Authentication missing, please enter username/password from Config->General "
+"into your 3rd party program:"
+msgstr ""
+"Authentikointi puuttuu, ole hyvä ja syötä käyttäjänimi/salasana Asetukset-"
+">Yleiset kolmannen osapuolen ohjelmaasi:"
+
+#: sabnzbd/interface.py:240
+msgid "Error: No secondary interface defined."
+msgstr "Virhe: Toissijaista käyttöliittymää ei ole määritelty."
+
+#: sabnzbd/interface.py:292
+msgid ""
+"Your UNRAR version is not recommended, get it from "
+"http://www.rarlab.com/rar_add.htm<br />"
+msgstr ""
+"Käyttämäsi UNRAR versio ei ole suositeltu, nouda oikea osoitteesta "
+"http://www.rarlab.com/rar_add.htm<br />"
+
+#: sabnzbd/interface.py:294
+msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
+msgstr ""
+"UNRAR ohjelmaa ei löydy, RAR-tiedostojen purkaminen ei ole mahdollista<br />"
+
+#: sabnzbd/interface.py:296
+msgid "No PAR2 program found, repairs not possible<br />"
+msgstr "PAR2 ohjelmaa ei löydy, korjaukset eivät ole mahdollista<br />"
+
+#: sabnzbd/interface.py:909 [Abbreviation for bytes, as in GB]
+msgid "B"
+msgstr "B"
+
+#: sabnzbd/interface.py:1109 # sabnzbd/interface.py:1121
+msgid "Initiating restart...<br />"
+msgstr "Aloitetaan uudelleenkäynnistys...<br />"
+
+#: sabnzbd/interface.py:1111 # sabnzbd/interface.py:1123
+msgid ""
+"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
+"click the button below.<br /><br /><strong><a "
+"href=\"..\">Refresh</a></strong><br />"
+msgstr ""
+"&nbsp<br />SABnzbd sammutus valmis.<br />Odota noin 5 sekuntia ja paina "
+"sitten alapuolella olevaa nappia.<br /><br /><strong><a "
+"href=\"..\">Päivitä</a></strong><br />"
+
+#: sabnzbd/interface.py:1754 [Used as default Feed name in Config->RSS] # sabnzbd/skintext.py:530 [Config->RSS, tab header]
+msgid "Feed"
+msgstr "Syöte"
+
+#: sabnzbd/interface.py:1992 # sabnzbd/skintext.py:84
+msgid "Daily"
+msgstr "Päivittäin"
+
+#: sabnzbd/interface.py:1993 # sabnzbd/skintext.py:85
+msgid "Monday"
+msgstr "Maanantai"
+
+#: sabnzbd/interface.py:1994 # sabnzbd/skintext.py:86
+msgid "Tuesday"
+msgstr "Tiistai"
+
+#: sabnzbd/interface.py:1995 # sabnzbd/skintext.py:87
+msgid "Wednesday"
+msgstr "Keskiviikko"
+
+#: sabnzbd/interface.py:1996 # sabnzbd/skintext.py:88
+msgid "Thursday"
+msgstr "Torstai"
+
+#: sabnzbd/interface.py:1997 # sabnzbd/skintext.py:89
+msgid "Friday"
+msgstr "Perjantai"
+
+#: sabnzbd/interface.py:1998 # sabnzbd/skintext.py:90
+msgid "Saturday"
+msgstr "Lauantai"
+
+#: sabnzbd/interface.py:1999 # sabnzbd/skintext.py:91
+msgid "Sunday"
+msgstr "Sunnuntai"
+
+#: sabnzbd/interface.py:2027 ["Off" value for speedlimit in scheduler] # sabnzbd/skintext.py:98
+msgid "off"
+msgstr "ei käytössä"
+
+#: sabnzbd/interface.py:2394
+msgid "&nbsp;Resolving address"
+msgstr "&nbsp;Selvitetään osoitetta"
+
+#: sabnzbd/interface.py:2502
+msgid "Incorrect parameter"
+msgstr "Virheellinen parametri"
+
+#: sabnzbd/interface.py:2502 # sabnzbd/interface.py:2528
+#: sabnzbd/interface.py:2552 # sabnzbd/interface.py:2569
+#: sabnzbd/interface.py:2659 # sabnzbd/interface.py:2678 # sabnzbd/skintext.py:117 [Generic "Back" button]
+msgid "Back"
+msgstr "Takaisin"
+
+#: sabnzbd/interface.py:2569
+msgid "Job \"%s\" was re-added to the queue"
+msgstr "Työ \"%s\" lisättiin uudelleen jonoon"
+
+#: sabnzbd/interface.py:2659
+msgid "Jobs marked with a '*' will not be automatically downloaded."
+msgstr ""
+"Töitä jotka ovat merkitty '*' merkillä ei ladata automaattisesti uudelleen."
+
+#: sabnzbd/interface.py:2659 # sabnzbd/skintext.py:544 [Config->RSS section header]
+msgid "Matched"
+msgstr "Vastaa"
+
+#: sabnzbd/interface.py:2660
+msgid "Not matched"
+msgstr "Ei vastaa"
+
+#: sabnzbd/interface.py:2660 # sabnzbd/skintext.py:546 [Config->RSS section header]
+msgid "Downloaded"
+msgstr "Ladattu"
+
+#: sabnzbd/interface.py:2678
+msgid "Downloaded so far"
+msgstr "Ladattu tähän mennessä"
+
+#: sabnzbd/interface.py:2730 # sabnzbd/interface.py:2734
+msgid "Incorrect value for %s: %s"
+msgstr "Virheellinen arvo %s: %s"
+
+#: sabnzbd/misc.py:372 [Error message] # sabnzbd/tvsort.py:176 [Error message]
+msgid "Cannot create directory %s"
+msgstr "Ei voi luoda kansiota %s"
+
+#: sabnzbd/misc.py:378 [Error message]
+msgid "%s directory: %s error accessing"
+msgstr "%s kansio: %s virhe käytettäessä"
+
+#: sabnzbd/misc.py:400 [Error message]
+msgid "Cannot connect to registry hive HKEY_CURRENT_USER."
+msgstr "Ei voida yhdistää rekisteripolkuun HKEY_CURRENT_USER."
+
+#: sabnzbd/misc.py:407 [Error message]
+msgid "Cannot open registry key \"%s\"."
+msgstr "Ei voida avata rekisteriavainta \"%s\"."
+
+#: sabnzbd/misc.py:434 [Error message]
+msgid "Failed to read registry keys for special folders"
+msgstr "Erikoiskansioiden rekisteriavainten lukeminen epäonnistui"
+
+#: sabnzbd/misc.py:791 [Error message]
+msgid "Failed making (%s)"
+msgstr "Kohteen (%s) luominen epäonnistui"
+
+#: sabnzbd/misc.py:826 [Error message] # sabnzbd/postproc.py:370
+msgid "Failed moving %s to %s"
+msgstr "Kohteen %s siirtäminen kohteeseen %s epäonnistui"
+
+#: sabnzbd/misc.py:950
+msgid "Unusable NZB file"
+msgstr "NZB tiedostoa ei voida käyttää"
+
+#: sabnzbd/misc.py:961
+msgid "Try again"
+msgstr "Yritä uudelleen"
+
+#: sabnzbd/misc.py:961 # sabnzbd/misc.py:969
+msgid "URL Fetching failed; %s"
+msgstr "Osoitteen nouto epäonnistui; %s"
+
+#: sabnzbd/misc.py:1154 [Warning message]
+msgid "pyopenssl module missing, please install for https access"
+msgstr ""
+"pyopenssl moduuli puuttuu, ole hyvä ja asenna se https käyttöä varten"
+
+#: sabnzbd/misc.py:1172 [Error message]
+msgid "Error creating SSL key and certificate"
+msgstr "Virhe luotaessa SSL avainta ja sertifikaattia"
+
+#: sabnzbd/misc.py:1359 [Error message]
+msgid "Cannot change permissions of %s"
+msgstr "Käyttöoikeuksien muuttaminen epäonnistui kohteelle %s"
+
+#: sabnzbd/newsunpack.py:355
+msgid "Joining"
+msgstr "Yhdistetään"
+
+#: sabnzbd/newsunpack.py:373
+msgid "Incomplete sequence of joinable files"
+msgstr "Puutteellinen joukko yhdistettäviä tiedostoja"
+
+#: sabnzbd/newsunpack.py:374 # sabnzbd/newsunpack.py:382
+msgid "File join of %s failed"
+msgstr "Tiedostoliitos %s epäonnistui"
+
+#: sabnzbd/newsunpack.py:375 # sabnzbd/newsunpack.py:383
+msgid "[%s] Error \"%s\" while joining files"
+msgstr "[%s] Virhe \"%s\" yhdistettäessä tiedostoja"
+
+#: sabnzbd/newsunpack.py:376 [Error message] # sabnzbd/newsunpack.py:384 [Error message]
+msgid "Error \"%s\" while running file_join on %s"
+msgstr "Virhe \"%s\" ajettaessa file_join kohteelle %s"
+
+#: sabnzbd/newsunpack.py:378
+msgid "[%s] Joined %s files"
+msgstr "[%s] Liitetty %s tiedostoa"
+
+#: sabnzbd/newsunpack.py:434 # sabnzbd/newsunpack.py:788
+msgid "Unpacking failed, %s"
+msgstr "Purkaminen epäonnistui, %s"
+
+#: sabnzbd/newsunpack.py:436
+msgid "[%s] Error \"%s\" while unpacking RAR files"
+msgstr "[%s] Virhe \"%s\" purettaessa RAR tiedostoja"
+
+#: sabnzbd/newsunpack.py:438 [Error message]
+msgid "Error \"%s\" while running rar_unpack on %s"
+msgstr "Virhe \"%s\" ajettaessa rar_unpack kohteelle %s"
+
+#: sabnzbd/newsunpack.py:453 [Warning message] # sabnzbd/newsunpack.py:462 [Warning message]
+#: sabnzbd/newsunpack.py:773 [Warning message] # sabnzbd/newsunpack.py:783 [Warning message]
+#: sabnzbd/newsunpack.py:890 [Warning message] # sabnzbd/newsunpack.py:900 [Warning message]
+#: sabnzbd/newsunpack.py:907 [Warning message] # sabnzbd/newsunpack.py:914 [Warning message]
+#: sabnzbd/newsunpack.py:930 [Warning message]
+msgid "Deleting %s failed!"
+msgstr "Kohteen %s poisto epäonnistui!"
+
+#: sabnzbd/newsunpack.py:509
+msgid "Trying unrar with password \"%s\""
+msgstr "Yritetään purkaa rar arkistoa salasanalla \"%s\""
+
+#: sabnzbd/newsunpack.py:517 [Error message] # sabnzbd/newsunpack.py:661
+#: sabnzbd/newsunpack.py:662
+msgid "Unpacking failed, archive requires a password"
+msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
+
+#: sabnzbd/newsunpack.py:582 # sabnzbd/newsunpack.py:602
+#: sabnzbd/newsunpack.py:748
+msgid "Unpacking"
+msgstr "Puretaan"
+
+#: sabnzbd/newsunpack.py:606 # sabnzbd/newsunpack.py:607
+msgid "Unpacking failed, unable to find %s"
+msgstr "Purkaminen epäonnistui, %s ei löydy"
+
+#: sabnzbd/newsunpack.py:609 [Warning message]
+msgid "ERROR: unable to find \"%s\""
+msgstr "VIRHE: kohdetta \"%s\" ei löydy"
+
+#: sabnzbd/newsunpack.py:614
+msgid "Unpacking failed, CRC error"
+msgstr "Purkaminen epäonnistui, CRC virhe"
+
+#: sabnzbd/newsunpack.py:615 # sabnzbd/newsunpack.py:617 [Warning message]
+msgid "ERROR: CRC failed in \"%s\""
+msgstr "VIRHE: CRC epäonnistui kohteessa \"%s\""
+
+#: sabnzbd/newsunpack.py:621 # sabnzbd/newsunpack.py:622
+#: sabnzbd/newsunpack.py:634 # sabnzbd/newsunpack.py:635
+msgid "Unpacking failed, write error or disk is full?"
+msgstr "Purkaminen epäonnistui, kirjoitusvirhe tai levy täynnä?"
+
+#: sabnzbd/newsunpack.py:624 [Error message] # sabnzbd/newsunpack.py:636 [Error message]
+msgid "ERROR: write error (%s)"
+msgstr "VIRHE: kirjoitusvirhe (%s)"
+
+#: sabnzbd/newsunpack.py:630 # sabnzbd/newsunpack.py:631
+msgid "Unpacking failed, path is too long"
+msgstr "Purkaminen epäonnistui, polku on liian pitkä"
+
+#: sabnzbd/newsunpack.py:632 [Error message]
+msgid "ERROR: path too long (%s)"
+msgstr "VIRHE: polku liian pitkä (%s)"
+
+#: sabnzbd/newsunpack.py:641
+msgid "Unpacking failed, see log"
+msgstr "Purkaminen epäonnistui, katso loki"
+
+#: sabnzbd/newsunpack.py:642 [Warning message] # sabnzbd/newsunpack.py:643
+msgid "ERROR: %s"
+msgstr "VIRHE: %s"
+
+#: sabnzbd/newsunpack.py:673 # sabnzbd/newsunpack.py:674
+msgid "Unusable RAR file"
+msgstr "Käyttökelvoton RAR arkisto"
+
+#: sabnzbd/newsunpack.py:714
+msgid "Missing expected file: %s => unrar error?"
+msgstr "Odotettu tiedosto: %s puuttuu => purkuvirhe?"
+
+#: sabnzbd/newsunpack.py:717
+msgid "Unpacking failed, an expected file was not unpacked"
+msgstr "Purkaminen epäonnistui, odotettua tiedostoa ei purettu"
+
+#: sabnzbd/newsunpack.py:719
+msgid "Unpacking failed, these file(s) are missing:"
+msgstr "Purkaminen epäonnistui, nämä tiedostot puuttuvat:"
+
+#: sabnzbd/newsunpack.py:726
+msgid "Unpacked %s files/folders in %s"
+msgstr "Purettiin %s tiedostoa/kansiota kohteeseen %s"
+
+#: sabnzbd/newsunpack.py:760
+msgid "%s files in %s"
+msgstr "%s tiedostoa kohteessa %s"
+
+#: sabnzbd/newsunpack.py:789 [Error message]
+msgid "Error \"%s\" while running unzip() on %s"
+msgstr "Virhe \"%s\" ajettaessa unzip() kohteelle %s"
+
+#: sabnzbd/newsunpack.py:832
+msgid "Quick Checking"
+msgstr "Pikatarkistetaan"
+
+#: sabnzbd/newsunpack.py:832 # sabnzbd/newsunpack.py:846 # sabnzbd/skintext.py:27 [PP phase "repair"]
+#: sabnzbd/skintext.py:179 # sabnzbd/skintext.py:279
+msgid "Repair"
+msgstr "Korjaa"
+
+#: sabnzbd/newsunpack.py:836
+msgid "[%s] Quick Check OK"
+msgstr "[%s] Pikatarkistus OK"
+
+#: sabnzbd/newsunpack.py:846
+msgid "Starting Repair"
+msgstr "Aloitetaan korjaus"
+
+#: sabnzbd/newsunpack.py:873 # sabnzbd/newsunpack.py:933
+msgid "Repairing failed, %s"
+msgstr "Korjaus epäonnistui, %s"
+
+#: sabnzbd/newsunpack.py:874 [Error message]
+msgid "Error %s while running par2_repair on set %s"
+msgstr "Virhe %s ajettaessa par2_repair setille %s"
+
+#: sabnzbd/newsunpack.py:934 [Error message]
+msgid "Error \"%s\" while running par2_repair on set %s"
+msgstr "Virhe \"%s\" ajettaessa par2_repair setille %s"
+
+#: sabnzbd/newsunpack.py:1042
+msgid ""
+"[%s] PAR2 received incorrect options, check your Config->Switches settings"
+msgstr ""
+"[%s] PAR2 vastaanotti vääränlaiset asetukset, tarkista Asetukset->Muuttujat"
+
+#: sabnzbd/newsunpack.py:1047
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] Varmennettiin ajassa %s, kaikki tiedostot kelvollisia"
+
+#: sabnzbd/newsunpack.py:1054
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] Varmennetiin ajassa %s, vaatii korjauksen"
+
+#: sabnzbd/newsunpack.py:1069
+msgid "Main packet not found..."
+msgstr "Pääpakettia ei löydy..."
+
+#: sabnzbd/newsunpack.py:1096
+msgid "Invalid par2 files, cannot verify or repair"
+msgstr "Virheelliset par2 arkistot, varmennus ja korjaus ei mahdollista"
+
+#: sabnzbd/newsunpack.py:1137 # sabnzbd/newsunpack.py:1171
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Korjaaminen epäonnistui, ei tarpeeksi korjauslohkoja (%s puuttuu)"
+
+#: sabnzbd/newsunpack.py:1166
+msgid "Fetching %s blocks..."
+msgstr "Noudetaan %s lohkoa..."
+
+#: sabnzbd/newsunpack.py:1168
+msgid "Fetching"
+msgstr "Noudetaan"
+
+#: sabnzbd/newsunpack.py:1180 # sabnzbd/newsunpack.py:1185
+msgid "Repairing"
+msgstr "Korjataan"
+
+#: sabnzbd/newsunpack.py:1189
+msgid "[%s] Repaired in %s"
+msgstr "[%s] Korjattiin ajassa %s"
+
+#: sabnzbd/newsunpack.py:1240 # sabnzbd/newsunpack.py:1258
+msgid "Verifying"
+msgstr "Varmennetaan"
+
+#: sabnzbd/newswrapper.py:181 [Error message]
+msgid "Error importing OpenSSL module. Connecting with NON-SSL"
+msgstr "Virhe tuotaessa OpenSSL moduulia. Yhdistetään EI-SSL kautta."
+
+#: sabnzbd/newzbin.py:126 [Error message]
+msgid "Failed to update newzbin job %s"
+msgstr "Newzbin työn %s päivitys epäonnistui"
+
+#: sabnzbd/newzbin.py:140 # sabnzbd/nzbqueue.py:380
+msgid "NZB added to queue"
+msgstr "NZB lisätty jonoon"
+
+#: sabnzbd/newzbin.py:189 [Error message]
+msgid "Newzbin server changed its protocol"
+msgstr "Newzbin palvelin vaihto protokollaansa"
+
+#: sabnzbd/newzbin.py:223 # sabnzbd/newzbin.py:333 [Warning message]
+msgid "You have no credit on your Newzbin account"
+msgstr "Sinulla ei ole maksettua aikaa Newzbin tililläsi"
+
+#: sabnzbd/newzbin.py:227 # sabnzbd/newzbin.py:331 [Warning message]
+msgid "Unauthorised, check your newzbin username/password"
+msgstr "Käyttö estetty, tarkista newzbin käyttäjänimi/salasana"
+
+#: sabnzbd/newzbin.py:231
+msgid "Newzbin report %s not found"
+msgstr "Newzbin raporttia %s ei löydy"
+
+#: sabnzbd/newzbin.py:235
+msgid "Newzbin gives undocumented error code (%s, %s)"
+msgstr "Newzbin antaa tuntemattoman virhekoodin (%s, %s)"
+
+#: sabnzbd/newzbin.py:242
+msgid "Newzbin server fails to give info for %s"
+msgstr "Newzbin palvelin ei onnistunut antamaan tietoja kohteesta %s"
+
+#: sabnzbd/newzbin.py:344 [Warning message]
+msgid "Could not delete newzbin bookmark %s"
+msgstr "Newzbin kirjanmerkkiä %s ei voitu poistaa"
+
+#: sabnzbd/newzbin.py:356 [Error message]
+msgid "Newzbin gives undocumented error code (%s)"
+msgstr "Newzbin antaa tuntemattoman virhekoodin (%s)"
+
+#: sabnzbd/nzbqueue.py:79 [Error message]
+msgid "Incompatible queuefile found, cannot proceed"
+msgstr "Ei-tuettu jonotiedosto löytyi, ei voida jatkaa"
+
+#: sabnzbd/nzbqueue.py:85 [Error message]
+msgid "Error loading %s, corrupt file detected"
+msgstr "Virhe ladattaessa %s, korruptoitunut tiedosto havaittu"
+
+#: sabnzbd/nzbqueue.py:285 [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Virhe lisättäessä %s, poistetaan"
+
+#: sabnzbd/nzbqueue.py:745 [Warning message]
+msgid "%s -> Unknown encoding"
+msgstr "%s -> Tuntematon koodaus"
+
+#: sabnzbd/nzbstuff.py:435 [Warning message]
+msgid "File %s is empty, skipping"
+msgstr "Tiedosto %s on tyhjä, ohitetaan"
+
+#: sabnzbd/nzbstuff.py:479 [Warning message]
+msgid "Failed to import %s files from %s"
+msgstr "Virhe tuotaessa %s tiedostoa kohteesta %s"
+
+#: sabnzbd/nzbstuff.py:717 [Warning message]
+msgid "Incomplete NZB file %s"
+msgstr "Keskeneräinen NZB tiedosto %s"
+
+#: sabnzbd/nzbstuff.py:719 [Warning message] # sabnzbd/nzbstuff.py:723 [Warning message]
+msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
+msgstr "Virheellinen NZB tiedosto %s, ohitetaan (syy=%s, rivi=%s)"
+
+#: sabnzbd/nzbstuff.py:742 # sabnzbd/nzbstuff.py:744
+msgid "Empty NZB file %s"
+msgstr "Tyhjä NZB tiedosto %s"
+
+#: sabnzbd/nzbstuff.py:810 [Warning message]
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
+
+#: sabnzbd/nzbstuff.py:815 [Warning message]
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
+
+#: sabnzbd/nzbstuff.py:947
+msgid "Aborted, cannot be completed"
+msgstr "Keskeytetty, ei voi valmistua"
+
+#: sabnzbd/nzbstuff.py:1037 [Queue indicator for duplicate job]
+msgid "DUPLICATE"
+msgstr "KAKSOISKAPPALE"
+
+#: sabnzbd/nzbstuff.py:1039 [Queue indicator for encrypted job]
+msgid "ENCRYPTED"
+msgstr "SALATTU"
+
+#: sabnzbd/nzbstuff.py:1041 [Queue indicator for oversized job]
+msgid "TOO LARGE"
+msgstr "LIIAN SUURI"
+
+#: sabnzbd/nzbstuff.py:1043 [Queue indicator for incomplete NZB]
+msgid "INCOMPLETE"
+msgstr "KESKENERÄINEN"
+
+#: sabnzbd/nzbstuff.py:1045 [Queue indicator for unwanted extensions]
+msgid "UNWANTED"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:1049 [Queue indicator for waiting URL fetch]
+msgid "WAIT %s sec"
+msgstr "Odota %s sekunttia"
+
+#: sabnzbd/nzbstuff.py:1141
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Ladattiin ajassa %s keskilatausnopeudella %sB/s"
+
+#: sabnzbd/nzbstuff.py:1148
+msgid "%s articles were malformed"
+msgstr "%s artikkelia oli väärin muotoiltuja"
+
+#: sabnzbd/nzbstuff.py:1150
+msgid "%s articles were missing"
+msgstr "%s artikkelia puuttui"
+
+#: sabnzbd/nzbstuff.py:1152
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
+
+#: sabnzbd/nzbstuff.py:1154
+msgid "%s articles were removed"
+msgstr "%s artikkelia poistettiin"
+
+#: sabnzbd/nzbstuff.py:1186 [Error message]
+msgid "Error importing %s"
+msgstr "Virhe tuotaessa %s"
+
+#: sabnzbd/osxmenu.py:127 # sabnzbd/osxmenu.py:424 # sabnzbd/osxmenu.py:432
+#: sabnzbd/skintext.py:269 [Footer: indicator of warnings] # sabnzbd/skintext.py:711 # sabnzbd/skintext.py:840
+msgid "Warnings"
+msgstr "Varoitukset"
+
+#: sabnzbd/osxmenu.py:138 # sabnzbd/osxmenu.py:468 # sabnzbd/sabtray.py:87
+#: sabnzbd/skintext.py:830
+msgid "Idle"
+msgstr "Toimeton"
+
+#: sabnzbd/osxmenu.py:145 # sabnzbd/skintext.py:273
+msgid "Configuration"
+msgstr "Asetukset"
+
+#: sabnzbd/osxmenu.py:154 # sabnzbd/skintext.py:124 [Main menu item] # sabnzbd/skintext.py:460
+msgid "Queue"
+msgstr "Jono"
+
+#: sabnzbd/osxmenu.py:161 # sabnzbd/skintext.py:213 [Queue page button] # sabnzbd/skintext.py:722
+msgid "Purge Queue"
+msgstr "Tyhjennä jono"
+
+#: sabnzbd/osxmenu.py:170 # sabnzbd/skintext.py:125 [Main menu item]
+msgid "History"
+msgstr "Historia"
+
+#: sabnzbd/osxmenu.py:177 # sabnzbd/skintext.py:226 [History page button] # sabnzbd/skintext.py:741
+msgid "Purge History"
+msgstr "Tyhjennä historia"
+
+#: sabnzbd/osxmenu.py:189
+msgid "Limit Speed"
+msgstr "Nopeusrajoitus"
+
+#: sabnzbd/osxmenu.py:209 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:56 [#: Config->Scheduler]
+#: sabnzbd/skintext.py:160 # sabnzbd/skintext.py:209 [Queue page button] # sabnzbd/skintext.py:405 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:522
+msgid "Pause"
+msgstr "Keskeytä"
+
+#: sabnzbd/osxmenu.py:215
+msgid "min."
+msgstr "min."
+
+#: sabnzbd/osxmenu.py:225 # sabnzbd/sabtray.py:64 # sabnzbd/skintext.py:55 [#: Config->Scheduler]
+#: sabnzbd/skintext.py:161 # sabnzbd/skintext.py:208 [Queue page button] # sabnzbd/skintext.py:521
+msgid "Resume"
+msgstr "Jatka"
+
+#: sabnzbd/osxmenu.py:235
+msgid "Get Newzbin Bookmarks"
+msgstr "Nouda Newzbin kirjanmerkit"
+
+#: sabnzbd/osxmenu.py:245 # sabnzbd/skintext.py:63 [#: Config->Scheduler]
+msgid "Scan watched folder"
+msgstr "Tarkista vahdittu kansio"
+
+#: sabnzbd/osxmenu.py:258 # sabnzbd/osxmenu.py:616
+msgid "Complete Folder"
+msgstr "Valmistuneet-kansio"
+
+#: sabnzbd/osxmenu.py:263 # sabnzbd/osxmenu.py:617
+msgid "Incomplete Folder"
+msgstr "Lataukset-kansio"
+
+#: sabnzbd/osxmenu.py:276 # sabnzbd/sabtray.py:61
+msgid "Troubleshoot"
+msgstr "Vianmääritys"
+
+#: sabnzbd/osxmenu.py:278 # sabnzbd/osxmenu.py:279 # sabnzbd/sabtray.py:61
+#: sabnzbd/sabtray.py:63 # sabnzbd/sabtray.py:115 # sabnzbd/sabtray.py:124
+#: sabnzbd/sabtray.py:133 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:277
+#: sabnzbd/skintext.py:524
+msgid "Restart"
+msgstr "Käynnistä uudelleen"
+
+#: sabnzbd/osxmenu.py:280 # sabnzbd/sabtray.py:62
+msgid "Restart without login"
+msgstr "Käynnistä uudelleen ilman kirjautumista"
+
+#: sabnzbd/osxmenu.py:293
+msgid "Quit"
+msgstr "Lopeta"
+
+#: sabnzbd/osxmenu.py:346
+msgid "Queue First 10 Items"
+msgstr "Vie ensimmäiset 10 kohdetta jonoon"
+
+#: sabnzbd/osxmenu.py:366 # sabnzbd/osxmenu.py:408
+msgid "Empty"
+msgstr "Tyhjä"
+
+#: sabnzbd/osxmenu.py:384
+msgid "History Last 10 Items"
+msgstr "Vie viimeiset 10 kohdetta historiaan"
+
+#: sabnzbd/osxmenu.py:529
+msgid "New release available"
+msgstr "Uusi versio saatavilla"
+
+#: sabnzbd/osxmenu.py:568
+msgid "Go to wizard"
+msgstr "Mene velhoon"
+
+#: sabnzbd/osxmenu.py:719 # sabnzbd/osxmenu.py:722 # sabnzbd/osxmenu.py:730
+#: sabnzbd/osxmenu.py:733 # sabnzbd/osxmenu.py:739 # sabnzbd/osxmenu.py:742
+#: sabnzbd/osxmenu.py:763
+msgid "Stopping..."
+msgstr "Pysäytetään..."
+
+#: sabnzbd/panic.py:44
+msgid "Problem with"
+msgstr "Ongelma"
+
+#: sabnzbd/panic.py:59
+msgid ""
+"\n"
+"    SABnzbd is not compatible with some software firewalls.<br>\n"
+"    %s<br>\n"
+"    Sorry, but we cannot solve this incompatibility right now.<br>\n"
+"    Please file a complaint at your firewall supplier.<br>\n"
+"    <br>\n"
+msgstr ""
+"\n"
+"    SABnzbd ei ole yhteensopiva kaikkien ohjelmistopalomuurien kanssa.<br>\n"
+"    %s<br>\n"
+"    Pahoittelumme, mutta emme voi ratkaista tätä yhteensopivuusongelmaa "
+"juuri nyt.<br>\n"
+"    Ole hyvä ja lähetä valitus palomuurin toimittajallesi.<br>\n"
+"    <br>\n"
+
+#: sabnzbd/panic.py:68
+msgid ""
+"\n"
+"    SABnzbd needs a free tcp/ip port for its internal web server.<br>\n"
+"    Port %s on %s was tried , but it is not available.<br>\n"
+"    Some other software uses the port or SABnzbd is already running.<br>\n"
+"    <br>\n"
+"    Please restart SABnzbd with a different port number."
+msgstr ""
+"\n"
+"    SABnzbd tarvitsee vapaan tcp/ip portin sisäiselle web-"
+"palvelimelleen.<br>\n"
+"    Porttia %s kohteessa %s yritettiin käyttää , mutta se ei ollut "
+"vapaana.<br>\n"
+"    Jokin toinen ohjelmisto käyttää porttia tai SABnzbd on jo "
+"käynnissä.<br>\n"
+"    <br>\n"
+"    Ole hyvä ja uudelleenkäynnistä SABnzbd toisella porttinumerolla."
+
+#: sabnzbd/panic.py:79 # sabnzbd/panic.py:93
+msgid ""
+"If you get this error message again, please try a different number.<br>"
+msgstr "Jos saat tämän virhesanoman uudestaan, kokeile toista numeroa.<br>"
+
+#: sabnzbd/panic.py:82
+msgid ""
+"\n"
+"    SABnzbd needs a free tcp/ip port for its internal web server.<br>\n"
+"    Port %s on %s was tried , but the account used for SABnzbd has no "
+"permission to use it.<br>\n"
+"    On OSX and Linux systems, normal users must use ports above 1023.<br>\n"
+"    <br>\n"
+"    Please restart SABnzbd with a different port number."
+msgstr ""
+"\n"
+"    SABnzbd tarvitsee vapaan tcp/ip portin sisäiselle web-"
+"palvelimelleen.<br>\n"
+"    Porttia %s kohteessa %s yritettiin käyttää , mutta tilillä jolla SABnzbd "
+"käynnistettiin ei ollut oikeuksia käyttää sitä.<br>\n"
+"    OSX ja Linux järjestelmissä normaalien käyttäjien tulee käyttää portteja "
+"jotka ovat suurempia kuin 1023.<br>\n"
+"    <br>\n"
+"    Ole hyvä ja uudelleenkäynnistä SABnzbd toisella porttinumerolla."
+
+#: sabnzbd/panic.py:96
+msgid ""
+"\n"
+"    SABnzbd needs a valid host address for its internal web server.<br>\n"
+"    You have specified an invalid address.<br>\n"
+"    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
+"    <br>\n"
+"    Please restart SABnzbd with a proper host address."
+msgstr ""
+"\n"
+"    SABnzbd tarvitsee vapaan tcp/ip portin sisäiselle web-"
+"palvelimelleen.<br>\n"
+"    Olet määritellyt epäkelvon osoitteen.<br>\n"
+"    Turvalliset arvot ovat <b>localhost</b> ja <b>0.0.0.0</b><br>\n"
+"    <br>\n"
+"    Ole hyvä ja uudelleenkäynnistä SABnzbd kunnollisella isäntäosoitteella."
+
+#: sabnzbd/panic.py:110
+msgid ""
+"\n"
+"    SABnzbd detected saved data from an other SABnzbd version<br>\n"
+"    but cannot re-use the data of the other program.<br><br>\n"
+"    You may want to finish your queue first with the other program.<br><br>\n"
+"    After that, start this program with the \"--clean\" option.<br>\n"
+"    This will erase the current queue and history!<br>\n"
+"    SABnzbd read the file \"%s\"."
+msgstr ""
+"\n"
+"    SABnzbd havaitsi tallennettua tietoa toisesta SABnzbd versiosta<br>\n"
+"    mutta ei voi uudelleenkäyttää tietoja toisesta ohjelmasta.<br><br>\n"
+"    Haluat ehkä ladata jonon loppuun toisella ohjelmallasi.<br><br>\n"
+"    Tämän jälkeen, käynnistä ohjelma \"--clean\" muuttujalla.<br>\n"
+"    Tämä tyhjentää nykyisen jonon ja historiasi!<br>\n"
+"    SABnzbd luki tiedostoa \"%s\"."
+
+#: sabnzbd/panic.py:125
+msgid ""
+"\n"
+"    SABnzbd cannot find its web interface files in %s.<br>\n"
+"    Please install the program again.<br>\n"
+"    <br>\n"
+msgstr ""
+"\n"
+"    SABnzbd ei löydä sen web-käyttöliittymän tiedostoja polusta %s.<br>\n"
+"    Ole hyvä ja asenna ohjelma uudelleen.<br>\n"
+"    <br>\n"
+
+#: sabnzbd/panic.py:132
+msgid "SABnzbd detected a fatal error:"
+msgstr "SABnzbd havaitsi vakavan virheen:"
+
+#: sabnzbd/panic.py:135
+msgid ""
+"\n"
+"    SABnzbd detected a Queue and History from an older (0.4.x) "
+"release.<br><br>\n"
+"    Both queue and history will be ignored and may get lost!<br><br>\n"
+"    You may choose to stop SABnzbd and finish the queue with the older "
+"program.<br><br>\n"
+"    Click OK to proceed to SABnzbd"
+msgstr ""
+"\n"
+"    SABnzbd tunnisti Jonon ja Historian vanhemmasta (0.4.x) "
+"julkaisusta.<br><br>\n"
+"    Molemmat, jono ja historia ohitetaan ja ne saattavat hävitä!<br><br>\n"
+"    Haluat ehkä lopettaa SABnzbd-ohjelman ja ladata jonon loppuun "
+"vanhemmalla ohjelmalla.<br><br>\n"
+"    Klikkaa OK jatkaaksesi SABnzbd-ohjelmaan"
+
+#: sabnzbd/panic.py:140
+msgid "OK"
+msgstr "OK"
+
+#: sabnzbd/panic.py:143
+msgid ""
+"\n"
+"    SABnzbd detected that the file sqlite3.dll is missing.<br><br>\n"
+"    Some poorly designed virus-scanners remove this file.<br>\n"
+"    Please check your virus-scanner, try to re-install SABnzbd and complain "
+"to your virus-scanner vendor.<br>\n"
+"    <br>\n"
+msgstr ""
+"\n"
+"    SABnzbd havaitsi, että tiedosto sqlite3.dll puuttuu.<br><br>\n"
+"    Jotkin huonosti suunnitellut viruksentorjunta ohjelmistot poistavat "
+"tämän tiedoston.<br>\n"
+"    Tarkista virustorjunta ohjelmistosi, yritä asentaa SABnzbd uudelleen ja "
+"valita virustorjunta ohjelmistosi valmistajalle.<br>\n"
+"    <br>\n"
+
+#: sabnzbd/panic.py:154
+msgid "Press Startkey+R and type the line (example):"
+msgstr "Paina Windows-nappia+R ja kirjoita seuraava rivi (esimerkki):"
+
+#: sabnzbd/panic.py:157
+msgid "Open a Terminal window and type the line (example):"
+msgstr "Avaa pääte ja kirjoita rivi (esimerkki):"
+
+#: sabnzbd/panic.py:177
+msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
+msgstr ""
+"On todennäköistä, että käytössäsi on ZoneAlarm ja käyttöjärjestelmäsi on "
+"Vista.<br>"
+
+#: sabnzbd/panic.py:188
+msgid "Program did not start!"
+msgstr "Ohjelma ei käynnistynyt!"
+
+#: sabnzbd/panic.py:213 [Error message]
+msgid "You have no permisson to use port %s"
+msgstr "Sinulla ei ole käyttöoikeuksia porttiin %s"
+
+#: sabnzbd/panic.py:229
+msgid "Fatal error"
+msgstr "Vakava virhe"
+
+#: sabnzbd/panic.py:253 [Warning message]
+msgid "Cannot launch the browser, probably not found"
+msgstr "Selainta ei voida käynnistää, todennäköisesti ei löydy"
+
+#: sabnzbd/panic.py:259
+msgid "Access denied"
+msgstr "Ei käyttöoikeutta"
+
+#: sabnzbd/panic.py:260
+msgid "Error %s: You need to provide a valid username and password."
+msgstr "Virhe %s: Syötä kelvollinen käyttäjänimi ja salasana."
+
+#: sabnzbd/postproc.py:98 [Warning message]
+msgid ""
+"Failed to load postprocessing queue: Wrong version (need:%s, found:%s)"
+msgstr ""
+"Jälkikäsittelyjonon lataaminen epäonnistui: Väärä versio (tarvitaan:%s, "
+"löytyi:%s)"
+
+#: sabnzbd/postproc.py:128 [Error message]
+msgid "Failed to remove nzo from postproc queue (id)"
+msgstr "Ei voitu poistaa nzo:ta jälkikäsittelyn jonosta (id)"
+
+#: sabnzbd/postproc.py:265
+msgid "Download might fail, only %s of required %s available"
+msgstr "Lataaminen saattaa epäonnistua, vain %s osaa %s osasta saatavilla"
+
+#: sabnzbd/postproc.py:267
+msgid "Download failed - Out of your server's retention?"
+msgstr "Lataus epäonnistui - Työ on palvelimesi säilytyksen ulkopuolella?"
+
+#: sabnzbd/postproc.py:331
+msgid "Cannot create final folder %s"
+msgstr "Ei voitu luoda lopullista kansiota %s"
+
+#: sabnzbd/postproc.py:353
+msgid "No post-processing because of failed verification"
+msgstr "Jälkikäsittelyä ei suoritettu, koska varmennus epäonnistui"
+
+#: sabnzbd/postproc.py:361
+msgid "Moving"
+msgstr "Siirretään"
+
+#: sabnzbd/postproc.py:392
+msgid "Sent %s to queue"
+msgstr "Lähetettiin %s jonoon"
+
+#: sabnzbd/postproc.py:406 [Error message]
+msgid "Error renaming \"%s\" to \"%s\""
+msgstr "Virhe uudelleennimettäessä \"%s\" nimelle \"%s\""
+
+#: sabnzbd/postproc.py:430
+msgid "Failed to move files"
+msgstr "Tiedostojen siirto epäonnistui"
+
+#: sabnzbd/postproc.py:438
+msgid "Running script"
+msgstr "Ajetaan skripti"
+
+#: sabnzbd/postproc.py:439
+msgid "Running user script %s"
+msgstr "Ajetaan käyttäjän skripti %s"
+
+#: sabnzbd/postproc.py:449
+msgid "Ran %s"
+msgstr "Ajettiin %s"
+
+#: sabnzbd/postproc.py:470
+msgid "More"
+msgstr "Lisää"
+
+#: sabnzbd/postproc.py:474
+msgid "View script output"
+msgstr "Näytä skriptin tuloste"
+
+#: sabnzbd/postproc.py:500
+msgid "Download Completed"
+msgstr "Lataus valmistui"
+
+#: sabnzbd/postproc.py:503 # sabnzbd/postproc.py:512
+msgid "Download Failed"
+msgstr "Lataus epäonnistui"
+
+#: sabnzbd/postproc.py:507 [Error message]
+msgid "Post Processing Failed for %s (%s)"
+msgstr "Jälkikäsittely epäonnistui kohteelle %s (%s)"
+
+#: sabnzbd/postproc.py:510
+msgid "see logfile"
+msgstr "katso lokitiedosto"
+
+#: sabnzbd/postproc.py:511
+msgid "PostProcessing was aborted (%s)"
+msgstr "Jälkikäsittely peruutettiin (%s)"
+
+#: sabnzbd/postproc.py:543 [Error message]
+msgid "Cleanup of %s failed."
+msgstr "%s puhdistaminen epäonnistui."
+
+#: sabnzbd/postproc.py:553 [Error message]
+msgid "Error removing workdir (%s)"
+msgstr "Virhe poistettaessa työkansiota (%s)"
+
+#: sabnzbd/postproc.py:570
+msgid "Post-processing"
+msgstr "Jälkikäsittely"
+
+#: sabnzbd/postproc.py:605
+msgid "[%s] No par2 sets"
+msgstr "[%s] Ei par2 arkistoja"
+
+#: sabnzbd/postproc.py:637
+msgid "Trying SFV verification"
+msgstr "Yritetään SFV tarkistusta"
+
+#: sabnzbd/postproc.py:640
+msgid "Some files failed to verify against \"%s\""
+msgstr "Jotkin tiedostot eivät varmentuneet \"%s\" kanssa"
+
+#: sabnzbd/postproc.py:646
+msgid "Verified successfully using SFV files"
+msgstr "Tarkastus käyttäen SFV tapauksia oli onnistunut"
+
+#: sabnzbd/postproc.py:701 [Error message] # sabnzbd/postproc.py:776 [Error message]
+msgid "Removing %s failed"
+msgstr "%s poistaminen epäonnistui"
+
+#: sabnzbd/powersup.py:39 [Error message]
+msgid "Failed to hibernate system"
+msgstr "Järjestelmän lepotilaan laittaminen epäonnistui"
+
+#: sabnzbd/powersup.py:50 [Error message] # sabnzbd/powersup.py:93 [Error message]
+msgid "Failed to standby system"
+msgstr "Järjestelmän valmiustilaan laittaminen epäonnistui"
+
+#: sabnzbd/powersup.py:81 [Error message]
+msgid "Error while shutting down system"
+msgstr "Virhe sammutettaessa järjestelmää"
+
+#: sabnzbd/rss.py:278 [Error message] # sabnzbd/rss.py:280
+msgid "Incorrect RSS feed description \"%s\""
+msgstr "Virheellinen RSS syötteen kuvaus \"%s\""
+
+#: sabnzbd/rss.py:336 # sabnzbd/rss.py:352
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
+
+#: sabnzbd/rss.py:342
+msgid "Do not have valid authentication for feed %s"
+msgstr "Ei ole käyttöoikeutta syötteeseen %s"
+
+#: sabnzbd/rss.py:346
+msgid "Server side error (server code %s); could not get %s on %s"
+msgstr ""
+
+#: sabnzbd/rss.py:356
+msgid "RSS Feed %s was empty"
+msgstr "RSS syöte %s oli tyhjä"
+
+#: sabnzbd/rss.py:382 # sabnzbd/rss.py:384
+msgid "Incompatible feed"
+msgstr "Puutteellinen syöte"
+
+#: sabnzbd/rss.py:674 [Warning message]
+msgid "Empty RSS entry found (%s)"
+msgstr "Tyhjä RSS kohde löytyi (%s)"
+
+#: sabnzbd/sabtray.py:59
+msgid "Show interface"
+msgstr "Näytä käyttöliittymä"
+
+#: sabnzbd/sabtray.py:60
+msgid "Open complete folder"
+msgstr "Avaa valmistuneet-kansio"
+
+#: sabnzbd/sabtray.py:65 # sabnzbd/sabtray.py:139 # sabnzbd/skintext.py:57 [#: Config->Scheduler]
+#: sabnzbd/skintext.py:159 # sabnzbd/skintext.py:523
+msgid "Shutdown"
+msgstr "Sammuta"
+
+#: sabnzbd/sabtray.py:84 # sabnzbd/skintext.py:800
+msgid "Remaining"
+msgstr "Jäljellä"
+
+#: sabnzbd/scheduler.py:83 [Warning message]
+msgid "Bad schedule %s at %s:%s"
+msgstr "Virheellinen ajastus %s kohteessa %s:%s"
+
+#: sabnzbd/scheduler.py:124 [Warning message]
+msgid "Unknown action: %s"
+msgstr "Tuntematon toiminto: %s"
+
+#: sabnzbd/scheduler.py:315 [Warning message] # sabnzbd/scheduler.py:320 [Warning message]
+msgid "Schedule for non-existing server %s"
+msgstr "Ajastettu tuntemattomalle palvelimelle %s"
+
+#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:170 # sabnzbd/skintext.py:547 [Config->RSS button "download item"]
+msgid "Download"
+msgstr "Lataa"
+
+#: sabnzbd/skintext.py:28 [PP phase "filejoin"]
+msgid "Join files"
+msgstr "Yhdistä tiedostot"
+
+#: sabnzbd/skintext.py:29 [PP phase "unpack"]
+msgid "Unpack"
+msgstr "Pura"
+
+#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:168
+msgid "Script"
+msgstr "Skripti"
+
+#: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:102 [Where to find the SABnzbd sourcecode]
+msgid "Source"
+msgstr "Lähde"
+
+#: sabnzbd/skintext.py:32 [PP Failure message]
+msgid "Failure"
+msgstr "Epäonnistui"
+
+#: sabnzbd/skintext.py:34 [PP status] # sabnzbd/skintext.py:235 [History: job status]
+msgid "Completed"
+msgstr "Valmistunut"
+
+#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:835
+msgid "Failed"
+msgstr "Epäonnistunut"
+
+#: sabnzbd/skintext.py:36 [Queue and PP status]
+msgid "Waiting"
+msgstr "Odotetaan"
+
+#: sabnzbd/skintext.py:38 [PP status]
+msgid "Repairing..."
+msgstr "Korjataan..."
+
+#: sabnzbd/skintext.py:39 [PP status]
+msgid "Extracting..."
+msgstr "Puretaan..."
+
+#: sabnzbd/skintext.py:40 [PP status]
+msgid "Moving..."
+msgstr "Siirretään..."
+
+#: sabnzbd/skintext.py:41 [PP status]
+msgid "Running script..."
+msgstr "Ajetaan skripti..."
+
+#: sabnzbd/skintext.py:42 [PP status]
+msgid "Fetching extra blocks..."
+msgstr "Noudetaan ylimääräiset lohkot..."
+
+#: sabnzbd/skintext.py:43 [PP status]
+msgid "Quick Check..."
+msgstr "Pikatarkistus..."
+
+#: sabnzbd/skintext.py:44 [PP status]
+msgid "Verifying..."
+msgstr "Varmennetaan..."
+
+#: sabnzbd/skintext.py:45 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:829
+msgid "Downloading"
+msgstr "Ladataan"
+
+#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Grabbing status]
+msgid "Get NZB"
+msgstr "Nouda NZB"
+
+#: sabnzbd/skintext.py:47 [PP status]
+msgid "Checking"
+msgstr "Tarkistetaan"
+
+#: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:515
+msgid "Frequency"
+msgstr "Toisto"
+
+#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:516 # sabnzbd/skintext.py:705 [Job details page, section header]
+msgid "Action"
+msgstr "Toiminto"
+
+#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:517
+msgid "Arguments"
+msgstr "Parametrit"
+
+#: sabnzbd/skintext.py:52 [#: Config->Scheduler]
+msgid "Task"
+msgstr "Tehtävä"
+
+#: sabnzbd/skintext.py:53 [#: Config->Scheduler]
+msgid "disable server"
+msgstr "poista palvelin käytöstä"
+
+#: sabnzbd/skintext.py:54 [#: Config->Scheduler]
+msgid "enable server"
+msgstr "ota palvelin käyttöön"
+
+#: sabnzbd/skintext.py:59 [#: Config->Scheduler]
+msgid "Speedlimit"
+msgstr "Nopeusrajoitus"
+
+#: sabnzbd/skintext.py:60 [#: Config->Scheduler]
+msgid "Pause All"
+msgstr "Keskeytä kaikki"
+
+#: sabnzbd/skintext.py:61 [#: Config->Scheduler]
+msgid "Pause post-processing"
+msgstr "Keskeytä jälkikäsittely"
+
+#: sabnzbd/skintext.py:62 [#: Config->Scheduler]
+msgid "Resume post-processing"
+msgstr "Jatka jälkikäsittelyä"
+
+#: sabnzbd/skintext.py:64 [#: Config->Scheduler]
+msgid "Read RSS feeds"
+msgstr "Lue RSS syötteet"
+
+#: sabnzbd/skintext.py:65 [Config->Scheduler]
+msgid "Remove failed jobs"
+msgstr "Poista epäonnistuneet työt"
+
+#: sabnzbd/skintext.py:70 [Speed indicator kilobytes/sec]
+msgid "KB/s"
+msgstr "kt/s"
+
+#: sabnzbd/skintext.py:71 [Megabytes]
+msgid "MB"
+msgstr "Mt"
+
+#: sabnzbd/skintext.py:72 [Gigabytes]
+msgid "GB"
+msgstr "Gt"
+
+#: sabnzbd/skintext.py:73 [One hour]
+msgid "hour"
+msgstr "tunti"
+
+#: sabnzbd/skintext.py:74 [Multiple hours]
+msgid "hours"
+msgstr "tuntia"
+
+#: sabnzbd/skintext.py:75 [One minute]
+msgid "min"
+msgstr "minuutti"
+
+#: sabnzbd/skintext.py:76 [Multiple minutes]
+msgid "mins"
+msgstr "minuuttia"
+
+#: sabnzbd/skintext.py:77 [One second]
+msgid "sec"
+msgstr "sekunti"
+
+#: sabnzbd/skintext.py:78 [Multiple seconds]
+msgid "seconds"
+msgstr "sekuntia"
+
+#: sabnzbd/skintext.py:79
+msgid "day"
+msgstr "päivä"
+
+#: sabnzbd/skintext.py:80
+msgid "days"
+msgstr "päivää"
+
+#: sabnzbd/skintext.py:81
+msgid "week"
+msgstr "viikko"
+
+#: sabnzbd/skintext.py:82
+msgid "Month"
+msgstr "Kuukausi"
+
+#: sabnzbd/skintext.py:83
+msgid "Year"
+msgstr "Vuosi"
+
+#: sabnzbd/skintext.py:92
+msgid "Day of month"
+msgstr "Kuukauden päivä"
+
+#: sabnzbd/skintext.py:93
+msgid "This week"
+msgstr "Tällä viikolla"
+
+#: sabnzbd/skintext.py:94
+msgid "This month"
+msgstr "Tässä kuussa"
+
+#: sabnzbd/skintext.py:95
+msgid "Today"
+msgstr "Tänään"
+
+#: sabnzbd/skintext.py:96
+msgid "Total"
+msgstr "Yhteensä"
+
+#: sabnzbd/skintext.py:97
+msgid "on"
+msgstr "käytössä"
+
+#: sabnzbd/skintext.py:99 [Config: startup parameters of SABnzbd]
+msgid "Parameters"
+msgstr "Parametrit"
+
+#: sabnzbd/skintext.py:100
+msgid "Python Version"
+msgstr "Python versio"
+
+#: sabnzbd/skintext.py:101 [Home page of the SABnzbd project]
+msgid "Home page"
+msgstr "Kotisivu"
+
+#: sabnzbd/skintext.py:103 [Used in "IRC or IRC-Webaccess"]
+msgid "or"
+msgstr "tai"
+
+#: sabnzbd/skintext.py:104 # sabnzbd/skintext.py:493 [Server hostname or IP]
+msgid "Host"
+msgstr "Isäntä"
+
+#: sabnzbd/skintext.py:105
+msgid "Comment"
+msgstr "Kommentti"
+
+#: sabnzbd/skintext.py:106
+msgid "Send"
+msgstr "Lähetä"
+
+#: sabnzbd/skintext.py:107
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: sabnzbd/skintext.py:108
+msgid "Other"
+msgstr "Muu"
+
+#: sabnzbd/skintext.py:109
+msgid "Report"
+msgstr "Ilmoita"
+
+#: sabnzbd/skintext.py:110
+msgid "Video"
+msgstr "Video"
+
+#: sabnzbd/skintext.py:111
+msgid "Audio"
+msgstr "Ääni"
+
+#: sabnzbd/skintext.py:114 [SABnzbd's theme line]
+msgid "The automatic usenet download tool"
+msgstr "Automaattinen usenet lataustyökalu"
+
+#: sabnzbd/skintext.py:115 ["Save" button]
+msgid "Save"
+msgstr "Tallenna"
+
+#: sabnzbd/skintext.py:116 ["Queued" used to show amount of jobs] # sabnzbd/skintext.py:149
+msgid "Queued"
+msgstr "Jonossa"
+
+#: sabnzbd/skintext.py:118 [Generic "Delete" button, short form] # sabnzbd/skintext.py:543 [Config->RSS button "Delete filter"] # sabnzbd/skintext.py:621
+msgid "X"
+msgstr "X"
+
+#: sabnzbd/skintext.py:119 [Used in confirmation popups] # sabnzbd/skintext.py:746
+msgid "Are you sure?"
+msgstr "Oletko varma?"
+
+#: sabnzbd/skintext.py:120 [Used in confirmation popups]
+msgid "Delete all downloaded files?"
+msgstr "Poistetaanko kaikki ladatut tiedostot?"
+
+#: sabnzbd/skintext.py:123 [Main menu item]
+msgid "Home"
+msgstr "Alkuun"
+
+#: sabnzbd/skintext.py:126 [Main menu item]
+msgid "Config"
+msgstr "Asetukset"
+
+#: sabnzbd/skintext.py:127 [Main menu item] # sabnzbd/skintext.py:237 [History table header]
+msgid "Status"
+msgstr "Tila"
+
+#: sabnzbd/skintext.py:128 [Main menu item] # sabnzbd/skintext.py:867 [Wizard help link]
+msgid "Help"
+msgstr "Ohje"
+
+#: sabnzbd/skintext.py:129 [Main menu item]
+msgid "Wiki"
+msgstr "Wiki"
+
+#: sabnzbd/skintext.py:130 [Main menu item]
+msgid "Forum"
+msgstr "Foorumi"
+
+#: sabnzbd/skintext.py:131 [Main menu item]
+msgid "IRC"
+msgstr "IRC"
+
+#: sabnzbd/skintext.py:132 [Main menu item] # sabnzbd/skintext.py:458
+msgid "General"
+msgstr "Yleiset"
+
+#: sabnzbd/skintext.py:133 [Main menu item]
+msgid "Folders"
+msgstr "Kansiot"
+
+#: sabnzbd/skintext.py:134 [Main menu item] # sabnzbd/skintext.py:687
+msgid "Switches"
+msgstr "Muuttujat"
+
+#: sabnzbd/skintext.py:135 [Main menu item]
+msgid "Servers"
+msgstr "Palvelimet"
+
+#: sabnzbd/skintext.py:136 [Main menu item] # sabnzbd/skintext.py:745
+msgid "Scheduling"
+msgstr "Ajastus"
+
+#: sabnzbd/skintext.py:137 [Main menu item]
+msgid "RSS"
+msgstr "RSS"
+
+#: sabnzbd/skintext.py:138 [Main menu item] # sabnzbd/skintext.py:553 [Main Config page] # sabnzbd/skintext.py:574 [Section header]
+msgid "Notifications"
+msgstr "Huomautukset"
+
+#: sabnzbd/skintext.py:139 [Main menu item]
+msgid "Email"
+msgstr "Sähköposti"
+
+#: sabnzbd/skintext.py:140 [Main menu item]
+msgid "Index Sites"
+msgstr "Indeksointisivustot"
+
+#: sabnzbd/skintext.py:141 [Main menu item]
+msgid "Categories"
+msgstr "Kategoriat"
+
+#: sabnzbd/skintext.py:142 [Main menu item]
+msgid "Sorting"
+msgstr "Lajittelu"
+
+#: sabnzbd/skintext.py:143 [Main menu item]
+msgid "Special"
+msgstr "Erikoisasetukset"
+
+#: sabnzbd/skintext.py:146
+msgid "Download Dir"
+msgstr "Lataukset-kansio"
+
+#: sabnzbd/skintext.py:147
+msgid "Complete Dir"
+msgstr "Valmistuneet-kansio"
+
+#: sabnzbd/skintext.py:148
+msgid "Download speed"
+msgstr "Latausnopeus"
+
+#: sabnzbd/skintext.py:150
+msgid "PAUSED"
+msgstr "KESKEYTETTY"
+
+#: sabnzbd/skintext.py:151
+msgid "Cached %s articles (%s)"
+msgstr "%s artikkelia välimuistitettu (%s)"
+
+#: sabnzbd/skintext.py:152
+msgid "Sysload"
+msgstr "Kuorma"
+
+#: sabnzbd/skintext.py:153
+msgid "WARNINGS"
+msgstr "VAROITUKSET"
+
+#: sabnzbd/skintext.py:154
+msgid "New release %s available at"
+msgstr "Uusi versio %s saatavilla osoitteesta"
+
+#: sabnzbd/skintext.py:157
+msgid "Add new downloads"
+msgstr "Lisää uusia latauksia"
+
+#: sabnzbd/skintext.py:158
+msgid "Are you sure you want to shutdown SABnzbd?"
+msgstr "Oletko varma, että haluat sammuttaa SABnzbdn?"
+
+#: sabnzbd/skintext.py:162 # sabnzbd/skintext.py:163
+msgid "Add"
+msgstr "Lisää"
+
+#: sabnzbd/skintext.py:164
+msgid "Report-id"
+msgstr "Raportti-id"
+
+#: sabnzbd/skintext.py:165
+msgid "Add File"
+msgstr "Lisää tiedostosta"
+
+#: sabnzbd/skintext.py:166
+msgid "Category"
+msgstr "Kategoria"
+
+#: sabnzbd/skintext.py:167 # sabnzbd/skintext.py:201 [Queue page table column header]
+msgid "Processing"
+msgstr "Käsitellään"
+
+#: sabnzbd/skintext.py:169
+msgid "Priority"
+msgstr "Prioriteetti"
+
+#: sabnzbd/skintext.py:171
+msgid "+Repair"
+msgstr "+Korjaa"
+
+#: sabnzbd/skintext.py:172
+msgid "+Unpack"
+msgstr "+Pura"
+
+#: sabnzbd/skintext.py:173
+msgid "+Delete"
+msgstr "+Poista"
+
+#: sabnzbd/skintext.py:174
+msgid "&nbsp;"
+msgstr "&nbsp;"
+
+#: sabnzbd/skintext.py:175
+msgid "R"
+msgstr "R"
+
+#: sabnzbd/skintext.py:176
+msgid "U"
+msgstr "U"
+
+#: sabnzbd/skintext.py:177
+msgid "D"
+msgstr "D"
+
+#: sabnzbd/skintext.py:178
+msgid "Force"
+msgstr "Pakota"
+
+#: sabnzbd/skintext.py:180
+msgid "Normal"
+msgstr "Normaali"
+
+#: sabnzbd/skintext.py:181
+msgid "High"
+msgstr "Korkea"
+
+#: sabnzbd/skintext.py:182
+msgid "Low"
+msgstr "Matala"
+
+#: sabnzbd/skintext.py:184
+msgid "Stop"
+msgstr "Pysäytä"
+
+#: sabnzbd/skintext.py:185
+msgid "Enter URL"
+msgstr "Syötä osoite"
+
+#: sabnzbd/skintext.py:186
+msgid "&nbsp;or Report ID"
+msgstr "&nbsp;tai Raportti ID"
+
+#: sabnzbd/skintext.py:189 [Queue page button]
+msgid "Sort by name"
+msgstr "Lajittele nimen mukaan"
+
+#: sabnzbd/skintext.py:190 [Queue page button]
+msgid "Sort by age"
+msgstr "Lajittele iän mukaan"
+
+#: sabnzbd/skintext.py:191 [Queue page button]
+msgid "Sort by size"
+msgstr "Lajittele koon mukaan"
+
+#: sabnzbd/skintext.py:192 [Queue page button]
+msgid "Hide files"
+msgstr "Piilota tiedostot"
+
+#: sabnzbd/skintext.py:193 [Queue page button]
+msgid "Show files"
+msgstr "Näytä tiedostot"
+
+#: sabnzbd/skintext.py:194 [Queue page selection menu]
+msgid "On queue finish"
+msgstr "Kun jono on tyhjä"
+
+#: sabnzbd/skintext.py:195 [Queue page end-of-queue action]
+msgid "Shutdown PC"
+msgstr "Sammuta tietokone"
+
+#: sabnzbd/skintext.py:196 [Queue page end-of-queue action]
+msgid "Standby PC"
+msgstr "Lepotila"
+
+#: sabnzbd/skintext.py:197 [Queue page end-of-queue action]
+msgid "Hibernate PC"
+msgstr "Horrostila"
+
+#: sabnzbd/skintext.py:198 [Queue page end-of-queue action]
+msgid "Shutdown SABnzbd"
+msgstr "Sammuta SABnzbd"
+
+#: sabnzbd/skintext.py:199 [Queue page selection menu or entry box]
+msgid "Speed Limit"
+msgstr "Nopeusrajoitus"
+
+#: sabnzbd/skintext.py:200 [Queue page button or entry box]
+msgid "Pause for"
+msgstr "Keskeytä ajaksi"
+
+#: sabnzbd/skintext.py:202 [Queue page table column header] # sabnzbd/skintext.py:535 [Config->RSS table column header]
+msgid "Order"
+msgstr "Järjestys"
+
+#: sabnzbd/skintext.py:203 [Queue page table column header] # sabnzbd/skintext.py:692 [Job details page]
+msgid "Name"
+msgstr "Nimi"
+
+#: sabnzbd/skintext.py:204 [Queue page table column header]
+msgid "Remain/Total"
+msgstr "Jäljellä/Yhteensä"
+
+#: sabnzbd/skintext.py:205 [Queue page table column header, "estimated time of arrival"]
+msgid "ETA"
+msgstr "Aikaa jäljellä"
+
+#: sabnzbd/skintext.py:206 [Queue page table column header, "age of the NZB"]
+msgid "AGE"
+msgstr "IKÄ"
+
+#: sabnzbd/skintext.py:207 [Queue page table, "Delete" button]
+msgid "Del"
+msgstr "Poista"
+
+#: sabnzbd/skintext.py:210 [Queue page button]
+msgid "Retry"
+msgstr "Yritä uudelleen"
+
+#: sabnzbd/skintext.py:211 [Queue end-of-queue selection box] # sabnzbd/skintext.py:808
+msgid "Actions"
+msgstr "Toiminnot"
+
+#: sabnzbd/skintext.py:212 [Queue page table, script selection menu]
+msgid "Scripts"
+msgstr "Skriptit"
+
+#: sabnzbd/skintext.py:214 [Confirmation popup]
+msgid "Delete all items from the queue?"
+msgstr "Poistetaanko kaikki kohteet jonosta?"
+
+#: sabnzbd/skintext.py:215 [Queue page button]
+msgid "Purge NZBs"
+msgstr "Puhdista NZBt"
+
+#: sabnzbd/skintext.py:216 [Queue page button]
+msgid "Purge NZBs & Delete Files"
+msgstr "Puhdista NZBt & poista tiedostot"
+
+#: sabnzbd/skintext.py:217 [Queue page button]
+msgid "Remove NZB"
+msgstr "Poista NZB"
+
+#: sabnzbd/skintext.py:218 [Queue page button]
+msgid "Remove NZB & Delete Files"
+msgstr "Poista NZB ja tiedostot"
+
+#: sabnzbd/skintext.py:219 [Queue page, as in "4G *of* 10G"]
+msgid "of"
+msgstr "/"
+
+#: sabnzbd/skintext.py:220 [Caption for missing articles in Queue]
+msgid "Missing articles"
+msgstr "Puuttuvat artikkelit"
+
+#: sabnzbd/skintext.py:221 [Remaining quota (displayed in Queue)]
+msgid "Quota left"
+msgstr "Latausrajoitusta jäljellä"
+
+#: sabnzbd/skintext.py:222 [Manual reset of quota]
+msgid "manual"
+msgstr "käsikäyttöinen"
+
+#: sabnzbd/skintext.py:223
+msgid "Reset Quota now"
+msgstr "Resetoi latausrajoitus nyt"
+
+#: sabnzbd/skintext.py:227 [History page button]
+msgid "Purge Failed History"
+msgstr "Tyhjennä epäonnistuneiden historia"
+
+#: sabnzbd/skintext.py:228 [Confirmation popup]
+msgid "Delete all completed items from History?"
+msgstr "Poistetaanko kaikki valmistuneet kohteet historiasta?"
+
+#: sabnzbd/skintext.py:229 [Confirmation popup]
+msgid "Delete all failed items from History?"
+msgstr "Poistetaanko kaikki epäonnistuneet kohteet historiasta?"
+
+#: sabnzbd/skintext.py:230 [Button/link hiding History job details]
+msgid "Hide details"
+msgstr "Piilota yksityiskohdat"
+
+#: sabnzbd/skintext.py:231 [Button/link showing History job details]
+msgid "Show details"
+msgstr "Näytä yksityiskohdat"
+
+#: sabnzbd/skintext.py:232 [History: amount of downloaded data]
+msgid "History Size"
+msgstr "Historian koko"
+
+#: sabnzbd/skintext.py:233 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
+msgid "Show Failed"
+msgstr "Näytä epäonnistuneet"
+
+#: sabnzbd/skintext.py:234 [Button or link showing all History jobs]
+msgid "Show All"
+msgstr "Näytä kaikki"
+
+#: sabnzbd/skintext.py:236 [History table header] # sabnzbd/skintext.py:465 [Size of the download quota] # sabnzbd/skintext.py:818
+msgid "Size"
+msgstr "Koko"
+
+#: sabnzbd/skintext.py:238 [Button to delete all failed jobs in History]
+msgid "Purge Failed NZBs"
+msgstr "Puhdista epäonnistuneet NZBt"
+
+#: sabnzbd/skintext.py:239 [Button to delete all failed jobs in History, including files]
+msgid "Purge Failed NZBs & Delete Files"
+msgstr "Puhdista epäonnistuneet NZBt & poista tiedostot"
+
+#: sabnzbd/skintext.py:240 [Button to delete all completed jobs in History]
+msgid "Purge Completed NZBs"
+msgstr "Puhdista valmistuneet NZBt"
+
+#: sabnzbd/skintext.py:241 [Button to add NZB to failed job in History]
+msgid "Optional Supplemental NZB"
+msgstr "Valinnainen täyte-NZB"
+
+#: sabnzbd/skintext.py:242 [Path as displayed in History details] # sabnzbd/skintext.py:749 # sabnzbd/skintext.py:819
+msgid "Path"
+msgstr "Polku"
+
+#: sabnzbd/skintext.py:243
+msgid "Virus/spam"
+msgstr "Virus/roskaposti"
+
+#: sabnzbd/skintext.py:244
+msgid "Passworded"
+msgstr "Salasanasuojattu"
+
+#: sabnzbd/skintext.py:245
+msgid "Out of retention"
+msgstr "Säilytyksen ulkopuolella"
+
+#: sabnzbd/skintext.py:246
+msgid "Other problem"
+msgstr "Muu ongelma"
+
+#: sabnzbd/skintext.py:249 [Status page button]
+msgid "Force Disconnect"
+msgstr "Pakota yhteyden katkaisu"
+
+#: sabnzbd/skintext.py:250
+msgid "This will send a test email to your account."
+msgstr "Tämä lähettää testiviestin sähköpostiosoitteeseesi."
+
+#: sabnzbd/skintext.py:251 [Status page button]
+msgid "Show Logging"
+msgstr "Näytä loki"
+
+#: sabnzbd/skintext.py:252 [Status page button]
+msgid "Show Weblogging"
+msgstr "Näytä webloki"
+
+#: sabnzbd/skintext.py:253 [Status page button]
+msgid "Test Email"
+msgstr "Testaa sähköpostia"
+
+#: sabnzbd/skintext.py:254 [Status page selection menu]
+msgid "Logging"
+msgstr "Lokiinkirjaus"
+
+#: sabnzbd/skintext.py:255 [Status page table header]
+msgid "Errors/Warning"
+msgstr "Virheet/varoitukset"
+
+#: sabnzbd/skintext.py:256 [Status page logging selection value]
+msgid "+ Info"
+msgstr "+ Tiedot"
+
+#: sabnzbd/skintext.py:257 [Status page logging selection value]
+msgid "+ Debug"
+msgstr "+ Debug"
+
+#: sabnzbd/skintext.py:258 [Status page tab header] # sabnzbd/skintext.py:498 [Server: amount of connections]
+msgid "Connections"
+msgstr "Yhteydet"
+
+#: sabnzbd/skintext.py:259 [Status page, server threads]
+msgid "Thread"
+msgstr "Ketju"
+
+#: sabnzbd/skintext.py:260 [Status page, title for email test result]
+msgid "Email Test Result"
+msgstr "Sähköpostitestin tulokset"
+
+#: sabnzbd/skintext.py:261 [Status page, table header]
+msgid "Latest Warnings"
+msgstr "Viimeisimmät varoitukset"
+
+#: sabnzbd/skintext.py:262 [Status page button]
+msgid "clear"
+msgstr "tyhjennä"
+
+#: sabnzbd/skintext.py:263 [Status page button]
+msgid "Unblock"
+msgstr "Poista esto"
+
+#: sabnzbd/skintext.py:264 [Status page, article identifier]
+msgid "Article identifier"
+msgstr "Artikkelin tunniste"
+
+#: sabnzbd/skintext.py:265 [Status page, par-set that article belongs to]
+msgid "File set"
+msgstr "Tiedostojoukko"
+
+#: sabnzbd/skintext.py:266 [Status page, table column header, when error occured]
+msgid "When"
+msgstr "Milloin"
+
+#: sabnzbd/skintext.py:267 [Status page, table column header, type of message] # sabnzbd/skintext.py:536 [Config->RSS table column header]
+msgid "Type"
+msgstr "Tyyppi"
+
+#: sabnzbd/skintext.py:268 [Status page, table column header, actual message]
+msgid "Warning"
+msgstr "Varoitus"
+
+#: sabnzbd/skintext.py:270 [Status page, indicator that server is enabled]
+msgid "Enabled"
+msgstr "Käytössä"
+
+#: sabnzbd/skintext.py:274
+msgid "Config File"
+msgstr "Asetustiedosto"
+
+#: sabnzbd/skintext.py:275 [Main config page, how much cache is in use]
+msgid "Used cache"
+msgstr "Käytetty välimuisti"
+
+#: sabnzbd/skintext.py:276
+msgid ""
+"This will restart SABnzbd.<br />Use it when you think the program has a "
+"stability problem.<br />Downloading will be paused before the restart and "
+"resume afterwards."
+msgstr ""
+"Tämä uudelleenkäynnistää SABnzbdn.<br />Käytä sitä kun luulet ohjelman "
+"toimivan epävakaasti.<br />Lataaminen keskeytyy uudelleenkäynnistyksen "
+"ajaksi ja jatkuu ohjelman käynnistyttyä."
+
+#: sabnzbd/skintext.py:278
+msgid ""
+"There are orphaned jobs in the download folder.<br />You can choose to "
+"delete them (including files) or send them back to the queue."
+msgstr ""
+"Latauskansiossa on orpoja töitä.<br />Voit valita niiden poistamisen "
+"(sisältäen tiedostot) tai voit lähettää ne takaisin jonoon."
+
+#: sabnzbd/skintext.py:280
+msgid ""
+"The \"Repair\" button will restart SABnzbd and do a complete<br "
+"/>reconstruction of the queue content, preserving already downloaded "
+"files.<br />This will modify the queue order."
+msgstr ""
+"\"Korjaa\" painike käynnistää SABnzbd uudelleen ja luo jonon<br />sisällön "
+"täydellisesti uudelleen, säilyttäen jo ladatut tiedostot.<br />Tämä muuttaa "
+"jonon järjestystä."
+
+#: sabnzbd/skintext.py:282
+msgid "Version"
+msgstr "Versio"
+
+#: sabnzbd/skintext.py:283
+msgid "Uptime"
+msgstr "Käynnissäoloaika"
+
+#: sabnzbd/skintext.py:284 [Indicates that server is Backup server in Status page]
+msgid "Backup"
+msgstr "Varmuuskopioi"
+
+#: sabnzbd/skintext.py:285
+msgid "OZnzb"
+msgstr "OZnzb"
+
+#: sabnzbd/skintext.py:288
+msgid "General configuration"
+msgstr "Yleisasetukset"
+
+#: sabnzbd/skintext.py:289
+msgid "Changes will require a SABnzbd restart!"
+msgstr "Muutokset vaativat SABnzbdn uudelleenkäynnistyksen!"
+
+#: sabnzbd/skintext.py:290
+msgid "SABnzbd Web Server"
+msgstr "SABnzbd web-palvelin"
+
+#: sabnzbd/skintext.py:291
+msgid "SABnzbd Host"
+msgstr "SABnzbd isäntä"
+
+#: sabnzbd/skintext.py:292
+msgid "Host SABnzbd should listen on."
+msgstr "Osoite jota SABnzbdn tulisi kuunnella."
+
+#: sabnzbd/skintext.py:293
+msgid "SABnzbd Port"
+msgstr "SABnzbd portti"
+
+#: sabnzbd/skintext.py:294
+msgid "Port SABnzbd should listen on."
+msgstr "Portti jota SABnzbdn tulisi kuunnella."
+
+#: sabnzbd/skintext.py:295
+msgid "Web Interface"
+msgstr "Web-käyttöliittymä"
+
+#: sabnzbd/skintext.py:296
+msgid "Choose a skin."
+msgstr "Valitse teema."
+
+#: sabnzbd/skintext.py:297
+msgid "Secondary Web Interface"
+msgstr "Toissijainen web-käyttöliittymä"
+
+#: sabnzbd/skintext.py:298
+msgid "Activate an alternative skin."
+msgstr "Aktivoi toissijainen teema."
+
+#: sabnzbd/skintext.py:299
+msgid "Web server authentication"
+msgstr "Web-palvelimen todennus"
+
+#: sabnzbd/skintext.py:300
+msgid "SABnzbd Username"
+msgstr "SABnzbd käyttäjänimi"
+
+#: sabnzbd/skintext.py:301
+msgid "Optional authentication username."
+msgstr "Vaihtoehtoinen käyttäjänimi todennukseen."
+
+#: sabnzbd/skintext.py:302
+msgid "SABnzbd Password"
+msgstr "SABnzbd salasana"
+
+#: sabnzbd/skintext.py:303
+msgid "Optional authentication password."
+msgstr "Vaihtoehtoinen salasana todennukseen."
+
+#: sabnzbd/skintext.py:304
+msgid "HTTPS Support"
+msgstr "HTTPS-tuki"
+
+#: sabnzbd/skintext.py:305
+msgid "Enable HTTPS"
+msgstr "HTTPS käytössä"
+
+#: sabnzbd/skintext.py:306
+msgid "not installed"
+msgstr "ei asennettu"
+
+#: sabnzbd/skintext.py:307
+msgid "Enable accessing the interface from a HTTPS address."
+msgstr "Ota käyttöön käyttöliittymän käyttäminen HTTPS-osoitteesta."
+
+#: sabnzbd/skintext.py:308
+msgid "HTTPS Port"
+msgstr "HTTPS portti"
+
+#: sabnzbd/skintext.py:309
+msgid "If empty, the standard port will only listen to HTTPS."
+msgstr "Jos tyhjä, oletusportti kuuntelee ainoastaan HTTPS."
+
+#: sabnzbd/skintext.py:310
+msgid "HTTPS Certificate"
+msgstr "HTTPS sertifikaatti"
+
+#: sabnzbd/skintext.py:311
+msgid "File name or path to HTTPS Certificate."
+msgstr "Tiedostonimi tai polku HTTPS sertifikaattiin."
+
+#: sabnzbd/skintext.py:312
+msgid "HTTPS Key"
+msgstr "HTTPS avain"
+
+#: sabnzbd/skintext.py:313
+msgid "File name or path to HTTPS Key."
+msgstr "Tiedostonimi tai polku HTTPS avaimeen."
+
+#: sabnzbd/skintext.py:314
+msgid "HTTPS Chain Certifcates"
+msgstr "HTTPS ketjun sertifikaatit"
+
+#: sabnzbd/skintext.py:315
+msgid "File name or path to HTTPS Chain."
+msgstr "Tiedostonimi tai polku HTTPS ketjuun."
+
+#: sabnzbd/skintext.py:316
+msgid "Tuning"
+msgstr "Hienosäätö"
+
+#: sabnzbd/skintext.py:317
+msgid "Queue auto refresh interval:"
+msgstr "Jonon automaattinen päivitysväli:"
+
+#: sabnzbd/skintext.py:318
+msgid "Refresh interval of the queue web-interface page(sec, 0= none)."
+msgstr "Jonon päivitysväli web-käyttöliittymässä(sek, 0= ei päivitä)."
+
+#: sabnzbd/skintext.py:319
+msgid "RSS Checking Interval"
+msgstr "RSS tarkistusväli"
+
+#: sabnzbd/skintext.py:320
+msgid ""
+"Checking interval (in minutes, at least 15). Not active when you use the "
+"Scheduler!"
+msgstr ""
+"Tarkistusväli (minuutteina, vähintään 15). Ei aktiivinen kun käytät "
+"Ajastinta!"
+
+#: sabnzbd/skintext.py:321
+msgid "Download Speed Limit"
+msgstr "Lataamisen nopeusrajoitus"
+
+#: sabnzbd/skintext.py:322
+msgid "Download rate limit (in KB/s - kilobytes per second)."
+msgstr "Latausnopeuden rajoitus (kt/s, kilotavuina sekunnissa)."
+
+#: sabnzbd/skintext.py:323
+msgid "Article Cache Limit"
+msgstr "Välimuistirajoitus artikkeleille"
+
+#: sabnzbd/skintext.py:324
+msgid ""
+"Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally "
+"follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
+msgstr ""
+"Välimuistita artikkelit muistissa levytapahtumien vähentämiseksi.<br "
+"/><i>Tavuina, vaihtoehtoisesti lisää pääte K,M,G. Esimerkiksi: \"64M\" tai "
+"\"128M\"</i>"
+
+#: sabnzbd/skintext.py:325
+msgid "Cleanup List"
+msgstr "Puhdistuslista"
+
+#: sabnzbd/skintext.py:326
+msgid ""
+"List of file extensions that should be deleted after download.<br />For "
+"example: <b>.nfo</b> or <b>.nfo, .sfv</b>"
+msgstr ""
+"Lista tiedostopäätteistä jotka tulisi poistaa lataamisen jälkeen.<br "
+"/>Esimerkiksi: <b>.nfo</b> tai <b>.nfo, .sfv</b>"
+
+#: sabnzbd/skintext.py:327
+msgid "Save Changes"
+msgstr "Tallenna muutokset"
+
+#: sabnzbd/skintext.py:328
+msgid "Language"
+msgstr "Kieli"
+
+#: sabnzbd/skintext.py:329
+msgid "Select a web interface language."
+msgstr "Valitse web-käyttöliittymän kieli."
+
+#: sabnzbd/skintext.py:330
+msgid "API Key"
+msgstr "API avain"
+
+#: sabnzbd/skintext.py:331
+msgid "This key will give 3rd party programs full access to SABnzbd."
+msgstr ""
+"Tämä avain antaa kolmannen osapuolen ohjelmille täyden pääsyn SABnzbd-"
+"ohjelmaan."
+
+#: sabnzbd/skintext.py:332
+msgid "NZB Key"
+msgstr "NZB avain"
+
+#: sabnzbd/skintext.py:333
+msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
+msgstr ""
+"Tämä avain antaa kolmannen osapuolen ohjelmille oikeudet lisätä NZB-"
+"tiedostoja SABnzbd-ohjelmaan."
+
+#: sabnzbd/skintext.py:334
+msgid "Generate New Key"
+msgstr "Luo uusi avain"
+
+#: sabnzbd/skintext.py:335
+msgid "Disable API-key"
+msgstr "Poista käytöstä API avain"
+
+#: sabnzbd/skintext.py:336
+msgid "Do not require the API key."
+msgstr "Älä vaadi API avainta."
+
+#: sabnzbd/skintext.py:337
+msgid "USE AT YOUR OWN RISK!"
+msgstr "KÄYTÄ OMALLA VASTUULLA!"
+
+#: sabnzbd/skintext.py:338 [Button to show QR code of APIKEY]
+msgid "QR Code"
+msgstr "QR-koodi"
+
+#: sabnzbd/skintext.py:339 [Explanation for QR code of APIKEY]
+msgid "API Key QR Code"
+msgstr "API avaimen QR-koodi"
+
+#: sabnzbd/skintext.py:342
+msgid "Folder configuration"
+msgstr "Kansion asetukset"
+
+#: sabnzbd/skintext.py:343
+msgid ""
+"<em>NOTE:</em> Folders will be created automatically when Saving. You may "
+"use absolute paths to save outside of the default folders."
+msgstr ""
+"<em>HUOM:</em> Kansiot luodaan automaattisesti tallennuksen yhteydessä. Voit "
+"käyttää täydellisiä polkuja jos haluat tallentaa oletuskansioiden "
+"ulkopuolelle."
+
+#: sabnzbd/skintext.py:344
+msgid "User Folders"
+msgstr "Käyttäjähakemistot"
+
+#: sabnzbd/skintext.py:345
+msgid "In"
+msgstr "Kohteessa"
+
+#: sabnzbd/skintext.py:346
+msgid "Temporary Download Folder"
+msgstr "Väliaikaiset lataukset kansio"
+
+#: sabnzbd/skintext.py:347
+msgid ""
+"Location to store unprocessed downloads.<br /><i>Can only be changed when "
+"queue is empty.</i>"
+msgstr ""
+"Sijainti jonne tallennetaan latauksessa olevat kohteet ennen käsittelyä.<br "
+"/><i>Voidaan muuttaa vain kun jono on tyhjä.</i>"
+
+#: sabnzbd/skintext.py:348
+msgid "Minimum Free Space for Temporary Download Folder"
+msgstr "Pienin vapaan tilan määrä väliaikaisille latauksille"
+
+#: sabnzbd/skintext.py:349
+msgid ""
+"Auto-pause when free space is beneath this value.<br /><i>In bytes, "
+"optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
+msgstr ""
+"Keskeytä automaattisesti kun vapaan tilan määrä on vähemmän kuin tämä "
+"arvo.<br /><i>Tavuina, mutta voit laittaa perään K,M,G,T kirjaimen. "
+"Esimerkiksi: \"800M\" tai \"8G\"</i>"
+
+#: sabnzbd/skintext.py:350
+msgid "Completed Download Folder"
+msgstr "Valmistuneet kansio"
+
+#: sabnzbd/skintext.py:351
+msgid ""
+"Location to store finished, fully processed downloads.<br /><i>Can be "
+"overruled by user-defined categories.</i>"
+msgstr ""
+"Sijainti jonne tallennetaan valmistuneet ja täysin käsitellyt ladatut "
+"kohteet.<br /><i>Käyttäjän asettamat kategoriat voivat kumota tämän.</i>"
+
+#: sabnzbd/skintext.py:352
+msgid "Permissions for completed downloads"
+msgstr "Käyttöoikeudet valmistuneille latauksille"
+
+#: sabnzbd/skintext.py:353
+msgid ""
+"Set permissions pattern for completed files/folders.<br /><i>In octal "
+"notation. For example: \"755\" or \"777\"</i>"
+msgstr ""
+"Aseta käyttöoikeusmalli valmistuneille tiedostoille/kansioille.<br "
+"/><i>Oktaalilukuna. Esimerkiksi: \"755\" tai \"777\"</i>"
+
+#: sabnzbd/skintext.py:354
+msgid "Watched Folder"
+msgstr "Vahdittu kansio"
+
+#: sabnzbd/skintext.py:355
+msgid ""
+"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
+"archives for .nzb files.</i>"
+msgstr ""
+"Kansio jota vahditaan .nzb tiedostojen varalta.<br /><i>Etsii .nzb "
+"tiedostoja myös .zip .rar ja .tar.gz arkistojen sisältä.</i>"
+
+#: sabnzbd/skintext.py:356
+msgid "Watched Folder Scan Speed"
+msgstr "Vahditun kansion tarkistusväli"
+
+#: sabnzbd/skintext.py:357
+msgid "Number of seconds between scans for .nzb files."
+msgstr "Skannausväli sekunteina .nzb tiedostoille."
+
+#: sabnzbd/skintext.py:358
+msgid "Post-Processing Scripts Folder"
+msgstr "Jälkikäsittelyskriptien kansio"
+
+#: sabnzbd/skintext.py:359
+msgid "Folder containing user scripts for post-processing."
+msgstr ""
+"Kansio jossa ovat käyttäjän skriptit joita käytetään jälkikäsittelyssä."
+
+#: sabnzbd/skintext.py:360
+msgid "Email Templates Folder"
+msgstr "Sähköpostipohjien kansio"
+
+#: sabnzbd/skintext.py:361
+msgid "Folder containing user-defined email templates."
+msgstr "Kansio joka sisältää käyttäjän luomat sähköpostipohjat."
+
+#: sabnzbd/skintext.py:362
+msgid "Password file"
+msgstr "Salasanatiedosto"
+
+#: sabnzbd/skintext.py:363
+msgid "File containing all passwords to be tried on encrypted RAR files."
+msgstr ""
+"Tiedosto joka sisältää kaikki salasanat joita kokeillaan salattuihin RAR "
+"tiedostoihin."
+
+#: sabnzbd/skintext.py:364
+msgid "System Folders"
+msgstr "Järjestelmäkansio"
+
+#: sabnzbd/skintext.py:365
+msgid "Administrative Folder"
+msgstr "Hallinnollinen kansio"
+
+#: sabnzbd/skintext.py:366
+msgid ""
+"Location for queue admin and history database.<br /><i>Can only be changed "
+"when queue is empty.</i>"
+msgstr ""
+"Sijainti jonne tallennetaan jonon hallinnan ja historian tietokannat.<br "
+"/><i>Voidaan muuttaa vain jonon ollessa tyhjä.</i>"
+
+#: sabnzbd/skintext.py:367
+msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
+msgstr ""
+"<i>Tiedostoja <b>ei</b> tulla siirtämään. Vaatii SABnzbd "
+"uudelleenkäynnistyksen!</i>"
+
+#: sabnzbd/skintext.py:368
+msgid "Log Folder"
+msgstr "Lokikansio"
+
+#: sabnzbd/skintext.py:369
+msgid ""
+"Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"
+msgstr ""
+"Sijainti jonne SABnzbd ohjelman lokitiedostot tallennetaan.<br /><i>Vaatii "
+"SABnzbd uudelleenkäynnistyksen!</i>"
+
+#: sabnzbd/skintext.py:370
+msgid ".nzb Backup Folder"
+msgstr ".nzb varmuuskopiokansio"
+
+#: sabnzbd/skintext.py:371
+msgid "Location where .nzb files will be stored."
+msgstr "Sijainti jonne .nzb tiedostot tallennetaan."
+
+#: sabnzbd/skintext.py:372
+msgid "Default Base Folder"
+msgstr "Oletuskansio"
+
+#: sabnzbd/skintext.py:375
+msgid "Switches configuration"
+msgstr "Parametrien asetukset"
+
+#: sabnzbd/skintext.py:376
+msgid "Processing Switches"
+msgstr "Käsittelyparametrit"
+
+#: sabnzbd/skintext.py:377
+msgid "Enable Quick Check"
+msgstr "Pikatarkistus käytössä"
+
+#: sabnzbd/skintext.py:378
+msgid "Skip par2 checking when files are 100% valid."
+msgstr "Ohita par2 tarkistus kun tiedostot ovat 100% kunnollisia."
+
+#: sabnzbd/skintext.py:379
+msgid "Enable Unrar"
+msgstr "Unrar käytössä"
+
+#: sabnzbd/skintext.py:380
+msgid "Enable built-in unrar functionality."
+msgstr "Ottaa käyttöön sisäänrakennetun unrar toiminnon."
+
+#: sabnzbd/skintext.py:381
+msgid "Enable Unzip"
+msgstr "Unzip käytössä"
+
+#: sabnzbd/skintext.py:382
+msgid "Enable built-in unzip functionality."
+msgstr "Ottaa käyttöön sisäänrakennetun unzip toiminnon."
+
+#: sabnzbd/skintext.py:383
+msgid "Enable Filejoin"
+msgstr "Tiedostojen yhdistäminen käytössä"
+
+#: sabnzbd/skintext.py:384
+msgid "Join files ending in .001, .002 etc. into one file."
+msgstr ""
+"Yhdistää tiedostot jotka päättyvät .001,.002 jne. yhdeksi tiedostoksi."
+
+#: sabnzbd/skintext.py:385
+msgid "Enable TS Joining"
+msgstr "TS-tiedostojen yhdistäminen käytössä"
+
+#: sabnzbd/skintext.py:386
+msgid "Join files ending in .001.ts, .002.ts etc. into one file."
+msgstr ""
+"Yhdistää tiedostot jotka päättyvät .001.ts,.002.ts jne. yhdeksi tiedostoksi."
+
+#: sabnzbd/skintext.py:387
+msgid "Enable Par Cleanup"
+msgstr "Par puhdistus käytössä"
+
+#: sabnzbd/skintext.py:388
+msgid "Cleanup par files (if verifiying/repairing succeded)."
+msgstr "Puhdistaa par tiedostot (jos varmennus/korjaus onnistui)."
+
+#: sabnzbd/skintext.py:389
+msgid "Fail on yEnc CRC Errors"
+msgstr "Huomioi yEnc CRC virheet"
+
+#: sabnzbd/skintext.py:390
+msgid "When article has a CRC error, try to get it from another server."
+msgstr ""
+"Jos artikkelissa on CRC virhe, yritetään hakea se toiselta palvelimelta."
+
+#: sabnzbd/skintext.py:391
+msgid "Only Get Articles for Top of Queue"
+msgstr "Hae artikkelit vain jonon huipulta"
+
+#: sabnzbd/skintext.py:392
+msgid ""
+"Enable for less memory usage. Disable to prevent slow jobs from blocking the "
+"queue."
+msgstr ""
+"Laita päälle jos haluat ohjelman käyttävän vähemmän muistia. Ota pois päältä "
+"jos haluat estää hitaiden töiden aiheuttavan ruuhkaa jonossa."
+
+#: sabnzbd/skintext.py:393
+msgid "Post-Process Only Verified Jobs"
+msgstr "Jälkikäsittele vain onnistuneet työt"
+
+#: sabnzbd/skintext.py:394
+msgid "Only perform post-processing on jobs that passed all PAR2 checks."
+msgstr ""
+"Suorittaa jälkikäsittelyn vain niille töille jotka läpäisevät kaikki PAR2 "
+"tarkistukset."
+
+#: sabnzbd/skintext.py:395
+msgid "Action when encrypted RAR is downloaded"
+msgstr "Toiminto kun salattu RAR havaitaan"
+
+#: sabnzbd/skintext.py:396
+msgid ""
+"In case of \"Pause\", you'll need to set a password and resume the job."
+msgstr ""
+"Jos valitsit \"Keskeytä\", sinun täytyy asettaa salasana ja jatkaa työn "
+"lataamista."
+
+#: sabnzbd/skintext.py:397
+msgid "Detect Duplicate Downloads"
+msgstr "Tunnista päällekkäiset lataukset"
+
+#: sabnzbd/skintext.py:398
+msgid ""
+"Detect identically named NZB files (requires NZB backup option) and "
+"duplicate titles across RSS feeds."
+msgstr ""
+"Tunnistaa identtisesti nimetyt NZB tiedostot (vaatii NZB varmuuskopio -"
+"valinnan) ja päällekkäiset otsikot RSS syötteissä."
+
+#: sabnzbd/skintext.py:399
+msgid "Action when unwanted extension detected"
+msgstr ""
+
+#: sabnzbd/skintext.py:400
+msgid "Action when an unwanted extension is detected in RAR files"
+msgstr ""
+
+#: sabnzbd/skintext.py:401
+msgid "Unwanted extensions"
+msgstr ""
+
+#: sabnzbd/skintext.py:402
+msgid ""
+"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+msgstr ""
+
+#: sabnzbd/skintext.py:403 [Three way switch for duplicates] # sabnzbd/skintext.py:451
+msgid "Off"
+msgstr "Ei käytössä"
+
+#: sabnzbd/skintext.py:404 [Three way switch for duplicates]
+msgid "Discard"
+msgstr "Hylkää"
+
+#: sabnzbd/skintext.py:406 [Three way switch for encrypted posts]
+msgid "Abort"
+msgstr "Lopeta"
+
+#: sabnzbd/skintext.py:407
+msgid "Enable SFV-based checks"
+msgstr "SFV-pohjaiset tarkistukset käytössä"
+
+#: sabnzbd/skintext.py:408
+msgid "Do an extra verification based on SFV files."
+msgstr "Suorittaa ylimääräisen varmennuksen SFV tiedostojen avulla."
+
+#: sabnzbd/skintext.py:409
+msgid "Check result of unpacking"
+msgstr "Tarkista purkamisen lopputulos"
+
+#: sabnzbd/skintext.py:410
+msgid "Check result of unpacking (needs to be off for some file systems)."
+msgstr ""
+"Tarkistaa purkamisen lopputulokset (täytyy olla pois päältä joissain "
+"tiedostojärjestelmissä)."
+
+#: sabnzbd/skintext.py:411
+msgid "Enable folder rename"
+msgstr "Kansion uudelleennimeäminen käytössä"
+
+#: sabnzbd/skintext.py:412
+msgid ""
+"Use temporary names during post processing. Disable when your system doesn't "
+"handle that properly."
+msgstr ""
+"Käyttää väliaikaisia nimiä kun jälkikäsittely on käynnissä. Poista käytöstä "
+"jos järjestelmäsi ei toimi oikein asetuksen ollessa päällä."
+
+#: sabnzbd/skintext.py:413
+msgid "Default Post-Processing"
+msgstr "Oletus jälkikäsittely"
+
+#: sabnzbd/skintext.py:414
+msgid "Used when no post-processing is defined by the category."
+msgstr ""
+"Käytetään kun mitään jälkikäsittelyä ei ole määriteltynä kategorialle."
+
+#: sabnzbd/skintext.py:415
+msgid "Default User Script"
+msgstr "Käyttäjän oletusskripti"
+
+#: sabnzbd/skintext.py:416
+msgid "Used when no user script is defined by the category."
+msgstr ""
+"Käytetään kun mitään käyttäjän skriptiä ei ole määritettynä kategorialle."
+
+#: sabnzbd/skintext.py:417
+msgid "Pre-queue user script"
+msgstr "Esijonon käyttäjän skripti"
+
+#: sabnzbd/skintext.py:418
+msgid "Used before an NZB enters the queue."
+msgstr "Käytetään ennen NZB lisäämistä jonoon."
+
+#: sabnzbd/skintext.py:419
+msgid "Default Priority"
+msgstr "Oletusprioriteetti"
+
+#: sabnzbd/skintext.py:420
+msgid "Used when no priority is defined by the category."
+msgstr "Käytetään kun mitään prioriteettiä ei ole määritettynä kategorialle."
+
+#: sabnzbd/skintext.py:421
+msgid "Enable MultiCore Par2"
+msgstr "Moniydin Par2 käytössä"
+
+#: sabnzbd/skintext.py:422 # sabnzbd/skintext.py:424 # sabnzbd/skintext.py:426
+#: sabnzbd/skintext.py:428
+msgid "Read the Wiki Help on this!"
+msgstr "Lue Wikin ohjeet tähän!"
+
+#: sabnzbd/skintext.py:423
+msgid "Extra PAR2 Parameters"
+msgstr "Ylimääräiset PAR2 parametrit"
+
+#: sabnzbd/skintext.py:425
+msgid "Nice Parameters"
+msgstr "Nice muuttujat"
+
+#: sabnzbd/skintext.py:427
+msgid "IONice Parameters"
+msgstr "IONice muuttujat"
+
+#: sabnzbd/skintext.py:429
+msgid "Other Switches"
+msgstr "Muut valinnat"
+
+#: sabnzbd/skintext.py:430
+msgid "Disconnect on Empty Queue"
+msgstr "Katkaise yhteys kun jono on tyhjä"
+
+#: sabnzbd/skintext.py:431
+msgid "Disconnect from Usenet server(s) when queue is empty or paused."
+msgstr ""
+"Katkaise yhteys Usenet palvelimeen/palvelimiin kun jono on tyhjä tai tila on "
+"keskeytetty."
+
+#: sabnzbd/skintext.py:432
+msgid "Send Group"
+msgstr "Lähetä ryhmä"
+
+#: sabnzbd/skintext.py:433
+msgid "Send group command before requesting articles."
+msgstr "Lähettää ryhmäkomennon ennen artikkeleiden pyytämistä."
+
+#: sabnzbd/skintext.py:434
+msgid "Sort by Age"
+msgstr "Järjestä iän mukaan"
+
+#: sabnzbd/skintext.py:435
+msgid "Automatically sort items by (average) age."
+msgstr "Järjestelee kohteet (keskimääräisen) iän mukaan."
+
+#: sabnzbd/skintext.py:436
+msgid "Check for New Release"
+msgstr "Tarkista uusi versio"
+
+#: sabnzbd/skintext.py:437
+msgid "Weekly check for new SABnzbd release."
+msgstr "Tarkistaa viikottain uusimman SABnzbd version."
+
+#: sabnzbd/skintext.py:438 [Pick list for weekly test for new releases]
+msgid "Also test releases"
+msgstr "Myös testiversiot"
+
+#: sabnzbd/skintext.py:439
+msgid "Replace Spaces in Foldername"
+msgstr "Korvaa välilyönnit kansionimessä"
+
+#: sabnzbd/skintext.py:440
+msgid "Replace spaces with underscores in folder names."
+msgstr "Korvaa välilyönnit alaviivoilla kansionimissä."
+
+#: sabnzbd/skintext.py:441
+msgid "Replace dots in Foldername"
+msgstr "Korvaa pisteet kansionimessä"
+
+#: sabnzbd/skintext.py:442
+msgid "Replace dots with spaces in folder names."
+msgstr "Korvaa pisteet välilyönneillä kansionimissä."
+
+#: sabnzbd/skintext.py:443
+msgid "Replace Illegal Characters in Folder Names"
+msgstr "Korvaa kielletyt merkit kansionimissä"
+
+#: sabnzbd/skintext.py:444
+msgid ""
+"Replace illegal characters in folder names by equivalents (otherwise remove)."
+msgstr ""
+"Korvaa kielletyt merkit kansionimissä vastaavalla merkillä (jos ei "
+"vastaavaa, poistaa)."
+
+#: sabnzbd/skintext.py:445
+msgid "Launch Browser on Startup"
+msgstr "Käynnistä selain käynnistyksen yhteydessä"
+
+#: sabnzbd/skintext.py:446
+msgid "Launch the default web browser when starting SABnzbd."
+msgstr "Käynnistää oletusselaimen kun SABnzbd käynnistetään."
+
+#: sabnzbd/skintext.py:447
+msgid "Pause Downloading During Post-Processing"
+msgstr "Keskeytä lataus jälkikäsittelyn ajaksi"
+
+#: sabnzbd/skintext.py:448
+msgid ""
+"Pauses downloading at the start of post processing and resumes when finished."
+msgstr ""
+"Keskeyttää lataamisen kun jälkikäsittely alkaa ja jatkaa lataamista kun se "
+"lopetetaan."
+
+#: sabnzbd/skintext.py:449
+msgid "Ignore Samples"
+msgstr "Ohita näytteet"
+
+#: sabnzbd/skintext.py:450
+msgid "Filter out sample files (e.g. video samples)."
+msgstr "Ohittaa näytetiedostot (esim. videonäytteet)."
+
+#: sabnzbd/skintext.py:452
+msgid "Delete after download"
+msgstr "Poista lataamisen jälkeen"
+
+#: sabnzbd/skintext.py:453
+msgid "Do not download"
+msgstr "Älä lataa"
+
+#: sabnzbd/skintext.py:454
+msgid "SSL type"
+msgstr "SSL tyyppi"
+
+#: sabnzbd/skintext.py:455
+msgid "Use V23 unless your provider requires otherwise!"
+msgstr "Käytä V23 ellei tarjoajasi vaadi toisin!"
+
+#: sabnzbd/skintext.py:456
+msgid "Use 12 hour clock (AM/PM)"
+msgstr "Käytä 12-tuntista kelloa (AM/PM)"
+
+#: sabnzbd/skintext.py:457
+msgid "Show times in AM/PM notation (does not affect scheduler)."
+msgstr "Näyttää ajat AM/PM muodossa (ei vaikuta ajastuksiin)"
+
+#: sabnzbd/skintext.py:459
+msgid "Server"
+msgstr "Palvelin"
+
+#: sabnzbd/skintext.py:461
+msgid "Post processing"
+msgstr "Jälkikäsittely"
+
+#: sabnzbd/skintext.py:462
+msgid "Naming"
+msgstr "Nimeäminen"
+
+#: sabnzbd/skintext.py:463
+msgid "Quota"
+msgstr "Latausrajoitus"
+
+#: sabnzbd/skintext.py:464
+msgid "Indexing"
+msgstr "Indeksoidaan"
+
+#: sabnzbd/skintext.py:466
+msgid "How much can be downloaded this month (K/M/G)"
+msgstr "Kuinka paljon voidaan ladata tässä kuussa (K/M/G)"
+
+#: sabnzbd/skintext.py:467 [Reset day of the download quota]
+msgid "Reset day"
+msgstr "Resetointipäivä"
+
+#: sabnzbd/skintext.py:468
+msgid ""
+"On which day of the month or week (1=Monday) does your ISP reset the quota? "
+"(Optionally with hh:mm)"
+msgstr ""
+"Minä päivänä kuusta tai viikosta (1=Maanantai) palveluntarjoajasi resetoi "
+"rajoituksen? (Voit syöttää kellonajan perään hh:mm)"
+
+#: sabnzbd/skintext.py:469 [Auto-resume download on the reset day]
+msgid "Auto resume"
+msgstr "Jatka automaattisesti"
+
+#: sabnzbd/skintext.py:470
+msgid "Should downloading resume after the quota is reset?"
+msgstr "Pitäisikö latauksia jatkaa kun latausrajoitus on resetoitu?"
+
+#: sabnzbd/skintext.py:471 [Does the quota get reset every day, week or month?]
+msgid "Quota period"
+msgstr "Latausrajoituksen pituus"
+
+#: sabnzbd/skintext.py:472
+msgid "Does the quota get reset each day, week or month?"
+msgstr "Resetoidaanko rajoitus joka päivä, viikko vai kuukausi?"
+
+#: sabnzbd/skintext.py:473
+msgid "Check before download"
+msgstr "Tarkista ennen lataamista"
+
+#: sabnzbd/skintext.py:474
+msgid "Try to predict successful completion before actual download (slower!)"
+msgstr "Yritä ennustaa latauksen valmistuminen ennen lataamista (hitaampi!)"
+
+#: sabnzbd/skintext.py:475
+msgid "Maximum retries"
+msgstr "Enimmäismäärä uudelleenyrityksille"
+
+#: sabnzbd/skintext.py:476
+msgid "Maximum number of retries per server"
+msgstr "Enimmäismäärä uudelleenyrityksiä yksittäiselle palvelimelle."
+
+#: sabnzbd/skintext.py:477
+msgid "Only for optional servers"
+msgstr "Vain valinnaisille palvelimille"
+
+#: sabnzbd/skintext.py:478
+msgid "Apply maximum retries only to optional servers"
+msgstr "Käytä uudelleenyritysten määrää vain valinnaisille palvelimille"
+
+#: sabnzbd/skintext.py:479
+msgid "Abort jobs that cannot be completed"
+msgstr "Peruuta työt jotka eivät voi valmistua"
+
+#: sabnzbd/skintext.py:480
+msgid ""
+"When during download it becomes clear that too much data is missing, abort "
+"the job"
+msgstr ""
+"Keskeytetään työ, jos latauksen yhteydessä huomataan liikaa dataa puuttuvan"
+
+#: sabnzbd/skintext.py:481
+msgid "Enable OZnzb Integration"
+msgstr "OZnzb integraatio käytössä"
+
+#: sabnzbd/skintext.py:482
+msgid ""
+"Enhanced functionality including ratings and extra status information is "
+"available when connected to OZnzb indexer."
+msgstr ""
+"Lisää enemmän toimintoja, kuten arvostelut ja lisätiedot jotka saadaan kun "
+"yhdistetään OZnzb indeksointiin."
+
+#: sabnzbd/skintext.py:483
+msgid "Site API Key"
+msgstr "Sivuston API avain"
+
+#: sabnzbd/skintext.py:484
+msgid ""
+"This key provides identity to indexer. Refer to "
+"https://www.oznzb.com/profile."
+msgstr ""
+"Tämän avaimen avulla indeksoija tietää kuka olet. Tarkista avain osoitteesta "
+"https://www.oznzb.com/profile."
+
+#: sabnzbd/skintext.py:485
+msgid "Refer to https://www.oznzb.com/profile"
+msgstr "Tarkista osoitteesta https://www.oznzb.com/profile"
+
+#: sabnzbd/skintext.py:486
+msgid "Automatic Feedback"
+msgstr "Automaattinen palaute"
+
+#: sabnzbd/skintext.py:487
+msgid ""
+"Send automatically calculated validation results for downloads to indexer."
+msgstr ""
+"Lähetä automaattisesti laskettu latauksen vahvistustulos indeksoijalle."
+
+#: sabnzbd/skintext.py:490 [Caption]
+msgid "Server configuration"
+msgstr "Palvelinasetukset"
+
+#: sabnzbd/skintext.py:491
+msgid "Server definition"
+msgstr "Palvelimen tyyppi"
+
+#: sabnzbd/skintext.py:492 [Caption] # sabnzbd/skintext.py:504 [Button: Add server]
+msgid "Add Server"
+msgstr "Lisää palvelin"
+
+#: sabnzbd/skintext.py:494 [Server port]
+msgid "Port"
+msgstr "Portti"
+
+#: sabnzbd/skintext.py:495 [Server username]
+msgid "Username"
+msgstr "Käyttäjänimi"
+
+#: sabnzbd/skintext.py:496 [Server password]
+msgid "Password"
+msgstr "Salasana"
+
+#: sabnzbd/skintext.py:497 [Server timeout]
+msgid "Timeout"
+msgstr "Aikakatkaisu"
+
+#: sabnzbd/skintext.py:499 [Server's retention time in days]
+msgid "Retention time"
+msgstr "Säilytysaika"
+
+#: sabnzbd/skintext.py:500 [Server SSL tickbox]
+msgid "SSL"
+msgstr "SSL"
+
+#: sabnzbd/skintext.py:501 [Backup server tickbox]
+msgid "Backup server"
+msgstr "Varapalvelin"
+
+#: sabnzbd/skintext.py:502 [Server optional tickbox] # sabnzbd/skintext.py:878 [As in "this item is optional"]
+msgid "Optional"
+msgstr "Valinnainen"
+
+#: sabnzbd/skintext.py:503 [Enable server tickbox]
+msgid "Enable"
+msgstr "Ota käyttöön"
+
+#: sabnzbd/skintext.py:505 [Button: Remove server]
+msgid "Remove Server"
+msgstr "Poista palvelin"
+
+#: sabnzbd/skintext.py:506 [Button: Test server] # sabnzbd/skintext.py:880 [Wizard step]
+msgid "Test Server"
+msgstr "Testaa palvelinta"
+
+#: sabnzbd/skintext.py:507 [Button: Clear server's byte counters]
+msgid "Clear Counters"
+msgstr "Nollaa laskurit"
+
+#: sabnzbd/skintext.py:508
+msgid "Testing server details..."
+msgstr "Testataan pavelimen tietoja..."
+
+#: sabnzbd/skintext.py:509
+msgid "Click below to test."
+msgstr "Klikkaa alapuolelta testataksesi."
+
+#: sabnzbd/skintext.py:510
+msgid "Bandwidth"
+msgstr "Kaista"
+
+#: sabnzbd/skintext.py:513
+msgid "Scheduling configuration"
+msgstr "Ajastimen asetukset"
+
+#: sabnzbd/skintext.py:514 # sabnzbd/skintext.py:518
+msgid "Add Schedule"
+msgstr "Lisää ajastus"
+
+#: sabnzbd/skintext.py:519
+msgid "Remove"
+msgstr "Poista"
+
+#: sabnzbd/skintext.py:520
+msgid "Current Schedules"
+msgstr "Nykyiset ajastukset"
+
+#: sabnzbd/skintext.py:527
+msgid "RSS Configuration"
+msgstr "RSS asetukset"
+
+#: sabnzbd/skintext.py:528
+msgid "New Feed URL"
+msgstr "Uuden syötteen osoite"
+
+#: sabnzbd/skintext.py:529
+msgid ""
+"The checkbox next to the feed name should be ticked for the feed to be "
+"enabled and be automatically checked for new items.<br />When a feed is "
+"added, it will only pick up new items and not anything already in the RSS "
+"feed unless you press \"Force Download\"."
+msgstr ""
+"Valintaruutu syötteen nimen vieressä täytyy olla valittuna jotta syöte on "
+"päällä ja uusia kohteita tarkistetaan automaattisesti.<br />Kun syöte "
+"lisätään, siitä lisätään vain uusia kohteita eikä niitä jotka ovat jo "
+"julkaistu syötteessä ellet paina \"Pakota lataus\" -painiketta."
+
+#: sabnzbd/skintext.py:531 [Config->RSS button]
+msgid "Add Feed"
+msgstr "Lisää syöte"
+
+#: sabnzbd/skintext.py:532 [Config->RSS button]
+msgid "Delete Feed"
+msgstr "Poista syöte"
+
+#: sabnzbd/skintext.py:533 [Config->RSS button]
+msgid "Read Feed"
+msgstr "Lue syöte"
+
+#: sabnzbd/skintext.py:534 [Config->RSS button]
+msgid "Force Download"
+msgstr "Pakota lataus"
+
+#: sabnzbd/skintext.py:537 [Config->RSS table column header]
+msgid "Filter"
+msgstr "Suodata"
+
+#: sabnzbd/skintext.py:538 [Config->RSS table column header]
+msgid "Skip"
+msgstr "Ohita"
+
+#: sabnzbd/skintext.py:539 [Config->RSS filter-type selection menu]
+msgid "Accept"
+msgstr "Hyväksy"
+
+#: sabnzbd/skintext.py:540 [Config->RSS filter-type selection menu]
+msgid "Reject"
+msgstr "Hylkää"
+
+#: sabnzbd/skintext.py:541 [Config->RSS filter-type selection menu]
+msgid "Requires"
+msgstr "Vaatii"
+
+#: sabnzbd/skintext.py:542 [Config->RSS filter-type selection menu]
+msgid "RequiresCat"
+msgstr "VaadittuCat"
+
+#: sabnzbd/skintext.py:545 [Config->RSS section header]
+msgid "Not Matched"
+msgstr "Ei vastaavuutta"
+
+#: sabnzbd/skintext.py:548 [Tab title for Config->Feeds]
+msgid "Feeds"
+msgstr "Syötteet"
+
+#: sabnzbd/skintext.py:549 [Config->RSS button]
+msgid "Read All Feeds Now"
+msgstr "Lue kaikki syötteet nyt"
+
+#: sabnzbd/skintext.py:550 [Tab title for Config->Feeds]
+msgid "Settings"
+msgstr "Asetukset"
+
+#: sabnzbd/skintext.py:551 [Tab title for Config->Feeds]
+msgid "Filters"
+msgstr "Suodattimet"
+
+#: sabnzbd/skintext.py:554 [Section header]
+msgid "Email Options"
+msgstr "Sähköpostiasetukset"
+
+#: sabnzbd/skintext.py:555
+msgid "Email Notification On Job Completion"
+msgstr "Sähköposti-ilmoitus onnistuneesta työstä"
+
+#: sabnzbd/skintext.py:556 [When to send email]
+msgid "Never"
+msgstr "Ei koskaan"
+
+#: sabnzbd/skintext.py:557 [When to send email]
+msgid "Always"
+msgstr "Aina"
+
+#: sabnzbd/skintext.py:558 [When to send email]
+msgid "Error-only"
+msgstr "Vain virheet"
+
+#: sabnzbd/skintext.py:559
+msgid "Disk Full Notifications"
+msgstr "Levy täynnä tiedotteet"
+
+#: sabnzbd/skintext.py:560
+msgid "Send email when disk is full and SABnzbd is paused."
+msgstr "Lähetä sähköposti kun levy on täynnä ja SABnzbd on keskeytetty."
+
+#: sabnzbd/skintext.py:561
+msgid "Send RSS notifications"
+msgstr "Lähetä RSS ilmoitukset"
+
+#: sabnzbd/skintext.py:562
+msgid "Send email when an RSS feed adds jobs to the queue."
+msgstr "Lähetä sähköpostia kun RSS syötteestä lisätään töitä jonoon."
+
+#: sabnzbd/skintext.py:563
+msgid "Email Account Settings"
+msgstr "Sähköpostitilin asetukset"
+
+#: sabnzbd/skintext.py:564
+msgid "SMTP Server"
+msgstr "SMTP-palvelin"
+
+#: sabnzbd/skintext.py:565
+msgid "Set your ISP's server for outgoing email."
+msgstr "Sähköpostin lähtevän postin palvelimen osoite."
+
+#: sabnzbd/skintext.py:566
+msgid "Email Recipient"
+msgstr "Sähköpostin vastaanottaja"
+
+#: sabnzbd/skintext.py:567
+msgid "Email address to send the email to."
+msgstr "Sähköpostiosoite johon viestit lähetetään."
+
+#: sabnzbd/skintext.py:568
+msgid "Email Sender"
+msgstr "Sähköpostin lähettäjä"
+
+#: sabnzbd/skintext.py:569
+msgid "Who should we say sent the email?"
+msgstr "Kuka näytetään viestin lähettäjänä?"
+
+#: sabnzbd/skintext.py:570
+msgid "OPTIONAL Account Username"
+msgstr "VALINNAINEN tilin käyttäjänimi"
+
+#: sabnzbd/skintext.py:571
+msgid "For authenticated email, account name."
+msgstr "Kirjautumisen vaativalle sähköpostille, tilin käyttäjänimi."
+
+#: sabnzbd/skintext.py:572
+msgid "OPTIONAL Account Password"
+msgstr "VALINNAINEN tilin salasana"
+
+#: sabnzbd/skintext.py:573
+msgid "For authenticated email, password."
+msgstr "Kirjautumisen vaativalle sähköpostille, tilin salasana."
+
+#: sabnzbd/skintext.py:575 [Don't translate "Growl"]
+msgid "Enable Growl"
+msgstr "Growl käytössä"
+
+#: sabnzbd/skintext.py:576 [Don't translate "Growl"]
+msgid "Send notifications to Growl"
+msgstr "Lähetä ilmoitukset Growliin"
+
+#: sabnzbd/skintext.py:577 [Address of Growl server]
+msgid "Server address"
+msgstr "Palvelimen osoite"
+
+#: sabnzbd/skintext.py:578 [Don't translate "Growl"]
+msgid "Only use for remote Growl server (host:port)"
+msgstr "Käytä vain Growl etäpalvelimelle (isäntä:portti)"
+
+#: sabnzbd/skintext.py:579 [Growl server password]
+msgid "Server password"
+msgstr "Palvelimen salasana"
+
+#: sabnzbd/skintext.py:580 [Don't translate "Growl"]
+msgid "Optional password for Growl server"
+msgstr "Valinnainen salasana Growl palvelimelle"
+
+#: sabnzbd/skintext.py:581 [Don't translate "NotifyOSD"]
+msgid "Enable NotifyOSD"
+msgstr "NotifyOSD käytössä"
+
+#: sabnzbd/skintext.py:582 [Don't translate "NotifyOSD"]
+msgid "Send notifications to NotifyOSD"
+msgstr "Lähetä ilmoitukset NotifyOSD:hen"
+
+#: sabnzbd/skintext.py:583
+msgid "Notification Center"
+msgstr "Ilmoituskeskus"
+
+#: sabnzbd/skintext.py:584
+msgid "Send notifications to Notification Center"
+msgstr "Lähetä ilmoitukset ilmoituskeskukseen"
+
+#: sabnzbd/skintext.py:585
+msgid "Notification classes"
+msgstr "Ilmoituksien luokat"
+
+#: sabnzbd/skintext.py:586
+msgid "Enable classes of messages to be reported (none, one or multiple)"
+msgstr ""
+"Ottaa luokat käyttöön viesteille joita raportoidaan (ei mitään, yksi tai "
+"monta)"
+
+#: sabnzbd/skintext.py:590
+msgid ""
+"If you have an account at <strong>www.newzbin2.es</strong>, you can enter "
+"your account info here.<br />This will unlock extra functionality."
+msgstr ""
+"Jos sinulla on tili osoitteessa <strong>www.newzbin2.es</strong>, voit "
+"syöttää tilisi tiedot tähän.<br />Tämä avaa lisätoimintoja."
+
+#: sabnzbd/skintext.py:591
+msgid "Account info"
+msgstr "Tilitiedot"
+
+#: sabnzbd/skintext.py:592
+msgid "Newzbin Username"
+msgstr "Newzbin käyttäjänimi"
+
+#: sabnzbd/skintext.py:593 # sabnzbd/skintext.py:609
+msgid "Set your account username here."
+msgstr "Syötä tilisi käyttäjänimi tähän."
+
+#: sabnzbd/skintext.py:594
+msgid "Newzbin Password"
+msgstr "Newzbin salasana"
+
+#: sabnzbd/skintext.py:595
+msgid "Set your account password here."
+msgstr "Kirjoita tilin salasana tähän."
+
+#: sabnzbd/skintext.py:596
+msgid "Bookmark Processing"
+msgstr "Kirjanmerkkien käsittely"
+
+#: sabnzbd/skintext.py:597
+msgid "Auto-Fetch Bookmarks"
+msgstr "Nouda kirjanmerkit automaattisesti"
+
+#: sabnzbd/skintext.py:598
+msgid "Automatically retrieve jobs from your bookmarks."
+msgstr "Noutaa työt automaattisesti kirjanmerkeistäsi."
+
+#: sabnzbd/skintext.py:599
+msgid "Get Bookmarks Now"
+msgstr "Nouda kirjanmerkit nyt"
+
+#: sabnzbd/skintext.py:600
+msgid "Hide Bookmarks"
+msgstr "Piilota kirjanmerkit"
+
+#: sabnzbd/skintext.py:601
+msgid "Show Bookmarks"
+msgstr "Näytä kirjanmerkit"
+
+#: sabnzbd/skintext.py:602
+msgid "Un-Bookmark If Download Complete"
+msgstr "Poista kirjanmerkki latauksen valmistuessa"
+
+#: sabnzbd/skintext.py:603
+msgid "Remove from bookmark list when download is complete."
+msgstr "Poistaa kirjanmerkin listalta kun lataus on valmistunut."
+
+#: sabnzbd/skintext.py:604
+msgid "Checking Interval"
+msgstr "Tarkistusväli"
+
+#: sabnzbd/skintext.py:605
+msgid "In minutes (at least 15 min)."
+msgstr "Minuutteina (vähintään 15 min)."
+
+#: sabnzbd/skintext.py:606
+msgid "Processed Bookmarks"
+msgstr "Käsitellyt kirjanmerkit"
+
+#: sabnzbd/skintext.py:607
+msgid ""
+"If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter "
+"your account info here.<br />This is required if you want to use the RSS "
+"feeds of this site."
+msgstr ""
+"Jos sinulla on tili osoitteessa <strong>www.nzbmatrix.com</strong>, voit "
+"syöttää tilisi tiedot tähän.<br />Nämä vaaditaan jos haluat käyttää RSS "
+"syötteitä kyseiseltä sivustolta."
+
+#: sabnzbd/skintext.py:608
+msgid "NzbMatrix Username"
+msgstr "NzbMatrix käyttäjänimi"
+
+#: sabnzbd/skintext.py:610
+msgid "NzbMatrix API key"
+msgstr "NzbMatrix API avain"
+
+#: sabnzbd/skintext.py:611
+msgid "Set the NzbMatrix API key here."
+msgstr "Kirjoita NzbMatrix API avain tähän."
+
+#: sabnzbd/skintext.py:614
+msgid "User-defined categories"
+msgstr "Käyttäjän määrittämät kategoriat"
+
+#: sabnzbd/skintext.py:615
+msgid "Defines post-processing and storage."
+msgstr "Määrittää jälkikäsittelyn ja tallennuksen."
+
+#: sabnzbd/skintext.py:616
+msgid ""
+"Use the \"Groups / Indexer tags\" column to map groups and tags to your "
+"categories.<br/>Wildcards are supported. Use commas to seperate terms."
+msgstr ""
+"Käytä \"Ryhmien / Indeksoijan tunnisteet\" -saraketta ryhmien ja "
+"tunnisteiden määrittämiseksi kategorioillesi.<br/>Jokerimerkkejä saa "
+"käyttää. Käytä pilkkuja termien erottelemiseen."
+
+#: sabnzbd/skintext.py:617
+msgid ""
+"Ending the path with an asterisk * will prevent creation of job folders."
+msgstr "Polun päättäminen tähteen * estää työkansioiden luomisen."
+
+#: sabnzbd/skintext.py:618
+msgid "Relative folders are based on"
+msgstr "Suhteelliset kansiot jotka perustuvat"
+
+#: sabnzbd/skintext.py:619
+msgid "Folder/Path"
+msgstr "Kansio/Polku"
+
+#: sabnzbd/skintext.py:620
+msgid "Groups / Indexer tags"
+msgstr "Ryhmien / Indeksoijan tunnisteet"
+
+#: sabnzbd/skintext.py:624
+msgid "Sorting configuration"
+msgstr "Lajittelun asetukset"
+
+#: sabnzbd/skintext.py:625
+msgid "Series Sorting"
+msgstr "Sarjojen lajittelu"
+
+#: sabnzbd/skintext.py:626
+msgid "Enable TV Sorting"
+msgstr "TV lajittelu käytössä"
+
+#: sabnzbd/skintext.py:627
+msgid "Enable sorting and renaming of episodes."
+msgstr "Ottaa jaksojen lajittelun ja uudelleennimeämisen käyttöön."
+
+#: sabnzbd/skintext.py:628
+msgid "Pattern Key"
+msgstr "Mallin avain"
+
+#: sabnzbd/skintext.py:629
+msgid "Clear"
+msgstr "Tyhjennä"
+
+#: sabnzbd/skintext.py:630
+msgid "Presets"
+msgstr "Esiasetukset"
+
+#: sabnzbd/skintext.py:631
+msgid "Example"
+msgstr "Esimerkki"
+
+#: sabnzbd/skintext.py:632
+msgid "Generic Sorting"
+msgstr "Yleinen lajittelu"
+
+#: sabnzbd/skintext.py:633
+msgid "Enable Movie Sorting"
+msgstr "Elokuvien lajittelu käytössä"
+
+#: sabnzbd/skintext.py:634
+msgid "Enable generic sorting and renaming of files."
+msgstr "Ottaa yleisen lajittelun ja uudelleennimeämisen käyttöön."
+
+#: sabnzbd/skintext.py:635
+msgid "Keep loose downloads in extra folders"
+msgstr "Pidä irralliset lataukset ylimääräisissä kansioissa"
+
+#: sabnzbd/skintext.py:636
+msgid "Enable if downloads are not put in their own folders."
+msgstr "Ota käyttöön jos latauksia ei ole laitettu omiin kansioihinsa."
+
+#: sabnzbd/skintext.py:637
+msgid "Affected Categories"
+msgstr "Kategoriat joita koskee"
+
+#: sabnzbd/skintext.py:638
+msgid "Meaning"
+msgstr "Merkitys"
+
+#: sabnzbd/skintext.py:639
+msgid "Pattern"
+msgstr "Malli"
+
+#: sabnzbd/skintext.py:640
+msgid "Result"
+msgstr "Tulos"
+
+#: sabnzbd/skintext.py:641
+msgid "1x05 Season Folder"
+msgstr "1x05 Tuotantokausi kansio"
+
+#: sabnzbd/skintext.py:642
+msgid "S01E05 Season Folder"
+msgstr "S01E05 Tuotantokausi kansio"
+
+#: sabnzbd/skintext.py:643
+msgid "1x05 Episode Folder"
+msgstr "1x05 Jakso kansio"
+
+#: sabnzbd/skintext.py:644
+msgid "S01E05 Episode Folder"
+msgstr "S01E05 Jakso kansio"
+
+#: sabnzbd/skintext.py:645
+msgid "Title"
+msgstr "Otsikko"
+
+#: sabnzbd/skintext.py:646
+msgid "Movie Name"
+msgstr "Elokuvan nimi"
+
+#: sabnzbd/skintext.py:647
+msgid "Movie.Name"
+msgstr "Elokuvan.nimi"
+
+#: sabnzbd/skintext.py:648
+msgid "Movie_Name"
+msgstr "Elokuvan_nimi"
+
+#: sabnzbd/skintext.py:649 # sabnzbd/skintext.py:650
+msgid "Show Name"
+msgstr "Ohjelman nimi"
+
+#: sabnzbd/skintext.py:651
+msgid "Show.Name"
+msgstr "Ohjelman.nimi"
+
+#: sabnzbd/skintext.py:652
+msgid "Show_Name"
+msgstr "Ohjelman_nimi"
+
+#: sabnzbd/skintext.py:653
+msgid "Season Number"
+msgstr "Tuotantokauden numero"
+
+#: sabnzbd/skintext.py:654
+msgid "Episode Number"
+msgstr "Jakson numero"
+
+#: sabnzbd/skintext.py:655 # sabnzbd/skintext.py:656
+msgid "Episode Name"
+msgstr "Jakson nimi"
+
+#: sabnzbd/skintext.py:657
+msgid "Episode.Name"
+msgstr "Jakson.nimi"
+
+#: sabnzbd/skintext.py:658
+msgid "Episode_Name"
+msgstr "Jakson_nimi"
+
+#: sabnzbd/skintext.py:659
+msgid "File Extension"
+msgstr "Tiedostotunniste"
+
+#: sabnzbd/skintext.py:660
+msgid "Extension"
+msgstr "Tunniste"
+
+#: sabnzbd/skintext.py:661
+msgid "Part Number"
+msgstr "Osan numero"
+
+#: sabnzbd/skintext.py:662
+msgid "Decade"
+msgstr "Vuosikymmen"
+
+#: sabnzbd/skintext.py:663
+msgid "Original Filename"
+msgstr "Alkuperäinen tiedostonimi"
+
+#: sabnzbd/skintext.py:664
+msgid "Original Foldername"
+msgstr "Alkuperäinen kansionimi"
+
+#: sabnzbd/skintext.py:665
+msgid "Lower Case"
+msgstr "Pienaakkoset"
+
+#: sabnzbd/skintext.py:666
+msgid "TEXT"
+msgstr "TEKSTI"
+
+#: sabnzbd/skintext.py:667
+msgid "text"
+msgstr "teksti"
+
+#: sabnzbd/skintext.py:668
+msgid "file"
+msgstr "tiedosto"
+
+#: sabnzbd/skintext.py:669
+msgid "folder"
+msgstr "kansio"
+
+#: sabnzbd/skintext.py:670
+msgid "Sort String"
+msgstr "Lajittelumerkkijono"
+
+#: sabnzbd/skintext.py:671
+msgid "Multi-part label"
+msgstr "Moniosainen selite"
+
+#: sabnzbd/skintext.py:672
+msgid "In folders"
+msgstr "Kansioissa"
+
+#: sabnzbd/skintext.py:673
+msgid "No folders"
+msgstr "Ei kansioita"
+
+#: sabnzbd/skintext.py:674
+msgid "Date Sorting"
+msgstr "Päivämäärän lajittelu"
+
+#: sabnzbd/skintext.py:675
+msgid "Enable Date Sorting"
+msgstr "Päivämäärän lajittelu käytössä"
+
+#: sabnzbd/skintext.py:676
+msgid "Enable sorting and renaming of date named files."
+msgstr ""
+"Ottaa päivämäärän mukaan nimettyjen tiedostojen lajittelun ja "
+"uudelleennimeämisen käyttöön."
+
+#: sabnzbd/skintext.py:677
+msgid "Show Name folder"
+msgstr "Ohjelman nimi kansio"
+
+#: sabnzbd/skintext.py:678
+msgid "Year-Month Folders"
+msgstr "Vuosittaiset-Kuukausittaiset kansiot"
+
+#: sabnzbd/skintext.py:679
+msgid "Daily Folders"
+msgstr "Päivittäiset kansiot"
+
+#: sabnzbd/skintext.py:680 [Note for title expression in Sorting that does case adjustment]
+msgid "case-adjusted"
+msgstr "kirjainkokoa säätävä"
+
+#: sabnzbd/skintext.py:681
+msgid "Processed Result"
+msgstr "Käsitellyt tulokset"
+
+#: sabnzbd/skintext.py:684
+msgid ""
+"Rarely used options. For their meaning and explanation, click on the Help "
+"button to go to the Wiki page.<br>Don't change these without checking the "
+"Wiki first, as some have serious side-effects.<br>The default values are "
+"between parentheses."
+msgstr ""
+"Harvoin käytetyt asetukset. Paina Ohje-painiketta Wiki-sivustolle "
+"päästäksesi, jotta saat tietää näiden tarkoituksen ja ohjeet "
+"käyttöön.<br>Älä muuta ennen Wikin lukemista, koska näiden muuttamisella voi "
+"olla vakavia sivuvaikutuksia.<br>Oletusarvot ovat kirjoitettuna sulkeiden "
+"sisään."
+
+#: sabnzbd/skintext.py:688
+msgid "Values"
+msgstr "Arvot"
+
+#: sabnzbd/skintext.py:691 [Job details page]
+msgid "Edit NZB Details"
+msgstr "NZB tietojen muokkaus"
+
+#: sabnzbd/skintext.py:693 [Job details page, delete button] # sabnzbd/skintext.py:807
+msgid "Delete"
+msgstr "Poista"
+
+#: sabnzbd/skintext.py:694 [Job details page, move file to top]
+msgid "Top"
+msgstr "Ylin"
+
+#: sabnzbd/skintext.py:695 [Job details page, move file one place up]
+msgid "Up"
+msgstr "Ylös"
+
+#: sabnzbd/skintext.py:696 [Job details page, move file one place down]
+msgid "Down"
+msgstr "Alas"
+
+#: sabnzbd/skintext.py:697 [Job details page, move file to bottom]
+msgid "Bottom"
+msgstr "Alin"
+
+#: sabnzbd/skintext.py:698 [Job details page, select all files]
+msgid "All"
+msgstr "Kaikki"
+
+#: sabnzbd/skintext.py:700 [Job details page, invert file selection]
+msgid "Invert"
+msgstr "Käänteinen"
+
+#: sabnzbd/skintext.py:701 [Job details page, filename column header]
+msgid "Filename"
+msgstr "Tiedostonimi"
+
+#: sabnzbd/skintext.py:702 [Job details page, subject column header]
+msgid "Subject"
+msgstr "Otsikko"
+
+#: sabnzbd/skintext.py:703 [Job details page, file age column header] # sabnzbd/skintext.py:851
+msgid "Age"
+msgstr "Ikä"
+
+#: sabnzbd/skintext.py:704 [Job details page, section header]
+msgid "Selection"
+msgstr "Valinta"
+
+#: sabnzbd/skintext.py:709
+msgid "Are you sure you want to delete"
+msgstr "Oletko varma, että haluat poistaa"
+
+#: sabnzbd/skintext.py:710 # sabnzbd/skintext.py:757
+msgid "Refresh"
+msgstr "Päivitä"
+
+#: sabnzbd/skintext.py:712 # sabnzbd/skintext.py:758
+msgid "Options"
+msgstr "Asetukset"
+
+#: sabnzbd/skintext.py:713
+msgid "Page"
+msgstr "Sivu"
+
+#: sabnzbd/skintext.py:714 # sabnzbd/skintext.py:752 # sabnzbd/skintext.py:824
+msgid "Prev"
+msgstr "Edellinen"
+
+#: sabnzbd/skintext.py:715 # sabnzbd/skintext.py:753 # sabnzbd/skintext.py:825
+#: sabnzbd/skintext.py:857 [Button to go to next Wizard page]
+msgid "Next"
+msgstr "Seuraava"
+
+#: sabnzbd/skintext.py:716 # sabnzbd/skintext.py:823
+msgid "First"
+msgstr "Ensimmäinen"
+
+#: sabnzbd/skintext.py:717 # sabnzbd/skintext.py:826
+msgid "Last"
+msgstr "Viimeinen"
+
+#: sabnzbd/skintext.py:718
+msgid "Close"
+msgstr "Sulje"
+
+#: sabnzbd/skintext.py:719
+msgid "Set Pause Interval"
+msgstr "Aseta keskeytysväli"
+
+#: sabnzbd/skintext.py:720 # sabnzbd/skintext.py:772
+msgid "Sort"
+msgstr "Lajittele"
+
+#: sabnzbd/skintext.py:721 # sabnzbd/skintext.py:779
+msgid "Purge the Queue?"
+msgstr "Puhdistetaanko jono?"
+
+#: sabnzbd/skintext.py:723
+msgid "Pause Interval"
+msgstr "Keskeytysväli"
+
+#: sabnzbd/skintext.py:724 # sabnzbd/skintext.py:761
+msgid "Pause for 5 minutes"
+msgstr "Keskeytä 5:ksi minuutiksi"
+
+#: sabnzbd/skintext.py:725 # sabnzbd/skintext.py:762
+msgid "Pause for 15 minutes"
+msgstr "Keskeytä 15:ksi minuutiksi"
+
+#: sabnzbd/skintext.py:726 # sabnzbd/skintext.py:763
+msgid "Pause for 30 minutes"
+msgstr "Keskeytä 30:ksi minuutiksi"
+
+#: sabnzbd/skintext.py:727 # sabnzbd/skintext.py:764
+msgid "Pause for 1 hour"
+msgstr "Keskeytä tunniksi"
+
+#: sabnzbd/skintext.py:728 # sabnzbd/skintext.py:765
+msgid "Pause for 3 hours"
+msgstr "Keskeytä 3:ksi tunniksi"
+
+#: sabnzbd/skintext.py:729 # sabnzbd/skintext.py:766
+msgid "Pause for 6 hours"
+msgstr "Keskeytä 6:ksi tunniksi"
+
+#: sabnzbd/skintext.py:730
+msgid "Pause for 12 hours"
+msgstr "Keskeytä 12:ksi tunniksi"
+
+#: sabnzbd/skintext.py:731
+msgid "Pause for 24 hours"
+msgstr "Keskeytä 24:ksi tunniksi"
+
+#: sabnzbd/skintext.py:732
+msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
+msgstr "Järjestä iän mukaan <small>Vanhin&rarr;Uusin</small>"
+
+#: sabnzbd/skintext.py:733
+msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
+msgstr "Järjestä iän mukaan <small>Uusin&rarr;Vanhin</small>"
+
+#: sabnzbd/skintext.py:734
+msgid "Sort by Name <small>A&rarr;Z</small>"
+msgstr "Järjestä nimen mukaan <small>A&rarr;Z</small>"
+
+#: sabnzbd/skintext.py:735
+msgid "Sort by Name <small>Z&rarr;A</small>"
+msgstr "Järjestä nimen mukaan <small>Z&rarr;A</small>"
+
+#: sabnzbd/skintext.py:736
+msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
+msgstr "Järjestä koon mukaan <small>Pienin&rarr;Suurin</small>"
+
+#: sabnzbd/skintext.py:737
+msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
+msgstr "Järjestä koon mukaan <small>Suurin&rarr;Pienin</small>"
+
+#: sabnzbd/skintext.py:738
+msgid "Rename"
+msgstr "Uudelleennimeä"
+
+#: sabnzbd/skintext.py:739
+msgid "Left"
+msgstr "Jäljellä"
+
+#: sabnzbd/skintext.py:740 # sabnzbd/skintext.py:754
+msgid "Purge the History?"
+msgstr "Puhdistetaanko historia?"
+
+#: sabnzbd/skintext.py:744
+msgid "Changes have not been saved, and will be lost."
+msgstr "Muutoksia ei ole tallennettu ja ne menetetään."
+
+#: sabnzbd/skintext.py:747
+msgid "Open Source URL"
+msgstr "Avaa lähdeosoite"
+
+#: sabnzbd/skintext.py:748
+msgid "Open Informational URL"
+msgstr "Avaa tietoja sisältävä osoite"
+
+#: sabnzbd/skintext.py:750
+msgid "Storage"
+msgstr "Tallennusasema"
+
+#: sabnzbd/skintext.py:751
+msgid "View Script Log"
+msgstr "Näytä skriptien loki"
+
+#: sabnzbd/skintext.py:755
+msgid "You must enable JavaScript for Plush to function!"
+msgstr "Ota JavaScript käyttöön, jotta Plush toimii oikein!"
+
+#: sabnzbd/skintext.py:756
+msgid "Add NZB"
+msgstr "Lisää NZB"
+
+#: sabnzbd/skintext.py:759
+msgid "Plush Options"
+msgstr "Plush asetukset"
+
+#: sabnzbd/skintext.py:760
+msgid "Update Available!"
+msgstr "Päivitys saatavilla!"
+
+#: sabnzbd/skintext.py:767 # sabnzbd/skintext.py:827
+msgid "Pause for how many minutes?"
+msgstr "Keskeytetään kuinka moneksi minuutiksi?"
+
+#: sabnzbd/skintext.py:768
+msgid "Pause for..."
+msgstr "Keskeytä ajaksi..."
+
+#: sabnzbd/skintext.py:769
+msgid "Multi-Operations"
+msgstr "Monioperaatiot"
+
+#: sabnzbd/skintext.py:770
+msgid "Top Menu"
+msgstr "Päävalikko"
+
+#: sabnzbd/skintext.py:771
+msgid "On Finish"
+msgstr "Valmistuessa"
+
+#: sabnzbd/skintext.py:773
+msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
+msgstr "Järjestä iän mukaan<small>(Vanhin&rarr;Uusin)</small>"
+
+#: sabnzbd/skintext.py:774
+msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
+msgstr "Järjestä iän mukaan<small>(Uusin&rarr;Vanhin)</small>"
+
+#: sabnzbd/skintext.py:775
+msgid "Sort by Name <small>(A&rarr;Z)</small>"
+msgstr "Järjestä nimen mukaan <small>(A&rarr;Z)</small>"
+
+#: sabnzbd/skintext.py:776
+msgid "Sort by Name <small>(Z&rarr;A)</small>"
+msgstr "Järjestä nimen mukaan <small>(Z&rarr;A)</small>"
+
+#: sabnzbd/skintext.py:777
+msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
+msgstr "Järjestä koon mukaan <small>(Pienin&rarr;Suurin)</small>"
+
+#: sabnzbd/skintext.py:778
+msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
+msgstr "Järjestä koon mukaan <small>(Suurin&rarr;Pienin)</small>"
+
+#: sabnzbd/skintext.py:780
+msgid "Purge"
+msgstr "Puhdista"
+
+#: sabnzbd/skintext.py:781
+msgid "left"
+msgstr "jäljellä"
+
+#: sabnzbd/skintext.py:782 [Used in speed menu. Split in two lines if too long.]
+msgid "Max Speed"
+msgstr "Enimmäisnopeus"
+
+#: sabnzbd/skintext.py:783
+msgid "Range"
+msgstr "Väli"
+
+#: sabnzbd/skintext.py:784
+msgid "Reset"
+msgstr "Nollaa"
+
+#: sabnzbd/skintext.py:785
+msgid "Apply to Selected"
+msgstr "Käytä valittuihin"
+
+#: sabnzbd/skintext.py:786
+msgid "page"
+msgstr "sivu"
+
+#: sabnzbd/skintext.py:787
+msgid "Everything"
+msgstr "Kaikki"
+
+#: sabnzbd/skintext.py:788
+msgid "Disabled"
+msgstr "Ei käytössä"
+
+#: sabnzbd/skintext.py:789
+msgid "Refresh Rate"
+msgstr "Päivitysväli"
+
+#: sabnzbd/skintext.py:790
+msgid "Container Width"
+msgstr "Säiliön leveys"
+
+#: sabnzbd/skintext.py:791
+msgid "Confirm Queue Deletions"
+msgstr "Varmista jonon poistot"
+
+#: sabnzbd/skintext.py:792
+msgid "Confirm History Deletions"
+msgstr "Varmista historian poistot"
+
+#: sabnzbd/skintext.py:793
+msgid ""
+"This will prevent refreshing content when your mouse cursor is hovering over "
+"the queue."
+msgstr ""
+"Tämä estää sisällön päivittämisen kun hiiren kursori on jonon päällä."
+
+#: sabnzbd/skintext.py:794
+msgid "Block Refreshes on Hover"
+msgstr "Estä päivitykset kun hiiri on päällä"
+
+#: sabnzbd/skintext.py:795 [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Nouda"
+
+#: sabnzbd/skintext.py:796 [Upload button in "Add NZB" dialog box]
+msgid "Upload"
+msgstr "Lähetä"
+
+#: sabnzbd/skintext.py:797
+msgid "Upload: .nzb .rar .zip .gz"
+msgstr "Lähetä: .nzb .rar .zip .gz"
+
+#: sabnzbd/skintext.py:798
+msgid "Optionally specify a filename"
+msgstr "Vaihtoehtoisesti anna tiedostonimi"
+
+#: sabnzbd/skintext.py:799 # sabnzbd/skintext.py:849
+msgid "Progress"
+msgstr "Edistyminen"
+
+#: sabnzbd/skintext.py:801
+msgid "Not enough disk space to complete downloads!"
+msgstr "Ei tarpeeksi levytilaa latauksien valmistumiseen!"
+
+#: sabnzbd/skintext.py:802
+msgid "Free Space"
+msgstr "Vapaa tila"
+
+#: sabnzbd/skintext.py:803
+msgid "Free (Temp)"
+msgstr "Vapaana (Temp)"
+
+#: sabnzbd/skintext.py:804
+msgid "IDLE"
+msgstr "EI TÖITÄ"
+
+#: sabnzbd/skintext.py:805
+msgid "Downloads"
+msgstr "Lataukset"
+
+#: sabnzbd/skintext.py:806
+msgid "Queue repair"
+msgstr "Jonon korjaus"
+
+#: sabnzbd/skintext.py:809
+msgid ""
+"<strong>Read Feed</strong> will get the current feed content. <strong>Force "
+"Download</strong> will download all matching NZBs now."
+msgstr ""
+"<strong>Lue syöte</strong> hakee vain syötteen uuden sisällön. "
+"<strong>Pakota lataus</strong> hakee kaikki vastaavat NZB:t heti."
+
+#: sabnzbd/skintext.py:813
+msgid "Hour:Min"
+msgstr "Tunti:Min"
+
+#: sabnzbd/skintext.py:814
+msgid "Delete Completed"
+msgstr "Poista valmistuneet"
+
+#: sabnzbd/skintext.py:815
+msgid "Delete the all failed items from the history?"
+msgstr "Poistetaanko kaikki epäonnistuneet historiasta?"
+
+#: sabnzbd/skintext.py:816
+msgid "Delete Failed"
+msgstr "Poista epäonnistuneet"
+
+#: sabnzbd/skintext.py:817
+msgid "Links"
+msgstr "Linkit"
+
+#: sabnzbd/skintext.py:820
+msgid "Showing %s to %s out of %s results"
+msgstr "Näytetään %s - %s tulosta %s tuloksesta"
+
+#: sabnzbd/skintext.py:821
+msgid "No results"
+msgstr "Ei tuloksia"
+
+#: sabnzbd/skintext.py:822
+msgid "Showing one result"
+msgstr "Näytetään yksi tulos"
+
+#: sabnzbd/skintext.py:831
+msgid "Email Sent!"
+msgstr "Sähköposti lähetetty!"
+
+#: sabnzbd/skintext.py:832
+msgid "Notification Sent!"
+msgstr "Ilmoitus lähetetty!"
+
+#: sabnzbd/skintext.py:833
+msgid "Saving.."
+msgstr "Tallennetaan..."
+
+#: sabnzbd/skintext.py:834
+msgid "Saved"
+msgstr "Tallennettu"
+
+#: sabnzbd/skintext.py:836
+msgid "Speed"
+msgstr "Nopeus"
+
+#: sabnzbd/skintext.py:837
+msgid "Toggle Add NZB"
+msgstr "Päälle/Pois Lisää NZB"
+
+#: sabnzbd/skintext.py:838
+msgid "DualView1"
+msgstr "Kaksoisnäkymä1"
+
+#: sabnzbd/skintext.py:839
+msgid "DualView2"
+msgstr "Kaksoisnäkymä2"
+
+#: sabnzbd/skintext.py:841
+msgid "Custom"
+msgstr "Mukautettu"
+
+#: sabnzbd/skintext.py:842
+msgid "Get Bookmarks"
+msgstr "Hae kirjanmerkit"
+
+#: sabnzbd/skintext.py:843
+msgid "Are you sure you want to restart SABnzbd?"
+msgstr "Oletko varma, että haluat käynnistää SABnzbd uudelleen?"
+
+#: sabnzbd/skintext.py:844
+msgid "Refresh rate"
+msgstr "Päivitysväli"
+
+#: sabnzbd/skintext.py:845
+msgid "Delete All"
+msgstr "Poista kaikki"
+
+#: sabnzbd/skintext.py:846
+msgid "Hide Edit Options"
+msgstr "Piilota muokkausvalinnat"
+
+#: sabnzbd/skintext.py:847
+msgid "Show Edit Options"
+msgstr "Näytä muokkausvalinnat"
+
+#: sabnzbd/skintext.py:848
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: sabnzbd/skintext.py:850
+msgid "Timeleft"
+msgstr "Aikaa jäljellä"
+
+#: sabnzbd/skintext.py:854
+msgid "SABnzbd Quick-Start Wizard"
+msgstr "SABnzbd pika-aloitus velho"
+
+#: sabnzbd/skintext.py:855
+msgid "SABnzbd Version"
+msgstr "SABnzbd versio"
+
+#: sabnzbd/skintext.py:856 [Button to go to previous Wizard page]
+msgid "Previous"
+msgstr "Edellinen"
+
+#: sabnzbd/skintext.py:858 [Wizard step in which the web server is set]
+msgid "Access"
+msgstr "Pääsy"
+
+#: sabnzbd/skintext.py:859
+msgid "I want SABnzbd to be viewable by any pc on my network."
+msgstr ""
+"Tahdon, että SABnzbd on käytettävissä jokaiselta verkossani olevalta PC:ltä."
+
+#: sabnzbd/skintext.py:860
+msgid "I want SABnzbd to be viewable from my pc only."
+msgstr "Tahdon, että SABnzbd on käytettävissä vain omalta PC:ltäni."
+
+#: sabnzbd/skintext.py:861
+msgid "Password protect access to SABnzbd (recommended)"
+msgstr "Suojaa SABnzbd käyttö salasanalla (suositeltavaa)"
+
+#: sabnzbd/skintext.py:862
+msgid "Enable HTTPS access to SABnzbd."
+msgstr "Aktivoi HTTPS pääsy SABnzbd-ohjelmaan."
+
+#: sabnzbd/skintext.py:863 [Wizard step]
+msgid "Misc"
+msgstr "Muut"
+
+#: sabnzbd/skintext.py:864
+msgid ""
+"Launch my internet browser with the SABnzbd page when the program starts."
+msgstr "Käynnistä internet selaimeni SABnzbd-sivulle kun ohjelma käynnistyy."
+
+#: sabnzbd/skintext.py:865
+msgid "Server Details"
+msgstr "Palvelimen tiedot"
+
+#: sabnzbd/skintext.py:866
+msgid "Please enter in the details of your primary usenet provider."
+msgstr "Syötä pääasiallisen usenet tarjoajasi tiedot."
+
+#: sabnzbd/skintext.py:868
+msgid ""
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
+msgstr ""
+"Jotta voit ladata usenetistä tarvitset tarjoajan. Palveluntarjoajasi saattaa "
+"tarjota sinulle sellaisen, mutta on suositeltavaa hankkia premium-tarjoaja."
+
+#: sabnzbd/skintext.py:869
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Eikö sinulla ole usenet tarjoajaa? Suosittelemme kokeilemaan %s."
+
+#: sabnzbd/skintext.py:870
+msgid "The number of connections allowed by your provider"
+msgstr "Tarjoajasi sallimien yhteyksien lukumäärä."
+
+#: sabnzbd/skintext.py:871 [Wizard: examples of amount of connections]
+msgid "E.g. 8 or 20"
+msgstr "Esim. 8 tai 20"
+
+#: sabnzbd/skintext.py:872
+msgid "Select only if your provider allows SSL connections."
+msgstr "Valitse vain jos tarjoajasi sallii SSL yhteydet."
+
+#: sabnzbd/skintext.py:873
+msgid "Click to test the entered details."
+msgstr "Klikkaa testataksesi syötettyjä tietoja."
+
+#: sabnzbd/skintext.py:874
+msgid "This field is required."
+msgstr "Tämä kenttä on pakollinen."
+
+#: sabnzbd/skintext.py:875
+msgid "Please enter a whole number."
+msgstr "Syötä kokonaisluku."
+
+#: sabnzbd/skintext.py:876
+msgid ""
+"If you are a member of newzbin or nzbmatrix, you may enter your username and "
+"password here so we can fetch their nzb's. This stage can be skipped if you "
+"don't use either services."
+msgstr ""
+"Mikäli olet newzbin tai nzbmatrix jäsen, voit syöttää käyttäjänimesi ja "
+"salasanasi tähän jotta ohjelma voi hakea nzb-tiedostot heiltä suoraan. Voit "
+"ohittaa tämän vaiheen jos et käytä kummankaan sivuston palveluita."
+
+#: sabnzbd/skintext.py:877
+msgid "Automatically download bookmarked posts."
+msgstr "Lataa automaattisesti kirjanmerkkeihin lisätyt postaukset."
+
+#: sabnzbd/skintext.py:879 [Abbreviation for "for example"]
+msgid "E.g."
+msgstr "Esim."
+
+#: sabnzbd/skintext.py:881 [Wizard step]
+msgid "Restarting SABnzbd..."
+msgstr "Käynnistetään SABnzbd uudelleen..."
+
+#: sabnzbd/skintext.py:882 [Wizard step]
+msgid "Setup is now complete!"
+msgstr "Asennus on nyt valmis!"
+
+#: sabnzbd/skintext.py:883 [Wizard tip]
+msgid "SABnzbd will now be running in the background."
+msgstr "SABnzbd on nyt käynnissä taustalla."
+
+#: sabnzbd/skintext.py:884 [Wizard tip]
+msgid "Closing any browser windows/tabs will NOT close SABnzbd."
+msgstr "Selaimen tai sen välilehtien sulkeminen EI sammuta SABnzbd:tä."
+
+#: sabnzbd/skintext.py:885 [Wizard tip]
+msgid ""
+"After SABnzbd has finished restarting you will be able to access it at the "
+"following location: %s"
+msgstr ""
+"Kun SABnzbd on käynnistynyt uudelleen, voit käyttää sitä seuraavasta "
+"osoitteesta: %s"
+
+#: sabnzbd/skintext.py:886 [Wizard tip]
+msgid ""
+"It is recommended you right click and bookmark this location and use this "
+"bookmark to access SABnzbd when it is running in the background."
+msgstr ""
+"On suositeltavaa, että painat linkistä hiiren oikealla ja lisäät sen "
+"kirjanmerkkeihin. Sitten voit käyttää kirjanmerkkiä kun haluat käyttää "
+"SABnzbd ohjelmaa sen ollessa käynnissä taustalla."
+
+#: sabnzbd/skintext.py:887 [Will be appended with a wiki-link, adjust word order accordingly]
+msgid "Further help can be found on our"
+msgstr "Lisää ohjeita löytyy"
+
+#: sabnzbd/skintext.py:888 [Wizard step]
+msgid "Go to SABnzbd"
+msgstr "Siirry SABnzbd:hen"
+
+#: sabnzbd/skintext.py:889 [Wizard step] # sabnzbd/wizard.py:86
+msgid "Step One"
+msgstr "Vaihe yksi"
+
+#: sabnzbd/skintext.py:890 [Wizard step] # sabnzbd/wizard.py:129
+msgid "Step Two"
+msgstr "Vaihe kaksi"
+
+#: sabnzbd/skintext.py:891 [Wizard step] # sabnzbd/wizard.py:168
+msgid "Step Three"
+msgstr "Vaihe kolme"
+
+#: sabnzbd/skintext.py:892 [Wizard step] # sabnzbd/wizard.py:188
+msgid "Step Four"
+msgstr "Vaihe neljä"
+
+#: sabnzbd/skintext.py:893 [Wizard step]
+msgid "Step Five"
+msgstr "Vaihe viisi"
+
+#: sabnzbd/skintext.py:894 [Wizard port number examples]
+msgid "E.g. 119 or 563 for SSL"
+msgstr "Esim. 119 tai 563 SSL yhteyksille"
+
+#: sabnzbd/skintext.py:895 [Wizard EXIT button on first page]
+msgid "Exit SABnzbd"
+msgstr "Poistu SABnzbd:stä"
+
+#: sabnzbd/skintext.py:896 [Wizard START button on first page]
+msgid "Start Wizard"
+msgstr "Käynnistä velho"
+
+#: sabnzbd/skintext.py:897
+msgid "If you do not have an account it can be created at "
+msgstr "Jos sinulla ei ole vielä tiliä, voit luoda sen osoitteessa "
+
+#: sabnzbd/skintext.py:900
+msgid ""
+"\n"
+"SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
+"This is free software, and you are welcome to redistribute it under certain "
+"conditions.\n"
+"It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your "
+"option) any later version.\n"
+msgstr ""
+"\n"
+"SABnzbd ohjelmalla EI OLE MINKÄÄNLAISTA TAKUUTA.\n"
+"Tämä on ilmainen ohjelma ja olet vapaa levittämään sitä tiettyjen ehtojen "
+"ollessa voimassa.\n"
+"Se on lisensoitu GNU GENERAL PUBLIC LICENSE Versio 2 alaiseksi ja (oman "
+"valinnan mukaan) myös myöhempien versioiden.\n"
+
+#: sabnzbd/tvsort.py:327 [Error message]
+msgid "Error getting TV info (%s)"
+msgstr "Virhe noudettaessa TV tietoja (%s)"
+
+#: sabnzbd/tvsort.py:696 [Error message] # sabnzbd/tvsort.py:720 [Error message] # sabnzbd/tvsort.py:908 [Error message]
+msgid "Failed to rename: %s to %s"
+msgstr "Virhe uudelleennimettäessä: %s %s"
+
+#: sabnzbd/tvsort.py:1148 [Error message]
+msgid "Failed to rename similar file: %s to %s"
+msgstr "Samankaltaisen tiedoston uudelleennimeäminen epäonnistui: %s %s"
+
+#: sabnzbd/urlgrabber.py:326 # sabnzbd/urlgrabber.py:344
+msgid "Invalid nzbmatrix report number %s"
+msgstr "Virheellinen nzbmatrix raporttinumero %s"
+
+#: sabnzbd/urlgrabber.py:332
+msgid "You need an nzbmatrix VIP account to use the API"
+msgstr "Tarvitset nzbmatrix VIP-tilin käyttääksesi API:a"
+
+#: sabnzbd/urlgrabber.py:334
+msgid "Invalid nzbmatrix credentials"
+msgstr "Virheelliset nzbmatrix käyttäjätiedot"
+
+#: sabnzbd/urlgrabber.py:352
+msgid "Problem accessing nzbmatrix server (%s)"
+msgstr "Ongelma nzbmatrix palvelimeen pääsyssä (%s)"
+
+#: sabnzbd/utils/servertests.py:35
+msgid "The hostname is not set."
+msgstr "Isäntänimeä ei ole asetettu."
+
+#: sabnzbd/utils/servertests.py:41
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
+
+#: sabnzbd/utils/servertests.py:74
+msgid "Password masked in ******, please re-enter"
+msgstr "Salasana on piilotettu ******, syötä uudelleen"
+
+#: sabnzbd/utils/servertests.py:78
+msgid "Invalid server details"
+msgstr "Virheelliset palvelimen tiedot"
+
+#: sabnzbd/utils/servertests.py:90
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
+
+#: sabnzbd/utils/servertests.py:92
+msgid "Timed out"
+msgstr "Aikakatkaistiin"
+
+#: sabnzbd/utils/servertests.py:97
+msgid "Invalid server address."
+msgstr "Virheellinen palvelimen osoite."
+
+#: sabnzbd/utils/servertests.py:101
+msgid "Server quit during login sequence."
+msgstr "Palvelin lopetettiin kesken kirjautumisen"
+
+#: sabnzbd/utils/servertests.py:123
+msgid "Server requires username and password."
+msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
+
+#: sabnzbd/utils/servertests.py:126
+msgid "Connection Successful!"
+msgstr "Yhdistäminen onnistui!"
+
+#: sabnzbd/utils/servertests.py:129
+msgid "Authentication failed, check username/password."
+msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
+
+#: sabnzbd/utils/servertests.py:132
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
+
+#: sabnzbd/utils/servertests.py:135
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+
+#~ msgid ""
+#~ "Error Fetching msgid %s from www.newzbin.com - Please make sure your "
+#~ "Username and Password are set"
+#~ msgstr ""
+#~ "Virhe noudettaessa msgid %s osoitteesta www.newzbin.com - Tarkista "
+#~ "käyttäjänimi ja salasana"
+
+#~ msgid "fetching msgid %s from www.newzbin.com"
+#~ msgstr "noudetaan msgid %s osoitteesta www.newzbin.com"
+
+#~ msgid "Expected size did not equal actual size"
+#~ msgstr "Odotettu koko ei vastannut todellista kokoa"
