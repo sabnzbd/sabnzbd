@@ -8,6 +8,8 @@
 - Limit article cache to 1G to prevent a memory size bug in the _yenc module
 - Fix a number of problems with embedded passwords and folder size trimming
 - Allow "float" timestamps in RSS feeds
+- Expose 'rating_host' to Config->Special
+- Add Finnish translation
 -------------------------------------------------------------------------------
  0.7.19RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------

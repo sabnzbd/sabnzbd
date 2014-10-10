@@ -5,6 +5,7 @@ Release Notes  -  SABnzbd 0.7.19RC2
 
 - Extended filtering for oznzb.com
 - Upgrade to unrar 5.11 (OSX and Windows)
+- Add Finnish translation
 
 ## Bug fixes
 - Fix OSX notification center problem
