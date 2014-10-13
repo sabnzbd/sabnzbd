@@ -1012,6 +1012,10 @@ def compatibility_fix(cf):
                 del cf[old]
             except KeyError:
                 pass
+    try:
+        cf['rating_host'] = cf['rating_host'].replace('www.oznzb.com', 'api.oznzb.com')
+    except KeyError:
+        pass
 
 def newzbin_fix(cf):
     """ Replace old newzbin links """
