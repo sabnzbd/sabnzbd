@@ -615,7 +615,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             msg = ('[%s] '+Ta('ERROR: CRC failed in "%s"')) % (setname, latin1(filename))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             logging.warning(Ta('ERROR: CRC failed in "%s"'), latin1(setname))
-            fail = 3
+            fail = 2 # Older unrar versions report a wrong password as a CRC error
 
         elif line.startswith('Write error'):
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
