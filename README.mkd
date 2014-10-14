@@ -1,4 +1,4 @@
-Release Notes  -  SABnzbd 0.7.19RC2
+Release Notes  -  SABnzbd 0.7.19RC3
 ===================================
 
 ## Features
@@ -14,6 +14,9 @@ Release Notes  -  SABnzbd 0.7.19RC2
 - Change renaming scheme for duplicate files
 - Fix sorting of the queue
 - Prevent removal of embedded passwords in filenames by trimming option
+- Improve password trial when the system uses an older unrar tool
+- OSX app is signed properly
+
 
 ## What's new in 0.7.0
 
