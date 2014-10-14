@@ -439,8 +439,8 @@ if target == 'app':
     py_ver = '%s.%s' % (sys.version_info[0], sys.version_info[1])
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/Cheetah -name '*.py' | xargs rm" % py_ver)
     os.system("find dist/SABnzbd.app/Contents/Resources/lib/python%s/xml -name '*.py' | xargs rm" % py_ver)
-    os.system('rm dist/SABnzbd.app/Contents/Resources/site.py')
-    
+    os.system('rm dist/SABnzbd.app/Contents/Resources/site.py 2>/dev/null')
+
     # Add the SabNotifier app
     if OSX_ML and os.path.exists(os.path.join(os.environ['HOME'], 'sabnotifier/SABnzbd.app')):
         os.system("cp -pR $HOME/sabnotifier/SABnzbd.app dist/SABnzbd.app/Contents/Resources/")

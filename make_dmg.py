@@ -83,8 +83,7 @@ for build in xrange(len(builds)):
     vol_path = '/Volumes/%s/%s/' % (volume, build_folders[build])
     os.system('ditto -x -z "%s" "%s"' % (build_paths[build], vol_path))
     if authority:
-        app_name = '%s-%s' % (volume, builds[build])
-        os.system('codesign -f -i "%s" -s "%s" "%s/SABnzbd.app"' % (app_name, authority, vol_path))
+        os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "%s/SABnzbd.app"' % (authority, vol_path))
 
 
 # Put README.rtf in root
