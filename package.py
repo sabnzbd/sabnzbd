@@ -416,7 +416,15 @@ if target == 'app':
         os.system("mv dist/SABnzbd.app dist/SABnzbd.app.temp")
         os.system("ditto --arch i386 --arch ppc dist/SABnzbd.app.temp dist/SABnzbd.app/")
         os.system("rm -rf dist/SABnzbd.app.temp")
-    
+
+    # Create a symlink for Mavericks compatibility
+    if not OSX_SL:
+        cdir = os.getcwd()
+        os.chdir('dist/SABnzbd.app/Contents/Frameworks/Python.framework/Versions')
+        if os.path.exists('2.7') and not os.path.exists('Current'):
+            os.system('ln -s 2.7 Current')
+        os.chdir(cdir)
+
     # copy unrar, 7zip & par2 binary
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
