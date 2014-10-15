@@ -283,18 +283,21 @@ def sanitize_foldername(name, limit=True):
 def sanitize_and_trim_path(path):
     """ Remove illegal characters and trim element size
     """
+    path = path.strip()
     path = path.replace('\\', '/')
     parts = path.split('/')
     if sabnzbd.WIN32 and len(parts[0]) == 2 and ':' in parts[0]:
         new_path = parts[0]
         parts.pop(0)
+    elif path.startswith('//'):
+        new_path = '//'
     elif path.startswith('/'):
         new_path = '/'
     else:
         new_path = ''
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
-    return new_path
+    return os.path.abspath(os.path.normpath(new_path))
 
 
 #------------------------------------------------------------------------------
