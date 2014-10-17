@@ -895,10 +895,13 @@ def get_filepath(path, nzo, filename):
         nzo.created = True
 
     fPath = os.path.join(os.path.join(path, dName), filename)
+    fPath, ext = os.path.splitext(fPath)
     n = 0
     while True:
-        fullPath = fPath
-        if n: fullPath += '.' + str(n)
+        if n:
+            fullPath = "%s.%d%s" % (fPath, n, ext)
+        else:
+            fullPath = fPath + ext
         if os.path.exists(fullPath):
             n = n + 1
         else:
