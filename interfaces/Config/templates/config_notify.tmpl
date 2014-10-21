@@ -119,6 +119,26 @@
                     <input type="password" name="growl_password" id="growl_password" value="$growl_password" size="30" />
                     <span class="desc">$T('explain-growl_password')</span>
                 </div>
+                <div class="field-pair" >
+                    <label class="config" for="pushover_enable">$T('opt-pushover_enable')</label>
+                    <input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if int($pushover_enable) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-pushover_enable')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="pushover_token">$T('opt-pushover_token')</label>
+                    <input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" size="40" />
+                    <span class="desc">$T('explain-pushover_token')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_userkey">$T('opt-pushover_userkey')</label>
+                    <input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" size="40" />
+                    <span class="desc">$T('explain-pushover_userkey')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_device">$T('opt-pushover_device')</label>
+                    <input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" size="20" />
+                    <span class="desc">$T('explain-pushover_device')</span>
+                </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
                     <input type="button" value="$T('testNotify')" id="test_notification" />

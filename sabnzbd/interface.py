@@ -2631,7 +2631,7 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable', 'ncenter_enable')
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable', 'ncenter_enable', 'pushover_enable', 'pushover_token', 'pushover_userkey', 'pushover_device')
 
 class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
@@ -2652,6 +2652,7 @@ class ConfigNotify(object):
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
         conf['have_ncenter'] = sabnzbd.DARWIN_ML and bool(sabnzbd.growler.ncenter_path())
+        conf['have_pushover'] = True
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()

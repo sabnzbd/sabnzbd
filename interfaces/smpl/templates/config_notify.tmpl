@@ -68,7 +68,7 @@
 
 </fieldset>
 
-<!--#if $have_growl or $have_ntfosd#-->
+<!--#if $have_growl or $have_ntfosd or $have_pushover#-->
   <fieldset class="EntryFieldSet">
   <legend>$T('growlSettings')</legend>
   <hr />
@@ -92,6 +92,27 @@
       <label class="label">$T('opt-growl_password'):</label>
       <input type="password" size="35" name="growl_password" value="$growl_password">
       <span class="tips">$T('explain-growl_password')</span>
+      <br class="clear" />
+    <!--#end if#-->
+    <!--#if $have_pushover#-->
+      <label><span class="label">$T('opt-pushover_enable'):</span>
+      <input class="radio" type="checkbox" name="pushover_enable" value="1" <!--#if $pushover_enable != "0" then "checked=1" else ""#--> />
+      <span class="tips">$T('explain-pushover_enable')</span></label>
+      <br class="clear" />
+
+      <label class="label">$T('opt-pushover_token'):</label>
+      <input type="text" size="35" name="pushover_token" value="$pushover_token">
+      <span class="tips">$T('explain-pushover_token')</span>
+      <br class="clear" />
+
+      <label class="label">$T('opt-pushover_userkey'):</label>
+      <input type="text" size="35" name="pushover_userkey" value="$pushover_userkey">
+      <span class="tips">$T('explain-pushover_userkey')</span>
+      <br class="clear" />
+
+      <label class="label">$T('opt-pushover_device'):</label>
+      <input type="text" size="20" name="pushover_device" value="$pushover_device">
+      <span class="tips">$T('explain-pushover_device')</span>
       <br class="clear" />
     <!--#end if#-->
 
