@@ -287,7 +287,7 @@ def sanitize_and_trim_path(path):
     path = path.replace('\\', '/')
     parts = path.split('/')
     if sabnzbd.WIN32 and len(parts[0]) == 2 and ':' in parts[0]:
-        new_path = parts[0]
+        new_path = parts[0] + '/'
         parts.pop(0)
     elif path.startswith('//'):
         new_path = '//'
