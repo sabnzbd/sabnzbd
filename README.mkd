@@ -1,5 +1,7 @@
-Release Notes  -  SABnzbd 0.7.19RC3
+Release Notes  -  SABnzbd 0.7.19RC4
 ===================================
+
+RC4 : Fixes bug in RC3: Damaging job's destination path on Windows
 
 ## Features
 
