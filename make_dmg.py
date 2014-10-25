@@ -27,7 +27,7 @@ OSX_MAV = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 9, 0]
 # Check if signing is possible
 authority = os.environ.get('SIGNING_AUTH')
 if authority and not OSX_MAV:
-    print 'Signing is only possible on OSX Mavericks (10.9.x) or higher'
+    print 'Signing should be done on OSX Mavericks (10.9.x) or higher'
     exit(1)
 
 if len(sys.argv) < 2:
@@ -78,12 +78,13 @@ m = re.search(r'/dev/(\w+)\s+', data)
 volume = 'SABnzbd-' + str(release)
 os.system('diskutil rename %s %s' % (m.group(1), volume))
 
-# Unpack build into image and sign if possible
+# Unpack build into image and sign if possible and not already done and not SnowLeopard
 for build in xrange(len(builds)):
     vol_path = '/Volumes/%s/%s/' % (volume, build_folders[build])
     os.system('ditto -x -z "%s" "%s"' % (build_paths[build], vol_path))
-    if authority:
-        os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "%s/SABnzbd.app"' % (authority, vol_path))
+    if authority and builds[build] != 'sl':
+        if not os.path.exists(os.path.join(vol_path, 'SABnzbd.app/Contents/_CodeSignature')):
+            os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "%s/SABnzbd.app"' % (authority, vol_path))
 
 
 # Put README.rtf in root

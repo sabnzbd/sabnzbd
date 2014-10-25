@@ -456,6 +456,11 @@ if target == 'app':
 
     os.system("sleep 5")
 
+    # Sign if possible
+    authority = os.environ.get('SIGNING_AUTH')
+    if authority:
+        os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "dist/SABnzbd.app"' % authority)
+        
     # Archive result to share, if present
     dest_path = os.environ.get('SHARE')
     if dest_path and os.path.exists(dest_path):
