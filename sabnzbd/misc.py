@@ -269,7 +269,9 @@ def sanitize_foldername(name, limit=True):
             lst.append(ch)
     name = ''.join(lst)
 
-    name = name.strip().rstrip('.')
+    name = name.strip()
+    if name != '.' and name != '..':
+        name = name.rstrip('.')
     if not name:
         name = 'unknown'
 
