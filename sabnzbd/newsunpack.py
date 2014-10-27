@@ -714,7 +714,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             missing = []
             # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
-                if one_folder:
+                if one_folder or cfg.flat_unpack():
                     path = os.path.split(path)[1]
                 path = unicode2local(path)
                 if '?' in path:
