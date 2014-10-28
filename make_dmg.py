@@ -42,7 +42,7 @@ fileOSr = prod + '-osx-src.tar.gz'
 fileImg = prod + '.sparseimage'
 builds = ('sl', 'lion', 'ml')
 build_folders = (
-        'SnowLeopard',
+        'Snow Leopard',
         'Lion',
         '.'
         )
