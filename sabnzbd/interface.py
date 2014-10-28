@@ -2146,6 +2146,7 @@ class ConfigCats(object):
         for cat in sorted(categories.keys()):
             slot = categories[cat].get_dict()
             slot['name'] = cat
+            slot['newzbin'] = slot['newzbin'].replace('"', '&quot;')
             slotinfo.append(slot)
         slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
