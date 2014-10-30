@@ -1,7 +1,5 @@
-Release Notes  -  SABnzbd 0.7.19RC4
-===================================
-
-RC4 : Fixes bug in RC3: Damaging job's destination path on Windows
+Release Notes  -  SABnzbd 0.7.19
+================================
 
 ## Features
 
@@ -18,6 +16,9 @@ RC4 : Fixes bug in RC3: Damaging job's destination path on Windows
 - Fix sorting of the queue
 - Prevent removal of embedded passwords in filenames by trimming option
 - Improve password trial when the system uses an older unrar tool
+- Support double quotes to delineate parameters in category match lists.
+- When a comma is present in a file name, quotes are needed when passed to a user script
+- The after-unrar-check needs to take the "flat_unpack" option into account
 - OSX app is signed properly
 
 

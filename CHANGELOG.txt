@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.7.19 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Support double quotes to delineate parameters in category match lists.
+- When a comma is present in a file name, quotes are needed when passed to a user script
+- The after-unrar-check needs to take the "flat_unpack" option into account
+- When sanitizing names, preserve "." and ".." elements in paths
+-------------------------------------------------------------------------------
  0.7.19RC4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix damaging of job's destination path on Windows
