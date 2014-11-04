@@ -55,6 +55,9 @@ def send(message, email_to, test=None):
         email_from    = test.get('email_from')
         email_account = test.get('email_account')
         email_pwd     = test.get('email_pwd')
+        if email_pwd and not email_pwd.replace('*', ''):
+            # If all stars, get stored password instead
+            email_pwd = cfg.email_pwd()
     else:
         email_server  = cfg.email_server()
         email_from    = cfg.email_from()
@@ -113,8 +116,14 @@ def send(message, email_to, test=None):
         if (email_account != "") and (email_pwd != ""):
             try:
                 mailconn.login(email_account, email_pwd)
+            except smtplib.SMTPHeloError:
+                return errormsg(T("The server didn't reply properly to the helo greeting"))
+            except smtplib.SMTPAuthenticationError:
+                return errormsg(T("Failed to authenticate to mail server"))
+            except smtplib.SMTPException:
+                return errormsg(T("No suitable authentication method was found"))
             except:
-                return errormsg(T('Failed to authenticate to mail server'))
+                return errormsg(T("Unknown authentication failure in mail server"))
 
         try:
             mailconn.sendmail(email_from, email_to, message)
@@ -188,7 +197,7 @@ def send_with_template(prefix, parm, test=None):
                     recipients = [ test.get('email_to') ]
                 else:
                     recipients = cfg.email_to()
-                
+
                 if len(recipients):
                     for recipient in recipients:
                         parm['to'] = recipient
@@ -219,7 +228,7 @@ def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, 
         xstages = {tr('stage-fail'): (fail_msg,)}
     else:
         xstages = {}
-    
+
     for stage in stages:
         lines = []
         for line in stages[stage]:
