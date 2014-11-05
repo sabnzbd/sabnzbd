@@ -65,9 +65,10 @@ elif os.name == 'posix':
         if platform.machine() == 'i386':
             DARWIN_INTEL = True
 if DARWIN:
+    DARWIN_YS = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 9]
     DARWIN_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8]
 else:
-    DARWIN_ML = False
+    DARWIN_YS = DARWIN_ML = False
 
 #------------------------------------------------------------------------
 
