@@ -59,14 +59,14 @@
   prevents the removal.
 
 - Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
-  memory systems (eg a SAN device) a challenge.
+  memory systems (e.g. a NAS device or a router) a challenge.
 
 - SABnzbd is not compatible with some software firewall versions.
   The Mircosoft Windows Firewall works fine, but remember to tell this
   firewall that SABnzbd is allowed to talk to other computers.
 
 - When SABnzbd cannot send nofication emails, check your virus scanner,
-  firewall or securiry suite. It may be blocking outgoing email.
+  firewall or security suite. It may be blocking outgoing email.
 
 - When you are using external drives or network shares on OSX or Linux
   make sure that the drives are mounted.
@@ -74,6 +74,12 @@
   You may have trouble finding the files when mounting the drive later.
   On OSX, SABnzbd will not create new folders in /Volumes.
   The result will be a failed job that can be retried once the volume has been mounted.
+
+- If you use a mounted drive as "temporary download folder", it must be present when SABnzbd
+  starts up. If not, SABnzbd will use the default location.
+  You can make SABnzbd wait for a mount of the "temporary download folder" by setting
+  Config->Special->wait_for_dfolder to 1.
+  SABnzbd will appear to hang until the drive is mounted.
 
 - On some operating systems it looks like there is a problem with one of the standard Python libraries.
   It is possible that you get errors about saving admin files and even unexplained crashes.
