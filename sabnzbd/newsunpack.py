@@ -1328,7 +1328,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = Status.FAILED
+                    nzo.status = Status.FETCHING
                     needed_blocks = avail_blocks
                     force = True
 
