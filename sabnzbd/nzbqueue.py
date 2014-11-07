@@ -154,6 +154,7 @@ class NzbQueue(TryList):
             verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x':False}
             return not bool([True for x in verified if not verified[x]])
 
+        nzo_id = None
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):
@@ -165,15 +166,18 @@ class NzbQueue(TryList):
                 filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
-                sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
+                nzo_id = sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
             else:
                 logging.debug('Repair job %s without stored NZB', latin1(name))
                 nzo = NzbObject(name, 0, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
                 self.add(nzo)
+                nzo_id = nzo.nzo_id
         else:
             remove_all(path, '*.gz')
             logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(filename))
-            sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
+            nzo_id = sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
+
+        return nzo_id
 
 
     def send_back(self, nzo):
@@ -951,7 +955,7 @@ def sort_queue(field, reverse=False):
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
 def repair_job(folder, new_nzb):
-    NzbQueue.do.repair_job(folder, new_nzb)
+    return NzbQueue.do.repair_job(folder, new_nzb)
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
