@@ -149,7 +149,7 @@ class Rating(Thread):
 
     # The same file may be uploaded multiple times creating a new nzo_id each time
     @synchronized(RATING_LOCK)
-    def add_rating(self, indexer_id, nzo_id, fields):
+    def add_rating(self, indexer_id, nzo_id, host, fields):
         if indexer_id and nzo_id and (len(fields) == 10):
             logging.debug('Add rating (%s, %s: %s, %s, %s, %s)', indexer_id, nzo_id, fields['video'], fields['audio'], fields['voteup'], fields['votedown'])
             try:
@@ -166,6 +166,7 @@ class Rating(Thread):
                 if fields['confirmed-spam']: rating.avg_spam_confirm = (fields['confirmed-spam'].lower() == 'yes')
                 if fields['passworded']: rating.avg_encrypted_cnt = int(float(fields['passworded']))                
                 if fields['confirmed-passworded']: rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
+                rating.host = host[0] if host and isinstance(host, list) else host
                 self.ratings[indexer_id] = rating
                 self.nzo_indexer_map[nzo_id] = indexer_id
             except:
@@ -238,12 +239,16 @@ class Rating(Thread):
 
         api_key = cfg.rating_api_key()
         rating_host = cfg.rating_host()
-        if not api_key or not rating_host:
-            return False
+        if not api_key:
+            return True
 
         requests = []
         _headers = {'User-agent' : 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
         rating = self._get_rating_by_indexer(indexer_id) # Requesting info here ensures always have latest information even on retry
+        if hasattr(rating, 'host') and rating.host:
+            rating_host = rating.host
+        if not rating_host:
+            return True
         if rating.changed & Rating.CHANGED_USER_VIDEO:
             requests.append({'m': 'r', 'r': 'videoQuality', 'rn': rating.user_video})
         if rating.changed & Rating.CHANGED_USER_AUDIO:

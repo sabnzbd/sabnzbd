@@ -1319,7 +1319,7 @@ class NzbObject(TryList):
             fields = {}
             for k in rating_types:
                 fields[k] = _get_first_meta(k)
-            Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, fields)
+            Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
         except:
             pass
 

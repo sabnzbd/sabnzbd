@@ -1212,7 +1212,7 @@ SWITCH_LIST = \
              'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless',
-             'rating_enable', 'rating_api_key', 'rating_host', 'rating_feedback', 'rating_filter_enable', 
+             'rating_enable', 'rating_api_key', 'rating_feedback', 'rating_filter_enable', 
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
              'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
