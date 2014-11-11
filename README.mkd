@@ -1,25 +1,14 @@
-Release Notes  -  SABnzbd 0.7.19
-================================
+Release Notes  -  SABnzbd 0.7.20RC1
+===================================
 
 ## Features
 
-- Extended filtering for oznzb.com
-- Earlier detection of Unwanted Extension if in last rar file
-- Upgrade to unrar 5.11 (OSX and Windows)
-- Add Finnish translation
+- API call "Retry" now returns new job id
+- Support of OSX Yosemite "Dark Mode"
 
 ## Bug fixes
-- Fix OSX notification center problem
-- Fix sort order of RSS feeds
-- Prevent multiple pauses in "unwanted extensions" option
-- Change renaming scheme for duplicate files
-- Fix sorting of the queue
-- Prevent removal of embedded passwords in filenames by trimming option
-- Improve password trial when the system uses an older unrar tool
-- Support double quotes to delineate parameters in category match lists.
-- When a comma is present in a file name, quotes are needed when passed to a user script
-- The after-unrar-check needs to take the "flat_unpack" option into account
-- OSX app is signed properly
+- OSX unrar now really updated to 5.11
+- Fix email test issue
 
 
 ## What's new in 0.7.0

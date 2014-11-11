@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+ 0.7.20RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- OSX unrar now really updated to 5.11
+- API call "Retry" now returns new job id
+- Support for NZB meta field 'x-rating-host'
+- Fix email test issue
+- Support of OSX Yosemite "Dark Mode"
+-------------------------------------------------------------------------------
  0.7.19 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Support double quotes to delineate parameters in category match lists.
