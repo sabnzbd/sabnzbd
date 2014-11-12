@@ -124,7 +124,7 @@ def init():
             logging.warning(Ta('Unknown action: %s'), action_name)
             continue
 
-        logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
+        logging.debug("scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
 
         __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
                              kronos.method.sequential, arguments, None)
