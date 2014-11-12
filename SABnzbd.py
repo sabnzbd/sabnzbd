@@ -1309,6 +1309,24 @@ def main():
             logging.debug('Could not determine my IPv6 address')
             pass
 
+        # measure and log Pystone performance, and - if possible - CPU type
+        try:
+            # First try pystone from Python test libary
+            from test.pystone import pystones
+        except:
+            # otherwise use the one provided by SABnzbd
+            from util.pystone import pystones
+        pystonetime,pystoneperformance = pystones(1000)
+        logging.debug('CPU Pystone available performance is %s',int(pystoneperformance))
+        try:	
+            for myline in open("/proc/cpuinfo"):
+                if myline.startswith(('model name')):
+                    logging.debug('CPU model name is %s', myline[13:].rstrip() )
+                    break
+        except:
+            # probably not on Linux
+            pass
+
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
         logging.info('[osx] IO priority setting')
