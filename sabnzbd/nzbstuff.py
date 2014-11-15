@@ -1312,7 +1312,7 @@ class NzbObject(TryList):
     def update_rating(self):
         try:
             def _get_first_meta(type):
-                values = self.meta.get('x-oznzb-rating-' + type, None)
+                values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
                 return values[0] if values else None
             rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
                             'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
