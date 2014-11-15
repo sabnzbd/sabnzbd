@@ -1,14 +1,19 @@
-Release Notes  -  SABnzbd 0.7.20RC1
+Release Notes  -  SABnzbd 0.7.20RC2
 ===================================
+
 
 ## Features
 
 - API call "Retry" now returns new job id
 - Support of OSX Yosemite "Dark Mode"
 
-## Bug fixes
+## Bug fixes RC1
 - OSX unrar now really updated to 5.11
 - Fix email test issue
+
+## Bug fixed RC2
+- unrar is now updated to 5.11 for Intel systems running (Snow)Leopard
+- (Snow)Leopard on PPC still only has unrar 4.01, support stopped
 
 
 ## What's new in 0.7.0
