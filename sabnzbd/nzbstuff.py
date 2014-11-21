@@ -1310,18 +1310,19 @@ class NzbObject(TryList):
     # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
     def update_rating(self):
-        try:
-            def _get_first_meta(type):
-                values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
-                return values[0] if values else None
-            rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
-                            'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
-            fields = {}
-            for k in rating_types:
-                fields[k] = _get_first_meta(k)
-            Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
-        except:
-            pass
+        if cfg.rating_enable():
+            try:
+                def _get_first_meta(type):
+                    values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
+                    return values[0] if values else None
+                rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
+                                'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
+                fields = {}
+                for k in rating_types:
+                    fields[k] = _get_first_meta(k)
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
+            except:
+                pass
 
     ## end nzo.Mutators #######################################################
     ###########################################################################

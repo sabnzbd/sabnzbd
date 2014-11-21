@@ -1056,7 +1056,8 @@ class HistoryPage(object):
                 audio = kwargs.get('audio') if kwargs.get('audio') != "-" else None                
                 flag = flag_map.get(kwargs.get('rating_flag'))
                 detail = kwargs.get('expired_host') if kwargs.get('expired_host') != '<Host>' else None
-                Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail) 
+                if cfg.rating_enable():
+                    Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail) 
         except:
             pass
         self.__edit_rating = None;

@@ -283,7 +283,8 @@ def _api_queue_rating(output, value, kwargs):
             audio = setting if type == 'audio' and setting != "-" else None
             vote = vote_map[setting] if type == 'vote' else None
             flag = flag_map[setting] if type == 'flag' else None
-            Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
+            if cfg.rating_enable():
+                Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
             return report(output)
         except:
             return report(output, _MSG_BAD_SERVER_PARMS)
