@@ -1,19 +1,17 @@
-Release Notes  -  SABnzbd 0.7.20RC2
-===================================
+Release Notes  -  SABnzbd 0.7.20
+================================
 
 
 ## Features
 
-- API call "Retry" now returns new job id
 - Support of OSX Yosemite "Dark Mode"
+- API call "Retry" now returns new job id (supporting nzbdrone)
 
-## Bug fixes RC1
-- OSX unrar now really updated to 5.11
-- Fix email test issue
-
-## Bug fixed RC2
+## Bug fixes
+- OSX unrar now really updated to 5.11 for Lion and higher
 - unrar is now updated to 5.11 for Intel systems running (Snow)Leopard
-- (Snow)Leopard on PPC still only has unrar 4.01, support stopped
+- (Snow)Leopard on PPC still only has unrar 4.01, no new versions from rarlabs
+- Fix email test issue
 
 
 ## What's new in 0.7.0
@@ -44,7 +42,7 @@ Release Notes  -  SABnzbd 0.7.20RC2
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2013 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2014 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
 ### IMPORTANT INFORMATION about release 0.7.x
