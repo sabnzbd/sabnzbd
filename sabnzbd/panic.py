@@ -41,7 +41,7 @@ def MSG_BAD_NEWS():
     return r'''
     <html>
     <head>
-    <title>''' + Ta('Problem with') + ''' %s %s</title>
+    <title>''' + T('Problem with') + ''' %s %s</title>
     </head>
     <body>
     <h1><font color="#0000FF"> %s %s</font></h1>
@@ -129,7 +129,7 @@ def MSG_BAD_TEMPL():
 ''')
 
 def MSG_OTHER():
-    return Ta('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
+    return T('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
 
 def MSG_OLD_QUEUE():
     return Ta(r'''
@@ -137,7 +137,7 @@ def MSG_OLD_QUEUE():
     You can convert the queue by clicking "Repair" in Status-&gt;"Queue Repair".<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
     Click OK to proceed to SABnzbd''') + \
-    ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % Ta('OK'))
+    ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % T('OK'))
 
 def MSG_SQLITE():
     return Ta(r'''
@@ -151,10 +151,10 @@ def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
     if sabnzbd.WIN32:
-        os_str = Ta('Press Startkey+R and type the line (example):')
+        os_str = T('Press Startkey+R and type the line (example):')
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
-        os_str = Ta('Open a Terminal window and type the line (example):')
+        os_str = T('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
     if panic == PANIC_PORT:
@@ -174,7 +174,7 @@ def panic_message(panic, a=None, b=None):
         msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
     elif panic == PANIC_FWALL:
         if a:
-            msg = MSG_BAD_FWALL() % Ta('It is likely that you are using ZoneAlarm on Vista.<br>')
+            msg = MSG_BAD_FWALL() % T('It is likely that you are using ZoneAlarm on Vista.<br>')
         else:
             msg = MSG_BAD_FWALL() % "<br>"
     elif panic == PANIC_SQLITE:
@@ -185,7 +185,7 @@ def panic_message(panic, a=None, b=None):
         msg = MSG_OTHER() % (a, b)
 
     msg = MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
-                          msg, Ta('Program did not start!'))
+                          msg, T('Program did not start!'))
 
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
@@ -210,7 +210,7 @@ def panic_host(host, port):
 
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
-    logging.error(Ta('You have no permisson to use port %s'), port)
+    logging.error(T('You have no permisson to use port %s'), port)
 
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
@@ -226,7 +226,7 @@ def panic_old_queue():
     return MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 def panic(reason, remedy=""):
-    print "\n%s:\n  %s\n%s" % (Ta('Fatal error'), reason, remedy)
+    print "\n%s:\n  %s\n%s" % (T('Fatal error'), reason, remedy)
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
@@ -250,7 +250,7 @@ def launch_a_browser(url, force=False):
             url = 'file:///%s' % url
         webbrowser.open(url, 2, 1)
     except:
-        logging.warning(Ta('Cannot launch the browser, probably not found'))
+        logging.warning(T('Cannot launch the browser, probably not found'))
         logging.info("Traceback: ", exc_info = True)
 
 

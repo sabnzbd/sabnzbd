@@ -80,7 +80,7 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning(Ta('Bad schedule %s at %s:%s'), action_name, m, h)
+            logging.warning(T('Bad schedule %s at %s:%s'), action_name, m, h)
             continue
 
         if d.isdigit():
@@ -145,7 +145,7 @@ def init():
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [HIGH_PRIORITY]
         else:
-            logging.warning(Ta('Unknown action: %s'), action_name)
+            logging.warning(T('Unknown action: %s'), action_name)
             continue
 
         logging.debug("scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
@@ -345,12 +345,12 @@ def analyse(was_paused=False, priority=None):
             try:
                 servers[value] = 1
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
 
     # Special case, a priority was passed, so evaluate only that and return state
     if priority == LOW_PRIORITY:

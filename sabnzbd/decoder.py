@@ -104,7 +104,7 @@ class Decoder(Thread):
                     nzf.article_count += 1
                     found = True
                 except IOError, e:
-                    logme = Ta('Decoding %s failed') % art_id
+                    logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info = True)
 
@@ -117,7 +117,7 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logme = Ta('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
+                    logme = T('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
                     logging.info(logme)
 
                     data = e.data
@@ -154,7 +154,7 @@ class Decoder(Thread):
                             logging.debug('Server has article %s', art_id)
                             register = True
                     elif not killed and not found:
-                        logme = Ta('Badly formed yEnc article in %s') % art_id
+                        logme = T('Badly formed yEnc article in %s') % art_id
                         logging.info(logme)
 
                     if not found or killed:
@@ -164,7 +164,7 @@ class Decoder(Thread):
                             logme = None
 
                 except:
-                    logme = Ta('Unknown Error while decoding %s') % art_id
+                    logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info = True)
 
@@ -226,7 +226,7 @@ class Decoder(Thread):
                 logging.debug('%s => found at least one untested server', article)
 
         else:
-            msg = Ta('%s => missing from all servers, discarding') % article
+            msg = T('%s => missing from all servers, discarding') % article
             logging.info(msg)
             article.nzf.nzo.inc_log('missing_art_log', msg)
 

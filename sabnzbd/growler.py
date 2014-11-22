@@ -31,7 +31,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder
 from sabnzbd.constants import NOTIFY_KEYS
 
 from gntp import GNTPRegister

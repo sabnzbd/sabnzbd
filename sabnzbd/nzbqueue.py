@@ -42,7 +42,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.growler as growler
-from sabnzbd.encoding import latin1, platform_encode
+from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
 #-------------------------------------------------------------------------------
@@ -86,13 +86,13 @@ class NzbQueue(TryList):
                     queue_vers, nzo_ids, dummy = data
                     if not queue_vers == QUEUE_VERSION:
                         nzo_ids = []
-                        logging.error(Ta('Incompatible queuefile found, cannot proceed'))
+                        logging.error(T('Incompatible queuefile found, cannot proceed'))
                         if not repair:
                             panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                             exit_sab(2)
                 except ValueError:
                     nzo_ids = []
-                    logging.error(Ta('Error loading %s, corrupt file detected'),
+                    logging.error(T('Error loading %s, corrupt file detected'),
                                   os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                     if not repair:
                         return
@@ -183,16 +183,16 @@ class NzbQueue(TryList):
             if not all_verified(path):
                 filename = globber_full(path, '*.gz')
             if len(filename) > 0:
-                logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
+                logging.debug('Repair job %s by reparsing stored NZB', name)
                 nzo_id = sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
             else:
-                logging.debug('Repair job %s without stored NZB', latin1(name))
+                logging.debug('Repair job %s without stored NZB', name)
                 nzo = NzbObject(name, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
                 self.add(nzo)
                 nzo_id = nzo.nzo_id
         else:
             remove_all(path, '*.gz')
-            logging.debug('Repair job %s with new NZB (%s)', latin1(name), latin1(filename))
+            logging.debug('Repair job %s with new NZB (%s)', name, filename)
             nzo_id = sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
 
         return nzo_id
@@ -301,7 +301,7 @@ class NzbQueue(TryList):
 
                 self.reset_try_list()
             except:
-                logging.error(Ta('Error while adding %s, removing'), nzo_id)
+                logging.error(T('Error while adding %s, removing'), nzo_id)
                 logging.info("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
@@ -796,7 +796,7 @@ class NzbQueue(TryList):
 
                 else:
                     if file_has_articles(nzf):
-                        logging.warning(Ta('%s -> Unknown encoding'), filename)
+                        logging.warning(T('%s -> Unknown encoding'), filename)
         if post_done:
             self.end_job(nzo)
 

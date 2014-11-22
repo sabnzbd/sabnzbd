@@ -51,7 +51,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
                          fix_unix_encoding
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.encoding import unicoder, platform_encode, latin1, name_fixer
+from sabnzbd.encoding import unicoder, platform_encode, name_fixer
 from sabnzbd.database import get_history_handle
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
@@ -413,7 +413,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             # Create an NZF
             self.in_file = False
             if not self.article_db:
-                logging.warning(Ta('File %s is empty, skipping'), self.filename)
+                logging.warning(T('File %s is empty, skipping'), self.filename)
                 return
             try:
                 tm = datetime.datetime.fromtimestamp(self.file_date)
@@ -458,7 +458,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
         self.nzo.md5sum = self.md5.hexdigest()
         if self.skipped_files:
-            logging.warning(Ta('Failed to import %s files from %s'),
+            logging.warning(T('Failed to import %s files from %s'),
                             self.skipped_files, self.nzo.filename)
 
 
@@ -651,13 +651,13 @@ class NzbObject(TryList):
             except xml.sax.SAXParseException, err:
                 self.incomplete = True
                 if '</nzb>' not in nzb:
-                    logging.warning(Ta('Incomplete NZB file %s'), filename)
+                    logging.warning(T('Incomplete NZB file %s'), filename)
                 else:
-                    logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
+                    logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                                     filename, err.getMessage(), err.getLineNumber())
             except Exception, err:
                 self.incomplete = True
-                logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
+                logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
 
             if self.incomplete:
                 if cfg.allow_incomplete_nzb():
@@ -682,9 +682,9 @@ class NzbObject(TryList):
             else:
                 mylog = logging.info
             if self.url:
-                mylog(Ta('Empty NZB file %s') + ' [%s]', filename, self.url)
+                mylog(T('Empty NZB file %s') + ' [%s]', filename, self.url)
             else:
-                mylog(Ta('Empty NZB file %s'), filename)
+                mylog(T('Empty NZB file %s'), filename)
             raise ValueError
 
         if cat is None:
@@ -753,12 +753,12 @@ class NzbObject(TryList):
             self.priority = LOW_PRIORITY
 
         if duplicate and cfg.no_dupes() == 1:
-            if cfg.warn_dupl_jobs(): logging.warning(Ta('Ignoring duplicate NZB "%s"'), filename)
+            if cfg.warn_dupl_jobs(): logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data(keep_basic=False)
             raise TypeError
 
         if duplicate or self.priority == DUP_PRIORITY:
-            if cfg.warn_dupl_jobs(): logging.warning(Ta('Pausing duplicate NZB "%s"'), filename)
+            if cfg.warn_dupl_jobs(): logging.warning(T('Pausing duplicate NZB "%s"'), filename)
             self.duplicate = True
             self.pause()
             self.priority = NORMAL_PRIORITY
@@ -1011,19 +1011,19 @@ class NzbObject(TryList):
     def final_name_pw(self):
         prefix = ''
         if self.duplicate:
-            prefix = Ta('DUPLICATE') + ' / ' #: Queue indicator for duplicate job
+            prefix = T('DUPLICATE') + ' / ' #: Queue indicator for duplicate job
         if self.encrypted and self.status == 'Paused':
-            prefix += Ta('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
+            prefix += T('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
         if self.oversized and self.status == 'Paused':
-            prefix += Ta('TOO LARGE') + ' / ' #: Queue indicator for oversized job
+            prefix += T('TOO LARGE') + ' / ' #: Queue indicator for oversized job
         if self.incomplete and self.status == 'Paused':
-            prefix += Ta('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
+            prefix += T('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
         if self.unwanted_ext and self.status == 'Paused':
-            prefix += Ta('UNWANTED') + ' / ' #: Queue indicator for unwanted extensions
+            prefix += T('UNWANTED') + ' / ' #: Queue indicator for unwanted extensions
         if isinstance(self.wait, float):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
-                prefix += Ta('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
+                prefix += T('WAIT %s sec') % dif + ' / ' #: Queue indicator for waiting URL fetch
         if self.password:
             return '%s%s / %s' % (prefix, self.final_name, self.password)
         else:
@@ -1168,7 +1168,7 @@ class NzbObject(TryList):
                             nzf.finish_import()
                             # Still not finished? Something went wrong...
                             if not nzf.import_finished:
-                                logging.error(Ta('Error importing %s'), nzf)
+                                logging.error(T('Error importing %s'), nzf)
                                 nzf_remove_list.append(nzf)
                                 continue
                         else:

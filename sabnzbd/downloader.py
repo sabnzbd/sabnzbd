@@ -258,7 +258,7 @@ class Downloader(Thread):
             if mx:
                 self.bandwidth_limit = mx * int(value) / 100
             else:
-                logging.warning(Ta('You must set a maximum bandwidth before you can set a bandwidth limit'))
+                logging.warning(T('You must set a maximum bandwidth before you can set a bandwidth limit'))
         else:
             self.speed_set()
         logging.info("Bandwidth limit set to %s%%", value)
@@ -301,7 +301,7 @@ class Downloader(Thread):
             server.bad_cons = 0
             server.active = False
             server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
-            logging.warning(Ta('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
+            logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
 
             # Remove all connections to server
@@ -394,7 +394,7 @@ class Downloader(Thread):
                                               nw.thrdnum, server.id)
                             nw.init_connect(self.write_fds)
                         except:
-                            logging.error(Ta('Failed to initialize %s@%s'), nw.thrdnum, server.id)
+                            logging.error(T('Failed to initialize %s@%s'), nw.thrdnum, server.id)
                             logging.info("Traceback: ", exc_info = True)
                             self.__reset_nw(nw, "failed to initialize")
 
@@ -526,30 +526,30 @@ class Downloader(Thread):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
-                                    server.errormsg = Ta('Too many connections to server %s') % display_msg
-                                    logging.error(Ta('Too many connections to server %s'), server.id)
+                                    server.errormsg = T('Too many connections to server %s') % display_msg
+                                    logging.error(T('Too many connections to server %s'), server.id)
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
-                                    server.errormsg = Ta('Probable account sharing') + display_msg
+                                    server.errormsg = T('Probable account sharing') + display_msg
                                     name = ' (%s)' % server.id
-                                    logging.error(Ta('Probable account sharing') + name)
+                                    logging.error(T('Probable account sharing') + name)
                                     penalty = _PENALTY_SHARE
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    server.errormsg = Ta('Failed login for server %s') % display_msg
-                                    logging.error(Ta('Failed login for server %s'), server.id)
+                                    server.errormsg = T('Failed login for server %s') % display_msg
+                                    logging.error(T('Failed login for server %s'), server.id)
                                 penalty = _PENALTY_PERM
                                 block = True
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    server.errormsg = Ta('Cannot connect to server %s [%s]') % ('', display_msg)
-                                    logging.warning(Ta('Cannot connect to server %s [%s]'), server.id, msg)
+                                    server.errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
                                 if clues_pay(msg):
                                     penalty = _PENALTY_PERM
                                 else:
@@ -564,8 +564,8 @@ class Downloader(Thread):
                             else:
                                 # Unknown error, just keep trying
                                 if server.active:
-                                    server.errormsg = Ta('Cannot connect to server %s [%s]') % ('', display_msg)
-                                    logging.error(Ta('Cannot connect to server %s [%s]'), server.id, msg)
+                                    server.errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    logging.error(T('Cannot connect to server %s [%s]'), server.id, msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
@@ -579,7 +579,7 @@ class Downloader(Thread):
                                 self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
-                            logging.error(Ta('Connecting %s@%s failed, message=%s'),
+                            logging.error(T('Connecting %s@%s failed, message=%s'),
                                               nw.thrdnum, nw.server.id, nw.lines[0])
                             # No reset-warning needed, above logging is sufficient
                             self.__reset_nw(nw, None, warn=False)

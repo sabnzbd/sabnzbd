@@ -124,7 +124,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(Ta('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
+            logging.error(T('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
             logging.info('Traceback: ', exc_info = True)
         self.save()
 
@@ -408,7 +408,7 @@ def process_job(nzo):
                     try:
                         newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
                     except:
-                        logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
+                        logging.error(T('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
                         logging.info('Traceback: ', exc_info = True)
                         # Better disable sorting because filenames are all off now
                         file_sorter.sort_file = None
@@ -503,7 +503,7 @@ def process_job(nzo):
             nzo.status = Status.FAILED
 
     except:
-        logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
+        logging.error(T('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
@@ -539,7 +539,7 @@ def process_job(nzo):
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
         sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
-        logging.error(Ta('Cleanup of %s failed.'), nzo.final_name)
+        logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info = True)
 
     ## Remove download folder
@@ -549,7 +549,7 @@ def process_job(nzo):
                 logging.debug('Removing workdir %s', workdir)
                 remove_all(workdir, recursive=True)
         except:
-            logging.error(Ta('Error removing workdir (%s)'), workdir)
+            logging.error(T('Error removing workdir (%s)'), workdir)
             logging.info("Traceback: ", exc_info = True)
 
     # Use automatic retry link on par2 errors and encrypted/bad RARs
@@ -697,7 +697,7 @@ def cleanup_list(wdir, skip_nzb):
                         logging.info("Removing unwanted file %s", path)
                         os.remove(path)
                     except:
-                        logging.error(Ta('Removing %s failed'), path)
+                        logging.error(T('Removing %s failed'), path)
                         logging.info("Traceback: ", exc_info = True)
         if files:
             try:
@@ -772,7 +772,7 @@ def remove_samples(path):
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(Ta('Removing %s failed'), path)
+                    logging.error(T('Removing %s failed'), path)
                     logging.info("Traceback: ", exc_info = True)
 
 

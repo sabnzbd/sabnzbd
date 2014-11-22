@@ -40,7 +40,7 @@ from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
-                             platform_encode, latin1, encode_for_xml
+                             platform_encode, encode_for_xml
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
@@ -172,10 +172,10 @@ def check_session(kwargs):
         key = kwargs.get('apikey')
     msg = None
     if not key:
-        logging.warning(Ta('Missing Session key'))
+        logging.warning(T('Missing Session key'))
         msg = T('Error: Session Key Required')
     elif key != cfg.api_key():
-        logging.warning(Ta('Error: Session Key Incorrect'))
+        logging.warning(T('Error: Session Key Incorrect'))
         msg = T('Error: Session Key Incorrect')
     return msg
 
@@ -213,14 +213,14 @@ def check_apikey(kwargs, nokey=False):
         key = kwargs.get('apikey')
         if not key:
             if not special:
-                log_warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
+                log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)
         elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
-            log_warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
+            log_warning(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect', callback=callback)
 
     # No active APIKEY, check web credentials instead
@@ -229,7 +229,7 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if not special:
-                log_warning(Ta('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
+                log_warning(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication', callback=callback)
     return None
 
@@ -1470,7 +1470,7 @@ class ConfigGeneral(object):
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
-            logging.warning(Ta('You must set a maximum bandwidth before you can set a bandwidth limit'))
+            logging.warning(T('You must set a maximum bandwidth before you can set a bandwidth limit'))
 
         config.save_config()
 
@@ -1740,7 +1740,7 @@ class ConfigRss(object):
 
         # Find a unique new Feed name
         unum = 1
-        txt = Ta('Feed') #: Used as default Feed name in Config->RSS
+        txt = T('Feed') #: Used as default Feed name in Config->RSS
         while txt + str(unum) in feeds:
             unum += 1
         conf['feed'] = txt + str(unum)
@@ -2312,7 +2312,7 @@ class Status(object):
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
+            w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
             wlist.insert(0, unicoder(w))
         header['warnings'] = wlist
 

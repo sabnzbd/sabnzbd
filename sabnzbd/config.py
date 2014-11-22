@@ -218,7 +218,7 @@ class OptionDir(Option):
                 if value and (self.__create or create):
                     res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
                     if not res:
-                        error = Ta("Cannot create %s folder %s") % (self.ident()[1], path)
+                        error = T('Cannot create %s folder %s') % (self.ident()[1], path)
             if not error:
                 self._Option__set(value)
         return error
@@ -795,7 +795,7 @@ def save_config(force=False):
 
     # Check if file is writable
     if not sabnzbd.misc.is_writable(filename):
-        logging.error(Ta('Cannot write to INI file %s'), filename)
+        logging.error(T('Cannot write to INI file %s'), filename)
         return res
 
     # copy current file to backup
@@ -803,7 +803,7 @@ def save_config(force=False):
         shutil.copyfile(filename, bakname)
     except:
         # Something wrong with the backup,
-        logging.error(Ta('Cannot create backup file for %s'), bakname)
+        logging.error(T('Cannot create backup file for %s'), bakname)
         logging.info("Traceback: ", exc_info = True)
         return res
 
@@ -813,7 +813,7 @@ def save_config(force=False):
         modified = False
         res = True
     except:
-        logging.error(Ta('Cannot write to INI file %s'), filename)
+        logging.error(T('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info = True)
         try:
             os.remove(filename)
@@ -942,7 +942,7 @@ def decode_password(pw, name):
             try:
                 ch = chr( int(pw[n] + pw[n+1], 16) )
             except ValueError:
-                logging.error(Ta('Incorrectly encoded password %s'), name)
+                logging.error(T('Incorrectly encoded password %s'), name)
                 return ''
             decPW += ch
         return decPW
@@ -966,7 +966,7 @@ def validate_octal(value):
         int(value, 8)
         return None, value
     except:
-        return Ta('%s is not a correct octal value') % value, None
+        return T('%s is not a correct octal value') % value, None
 
 
 def validate_no_unc(root, value, default):
@@ -975,7 +975,7 @@ def validate_no_unc(root, value, default):
     if value and not value.startswith(r'\\'):
         return validate_notempty(root, value, default)
     else:
-        return Ta('UNC path "%s" not allowed here') % value, None
+        return T('UNC path "%s" not allowed here') % value, None
 
 
 def validate_safedir(root, value, default):
@@ -983,11 +983,11 @@ def validate_safedir(root, value, default):
         On Windows path should be 80 max
     """
     if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) > 80:
-        return Ta('Error: Path length should be below 80.'), None
+        return T('Error: Path length should be below 80.'), None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:
-        return Ta('Error: Queue not empty, cannot change folder.'), None
+        return T('Error: Queue not empty, cannot change folder.'), None
 
 
 def validate_dir_exists(root, value, default):
@@ -996,7 +996,7 @@ def validate_dir_exists(root, value, default):
     if os.path.exists(p):
         return None, value
     else:
-        return Ta('Folder "%s" does not exist') % p, None
+        return T('Folder "%s" does not exist') % p, None
 
 
 def validate_notempty(root, value, default):

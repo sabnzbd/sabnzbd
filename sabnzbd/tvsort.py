@@ -31,7 +31,7 @@ from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_pat
                          get_unique_filename, get_ext, renamer, sanitize_foldername
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import titler, latin1
+from sabnzbd.encoding import titler
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -173,7 +173,7 @@ class Sorter(object):
             try:
                 renamer(old, workdir_complete)
             except:
-                logging.error(Ta('Cannot create directory %s'), workdir_complete)
+                logging.error(T('Cannot create directory %s'), workdir_complete)
                 workdir_complete = old
                 ok = False
         return workdir_complete, ok
@@ -324,7 +324,7 @@ class SeriesSorter(object):
             return True
 
         except:
-            logging.error(Ta('Error getting TV info (%s)'), self.original_dirname)
+            logging.error(T('Error getting TV info (%s)'), self.original_dirname)
             logging.info("Traceback: ", exc_info = True)
             return False
 
@@ -693,7 +693,7 @@ class GenericSorter(object):
                     logging.debug("Rename: %s to %s", filepath, newpath)
                     renamer(filepath, newpath)
                 except:
-                    logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
+                    logging.error(T('Failed to rename: %s to %s'), filepath, newpath)
                     logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, ())
 
@@ -717,7 +717,7 @@ class GenericSorter(object):
                         logging.debug("Rename: %s to %s", filepath, newpath)
                         renamer(filepath, newpath)
                     except:
-                        logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
+                        logging.error(T('Failed to rename: %s to %s'), filepath, newpath)
                         logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, renamed)
             else:
@@ -905,7 +905,7 @@ class DateSorter(object):
                                 logging.debug("Rename: %s to %s", filepath, newpath)
                                 renamer(filepath, newpath)
                             except:
-                                logging.error(Ta('Failed to rename: %s to %s'), current_path, newpath)
+                                logging.error(T('Failed to rename: %s to %s'), current_path, newpath)
                                 logging.info("Traceback: ", exc_info = True)
                             rename_similar(current_path, ext, self.filename_set, ())
                             break
@@ -1026,7 +1026,7 @@ def get_descriptions(nzo, match, name):
     like ' - Description' or '_-_Description'
     '''
     if nzo:
-        ep_name = latin1(nzo.nzo_info.get('episodename') or nzo.meta.get('episodename', (None,))[0])
+        ep_name = nzo.nzo_info.get('episodename') or nzo.meta.get('episodename', (None,))[0]
     else:
         ep_name = ''
     if not ep_name:
@@ -1145,7 +1145,7 @@ def rename_similar(folder, skip_ext, name, skipped_files):
                     logging.debug("Rename: %s to %s", path, newpath)
                     renamer(path, newpath)
                 except:
-                    logging.error(Ta('Failed to rename similar file: %s to %s'), path, newpath)
+                    logging.error(T('Failed to rename similar file: %s to %s'), path, newpath)
                     logging.info("Traceback: ", exc_info=True)
     cleanup_empty_directories(folder)
 

@@ -250,7 +250,7 @@ class BPSMeter(object):
                     from sabnzbd.downloader import Downloader
                     if Downloader.do and not Downloader.do.paused:
                         Downloader.do.pause()
-                        logging.warning(Ta('Quota spent, pausing downloading'))
+                        logging.warning(T('Quota spent, pausing downloading'))
 
         # Speedometer
         try:

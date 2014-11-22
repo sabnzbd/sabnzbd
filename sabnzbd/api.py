@@ -1620,7 +1620,7 @@ def build_header(prim, webdir='', search=None):
     header['speedlimit'] = "%s" % speed_limit
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
-    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
+    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
     header['active_lang'] = cfg.language()
     header['my_lcldata'] = sabnzbd.DIR_LCLDATA
     header['my_home'] = sabnzbd.DIR_HOME
@@ -1707,7 +1707,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         try:
             re_search = re.compile(search_text, re.I)
         except:
-            logging.error(Ta('Failed to compile regex for search term: %s'), search_text)
+            logging.error(T('Failed to compile regex for search term: %s'), search_text)
             return False
         return re_search.search(text)
 

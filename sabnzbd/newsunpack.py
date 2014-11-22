@@ -30,7 +30,7 @@ import shutil
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
-     reliable_unpack_names, unicoder, latin1, platform_encode, deunicode
+     reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
                          flag_file, real_path, globber
@@ -188,7 +188,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
-        logging.warning('Unpack nesting too deep [%s]', latin1(nzo.final_name))
+        logging.warning('Unpack nesting too deep [%s]', nzo.final_name)
         return False, []
     depth += 1
 
@@ -690,7 +690,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             else:
                 filename = '???'
             nzo.fail_msg = T('Unusable RAR file')
-            msg = ('[%s][%s] '+ Ta('Unusable RAR file')) % (setname, latin1(filename))
+            msg = ('[%s][%s] '+ T('Unusable RAR file')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 3
 
@@ -723,7 +723,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
                     logging.info('Skipping check of file %s', path)
                     continue
                 fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existence of %s", latin1(fullpath))
+                logging.debug("Checking existence of %s", fullpath)
                 if path.endswith('/'):
                     # Folder
                     continue
@@ -1697,10 +1697,10 @@ def sfv_check(sfv_path):
                     if crc_check(path, checksum):
                         logging.debug('File %s passed SFV check', path)
                     else:
-                        logging.info('File %s did not pass SFV check', latin1(path))
+                        logging.info('File %s did not pass SFV check', path)
                         failed.append(unicoder(filename))
                 else:
-                    logging.info('File %s missing in SFV check', latin1(path))
+                    logging.info('File %s missing in SFV check', path)
                     failed.append(unicoder(filename))
     fp.close()
     return failed

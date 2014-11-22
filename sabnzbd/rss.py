@@ -34,7 +34,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, \
                          match_str, from_units, int_conv
 import sabnzbd.emailer as emailer
-from sabnzbd.encoding import latin1, unicoder, xml_name
+from sabnzbd.encoding import unicoder, xml_name
 
 import sabnzbd.utils.feedparser as feedparser
 
@@ -277,7 +277,7 @@ class RSSQueue(object):
         try:
             feeds = config.get_rss()[feed]
         except KeyError:
-            logging.error(Ta('Incorrect RSS feed description "%s"'), feed)
+            logging.error(T('Incorrect RSS feed description "%s"'), feed)
             logging.info("Traceback: ", exc_info = True)
             return T('Incorrect RSS feed description "%s"') % feed
 
@@ -338,27 +338,27 @@ class RSSQueue(object):
             d = feedparser.parse(uri.replace('feed://', 'http://'))
             logging.debug("Done parsing %s", uri)
             if not d:
-                msg = Ta('Failed to retrieve RSS from %s: %s') % (uri, '?')
+                msg = T('Failed to retrieve RSS from %s: %s') % (uri, '?')
                 logging.info(msg)
                 return unicoder(msg)
 
             status = d.get('status', 999)
             if status in (401, 402, 403):
-                msg = Ta('Do not have valid authentication for feed %s') % feed
+                msg = T('Do not have valid authentication for feed %s') % feed
                 logging.info(msg)
                 return unicoder(msg)
             if status >= 500 and status <=599:
-                msg = Ta('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
+                msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
                 logging.info(msg)
                 return unicoder(msg)
 
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
-                msg = Ta('Failed to retrieve RSS from %s: %s') % (uri, xml_name(str(d['bozo_exception'])))
+                msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(str(d['bozo_exception'])))
                 logging.info(msg)
                 return unicoder(msg)
             if not entries:
-                msg = Ta('RSS Feed %s was empty') % uri
+                msg = T('RSS Feed %s was empty') % uri
                 logging.info(msg)
 
         if feed not in self.jobs:
@@ -385,7 +385,7 @@ class RSSQueue(object):
                     link = None
                     category = u''
                     size = 0L
-                    logging.info(Ta('Incompatible feed') + ' ' + uri)
+                    logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info = True)
                     return T('Incompatible feed')
                 title = entry.title
@@ -683,7 +683,7 @@ def _get_link(uri, entry):
                         category = ''
         return link, category, size
     else:
-        logging.warning(Ta('Empty RSS entry found (%s)'), link)
+        logging.warning(T('Empty RSS entry found (%s)'), link)
         return None, '', 0L
 
 

@@ -120,11 +120,11 @@ class HistoryDB(object):
         except:
             error = str(sys.exc_value)
             if 'readonly' in error:
-                logging.error(Ta('Cannot write to History database, check access rights!'))
+                logging.error(T('Cannot write to History database, check access rights!'))
                 # Report back success, because there's no recovery possible
                 return True
             elif 'not a database' in error or 'malformed' in error:
-                logging.error(Ta('Damaged History database, created empty replacement'))
+                logging.error(T('Damaged History database, created empty replacement'))
                 logging.info("Traceback: ", exc_info = True)
                 self.close()
                 try:
@@ -133,7 +133,7 @@ class HistoryDB(object):
                     pass
                 self.connect()
             else:
-                logging.error(Ta('SQL Command Failed, see log'))
+                logging.error(T('SQL Command Failed, see log'))
                 logging.debug("SQL: %s" , command)
                 logging.info("Traceback: ", exc_info = True)
                 try:
@@ -181,7 +181,7 @@ class HistoryDB(object):
         try:
             self.con.commit()
         except:
-            logging.error(Ta('SQL Commit Failed, see log'))
+            logging.error(T('SQL Commit Failed, see log'))
             logging.info("Traceback: ", exc_info = True)
 
     def close(self):
@@ -189,7 +189,7 @@ class HistoryDB(object):
             self.c.close()
             self.con.close()
         except:
-            logging.error(Ta('Failed to close database, see log'))
+            logging.error(T('Failed to close database, see log'))
             logging.info("Traceback: ", exc_info = True)
 
     def remove_completed(self, search=None):

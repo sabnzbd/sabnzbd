@@ -178,7 +178,7 @@ class NNTP(object):
 
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error(Ta('Error importing OpenSSL module. Connecting with NON-SSL'))
+            logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)

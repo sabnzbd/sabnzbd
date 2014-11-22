@@ -43,7 +43,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1, unicoder, is_utf8
+from sabnzbd.encoding import unicoder, is_utf8
 
 
 #------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ class Assembler(Thread):
                         else:
                             # 28 == disk full => pause downloader
                             if errno == 28:
-                                logging.error(Ta('Disk full! Forcing Pause'))
+                                logging.error(T('Disk full! Forcing Pause'))
                             else:
                                 logging.error(T('Disk error on creating file %s'), filepath)
                             # Pause without saving
@@ -114,18 +114,18 @@ class Assembler(Thread):
 
                     if check_encrypted_rar(nzo, filepath):
                         if cfg.pause_on_pwrar() == 1:
-                            logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file'), nzo.final_name)
                             nzo.pause()
                         else:
-                            logging.warning(Ta('WARNING: Aborted job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file'), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     unwanted = rar_contains_unwanted_file(nzo, filepath)
                     if unwanted:
-                        logging.warning(Ta('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), latin1(nzo.final_name), unwanted)
-                        logging.debug(Ta('Unwanted extension is in rar file %s'), filepath)
+                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted)
+                        logging.debug(T('Unwanted extension is in rar file %s'), filepath)
                         if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                             logging.debug('Unwanted extension ... pausing')
                             nzo.unwanted_ext = 1
@@ -168,7 +168,7 @@ def _assemble(nzf, path, dupe):
         data = ArticleCache.do.load_article(article)
 
         if not data:
-            logging.info(Ta('%s missing'), article)
+            logging.info(T('%s missing'), article)
         else:
             # yenc data already decoded, flush it out
             if _type == 'yenc':

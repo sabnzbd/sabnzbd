@@ -169,7 +169,7 @@ def sig_handler(signum = None, frame = None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
-        logging.warning(Ta('Signal %s caught, saving and exiting...'), signum)
+        logging.warning(T('Signal %s caught, saving and exiting...'), signum)
     try:
         save_state(flag=True)
         sabnzbd.zconfig.remove_server()
@@ -599,7 +599,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
                     os.write(f, nzbfile.file.read())
             os.close(f)
         except:
-            logging.error(Ta('Cannot create temp file for %s'), filename)
+            logging.error(T('Cannot create temp file for %s'), filename)
             logging.info("Traceback: ", exc_info = True)
 
     if ext.lower() in VALID_ARCHIVES:
@@ -616,7 +616,7 @@ def enable_server(server):
     try:
         config.get_config('servers', server).enable.set(1)
     except:
-        logging.warning(Ta('Trying to set status of non-existing server %s'), server)
+        logging.warning(T('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
     Downloader.do.update_server(server, server)
@@ -628,7 +628,7 @@ def disable_server(server):
     try:
         config.get_config('servers', server).enable.set(0)
     except:
-        logging.warning(Ta('Trying to set status of non-existing server %s'), server)
+        logging.warning(T('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
     Downloader.do.update_server(server, server)
@@ -769,7 +769,7 @@ def CheckFreeSpace():
     """
     if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
         if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
-            logging.warning(Ta('Too little diskspace forcing PAUSE'))
+            logging.warning(T('Too little diskspace forcing PAUSE'))
             # Pause downloader, but don't save, since the disk is almost full!
             Downloader.do.pause(save=False)
             emailer.diskfull()
@@ -795,7 +795,7 @@ def get_new_id(prefix, folder, check_list=None):
             if not check_list or tail not in check_list:
                 return tail
         except:
-            logging.error(Ta('Failure in tempfile.mkstemp'))
+            logging.error(T('Failure in tempfile.mkstemp'))
             logging.info("Traceback: ", exc_info = True)
     # Cannot create unique id, crash the process
     raise IOError
@@ -825,7 +825,7 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
             _f.flush()
             _f.close()
     except:
-        logging.error(Ta('Saving %s failed'), path)
+        logging.error(T('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -855,7 +855,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
         if remove:
             os.remove(path)
     except:
-        logging.error(Ta('Loading %s failed'), path)
+        logging.error(T('Loading %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
         return None
 
@@ -896,7 +896,7 @@ def save_admin(data, _id, do_pickle=True):
             _f.flush()
             _f.close()
     except:
-        logging.error(Ta('Saving %s failed'), path)
+        logging.error(T('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -922,7 +922,7 @@ def load_admin(_id, remove=False, do_pickle=True):
             os.remove(path)
     except:
         excepterror = str(sys.exc_info()[0])
-        logging.error(Ta('Loading %s failed with error %s'), path, excepterror)
+        logging.error(T('Loading %s failed with error %s'), path, excepterror)
         logging.info("Traceback: ", exc_info = True)
         return None
 

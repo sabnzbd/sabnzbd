@@ -42,7 +42,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, latin1, special_fixer, gUTF
+from sabnzbd.encoding import unicoder, special_fixer, gUTF
 import sabnzbd.growler as growler
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
@@ -405,13 +405,13 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(Ta('Cannot create directory %s'), my_dir)
+                logging.error(T('Cannot create directory %s'), my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
         else:
-            logging.error(Ta('%s directory: %s error accessing'), name, my_dir)
+            logging.error(T('%s directory: %s error accessing'), name, my_dir)
             return (False, my_dir)
     else:
         return (False, "")
@@ -433,14 +433,14 @@ def get_user_shellfolders():
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
-        logging.error(Ta('Cannot connect to registry hive HKEY_CURRENT_USER.'))
+        logging.error(T('Cannot connect to registry hive HKEY_CURRENT_USER.'))
         return values
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
         key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error(Ta('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
+        logging.error(T('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 
@@ -454,7 +454,7 @@ def get_user_shellfolders():
         return values
     except WindowsError:
         # On error, return empty dict.
-        logging.error(Ta('Failed to read registry keys for special folders'))
+        logging.error(T('Failed to read registry keys for special folders'))
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
@@ -511,7 +511,7 @@ def get_serv_parms(service):
     except WindowsError:
         pass
     for n in xrange(len(value)):
-        value[n] = latin1(value[n])
+        value[n] = value[n]
     return value
 
 
@@ -811,7 +811,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(Ta('Failed making (%s)'), dirpath)
+            logging.error(T('Failed making (%s)'), dirpath)
             return None
     return dirpath
 
@@ -847,7 +847,7 @@ def move_to_path(path, new_path):
                 os.remove(path)
             except:
                 if not (cfg.marker_file() and cfg.marker_file() in path):
-                    logging.error(Ta('Failed moving %s to %s'), path, new_path)
+                    logging.error(T('Failed moving %s to %s'), path, new_path)
                     logging.info("Traceback: ", exc_info = True)
                 ok = False
     return ok, new_path
@@ -1189,7 +1189,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
              TYPE_RSA, serial
     except:
-        logging.warning(Ta('pyopenssl module missing, please install for https access'))
+        logging.warning(T('pyopenssl module missing, please install for https access'))
         return False
 
     # Create the CA Certificate
@@ -1207,7 +1207,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error(Ta('Error creating SSL key and certificate'))
+        logging.error(T('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info = True)
         return False
 
@@ -1391,7 +1391,7 @@ def set_chmod(path, permissions, report):
     except:
         lpath = path.lower()
         if report and '.appledouble' not in lpath and '.ds_store' not in lpath:
-            logging.error(Ta('Cannot change permissions of %s'), path)
+            logging.error(T('Cannot change permissions of %s'), path)
             logging.info("Traceback: ", exc_info = True)
 
 

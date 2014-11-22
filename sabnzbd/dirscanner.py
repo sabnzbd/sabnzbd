@@ -128,7 +128,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         try:
             if not keep: os.remove(path)
         except:
-            logging.error(Ta('Error removing %s'), path)
+            logging.error(T('Error removing %s'), path)
             logging.info("Traceback: ", exc_info = True)
             status = 1
     else:
@@ -166,7 +166,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         data = f.read()
         f.close()
     except:
-        logging.warning(Ta('Cannot read %s'), path)
+        logging.warning(T('Cannot read %s'), path)
         logging.info("Traceback: ", exc_info = True)
         return -2, nzo_ids
 
@@ -199,7 +199,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         if not keep: os.remove(path)
     except:
-        logging.error(Ta('Error removing %s'), path)
+        logging.error(T('Error removing %s'), path)
         logging.info("Traceback: ", exc_info = True)
         return 1, nzo_ids
 
@@ -299,7 +299,7 @@ class DirScanner(threading.Thread):
                 files = os.listdir(folder)
             except:
                 if not self.error_reported and not catdir:
-                    logging.error(Ta('Cannot read Watched Folder %s'), folder)
+                    logging.error(T('Cannot read Watched Folder %s'), folder)
                     self.error_reported = True
                 files = []
 
@@ -382,7 +382,7 @@ class DirScanner(threading.Thread):
                     list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
-                        logging.error(Ta('Cannot read Watched Folder %s'), dirscan_dir)
+                        logging.error(T('Cannot read Watched Folder %s'), dirscan_dir)
                         self.error_reported = True
                     list = []
 

@@ -96,7 +96,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, latin1, deunicode
+from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.growler as growler
 import sabnzbd.zconfig
 
@@ -325,7 +325,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, err=''):
     """Abort program because of CherryPy troubles
     """
-    logging.error(Ta('Failed to start web-interface') + ' : ' + str(err))
+    logging.error(T('Failed to start web-interface') + ' : ' + str(err))
     if not sabnzbd.DAEMON:
         if '13' in err:
             panic_xport(browserhost, cherryport)
@@ -363,7 +363,7 @@ def Web_Template(key, defweb, wdir):
         if defweb == DEF_STDCONFIG:
             return ''
         # end temp fix
-        logging.warning(Ta('Cannot find web template: %s, trying standard template'), full_main)
+        logging.warning(T('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -489,14 +489,14 @@ def print_modules():
         logging.info("_yenc module... found!")
     else:
         if hasattr(sys, "frozen"):
-            logging.error(Ta('_yenc module... NOT found!'))
+            logging.error(T('_yenc module... NOT found!'))
         else:
             logging.info("_yenc module... NOT found!")
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error(Ta('par2 binary... NOT found!'))
+        logging.error(T('par2 binary... NOT found!'))
 
     if sabnzbd.newsunpack.PAR2C_COMMAND:
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
@@ -504,17 +504,17 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.warning(Ta('unrar binary... NOT found'))
+        logging.warning(T('unrar binary... NOT found'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        if sabnzbd.cfg.enable_unzip(): logging.warning(Ta('unzip binary... NOT found!'))
+        if sabnzbd.cfg.enable_unzip(): logging.warning(T('unzip binary... NOT found!'))
 
     if sabnzbd.newsunpack.SEVEN_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
     else:
-        if sabnzbd.cfg.enable_7zip(): logging.warning(Ta('7za binary... NOT found!'))
+        if sabnzbd.cfg.enable_7zip(): logging.warning(T('7za binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -667,7 +667,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
-        logging.warning(Ta('Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access'))
+        logging.warning(T('Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access'))
 
     if cherryhost == 'localhost' and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -697,7 +697,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
-        #logging.error(Ta('HTTP and HTTPS ports cannot be the same'))
+        #logging.error(T('HTTP and HTTPS ports cannot be the same'))
         logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
@@ -1418,7 +1418,7 @@ def main():
             create_https_certificates(https_cert, https_key)
 
         if not (os.path.exists(https_cert) and os.path.exists(https_key)):
-            logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
+            logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
     # Determine if this system has multiple definitions for 'localhost'
@@ -1871,9 +1871,9 @@ if __name__ == '__main__':
     args = []
     for txt in sys.argv:
         if ' ' in txt:
-            txt = '"%s"' % latin1(txt)
+            txt = '"%s"' % unicoder(txt)
         else:
-            txt = latin1(txt)
+            txt = unicoder(txt)
         args.append(txt)
     sabnzbd.CMDLINE = ' '.join(args)
 
