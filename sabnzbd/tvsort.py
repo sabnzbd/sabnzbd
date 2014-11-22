@@ -31,7 +31,6 @@ from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_pat
                          get_unique_filename, get_ext, renamer, sanitize_foldername
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import titler
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -956,7 +955,7 @@ def get_titles(nzo, match, name, titleing=False):
                 # (us) > (US)
                 name = replace_word(name, rep.lower(), rep)
                 # (Us) > (US)
-                name = replace_word(name, titler(rep), rep)
+                name = replace_word(name, rep.title(), rep)
                 # .US. > (US)
                 dotted_country = '.%s.' % (rep.strip('()'))
                 name = replace_word(name, dotted_country, rep)
@@ -973,7 +972,7 @@ def get_titles(nzo, match, name, titleing=False):
         title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
         if titleing:
-            title = titler(title) # title the show name so it is in a consistant letter case
+            title = title.title() # title the show name so it is in a consistant letter case
 
             #title applied uppercase to 's Python bug?
             title = title.replace("'S", "'s")
@@ -981,25 +980,25 @@ def get_titles(nzo, match, name, titleing=False):
             # Replace titled country names, (Us) with (US) and so on
             if cfg.tv_sort_countries() == 1:
                 for rep in COUNTRY_REP:
-                    title = title.replace(titler(rep), rep)
+                    title = title.replace(rep.title(), rep)
             # Remove country names, ie (Us)
             elif cfg.tv_sort_countries() == 2:
                 for rep in COUNTRY_REP:
-                    title = title.replace(titler(rep), '').strip()
+                    title = title.replace(rep.title(), '').strip()
 
             # Make sure some words such as 'and' or 'of' stay lowercased.
             for x in LOWERCASE:
-                xtitled = titler(x)
+                xtitled = x.title()
                 title = replace_word(title, xtitled, x)
 
             # Make sure some words such as 'III' or 'IV' stay uppercased.
             for x in UPPERCASE:
-                xtitled = titler(x)
+                xtitled = x.title()
                 title = replace_word(title, xtitled, x)
 
             # Make sure the first letter of the title is always uppercase
             if title:
-                title = titler(title[0]) + title[1:]
+                title = title[0].title() + title[1:]
 
     # The title with spaces replaced by dots
     dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')

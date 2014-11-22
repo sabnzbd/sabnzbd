@@ -163,21 +163,6 @@ def encode_for_xml(ustr, encoding='ascii'):
     return ustr.encode(encoding, 'xmlcharrefreplace')
 
 
-def titler(p):
-    """ title() replacement
-        Python's title() fails with 8bit ASCII, so use Unicode detour.
-    """
-    if isinstance(p, unicode):
-        return p.title()
-    elif gUTF:
-        try:
-            return p.decode('utf-8').title().encode('utf-8')
-        except:
-            return p.decode(codepage, 'replace').title().encode(codepage, 'replace')
-    else:
-        return p.decode(codepage, 'replace').title().encode(codepage, 'replace')
-
-
 class LatinFilter(Filter):
     """ Make sure Cheetah gets only Unicode strings """
     def filter(self, val, str=str, **kw):
