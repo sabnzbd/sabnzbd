@@ -308,6 +308,8 @@ show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
 enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
+new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
+
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
