@@ -51,10 +51,10 @@ from cherrypy import _cpwsgi_server
 
 SQLITE_DLL = True
 try:
-    from sqlite3 import version as sqlite3_version
+    from sqlite3 import version as sqlite3_version  # @UnusedImport
 except:
     try:
-        from pysqlite2.dbapi2 import version as sqlite3_version
+        from pysqlite2.dbapi2 import version as sqlite3_version  # @UnresolvedImport @UnusedImport
     except:
         if os.name != 'nt':
             print "Sorry, requires Python module sqlite3"
@@ -63,8 +63,8 @@ except:
         else:
             SQLITE_DLL = False
 
-import sabnzbd
-import sabnzbd.lang
+import sabnzbd  # @UnusedImport
+import sabnzbd.lang  # @UnusedImport
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
@@ -86,6 +86,8 @@ from threading import Thread
 LOG_FLAG = False        # Global for this module, signalling loglevel change
 
 _first_log = True
+
+
 def FORCELOG(txt):
     global _first_log
     if _first_log:
@@ -100,7 +102,11 @@ def FORCELOG(txt):
 #------------------------------------------------------------------------------
 try:
     import win32api
-    import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
+    import win32serviceutil
+    import win32evtlogutil
+    import win32event
+    import win32service
+    import pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
     from util.mailslot import MailSlot
     from util.apireg import get_connection_info, set_connection_info, del_connection_info
@@ -145,8 +151,8 @@ if sabnzbd.WIN32:
             if self.encoding is None:
                 stream = open(self.baseFilename, self.mode)
                 newosf = duplicate(msvcrt.get_osfhandle(stream.fileno()), inheritable=False)
-                newFD  = msvcrt.open_osfhandle(newosf,os.O_APPEND)
-                newstream = os.fdopen(newFD,self.mode)
+                newFD = msvcrt.open_osfhandle(newosf, os.O_APPEND)
+                newstream = os.fdopen(newFD, self.mode)
                 stream.close()
                 return newstream
             else:
@@ -156,12 +162,14 @@ if sabnzbd.WIN32:
 else:
     NewRotatingFileHandler = logging.handlers.RotatingFileHandler
 
+
 #------------------------------------------------------------------------------
 class FilterCP3:
     ### Filter out all CherryPy3-Access logging that we receive,
     ### because we have the root logger
     def __init__(self):
         pass
+
     def filter(self, record):
         _cplogging = record.module == '_cplogging'
         # Python2.4 fix
@@ -207,7 +215,7 @@ class guiHandler(logging.Handler):
 
     def last(self):
         if self.store:
-            return self.store[len(self.store)-1]
+            return self.store[len(self.store) - 1]
         else:
             return ""
 
@@ -257,6 +265,7 @@ def print_help():
     print "      --new                Run a new instance of SABnzbd"
     print "      --no_ipv6            Do not listen on IPv6 address [::1]"
 
+
 def print_version():
     print """
 %s-%s
@@ -273,7 +282,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 #------------------------------------------------------------------------------
 def daemonize():
     try:
-        pid = os.fork()
+        pid = os.fork()  # @UndefinedVariable
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -281,13 +290,13 @@ def daemonize():
         sys.exit(1)
 
     os.chdir(sabnzbd.DIR_PROG)
-    os.setsid()
+    os.setsid()   # @UndefinedVariable
     # Make sure I can read my own files and shut out others
-    prev= os.umask(0)
-    os.umask(prev and int('077',8))
+    prev = os.umask(0)
+    os.umask(prev and int('077', 8))
 
     try:
-        pid = os.fork()
+        pid = os.fork()  # @UndefinedVariable
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -296,6 +305,7 @@ def daemonize():
 
     dev_null = file('/dev/null', 'r')
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
+
 
 #------------------------------------------------------------------------------
 def Bail_Out(browserhost, cherryport, err=''):
@@ -311,6 +321,7 @@ def Bail_Out(browserhost, cherryport, err=''):
             panic_port(browserhost, cherryport)
     sabnzbd.halt()
     exit_sab(2)
+
 
 #------------------------------------------------------------------------------
 def Web_Template(key, defweb, wdir):
@@ -355,12 +366,13 @@ def Web_Template(key, defweb, wdir):
 #------------------------------------------------------------------------------
 def CheckColor(color, web_dir):
     """ Check existence of color-scheme """
-    if color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color+'.css')):
+    if color and os.path.exists(os.path.join(web_dir, 'static/stylesheets/colorschemes/' + color + '.css')):
         return color
-    elif color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color)):
+    elif color and os.path.exists(os.path.join(web_dir, 'static/stylesheets/colorschemes/' + color)):
         return color
     else:
         return ''
+
 
 #------------------------------------------------------------------------------
 def fix_webname(name):
@@ -378,6 +390,7 @@ def fix_webname(name):
         return 'Plush'
     else:
         return name
+
 
 #------------------------------------------------------------------------------
 def GetProfileInfo(vista_plus):
@@ -410,7 +423,7 @@ def GetProfileInfo(vista_plus):
                     root = os.environ['AppData']
                     user = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root.replace('\\Roaming', '\\Local'), DEF_WORKDIR)
-                    sabnzbd.DIR_HOME    = '%s\\Documents' % user
+                    sabnzbd.DIR_HOME = '%s\\Documents' % user
                 else:
                     root = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
@@ -509,7 +522,7 @@ def all_localhosts():
     try:
         # Check whether IPv6 is available and enabled
         info = socket.getaddrinfo('::1', None)
-        af, socktype, proto, canonname, sa = info[0]
+        af, socktype, proto, canonname, sa = info[0]  # @UnusedVariable
         s = socket.socket(af, socktype, proto)
         s.close()
     except socket.error:
@@ -531,11 +544,12 @@ def check_resolve(host):
     """ Return True if 'host' resolves
     """
     try:
-        info = socket.getaddrinfo(host, None)
+        unused = socket.getaddrinfo(host, None)
     except:
         # Does not resolve
         return False
     return True
+
 
 #------------------------------------------------------------------------------
 def get_webhost(cherryhost, cherryport, https_port):
@@ -574,7 +588,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     for item in info:
         ip = str(item[4][0])
         if ip.startswith('169.254.'):
-            pass # Is an APIPA
+            pass  # Is an APIPA
         elif ':' in ip:
             ipv6 = True
         elif '.' in ip and not ipv4:
@@ -598,7 +612,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = localhost
 
     # :: will listen on all ipv6 interfaces (no ipv4 addresses)
-    elif cherryhost in ('::','[::]'):
+    elif cherryhost in ('::', '[::]'):
         cherryhost = cherryhost.strip('[').strip(']')
         # Assume '::1' == 'localhost'
         browserhost = localhost
@@ -727,7 +741,7 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
         else:
             # Launch the web browser and quit since sabnzbd is already running
             # Trim away everything after the final slash in the URL
-            url = url[:url.rfind('/')+1]
+            url = url[:url.rfind('/') + 1]
             launch_a_browser(url, force=allow_browser)
         exit_sab(0)
         return True
@@ -781,7 +795,7 @@ def evaluate_inipath(path):
     elif os.path.isfile(path) or os.path.isfile(path + '.bak'):
         return path
     else:
-        dirpart, name = os.path.split(path)
+        dirpart, name = os.path.split(path)  # @UnusedVariable
         if name.find('.') < 1:
             return inipath
         else:
@@ -815,7 +829,7 @@ def commandline_handler(frozen=True):
     """
     service = ''
     sab_opts = []
-    serv_inst = False
+    serv_inst = False  # @UnusedVariable
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
@@ -830,13 +844,13 @@ def commandline_handler(frozen=True):
     if len(sys.argv) > 1 and \
        'sabnzbd' in sys.argv[1].lower() and \
        not sys.argv[1].startswith('-'):
-        slice = 2
+        nameslice = 2
     else:
-        slice = 1
+        nameslice = 1
 
     # Prepend options from env-variable to options
     info = os.environ.get('SABnzbd', '').split()
-    info.extend(sys.argv[slice:])
+    info.extend(sys.argv[nameslice:])
 
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
@@ -861,11 +875,11 @@ def commandline_handler(frozen=True):
     if not service:
         # Get and remove any NZB file names
         for entry in args:
-            if get_ext(entry) in ('.nzb', '.zip','.rar', '.gz'):
+            if get_ext(entry) in ('.nzb', '.zip', '.rar', '.gz'):
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
-        if opt in ('password','username','startup','perfmonini', 'perfmondll', 'interactive', 'wait'):
+        if opt in ('password', 'username', 'startup', 'perfmonini', 'perfmondll', 'interactive', 'wait'):
             # Service option, just collect
             if service:
                 serv_opts.append(opt)
@@ -922,7 +936,7 @@ def main():
     osx_console = False
     no_ipv6 = False
 
-    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()  # @UnusedVariable
 
     for opt, arg in sab_opts:
         if opt == '--servicecall':
@@ -1023,7 +1037,7 @@ def main():
 
     if getattr(sys, 'frozen', None) == 'macosx_app':
         # Correct path if frozen with py2app (OSX)
-        sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py","/MacOS/SABnzbd")
+        sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py", "/MacOS/SABnzbd")
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
@@ -1052,7 +1066,6 @@ def main():
     if sabnzbd.WIN32:
         vista_plus, vista64 = windows_variant()
         sabnzbd.WIN64 = vista64
-
 
     if not SQLITE_DLL:
         panic_sqlite(sabnzbd.MY_FULLNAME)
@@ -1150,7 +1163,7 @@ def main():
                         if https_port:
                             https_port = newport
                         else:
-                            http_port = newport
+                            http_port = newport  # @UnusedVariable
         except:
             Bail_Out(browserhost, cherryport, '49')
 
@@ -1171,7 +1184,6 @@ def main():
     except:
         Bail_Out(browserhost, cherryport, '49')
 
-
     if cherrypylogging is None:
         cherrypylogging = sabnzbd.cfg.log_web()
     else:
@@ -1189,7 +1201,7 @@ def main():
         sys.exit(1)
 
     if clean_up:
-        xlist= globber(logdir)
+        xlist = globber(logdir)
         for x in xlist:
             if RSS_FILE_NAME not in x:
                 try:
@@ -1220,7 +1232,7 @@ def main():
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
-        logger.setLevel(LOGLEVELS[logging_level+1])
+        logger.setLevel(LOGLEVELS[logging_level + 1])
 
     except IOError:
         print "Error:"
@@ -1248,7 +1260,7 @@ def main():
             if consoleLogging:
                 console = logging.StreamHandler()
                 console.addFilter(FilterCP3())
-                console.setLevel(LOGLEVELS[logging_level+1])
+                console.setLevel(LOGLEVELS[logging_level + 1])
                 console.setFormatter(logging.Formatter(format))
                 logger.addHandler(console)
             if noConsoleLoggingOSX:
@@ -1319,7 +1331,7 @@ def main():
         try:
             from ctypes import cdll
             libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult = libc.setiopolicy_np(0, 1, 3)
+            boolSetResult = libc.setiopolicy_np(0, 1, 3)  # @UnusedVariable
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
@@ -1344,24 +1356,24 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir  = Web_Template(sabnzbd.cfg.web_dir,  DEF_STDINTF,  fix_webname(web_dir))
+    web_dir = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
     web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
-    web_dirc = Web_Template(None,  DEF_STDCONFIG, '')
+    web_dirc = Web_Template(None, DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
     #sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
-    sabnzbd.WEB_DIR  = web_dir
+    sabnzbd.WEB_DIR = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
     sabnzbd.WEB_DIRC = web_dirc
     sabnzbd.WIZARD_DIR = wizard_dir
 
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(),  web_dir)
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), web_dir)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(),  web_dir2)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(), web_dir2)
     sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
-    logging.debug('Unwanted extensions are ... %s',sabnzbd.cfg.unwanted_extensions())
+    logging.debug('Unwanted extensions are ... %s', sabnzbd.cfg.unwanted_extensions())
 
     if fork and not sabnzbd.WIN32:
         daemonize()
@@ -1385,8 +1397,8 @@ def main():
         cherrypy_logging(sabnzbd.WEBLOGFILE, log_handler)
         if not fork:
             try:
-                x= sys.stderr.fileno
-                x= sys.stdout.fileno
+                x = sys.stderr.fileno
+                x = sys.stdout.fileno
                 if cherrypylogging == 1:
                     cherrylogtoscreen = True
             except:
@@ -1433,13 +1445,12 @@ def main():
             # Extra HTTPS port for secondary localhost
             attach_server(hosts[1], cherryport, https_cert, https_key)
 
-        cherrypy.config.update({'server.ssl_certificate' : https_cert,
-                                'server.ssl_private_key' : https_key,
-                                'server.ssl_certificate_chain' : https_chain})
+        cherrypy.config.update({'server.ssl_certificate': https_cert,
+                                'server.ssl_private_key': https_key,
+                                'server.ssl_certificate_chain': https_chain})
     elif multilocal:
         # Extra HTTP port for secondary localhost
         attach_server(hosts[1], cherryport)
-
 
     if no_login:
         sabnzbd.cfg.username.set('')
@@ -1468,7 +1479,7 @@ def main():
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
                             'log.screen': cherrylogtoscreen,
-                            'engine.autoreload_frequency' : 100,
+                            'engine.autoreload_frequency': 100,
                             'engine.autoreload_on' : False,
                             'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
@@ -1484,13 +1495,12 @@ def main():
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     if web_dirc:
         staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
 
-    appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
+    appconfig = {'/sabnzbd/api': {'tools.basic_auth.on' : False},
                  '/api' : {'tools.basic_auth.on' : False},
                  '/m/api' : {'tools.basic_auth.on' : False},
                  '/rss' : {'tools.basic_auth.on' : False},
@@ -1508,8 +1518,8 @@ def main():
 
     if web_dir2:
         static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
-        appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on' : False}
-        appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on' : False}
+        appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on': False}
+        appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on': False}
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
         appconfig['/sabnzbd/m/static'] = static2
         appconfig['/m/static'] = static2
@@ -1540,13 +1550,13 @@ def main():
                 sabnzbd.halt()
                 exit_sab(2)
         else:
-            logging.error("Failed to start web-interface: ", exc_info = True)
+            logging.error("Failed to start web-interface: ", exc_info=True)
             Bail_Out(browserhost, cherryport, str(error))
     except socket.error, error:
-        logging.error("Failed to start web-interface: ", exc_info = True)
+        logging.error("Failed to start web-interface: ", exc_info=True)
         Bail_Out(browserhost, cherryport)
     except:
-        logging.error("Failed to start web-interface: ", exc_info = True)
+        logging.error("Failed to start web-interface: ", exc_info=True)
         Bail_Out(browserhost, cherryport)
 
     # Wait for server to become ready
@@ -1626,7 +1636,7 @@ def main():
         # Check for loglevel changes
         if LOG_FLAG:
             LOG_FLAG = False
-            level = LOGLEVELS[sabnzbd.cfg.log_level()+1]
+            level = LOGLEVELS[sabnzbd.cfg.log_level() + 1]
             logger.setLevel(level)
             if consoleLogging:
                 console.setLevel(level)
@@ -1671,7 +1681,7 @@ def main():
                 sabnzbd.halt()
                 cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
-            if sabnzbd.downloader.Downloader.do.paused:
+            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
                 re_argv.append('-p')
             if autorestarted:
                 re_argv.append('--autorestarted')
@@ -1686,9 +1696,9 @@ def main():
                     #[[NSProcessInfo processInfo] processIdentifier]]
                     #logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
                     logging.info(os.getpid())
-                    os.system('kill -9 %s && open "%s"' % (os.getpid(),sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")) )
+                    os.system('kill -9 %s && open "%s"' % (os.getpid(), sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")) )
                 else:
-                    pid = os.fork()
+                    pid = os.fork()  # @UndefinedVariable
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE and mail:
@@ -1708,7 +1718,8 @@ def main():
         mail.send('stop')
     if sabnzbd.WIN32:
         del_connection_info()
-    if sabnzbd.FOUNDATION: sabnzbd.osxmenu.notify("SAB_Shutdown", None)
+    if sabnzbd.FOUNDATION:
+        sabnzbd.osxmenu.notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()
@@ -1716,9 +1727,8 @@ def main():
     if getattr(sys, 'frozen', None) == 'macosx_app':
         AppHelper.stopEventLoop()
     else:
-        growler.send_notification('SABnzbd',T('SABnzbd shutdown finished'), 'startup')
+        growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
-
 
 
 #####################################################################
@@ -1726,7 +1736,8 @@ def main():
 # Windows Service Support
 #
 if sabnzbd.WIN32:
-    import servicemanager
+    import servicemanager  # @UnresolvedImport
+
     class SABnzbd(win32serviceutil.ServiceFramework):
         """ Win32 Service Handler """
 
@@ -1796,13 +1807,14 @@ Run services.msc from a command prompt.
 Don't forget to install the Service SABnzbd-helper.exe too!
 """
 
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
         You MUST set 'cmdline_style':'custom' in the package.py!
         Returns True when any service commands were detected.
     """
-    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()  # @UnusedVariable
     if service and not allow_service:
         # The other frozen apps don't support Services
         print "For service support, use SABnzbd-service.exe"
@@ -1832,7 +1844,6 @@ def HandleCommandLine(allow_service=True):
     return bool(service)
 
 
-
 #####################################################################
 #
 # Platform specific startup code
@@ -1856,17 +1867,19 @@ if __name__ == '__main__':
         # OSX binary
 
         try:
-            from PyObjCTools import AppHelper
-            from sabnzbd.osxmenu import SABnzbdDelegate
+            from PyObjCTools import AppHelper  # @UnresolvedImport
+            from sabnzbd.osxmenu import SABnzbdDelegate  # @UnusedImport
 
             class startApp(Thread):
                 def __init__(self):
                     logging.info('[osx] sabApp Starting - starting main thread')
                     Thread.__init__(self)
+
                 def run(self):
                     main()
                     logging.info('[osx] sabApp Stopping - main thread quit ')
                     AppHelper.stopEventLoop()
+
                 def stop(self):
                     logging.info('[osx] sabApp Quit - stopping main thread ')
                     sabnzbd.halt()
