@@ -237,6 +237,14 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
 
+    ### Convert ssl_type to sec_type (if still needed)
+    if cfg.ssl_type():
+        if cfg.ssl_type() == 'v2':
+            cfg.sec_type.set('v2')
+        else:
+            cfg.sec_type.set('t1')
+        cfg.ssl_type.set('')
+
     ### Set call backs for Config items
     cfg.cache_limit.callback(new_limit)
     cfg.cherryhost.callback(guard_restart)

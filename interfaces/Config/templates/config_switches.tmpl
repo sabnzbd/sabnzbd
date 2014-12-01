@@ -63,13 +63,14 @@
                     <span class="desc">$T('explain-send_group')</span>
                 </div>
                 <div class="field-pair alt">
-                    <label class="config" for="ssl_type">$T('opt-ssl_type')</label>
-                    <select name="ssl_type" id="ssl_type">
-                        <option value="v23" <!--#if $ssl_type == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
-                        <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
-                        <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
+                    <label class="config" for="sec_type">$T('opt-sec_type')</label>
+                    <select name="sec_type" id="sec_type">
+                        <option value="t1"  <!--#if $sec_type == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
+                        <option value="v23" <!--#if $sec_type == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
+                        <option value="v2"  <!--#if $sec_type == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
+                        <option value="v3"  <!--#if $sec_type == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
                     </select>
-                    <span class="desc">$T('explain-ssl_type')</span>
+                    <span class="desc">$T('explain-sec_type')</span>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />

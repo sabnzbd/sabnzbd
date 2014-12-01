@@ -168,8 +168,10 @@ class NNTP(object):
 
         if sslenabled and _ssl:
             # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.ssl_type.get()
-            if ssl_type == 'v2':
+            ssl_type = sabnzbd.cfg.sec_type.get()
+            if ssl_type == 't1' and hasattr(_ssl, 'TLSv1_METHOD'):
+                ctx = _ssl.Context(_ssl.TLSv1_METHOD)
+            elif ssl_type == 'v2':
                 ctx = _ssl.Context(_ssl.SSLv2_METHOD)
             elif ssl_type == 'v3':
                 ctx = _ssl.Context(_ssl.SSLv3_METHOD)
