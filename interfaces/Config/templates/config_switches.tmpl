@@ -214,19 +214,19 @@
                     <span class="desc">$T('explain-enable_recursive')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="flat_unpack">$T('opt-flat_unpack')</label>
+                    <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-flat_unpack')</span>
+                </div>
+                <div class="field-pair alt">
                     <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
                     <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_filejoin')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
                     <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-ts_join')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="enable_par_cleanup">$T('opt-enable_par_cleanup')</label>
-                    <input type="checkbox" name="enable_par_cleanup" id="enable_par_cleanup" value="1" <!--#if int($enable_par_cleanup) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-enable_par_cleanup')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="fail_on_crc">$T('opt-fail_on_crc')</label>
@@ -306,6 +306,11 @@
                     <span class="desc">$T('explain-replace_illegal')</span>
                 </div>
                 <div class="field-pair alt">
+                    <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
+                    <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-sanitize_safe')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
                     <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_meta')</span>

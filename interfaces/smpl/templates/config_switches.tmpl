@@ -26,6 +26,13 @@
   <span class="tips">$T('explain-enable_unzip')</span></label>
 <br class="clear" />
 
+<!--#if $have_7zip#-->
+  <label><span class="label">$T('opt-enable_7zip'):</span>
+  <input class="radio" type="checkbox" name="enable_7zip" value="1" <!--#if $enable_7zip > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-enable_7zip')</span></label>
+<br class="clear" />
+<!--#end if#-->
+
   <label><span class="label">$T('opt-enable_filejoin'):</span>
   <input class="radio" type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-enable_filejoin')</span></label>
@@ -36,9 +43,14 @@
   <span class="tips">$T('explain-ts_join')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-enable_par_cleanup'):</span>
-  <input class="radio" type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-enable_par_cleanup')</span></label>
+  <label><span class="label">$T('opt-enable_recursive'):</span>
+  <input class="radio" type="checkbox" name="enable_recursive" value="1" <!--#if $enable_recursive > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-enable_recursive')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-flat_unpack'):</span>
+  <input class="radio" type="checkbox" name="flat_unpack" value="1" <!--#if $flat_unpack > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-flat_unpack')</span></label>
 <br class="clear" />
 
   <label><span class="label">$T('opt-fail_on_crc'):</span>
@@ -153,9 +165,13 @@
   <span class="tips">$T('explain-auto_sort')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-check_new_rel'):</span>
-  <input class="radio" type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-check_new_rel')</span></label>
+  <span class="label">$T('opt-check_new_rel'):</span>
+  <select name="check_new_rel" id="check_new_rel" class="select">
+      <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
+      <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
+      <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
+  </select>
+    <span class="tips">$T('explain-check_new_rel')</span>
 <br class="clear" />
 
   <label><span class="label">$T('opt-replace_spaces'):</span>
@@ -171,6 +187,11 @@
   <label><span class="label">$T('opt-replace_illegal'):</span>
   <input class="radio" type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-replace_illegal')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-sanitize_safe'):</span>
+  <input class="radio" type="checkbox" name="sanitize_safe" value="1" <!--#if $sanitize_safe > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-sanitize_safe')</span></label>
 <br class="clear" />
 
   <label><span class="label">$T('opt-enable_meta'):</span>

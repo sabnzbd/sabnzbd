@@ -12,13 +12,14 @@
       <h3>$T('swtag-general')</h3>
     </div>
     <fieldset class="component-group-list">
-      <div class="field-pair">
-        <input type="checkbox" name="check_new_rel" id="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> />
-        <label class="clearfix" for="check_new_rel">
+        <label class="nocheck clearfix" for="check_new_rel">
           <span class="component-title">$T('opt-check_new_rel')</span>
-          <span class="component-desc">$T('explain-check_new_rel')</span>
+          <select name="check_new_rel" id="check_new_rel">
+              <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
+              <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
+              <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
+          </select>
         </label>
-      </div>
       <div class="field-pair alt">
         <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="auto_browser">
@@ -206,25 +207,39 @@
           <span class="component-desc">$T('explain-enable_unzip')</span>
         </label>
       </div>
-      <div class="field-pair">
+      <div class="field-pair  <!--#if not $have_7zip then "disabled" else "" #-->">
+        <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if $enable_7zip > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="enable_7zip">
+          <span class="component-title">$T('opt-enable_7zip')</span>
+          <span class="component-desc">$T('explain-enable_7zip')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
         <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="enable_filejoin">
           <span class="component-title">$T('opt-enable_filejoin')</span>
           <span class="component-desc">$T('explain-enable_filejoin')</span>
         </label>
       </div>
-      <div class="field-pair alt">
+      <div class="field-pair">
         <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="enable_tsjoin">
           <span class="component-title">$T('opt-enable_tsjoin')</span>
           <span class="component-desc">$T('explain-ts_join')</span>
         </label>
       </div>
+      <div class="field-pair alt">
+        <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if $enable_recursive > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="enable_recursive">
+          <span class="component-title">$T('opt-enable_recursive')</span>
+          <span class="component-desc">$T('explain-enable_recursive')</span>
+        </label>
+      </div>
       <div class="field-pair">
-        <input type="checkbox" name="enable_par_cleanup" id="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> />
-        <label class="clearfix" for="enable_par_cleanup">
-          <span class="component-title">$T('opt-enable_par_cleanup')</span>
-          <span class="component-desc">$T('explain-enable_par_cleanup')</span>
+        <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if $flat_unpack > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="flat_unpack">
+          <span class="component-title">$T('opt-flat_unpack')</span>
+          <span class="component-desc">$T('explain-flat_unpack')</span>
         </label>
       </div>
       <div class="field-pair alt">
@@ -248,7 +263,7 @@
           <span class="component-desc">$T('explain-sfv_check')</span>
         </label>
       </div>
-      <div class="field-pair alt">
+      <div class="field-pair">
         <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if $unpack_check > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="unpack_check">
           <span class="component-title">$T('opt-unpack_check')</span>
@@ -256,7 +271,7 @@
         </label>
       </div>
       <!--#if $nt#-->
-      <div class="field-pair">
+      <div class="field-pair alt">
         <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="par2_multicore">
           <span class="component-title">$T('opt-par2_multicore')</span>
@@ -264,7 +279,7 @@
         </label>
       </div>
       <!--#end if#-->
-      <div class="field-pair">
+      <div class="field-pair alt">
         <label class="nocheck clearfix" for="par_option">
           <span class="component-title">$T('opt-par_option')</span>
           <input type="text" name="par_option" id="par_option" value="$par_option"/>
@@ -275,7 +290,7 @@
         </label>
       </div>
       <!--#if $have_nice#-->
-      <div class="field-pair alt">
+      <div class="field-pair">
         <label class="nocheck clearfix" for="nice">
           <span class="component-title">$T('opt-nice')</span>
           <input type="text" name="nice" id="nice" value="$nice"/>
@@ -335,6 +350,13 @@
         </label>
       </div>
       <div class="field-pair">
+        <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if $sanitize_safe > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="sanitize_safe">
+          <span class="component-title">$T('opt-sanitize_safe')</span>
+          <span class="component-desc">$T('explain-sanitize_safe')</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
         <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if $enable_meta > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="enable_meta">
           <span class="component-title">$T('opt-enable_meta')</span>
