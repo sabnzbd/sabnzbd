@@ -171,7 +171,7 @@ SKIN_TEXT = {
     'add' : TT('Add'),  #: Add NZB to queue (header)
     'addFile' : TT('Add File'), #: Add NZB file to queue (header
     'category' : TT('Category'), #: Job category
-    'pp' : TT('Processing'), 
+    'pp' : TT('Processing'),
     'script' : TT('Script'),
     'priority' : TT('Priority'),
     'pp-none' : TT('Download'), #: Post processing pick list
@@ -430,6 +430,8 @@ SKIN_TEXT = {
     'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
     'opt-unpack_check' : TT('Check result of unpacking'),
     'explain-unpack_check' : TT('Check result of unpacking (needs to be off for some file systems).'),
+    'opt-enable_meta' : TT('Use tags from indexer'),
+    'explain-enable_meta' : TT('Use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
     'opt-folder_rename' : TT('Enable folder rename'),
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-dirscan_opts' : TT('Default Post-Processing'),

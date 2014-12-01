@@ -1181,7 +1181,7 @@ SWITCH_LIST = \
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
              'enable_recursive', 'no_series_dupes',
-             'unwanted_extensions', 'action_on_unwanted_extensions'
+             'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta'
              )
 
 #------------------------------------------------------------------------------
@@ -1249,7 +1249,7 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour', 'script_can_fail',
-              'sanitize_safe', 'enable_meta', 'flat_unpack', 'warn_dupl_jobs', 'new_nzb_on_failure'
+              'sanitize_safe', 'flat_unpack', 'warn_dupl_jobs', 'new_nzb_on_failure'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',

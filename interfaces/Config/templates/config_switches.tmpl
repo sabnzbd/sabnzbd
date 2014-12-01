@@ -285,7 +285,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="folder_rename">$T('opt-folder_rename')</label>
                     <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if int($folder_rename) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-folder_rename')</span>
@@ -304,6 +304,11 @@
                     <label class="config" for="replace_illegal">$T('opt-replace_illegal')</label>
                     <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-replace_illegal')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
+                    <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-enable_meta')</span>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
