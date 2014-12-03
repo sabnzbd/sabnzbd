@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -365,6 +365,8 @@ class ConfigServer(object):
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
+        self.ssl_type = OptionStr(name, 'ssl_type', 't1', add=False)
+        self.send_group = OptionBool(name, 'send_group', False, add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -372,7 +374,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
-                   'fillserver', 'ssl', 'enable', 'optional', 'retention'):
+                   'fillserver', 'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention'):
             try:
                 value = values[kw]
             except KeyError:
@@ -398,6 +400,8 @@ class ConfigServer(object):
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
+        dict['ssl_type'] = self.ssl_type()
+        dict['send_group'] = self.send_group()
         return dict
 
     def delete(self):

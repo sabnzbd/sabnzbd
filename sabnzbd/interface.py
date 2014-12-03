@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -1173,11 +1173,11 @@ class ConfigFolders(object):
 
 SWITCH_LIST = \
             ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
-             'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
+             'enable_tsjoin', 'fail_on_crc', 'top_only',
              'auto_sort', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-             'sec_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
+             'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
              'enable_recursive', 'no_series_dupes',
@@ -1653,7 +1653,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ('fillserver', 'ssl', 'enable', 'optional'):
+    for kw in ('fillserver', 'ssl', 'send_group', 'enable', 'optional'):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:

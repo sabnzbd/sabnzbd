@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -236,14 +236,6 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     path = cfg.dirscan_dir.get_path()
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
-
-    ### Convert ssl_type to sec_type (if still needed)
-    if cfg.ssl_type():
-        if cfg.ssl_type() == 'v2':
-            cfg.sec_type.set('v2')
-        else:
-            cfg.sec_type.set('t1')
-        cfg.ssl_type.set('')
 
     ### Set call backs for Config items
     cfg.cache_limit.callback(new_limit)

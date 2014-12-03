@@ -25,8 +25,29 @@
       <label class="label">$T('srv-retention') ($T('days')):</label><input type="text" size="25" name="retention" value="$servers[$server]['retention']">
         <br class="clear" />
 
-  <label><span class="label">$T('srv-ssl')<!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#-->:</span>
-  <input class="radio" type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
+  <label><span class="label">$T('srv-ssl'):</span>
+  <!--#if int($have_ssl) == 1#-->
+     <input class="radio" type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
+  <!--#else#-->
+    <i>$T('opt-notInstalled')</i>
+  <!--#end if#-->
+  </label><br class="clear" />
+
+  <label><span class="label">$T('srv-ssl_type'):</span>
+    <!--#if int($have_ssl) == 1#-->
+        <select name="ssl_type" id="ssl_type">
+            <option value="t1"  <!--#if $servers[$server]['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
+            <option value="v23" <!--#if $servers[$server]['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
+            <option value="v2"  <!--#if $servers[$server]['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
+            <option value="v3"  <!--#if $servers[$server]['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
+        </select>
+    <!--#else#-->
+    <i>$T('opt-notInstalled')</i>
+    <!--#end if#-->
+  </label><br class="clear" />
+
+  <label><span class="label">$T('srv-send_group'):</span>
+  <input class="radio" type="checkbox" name="send_group" value="1" />
   </label><br class="clear" />
 
   <label><span class="label">$T('srv-fillserver'):</span>
@@ -92,6 +113,21 @@
 
   <label><span class="label">$T('srv-ssl')<!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#-->:</span>
     <input class="radio" type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->></label>
+<br class="clear" />
+
+  <label><span class="label">$T('srv-ssl_type')<!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#-->:</span>
+  <!--#if int($have_ssl) == 1#-->
+    <select name="sec_type" id="sec_type" class="select">
+      <option value="t1" selected> TLS1</option>
+      <option value="v23"> V23</option>
+      <option value="v2"> V2</option>
+      <option value="v3"> V3</option>
+    </select>
+  <!--#end if#-->
+<br class="clear" />
+
+  <label><span class="label">$T('srv-send_group'):</span>
+    <input class="radio" type="checkbox" name="send_group" value="1"></label>
 <br class="clear" />
 
   <label><span class="label">$T('srv-fillserver'):</span>

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -150,8 +150,15 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
+_SSL_TYPES = {
+    't1' : _ssl.TLSv1_METHOD,
+    'v2' : _ssl.SSLv2_METHOD,
+    'v3' : _ssl.SSLv3_METHOD,
+    'v23': _ssl.SSLv23_METHOD
+}
+
 class NNTP(object):
-    def __init__(self, host, port, info, sslenabled, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
         assert isinstance(nw, NewsWrapper)
         self.host = host
         self.port = port
@@ -167,17 +174,7 @@ class NNTP(object):
         af, socktype, proto, canonname, sa = info[0]
 
         if sslenabled and _ssl:
-            # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.sec_type.get()
-            if ssl_type == 't1' and hasattr(_ssl, 'TLSv1_METHOD'):
-                ctx = _ssl.Context(_ssl.TLSv1_METHOD)
-            elif ssl_type == 'v2':
-                ctx = _ssl.Context(_ssl.SSLv2_METHOD)
-            elif ssl_type == 'v3':
-                ctx = _ssl.Context(_ssl.SSLv3_METHOD)
-            else:
-                ctx = _ssl.Context(_ssl.SSLv23_METHOD)
-
+            ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
@@ -224,8 +221,8 @@ class NNTP(object):
             self.error(e)
 
     def error(self, error):
-        if 'SSL23_GET_SERVER_HELLO' in str(error):
-            error = 'This server does not allow SSL on this port'
+        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
+            error = T('This server does not allow SSL on this port')
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
@@ -261,7 +258,8 @@ class NewsWrapper(object):
         self.force_login = False
 
     def init_connect(self, write_fds):
-        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl, self,
+        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
+                         self.server.ssl_type, self.server.send_group, self,
                          self.server.username, self.server.password, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -455,8 +455,6 @@ SKIN_TEXT = {
     'otherSwitches' : TT('Other Switches'),
     'opt-auto_disconnect' : TT('Disconnect on Empty Queue'),
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
-    'opt-send_group' : TT('Send Group'),
-    'explain-send_group' : TT('Send group command before requesting articles.'),
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
     'opt-check_new_rel' : TT('Check for New Release'),
@@ -479,8 +477,6 @@ SKIN_TEXT = {
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
     'igsam-not' : TT('Do not download'),
-    'opt-sec_type' : TT('SSL type'),
-    'explain-sec_type' : TT('Use T1 unless your provider requires otherwise!'),
     'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
     'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
     'swtag-general' : TT('General'),
@@ -522,6 +518,8 @@ SKIN_TEXT = {
     'srv-fillserver' : TT('Backup server'), #: Backup server tickbox
     'srv-optional' : TT('Optional'), #: Server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
+    'srv-ssl_type' : TT('SSL type'),
+    'srv-explain-ssl_type' : TT('Use TLS1 unless your provider requires otherwise!'),
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server
     'button-testServer' : TT('Test Server'), #: Button: Test server
@@ -529,6 +527,8 @@ SKIN_TEXT = {
     'srv-testing' : TT('Testing server details...'),
     'srv-testHint' : TT('Click below to test.'),
     'srv-bandwidth' : TT('Bandwidth'),
+    'srv-send_group' : TT('Send Group'),
+    'srv-explain-send_group' : TT('Send group command before requesting articles.'),
 
 # Config->Scheduling
     'configSchedule' : TT('Scheduling configuration'), #:Config->Scheduling

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -54,7 +54,7 @@ TIMER_LOCK = RLock()
 
 #------------------------------------------------------------------------------
 class Server(object):
-    def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
+    def __init__(self, id, host, port, timeout, threads, fillserver, ssl, ssl_type, send_group, username = None,
                  password = None, optional=False, retention=0):
         self.id = id
         self.newid = None
@@ -65,8 +65,10 @@ class Server(object):
         self.threads = threads
         self.fillserver = fillserver
         self.ssl = ssl
+        self.ssl_type = ssl_type
         self.optional = optional
         self.retention = retention
+        self.send_group = send_group
 
         self.username = username
         self.password = password
@@ -180,10 +182,12 @@ class Downloader(Thread):
             fillserver = srv.fillserver()
             primary = enabled and (not fillserver) and (threads > 0)
             ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
+            ssl_type = srv.ssl_type()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
             retention = float(srv.retention() * 24 * 3600) # days ==> seconds
+            send_group = srv.send_group()
             create = True
 
         if oldserver:
@@ -198,6 +202,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
+                                            ssl_type, send_group,
                                             username, password, optional, retention))
 
         return primary
@@ -705,7 +710,7 @@ class Downloader(Thread):
     def __request_article(self, nw):
         try:
             nzo = nw.article.nzf.nzo
-            if cfg.send_group() and nzo.group != nw.group:
+            if nw.server.send_group and nzo.group != nw.group:
                 group = nzo.group
                 if sabnzbd.LOG_ALL:
                     logging.debug('Thread %s@%s: GROUP <%s>', nw.thrdnum, nw.server.id, group)

@@ -54,12 +54,29 @@
                     <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
                 </div>
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl_type">$T('srv-ssl_type')</label>
+                    <!--#if int($have_ssl) == 1#-->
+                        <select name="ssl_type" id="ssl_type">
+                            <option value="t1"  selected="selected" class="selected">TLS1</option>
+                            <option value="v23">V23</option>
+                            <option value="v2" >V2</option>
+                            <option value="v3" >V3</option>
+                        </select>
+                    <!--#end if#-->
+                    <span class="desc">$T('srv-explain-ssl_type')</span>
+                </div>
                 <div class="field-pair">
                     <label class="config" for="fillserver">$T('srv-fillserver')</label>
                     <input type="checkbox" name="fillserver" id="fillserver" value="1" />
                     <span class="desc">$T('srv-fillserver')</span>
                 </div>
                 <div class="field-pair alt">
+                    <label class="config" for="send_group">$T('srv-send_group')</label>
+                    <input type="checkbox" name="send_group" id="send_group" value="1" />
+                    <span class="desc">$T('srv-explain-send_group')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config" for="optional">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional" value="1" />
                     <span class="desc">$T('srv-optional')</span>
@@ -135,6 +152,18 @@
                     <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
                 </div>
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl_type$cur">$T('srv-ssl_type')</label>
+                    <!--#if int($have_ssl) == 1#-->
+                        <select name="ssl_type" id="ssl_type$cur">
+                            <option value="t1"  <!--#if $servers[$server]['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
+                            <option value="v23" <!--#if $servers[$server]['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
+                            <option value="v2"  <!--#if $servers[$server]['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
+                            <option value="v3"  <!--#if $servers[$server]['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
+                        </select>
+                    <!--#end if#-->
+                    <span class="desc">$T('srv-explain-ssl_type')</span>
+                </div>
                 <div class="field-pair">
                     <label class="config" for="fillserver$cur">$T('srv-fillserver')</label>
                     <input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then 'checked="checked"' else ""#--> />
@@ -144,6 +173,11 @@
                     <label class="config" for="optional$cur">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-optional')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="send_group$cur">$T('srv-send_group')</label>
+                    <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($servers[$server]['send_group']) != 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />

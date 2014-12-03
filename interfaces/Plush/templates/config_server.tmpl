@@ -74,10 +74,30 @@
           <span class="component-desc">&nbsp;</span>
         </label>
       </div>
-      <div class="field-pair alt">
+      <div class="field-pair">
         <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
         <label class="clearfix" for="ssl">
           <span class="component-title">$T('srv-ssl')</span>
+          <span class="component-desc">&nbsp;</span>
+        </label>
+      </div>
+      <div class="field-pair alt">
+        <label class="clearfix" for="ssl_type">
+          <span class="component-title">$T('srv-ssl_type')</span>
+          <!--#if int($have_ssl) == 1#-->
+            <select name="ssl_type" id="ssl_type" class="select">
+              <option value="t1" selected> TLS1</option>
+              <option value="v23"> V23</option>
+              <option value="v2"> V2</option>
+              <option value="v3"> V3</option>
+            </select>
+          <!--#end if#-->
+        </label>
+      </div>
+      <div class="field-pair">
+        <input type="checkbox" name="send_group" id="send_group" value="1"/>
+        <label class="clearfix" for="send_group">
+          <span class="component-title">$T('srv-send_group')</span>
           <span class="component-desc">&nbsp;</span>
         </label>
       </div>
@@ -185,10 +205,31 @@
       <span class="component-desc">&nbsp;</span>
     </label>
   </div>
-  <div class="field-pair alt">
+  <div class="field-pair">
     <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
     <label class="clearfix" for="ssl">
       <span class="component-title">$T('srv-ssl')</span>
+      <span class="component-desc">&nbsp;</span>
+    </label>
+  </div>
+  <div class="field-pair alt">
+    <label class="clearfix" for="ssl_type">
+      <span class="component-title">$T('srv-ssl_type')</span>
+      <span class="component-desc">&nbsp;</span>
+      <!--#if int($have_ssl) == 1#-->
+          <select name="ssl_type" id="ssl_type">
+              <option value="t1"  <!--#if $servers[$server]['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
+              <option value="v23" <!--#if $servers[$server]['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
+              <option value="v2"  <!--#if $servers[$server]['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
+              <option value="v3"  <!--#if $servers[$server]['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
+          </select>
+      <!--#end if#-->
+    </label>
+  </div>
+  <div class="field-pair">
+    <input type="checkbox" name="send_group" id="send_group" value="1" <!--#if int($servers[$server]['send_group']) != 0 then "checked=1" else ""#-->/>
+    <label class="clearfix" for="send_group">
+      <span class="component-title">$T('srv-send_group')</span>
       <span class="component-desc">&nbsp;</span>
     </label>
   </div>

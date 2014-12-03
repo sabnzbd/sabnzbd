@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -66,7 +66,6 @@ else:
 #
 quick_check = OptionBool('misc', 'quick_check', True)
 fail_on_crc = OptionBool('misc', 'fail_on_crc', True)
-send_group = OptionBool('misc', 'send_group', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
 email_server  = OptionStr('misc', 'email_server', validation=validate_server)
@@ -215,8 +214,6 @@ https_chain = OptionDir('misc','https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
-ssl_type = OptionStr('misc', 'ssl_type') # Obsolete variable, only used to seed 'sec_type'
-sec_type = OptionStr('misc', 'sec_type', 't1')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 randomize_server_ip = OptionBool('misc', 'randomize_server_ip', False)
