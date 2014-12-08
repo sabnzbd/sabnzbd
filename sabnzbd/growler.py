@@ -122,10 +122,10 @@ def send_notification(title , msg, gtype):
     """ Send Notification message
     """
     # Notification Center
-    if sabnzbd.DARWIN_ML and sabnzbd.cfg.ncenter_enable():
+    if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
-    
+
     # Growl
     if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl'):
         if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
@@ -133,13 +133,13 @@ def send_notification(title , msg, gtype):
         else:
             Thread(target=send_growl, args=(title, msg, gtype)).start()
             time.sleep(0.5)
-    
+
     # Prowl
     if sabnzbd.cfg.prowl_enable():
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
             time.sleep(0.5)
-    
+
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
@@ -320,9 +320,9 @@ def ncenter_path():
 
 def send_notification_center(title, msg, gtype):
     """ Send message to Mountain Lion's Notification Center """
-    if not sabnzbd.DARWIN_ML:
+    if sabnzbd.DARWIN_VERSION < 8:
         return T('Not available') #: Function is not available on this OS
-    tool = ncenter_path()    
+    tool = ncenter_path()
     if tool:
         try:
             command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other')),
@@ -380,7 +380,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     if gtype == 'queue_done': prio = sabnzbd.cfg.prowl_prio_queue_done()
     if gtype == 'other':     prio = sabnzbd.cfg.prowl_prio_other()
     if force: prio = 0
-    
+
     if prio > -3:
         url = 'https://api.prowlapp.com/publicapi/add?apikey=%s&application=SABnzbd' \
               '&event=%s&description=%s&priority=%d' % (apikey, title, msg, prio)

@@ -234,7 +234,7 @@ use_pickle = OptionBool('misc', 'use_pickle', False)
 no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 # [ncenter]
-ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN)
+ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN_VERSION > 7)
 ncenter_prio_startup = OptionNumber('ncenter', 'ncenter_prio_startup', -3)
 ncenter_prio_download = OptionNumber('ncenter', 'ncenter_prio_download', 0)
 ncenter_prio_pp = OptionNumber('ncenter', 'ncenter_prio_pp', 0)
@@ -260,7 +260,7 @@ ntfosd_prio_queue_done = OptionNumber('ntfosd', 'ntfosd_prio_queue_done', 1)
 ntfosd_prio_other = OptionNumber('ntfosd', 'ntfosd_prio_other', 0)
 
 # [growl]
-growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
+growl_enable = OptionBool('growl', 'growl_enable', sabnzbd.DARWIN_VERSION < 8)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
 growl_prio_startup = OptionNumber('growl', 'growl_prio_startup', -3)

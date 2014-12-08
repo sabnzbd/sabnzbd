@@ -2645,7 +2645,7 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
-        conf['have_ncenter'] = sabnzbd.DARWIN_ML and bool(sabnzbd.growler.ncenter_path())
+        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.growler.ncenter_path())
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()

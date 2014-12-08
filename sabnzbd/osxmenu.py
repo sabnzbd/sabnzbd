@@ -84,7 +84,7 @@ class SABnzbdDelegate(NSObject):
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
             self.icons[i] = NSImage.alloc().initByReferencingFile_(status_icons[i])
-            if sabnzbd.DARWIN_YS:
+            if sabnzbd.DARWIN_VERSION > 9:
                 # Support for Yosemite Dark Mode
                 self.icons[i].setTemplate_(YES)
         self.status_item.setImage_(self.icons['idle'])

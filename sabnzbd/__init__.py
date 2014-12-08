@@ -64,11 +64,12 @@ elif os.name == 'posix':
             pass
         if '86' in platform.machine():
             DARWIN_INTEL = True
+
 if DARWIN:
-    DARWIN_YS = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 9]
-    DARWIN_ML = [int(n) for n in platform.mac_ver()[0].split('.')] >= [10, 8]
+    # 10 = Yosemite, 9 = Mavericks, 8 = MountainLion, 7 = Lion
+    DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
 else:
-    DARWIN_YS = DARWIN_ML = False
+    DARWIN_VERSION = 0
 
 #------------------------------------------------------------------------
 
