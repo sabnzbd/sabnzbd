@@ -88,8 +88,10 @@ def check_access(access_type=4):
         `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
     """
     referrer = cherrypy.request.remote.ip
-    return referrer in ('127.0.0.1', '::1') or referrer.startswith(cfg.local_range()) or \
-           access_type <= cfg.inet_exposure()
+    range_ok = bool([1 for r in cfg.local_range() if referrer.startswith(r)])
+    if not range_ok:
+        logging.debug('Refused connection to %s', referrer)
+    return referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
@@ -1409,7 +1411,7 @@ class ConfigGeneral(object):
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
-        conf['local_range'] = cfg.local_range()
+        conf['local_range'] = cfg.local_range.get_string()
         conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'

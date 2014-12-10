@@ -230,11 +230,11 @@ class OptionDir(Option):
 
 class OptionList(Option):
     """ List option class """
-    def __init__(self, section, keyword, default_val=None, validation=None, add=True):
+    def __init__(self, section, keyword, default_val=None, validation=None, add=True, protect=False):
         self.__validation = validation
         if default_val is None:
             default_val = []
-        Option.__init__(self, section, keyword, default_val, add=add)
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ Set the list given a comma-separated string or a list"""
