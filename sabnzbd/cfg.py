@@ -234,7 +234,7 @@ use_pickle = OptionBool('misc', 'use_pickle', False)
 no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
 # [ncenter]
-ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN_VERSION > 7)
+ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN_VERSION > 7)
 ncenter_prio_startup = OptionNumber('ncenter', 'ncenter_prio_startup', -3)
 ncenter_prio_download = OptionNumber('ncenter', 'ncenter_prio_download', 0)
 ncenter_prio_pp = OptionNumber('ncenter', 'ncenter_prio_pp', 0)
