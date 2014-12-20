@@ -802,6 +802,11 @@ class NzbObject(TryList):
                 except:
                     logging.debug('The lastrar swap did not go well')
 
+        # Copy meta fields to nzo_info, if not already set
+        for kw in self.meta:
+            if not self.nzo_info.get(kw):
+                self.nzo_info[kw] = self.meta[kw][0]
+
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
 

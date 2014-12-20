@@ -566,7 +566,7 @@ class GenericSorter(object):
         """
         ## - Get Year
         if self.nzo:
-            year = self.nzo.nzo_info.get('year') or self.nzo.meta.get('year', (None,))[0]
+            year = self.nzo.nzo_info.get('year')
         else:
             year = ''
         if year:
@@ -942,7 +942,7 @@ def get_titles(nzo, match, name, titleing=False):
     a lot of little hacks to make it better and for more control
     '''
     if nzo:
-        title = nzo.nzo_info.get('propername') or nzo.meta.get('propername', (None,))[0]
+        title = nzo.nzo_info.get('propername')
     else:
         title = ''
     if not title:
@@ -1025,7 +1025,7 @@ def get_descriptions(nzo, match, name):
     like ' - Description' or '_-_Description'
     '''
     if nzo:
-        ep_name = nzo.nzo_info.get('episodename') or nzo.meta.get('episodename', (None,))[0]
+        ep_name = nzo.nzo_info.get('episodename')
     else:
         ep_name = ''
     if not ep_name:
