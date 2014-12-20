@@ -1315,9 +1315,13 @@ def main():
             from test.pystone import pystones
         except:
             # otherwise use the one provided by SABnzbd
-            from util.pystone import pystones
-        pystonetime,pystoneperformance = pystones(1000)
-        logging.debug('CPU Pystone available performance is %s',int(pystoneperformance))
+            try:
+                from util.pystone import pystones
+            except:
+                pystones = None
+        if pystones:
+            pystonetime,pystoneperformance = pystones(1000)
+            logging.debug('CPU Pystone available performance is %s',int(pystoneperformance))
         try:	
             for myline in open("/proc/cpuinfo"):
                 if myline.startswith(('model name')):
