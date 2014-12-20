@@ -1387,9 +1387,16 @@ def main():
     # Save the INI file
     config.save_config(force=True)
 
-    if sabnzbd.WIN32 and sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
-        import sabnzbd.sabtray
-        sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+    if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
+        if sabnzbd.WIN32:
+            import sabnzbd.sabtray
+            sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+        elif sabnzbd.LINUX_POWER and os.environ.get('DISPLAY'):
+            try:
+                import gtk, sabnzbd.sabtraylinux
+                sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+            except:
+                logging.info("pygtk2 not found. No SysTray.")
 
     print_modules()
 
