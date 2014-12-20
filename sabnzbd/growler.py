@@ -113,7 +113,7 @@ def have_ntfosd():
 def check_classes(gtype, section):
     """ Check if `gtype` is enabled in `section` """
     try:
-        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))()
+        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
 
