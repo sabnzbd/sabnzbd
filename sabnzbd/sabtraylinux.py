@@ -25,6 +25,7 @@ import cherrypy
 from time import sleep
 import subprocess
 import threading
+import logging
 from threading import Thread
 
 import sabnzbd
@@ -103,6 +104,7 @@ class StatusIcon(Thread):
         maddnzb = gtk.MenuItem(T("Add NZB"))
         mshowinterface = gtk.MenuItem(T("Show interface"))
         mopencomplete = gtk.MenuItem(T("Open complete folder"))
+        mrss = gtk.MenuItem(T("Read all RSS feeds"))
 
         if self.sabpaused:
             mpauseresume = gtk.MenuItem(T("Resume"))
@@ -114,6 +116,7 @@ class StatusIcon(Thread):
         maddnzb.connect("activate",self.addnzb)
         mshowinterface.connect("activate",self.browse)
         mopencomplete.connect("activate",self.opencomplete)
+        mrss.connect("activate", self.rss)
         mpauseresume.connect("activate",self.pauseresume)
         mrestart.connect("activate",self.restart)
         mshutdown.connect("activate", self.shutdown)
@@ -121,6 +124,7 @@ class StatusIcon(Thread):
         menu.append(maddnzb)
         menu.append(mshowinterface)
         menu.append(mopencomplete)
+        menu.append(mrss)
         menu.append(mpauseresume)
         menu.append(mrestart)
         menu.append(mshutdown)
@@ -178,3 +182,6 @@ class StatusIcon(Thread):
     def resume(self):
         scheduler.plan_resume(0)
         sabnzbd.unpause_all()
+
+    def rss(self, icon):
+        scheduler.force_rss()

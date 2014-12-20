@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2014 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -63,6 +63,7 @@ class SABTrayThread(SysTrayIconThread):
                                       (self.txt_restart_nl, None, self.nologin),
                                       (self.txt_restart + ' - 127.0.0.1:8080', None, self.defhost))),
             (self.txt_pause + '/' + self.txt_resume, None, self.pauseresume),
+            (self.txt_rss, None, self.rss),
             (self.txt_shutdown, None, self.shutdown),
         )
 
@@ -87,6 +88,7 @@ class SABTrayThread(SysTrayIconThread):
         self.txt_idle = fix(TT('Idle'))
         self.txt_paused = fix(TT('Paused'))
         self.txt_remaining = fix(TT('Remaining'))
+        self.txt_rss = fix(TT('Read all RSS feeds'))
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
@@ -135,6 +137,11 @@ class SABTrayThread(SysTrayIconThread):
         self.hover_text = self.txt_restart
         sabnzbd.halt()
         cherrypy.engine.restart()
+
+    # menu handler
+    def rss(self, icon):
+        self.hover_text = self.txt_rss
+        scheduler.force_rss()
 
     # menu handler
     def nologin(self, icon):

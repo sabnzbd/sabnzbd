@@ -241,6 +241,14 @@ class SABnzbdDelegate(NSObject):
             self.watched_menu_item.setEnabled_(NO)
         self.menu.addItem_(self.watched_menu_item)
 
+        #All RSS feeds
+        self.rss_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Read all RSS feeds'), 'rssAction:', '')
+        if self.isLeopard:
+            self.rss_menu_item.setHidden_(YES)
+        else:
+            self.rss_menu_item.setEnabled_(NO)
+        self.menu.addItem_(self.rss_menu_item)
+
         self.separator2_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator2_menu_item)
 
@@ -311,6 +319,7 @@ class SABnzbdDelegate(NSObject):
                     self.versionUpdate()
                     self.diskspaceUpdate()
                     self.watchedUpdate()
+                    self.rssUpdate()
             else:
                 if self.status_removed == 0:
                     status_bar = NSStatusBar.systemStatusBar()
@@ -537,6 +546,15 @@ class SABnzbdDelegate(NSObject):
         except :
             logging.info("[osx] watchedUpdate Exception %s" % (sys.exc_info()[0]))
 
+    def rssUpdate(self):
+        try:
+            if self.isLeopard:
+                self.rss_menu_item.setHidden_(NO)
+            else:
+                self.rss_menu_item.setEnabled_(YES)
+        except :
+            logging.info("[osx] rssUpdate Exception %s" % (sys.exc_info()[0]))
+
     def serverUpdate(self):
         try:
             if not config.get_servers():
@@ -553,6 +571,7 @@ class SABnzbdDelegate(NSObject):
                 self.resume_menu_item.setHidden_(hide)
                 self.pause_menu_item.setHidden_(hide)
                 self.watched_menu_item.setHidden_(hide)
+                self.rss_menu_item.setHidden_(hide)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setHidden_(hide)
                 self.queue_menu_item.setHidden_(hide)
@@ -568,6 +587,7 @@ class SABnzbdDelegate(NSObject):
                 self.resume_menu_item.setEnabled_(alternate)
                 self.pause_menu_item.setEnabled_(alternate)
                 self.watched_menu_item.setEnabled_(alternate)
+                self.rss_menu_item.setEnabled_(alternate)
                 self.purgequeue_menu_item.setAlternate_(alternate)
                 self.purgequeue_menu_item.setEnabled_(alternate)
                 self.queue_menu_item.setEnabled_(alternate)
@@ -673,6 +693,9 @@ class SABnzbdDelegate(NSObject):
 
     def watchedFolderAction_(self, sender):
         sabnzbd.dirscanner.dirscan()
+
+    def rssAction_(self, sender):
+        scheduler.force_rss()
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()
