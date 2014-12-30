@@ -89,9 +89,10 @@ def check_access(access_type=4):
     """
     referrer = cherrypy.request.remote.ip
     range_ok = bool([1 for r in cfg.local_range() if referrer.startswith(r)])
-    if not range_ok:
+    allowed = referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
+    if not allowed:
         logging.debug('Refused connection to %s', referrer)
-    return referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
+    return allowed
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
