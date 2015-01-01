@@ -20,6 +20,7 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 """
 
 import os
+import sys
 import time
 import re
 import logging
@@ -132,6 +133,8 @@ class URLGrabber(Thread):
                     fn, header = opener.retrieve(url)
                 except:
                     fn = None
+                    logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
+
 
                 if fn:
                     for tup in header.items():
