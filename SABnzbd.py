@@ -1309,19 +1309,21 @@ def main():
             logging.debug('Could not determine my IPv6 address')
             pass
 
-        # measure and log Pystone performance, and - if possible - CPU type
-        try:
-            # First try pystone from Python test libary
-            from test.pystone import pystones
-        except:
-            # otherwise use the one provided by SABnzbd
+        # measure and log Pystone performance
+        # to avoid a triple nested try/except construction, we use another method:
+        for pystonemodule in ['test.pystone', 'util.pystone']:
+            print pystonemodule
             try:
-                from util.pystone import pystones
+                exec "from " + pystonemodule + " import pystones"
+                logging.debug('CPU Pystone available performance is %s',int(pystones(1000)[1]))
+                break	# import and calculation worked, so we're done. Get out of the for loop
             except:
-                pystones = None
-        if pystones:
-            pystonetime,pystoneperformance = pystones(1000)
-            logging.debug('CPU Pystone available performance is %s',int(pystoneperformance))
+                pass	# ... the import went wrong, so continue in the for loop
+        else:
+            # got to the end of the for (!) loop, so no more pystone modules to try ...
+            logging.debug("Could not import or calculate pystones")
+
+        # On Linux, let's print the CPU model name:
         try:	
             for myline in open("/proc/cpuinfo"):
                 if myline.startswith(('model name')):
