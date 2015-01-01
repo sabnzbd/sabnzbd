@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2013 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 """
 
 import os
+import sys
 import time
 import re
 import logging
@@ -106,7 +107,8 @@ class URLGrabber(Thread):
                 try:
                     fn = urllib2.urlopen(req)
                 except:
-                    ret = None
+                    fn = None
+                    logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
 
                 new_url = dereferring(url, fn)
                 if new_url:
