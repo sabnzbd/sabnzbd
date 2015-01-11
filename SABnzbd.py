@@ -578,7 +578,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = ''
 
     if cherryhost is None:
-        cherryhost = sabnzbd.cfg.cherryhost()
+        cherryhost = deunicode(sabnzbd.cfg.cherryhost())
     else:
         sabnzbd.cfg.cherryhost.set(cherryhost)
 
@@ -1299,7 +1299,7 @@ def main():
         except:
             logging.debug('Could not determine my IPv4 address')
             pass
-        
+
         try:
             s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
             s_ipv6.connect(('ipv6.google.com', 80))
@@ -1323,7 +1323,7 @@ def main():
             logging.debug("Could not import or calculate pystones")
 
         # On Linux, let's print the CPU model name:
-        try:	
+        try:
             for myline in open("/proc/cpuinfo"):
                 if myline.startswith(('model name')):
                     logging.debug('CPU model name is %s', myline[13:].rstrip() )
