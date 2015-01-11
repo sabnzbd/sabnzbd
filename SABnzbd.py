@@ -1311,7 +1311,7 @@ def main():
 
         # measure and log Pystone performance
         # to avoid a triple nested try/except construction, we use another method:
-        for pystonemodule in ['test.pystone', 'util.pystone']:
+        for pystonemodule in ['test.pystone', 'sabnzbd.utils.pystone']:
             try:
                 exec "from " + pystonemodule + " import pystones"
                 logging.debug('CPU Pystone available performance is %s',int(pystones(1000)[1]))
