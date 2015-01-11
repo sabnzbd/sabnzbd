@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-                         flag_file, real_path, globber
+                         flag_file, real_path, globber, short_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -996,6 +996,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     #set the current nzo status to "Repairing". Used in History
 
     parfile = os.path.join(workdir, parfile_nzf.filename)
+    parfile = short_path(parfile)
+    workdir = short_path(workdir)
 
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
