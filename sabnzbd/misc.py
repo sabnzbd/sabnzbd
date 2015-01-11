@@ -286,10 +286,19 @@ def sanitize_and_trim_path(path):
     """ Remove illegal characters and trim element size
     """
     path = path.strip()
+    new_path = ''
+    if sabnzbd.WIN32:
+        if path.startswith(u'\\\\?\\'):
+            new_path = u'\\\\?\\'
+            path = path[4:]
+        elif path.startswith(u'\\\\?\\UNC\\'):
+            new_path = u'\\\\?\\UNC\\'
+            path = path[8:]
+
     path = path.replace('\\', '/')
     parts = path.split('/')
     if sabnzbd.WIN32 and len(parts[0]) == 2 and ':' in parts[0]:
-        new_path = parts[0] + '/'
+        new_path += parts[0] + '/'
         parts.pop(0)
     elif path.startswith('//'):
         new_path = '//'
@@ -1443,7 +1452,7 @@ def short_path(path, always=True):
                 # For new path, shorten only existing part (recursive)
                 path1, name = os.path.split(path)
                 path = os.path.join(short_path(path1, always), name)
-            path = clip_path(path)
+        path = clip_path(path)
     return path
 
 
