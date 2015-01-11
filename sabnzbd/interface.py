@@ -55,7 +55,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
-     retry_job, build_header, build_history, del_job_files, \
+     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
      format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
      _api_test_email, _api_test_notif
 
@@ -956,6 +956,13 @@ class HistoryPage(object):
         msg = check_session(kwargs)
         if msg: return msg
         retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def retry_all(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        retry_all_jobs()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose

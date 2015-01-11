@@ -249,6 +249,27 @@ jQuery(function($){
     });
   });
 
+  // Retry all failed jobs
+  $('#queue_retry').click(function(event) {
+    $.colorbox({ inline:true, href:"#queue_retry_modal", title:'',
+      innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+    });
+    return false;
+  });
+  $('#queue_retry_modal input:submit').click(function(){
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'retry_all', apikey: $.plush.apikey},
+      success: function(){
+        $.colorbox.close();
+        $.plush.modalOpen=false;
+        $.plush.RefreshQueue();
+      }
+    });
+  });
+
 
   // Queue sort (6-in-1)
   $('#queue_sort_list .queue_sort').click(function(event) {

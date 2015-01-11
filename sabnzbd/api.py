@@ -651,6 +651,10 @@ def _api_rss_now(name, output, kwargs):
     scheduler.force_rss()
     return report(output)
 
+def _api_retry_all(name, output, kwargs):
+    """ API: Retry all failed items in History"""
+    return report(output, keyword='status', data=retry_all_jobs)
+
 def _api_reset_quota(name, output, kwargs):
     """ Reset quota left """
     BPSMeter.do.reset_quota(force=True)
@@ -845,6 +849,7 @@ _api_table = {
     'pause_pp'        : (_api_pause_pp, 2),
     'rss_now'         : (_api_rss_now, 2),
     'browse'          : (_api_browse, 2),
+    'retry_all'       : (_api_retry_all, 2),
     'reset_quota'     : (_api_reset_quota, 2),
     'test_email'      : (_api_test_email, 2),
     'test_notif'      : (_api_test_notif, 2),
@@ -1522,6 +1527,13 @@ def retry_job(job, new_nzb):
             history_db.remove_history(job)
             return nzo_id
     return None
+
+
+#------------------------------------------------------------------------------
+def retry_all_jobs():
+    """ Re enter all failed jobs in the download queue """
+    history_db = cherrypy.thread_data.history_db
+    return NzbQueue.do.retry_all_jobs(history_db)
 
 
 #------------------------------------------------------------------------------

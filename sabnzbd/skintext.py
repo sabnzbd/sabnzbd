@@ -221,6 +221,7 @@ SKIN_TEXT = {
     'purgeQueueConf' : TT('Delete all items from the queue?'), #: Confirmation popup
     'purgeNZBs' : TT('Purge NZBs'), #: Queue page button
     'purgeNZBs-Files' : TT('Purge NZBs & Delete Files'), #: Queue page button
+    'retryQueue' : TT('Retry all failed jobs'), #: Retry all failed jobs dialog box
     'removeNZB' : TT('Remove NZB'), #: Queue page button
     'removeNZB-Files' : TT('Remove NZB & Delete Files'), #: Queue page button
     'AofB' : TT('of'), #: Queue page, as in "4G *of* 10G"
@@ -247,6 +248,8 @@ SKIN_TEXT = {
     'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
     'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
     'msg-path' : TT('Path'), #: Path as displayed in History details
+    'link-retryAll' : TT('Retry all failed'), #: Retry all failed jobs in History
+    'retryNZBs' : TT('Retry All'), #: Retry all button for Retry All Failed Jobs
 
 
 # Connections page
@@ -785,6 +788,7 @@ SKIN_TEXT = {
     'Plush-sortSizeAsc' : TT('Sort by Size <small>(Smallest&rarr;Largest)</small>'),
     'Plush-sortSizeDesc' : TT('Sort by Size <small>(Largest&rarr;Smallest)</small>'),
     'Plush-confirmPurgeQ' : TT('Purge the Queue?'),
+    'Plush-confirmRetryQ' : TT('Retry all failed jobs in History?'),
     'Plush-purge' : TT('Purge'),
     'Plush-left' : TT('left'),
     'Plush-maxSpeed' : TT('Max Speed'), #: Used in speed menu. Split in two lines if too long.
@@ -822,6 +826,8 @@ SKIN_TEXT = {
     'smpl-purgehist' : TT('Delete Completed'),
     'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),
     'smpl-purgefailhist' : TT('Delete Failed'),
+    'smpl-retryAllJobs?' : TT('Retry all failed jobs?'),
+    'smpl-retryAll' : TT('Retry all'), #: Link in SMPL for "Retry all failed jobs"
     'smpl-links' : TT('Links'),
     'smpl-size' : TT('Size'),
     'smpl-path' : TT('Path'),

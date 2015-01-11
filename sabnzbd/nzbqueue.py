@@ -163,6 +163,24 @@ class NzbQueue(TryList):
                     logging.info('Skipping repair for job %s', folder)
         return result
 
+    def retry_all_jobs(self, history_db):
+        """ Retry all retryable jobs in History
+        """
+        from sabnzbd.api import build_history
+        result = []
+
+        # Retryable folders from History
+        items = build_history()[0]
+        registered = [ (platform_encode(os.path.basename(item['path'])),
+                       item['nzo_id'])
+                       for item in items if item['retry']]
+
+        for job in registered:
+            logging.info('Repairing job %s', job[0])
+            result.append(self.repair_job(job[0]))
+            history_db.remove_history(job[1])
+        return bool(result)
+
 
     def repair_job(self, folder, new_nzb=None):
         """ Reconstruct admin for a single job folder, optionally with new NZB
