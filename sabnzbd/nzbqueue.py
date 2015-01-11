@@ -310,18 +310,25 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def change_opts(self, nzo_ids, pp):
+        result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 self.__nzo_table[nzo_id].set_pp(pp)
+                result += 1
+        return result
 
     @synchronized(NZBQUEUE_LOCK)
     def change_script(self, nzo_ids, script):
+        result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 self.__nzo_table[nzo_id].script = script
+                result += 1
+        return result
 
     @synchronized(NZBQUEUE_LOCK)
     def change_cat(self, nzo_ids, cat, explicit_priority=None):
+        result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
@@ -329,6 +336,8 @@ class NzbQueue(TryList):
                 nzo.set_pp(pp)
                 if explicit_priority is None:
                     self.set_priority(nzo_id, prio)
+                result += 1
+        return result
 
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name, password=None):

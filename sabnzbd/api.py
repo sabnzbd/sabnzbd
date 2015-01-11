@@ -394,8 +394,8 @@ def _api_change_cat(name, output, kwargs):
         cat = value2
         if cat == 'None':
             cat = None
-        NzbQueue.do.change_cat(nzo_id, cat)
-        return report(output)
+        result = NzbQueue.do.change_cat(nzo_id, cat)
+        return report(output, keyword='status', data=bool(result > 0))
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -409,8 +409,8 @@ def _api_change_script(name, output, kwargs):
         script = value2
         if script.lower() == 'none':
             script = None
-        NzbQueue.do.change_script(nzo_id, script)
-        return report(output)
+        result = NzbQueue.do.change_script(nzo_id, script)
+        return report(output, keyword='status', data=bool(result > 0))
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -419,8 +419,8 @@ def _api_change_opts(name, output, kwargs):
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
     if value and value2 and value2.isdigit():
-        NzbQueue.do.change_opts(value, int(value2))
-    return report(output)
+        result = NzbQueue.do.change_opts(value, int(value2))
+    return report(output, keyword='status', data=bool(result > 0))
 
 
 def _api_fullstatus(name, output, kwargs):
