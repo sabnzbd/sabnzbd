@@ -35,7 +35,7 @@ except:
     new_md5 = md5.new
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer, \
+from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
                          set_permissions, flag_file, long_path
 from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
