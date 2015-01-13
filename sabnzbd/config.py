@@ -174,11 +174,12 @@ class OptionBool(Option):
 
 class OptionDir(Option):
     """ Directory option class """
-    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, add=True):
+    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, writable=True, add=True):
         self.__validation = validation
         self.__root = ''   # Base directory for relative paths
         self.__apply_umask = apply_umask
         self.__create = create
+        self.__writable = writable
         Option.__init__(self, section, keyword, default_val, add=add)
 
     def get_path(self):
@@ -188,7 +189,7 @@ class OptionDir(Option):
         if value:
             path = sabnzbd.misc.real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
+                res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
     def test_path(self):
@@ -216,7 +217,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, self._Option__default_val)
             if not error:
                 if value and (self.__create or create):
-                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
+                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
                     if not res:
                         error = T('Cannot create %s folder %s') % (self.ident()[1], path)
             if not error:
@@ -226,7 +227,6 @@ class OptionDir(Option):
     def set_create(self, value):
         """ Set auto-creation value """
         self.__create = value
-
 
 class OptionList(Option):
     """ List option class """

@@ -160,7 +160,7 @@ download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, create=False,
 download_free = OptionStr('misc', 'download_free')
 complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False, \
                          apply_umask=True, validation=validate_notempty)
-script_dir = OptionDir('misc', 'script_dir', create=True)
+script_dir = OptionDir('misc', 'script_dir', create=True, writable=False)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')

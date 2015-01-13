@@ -402,11 +402,12 @@ def real_path(loc, path):
 ################################################################################
 # Create_Real_Path                                                             #
 ################################################################################
-def create_real_path(name, loc, path, umask=False):
+def create_real_path(name, loc, path, umask=False, writable=True):
     """ When 'path' is relative, create join of 'loc' and 'path'
         When 'path' is absolute, create normalized path
         'name' is used for logging.
         Optional 'umask' will be applied.
+        'writable' means that an existing folder should be writable
         Returns ('success', 'full path')
     """
     if path:
@@ -417,7 +418,8 @@ def create_real_path(name, loc, path, umask=False):
                 logging.error(T('Cannot create directory %s'), my_dir)
                 return (False, my_dir)
 
-        if os.access(my_dir, os.R_OK + os.W_OK):
+        checks = (os.W_OK + os.R_OK) if writable else os.R_OK
+        if os.access(my_dir, checks):
             return (True, my_dir)
         else:
             logging.error(T('%s directory: %s error accessing'), name, my_dir)
