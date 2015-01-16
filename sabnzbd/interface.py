@@ -88,7 +88,7 @@ def check_access(access_type=4):
         `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
     """
     referrer = cherrypy.request.remote.ip
-    range_ok = bool([1 for r in cfg.local_range() if referrer.startswith(r)])
+    range_ok = (not cfg.local_range()) or bool([1 for r in cfg.local_range() if referrer.startswith(r)])
     allowed = referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
     if not allowed:
         logging.debug('Refused connection to %s', referrer)
