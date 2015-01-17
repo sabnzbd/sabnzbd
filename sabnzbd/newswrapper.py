@@ -150,12 +150,15 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
-_SSL_TYPES = {
-    't1' : _ssl.TLSv1_METHOD,
-    'v2' : _ssl.SSLv2_METHOD,
-    'v3' : _ssl.SSLv3_METHOD,
-    'v23': _ssl.SSLv23_METHOD
-}
+try:
+    _SSL_TYPES = {
+        't1' : _ssl.TLSv1_METHOD,
+        'v2' : _ssl.SSLv2_METHOD,
+        'v3' : _ssl.SSLv3_METHOD,
+        'v23': _ssl.SSLv23_METHOD
+    }
+except:
+    _SSL_TYPES = {}
 
 class NNTP(object):
     def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
