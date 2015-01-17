@@ -230,20 +230,22 @@ gTABLE_850_LATIN = string.maketrans(TAB_850, TAB_LATIN)
 gTABLE_LATIN_850 = string.maketrans(TAB_LATIN, TAB_850)
 
 def TRANS(p):
-    """ For Windows: Translate CP850 to Python's Latin-1
+    """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
+        Others: return original string
     """
     global gTABLE_850_LATIN
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_850_LATIN)
+        return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
     else:
         return p
 
 def UNTRANS(p):
     """ For Windows: Translate Python's Latin-1 to CP850
+        Others: return original string
     """
     global gTABLE_LATIN_850
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_LATIN_850)
+        return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
     else:
         return p
 
