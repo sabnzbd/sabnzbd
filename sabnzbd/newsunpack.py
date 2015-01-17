@@ -449,6 +449,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             success = not fail
         except:
             success = False
+            fail = True
             msg = sys.exc_info()[1]
             nzo.set_fail = T('Unpacking failed, %s') % msg
             setname = nzo.final_name
