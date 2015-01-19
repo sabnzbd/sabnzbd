@@ -345,8 +345,8 @@ SKIN_TEXT = {
     'explain-disableApikeyWarn' : TT('USE AT YOUR OWN RISK!'),
     'qr-code' : TT('QR Code'), #: Button to show QR code of APIKEY
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
-    'opt-local_range' : TT('List of local network ranges'),
-    'explain-local_range' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
+    'opt-local_ranges' : TT('List of local network ranges'),
+    'explain-local_ranges' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
     'opt-inet_exposure' : TT('External internet access'),
     'explain-inet_exposure' : TT('You can set access rights for systems outside your local network'),
     'inet-local' : TT('No access'), # Selection value for external access

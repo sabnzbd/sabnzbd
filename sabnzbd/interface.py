@@ -88,7 +88,7 @@ def check_access(access_type=4):
         `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
     """
     referrer = cherrypy.request.remote.ip
-    range_ok = (not cfg.local_range()) or bool([1 for r in cfg.local_range() if referrer.startswith(r)])
+    range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if referrer.startswith(r)])
     allowed = referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
     if not allowed:
         logging.debug('Refused connection to %s', referrer)
@@ -1311,7 +1311,7 @@ class ConfigSpecial(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit', 'local_range', 'inet_exposure',
+    'refresh_rate', 'cache_limit', 'local_ranges', 'inet_exposure',
     'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
@@ -1419,7 +1419,7 @@ class ConfigGeneral(object):
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
-        conf['local_range'] = cfg.local_range.get_string()
+        conf['local_ranges'] = cfg.local_ranges.get_string()
         conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
