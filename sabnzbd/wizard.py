@@ -142,7 +142,7 @@ class Wizard(object):
         host = cfg.cherryhost()
         info['host'] = host
         # Allow special operation if host is not one of the defaults
-        if host not in ('localhost','0.0.0.0'):
+        if host not in ('127.0.0.1', '::1', 'localhost','0.0.0.0'):
             info['custom_host'] = True
         else:
             info['custom_host'] = False
