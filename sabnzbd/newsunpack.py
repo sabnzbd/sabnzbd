@@ -96,15 +96,12 @@ def find_programs(curdir):
     save_data = sabnzbd.save_data
 
     if sabnzbd.DARWIN:
-        try:
-            os_version = run_simple('sw_vers -productVersion')
+        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
+        if sabnzbd.DARWIN_VERSION >= 6:
             #par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
-            if int(os_version.split('.')[1]) >= 6:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
-            else:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
-        except:
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+        else:
+            sabnzbd.newsunpack.PAR2_COMMAND = sabnzbd.newsunpack.PAR2C_COMMAND
 
         if sabnzbd.DARWIN_INTEL:
             sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
@@ -1133,6 +1130,8 @@ _RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
     """ Run par2 on par-set """
+    import sabnzbd # Python bug requires import here
+    import sabnzbd.assembler
     if cfg.never_repair():
         cmd = 'v'
     else:
@@ -1146,18 +1145,19 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     start = time()
 
     classic = classic or not cfg.par2_multicore()
-    logging.debug('Par2-classic = %s', classic)
-
-    import sabnzbd.assembler
-    if (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND:
-        if cfg.par_option():
-            command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
+    if sabnzbd.WIN32:
+        # If filenames are UTF-8 then we must use par2-tbb, unless this is a retry with classic
+        tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND
+    else:
+        tbb = False
+    if tbb and cfg.par_option():
+        command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
+    else:
+        if classic:
+            command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
-        classic = not PAR2C_COMMAND
-    else:
-        command = [str(PAR2C_COMMAND), cmd, parfile]
-        classic = True
+    logging.debug('Par2-classic = %s', classic)
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1402,7 +1402,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
-                retry_classic = True
+                retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
                 if not classic and sabnzbd.WIN32:

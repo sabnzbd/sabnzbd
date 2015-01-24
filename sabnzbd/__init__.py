@@ -66,7 +66,7 @@ elif os.name == 'posix':
             DARWIN_INTEL = True
 
 if DARWIN:
-    # 10 = Yosemite, 9 = Mavericks, 8 = MountainLion, 7 = Lion
+    # 10 = Yosemite, 9 = Mavericks, 8 = MountainLion, 7 = Lion, 6 = SnowLeopard, 5 = Leopard
     DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
 else:
     DARWIN_VERSION = 0

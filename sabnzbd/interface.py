@@ -1208,7 +1208,7 @@ class ConfigSwitches(object):
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
-        conf['nt'] = sabnzbd.WIN32
+        conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['have_unrar'] = bool(sabnzbd.newsunpack.RAR_COMMAND)
@@ -1254,7 +1254,7 @@ class ConfigSwitches(object):
 #------------------------------------------------------------------------------
 SPECIAL_BOOL_LIST = \
             ( 'start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
-              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
