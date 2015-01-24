@@ -99,7 +99,10 @@ def find_programs(curdir):
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
         if sabnzbd.DARWIN_VERSION >= 6:
             #par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+            if sabnzbd.DARWIN_64:
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
+            else:
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
         else:
             sabnzbd.newsunpack.PAR2_COMMAND = sabnzbd.newsunpack.PAR2C_COMMAND
 
