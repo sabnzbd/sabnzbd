@@ -1,11 +1,9 @@
 === Table of contents ===
 
 --- Introduction ---
---- About the NVIDIA CUDA version ---
---- Installing the pre-built Windows (32-bit) version ---
+--- Installing the pre-built Windows version ---
 --- Installing the pre-built Mac OS X version ---
 --- Installing the pre-built Linux version ---
---- Installing the pre-built FreeBSD version ---
 --- Building and installing on UNIX type systems ---
 --- Building and installing on Mac OS X systems ---
 --- Building and installing on Windows operating systems ---
@@ -59,183 +57,15 @@ concurrent version of par2cmdline 0.4, go to:
 http://www.chuchusoft.com/par2_tbb
 
 
---- About the NVIDIA CUDA version ---
-
-
-*** The NVIDIA CUDA version should be considered experimental. ***
-
-There is no guarantee that the NVIDIA CUDA version will perform correctly. Even
-though it has been tested on test data and correctly worked on those files, it may
-not work on your files since the GPU program is new and may have unknown bugs in
-it. Caveat emptor.
-
-The NVIDIA CUDA version of the par2 program has been modified to utilise NVIDIA
-CUDA 2.0 technology, which enables it to process data using the processor (GPU) on
-certain video cards. Most of the processing is still performed by the computer's
-CPU but some will be offloaded to the video card's GPU. The amount of offloading
-depends on how much speed/power the GPU has. After processing all of the data for
-par2 creation or par2 repair, the program will display, as a percentage, how much
-of the processing was done by the GPU (or whether the GPU was not available for
-use).
-
-There are two factors which determine how much processing the GPU can provide:
-
-  (1) the amount of video card memory. Some of the memory will be used for the video
-      display, and this is partly determined by the operating system. For example, if
-      the OS/video-driver performs drawing acceleration using extra video memory, less
-      memory is available for CUDA use. For example, on a 128MB video card running
-      Mac OS X 10.5, only about 22MB was available for use by CUDA applications. If
-      the parity data totals more than 22MB, only a portion of that data can be
-      processed by the GPU. Of course this is only an example and your system will
-      probably have a different amount of memory available for CUDA use.
-      Because of OS use, it is recommended that for Mac OS X, a video card with at
-      least 256MB of video memory is recommended. For Windows XP, a video card of at
-      least 128MB is recommended, and for Windows Vista, at least 256MB is recommended.
-
-  (2) the video card's speed, which depends on both the GPU's speed and the video
-      memory's bandwidth. For the GPU, its speed depends on both its clock rate and
-      the number of stream processors it has. For example, a GeForce 8600 GT has 32
-      stream processors compared to a 9800 GTX which has 128 stream processors.
-      Memory bandwidth depends on both how wide the data path is between the GPU
-      and its memory (for example, a 64-bit wide data bus will transfer data half
-      as quickly as a 128-bit wide data bus), as well as the clock rate of the
-      video memory - the higher the clock rate, the faster the GPU can move data
-      from/to the video memory and this in turn affects how fast it processes data.
-
-Hardware requirements:
-
-  Requires a "Compute Capability 1.1" device, which is any 200 series GeForce card,
-  any 9 series GeForce card, and most 8 series GeForce card EXCEPT for the first
-  generation cards such as the 8800 Ultra, 8800 GTX, 8800 GTS, and certain Tesla
-  and Quadro cards: search the web for "Compute Capability 1.0" devices. 1.0-only
-  devices are not capable of being used. Cards such as the 8400, 8500, 8600,
-  8800 GS, 8800 GT, 8800M GTS (mobile), and 8800M GTX (mobile) are capable of
-  being used.
-
-  Mobile variants will also work, for example, 8600 refers to both the desktop and
-  mobile versions such as 8600 GT (desktop) and 8600M GT (mobile).
-
-Software requirements:
-
-  The CUDA runtime/toolkit may need to be downloaded and installed by you because NVIDIA do
-  not permit redistribution of it with third party executables. If you need to install the
-  runtime, please search for "NVIDIA CUDA toolkit" in your favourite search engine.
-
-  On Windows, it appears that the CUDA runtime/toolkit ships with recent video card driver
-  software from NVIDIA. You can verify this by checking for it at this path:
-  "C:\Windows\system32\nvcuda.dll".
-
-  On Mac OS X 10.5, check for the driver at this path: "/System/Library/Extensions/CUDA.kext",
-  and for the runtime library at this path: "/usr/local/cuda/lib/libcudart.dylib". Mac OS X
-  users will probably need to download and install the CUDA runtime/toolkit. You should be
-  aware that the default install options for the CUDA runtime/toolkit does *not* install the
-  required CUDA driver, so it needs to be installed by performing a *custom* install of the
-  runtime/toolkit: be sure to check the checkbox for "CUDA.kext".
-
-Limitations:
-
-  [1] only available as a 32-bit executable for Windows XP and later, and Intel Mac OS X
-      10.5.2 and later. Due to time constraints, other systems such as GNU/Linux are not
-      available at this time. You are most welcome to modify/build/test it for other
-      systems if you feel up to the challenge :)
-
-  [2] "low end" GPUs are "slow", ie, they do not contribute to much of the processing.
-      For example, to create 128MB (256 blocks of 524288 bytes) of parity data on a
-      128MB 8600M GT in a Core 2 Duo 2.2GHz machine, about 2% of the workload was
-      offloaded to the GPU. For the same 128MB of parity data, a 256MB 8600M GT in a
-      Core 2 Duo 2.4GHz machine offloaded about 5% of the workload to the GPU (mainly
-      because having more memory allowed more data to be processed on the video card).
-
-      It is expected that "high end" video cards will have even higher GPU offloading,
-      but without access to such a video card (yes, some of us can't splurge on that
-      top-of-the-line video card!), it's mere speculation as to what sort of performance
-      will occur. :)   Maybe someone will send an email with some answers :)
-
-  [3] sometimes the CUDA runtime reports little or no available memory on the video card
-      for use by programs, which will result in this version not being able to use the
-      GPU for processing. This problem is probably related to video display acceleration
-      by the OS, in which case, closing windows and/or applications will probably free
-      up video memory. It may, however, require a reboot to reset the video card (you
-      should do this only as a last resort).
-
-Licensing:
-
-  The source code for the CUDA-specific parts of the par2cmdline-0.4 program is provided
-  and released under the GPLv2, which is believed to be compatible with NVIDIA's licensing
-  of the sample source code/libraries in the CUDA SDK, from which the par2 processing
-  code is based on (but IANAL).
-
-Building:
-
-  If you're interested in building this version, you will need to set up the following
-  development environment(s):
-
-  Mac OS X:
-  - 10.5.2 or later
-  - Xcode 3.0 or later installed
-  - TBB 2.1 or later installed
-  - NVIDIA CUDA 2.0 toolkit installed, including the driver by performing a custom install.
-    The following assumes it is installed into "/usr/local/cuda".
-  - NVIDIA CUDA 2.0 SDK installed. The following assumes it is installed into "/Developer/CUDA".
-
-  Windows:
-  - XPSP2 or later
-  - Visual C++ Express 2005 installed
-  - Visual C++ Express 2008 installed
-  - TBB 2.1 or later installed
-  - NVIDIA CUDA 2.0 toolkit installed. The following assumes it is installed into "C:\CUDA".
-  - NVIDIA CUDA 2.0 SDK installed. The following assumes it is installed into
-    "C:\Program Files\NVIDIA Corporation\NVIDIA CUDA SDK" .
-
-  The following build instructions assume that you have already successfully built the non-CUDA
-  version of the par2 program. If you haven't done so, it is strongly recommended you do so first,
-  so that any issues relating to the non-CUDA version are fixed before you try building the CUDA
-  version (which has its own set of possible build issues).
-
-  Mac building:
-  - copy the par2_cuda folder into /Developer/CUDA/projects
-  - open a Terminal window, cd to /Developer/CUDA/projects/par2_cuda
-  - enter 'make' to build the par2_cuda static library
-  - cd to your <par2_tbb_cuda> folder. Enter 'configure gpgpu=cuda && make' to build the
-    par2 program. If it fails to compile, check your Makefile for incorrect paths, fix, try
-    building again, etc. If it fails to link, check your Makefile for incorrect paths, fix, try
-    building again, etc. When the par2 program is linked, it will assume that the
-    libcudart.dylib library is in "/usr/local/cuda/lib".
-  - copy the libtbb.dylib file into the <par2_tbb_cuda> folder (or wherever you built the par2
-    executable)
-  - run the program. If it fails to run, make sure "/usr/local/cuda/lib/libcudart.dylib" exists.
-  - if it fails to find any GPU resources for processing, check that you have installed the
-    runtime correctly including the custom installing of the CUDA driver (which should be at
-    "/System/Library/Extensions/CUDA.kext").
-
-  Windows building:
-  - copy the par2_cuda folder into "C:\Program Files\NVIDIA Corporation\NVIDIA CUDA SDK\projects"
-  - open the "C:\Program Files\NVIDIA Corporation\NVIDIA CUDA SDK\projects\par2_cuda_lib.vcproj"
-    file using Visual C++ Express 2005
-  - build the 'release' configuration (ignore the warnings about import linkage mismatches - they
-    are due to TBB's requirement of the DLL version of the CRT whereas CUDA programs are supposed
-    to link to the static version of the CRT - this causes the mismatch but won't cause crashes or
-    malfunctions).
-  - open the par2.vcproj file in the <par2_tbb_cuda> folder using Visual C++ Express 2008
-  - build the 'releaseCUDA' configuration
-  - copy the tbb.dll file into the ReleaseCUDA folder in the <par2_tbb_cuda> folder
-  - run the program. If it fails to run, make sure cudart.dll is in the %PATH% environment variable
-    (there should be an entry for "C:\cuda\bin").
-  - if it fails to find any GPU resources for processing, check that you have installed the
-    runtime correctly.
-
-*** Just to repeat, the NVIDIA CUDA version should be considered experimental. ***
-
-
---- Installing the pre-built Windows version (32-bit or 64-bit) ---
+--- Installing the pre-built Windows version ---
 
 
 The Windows version is distributed as an executable (par2.exe) which has
 built into it (i.e., statically linked) the Intel Threading Building Blocks
-2.2 library, built from the tbb22_20090809oss_src.tar.gz distribution. The
-Windows version no longer requires a specific version of the C runtime
-library because the par2.exe executable is now built by statically linking
-with the C runtime library.
+4.3 Update 1 library, built from the tbb43_20141023oss_src.tgz distribution.
+The Windows version is portable (can be run from a USB thumb drive) and does
+not require a specific version of the C runtime library because the par2.exe
+executable is built by statically linking with the C runtime library.
 
 To install, copy the par2.exe file and then invoke it from the command line.
 
@@ -246,13 +76,13 @@ distribution folder.
 --- Installing the pre-built Mac OS X version ---
 
 
-The Mac version is an universal build of the concurrent version
-of par2cmdline 0.4 for Mac OS X 10.4 (32-bit binaries) and 10.5 (64-bit
-binaries). In other words, the par2 executable file contains both a 32-bit
-x86 and a 64-bit x86_64 build of the par2 sources.
-It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.2 library (libtbb.dylib). The libtbb.dylib file
-is also universal (32-bit and 64-bit versions for x86/x86_64 are inside it).
+The Mac version is an universal build of the concurrent version of par2cmdline 0.4
+for Mac OS X 10.5. In other words, the par2 executable file contains both a 32-bit
+x86 and a 64-bit x86_64 build of the par2 sources. It is also portable and can be
+run from a USB thumb drive (no need to copy to the Mac's internal storage device).
+
+It is distributed as an executable (par2) along with the required universal build
+of the Intel Threading Building Blocks 4.3 Update 1 library (libtbb.dylib).
 
 To install, place the par2 and libtbb.dylib files in a folder and
 invoke them from the command line.
@@ -267,31 +97,16 @@ files from the distribution folder.
 The Linux versions are a 32-bit i386 and 64-bit x86_64 build of the
 concurrent version of par2cmdline 0.4 for GNU/Linux kernel version 2.6
 with GCC 4. It is distributed as an executable (par2) along with the
-required Intel Threading Building Blocks 2.2 library (libtbb.so and
+required Intel Threading Building Blocks 4.3 Update 1 (libtbb.so and
 libtbb.so.2). There are separate distributions for the 32-bit and
-64-bit versions.
+64-bit versions. They are also portable and can be run from a USB thumb
+drive (no need to copy to the computer's internal storage device).
 
 To install, place the par2, libtbb.so and libtbb.so.2 files in a
 folder and invoke them from the command line.
 
 To uninstall, delete the par2, libtbb.so and libtbb.so.2 files along
 with any files from the distribution folder.
-
-
---- Installing the pre-built FreeBSD version ---
-
-
-Both the 32-bit and 64-bit binaries were built using RELEASE 7.0 of FreeBSD.
-It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.2 library (libtbb.so). There are separate
-distributions for the 32-bit and 64-bit versions.
-
-To install: copy libtbb.so to /usr/local/lib, copy par2 to a convenient
-location, eg, /usr/local/bin, then remove the distribution directory. You
-will need superuser permission to copy files to the /usr/local area.
-
-To uninstall, delete the par2 and libtbb.so files along with any
-files from the distribution folder.
 
 
 --- Building and installing on UNIX type systems ---
@@ -311,11 +126,11 @@ Makefile:
 
   In `Makefile.am', for Darwin/Mac OS X, change the AM_CXXFLAGS line to:
 
-AM_CXXFLAGS = -Wall -I../tbb22_20090809oss_src/include -gfull -O3 -fvisibility=hidden -fvisibility-inlines-hidden
+AM_CXXFLAGS = -Wall -I../tbb43_20141023oss/include -gfull -O3 -fvisibility=hidden -fvisibility-inlines-hidden
 
   or for other POSIX systems, change the AM_CXXFLAGS line to:
 
-AM_CXXFLAGS = -Wall -I../tbb22_20090809oss_src/include
+AM_CXXFLAGS = -Wall -I../tbb43_20141023oss/include
 
 and modify the path to wherever your extracted Intel TBB files are. Note that it
 should point at the `include' directory inside the main tbb directory.
@@ -348,103 +163,189 @@ for the dynamic library (by passing the "-R $ORIGIN" option to the linker).
 --- Building and installing on Mac OS X systems ---
 
 
-The Mac version is an universal build of the concurrent version
-of par2cmdline 0.4 for Mac OS X 10.4 (32-bit binaries) and 10.5 (64-bit
-binaries). In other words, the par2 executable file contains both a 32-bit
+The Mac version is an universal build of the concurrent version of par2cmdline 0.4
+for Mac OS X 10.5. In other words, the par2 executable file contains both a 32-bit
 x86 and a 64-bit x86_64 build of the par2 sources.
+
 It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.2 library (libtbb.dylib). The libtbb.dylib file
+Threading Building Blocks 4.2 library (libtbb.dylib). The libtbb.dylib file
 is also universal (32-bit and 64-bit versions for x86/x86_64 are inside it).
 
-The par2 32-bit executable is built for 10.4, and the 64-bit executable is
-built for 10.5, which are then symbol stripped and combined using the lipo
-tool. The 64-bit executable needs to be built for 10.5 because the 10.4
-build of the 64-bit executable was found to (1) cause the "fat" executable
-to crash when it was run under 10.5, and (2) not be able to correctly read
-par2 files when those files resided on a SMB server (ie, a shared folder on
-a Windows computer). Combining the mixed-OS executables solves both of these
-problems (see the 20080116 version release notes below for details).
+The distributed version is built on a 10.6.8 system using the compiler toolchain
+from Xcode 3.2.6: GCC 4.2. The target OS is 10.5 using the 10.5 SDK.
 
-The libtbb.dylib file is built from the TBB 2.2 tbb22_20090809oss_src.tar.gz
-distribution. It was built for the x86 and x86_64 architectures
-and will therefore run on all Macs that support 10.4 or 10.5.
+The libtbb.dylib file in the distribution is built from the TBB 4.3 Update 1
+tbb43_20141023oss_src.tgz sources, and was built for the x86 and x86_64
+architectures.
+
+The default compiler is clang 1.7 which does not compile the TBB library
+(because it has bugs when compiling C++ source code), so it needs to changed
+to GCC 4.2.
 
 Normally, the libtbb.dylib file is built so that for a client program to use
-it, it would usually have to be placed in /usr/lib, which would therefore
-require administrator privileges to install it onto a Mac OS X system. The
-version included in this distribution does not require that it be installed,
-and is therefore usable "out of the box". To implement this change, the
-macos.gcc.inc file was modified with this line:
+it, it would have to be placed in /usr/lib, and would therefore require
+administrator privileges to install it onto a Mac OS X system. The version
+included in this distribution does not need to be installed in /usr/lib, and
+is therefore usable "out of the box" and portable (eg, can be run from a USB
+thumb drive).
 
-LIB_LINK_FLAGS = -dynamiclib -Wl,-install_name,@executable_path/$@
+So to build it the same way as in the distribution, the macos.clang.inc file
+needs to be modified with these lines:
 
-Other required changes are:
+WARNING_SUPPRESS = -Wno-non-virtual-dtor ### -Wno-dangling-else (no-dangling-else is clang-specific)
+
+LIB_LINK_FLAGS = -dynamiclib -Wl,-install_name,@executable_path/$@  ### enables portable .dylib
 
 ifeq (intel64,$(arch))
-    CPLUS_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
-    LINK_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
-    LIB_LINK_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
+    CPLUS = g++-4.2  ### because clang 1.7 cannot compile the TBB
+    CPLUS_FLAGS += -m64 -mmacosx-version-min=10.5
+    LINK_FLAGS += -m64 -mmacosx-version-min=10.5
+    LIB_LINK_FLAGS += -m64 -mmacosx-version-min=10.5
 endif
 
 ifeq (ia32,$(arch))
-    CPLUS = g++-4.0
-    C_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
-    CPLUS_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
-    LINK_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
-    LIB_LINK_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
+    CPLUS = g++-4.2  ### because clang 1.7 cannot compile the TBB
+    CPLUS_FLAGS += -m32 -mmacosx-version-min=10.5
+    LINK_FLAGS += -m32 -mmacosx-version-min=10.5
+    LIB_LINK_FLAGS += -m32 -mmacosx-version-min=10.5
 endif
+
+Then build the x86 and x86_64 variants using:
+
+cd <TBB-src>
+make tbb arch=ia32 SDKROOT=/Developer/SDKs/MacOSX10.5.sdk
+make tbb arch=intel64 SDKROOT=/Developer/SDKs/MacOSX10.5.sdk
+
+Then create the final dylib using (this example is built on a 10.6.8 system):
+
+cp ./build/macos_ia32_clang_cc4.2.1_os10.6.8_release/libtbb.dylib libtbb-x86.dylib
+cp ./build/macos_intel64_clang_cc4.2.1_os10.6.8_release/libtbb.dylib libtbb-x86_64.dylib
+lipo -create -o libtbb.dylib libtbb-x86.dylib libtbb-x86_64.dylib 
+strip -x libtbb.dylib 
 
 To build the executables, configure needs to be invoked in a particular manner for both x86 and x64 builds:
 
 cd <par2_tbb_root>/build
+../configure --build=i686-apple-darwin10.2.0 --host=i686-apple-darwin10.2.0 CXX=g++-4.2 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86 && make clean
+../configure --build=i686-apple-darwin10.2.0 --host=x86_64-apple-darwin10.2.0 CXX=g++-4.2 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86_64 && make clean
+lipo -create -o par2 par2-x86 par2-x86_64
 
-../configure --build=i686-apple-darwin10.2.0 --host=i686-apple-darwin10.2.0 CXX=g++-4.0 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86 && make clean
-
-../configure --build=i686-apple-darwin10.2.0 --host=x86_64-apple-darwin10.2.0 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86_64 && make clean
-
-The par2 executable has been symbol stripped (using the 'strip' command line
-tool).
+Note: the distributed copies of the par2 and libtbb.dylib files are symbol stripped (using the 'strip'
+command line tool) to reduce their size.
 
 
 --- Building and installing on Windows operating systems ---
 
 
-This modified version has been built and tested on Windows XP SP2 using Visual
-Studio/C++ 2010 beta 2. It statically links with both the TBB and the C runtime
-library and the included project and makefiles are set up for that.
+This modified version has been built and tested on Windows 7 using Visual Studio 2013.
+It statically links with both the TBB and the C runtime library and the included
+Makefile, Project and Solution files are set up to build in this manner. To build the
+program, you need to build the TBB as a static library and then build par2.
 
-For Windows, the project file for Visual Studio 2010 has been included. Open
-the project file in Visual Studio and go to the project properties window.
-For the C/C++ include paths, make sure the path to where you extracted the
-Intel TBB files is correct. Similarly for the linker paths.
+[1] install Windows SDK v7.1 (only the Windows headers and libraries are required)
+    and Visual Studio 2013 for Windows Desktop or Visual Studio 2013 Community Edition
+    (only the C++ compilers, headers and libraries are required).
 
-To build the 32-bit version, download the source tarball from the website and
-open the sln/vcproj project files in the win32 directory with Visual C++ 2010.
-You will also need to build the TBB in a modified manner so that it statically
-links against the C runtime library and it itself is linked as a static library,
-instead of as a DLL. To do this, use the modified TBB makefiles in the
-windows-tbb directory. To use the TBB makefile, you'll need to use GNU make,
-which can be built from its source tarsal.
+[2] extract the TBB source tarball into a directory, which will be referred to as <tbb>
+    in the instructions below
 
-To build the 64-bit version, install the "Windows 2003 Server R2" version
-of the platform SDK and open a command line window for a 64-bit Windows XP
-build environment (in the Platform SDK program group in the Start Menu). You
-can also use any non-Express version of Visual C++.
-Change the directory to the par2cmdline-0.4-tbb-<version> directory. Move or
-copy the Makefile in the win64 directory to its parent (ie, to the
-par2cmdline-0.4-tbb-<version> directory). Then invoke the 'nmake' command to
-build the binary. The result should be an executable file named
-par2_win64.exe in the par2cmdline-0.4-tbb-<version> directory. This can
-then be renamed to par2.exe if so desired. As for the 32-bit version, you
-will need to build the TBB in a modified manner. More details are in the
-win64 Makefile.
+[3] in <tbb>/build, modify windows.inc:
+
+# static library version of TBB does not need .def file:
+#TBB.DEF = $(TBB.LST:.lst=.def)
+
+# static library version of TBB should use .lib suffix:
+#TBB.DLL = tbb$(CPF_SUFFIX)$(DEBUG_SUFFIX).$(DLL)
+TBB.DLL = tbb$(CPF_SUFFIX)$(DEBUG_SUFFIX).$(LIBEXT)
+
+# static library version of TBB does not need a version resource:
+#TBB.RES = tbb_resource.res
+
+# static library version of TBB uses lib.exe to build the library, not "cl.exe /DLL":
+LIB_LINK_CMD = lib.exe
+
+[4] in <tbb>/build, modify windows.cl.inc:
+
+# static library version of TBB only needs to pass /nologo to lib.exe:
+#LIB_LINK_FLAGS=/link /nologo /DLL /MAP /DEBUG /fixed:no /INCREMENTAL:NO /DYNAMICBASE /NXCOMPAT
+LIB_LINK_FLAGS=/nologo
+
+# static library version of TBB cannot pass /SAFESEH to lib.exe:
+#	LIB_LINK_FLAGS += /SAFESEH
+
+# static library version of TBB asks lib.exe to output to tbb.lib or tbb_debug.lib:
+#OUTPUT_KEY = /Fe
+OUTPUT_KEY = /out:
+
+[5] open Visual Studio 2013 -> Visual Studio Tools -> open a VS2013 x64 Cross Tools Command Prompt window
+
+[6] modify these environment variables:
+
+set INCLUDE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\INCLUDE;
+set LIB=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\LIB\amd64;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64
+
+[7] build a x64 (64-bit) version of the TBB using GNU make. If you do not have GNU make,
+    first download the source tarball for it and build it using its instructions.
+
+    Note the use of the vc_mt runtime, which asks to link the TBB library statically
+	with the C runtime library:
+
+cd <tbb>
+gmake.exe tbb runtime=vc_mt arch=intel64
+
+[8] open Visual Studio 2013 -> Visual Studio Tools -> open a VS2013 x86 Native Tools Command Prompt window
+
+[9] modify these environment variables:
+
+set INCLUDE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\INCLUDE;
+set LIB=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\LIB;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib
+
+[10] build a x86 (32-bit) version of the TBB using GNU make:
+
+cd <tbb>
+gmake.exe tbb runtime=vc_mt arch=ia32
+
+[11] from here, you can either build par2 using a Visual C++ project or from the command line using
+     the Windows SDK make tool.
+
+     To build using the Visual C++ project, open the par2cmdline.sln solution file in Visual Studio
+     2013 for Windows Desktop (or the Community Edition), select the configuration you want to build,
+     and then build the program.
+
+     To build using the Windows SDK make tool, go back to the VS2013 x64 Cross Tools Command Prompt
+     window you opened in step [5] and do this to create the par2_win64.exe executable:
+
+cd <par2>
+nmake nodebug=1 arch=x64
+del *.obj
+
+     Then go back to the VS2013 x86 Native Tools Tools Command Prompt window you opened in step [8]
+     and do this to create the par2_win32.exe executable:
+
+cd <par2>
+nmake nodebug=1 arch=x86
+del *.obj
+
+    Note: the makefile assumes that the <par2> and <tbb> source folders are both in the same folder.
+    If this is not the case, change this line in the Makefile so that the linker can find the TBB
+    library you built above:
+
+
+MY_TBB_DIR=../tbb43_20141023oss
 
 
 
 --- Building and installing on FreeBSD ---
 
 
-Instructions:
+The instructions below are not needed if you use the FreeBSD ports system to
+download, unpack, compile, link and install the program. Please see the
+documentation in the ports system for instructions on its use. It is recommended
+that the ports system be used to build the program since the source code can
+build with modification. Please consider the following to be deprecated or for
+educational use only.
+
+Instructions for building without using the FreeBSD ports system:
 
 [1] build and install TBB
 - extract TBB from the source archive.
@@ -558,6 +459,72 @@ enough memory to not be I/O bound when creating or repairing parity/data files.
 
 --- Version History ---
 
+
+The changes in the 20141125 version are:
+
+- when creating parity files, the main packet was not always being written to the parity
+  files when they were processed concurrently because the main packet was not being
+  safely appended to the list of packets to output because a non-thread-safe data
+  container (std::list<T>) was being used. This bug would manifest when a large number
+  of source files were being processed. Fixed by using tbb::concurrent_vector<T> instead
+  of std::list<T>.
+- when creating parity files, the "Opening: <file>" messages will only be displayed for
+  the first n source files, where n defaults to 200. This restriction was added so that
+  creating parity files for a large number of source files would not cause a lot of
+  scrolling which in turn would make the processing take a long time. Use the new -z<n>
+  command line switch to set a different limit. Use -z0 to specify no limit.
+- verification of extra files is now performed concurrently if requested to do so
+  (previously they were always verified serially)
+- the -t parameter can now include a positive integer value to restrict the logical number
+  of CPUs with which to process data with. The different variants are:
+  -t- verifies, repairs, and creates serially (no change)
+  -t+ verifies, repairs, and creates concurrently (no change)
+  -t0 verifies serially and repairs/creates concurrently (no change)
+  -t-n verifies, repairs, and creates concurrently using the maximum number of logical
+       CPUs minus n, or 1 (whichever is larger) for n > 0; n <= 0 is illegal
+  -t+n verifies, repairs, and creates concurrently using the maximum number of logical
+       CPUs, or n (whichever is smaller) for n > 0; n <= 0 is illegal
+  -t0n verifies serially and repairs/creates concurrently using:
+      for n > 0: the maximum number of logical CPUs, or n (whichever is smaller)
+      for n < 0: the maximum number of logical CPUs minus n, or 1 (whichever is larger)
+      for n = 0: illegal
+  For example, -t-1 on a 6 logical CPU system will use up to 5 logical CPUs. On the
+  same system, -t-7 will use up to 1 logical CPU, ie, process serially.
+  - "up to" is used because there may not be enough data to use the maximum number of
+    logical CPUs.
+  - the maximum number of logical CPUs may be determined by the operating system or the
+    hypervisor and may be less than the actual number of physical CPU cores, eg, when
+	running in a virtual machine.
+- in the Windows version, the program's CPU scheduling priority can now be specified
+  using the -p parameter:
+  -pN to process at normal priority (Normal in Task Manager) [default]
+  -pL to process at low priority (Below Normal in Task Manager)
+  -pI to process at idle priority (Low in Task Manager)
+- the heap became fragmented during the verification of data files because the checksum
+  data buffer was allocated and deallocated for each file verified, which resulted in the
+  program's memory footprint (aka its "working set") steadily increasing during the
+  verification phase. This would result in the 32-bit Windows version failing to verify
+  large data sets because it could not allocate verification data buffers. To solve this,
+  the checksum data buffer is no longer allocated and deallocated for each file verified.
+  Instead, a pool of checksum objects is created and that pool of objects is then used and
+  re-used for verifying data files. The size of the pool matches the number of logical
+  CPUs which the program is asked to use. This change benefits all versions of the program
+  because by reducing heap fragmentation, larger data sets can be processed using less
+  virtual memory.
+- numerous small code changes were made to remove unnecessary string copying. Such
+  redundant copying would further fragment the heap as well as use up memory for temporary
+  strings which did not need to be allocated in the first place.
+- updated to Intel TBB 4.3 Update 1 (tbb43_20141023oss_src.tgz)
+- removed use of MAX_PATH or other fixed-size path buffers to avoid buffer overflow errors
+- the program failed to build under newer C++ standard libraries because they no longer
+  provide std::auto_ptr<T>. Fixed by either using std::unique_ptr<T> (if available) or by
+  providing our own version of std::auto_ptr<T>.
+- the Mac OS x86 (32-bit) version now requires 10.5 or later
+- stopped building the FreeBSD version because the FreeBSD ports system can now build the
+  par2 program and TBB library without requiring any changes to the sources of either and
+  because it isn't possible to build a "portable" version of the program, in the sense
+  that the TBB library cannot be in the same directory as the par2 executable - it must be
+  installed into /usr/lib/, and that is a job best left to the FreeBSD ports system.
 
 The changes in the 20100203 version are:
 
@@ -906,12 +873,13 @@ The changes in the 20070831 version are:
 
 
 Vincent Tan.
-February 03, 2010.
+November 25, 2014.
+<chuchusoft@gmail.com>
 
 //
 //  Modifications for concurrent processing, Unicode support, and hierarchial
-//  directory support are Copyright (c) 2007-2010 Vincent Tan.
+//  directory support are Copyright (c) 2007-2014 Vincent Tan.
 //  Search for "#if WANT_CONCURRENT" for concurrent code.
-//  Concurrent processing utilises Intel Thread Building Blocks 2.2,
-//  Copyright (c) 2007-2009 Intel Corp.
+//  Concurrent processing utilises Intel Thread Building Blocks 4.3 Update 1,
+//  Copyright (c) 2007-2014 Intel Corp.
 //
