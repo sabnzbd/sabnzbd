@@ -427,49 +427,6 @@ def create_real_path(name, loc, path, umask=False, writable=True):
     else:
         return (False, "")
 
-################################################################################
-# get_user_shellfolders
-#
-# Return a dictionary with Windows Special Folders
-# Read info from the registry
-################################################################################
-
-def get_user_shellfolders():
-    """ Return a dictionary with Windows Special Folders
-    """
-    import _winreg
-    values = {}
-
-    # Open registry hive
-    try:
-        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-    except WindowsError:
-        logging.error(T('Cannot connect to registry hive HKEY_CURRENT_USER.'))
-        return values
-
-    # Then open the registry key where Windows stores the Shell Folder locations
-    try:
-        key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-    except WindowsError:
-        logging.error(T('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-        _winreg.CloseKey(hive)
-        return values
-
-    try:
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
-            values[name] = value
-            i += 1
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return values
-    except WindowsError:
-        # On error, return empty dict.
-        logging.error(T('Failed to read registry keys for special folders'))
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return {}
-
 
 #------------------------------------------------------------------------------
 def windows_variant():

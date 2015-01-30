@@ -86,7 +86,7 @@ import sabnzbd.lang
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import get_user_shellfolders, real_path, \
+from sabnzbd.misc import real_path, \
      check_latest_version, exit_sab, \
      split_host, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
@@ -423,11 +423,13 @@ def GetProfileInfo(vista_plus):
             pass
         ok = True
     elif sabnzbd.WIN32:
-        specials = get_user_shellfolders()
         try:
-            sabnzbd.DIR_APPDATA = '%s\\%s' % (specials['AppData'], DEF_WORKDIR)
-            sabnzbd.DIR_LCLDATA = '%s\\%s' % (specials['Local AppData'], DEF_WORKDIR)
-            sabnzbd.DIR_HOME = specials['Personal']
+            from win32com.shell import shell, shellcon
+            path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0)
+            sabnzbd.DIR_APPDATA = os.path.join(path, DEF_WORKDIR)
+            path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
+            sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
+            sabnzbd.DIR_HOME = os.environ['USERPROFILE']
             ok = True
         except:
             try:
@@ -435,7 +437,7 @@ def GetProfileInfo(vista_plus):
                     root = os.environ['AppData']
                     user = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root.replace('\\Roaming', '\\Local'), DEF_WORKDIR)
-                    sabnzbd.DIR_HOME    = '%s\\Documents' % user
+                    sabnzbd.DIR_HOME = user
                 else:
                     root = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
@@ -1081,11 +1083,9 @@ def main():
         # No ini file given, need profile data
         GetProfileInfo(vista_plus)
         # Find out where INI file is
-        inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
-        if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak'):
-            inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+        inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
 
-    # If INI file at non-std location, then use program dir as $HOME
+    # If INI file at non-std location, then use INI location as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
         sabnzbd.DIR_HOME = os.path.dirname(inifile)
 
