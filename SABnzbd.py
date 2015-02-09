@@ -1301,6 +1301,15 @@ def main():
             pass
 
         try:
+            import urllib
+            f = urllib.urlopen("http://api.ipify.org")
+            public_ipv4 = f.read()
+            logging.debug('My public IPv4 address = %s', public_ipv4)
+        except:
+            logging.debug('Could not determine my public IPv4 address. Error: %s',sys.exc_info()[0])
+            pass
+
+        try:
             s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
             s_ipv6.connect(('ipv6.google.com', 80))
             logging.debug('My IPv6 address = %s', s_ipv6.getsockname()[0])
