@@ -319,7 +319,7 @@ def _api_addfile(name, output, kwargs):
 
 
 def _api_retry(name, output, kwargs):
-    """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB) """
+    """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB), password (optional) """
     value = kwargs.get('value')
     # When uploading via flash it will send the nzb in a kw arg called Filedata
     if name is None or isinstance(name, basestring):
@@ -327,8 +327,10 @@ def _api_retry(name, output, kwargs):
     # Normal upload will send the nzb in a kw arg called nzbfile
     if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
+    password = kwargs.get('password')
+    password = password[0] if isinstance(password, list) else password
 
-    nzo_id = retry_job(value, name)
+    nzo_id = retry_job(value, name, password)
     if nzo_id:
         if isinstance(nzo_id, list):
             nzo_id = nzo_id[0]
@@ -1517,13 +1519,13 @@ def options_list(output):
 
 
 #------------------------------------------------------------------------------
-def retry_job(job, new_nzb):
+def retry_job(job, new_nzb, password):
     """ Re enter failed job in the download queue """
     if job:
         history_db = cherrypy.thread_data.history_db
         path = history_db.get_path(job)
         if path:
-            nzo_id = repair_job(platform_encode(path), new_nzb)
+            nzo_id = repair_job(platform_encode(path), new_nzb, password)
             history_db.remove_history(job)
             return nzo_id
     return None

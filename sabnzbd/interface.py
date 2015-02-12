@@ -455,7 +455,7 @@ class MainPage(object):
         # Duplicate of History/retry_pp to please the SMPL skin :(
         msg = check_session(kwargs)
         if msg: return msg
-        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'), kwargs.get('password'))
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -955,7 +955,7 @@ class HistoryPage(object):
     def retry_pp(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'), kwargs.get('password'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1123,7 +1123,7 @@ def orphan_add(kwargs):
     if path:
         path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
-        sabnzbd.nzbqueue.repair_job(path, None)
+        sabnzbd.nzbqueue.repair_job(path, None, None)
 
 
 #------------------------------------------------------------------------------

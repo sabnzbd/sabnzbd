@@ -182,7 +182,7 @@ class NzbQueue(TryList):
         return bool(result)
 
 
-    def repair_job(self, folder, new_nzb=None):
+    def repair_job(self, folder, new_nzb=None, password=None):
         """ Reconstruct admin for a single job folder, optionally with new NZB
         """
         def all_verified(path):
@@ -213,6 +213,11 @@ class NzbQueue(TryList):
             logging.debug('Repair job %s with new NZB (%s)', name, filename)
             nzo_id = sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
 
+        if nzo_id:
+            # Set password, will only work for first job
+            nzo = self.get_nzo(nzo_id[0])
+            if nzo:
+                nzo.password = password
         return nzo_id
 
 
@@ -1038,8 +1043,8 @@ def sort_queue(field, reverse=False):
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
-def repair_job(folder, new_nzb):
-    return NzbQueue.do.repair_job(folder, new_nzb)
+def repair_job(folder, new_nzb, password):
+    return NzbQueue.do.repair_job(folder, new_nzb, password)
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
