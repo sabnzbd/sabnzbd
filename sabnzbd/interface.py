@@ -1599,9 +1599,10 @@ class ConfigServer(object):
         server = kwargs.get('server')
         if server:
             svr = config.get_config('servers', server)
-            svr.enable.set(not svr.enable())
-            config.save_config()
-            Downloader.do.update_server(server, server)
+            if svr:
+                svr.enable.set(not svr.enable())
+                config.save_config()
+                Downloader.do.update_server(server, server)
         raise dcRaiser(self.__root, kwargs)
 
 
