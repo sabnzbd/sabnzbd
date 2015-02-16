@@ -134,6 +134,9 @@ def find_programs(curdir):
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
         sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
 
+    if not sabnzbd.newsunpack.PAR2C_COMMAND:
+        sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
+            
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
