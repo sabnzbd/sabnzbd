@@ -65,7 +65,6 @@ else:
 # Configuration instances
 #
 quick_check = OptionBool('misc', 'quick_check', True)
-fail_on_crc = OptionBool('misc', 'fail_on_crc', True)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
 email_server  = OptionStr('misc', 'email_server', validation=validate_server)

@@ -122,12 +122,6 @@ class Decoder(Thread):
 
                     data = e.data
 
-                    if cfg.fail_on_crc():
-                        new_server_found = self.__search_new_server(article)
-                        if new_server_found:
-                            register = False
-                            logme = None
-
                 except BadYenc:
                     # Handles precheck and badly formed articles
                     killed = False

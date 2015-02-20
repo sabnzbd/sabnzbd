@@ -205,19 +205,19 @@
                     <span class="desc">$T('explain-flat_unpack')</span>
                 </div>
                 <div class="field-pair alt">
+                    <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
+                    <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-overwrite_files')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
                     <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_filejoin')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair alt">
                     <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
                     <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-ts_join')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="fail_on_crc">$T('opt-fail_on_crc')</label>
-                    <input type="checkbox" name="fail_on_crc" id="fail_on_crc" value="1" <!--#if int($fail_on_crc) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-fail_on_crc')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
@@ -254,7 +254,7 @@
                     <input type="text" name="ionice" id="ionice" value="$ionice" size="20" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ionice')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                     <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50"/>
                     <span class="desc">$T('explain-cleanup_list')</span>
