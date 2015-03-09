@@ -1679,6 +1679,17 @@ def unrar_check(rar):
             return (int(m.group(1)), int(m.group(2))) >= (3, 80)
     return False
 
+def unrar_version(rar):
+    """ Return version of unrar as string """
+    if rar:
+        try:
+            unraroutput = run_simple(rar)
+        except:
+            return False
+        versionnumber = re.findall("UNRAR ([\.0-9]*)", unraroutput)[0]
+        if versionnumber:
+            return versionnumber
+    return False
 
 #-------------------------------------------------------------------------------
 def sfv_check(sfv_path):

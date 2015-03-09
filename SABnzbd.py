@@ -505,6 +505,12 @@ def print_modules():
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
+        unrarversion = sabnzbd.newsunpack.unrar_version(sabnzbd.newsunpack.RAR_COMMAND)
+        if unrarversion:
+            logging.info("unrar binary version is %s", unrarversion)
+            unrarversionneeded = "5.00"
+            if unrarversion < unrarversionneeded:
+                logging.warning("unrar binary version is older than version %s", unrarversionneeded)
     else:
         logging.warning(T('unrar binary... NOT found'))
 
