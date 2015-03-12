@@ -77,6 +77,7 @@ ZIP_COMMAND = None
 SEVEN_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
+RAR_VERSION = 0
 CURL_COMMAND = None
 
 
@@ -136,9 +137,11 @@ def find_programs(curdir):
 
     if not sabnzbd.newsunpack.PAR2C_COMMAND:
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
-            
+
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
+        sabnzbd.newsunpack.RAR_VERSION = version
 
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
@@ -1668,16 +1671,22 @@ def add_s(i):
 
 
 def unrar_check(rar):
-    """ Return True if correct version of unrar is found """
+    """ Return version number of unrar, where "5.01" returns 501
+        Also return whether an original version is found
+        (version, original)
+    """
     if rar:
         try:
             version = run_simple(rar)
         except:
             return False
-        m = re.search(r"RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
+        original = "Alexander Roshal" in version
+        m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:
-            return (int(m.group(1)), int(m.group(2))) >= (3, 80)
-    return False
+            version = int(m.group(1)) * 100 + int(m.group(2))
+        else:
+            version = 0
+    return version, original
 
 
 #-------------------------------------------------------------------------------
