@@ -581,7 +581,11 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         filename = filename.replace('\\', '/')
 
     filename = os.path.basename(filename)
-    root, ext = os.path.splitext(filename)
+    ext = os.path.splitext(filename)[1]
+    if ext.lower() in VALID_ARCHIVES:
+        suffix = ext.lower()
+    else:
+        suffix = '.nzb'
 
     logging.info('Adding %s', filename)
 
@@ -589,7 +593,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         path = nzbfile
     else:
         try:
-            f, path = tempfile.mkstemp(suffix=ext, text=False)
+            f, path = tempfile.mkstemp(suffix=suffix, text=False)
             # More CherryPy madness, sometimes content is in 'value', sometimes not.
             if nzbfile.value:
                 os.write(f, nzbfile.value)
