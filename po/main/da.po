@@ -776,15 +776,15 @@ msgstr "Fejl \"%s\" når du køre unzip() på %s"
 
 #: sabnzbd/newsunpack.py:895
 msgid "Trying 7zip with password \"%s\""
-msgstr "Forsøger 7zip med password \"% s\""
+msgstr "Forsøger 7zip med password \"%s\""
 
 #: sabnzbd/newsunpack.py:933
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "7ZIP sæt \"% s\" er ufuldstændig, kan ikke udpakke"
+msgstr "7ZIP sæt \"%s\" er ufuldstændig, kan ikke udpakke"
 
 #: sabnzbd/newsunpack.py:964
 msgid "Could not unpack %s"
-msgstr "Kan ikke udpakke &s"
+msgstr "Kan ikke udpakke %s"
 
 #: sabnzbd/newsunpack.py:985
 msgid "Quick Checking"
