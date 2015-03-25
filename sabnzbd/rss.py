@@ -32,7 +32,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, \
-                         match_str, from_units, int_conv
+                         match_str, from_units, int_conv, get_urlbase
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import unicoder, xml_name
 
@@ -354,7 +354,11 @@ class RSSQueue(object):
 
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
-                msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(str(d['bozo_exception'])))
+                msg = str(d['bozo_exception'])
+                if 'CERTIFICATE_VERIFY_FAILED' in msg:
+                    msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
+                else:
+                    msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
                 logging.info(msg)
                 return unicoder(msg)
             if not entries:

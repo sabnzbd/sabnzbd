@@ -27,7 +27,6 @@ import logging
 import Queue
 import urllib2
 from threading import Thread
-from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.constants import FUTURE_Q_FOLDER
@@ -40,13 +39,6 @@ _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
 
 #------------------------------------------------------------------------------
 
-def get_urlbase(url):
-    ''' Return the base URL (like http://server.domain.com/)
-    '''
-    parsed_uri = urlparse(url)
-    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
-
-    
 class URLGrabber(Thread):
     do = None  # Link to instance of the thread
 
@@ -119,7 +111,7 @@ class URLGrabber(Thread):
                 except urllib2.URLError:
                     error = str(sys.exc_info()[1])
                     if 'CERTIFICATE_VERIFY_FAILED' in error:
-                        msg = T('Server %s uses an untrusted certificate') % get_urlbase(url)
+                        msg = T('Server %s uses an untrusted HTTPS certificate') % misc.get_urlbase(url)
                         retry = False
                 except:
                     logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)

@@ -36,6 +36,7 @@ try:
     _HAVE_SSL = True
 except:
     _HAVE_SSL = False
+from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -1447,3 +1448,9 @@ def fix_unix_encoding(folder):
                         os.rename(os.path.join(root, name), os.path.join(root, new_name))
                     except:
                         logging.info('Cannot correct name of %s', os.path.join(root, name))
+
+def get_urlbase(url):
+    ''' Return the base URL (like http://server.domain.com/)
+    '''
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)

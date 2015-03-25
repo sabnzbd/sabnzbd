@@ -1261,7 +1261,8 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour', 'script_can_fail',
-              'warn_dupl_jobs', 'new_nzb_on_failure', 'enable_par_cleanup'
+              'warn_dupl_jobs', 'new_nzb_on_failure', 'enable_par_cleanup',
+              'enable_https_verification'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
@@ -1699,6 +1700,7 @@ class ConfigRss(object):
         self.__refresh_download = False
         self.__refresh_force = False
         self.__refresh_ignore = False
+        self.__last_msg = ''
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1745,11 +1747,15 @@ class ConfigRss(object):
                                  ignoreFirst=self.__refresh_ignore, readout=readout)
             if readout:
                 sabnzbd.rss.save()
+                self.__last_msg = msg
+            else:
+                msg = self.__last_msg
             self.__refresh_readout = None
             conf['error'] = msg
 
             conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
-
+        else:
+            self.__last_msg = ''
 
         # Find a unique new Feed name
         unum = 1

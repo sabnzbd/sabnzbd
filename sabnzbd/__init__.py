@@ -261,6 +261,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     cfg.quota_period.callback(guard_quota_dp)
     cfg.fsys_type.callback(guard_fsys_type)
     cfg.language.callback(sabnzbd.growler.reset_growl)
+    cfg.enable_https_verification.callback(guard_https_ver)
+    guard_https_ver()
 
     ### Set Posix filesystem encoding
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
@@ -455,6 +457,17 @@ def guard_fsys_type():
     """ Callback for change of file system naming type """
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
+def guard_https_ver():
+    """ Callback for change of https verification """
+    try:
+        import ssl
+        if hasattr(ssl, '_create_default_https_context'):
+            if cfg.enable_https_verification():
+                ssl._create_default_https_context = ssl.create_default_context
+            else:
+                ssl._create_default_https_context = ssl._create_unverified_context
+    except ImportError:
+        pass
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on a URL, attributes optional
