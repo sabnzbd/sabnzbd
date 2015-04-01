@@ -1253,7 +1253,7 @@ def renamer(old, new):
         retries = 15
         while retries > 0:
             try:
-                os.rename(old, new)
+                shutil.move(old, new)
                 return
             except WindowsError, err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
@@ -1265,7 +1265,7 @@ def renamer(old, new):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        os.rename(old, new)
+        shutil.move(old, new)
 
 
 def remove_dir(path):
@@ -1445,7 +1445,7 @@ def fix_unix_encoding(folder):
                 new_name = special_fixer(name).encode('utf-8')
                 if name != new_name:
                     try:
-                        os.rename(os.path.join(root, name), os.path.join(root, new_name))
+                        shutil.move(os.path.join(root, name), os.path.join(root, new_name))
                     except:
                         logging.info('Cannot correct name of %s', os.path.join(root, name))
 
