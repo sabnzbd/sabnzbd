@@ -182,6 +182,18 @@ class OptionDir(Option):
         self.__writable = writable
         Option.__init__(self, section, keyword, default_val, add=add)
 
+    def get(self):
+        """ Return value, corrected for platform """
+        if self._Option__value != None:
+            p = self._Option__value
+        else:
+            p = self._Option__default_val
+        if sabnzbd.WIN32:
+            return p.replace('/', '\\') if '/' in p else p
+        else:
+            return p.replace('\\', '/') if '\\' in p else p
+        
+
     def get_path(self):
         """ Return full absolute path """
         value = self.get()
