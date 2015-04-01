@@ -885,26 +885,6 @@ def get_f_option(opts):
     else:
         return None
 
-def print_ip_addresses():
-    try:
-        s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s_ipv4.connect(("google.com",80))
-        logging.info('IP address = %s', s_ipv4.getsockname()[0])
-        s_ipv4.close()
-    except:
-        logging.info('could not determine IP address')
-        pass
-
-    try:
-        s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        s_ipv6.connect(("ipv6.google.com",80))
-        logging.info('IPv6 address = %s', s_ipv6.getsockname()[0])
-        s_ipv6.close()
-    except:
-        logging.info('could not determine IPv6 address')
-        pass
-
-    return None
 
 #------------------------------------------------------------------------------
 def main():
@@ -1293,7 +1273,7 @@ def main():
     if sabnzbd.cfg.log_level() > 1:
         try:
             s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s_ipv4.connect(('google.com', 80))
+            s_ipv4.connect(('1.2.3.4', 80))
             logging.debug('My IPv4 address = %s', s_ipv4.getsockname()[0])
             s_ipv4.close()
         except:
@@ -1306,17 +1286,16 @@ def main():
             public_ipv4 = f.read()
             logging.debug('My public IPv4 address = %s', public_ipv4)
         except:
-            logging.debug('Could not determine my public IPv4 address. Error: %s',sys.exc_info()[0])
+            logging.debug('Could not determine my public IPv4 address. Error: %s',sys.exc_info())
             pass
 
         try:
             s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-            s_ipv6.connect(('ipv6.google.com', 80))
+            s_ipv6.connect(('2001:db8::8080', 80))
             logging.debug('My IPv6 address = %s', s_ipv6.getsockname()[0])
             s_ipv6.close()
         except:
-            logging.debug('Could not determine my IPv6 address')
-            pass
+            logging.debug('Could not determine my IPv6 address. Error: %s',sys.exc_info())
 
         # measure and log Pystone performance
         # to avoid a triple nested try/except construction, we use another method:
