@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2011-2013 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ exec(code)
 # Fixed information for the POT header
 HEADER = r'''#
 # SABnzbd Translation Template file __TYPE__
-# Copyright (C) 2011-2013 by the SABnzbd Team
+# Copyright (C) 2011-2015 by the SABnzbd Team
 #   team@sabnzbd.org
 #
 msgid ""

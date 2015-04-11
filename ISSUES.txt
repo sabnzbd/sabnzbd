@@ -20,15 +20,6 @@
   Description: http://support.microsoft.com/kb/979223/en-us
   Download location: http://support.microsoft.com/hotfix/KBHotfix.aspx?kbnum=979223&kbln=en-us
 
-- Windows cannot handle pathnames longer than 254 characters.
-  Currently, SABnzbd doesn't handle this problem gracefully.
-  We have added the INI-only option "folder_length_max" in which you can set
-  a maximum folder name size.
-  For Windows the default is 128 and for others 256.
-  A quite safe value for Windows would be 64.
-  SABnzbd will take care of overlapping names.
-  See: http://wiki.sabnzbd.org/configure-special-0-8
-
 - Some Usenet servers have intermittent login (or other) problems.
   For these the server blocking method is not very favourable.
   There is an INI-only option that will limit blocks to 1 minute.
