@@ -215,55 +215,55 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     if cfg.enable_filejoin():
         new_joins = [jn for jn in xjoinables if jn not in joinables]
         if new_joins:
-            rerun = True
             logging.info('Filejoin starting on %s', workdir)
             error, newf = file_join(nzo, workdir, workdir_complete, dele, new_joins)
             if newf:
                 newfiles.extend(newf)
             logging.info('Filejoin finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_unrar():
         new_rars = [rar for rar in xrars if rar not in rars]
         if new_rars:
-            rerun = True
             logging.info('Unrar starting on %s', workdir)
             error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, one_folder, new_rars)
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_unzip():
         new_zips = [zip for zip in xzips if zip not in zips]
         if new_zips:
-            rerun = True
             logging.info('Unzip starting on %s', workdir)
             if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
                 error = 1
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_7zip():
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
-            rerun = True
             logging.info('7za starting on %s', workdir)
             if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
                 error = True
             logging.info('7za finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
         if new_ts:
-            rerun = True
             logging.info('TS Joining starting on %s', workdir)
             error, newf = file_join(nzo, workdir, workdir_complete, dele, new_ts)
             if newf:
                 newfiles.extend(newf)
             logging.info('TS Joining finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins):
