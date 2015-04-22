@@ -690,7 +690,7 @@ msgstr "Погрешно брисање %s!"
 
 #: sabnzbd/newsunpack.py:521
 msgid "Trying unrar with password \"%s\""
-msgstr "Проба испакивања са лозинком \"%s\""
+msgstr "Проба испакивања са лозинком joinable"
 
 #: sabnzbd/newsunpack.py:529 [Error message] # sabnzbd/newsunpack.py:669
 #: sabnzbd/newsunpack.py:670 # sabnzbd/newsunpack.py:904 [Error message]
