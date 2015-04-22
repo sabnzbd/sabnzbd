@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
      reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-                         flag_file, real_path, globber, short_path
+                         flag_file, real_path, globber, globber_full, short_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -1175,16 +1175,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
         # Support bizarre naming conventions
-        wildcard = os.path.join(parfolder, '*')
+        wildcard = '*'
     else:
         # Normal case, everything is named after set
-        wildcard = os.path.join(parfolder, setname + '*')
+        wildcard = setname + '*'
 
     if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        command.append(wildcard)
+        command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
-        flist = [item for item in globber(wildcard, None) if os.path.isfile(item)]
+        flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
         command.extend(flist)
 
     stup, need_shell, command, creationflags = build_command(command)
