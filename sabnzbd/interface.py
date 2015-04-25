@@ -294,8 +294,10 @@ class MainPage(object):
             if cfg.enable_unrar():
                 version = sabnzbd.newsunpack.RAR_VERSION
                 if version and version < REC_RAR_VERSION and not cfg.ignore_wrong_unrar():
-                    info['warning'] = T('Your UNRAR version is %.2f, we recommend version %.2f or higher.<br />') % \
-                                         (float(version)/100, float(REC_RAR_VERSION)/100)
+                    have_str = '%.2f' % (float(version)/100)
+                    want_str = '%.2f' % (float(REC_RAR_VERSION)/100)
+                    info['warning'] = T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % \
+                                         (have_str, want_str)
                 if not sabnzbd.newsunpack.RAR_COMMAND:
                     info['warning'] = T('No UNRAR program found, unpacking RAR files is not possible<br />')
             if not sabnzbd.newsunpack.PAR2_COMMAND:
