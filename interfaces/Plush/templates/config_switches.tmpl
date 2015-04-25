@@ -248,8 +248,15 @@
           <span class="component-desc">$T('explain-unpack_check')</span>
         </label>
       </div>
-      <!--#if $have_multicore#-->
       <div class="field-pair alt">
+        <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if $script_can_fail > 0 then "checked=1" else ""#--> />
+        <label class="clearfix" for="script_can_fail">
+          <span class="component-title">$T('opt-script_can_fail')</span>
+          <span class="component-desc">$T('explain-script_can_fail')</span>
+        </label>
+      </div>
+      <!--#if $have_multicore#-->
+      <div class="field-pair">
         <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> />
         <label class="clearfix" for="par2_multicore">
           <span class="component-title">$T('opt-par2_multicore')</span>

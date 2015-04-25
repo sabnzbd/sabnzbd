@@ -1192,7 +1192,7 @@ SWITCH_LIST = \
              'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
-             'enable_recursive', 'no_series_dupes',
+             'enable_recursive', 'no_series_dupes', 'script_can_fail',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe'
              )
 
@@ -1260,7 +1260,7 @@ SPECIAL_BOOL_LIST = \
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
-              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour', 'script_can_fail',
+              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'new_nzb_on_failure', 'enable_par_cleanup',
               'enable_https_verification'
             )

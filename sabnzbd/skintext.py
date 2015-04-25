@@ -435,6 +435,8 @@ SKIN_TEXT = {
     'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
     'opt-unpack_check' : TT('Check result of unpacking'),
     'explain-unpack_check' : TT('Check result of unpacking (needs to be off for some file systems).'),
+    'opt-script_can_fail' : TT('User script can flag job as failed'),
+    'explain-script_can_fail' : TT('When the user script returns a non-zero exit code, the job will be flagged as failed.'),
     'opt-enable_meta' : TT('Use tags from indexer'),
     'explain-enable_meta' : TT('Use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
     'opt-folder_rename' : TT('Enable folder rename'),
