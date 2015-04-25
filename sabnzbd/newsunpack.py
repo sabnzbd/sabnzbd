@@ -132,8 +132,10 @@ def find_programs(curdir):
             sabnzbd.newsunpack.RAR_COMMAND = find_on_path(('unrar', 'rar', 'unrar3', 'rar3',))
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
-        sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
-        sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
+        if not sabnzbd.newsunpack.ZIP_COMMAND:
+            sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
+        if not sabnzbd.newsunpack.SEVEN_COMMAND:
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
 
     if not sabnzbd.newsunpack.PAR2C_COMMAND:
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
