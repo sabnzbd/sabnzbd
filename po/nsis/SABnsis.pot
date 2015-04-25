@@ -30,7 +30,7 @@ msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
 #: NSIS_Installer.nsi:424
-msgid "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+msgid "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the release notes or go to http://wiki.sabnzbd.org/introducing-0-8-0 !"
 msgstr ""
 
 #: NSIS_Installer.nsi:426
