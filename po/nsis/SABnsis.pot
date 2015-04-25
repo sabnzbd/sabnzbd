@@ -29,51 +29,51 @@ msgstr ""
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
-#: NSIS_Installer.nsi:426
+#: NSIS_Installer.nsi:424
 msgid "This will uninstall SABnzbd from your system"
 msgstr ""
 
-#: NSIS_Installer.nsi:428
+#: NSIS_Installer.nsi:426
 msgid "Run at startup"
 msgstr ""
 
-#: NSIS_Installer.nsi:430
+#: NSIS_Installer.nsi:428
 msgid "Desktop Icon"
 msgstr ""
 
-#: NSIS_Installer.nsi:432
+#: NSIS_Installer.nsi:430
 msgid "NZB File association"
 msgstr ""
 
-#: NSIS_Installer.nsi:434
+#: NSIS_Installer.nsi:432
 msgid "Delete Program"
 msgstr ""
 
-#: NSIS_Installer.nsi:436
+#: NSIS_Installer.nsi:434
 msgid "Delete Settings"
 msgstr ""
 
-#: NSIS_Installer.nsi:438
+#: NSIS_Installer.nsi:436
 msgid "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
 msgstr ""
 
-#: NSIS_Installer.nsi:440
+#: NSIS_Installer.nsi:438
 msgid "Downloading Microsoft runtime installer..."
 msgstr ""
 
-#: NSIS_Installer.nsi:442
+#: NSIS_Installer.nsi:440
 msgid "Download error, retry?"
 msgstr ""
 
-#: NSIS_Installer.nsi:444
+#: NSIS_Installer.nsi:442
 msgid "Cannot install without runtime library, retry?"
 msgstr ""
 
-#: NSIS_Installer.nsi:446
+#: NSIS_Installer.nsi:444
 msgid "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
 
-#: NSIS_Installer.nsi:448
+#: NSIS_Installer.nsi:446
 msgid "Your settings and data will be preserved."
 msgstr ""
 
