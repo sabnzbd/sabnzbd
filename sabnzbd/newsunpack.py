@@ -1793,6 +1793,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
 
         output = p.stdout.read()
         ret = p.wait()
+        logging.info('Pre-queue script returns %s and output=\n%s', ret, output)
         if ret == 0:
             n = 0
             for line in output.split('\n'):
