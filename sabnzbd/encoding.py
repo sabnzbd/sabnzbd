@@ -58,13 +58,13 @@ def reliable_unpack_names():
 def platform_encode(p):
     """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1
     """
-    if p is None or isinstance(p, unicode) or isinstance(p, list):
-        return p
-    else:
+    if isinstance(p, str):
         try:
             return p.decode('utf-8')
         except:
             return p.decode('cp1252')
+    else:
+        return p
 
 def name_fixer(p):
     """ Return Unicode name of 8bit ASCII string, first try UTF-8, then cp1252
