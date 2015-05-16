@@ -41,14 +41,15 @@ except:
 # SABnzbd modules
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
-                              DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-                              HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
-                              RENAMES_FILE, Status
+     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
+     HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
+     RENAMES_FILE, Status
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, format_source_url, \
-                         sanitize_filename, globber_full, sanitize_foldername, int_conv, \
-                         set_permissions, format_time_string, long_path, trim_win_path, \
-                         fix_unix_encoding
+     get_unique_path, get_admin_path, remove_all, format_source_url, \
+     sanitize_filename, globber_full, sanitize_foldername, int_conv, \
+     set_permissions, format_time_string, long_path, trim_win_path, \
+     fix_unix_encoding
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, name_fixer
@@ -78,6 +79,7 @@ class Article(TryList):
         TryList.__init__(self)
 
         self.fetcher = None
+        self.fetcher_priority = 0
         self.allow_fill_server = False
 
         self.article = article
@@ -87,16 +89,48 @@ class Article(TryList):
         self.tries = 0 # Try count
         self.nzf = nzf
 
-    def get_article(self, server):
+    def get_article(self, server, servers):
         """ Return article when appropriate for specified server """
-        if server.fillserver and (not self.allow_fill_server) and sabnzbd.active_primaries():
-            return None
-
+        log = sabnzbd.LOG_ALL
         if not self.fetcher and not self.server_in_try_list(server):
-            self.fetcher = server
-            self.tries += 1
-            if sabnzbd.LOG_ALL: logging.debug('Article-try = %s', self.tries)
-            return self
+            if log: logging.debug('Article %s | Server: %s | in second if', self.article, server.host)
+            # Is the current selected server of the same priority as this article?
+            if log: logging.debug('Article %s | Server: %s | Article priority: %s', self.article, server.host, self.fetcher_priority)
+            if log: logging.debug('Article %s | Server: %s | Server priority: %s', self.article, server.host, server.priority)
+            if server.priority == self.fetcher_priority:
+                if log: logging.debug('Article %s | Server: %s | same priority, use it', self.article, server.host)
+                self.fetcher = server
+                self.tries += 1
+                if log: logging.debug('Article %s | Server: %s | Article-try: %s', self.article, server.host, self.tries)
+                return self
+            else:
+                if log: logging.debug('Article %s | Server: %s | not the same priorty', self.article, server.host)
+                # No, so is it a lower priority?
+                if (server.priority > self.fetcher_priority):
+                    if log: logging.debug('Article %s | Server: %s | lower priority', self.article, server.host)
+                    # Is there an available server that is a higher priority?
+                    found_priority = 1000
+                    #for server_check in config.get_servers():
+                    for server_check in servers:
+                        if log: logging.debug('Article %s | Server: %s | checking', self.article, server.host)
+                        #if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
+                        if (server_check.priority < found_priority):
+                            if (server_check.priority < server.priority):
+                                if (not self.server_in_try_list(server_check)):
+                                    if log: logging.debug('Article %s | Server: %s | setting found priority to %s', self.article, server.host, server_check.priority)
+                                    found_priority = server_check.priority
+                    if found_priority == 1000:
+                        # If no higher priority servers, use this server
+                        self.fetcher_priority = server.priority
+                        self.fetcher = server
+                        self.tries += 1
+                        if log: logging.debug('Article %s | Server: %s | Article-try: %s', self.article, server.host, self.tries)
+                        return self
+                    else:
+                        # There is a higher priorty server, so set article priority
+                        if log: logging.debug('Article %s | Server: %s | setting self priority', self.article, server.host)
+                        self.fetcher_priority = found_priority
+        if log: logging.debug('Article %s | Server: %s | Returning None', self.article, server.host)
         return None
 
     def get_art_id(self):
@@ -122,6 +156,7 @@ class Article(TryList):
                 self.__dict__[item] = None
         TryList.__init__(self)
         self.fetcher = None
+        self.fetcher_priority = 0
         self.allow_fill_server = False
         self.tries = 0
 
@@ -231,16 +266,16 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int(blocks)
 
-    def get_article(self, server):
+    def get_article(self, server, servers):
         """ Get next article to be downloaded """
         if self.initial_article:
-            article = self.initial_article.get_article(server)
+            article = self.initial_article.get_article(server, servers)
             if article:
                 return article
 
         else:
             for article in self.articles:
-                article = article.get_article(server)
+                article = article.get_article(server, servers)
                 if article:
                     return article
 
@@ -718,8 +753,8 @@ class NzbObject(TryList):
         # Run user pre-queue script if needed
         if not reuse:
             accept, name, pp, cat, script, priority, group = \
-                    sabnzbd.proxy_pre_queue(self.final_name_pw_clean, pp, cat, script,
-                                            priority, self.bytes, self.groups)
+                sabnzbd.proxy_pre_queue(self.final_name_pw_clean, pp, cat, script,
+                                        priority, self.bytes, self.groups)
             accept = int_conv(accept)
             try:
                 pp = int(pp)
@@ -886,7 +921,7 @@ class NzbObject(TryList):
                         ## But only do this if our last initialparfile
                         ## isn't already done (e.g two small parfiles)
                         if nzf.blocks < self.partable[head].blocks \
-                        and self.partable[head] in self.files:
+                           and self.partable[head] in self.files:
                             self.partable[head].reset_try_list()
                             self.files.remove(self.partable[head])
                             self.extrapars[head].append(self.partable[head])
@@ -949,7 +984,7 @@ class NzbObject(TryList):
         """ Check if downloaded files already exits, for these set NZF to complete
         """
         fix_unix_encoding(wdir)
-        
+
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber_full(wdir) if os.path.isfile(f)]
 
@@ -1155,7 +1190,7 @@ class NzbObject(TryList):
         except:
             self.nzo_info[log] = [txt]
 
-    def get_article(self, server):
+    def get_article(self, server, servers):
         article = None
         nzf_remove_list = []
 
@@ -1169,7 +1204,7 @@ class NzbObject(TryList):
                     if not nzf.import_finished:
                         # Only load NZF when it's a primary server
                         # or when it's a backup server without active primaries
-                        if server.fillserver ^ sabnzbd.active_primaries():
+                        if sabnzbd.highest_server(server):
                             nzf.finish_import()
                             # Still not finished? Something went wrong...
                             if not nzf.import_finished:
@@ -1179,7 +1214,7 @@ class NzbObject(TryList):
                         else:
                             continue
 
-                    article = nzf.get_article(server)
+                    article = nzf.get_article(server, servers)
                     if article:
                         break
 
@@ -1346,6 +1381,10 @@ class NzbObject(TryList):
             filename = nzf.filename
             if not filename:
                 filename = nzf.subject
+            ### TEMP ###
+            if nzf.import_finished:
+                filename = 'XX ' + filename
+            ############
             date = nzf.date
             if for_cli:
                 date = time.mktime(date.timetuple())

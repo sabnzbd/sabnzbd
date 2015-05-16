@@ -198,7 +198,7 @@ class Decoder(Thread):
 
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
-                if server.fillserver:
+                if not sabnzbd.highest_server(server):
                     fill_server_found = True
                 else:
                     new_server_found = True

@@ -774,12 +774,12 @@ class NzbQueue(TryList):
         return False
 
     @synchronized(NZBQUEUE_LOCK)
-    def get_article(self, server):
+    def get_article(self, server, servers):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
                     if nzo.status not in (Status.PAUSED, Status.GRABBING):
-                        article = nzo.get_article(server)
+                        article = nzo.get_article(server, servers)
                         if article:
                             return article
 
@@ -787,7 +787,7 @@ class NzbQueue(TryList):
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
                 if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING):
-                    article = nzo.get_article(server)
+                    article = nzo.get_article(server, servers)
                     if article:
                         return article
 

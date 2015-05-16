@@ -1669,7 +1669,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ('fillserver', 'ssl', 'send_group', 'enable', 'optional'):
+    for kw in ('ssl', 'send_group', 'enable', 'optional'):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:
@@ -2329,7 +2329,8 @@ class Status(object):
             busy.sort()
 
             header['servers'].append((server.id, '', connected, busy, server.ssl,
-                                      server.active, server.errormsg, server.fillserver, server.optional))
+                                      server.active, server.errormsg, server.priority, server.optional))
+                                      #     5            6                   7               8
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():

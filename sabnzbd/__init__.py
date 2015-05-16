@@ -1085,8 +1085,8 @@ def wait_for_download_folder():
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
-def active_primaries():
-    return sabnzbd.downloader.Downloader.do.active_primaries()
+def highest_server(me):
+    return sabnzbd.downloader.Downloader.do.highest_server(me)
 
 
 def proxy_pre_queue(name, pp, cat, script, priority, size, groups):

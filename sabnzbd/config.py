@@ -372,13 +372,13 @@ class ConfigServer(object):
         self.username = OptionStr(name, 'username', '', add=False)
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
-        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
         self.ssl_type = OptionStr(name, 'ssl_type', 't1', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
+        self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -386,7 +386,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
-                   'fillserver', 'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention'):
+                   'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority'):
             try:
                 value = values[kw]
             except KeyError:
@@ -407,13 +407,13 @@ class ConfigServer(object):
         else:
             dict['password'] = self.password()
         dict['connections'] = self.connections()
-        dict['fillserver'] = self.fillserver()
         dict['ssl'] = self.ssl()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
         dict['ssl_type'] = self.ssl_type()
         dict['send_group'] = self.send_group()
+        dict['priority'] = self.priority()
         return dict
 
     def delete(self):

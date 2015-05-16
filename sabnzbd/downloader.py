@@ -54,7 +54,7 @@ TIMER_LOCK = RLock()
 
 #------------------------------------------------------------------------------
 class Server(object):
-    def __init__(self, id, host, port, timeout, threads, fillserver, ssl, ssl_type, send_group, username = None,
+    def __init__(self, id, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username = None,
                  password = None, optional=False, retention=0):
         self.id = id
         self.newid = None
@@ -63,7 +63,7 @@ class Server(object):
         self.port = port
         self.timeout = timeout
         self.threads = threads
-        self.fillserver = fillserver
+        self.priority = priority
         self.ssl = ssl
         self.ssl_type = ssl_type
         self.optional = optional
@@ -164,11 +164,9 @@ class Downloader(Thread):
     def init_server(self, oldserver, newserver):
         """ Setup or re-setup single server
             When oldserver is defined and in use, delay startup.
-            Return True when newserver is primary
             Note that the server names are "host:port" strings!
         """
 
-        primary = False
         create = False
 
         servers = config.get_servers()
@@ -179,8 +177,7 @@ class Downloader(Thread):
             port = srv.port()
             timeout = srv.timeout()
             threads = srv.connections()
-            fillserver = srv.fillserver()
-            primary = enabled and (not fillserver) and (threads > 0)
+            priority = srv.priority()
             ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
             ssl_type = srv.ssl_type()
             username = srv.username()
@@ -201,11 +198,11 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
+            self.servers.append(Server(newserver, host, port, timeout, threads, priority, ssl,
                                             ssl_type, send_group,
                                             username, password, optional, retention))
 
-        return primary
+        return
 
     @synchronized_CV
     def set_paused_state(self, state):
@@ -291,12 +288,15 @@ class Downloader(Thread):
             else:
                 return True
 
-    def active_primaries(self):
-        """ Check if any primary server is defined and active """
+    def highest_server(self, me):
+        """ Return True when this server has the highest priority of the active ones
+            0 is the highest priority
+        """
+
         for server in self.servers:
-            if server.active and not server.fillserver:
-                return True
-        return False
+            if server is not me and server.active and server.priority < me.priority:
+                return False
+        return True
 
     def maybe_block_server(self, server):
         from sabnzbd.nzbqueue import NzbQueue
@@ -374,7 +374,7 @@ class Downloader(Thread):
                         request_server_info(server)
                         break
 
-                    article = NzbQueue.do.get_article(server)
+                    article = NzbQueue.do.get_article(server, self.servers)
 
                     if not article:
                         break

@@ -56,18 +56,24 @@
         </label>
       </div>
       <div class="field-pair alt">
+        <label class="nocheck clearfix" for="priority">
+          <span class="component-title">$T('srv-priority')</span>
+          <input type="text" size="10" name="priority"/>
+        </label>
+      </div>
+      <div class="field-pair">
         <label class="nocheck clearfix" for="retention">
           <span class="component-title">$T('srv-retention')</span>
           <input type="text" size="10" name="retention"/> <i>$T('days')</i>
         </label>
       </div>
-      <div class="field-pair">
+      <div class="field-pair alt">
         <label class="nocheck clearfix" for="timeout">
           <span class="component-title">$T('srv-timeout')</span>
           <input type="text" size="10" name="timeout"/> <i>$T('seconds')</i>
         </label>
       </div>
-      <div class="field-pair alt">
+      <div class="field-pair">
         <input type="checkbox" name="enable" id="enable" value="1" checked="1"/>
         <label class="clearfix" for="enable">
           <span class="component-title">$T('srv-enable')</span>
@@ -186,19 +192,25 @@
     </label>
   </div>
   <div class="field-pair alt">
+    <label class="nocheck clearfix" for="priority">
+      <span class="component-title">$T('srv-priority')</span>
+      <input type="text" size="10" name="priority" value="$servers[$server]['priority']" />
+    </label>
+  </div>
+  <div class="field-pair">
     <label class="nocheck clearfix" for="retention">
       <span class="component-title">$T('srv-retention')</span>
       <input type="text" size="10" name="retention" value="$servers[$server]['retention']" /> <i>$T('days')</i>
     </label>
   </div>
-  <div class="field-pair">
+  <div class="field-pair alt">
     <label class="nocheck clearfix" for="timeout">
       <span class="component-title">$T('srv-timeout')</span>
       <input type="text" size="10" name="timeout" value="$servers[$server]['timeout']" /> <i>$T('seconds')</i>
     </label>
   </div>
 
-  <div class="field-pair alt">
+  <div class="field-pair">
     <input type="checkbox" name="enable" id="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
     <label class="clearfix" for="enable">
       <span class="component-title">$T('srv-enable')</span>
