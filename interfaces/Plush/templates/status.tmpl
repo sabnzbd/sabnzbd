@@ -7,7 +7,9 @@
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
     <li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
     <li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
+    <li><a href="#tabs-dashboard">$T('Dashboard')</a></li>
   </ul>
+
   <div id="tabs-warnings">
     <p>
       <a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a>
@@ -119,6 +121,19 @@
   <!--#else#-->
     <p>$T('none')</p>
   <!--#end if#-->
+  </div>
+
+  <div id="tabs-dashboard">
+      <table class="rssTable">
+        <tr> <th>Item           </th> <th>Value          </th> </tr>
+        <!--#set $odd = False#-->
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Local IPv4 address</td><td>$localipv4</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Public IPv4 address</td><td>$publicipv4</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>IPv6 address</td><td>$ipv6</td></tr>
+      </table>
   </div>
 
 </div>

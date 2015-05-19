@@ -2278,6 +2278,10 @@ class Status(object):
         if not check_access(): return Protected()
         header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
+        # anything in header[] will be known to the python templates
+        # header['blabla'] will be known as $blabla
+        # this function is called on each refresh of the template
+
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
         header['loglevel'] = str(cfg.log_level())
@@ -2286,6 +2290,12 @@ class Status(object):
 
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
+
+        # For the Dashboard:
+        from utils.getipaddress import localipv4, publicipv4, ipv6
+        header['localipv4'] = localipv4()
+        header['publicipv4'] = publicipv4()
+        header['ipv6'] = ipv6()
 
 
         header['servers'] = []
