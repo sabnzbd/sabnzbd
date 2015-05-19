@@ -1271,31 +1271,26 @@ def main():
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
     if sabnzbd.cfg.log_level() > 1:
-        try:
-            s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s_ipv4.connect(('1.2.3.4', 80))
-            logging.debug('My IPv4 address = %s', s_ipv4.getsockname()[0])
-            s_ipv4.close()
-        except:
-            logging.debug('Could not determine my IPv4 address')
-            pass
+        from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
 
-        try:
-            import urllib
-            f = urllib.urlopen("http://api.ipify.org")
-            public_ipv4 = f.read()
-            logging.debug('My public IPv4 address = %s', public_ipv4)
-        except:
-            logging.debug('Could not determine my public IPv4 address. Error: %s',sys.exc_info())
-            pass
+        mylocalipv4 = localipv4()
+        if mylocalipv4 :
+            logging.debug('My local IPv4 address = %s', mylocalipv4)
+        else:
+            logging.debug('Could not determine my local IPv4 address')
 
-        try:
-            s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-            s_ipv6.connect(('2001:db8::8080', 80))
-            logging.debug('My IPv6 address = %s', s_ipv6.getsockname()[0])
-            s_ipv6.close()
-        except:
-            logging.debug('Could not determine my IPv6 address. Error: %s',sys.exc_info())
+        mypublicipv4 = publicipv4()
+        if mypublicipv4 :
+            logging.debug('My public IPv4 address = %s', mypublicipv4)
+        else:
+            logging.debug('Could not determine my public IPv4 address')
+
+        myipv6 = ipv6()
+        if myipv6 :
+            logging.debug('My IPv6 address = %s', myipv6)
+        else:
+            logging.debug('Could not determine my IPv6 address')
+
 
         # measure and log Pystone performance
         # to avoid a triple nested try/except construction, we use another method:
