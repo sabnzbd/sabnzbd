@@ -1381,10 +1381,6 @@ class NzbObject(TryList):
             filename = nzf.filename
             if not filename:
                 filename = nzf.subject
-            ### TEMP ###
-            if nzf.import_finished:
-                filename = 'XX ' + filename
-            ############
             date = nzf.date
             if for_cli:
                 date = time.mktime(date.timetuple())
