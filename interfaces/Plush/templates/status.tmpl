@@ -133,7 +133,24 @@
                <td>Public IPv4 address</td><td>$publicipv4</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>IPv6 address</td><td>$ipv6</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Nameserver / DNS Lookup</td><td>$dnslookup</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Download Directory</td><td>$downloaddir</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Download Directory Speed [MB/s]</td><td>$downloaddirspeed</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Complete Directory</td><td>$completedir</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Complete Directory Speed [MB/s]</td><td>$completedirspeed</td></tr>
+
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Dash Refresh Counter</td><td>$dashrefreshcounter</td></tr>
+
       </table>
+      <BR>
+      If you want to (re)run the tests, click on:
+      <a href="dashrefresh?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
   </div>
 
 </div>
