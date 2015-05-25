@@ -636,7 +636,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.set_action_line(T('Unpacking'), '%02d/%02d' % (curr, numrars))
 
         elif line.find('recovery volumes found') > -1:
-            inrecovery = True		# and thus start ignoring "Cannot find volume" for a while
+            inrecovery = True		# and thus start ignoring "Cannot find volume" for a while ... until:
             logging.debug("unrar recovery start: %s" % line)
         elif line.startswith('Reconstruct'):
             # end of reconstruction: 'Reconstructing... 100%' or 'Reconstructing... ' (both success), or 'Reconstruction impossible'
