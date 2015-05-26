@@ -130,7 +130,11 @@
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Local IPv4 address</td><td>$localipv4</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Public IPv4 address</td><td>$publicipv4</td></tr>
+               <td>Public IPv4 address</td><td>  
+                   <!--#if $publicipv4#-->$publicipv4
+                   <!--#else#--><B><font color="red">No public IPv4. That is bad</font></B>
+                   <!--#end if#-->
+               </td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>IPv6 address</td><td>$ipv6</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
@@ -149,6 +153,12 @@
 
       </table>
       <BR>
+
+
+  <BR><BR>
+
+
+
       If you want to (re)run the tests, click on:
       <a href="dashrefresh?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
   </div>
