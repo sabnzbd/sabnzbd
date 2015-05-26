@@ -618,6 +618,9 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     rarfiles = []
     fail = 0
 
+    # default: not in REV recovery block:
+    inrecovery = False
+
     while 1:
         line = proc.readline()
         if not line:
@@ -632,7 +635,15 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             curr += 1
             nzo.set_action_line(T('Unpacking'), '%02d/%02d' % (curr, numrars))
 
-        elif line.startswith('Cannot find volume'):
+        elif line.find('recovery volumes found') > -1:
+            inrecovery = True		# and thus start ignoring "Cannot find volume" for a while
+            logging.debug("unrar recovery start: %s" % line)
+        elif line.startswith('Reconstruct'):
+            # end of reconstruction: 'Reconstructing... 100%' or 'Reconstructing... ' (both success), or 'Reconstruction impossible'
+            inrecovery = False
+            logging.debug("unrar recovery result: %s" % line)
+
+        elif line.startswith('Cannot find volume') and not inrecovery:
             filename = os.path.basename(TRANS(line[19:]))
             nzo.fail_msg = T('Unpacking failed, unable to find %s') % unicoder(filename)
             msg = (u'[%s] '+T('Unpacking failed, unable to find %s')) % (setname, filename)
