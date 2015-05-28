@@ -7,7 +7,9 @@
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
     <li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
     <li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
+    <li><a href="#tabs-dashboard">$T('Dashboard')</a></li>
   </ul>
+
   <div id="tabs-warnings">
     <p>
       <a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a>
@@ -119,6 +121,36 @@
   <!--#else#-->
     <p>$T('none')</p>
   <!--#end if#-->
+  </div>
+
+  <div id="tabs-dashboard">
+      <table class="rssTable">
+        <tr> <th>Item           </th> <th>Value          </th> </tr>
+        <!--#set $odd = False#-->
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Local IPv4 address</td><td>$localipv4</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Public IPv4 address</td><td>$publicipv4</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>IPv6 address</td><td>$ipv6</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Nameserver / DNS Lookup</td><td>$dnslookup</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Download Directory</td><td>$downloaddir</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Download Directory Speed [MB/s]</td><td>$downloaddirspeed</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Complete Directory</td><td>$completedir</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Complete Directory Speed [MB/s]</td><td>$completedirspeed</td></tr>
+
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>Dash Refresh Counter</td><td>$dashrefreshcounter</td></tr>
+
+      </table>
+      <BR>
+      If you want to (re)run the tests, click on:
+      <a href="dashrefresh?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
   </div>
 
 </div>

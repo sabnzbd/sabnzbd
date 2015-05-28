@@ -2278,6 +2278,10 @@ class Status(object):
         if not check_access(): return Protected()
         header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
+        # anything in header[] will be known to the python templates
+        # header['blabla'] will be known as $blabla
+        # this function is called on each refresh of the template
+
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
         header['loglevel'] = str(cfg.log_level())
@@ -2286,6 +2290,40 @@ class Status(object):
 
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
+
+        # For the Dashboard:
+        from utils.getipaddress import localipv4, publicipv4, ipv6
+        header['localipv4'] = localipv4()
+        header['publicipv4'] = publicipv4()
+        header['ipv6'] = ipv6()
+        # DNS-check
+        try:
+            import socket
+            socket.gethostbyname('www.google.com')
+            header['dnslookup'] = "OK"
+        except:
+            header['dnslookup'] = "Not OK"
+
+        # Speed of Download directory:
+        header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+        try:
+            sabnzbd.downloaddirspeed # The persistent var
+        except:
+            sabnzbd.downloaddirspeed = None
+        header['downloaddirspeed'] = sabnzbd.downloaddirspeed
+        # Speed of Complete directory:
+        header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+        try:
+            sabnzbd.completedirspeed # The persistent var
+        except:
+            sabnzbd.completedirspeed = None
+        header['completedirspeed'] = sabnzbd.completedirspeed
+
+        try:
+            sabnzbd.dashrefreshcounter # The persistent var
+        except:
+            sabnzbd.dashrefreshcounter = 0
+        header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
 
 
         header['servers'] = []
@@ -2420,6 +2458,22 @@ class Status(object):
         if msg: return msg
         orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def dashrefresh(self, **kwargs):		# run if Refresh on Dashboard is clicked
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            logging.debug('DashRefresh!!!')
+            sabnzbd.dashrefreshcounter += 1
+            from utils.diskspeed import diskspeedmeasure
+            sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()),1)
+            sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()),1)
+            logging.debug('DashRefresh ... End')
+
+        except:
+            pass
+        raise dcRaiser(self.__root, kwargs)	# Refresh screen
 
 
 def Protected():
