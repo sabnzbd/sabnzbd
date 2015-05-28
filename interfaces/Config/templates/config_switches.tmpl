@@ -178,19 +178,19 @@
                     <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_all_par')</span>
                 </div>
-                <div class="field-pair<!--#if not $have_unrar then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_unrar then "disabled" else "" #-->">
                     <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
-                    <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if not $have_unrar then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_unrar')</span>
                 </div>
                 <div class="field-pair alt <!--#if not $have_unzip then "disabled" else "" #-->">
                     <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
-                    <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if not $have_unzip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_unzip')</span>
                 </div>
                 <div class="field-pair <!--#if not $have_7zip then "disabled" else "" #-->">
                     <label class="config" for="enable_7zip">$T('opt-enable_7zip')</label>
-                    <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if not $have_7zip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_7zip')</span>
                 </div>
                 <div class="field-pair alt">

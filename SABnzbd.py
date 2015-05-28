@@ -516,7 +516,7 @@ def print_modules():
     if sabnzbd.newsunpack.SEVEN_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
     else:
-        if sabnzbd.cfg.enable_7zip(): logging.warning(T('7za binary... NOT found!'))
+        if sabnzbd.cfg.enable_7zip(): logging.info(T('7za binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
