@@ -125,27 +125,70 @@
 
   <div id="tabs-dashboard">
       <table class="rssTable">
-        <tr> <th>Item           </th> <th>Value          </th> </tr>
+      
+
+        <tr> <th>Item</th> <th>Value</th> </tr>
         <!--#set $odd = False#-->
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Local IPv4 address</td><td>$localipv4</td></tr>
+               <td>Local IPv4 address</td><td>  
+                   <!--#if $publicipv4#-->$localipv4
+                   <!--#else#--><B><font color="red">No local IPv4. That is bad</font></B>
+                   <!--#end if#-->
+               </td></tr>
+
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Public IPv4 address</td><td>$publicipv4</td></tr>
+               <td>Public IPv4 address</td><td>  
+                   <!--#if $publicipv4#-->$publicipv4
+                   <!--#else#--><B><font color="red">No public IPv4. That is bad</font></B>
+                   <!--#end if#-->
+               </td></tr>
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>IPv6 address</td><td>$ipv6</td></tr>
+               <td>IPv6 address</td><td>  
+                   <!--#if $ipv6#-->$ipv6
+                   <!--#else#-->No IPv6.
+                   <!--#end if#-->
+               </td></tr>
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Nameserver / DNS Lookup</td><td>$dnslookup</td></tr>
+               <td>Nameserver / DNS Lookup</td><td>  
+                   <!--#if $dnslookup#-->DNS is OK
+                   <!--#else#-->
+		           <!--#if $publicipv4#-->No DNS
+		           <!--#else#-->First fix your network, then check DNS again
+		           <!--#end if#-->
+                   <!--#end if#-->
+               </td></tr>
+
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>System Performance (Pystone)</td><td>$pystone</td></tr>
+        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
+               <td>CPU Model (only on Linux)</td><td>$cpumodel</td></tr>
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Download Directory</td><td>$downloaddir</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Download Directory Speed [MB/s]</td><td>$downloaddirspeed</td></tr>
+               <td>Download Directory writing Speed [MB/s]</td><td>  
+                   <!--#if $downloaddirspeed#-->$downloaddirspeed
+                   <!--#else#--><B><font color="red">Could not write. That is bad</font></B>
+                   <!--#end if#-->
+               </td></tr>
+
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Complete Directory</td><td>$completedir</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Complete Directory Speed [MB/s]</td><td>$completedirspeed</td></tr>
+               <td>Complete Directory writing Speed [MB/s]</td><td>  
+                   <!--#if $completedirspeed#-->$completedirspeed
+                   <!--#else#--><B><font color="red">Could not write. That is bad</font></B>
+                   <!--#end if#-->
+               </td></tr>
 
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Dash Refresh Counter</td><td>$dashrefreshcounter</td></tr>
+
+        
 
       </table>
       <BR>

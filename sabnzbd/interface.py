@@ -2291,27 +2291,31 @@ class Status(object):
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
 
-        # For the Dashboard:
+        # Dashboard: Begin
         from utils.getipaddress import localipv4, publicipv4, ipv6
         header['localipv4'] = localipv4()
         header['publicipv4'] = publicipv4()
         header['ipv6'] = ipv6()
-        # DNS-check
+        # Dashboard: DNS-check
         try:
             import socket
             socket.gethostbyname('www.google.com')
             header['dnslookup'] = "OK"
         except:
-            header['dnslookup'] = "Not OK"
+            header['dnslookup'] = None
 
-        # Speed of Download directory:
+        # Dashboard: Speed of System
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        header['pystone'] = getpystone()
+        header['cpumodel'] = getcpu()
+        # Dashboard: Speed of Download directory:
         header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
         try:
             sabnzbd.downloaddirspeed # The persistent var
         except:
             sabnzbd.downloaddirspeed = None
         header['downloaddirspeed'] = sabnzbd.downloaddirspeed
-        # Speed of Complete directory:
+        # Dashboard: Speed of Complete directory:
         header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
         try:
             sabnzbd.completedirspeed # The persistent var
@@ -2324,6 +2328,7 @@ class Status(object):
         except:
             sabnzbd.dashrefreshcounter = 0
         header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
+        # Dashboard: End
 
 
         header['servers'] = []
