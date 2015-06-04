@@ -2293,16 +2293,29 @@ class Status(object):
 
         # For the Dashboard:
         from utils.getipaddress import localipv4, publicipv4, ipv6
+
         header['localipv4'] = localipv4()
+        if not header['localipv4']:
+            header['localipv4'] = "Could not be found. This is bad." 
+
         header['publicipv4'] = publicipv4()
+        '''
+        if not header['publicipv4']:
+            header['publicipv4'] = "Could not be found. Maybe no Internet access?" 
+        '''
+
         header['ipv6'] = ipv6()
+        if not header['ipv6']:
+            header['ipv6'] = "No IPv6. That is no problem." 
+
+
         # DNS-check
         try:
             import socket
             socket.gethostbyname('www.google.com')
             header['dnslookup'] = "OK"
         except:
-            header['dnslookup'] = "Not OK"
+            header['dnslookup'] = "Not OK. That is bad."
 
         # Speed of Download directory:
         header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
@@ -2314,7 +2327,7 @@ class Status(object):
         # Speed of Complete directory:
         header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
         try:
-            sabnzbd.completedirspeed # The persistent var
+            sabnzbd.completedirspeed # The persistent var. If it does not exist, create a dummy None
         except:
             sabnzbd.completedirspeed = None
         header['completedirspeed'] = sabnzbd.completedirspeed

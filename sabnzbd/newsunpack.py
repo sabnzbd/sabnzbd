@@ -617,6 +617,8 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     extracted = []
     rarfiles = []
     fail = 0
+
+    # default: not in REV recovery block:
     inrecovery = False
 
     while 1:
