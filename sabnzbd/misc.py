@@ -416,14 +416,14 @@ def create_real_path(name, loc, path, umask=False, writable=True):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(T('Cannot create directory %s'), my_dir)
+                logging.error(T('Cannot create directory %s'), clip_path(my_dir))
                 return (False, my_dir)
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
             return (True, my_dir)
         else:
-            logging.error(T('%s directory: %s error accessing'), name, my_dir)
+            logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
             return (False, my_dir)
     else:
         return (False, "")
@@ -780,7 +780,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(T('Failed making (%s)'), dirpath)
+            logging.error(T('Failed making (%s)'), clip_path(dirpath))
             return None
     return dirpath
 
@@ -816,7 +816,7 @@ def move_to_path(path, new_path):
                 os.remove(path)
             except:
                 if not (cfg.marker_file() and cfg.marker_file() in path):
-                    logging.error(T('Failed moving %s to %s'), path, new_path)
+                    logging.error(T('Failed moving %s to %s'), clip_path(path), clip_path(new_path))
                     logging.info("Traceback: ", exc_info = True)
                 ok = False
     return ok, new_path
@@ -1360,7 +1360,7 @@ def set_chmod(path, permissions, report):
     except:
         lpath = path.lower()
         if report and '.appledouble' not in lpath and '.ds_store' not in lpath:
-            logging.error(T('Cannot change permissions of %s'), path)
+            logging.error(T('Cannot change permissions of %s'), clip_path(path))
             logging.info("Traceback: ", exc_info = True)
 
 

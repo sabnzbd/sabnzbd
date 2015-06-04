@@ -408,7 +408,7 @@ def process_job(nzo):
                     try:
                         newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
                     except:
-                        logging.error(T('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
+                        logging.error(T('Error renaming "%s" to "%s"'), clip_path(tmp_workdir_complete), clip_path(workdir_complete))
                         logging.info('Traceback: ', exc_info = True)
                         # Better disable sorting because filenames are all off now
                         file_sorter.sort_file = None
@@ -549,7 +549,7 @@ def process_job(nzo):
                 logging.debug('Removing workdir %s', workdir)
                 remove_all(workdir, recursive=True)
         except:
-            logging.error(T('Error removing workdir (%s)'), workdir)
+            logging.error(T('Error removing workdir (%s)'), clip_path(workdir))
             logging.info("Traceback: ", exc_info = True)
 
     # Use automatic retry link on par2 errors and encrypted/bad RARs
@@ -697,7 +697,7 @@ def cleanup_list(wdir, skip_nzb):
                         logging.info("Removing unwanted file %s", path)
                         os.remove(path)
                     except:
-                        logging.error(T('Removing %s failed'), path)
+                        logging.error(T('Removing %s failed'), clip_path(path))
                         logging.info("Traceback: ", exc_info = True)
         if files:
             try:
@@ -772,7 +772,7 @@ def remove_samples(path):
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(T('Removing %s failed'), path)
+                    logging.error(T('Removing %s failed'), clip_path(path))
                     logging.info("Traceback: ", exc_info = True)
 
 

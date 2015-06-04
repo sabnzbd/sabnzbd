@@ -28,7 +28,7 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, sanitize_foldername
+                         get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 
@@ -172,7 +172,7 @@ class Sorter(object):
             try:
                 renamer(old, workdir_complete)
             except:
-                logging.error(T('Cannot create directory %s'), workdir_complete)
+                logging.error(T('Cannot create directory %s'), clip_path(workdir_complete))
                 workdir_complete = old
                 ok = False
         return workdir_complete, ok
@@ -323,7 +323,7 @@ class SeriesSorter(object):
             return True
 
         except:
-            logging.error(T('Error getting TV info (%s)'), self.original_dirname)
+            logging.error(T('Error getting TV info (%s)'), clip_path(self.original_dirname))
             logging.info("Traceback: ", exc_info = True)
             return False
 
@@ -437,7 +437,7 @@ class SeriesSorter(object):
                 logging.debug("Rename: %s to %s", filepath, newpath)
                 renamer(filepath, newpath)
             except:
-                logging.error("Failed to rename: %s to %s", current_path, newpath)
+                logging.error("Failed to rename: %s to %s", clip_path(current_path), clip_path(newpath))
                 logging.info("Traceback: ", exc_info = True)
             rename_similar(current_path, self.ext, self.filename_set, ())
         else:
@@ -692,7 +692,7 @@ class GenericSorter(object):
                     logging.debug("Rename: %s to %s", filepath, newpath)
                     renamer(filepath, newpath)
                 except:
-                    logging.error(T('Failed to rename: %s to %s'), filepath, newpath)
+                    logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
                     logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, ())
 
@@ -716,7 +716,7 @@ class GenericSorter(object):
                         logging.debug("Rename: %s to %s", filepath, newpath)
                         renamer(filepath, newpath)
                     except:
-                        logging.error(T('Failed to rename: %s to %s'), filepath, newpath)
+                        logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
                         logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, renamed)
             else:
@@ -904,7 +904,7 @@ class DateSorter(object):
                                 logging.debug("Rename: %s to %s", filepath, newpath)
                                 renamer(filepath, newpath)
                             except:
-                                logging.error(T('Failed to rename: %s to %s'), current_path, newpath)
+                                logging.error(T('Failed to rename: %s to %s'), clip_path(current_path), clip_path(newpath))
                                 logging.info("Traceback: ", exc_info = True)
                             rename_similar(current_path, ext, self.filename_set, ())
                             break
@@ -1144,7 +1144,7 @@ def rename_similar(folder, skip_ext, name, skipped_files):
                     logging.debug("Rename: %s to %s", path, newpath)
                     renamer(path, newpath)
                 except:
-                    logging.error(T('Failed to rename similar file: %s to %s'), path, newpath)
+                    logging.error(T('Failed to rename similar file: %s to %s'), clip_path(path), clip_path(newpath))
                     logging.info("Traceback: ", exc_info=True)
     cleanup_empty_directories(folder)
 

@@ -36,7 +36,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-                         set_permissions, flag_file, long_path
+                         set_permissions, flag_file, long_path, clip_path
 from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -97,7 +97,7 @@ class Assembler(Thread):
                             if errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
                             else:
-                                logging.error(T('Disk error on creating file %s'), filepath)
+                                logging.error(T('Disk error on creating file %s'), clip_path(filepath))
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
