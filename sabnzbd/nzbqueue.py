@@ -603,9 +603,10 @@ class NzbQueue(TryList):
         return -1
 
     @synchronized(NZBQUEUE_LOCK)
-    def move_up_bulk(self, nzo_id, nzf_ids):
+    def move_up_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
+            for x in range(size):
+                self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
     @synchronized(NZBQUEUE_LOCK)
     def move_top_bulk(self, nzo_id, nzf_ids):
@@ -613,9 +614,10 @@ class NzbQueue(TryList):
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
 
     @synchronized(NZBQUEUE_LOCK)
-    def move_down_bulk(self, nzo_id, nzf_ids):
+    def move_down_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
+            for x in range(size):
+                self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
     @synchronized(NZBQUEUE_LOCK)
     def move_bottom_bulk(self, nzo_id, nzf_ids):

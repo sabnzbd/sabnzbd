@@ -641,18 +641,18 @@ class NzoPage(object):
                 if kwargs[key] == 'on':
                     NzbQueue.do.remove_nzf(nzo_id, key)
 
-        elif kwargs['action_key'] == 'Top' or kwargs['action_key'] == 'Up' or \
-             kwargs['action_key'] == 'Down' or kwargs['action_key'] == 'Bottom':
+        elif kwargs['action_key'] in ('Top', 'Up', 'Down', 'Bottom'):
             nzf_ids = []
             for key in kwargs:
                 if kwargs[key] == 'on':
                     nzf_ids.append(key)
+            size = int_conv(kwargs.get('action_size', 1))
             if kwargs['action_key'] == 'Top':
                 NzbQueue.do.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Up':
-                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids, size)
             elif kwargs['action_key'] == 'Down':
-                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids, size)
             elif kwargs['action_key'] == 'Bottom':
                 NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
 
