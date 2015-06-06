@@ -295,7 +295,7 @@ class NewsWrapper(object):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % (self.server.username)
-            self.nntp.sock.sendall(command)
+            self.nntp.sock.sendall(command.encode('ascii', 'ignore'))		# convert unicode format to plain ascii
             self.user_sent = True
         elif not self.user_ok:
             if code == '381':
@@ -309,7 +309,7 @@ class NewsWrapper(object):
 
         if self.user_ok and not self.pass_sent:
             command = 'authinfo pass %s\r\n' % (self.server.password)
-            self.nntp.sock.sendall(command)
+            self.nntp.sock.sendall(command.encode('ascii', 'ignore'))
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != '281':
@@ -331,12 +331,12 @@ class NewsWrapper(object):
             command = 'BODY <%s>\r\n' % (self.article.article)
         else:
             command = 'ARTICLE <%s>\r\n' % (self.article.article)
-        self.nntp.sock.sendall(command)
+        self.nntp.sock.sendall(command.encode('ascii', 'ignore'))
 
     def send_group(self, group):
         self.timeout = time.time() + self.server.timeout
         command = 'GROUP %s\r\n' % (group)
-        self.nntp.sock.sendall(command)
+        self.nntp.sock.sendall(command.encode('ascii', 'ignore'))
 
     def recv_chunk(self, block=False):
         """ Receive data, return #bytes, done, skip
