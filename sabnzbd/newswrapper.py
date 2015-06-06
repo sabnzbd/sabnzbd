@@ -57,6 +57,12 @@ import select
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
+def force_bytes(p):
+    """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
+    if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
+        return p.encode('cp1252', 'replace')
+    else:
+        return p
 
 #------------------------------------------------------------------------------
 # getaddrinfo() can be very slow. In some situations this can lead
@@ -294,7 +300,7 @@ class NewsWrapper(object):
         if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
-            command = 'authinfo user %s\r\n' % (self.server.username)
+            command = 'authinfo user %s\r\n' % force_bytes(self.server.username)
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
@@ -308,7 +314,7 @@ class NewsWrapper(object):
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = 'authinfo pass %s\r\n' % (self.server.password)
+            command = 'authinfo pass %s\r\n' % force_bytes(self.server.password)
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
