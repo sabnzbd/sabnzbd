@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-04-25 09:51+0000\n"
-"PO-Revision-Date: 2015-04-22 20:03+0000\n"
-"Last-Translator: Jean Marc <Unknown>\n"
+"PO-Revision-Date: 2015-06-06 09:36+0000\n"
+"Last-Translator: Jean-Marc <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-26 05:45+0000\n"
-"X-Generator: Launchpad (build 17430)\n"
+"X-Launchpad-Export-Date: 2015-06-06 09:40+0000\n"
+"X-Generator: Launchpad (build 17540)\n"
 
 #: SABnzbd.py:328 [Error message]
 msgid "Failed to start web-interface"
@@ -109,7 +109,7 @@ msgstr "Chargement %s echoué"
 
 #: sabnzbd/__init__.py:944 [Error message]
 msgid "Loading %s failed with error %s"
-msgstr ""
+msgstr "Chargement de %s échoué avec l'erreur %s"
 
 #: sabnzbd/api.py:681 # sabnzbd/api.py:687 # sabnzbd/api.py:693 # sabnzbd/api.py:699
 #: sabnzbd/skintext.py:617
@@ -363,11 +363,11 @@ msgstr "Échec de l'authentification au serveur de mail"
 
 #: sabnzbd/emailer.py:124
 msgid "No suitable authentication method was found"
-msgstr ""
+msgstr "Aucune méthode d'authentification approprié n'a été trouvé"
 
 #: sabnzbd/emailer.py:126
 msgid "Unknown authentication failure in mail server"
-msgstr ""
+msgstr "Échec d'authentification inconnu dans le serveur de messagerie"
 
 #: sabnzbd/emailer.py:140
 msgid "Failed to send e-mail"
@@ -1065,7 +1065,7 @@ msgstr "Analyser le dossier des Nzbs"
 
 #: sabnzbd/osxmenu.py:245 # sabnzbd/sabtray.py:91 # sabnzbd/sabtraylinux.py:107
 msgid "Read all RSS feeds"
-msgstr ""
+msgstr "Lire tous les flux RSS"
 
 #: sabnzbd/osxmenu.py:258 # sabnzbd/osxmenu.py:609
 msgid "Complete Folder"
@@ -2091,7 +2091,7 @@ msgstr "Vider les NZB & Supprimer les fichiers"
 
 #: sabnzbd/skintext.py:224 [Retry all failed jobs dialog box]
 msgid "Retry all failed jobs"
-msgstr ""
+msgstr "Réessayez toutes les tâches échouées"
 
 #: sabnzbd/skintext.py:225 [Queue page button]
 msgid "Remove NZB"
@@ -2815,11 +2815,11 @@ msgstr "Décompresser archives (rar, zip, 7z) à l'intérieur des archives."
 
 #: sabnzbd/skintext.py:406
 msgid "Ignore any folders inside archives"
-msgstr ""
+msgstr "Ignorer tous les dossiers à l'intérieur des archives"
 
 #: sabnzbd/skintext.py:407
 msgid "All files will go into a single folder."
-msgstr ""
+msgstr "Tous les fichiers iront dans un seul dossier."
 
 #: sabnzbd/skintext.py:408
 msgid "Enable Filejoin"
@@ -3104,11 +3104,12 @@ msgstr ""
 
 #: sabnzbd/skintext.py:474
 msgid "Make Windows compatible"
-msgstr ""
+msgstr "Rendre Windows compatible"
 
 #: sabnzbd/skintext.py:475
 msgid "For servers: make sure names are compatible with Windows."
 msgstr ""
+"Pour les serveurs: assurez-vous que les noms soient compatibles avec Windows."
 
 #: sabnzbd/skintext.py:476
 msgid "Launch Browser on Startup"
