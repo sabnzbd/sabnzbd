@@ -79,12 +79,12 @@ Optional modules
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
 
 Optional modules Windows
-    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.15       http://pypi.python.org/pypi/pyOpenSSL
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
-    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
-    openssl => v0.9.8g+     http://www.openssl.org/
+    pyopenssl >= 0.15       http://pypi.python.org/pypi/pyOpenSSL
+    openssl => ?            http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.

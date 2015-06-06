@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.8.0Alpha1
+Release Notes  -  SABnzbd 0.8.0Alpha2
 =====================================
+
+## Changes since Alpha2
+- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
+- Work-arounds to avoid bugs in PyOpenSSL 0.14
+- Support RAR's REV files to some extent
+- Diagnostic dashboard tab for "Status" page
+
 
 ## What's new in 0.8.0
 
