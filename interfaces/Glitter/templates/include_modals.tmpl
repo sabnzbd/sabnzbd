@@ -1,0 +1,348 @@
+<div id="modal_options" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <a href="#" data-bind="click: loadStatusInfo" title="Refresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                <h4 class="modal-title">Status and interface options</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" onsubmit="return false;">
+                    <fieldset>
+                        <legend>Interface options</legend>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">Interface refresh rate</label>
+                            <div class="col-sm-4">
+                                <select id="refreshRate-option" class="form-control"  data-bind="value: refreshRate" >
+                                    <option value="1">1 sec</option>
+                                    <option value="2">2 sec</option>
+                                    <option value="4">4 sec</option>
+                                    <option value="8">8 sec</option>
+                                    <option value="16">16 sec</option>
+                                    <option value="30">30 sec</option>
+                                    <option value="60">1 min</option>
+                                    <option value="120">2 min</option>
+                                    <option value="900">15 min</option>
+                                    <option value="1800">30 min</option>
+                                    <option value="100000000000">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">Queue items</label>
+                            <div class="col-sm-4">
+                                <select name="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
+                                    <option value="5">5 / page</option>
+                                    <option value="10">10 / page</option>
+                                    <option value="20">20 / page</option>
+                                    <option value="30">30 / page</option>
+                                    <option value="40">40 / page</option>
+                                    <option value="50">50 / page</option>
+                                    <option value="9999999">Everything</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">History items</label>
+                            <div class="col-sm-4">
+                                <select name="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
+                                    <option value="5">5 / page</option>
+                                    <option value="10">10 / page</option>
+                                    <option value="20">20 / page</option>
+                                    <option value="30">30 / page</option>
+                                    <option value="40">40 / page</option>
+                                    <option value="50">50 / page</option>
+                                    <option value="9999999">Everything</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <!-- ko if: !hasStatusInfo() -->
+                    <strong>Loading...</strong>
+                    <!-- /ko -->
+                    
+                    <!-- ko if: hasStatusInfo -->
+                    <fieldset>
+                        <legend>
+                           
+                            Status
+                        </legend>
+
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <strong>Local IPv4 address</strong><br />
+                                <strong>Public IPv4 address</strong><br />
+                                <strong>IPv6 address</strong><br />
+                                <strong>Nameserver / DNS Lookup</strong><br />
+                                <strong>Cache</strong><br />
+                            </div>
+                            <div class="col-xs-7">
+                                <span data-bind="text: statusInfo.dashboard.localipv4"></span><br />
+                                <span data-bind="text: statusInfo.dashboard.publicipv4"></span><br />
+                                <span data-bind="text: statusInfo.dashboard.ipv6"></span><br />
+                                <span data-bind="text: statusInfo.dashboard.dnslookup"></span><br />
+                                <span data-bind="text: statusInfo.status.cache.cache_size"></span>  (<span data-bind="text: statusInfo.status.cache.cache_current"></span> articles)
+                            </div>
+                        </div>
+                        
+                        <div class="options-function-box">
+                            <a href="#" data-bind="click: forceDisconnect" class="btn btn-default">Force disconnect</a>
+                            <a href="#" data-bind="click: repairQueue" class="btn btn-default">Repair Queue</a>
+                            <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">Show logging</a>
+                        </div>
+
+                    </fieldset>
+                    
+                    <fieldset>
+                        <legend>
+                            <label for="options-show-connections">
+                                <input id="options-show-connections" onclick="\$(this).parents('fieldset').find('table').toggle()" type="checkbox" name="showConnections" /> Show active connections
+                            </label>
+                            Connections
+                        </legend>
+                        
+                        <div data-bind="foreach: statusInfo.status.servers">
+                            <div class="options-server-box">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <strong>Server</strong><br />
+                                        <strong>Status</strong><br />
+                                        <strong>Priority</strong><br />
+                                        <strong># Connections</strong><br />
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">Unblock server</a>
+                                        <span data-bind="text: servername"></span><br />
+                                        <span data-bind="text: serverstatus"></span><br />
+                                        <span data-bind="text: serverpriority"></span><br />
+                                        <span data-bind="text: serveractiveconn"></span><br />
+                                    </div>
+                                </div>
+                                <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
+        
+                                
+                                <!-- ko if: serverconnections().length > 0 -->
+                                <table class="table table-hover table-server-connections" data-bind="visible: \$('#options-show-connections').prop('checked')">
+                                    <thead>
+                                        <tr>
+                                            <th><strong>Article identifier</strong></th>
+                                            <th><strong>Filename</strong></th>
+                                            <th><strong>Fileset</strong></th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody>
+                                        
+                                        <!-- ko foreach: serverconnections -->
+                                        <tr>
+                                            <td class="row-wrap-text"><span data-bind="text: articleid, attr: { title: articleid }"></span></td>
+                                            <td class="row-wrap-text"><span data-bind="text: filename, attr: { title: filename }"></span></td>
+                                            <td class="row-wrap-text"><span data-bind="text: fileset, attr: { title: fileset }"></span></td>
+                                        </tr>
+                                        <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    
+                    <fieldset data-bind="visible: (statusInfo.status.folders().length > 0)">
+                        <legend>Orphaned jobs</legend>
+                        <table class="table table-hover"> 
+                            <thead>
+                                <th style="width: 30px;"></th>
+                                <th></th>
+                                <th style="width: 30px;"></th>
+                                <th style="width: 30px;"></th>
+                            </thead>
+                            <tbody data-bind="foreach: statusInfo.status.folders">
+                                <tr>
+                                    <td><span class="glyphicon glyphicon-folder-open"></span></td>
+                                    <td class="row-wrap-text"><strong data-bind="text: folder"></strong></td>
+                                    <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="add" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="Send back to queue"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                    <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="delete" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="Delete job and files"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
+                    <!-- /ko -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_add_nzb" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add NZB</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form data-bind="submit: addNZBFromURL" class="col-md-6">
+                        <fieldset>
+                            <legend>Add by URL</legend>
+                            <div class="input-group" data-toggle="tooltip" data-placement="bottom" title="Formats: .nzb, .rar, .zip, .gz">
+                                <input type="text" name="nzbURL" class="form-control" placeholder="URL to NZB" />
+                                <span class="input-group-btn">
+                                    <input type="submit" name="Add"  value="Add" class="btn btn-default" />
+                                </span>
+                            </div>
+                        </fieldset>
+                    </form>
+                    <form data-bind="submit: addNZBFromFileForm" class="col-md-6">
+                        <fieldset style="float: right;">
+                            <legend>Add by file upload</legend>
+                            <div class="input-group" data-toggle="tooltip" data-placement="bottom" title="Formats: .nzb, .rar, .zip, .gz">
+                                <input type="file" name="nzbFile" class="form-control" id="file" />
+                                <span class="input-group-btn">
+                                     <input type="submit" name="Add"  value="Add" class="btn btn-default" />
+                                </span>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="clearfix"></div>
+                <hr />
+                <div class="add-nzb-inputbox" title="Category">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: 'Default'"></select>
+                </div>
+                <div class="add-nzb-inputbox" title="Priority">
+                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                    <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: 'Default'"></select>
+                </div>
+                <div class="add-nzb-inputbox" title="Processing">
+                    <span class="glyphicon glyphicon-check"></span>
+                    <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: 'Default'"></select>
+                </div>
+                <div class="add-nzb-inputbox" title="Post-processing">
+                    <span class="glyphicon glyphicon-flash"></span>
+                    <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: 'Default'"></select>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div id="modal_help" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <img src="./static/images/logo.png" width="120" height="45" alt=""/>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tbody>
+                        <tr><td><strong>Wiki:</strong></td><td><a href="http://wiki.sabnzbd.org/" target="_blank">http://wiki.sabnzbd.org/</a></td></tr>
+                        <tr><td><strong>Forum:</strong></td><td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td></tr>
+                        <tr><td><strong>IRC:</strong></td><td><a href="http://www.sabnzbd.org/live-chat/" target="_blank">http://www.sabnzbd.org/live-chat/</a></td></tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>SABnzbd Version:</strong> $version</p>
+                <p><small>Copyright (C) 2008-2014, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
+                <p><small>
+                SABnzbd comes with ABSOLUTELY NO WARRANTY.
+                This is free software, and you are welcome to redistribute it under certain conditions.
+                It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
+                </small></p>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div id="modal_purge_history" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Clear history</h4>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-danger" id="history_purge_failed"><span class="glyphicon glyphicon-floppy-remove"></span> Purge failed NZBs</button>
+                <button type="button" class="btn btn-danger" id="history_purgeremove_failed"><span class="glyphicon glyphicon-floppy-remove"></span> Purge failed NZBs and delete files</button>
+                <button type="button" class="btn btn-danger" id="history_purge_completed"><span class="glyphicon glyphicon-floppy-saved"></span> Purge completed NZBs</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div id="modal_item_files" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title row-wrap-text" data-bind="text: filelist.modalTitle">Loading..</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modal_item_filelist">
+                
+                    <form data-bind="submit: filelist.setNzbPassword" class="form-inline" role="form">
+                    <div class="multioperations-selector">
+                            <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" />
+                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="right" title="Remove all selected files">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hoverbutton" data-toggle="tooltip" data-placement="right" title="Hide/show completed files">
+                                <span class="glyphicon glyphicon-eye-close"></span> 100%
+                            </a>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-lock"></span> 
+                                    <span class="glyphicon glyphicon-floppy-saved"></span>
+                                </span>                   
+                                <input type="text" class="form-control" id="nzb_password" placeholder="Password for unpacking" data-bind="value: filelist.modalPassword" />
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </div>
+                        </div>
+
+                        <table class="table item-files-table">
+                            <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { containment: '#modal_item_filelist', items: '.files-sortable' } }">
+                                <tr data-bind="css: { 'files-sortable' : canChange() }">
+                                    <td class="row-wrap-text">  
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-info" role="progressbar" data-bind="attr: { 'style': 'width: '+percentage() }">
+                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canChange()  }" />
+                                                <strong data-bind="text: percentage"></strong>
+                                                <span data-bind="html: filenameAndAge"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="multioperations-selector">
+                            <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" />
+                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="right" title="Remove all selected files">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </div>
+                        
+                        <div class="clearfix"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div id="history_script_log" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Script log</h4>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div> 
