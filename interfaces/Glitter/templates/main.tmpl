@@ -23,6 +23,8 @@
         
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css" media="all and (max-width: 768px)" />
+
         <link rel="shortcut icon" type="image/ico" href="./static/images/sabnzbdplus.ico" data-bind="attr: { 'href':SABIcon }" />
         
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -45,7 +47,8 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<img src="./static/images/logo.png" width="120" height="45" alt=""/>
+					<img src="./static/images/logo.png" width="120" height="45" alt="" id="navbar-logo-big"/>
+                    <img src="./static/images/logo-small.png" width="45" height="45" alt="" id="navbar-logo-small"/>
                     
 					<div class="btn-group">
 						<div class="btn-group">
@@ -54,6 +57,7 @@
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu" role="menu">
+                                <li><a href="#" data-time="5" data-bind="click: pauseTime">Pause 5 minutes</a></li>
 								<li><a href="#" data-time="10" data-bind="click: pauseTime">Pause 10 minutes</a></li>
 								<li><a href="#" data-time="30" data-bind="click: pauseTime">Pause 30 minutes</a></li>
 								<li><a href="#" data-time="60" data-bind="click: pauseTime">Pause 1 hour</a></li>
@@ -62,7 +66,7 @@
 								<li><a href="#" data-time="360" data-bind="click: pauseTime">Pause 6 hours</a></li>
 							</ul>
 						</div>
-						<span class="btn btn-default navbar-btn  navbar-timeleft" data-bind="text: timeLeft">0:00:00</span>
+						<span class="btn btn-default navbar-btn  navbar-timeleft" data-bind="text: timeLeft">0:00</span>
 					</div>
                     
 				</div>
@@ -74,9 +78,7 @@
 							<div class="btn-group">
         						<div class="btn-group">
                                     <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
-                                        <!-- ko if: (speedLimit() != 100)  -->
-                                        <span class="glyphicon glyphicon-link" data-bind="click: clearSpeedLimit" ></span>
-                                        <!-- /ko -->
+                                        <span class="glyphicon glyphicon-link" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;"></span>
                                         <span data-bind="text: speedText">0 KB/s</span>
                                     </button>
         							<button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
@@ -130,20 +132,17 @@
 		</div>
 
 		<div class="container main-content">
-            
-            
 			<div class="queue">
                 <h2>Queue</h2>
                 
-                <div class="info-container">
-            
+                <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
                     <!-- ko if: (queueDataLeft() != '')  -->
                     <span class="glyphicon glyphicon-save info-textspacer"></span> 
                     <span data-bind="text: queueDataLeft"></span> MB left
                     <!-- /ko -->
                 
                     <!-- ko if: (quotaLimit() != 0)  -->
-                    <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }">
+                    <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }" class="info-container-break">
                         <span class="glyphicon glyphicon-signal info-textspacer"></span> 
                         <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B quota
                     </span>
@@ -170,7 +169,7 @@
 						<tr>
 							<th style="width: 25px;"></th>
 							<th></th>
-							<th style="width: 40%;"></th>
+							<th class="table-header-progress"></th>
 							<th style="width: 80px;"></th>
 							<th style="width: 60px;"></th>
 						</tr>
@@ -248,12 +247,6 @@
 					</tbody>
 				</table>
                 
-                <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
-                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
-                        <span data-bind="text: page"></span>
-                    </li>
-                </ul>  
-                
                 <div class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox">
                         <span class="glyphicon glyphicon-tag"></span>
@@ -276,27 +269,36 @@
                     </div>
                     <div class="clearfix"></div>
     			</div>
+                
+                <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
+                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
+                        <span data-bind="text: page"></span>
+                    </li>
+                </ul>  
+                
+                
             </div>
 
             <div class="queue-warnings" data-bind="visible: (nrWarnings() > 0)" style="display: none;">
                 <table class="table table-hover table-warnings"> 
                     <thead>
-                        <th style="width: 100px;"></th>
-                        <th style="width: 110px;"></th>
+                        <th class="table-warnings-header-label"></th>
                         <th></th>
                         <th style="width: 30px;"></th>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="3" class="table-warnings-hide"></td>
-                            <td data-bind="attr: { 'rowspan': nrWarnings()+1 }" class="table-warnings-remove">
-                                <a href="#" class="hoverbutton" data-bind="click: clearWarnings"><span class="glyphicon glyphicon-trash"></span></a>
+                            <td colspan="2" class="table-warnings-hide"></td>
+                            <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-warnings-remove">
+                                <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
                         </tr>
                         <!-- ko foreach: allWarnings -->
                         <tr>
-                            <td><span class="label" data-bind="css: 'label-' + css, text: type"></span></td>
-                            <td><strong data-bind="text: date"></strong></td>
+                            <td>
+                                <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                                <strong data-bind="text: date"></strong>                                
+                            </td>
                             <td><span class="queue-warning-text" data-bind="text: text"></span></td>
                         </tr>
                         <!-- /ko -->
@@ -312,14 +314,14 @@
 							<th style="width: 25px;"></th>
                             <th></th>
 							<th class="status-header"></th>
-                            <th style="width: 90px;"></th>
+                            <th style="width: 108px;"></th>
 							<th style="width: 60px;"></th>
                             
 						</tr>
 					</thead>
                     
 					<tbody data-bind="foreach: history.historyItems">
-						<tr class="historyitem">
+						<tr class="historyitem" data-bind="css: {'history-failed-download':failed()}">
 							<td>
 								<div data-bind="visible: failed()">
 									<a class="retrybutton" href="#" data-bind="click: retry">
@@ -335,6 +337,7 @@
 							</td>
 							<td class="name">
                                 <div class="row-wrap-text">
+                                    <a class="retrybuttontext" href="#" data-bind="visible: failed(), click: retry">Retry</a>
                                     <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
                                     <a href="#" class="name-ratings hoverbutton" data-bind="visible: historyStatus.rating_avg_video">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: historyStatus.rating_avg_video"></span>
@@ -438,8 +441,8 @@
         <div class="main-filedrop modal-backdrop fade in">
             <span class="glyphicon glyphicon-plus-sign"></span>
         </div>
-        <div class="main-restarting modal-backdrop fade in" data-bind="visible: isRestarting" style="display: none;">
-            <span class="glyphicon glyphicon-retweet"></span> SABnzbd is unavailable..<br />
+        <div class="main-restarting modal-backdrop fade in"  data-bind="visible: isRestarting" style="display: none;">
+            <strong><span class="glyphicon glyphicon-retweet"></span> Lost connnection to SABnzbd..</strong><br />
             <small>In case of SABnzbd restart this screen will diseappear automatically!</small>
         </div>
         
@@ -455,7 +458,7 @@
             <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.cookie.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery.ui.touch-punch.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.ui.touch.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.sparkline.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.dateFormat.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-3.3.0.js"#-->

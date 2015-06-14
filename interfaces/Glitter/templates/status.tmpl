@@ -47,7 +47,13 @@
         "localipv4": "$localipv4",
         "publicipv4": "$publicipv4",
         "ipv6": "$ipv6",
-        "dnslookup": "$dnslookup"
+        "dnslookup": "$dnslookup", 
+        <!--#set $downloaddir = $downloaddir.replace('\\','\\\\')#-->
+        "downloaddir": "$downloaddir",
+        "downloaddirspeed": "$downloaddirspeed", 
+        <!--#set $completedir = $completedir.replace('\\','\\\\')#-->
+        "completedir": "$completedir",
+        "completedirspeed": "$completedirspeed"
     }
 }
 

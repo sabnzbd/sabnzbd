@@ -5,7 +5,7 @@ jQuery
 jQuery UI
 jQuery Cookie Plugin v1.4.1
 jquery dateFormat
-jQuery UI Touch Punch
+jQuery UI TouchPlugin
 Knockout JavaScript library
 Knockout sortable
 Knockout filedrop

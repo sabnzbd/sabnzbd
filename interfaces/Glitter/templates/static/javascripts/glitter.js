@@ -29,8 +29,6 @@ if (!Array.prototype.indexOf) {
 **/
 $(function() {
     // Set base variables
-    var numPerPageQueue = $.cookie('queuePaginationLimit') ? $.cookie('queuePaginationLimit')  : 20;
-    var numPerPageHistory = $.cookie('historyPaginationLimit') ? $.cookie('historyPaginationLimit')  : 5;
     var fadeOnDeleteDuration = 400; // ms after deleting a row
 	var sparkline_config = {
 		width:'150px',
@@ -85,16 +83,17 @@ $(function() {
         
         self.isRestarting      = ko.observable(false);
         self.refreshRate       = ko.observable($.cookie('pageRefreshRate') ? $.cookie('pageRefreshRate')  : 1)
+        self.dateFormat        = ko.observable($.cookie('pageDateFormat') ? $.cookie('pageDateFormat')  : 'dd-MM-yy')
         self.title             = ko.observable()
         self.hasStatusInfo     = ko.observable(false); // True when we load it
 		self.speed             = ko.observable(0);
 		self.speedMetric       = ko.observable();
         self.bandwithLimit     = ko.observable(false);
-		self.speedLimit        = ko.observable(false).extend( { rateLimit: 200 } );
+		self.speedLimit        = ko.observable(100).extend( { rateLimit: 200 } );
         self.speedLimitInt     = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused   = ko.observable(false);
 		self.mainPauseStatus   = ko.observable();
-		self.timeLeft          = ko.observable("0:00:00");
+		self.timeLeft          = ko.observable("0:00");
         self.diskSpaceLeft1    = ko.observable();
         self.diskSpaceLeft2    = ko.observable();
         self.queueDataLeft     = ko.observable();
@@ -218,7 +217,7 @@ $(function() {
 				                    index: index,
 				                    type: warningSplit[1],
                                     text: warningSplit.slice(2).join(' '), // Recombine if multiple lines
-                                    date: $.format.date(warningSplit[0], 'dd/MM/yy HH:mm'), 
+                                    date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'), 
 				                    css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"), 
                                     clear: self.clearWarnings
                                   };
@@ -249,23 +248,19 @@ $(function() {
 				self.speedHistory.shift();
 			self.speedHistory.push( parseFloat( response.queue.kbpersec ) );
 
-            // Anything to report?
-            $('.sparkline').sparkline(self.speedHistory, sparkline_config);
+            // Is sparkline visible? Not on small mobile devices..
+            if($('.sparkline').css('display') != 'none') {
+                $('.sparkline').sparkline(self.speedHistory, sparkline_config);
+            }
+            
                 
             /***
                 Speedlimit
             ***/
             // Nothing = 100%
             response.queue.speedlimit = response.queue.speedlimit=='' ? 100 : response.queue.speedlimit;
-            
-            // First load
-            if(!self.speedLimitInt()) {
-                // Set speedlimit from the 1st response
-                self.speedLimitInt(response.queue.speedlimit)
-                self.speedLimit(response.queue.speedlimit)
-            } else {
-                self.speedLimitInt(response.queue.speedlimit)
-            }
+            self.speedLimitInt(response.queue.speedlimit)
+            self.speedLimit(response.queue.speedlimit)
 
             /***
                 Download timing and pausing
@@ -393,6 +388,11 @@ $(function() {
             $.cookie('pageRefreshRate', parseInt(newValue), { expires: 365 });
         })
         
+        // Update dateformat
+        self.dateFormat.subscribe( function( newValue ) {
+            $.cookie('pageDateFormat', newValue, { expires: 365 });
+        })
+        
         /***
              Add NZB's
         ***/
@@ -458,6 +458,13 @@ $(function() {
                     $('#modal_options [data-toggle="tooltip"]').tooltip()
                 });
             
+        }
+        
+        // Do a disk-speedtest
+        self.testDiskSpeed = function() {
+            callSpecialAPI('status/dashrefresh', {}).then(function() {
+                self.loadStatusInfo()
+            })
         }
         
         // Unblock server
@@ -540,13 +547,13 @@ $(function() {
     		{ value: 3, name: "+Delete" }]);
         
         // External var's
-        self.queueItems      = ko.observableArray([]).extend({rateLimit: 50});
+        self.queueItems      = ko.observableArray([]);
         self.totalItems      = ko.observable(0);
         self.isMultiEditing  = ko.observable(false);
         self.categoriesList  = ko.observableArray( [] );
         self.scriptsList     = ko.observableArray( [] );
         self.dragging        = false;
-        self.paginationLimit = ko.observable(numPerPageQueue)
+        self.paginationLimit = ko.observable($.cookie('queuePaginationLimit') ? $.cookie('queuePaginationLimit')  : 20)
         self.pagination      = new paginationModel(self);
 
         // Don't update while dragging
@@ -603,8 +610,7 @@ $(function() {
         
         // Save pagination state
         self.paginationLimit.subscribe( function( newValue ) {
-			numPerPageQueuem = newValue;
-            $.cookie('queuePaginationLimit', numPerPageQueuem, { expires: 365 });
+            $.cookie('queuePaginationLimit', newValue, { expires: 365 });
             self.parent.refresh();
 		} );
         
@@ -683,9 +689,14 @@ $(function() {
         
         // On change of page we need to check all those that were in the list!
         self.queueItems.subscribe(function() {
-            $.each(multiEditItems, function(index) {
-                $('#multiedit_' + this.id).prop('checked', true);
-            })   
+            // We need to wait until the unit is actually finished rendering
+            setTimeout(function() {
+                $.each(multiEditItems, function(index) {
+                    $('#multiedit_' + this.id).prop('checked', true);
+                }) 
+            },100)
+              
+            
         }, null, "arrayChange")
 	}
 
@@ -818,6 +829,7 @@ $(function() {
         // See items
         self.showFiles = function() {
             // Trigger update
+            
             parent.parent.filelist.loadFiles(self)
             
             
@@ -861,7 +873,7 @@ $(function() {
         // Variables
 		self.historyItems    = ko.observableArray( [] );
         self.hasScriptLines  = ko.observable(false);
-        self.paginationLimit = ko.observable(numPerPageHistory);
+        self.paginationLimit = ko.observable($.cookie('historyPaginationLimit') ? $.cookie('historyPaginationLimit')  : 5);
         self.totalItems      = ko.observable(0);
         self.pagination      = new paginationModel(self);
       
@@ -911,11 +923,31 @@ $(function() {
         
         // Save pagination state
         self.paginationLimit.subscribe( function( newValue ) {
-			numPerPageHistory = newValue;
-            $.cookie('historyPaginationLimit', numPerPageHistory, { expires: 365 });
+            $.cookie('historyPaginationLimit', newValue, { expires: 365 });
             self.parent.refresh();
 		} );
 
+        // Retry a job
+        self.retryJob = function(form) {
+            // Adding a extra retry file happens through this special function
+            var data = new FormData();
+    		data.append("nzbfile",    $(form.nzbFile)[0].files[0]);
+    		data.append("job",        $('#modal_retry_job input[name="retry_job_id"]').val());
+    		data.append("password",   $('#retry_job_password').val());  
+            data.append("session",    apiKey);
+            // Add 
+            $.ajax({    url: "history/retry_pp", 
+                        type: "POST", 
+                        cache: false, 
+                        processData: false, 
+                        contentType: false, 
+                        data: data }).then(function(r) { self.parent.refresh() });
+                        
+            // Hide and reset
+            $("#modal_retry_job").modal("hide");
+            form.reset()
+            
+        }
         
         // Empty history options
         self.emptyHistory = function() {
@@ -959,6 +991,7 @@ $(function() {
         // The Status/Actionline/scriptline/completed we do update every time
         // When clicked on the more-info button we load the rest again
         self.historyStatus = ko.mapping.fromJS(data);   
+        self.nzo_id = '';
         self.updateAllHistory = false;
         self.status = ko.observable();
         self.action_line = ko.observable();
@@ -968,12 +1001,13 @@ $(function() {
 
 		self.updateFromData = function( data ) {       
             // Fill all the basic info
+            self.nzo_id = data.nzo_id;
             self.status(data.status)
             self.action_line(data.action_line)
             self.script_line(data.script_line)
             self.fail_message(data.fail_message)
             self.completed(data.completed) 
-            
+
             // Update all ONCE?
             if(self.updateAllHistory) {
                 ko.mapping.fromJS(data, {}, self.historyStatus);  
@@ -1021,12 +1055,16 @@ $(function() {
         
         // Format completion time
         self.completedOn = ko.computed(function() {
-            return $.format.date(parseInt(self.completed())*1000, 'dd/MM/yy HH:mm')
+            return $.format.date(parseInt(self.completed())*1000, parent.parent.dateFormat() + ' HH:mm')
         });
 
         // Re-try button
 		self.retry = function() {
-			callAPI( {mode:'retry', value:self.historyStatus.nzo_id()} ).then(self.parent.parent.refresh);
+            // Set JOB-id
+            $('#modal_retry_job input[name="retry_job_id"]').val(self.nzo_id)
+            // Open modal
+            $('#modal_retry_job').modal("show")
+			//callAPI( {mode:'retry', value:self.historyStatus.nzo_id()} ).then(self.parent.parent.refresh);
 		};
         
         // Update information only on click
@@ -1073,7 +1111,7 @@ $(function() {
     function Fileslisting( parent ) {
 		var self = this;
 		self.parent = parent;
-        self.fileItems = ko.observableArray([]).extend({ rateLimit: 50 });
+        self.fileItems = ko.observableArray([]);
         self.modalNZBId = ko.observable();
         self.modalTitle = ko.observable();
         self.modalPassword = ko.observable();
@@ -1088,10 +1126,17 @@ $(function() {
             // Get pasword self.currentItem title
             passwordSplit = self.currentItem.name().split(" / ")
             
+            // Has SAB already detected its encrypted? Then there will be 3x /
+            passwordSplitExtra = 0;
+            if(passwordSplit.length == 3 || passwordSplit[0] == 'ENCRYPTED') { 
+                passwordSplitExtra = 1;
+            }
+            
+            
             // Set files & title
             self.modalNZBId(self.currentItem.id)
-            self.modalTitle(passwordSplit[0])
-            self.modalPassword(passwordSplit[1])
+            self.modalTitle(passwordSplit[0+passwordSplitExtra])
+            self.modalPassword(passwordSplit[1+passwordSplitExtra])
             
             // Hide ok button and reset
             $('#modal_item_filelist .glyphicon-floppy-saved').hide()
@@ -1107,6 +1152,7 @@ $(function() {
 
         // Trigger update
         self.triggerUpdate = function() {
+            
             callAPI( { mode: 'get_files', value: self.currentItem.id, limit: 5 } ).then(function(response) {
                 // When there's no files left we close the modal and the update will be stopped
                 // For example when the job has finished downloading
@@ -1138,11 +1184,18 @@ $(function() {
                 }
                 
                 // Refresh with same as rest
-                self.updateTimeout = setTimeout(function() {
-                    self.triggerUpdate()
-                }, parent.refreshRate()*1000)
+                self.setUpdate()
             })
         }
+        
+        // Set update         
+        self.setUpdate = function () {
+            self.updateTimeout = setTimeout(function() {
+                self.triggerUpdate()
+            }, parent.refreshRate()*1000)
+                    
+                    
+        }                
         
         // Remove the update
         self.removeUpdate = function() {
@@ -1156,21 +1209,19 @@ $(function() {
             var nrMoves = e.sourceIndex - e.targetIndex;
             var direction = (nrMoves > 0 ? 'Up' : 'Down')
             
-            // Do it as much as need (UNTIL WE HAVE A GOOD API!)
-            for(i = 1; i <= Math.abs(nrMoves); i++) {
-                // We have to create the data-structure before, to be able to use the name as a key
-                var dataToSend = {};
-                dataToSend[e.item.nzf_id()] = 'on';
-                dataToSend['session'] = apiKey;
-                dataToSend['action_key'] = direction;
-                // Activate with this weird URL "API"
-                $.ajax({
-        			url: "nzb/" + self.currentItem.id + "/bulk_operation", 
-        			type: "POST", 
-        			cache: false, 
-        			data: dataToSend
-        		})
-            }
+            // We have to create the data-structure before, to be able to use the name as a key
+            var dataToSend = {};
+            dataToSend[e.item.nzf_id()] = 'on';
+            dataToSend['session'] = apiKey;
+            dataToSend['action_key'] = direction;
+            dataToSend['action_size'] = Math.abs(nrMoves);
+            // Activate with this weird URL "API"
+            $.ajax({
+    			url: "nzb/" + self.currentItem.id + "/bulk_operation", 
+    			type: "POST", 
+    			cache: false, 
+    			data: dataToSend
+    		})
 		};
         
         // Remove selected files

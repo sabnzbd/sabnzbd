@@ -1,3 +1,14 @@
+ko.bindingHandlers.truncatedText = {
+    update: function (element, valueAccessor, allBindingsAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor()),
+        length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
+        truncatedValue = value.length > length ? value.substring(0, Math.min(value.length, length)) + " ..." : value;
+
+        ko.bindingHandlers.text.update(element, function () { return truncatedValue; });
+    },
+    defaultLength: 15
+};
+
 ko.bindingHandlers.filedrop = {
   init: function (element, valueAccessor) {
     var options = $.extend({}, { overlaySelector: null }, valueAccessor());

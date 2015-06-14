@@ -37,7 +37,8 @@ nav.main-navbar .sparkline {
     float: right;
 }
 
-.navbar-collapse.in>ul>li>a {
+.navbar-collapse.in>ul>li>a,
+.navbar-collapse.collapsing>ul>li>a {
     margin-top: 7px;
 }
 
@@ -59,7 +60,6 @@ nav.main-navbar .sparkline {
     color:  white !important;
 }
 
-
 .navbar-timeleft {
     font-weight:bold;
     min-width: 100px;
@@ -69,6 +69,14 @@ nav.main-navbar .sparkline {
 
 .navbar-header img {
     margin-right:1em;
+}
+
+#navbar-logo-big {
+    display: inline-block;
+}
+
+#navbar-logo-small {
+    display: none;
 }
 
 li.dropdown {
@@ -187,14 +195,18 @@ li.dropdown {
 .main-restarting.in { 
     display: none; 
     text-align: center; 
-    font-size: 20em; 
-    padding-top: 15%; 
     opacity: 0.9;
     color:  black;
     z-index: 2000;
+    padding: 1em;
+    padding-top: 15%; 
 }
 
-.main-restarting.in {
+.main-filedrop.in span {
+    font-size: 20em;
+}
+
+.main-restarting.in strong {
     font-size: 5em;
     display: block;
 }
@@ -300,6 +312,10 @@ tbody>tr>td:last-child {
     cursor: move;
 }
 
+.queue-table .table-header-progress {
+    width: 40%;
+}
+
 td.name .row-wrap-text {
     max-width:100%;
     display:block; 
@@ -310,9 +326,6 @@ td.name .row-wrap-text {
 
 .queue-table td.name .name-options {
     display: none;
-}
-
-.queue-table td.name .name-options a {
 }
 
 .queue-table td.name:hover .row-wrap-text {
@@ -466,9 +479,6 @@ td.delete label {
     background-color: #9DDB72;
 }
 
-.queue-warnings {
-    clear: both;
-}
 
 .multioperations-selector {
     padding-left: 10px;
@@ -487,6 +497,18 @@ td.delete label {
     width: 4%
 }
 
+.table-warnings .table-warnings-header-label {
+    width: 220px;
+}
+
+/* WARNINGS */
+.queue-warnings {
+    clear: both;
+    width: 100%;
+    overflow: auto;
+    max-height: 200px;
+}
+
 .table-warnings .table-warnings-hide {
     padding: 0 !important;
     border: 0 !important;
@@ -495,10 +517,21 @@ td.delete label {
 .table-warnings .table-warnings-remove {
     border-bottom: 1px solid #F0F0F0 !important;
     text-align: center;
+    vertical-align: top !important;
+    padding-top: 4px !important;
+    cursor: pointer;
 }
 
 .table-warnings .table-warnings-remove a {
     display: block;
+}
+
+.table-warnings .table-warnings-remove:hover a {
+    opacity: 1;
+}
+
+.table-warnings .label {
+    margin-right:  8px;
 }
 
 .table-warnings td {
@@ -527,12 +560,25 @@ td.delete label {
     border-bottom:1px solid #F0F0F0 !important;
 }
 
+.history-failed-download td.status {
+    color: red !important;
+}	
+
 .retrybutton {
-    color: red;
+    color: red !important;
+    
 }
 
+.retrybuttontext {
+    text-decoration: underline;
+    color: red !important;
+    font-weight: bold;
+}
+
+.history-failed-download:hover .retrybutton .glyphicon:before,
 .retrybutton:hover .glyphicon:before {
     content: " \e030 ";
+    color: red !important;
 }
 
 .history-table tr td {
@@ -548,6 +594,9 @@ td.delete label {
     vertical-align: bottom !important;
 }
 
+.history-table tr td.history-completedon {
+    text-align: center;
+}
 
 .history-table .status-header {
     width: 35%;
@@ -693,7 +742,7 @@ td.delete label {
     opacity: 0.9;
 }
 
-#modal_options .options-function-box {
+#modal_options .options-function-box .btn {
     margin-top: 10px; 
 }
 
@@ -707,8 +756,30 @@ td.delete label {
     float: right;
 }
 
-#modal_options .col-xs-5 {
+#modal_options .col-sm-5 {
     text-align: right;
+    font-weight: bold;
+}
+
+#modal_options .col-sm-7 {
+    word-break: break-all;
+}
+
+#modal_options .options-bad-status {
+    color: red;
+    font-weight: bold;
+}
+
+#modal_options .options-bad-status-ip:after {
+    content: "Connection error!"
+}
+
+#modal_options .options-status-box .glyphicon {
+    top: 2px;
+}
+
+#modal_options .options-status-box small {
+    color: #9E9E9E
 }
 
 #modal_options .table-server-connections {
@@ -866,6 +937,14 @@ td.delete label {
     margin-bottom: 5px;
 }
 
+/* RETRY JOB MODAL */
+#modal_retry_job .form-group {
+    margin-bottom: 3px;
+}
+#modal_retry_job fieldset {
+    margin-bottom: 10px !important;
+}
+
 
 /* SCRIPT LOG MODAL */
 #history_script_log .modal-dialog  {
@@ -891,60 +970,41 @@ td.delete label {
 ***/
 @media screen and (max-width: 1200px) {
     .queue-table td.name:hover .row-wrap-text {
-        max-width:85%;/* Change for each size! */
+        max-width:85%;
     }
 }
+
 @media screen and (max-width: 1000px) {
-    nav.main-navbar {
-        margin-top: 0;
+    .sparkline {
+        display: none;
     }
     
     .queue-table td.name:hover .row-wrap-text {
-        max-width:80%;/* Change for each size! */
+        max-width:80%;
     }
 }
 
-
-@media screen and (min-width: 768px) and (max-width: 992px) {
-    .container {
-        width: auto;
-    }
-}
 
 @media screen and (min-width: 768px) {
-    .modal-dialog {
-        width: 650px;    
-    }
-    
-    #modal_purge_history .modal-dialog {
+    .modal-small .modal-dialog {
         width: 350px;
     }  
     
 }
 
-/* Only small screens */
-@media screen and (max-width: 768px) {
+/* Targetting Ipad */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px)  {
+    nav.main-navbar {
+        margin-top: 0;
+    }
+    
     .container {
-        padding-left: 8px;
-        padding-right: 8px;
-    }
-    
-    .progress i {
-        display: none;
-    }
-    
-    .queue-table td.name:hover .row-wrap-text {
-        max-width:70%;/* Change for each size! */
-    }
-    
-    .history-table .status-header {
-        width: 25%;
-    }
-
-    .history-table .delete .dropdown-menu {
-        width: 90%;
+        width: 100%;
     }
 }
+
 
 /***
     Bootstrap overwrites
@@ -986,6 +1046,9 @@ a, a:active, a:hover, a:focus {
     cursor: pointer;
 }
 
+legend {
+    margin-bottom: 10px;
+}
 
 .form-control,
 .input-group-addon {
@@ -1026,10 +1089,15 @@ a, a:active, a:hover, a:focus {
     
 }
 
+.modal-dialog {
+    padding: 3px;
+}
+
 .modal-header {
     background-color: #3C3C3C;
     color: white;
     border: 0;
+    padding: 10px 12px;
 }
 
 .modal-header .close {
