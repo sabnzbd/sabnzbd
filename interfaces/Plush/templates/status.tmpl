@@ -126,7 +126,6 @@
   <div id="tabs-dashboard">
       <table class="rssTable">
       
-
         <tr> <th>Item</th> <th>Value</th> </tr>
         <!--#set $odd = False#-->
 
@@ -171,8 +170,9 @@
                <td>Download Directory</td><td>$downloaddir</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Download Directory writing Speed [MB/s]</td><td>  
-                   <!--#if $downloaddirspeed#-->$downloaddirspeed
-                   <!--#else#--><B><font color="red">Could not write. That is bad</font></B>
+                   <!--#if $downloaddirspeed >= 0 #-->$downloaddirspeed
+                   <!--#elif $downloaddirspeed < 0 #-->Click on Refresh button below to determine
+                   <!--#else#--><B><font color="red">Could not write. Check that the directory is writable.</font></B>
                    <!--#end if#-->
                </td></tr>
 
@@ -180,16 +180,12 @@
                <td>Complete Directory</td><td>$completedir</td></tr>
         <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
                <td>Complete Directory writing Speed [MB/s]</td><td>  
-                   <!--#if $completedirspeed#-->$completedirspeed
-                   <!--#else#--><B><font color="red">Could not write. That is bad</font></B>
+                   <!--#if $completedirspeed >=0 #-->$completedirspeed
+                   <!--#elif $completedirspeed < 0 #-->Click on Refresh button below to determine
+                   <!--#else#--><B><font color="red">Could not write. Check that the directory is writable.</font></B>
                    <!--#end if#-->
                </td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Dash Refresh Counter</td><td>$dashrefreshcounter</td></tr>
-
-        
-
+      
       </table>
       <BR>
       If you want to (re)run the tests, click on:
