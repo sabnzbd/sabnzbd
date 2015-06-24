@@ -51,9 +51,13 @@
         <!--#set $downloaddir = $downloaddir.replace('\\','\\\\')#-->
         "downloaddir": "$downloaddir",
         "downloaddirspeed": "$downloaddirspeed", 
+        <!--#if not $downloaddirspeed#--><!--#set $downloaddirspeed = -1#--><!--#end if#-->
+        "downloaddirspeedbad": <!--#if 0 < float($downloaddirspeed) < 5#-->true<!--#else#-->false<!--#end if#-->, 
         <!--#set $completedir = $completedir.replace('\\','\\\\')#-->
         "completedir": "$completedir",
-        "completedirspeed": "$completedirspeed"
+        "completedirspeed": "$completedirspeed",
+        <!--#if not $completedirspeed#--><!--#set $completedirspeed = -1#--><!--#end if#-->
+        "completedirspeedbad": <!--#if 0 < float($completedirspeed) < 5#-->true<!--#else#-->false<!--#end if#-->
     }
 }
 

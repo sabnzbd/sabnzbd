@@ -28,6 +28,9 @@ if (!Array.prototype.indexOf) {
     GLITTER CODE
 **/
 $(function() {
+    /**
+        Base variables and functions
+    **/
     // Set base variables
     var fadeOnDeleteDuration = 400; // ms after deleting a row
 	var sparkline_config = {
@@ -47,6 +50,7 @@ $(function() {
 
     // Basic API-call
 	function callAPI( data ) {
+	    // Fill basis var's
 		data.output = "json";
 		data.apikey = apiKey;
 		var ajaxQuery = $.ajax({
@@ -58,8 +62,12 @@ $(function() {
 
 		return $.when( ajaxQuery );
 	}
+    
     // Special API call
     function callSpecialAPI(url, data) {
+        // Did we get input?
+        if(data == undefined) data = {};
+        // Fill basis var's
         data.output = "json";
 		data.apikey = apiKey;
 		var ajaxQuery = $.ajax({
@@ -72,6 +80,45 @@ $(function() {
 		return $.when( ajaxQuery );
     }
     
+    /**
+        Handle visibility changes so we 
+        do only incremental update when not visible
+    **/
+    var pageIsVisible = true;
+    // Set the name of the hidden property and the change event for visibility
+    var hidden, visibilityChange; 
+    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.mozHidden !== "undefined") {
+        hidden = "mozHidden";
+        visibilityChange = "mozvisibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+     
+    // Set the global visibility  
+    function handleVisibilityChange() {
+        if (document[hidden]) {
+            pageIsVisible = false;
+        } else {
+            pageIsVisible = true;
+        }
+    }
+    
+    // Add event listener only for supported browsers
+    if (typeof document.addEventListener !== "undefined" && typeof document[hidden] !== "undefined") {
+        // Handle page visibility change   
+        document.addEventListener(visibilityChange, handleVisibilityChange, false);
+    }
+    
+    /**
+        Define main view model
+    **/
    	function ViewModel() {
 	    // Initialize models
 		var self = this;
@@ -80,19 +127,18 @@ $(function() {
         self.filelist = new Fileslisting(this);
 
         // Set information varibales
-        
         self.isRestarting      = ko.observable(false);
         self.refreshRate       = ko.observable($.cookie('pageRefreshRate') ? $.cookie('pageRefreshRate')  : 1)
         self.dateFormat        = ko.observable($.cookie('pageDateFormat') ? $.cookie('pageDateFormat')  : 'dd-MM-yy')
         self.title             = ko.observable()
         self.hasStatusInfo     = ko.observable(false); // True when we load it
 		self.speed             = ko.observable(0);
-		self.speedMetric       = ko.observable();
+        self.speedMetric       = ko.observable();
+        self.speedMetrics      = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit     = ko.observable(false);
 		self.speedLimit        = ko.observable(100).extend( { rateLimit: 200 } );
         self.speedLimitInt     = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused   = ko.observable(false);
-		self.mainPauseStatus   = ko.observable();
 		self.timeLeft          = ko.observable("0:00");
         self.diskSpaceLeft1    = ko.observable();
         self.diskSpaceLeft2    = ko.observable();
@@ -100,9 +146,8 @@ $(function() {
         self.quotaLimit        = ko.observable();
         self.quotaLimitLeft    = ko.observable();
         self.nrWarnings        = ko.observable(0);
-        self.allWarnings       = ko.observableArray([]).extend({ rateLimit: 50 });
+        self.allWarnings       = ko.observableArray([])
         self.onQueueFinish     = ko.observable();
-		self.speedMetrics      = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.speedHistory      = [];
         
         // Get the speed-limit
@@ -159,7 +204,7 @@ $(function() {
 		});
 
         // Update main queue
-		self.updateQueue = function( response ) {
+		self.updateQueue = function(response) {
 			if(!self.queue.shouldUpdate()) return;
             
             // Make sure we are displaying the interface
@@ -174,19 +219,16 @@ $(function() {
             /***
                 Basic information
             ***/
-            // Finish action
-            self.onQueueFinish(response.queue.finishaction);
+            // Queue left
+            self.queueDataLeft(response.queue.mbleft > 0 ? Math.round(response.queue.mbleft) : '')
             
             // Paused?
             self.downloadsPaused(response.queue.paused);
-			self.mainPauseStatus( self.downloadsPaused() ? "glyphicon-play" : "glyphicon-pause" );
-      
-            // Disk and queyesizes
-            if(response.queue.mbleft > 0)
-                self.queueDataLeft(Math.round(response.queue.mbleft))
-            else
-                self.queueDataLeft("")
             
+            // Finish action
+            self.onQueueFinish(response.queue.finishaction);
+      
+            // Disk sizes
             self.diskSpaceLeft1(parseFloat(response.queue.diskspace1).toFixed(1))
             
             // Same sizes? Then it's all 1 disk!
@@ -267,34 +309,34 @@ $(function() {
             ***/
 			timeString = response.queue.timeleft;
 			if(timeString === '') {
-                timeString = '0:00:00';
+                timeString = '0:00';
 			} else {
                 timeString = rewriteTime(response.queue.timeleft)
 			}
-			
+                        
             // Paused main queue
 			if(self.downloadsPaused()) {
 				if( response.queue.pause_int == '0' ) {
-					timeString = 'Paused';
+					timeString = glitterTranslate.paused;
 				} else {
 					pauseSplit = response.queue.pause_int.split(/:/);
 					seconds = parseInt(pauseSplit[0]) * 60 + parseInt(pauseSplit[1]);
 					hours = Math.floor(seconds/3600);
 					minutes = Math.floor((seconds -= hours * 3600) / 60);
 					seconds -= minutes * 60;
-					timeString = 'Paused (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
+					timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
 				}
                 
                 // Add info about amount of download (if actually downloading)
-                if(response.queue.slots.length > 0 && self.queueDataLeft() > 0) {
-                    self.title(timeString + ' - ' + self.queueDataLeft() + ' MB left - SABnzbd')
+                if(response.queue.noofslots > 0 && self.queueDataLeft() > 0) {
+                    self.title(timeString + ' - ' + self.queueDataLeft() + ' MB ' + glitterTranslate.left + ' - SABnzbd')
                 } else {
                     // Set title with pause information
                     self.title(timeString + ' - SABnzbd')
                 }
-            } else if(response.queue.slots.length > 0 && self.queueDataLeft() > 0) {
+            } else if(response.queue.noofslots > 0 && self.queueDataLeft() > 0) {
                 // Set title only if we are actually downloading something..
-                self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' MB left - SABnzbd')
+                self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' MB ' + glitterTranslate.left + ' - SABnzbd')
             } else {
                 // Empty title
                 self.title('SABnzbd')
@@ -304,7 +346,7 @@ $(function() {
 			self.timeLeft( timeString );
             
             // Update queue rows
-			self.queue.updateFromData( response.queue );
+            self.queue.updateFromData( response.queue );
 		}
 
         // Update history items
@@ -315,13 +357,35 @@ $(function() {
 
         // Refresh function
 		self.refresh = function() {
-            // Do requests for information
+            /**
+                Limited refresh
+            **/
+            // Only update the title when page not visible
+            if(!pageIsVisible) {
+                // Request new title 
+                callSpecialAPI('queue/', {}).then(function(data) {
+                    // Set title
+                    self.title(data);
+                    
+                    // Does it contain 'Paused'? Update icon!
+                    self.downloadsPaused(data.search(glitterTranslate.paused) !== -1)
+                })
+                // Do not continue!
+                return;
+            }
+            
+            /**
+                Full refresh
+            **/
+            // Do requests for full information
             // Catch the fail to display message
 			callAPI( {  mode: "queue", 
                         start: self.queue.pagination.currentStart(), 
                         limit: self.queue.paginationLimit() } ).then(
-                            self.updateQueue, 
-                            function() { self.isRestarting(true)} 
+                            self.updateQueue,
+                            function() { 
+                                self.isRestarting(true)
+                            } 
                         );
 			callAPI( {  mode: "history", 
                         search: $('#history-table-searchbox').val(),
@@ -331,7 +395,6 @@ $(function() {
 
         // Set pause action on click of toggle
 		self.pauseToggle = function() {
-			self.mainPauseStatus( self.downloadsPaused() ? "glyphicon-play" : "glyphicon-pause" );
 			callAPI( { mode: ( self.downloadsPaused() ? "resume" : "pause" ) } ).then( self.refresh );
 			self.downloadsPaused(!self.downloadsPaused());
 		}
@@ -339,24 +402,17 @@ $(function() {
         // Pause timer
 		self.pauseTime = function(e, b) {
 			pauseDuration = $(b.currentTarget).data( 'time' );
-			self.mainPauseStatus( "glyphicon-pause" );
+		
 			callAPI( { mode: 'config', name: 'set_pause', value: pauseDuration } );
 			self.downloadsPaused(true);
 		};
         
-        
-        
         // Clear warnings through this weird URL..
         self.clearWarnings = function() {
-            if ( !confirm( "Are you sure you want to clear all warnings?" ) )
+            if ( !confirm(glitterTranslate.clearWarn) )
 				return;
             // Activate
-            $.ajax({
-    			url: "status/clearwarnings", 
-    			type: "GET", 
-    			cache: false, 
-    			data: { session: apiKey }
-    		})
+            callSpecialAPI("status/clearwarnings")
         }
         
         // Update on speed-limit change
@@ -441,10 +497,7 @@ $(function() {
             self.hasStatusInfo(false)
                     
             // Load the custom status info
-            $.ajax({ 
-                url: "status/", 
-                type: "GET", 
-                cache: false }).then(function(data) { 
+            callSpecialAPI('status/').then(function(data) { 
                     // Already exists?
                     if(self.hasStatusInfo()) {
                         ko.mapping.fromJS(JSON.parse(data), self.statusInfo);
@@ -462,53 +515,48 @@ $(function() {
         
         // Do a disk-speedtest
         self.testDiskSpeed = function() {
-            callSpecialAPI('status/dashrefresh', {}).then(function() {
+            // Hide before running the test
+            self.hasStatusInfo(false)
+            // Run it and then display it
+            callSpecialAPI('status/dashrefresh').then(function() {
                 self.loadStatusInfo()
             })
         }
         
         // Unblock server
         self.unblockServer = function(servername) {
-            $.ajax({ url: "status/unblock_server", type: "GET", cache: false, data: { session: apiKey, server: servername } }).then(function() {$("#modal_options").modal("hide");}) 
+            callSpecialAPI("status/unblock_server",{ server: servername }).then(function() {$("#modal_options").modal("hide");}) 
         }
         
         // Abandoned folder processing
         self.folderProcess = function(e,b) {
             // Activate
-            $.ajax({
-    			url: "status/" + $(b.currentTarget).data('action'), 
-    			type: "GET", 
-    			cache: false, 
-    			data: { 
-                    session: apiKey,
-                    name: $(b.currentTarget).data('folder') 
-                }
-    		}).then(function() {
+            callSpecialAPI("status/" + $(b.currentTarget).data('action'), {name: $(b.currentTarget).data('folder') }).then(function() {
                 // Remove item and load status data
                 $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration /*, function() {self.loadStatusInfo()}*/)
-                
     		})
         }
       
         // SABnzb options
         self.shutdownSAB = function() { 
-            return confirm('Are you sure you want to shutdown SABnzbd?'); 
+            return confirm(glitterTranslate.shutdown); 
         }
         self.restartSAB = function() { 
-             if(!confirm('Are you sure you want to restart SABnzbd?\nUse it when you think the program has a stability problem.\nDownloading will be paused before the restart and will resume afterwards.')) return;
-             $.ajax({ url: "config/restart", type: "POST", cache: false, data: { session: apiKey } })
-             
+             if(!confirm(glitterTranslate.restart)) return;
+             // Call restart function
+             callSpecialAPI("config/restart")
+            
              // Set counter, we need at least 15 seconds
              self.isRestarting(Math.max(1, Math.floor(15/self.refreshRate())));
              // Force refresh in case of very long refresh-times
              if(self.refreshRate() > 30) { setTimeout(self.refresh, 30*1000) }
         }
         self.repairQueue = function() { 
-            if(!confirm('The Repair button will restart SABnzbd and do a complete construction of the queue content, preserving already downloaded files. This will modify the queue order.')) return;
-            $.ajax({ url: "config/repair", type: "POST", cache: false, data: { session: apiKey } }).then(function() {$("#modal_options").modal("hide");}) 
+            if(!confirm(glitterTranslate.repair)) return;
+            callSpecialAPI("config/repair").then(function() {$("#modal_options").modal("hide");}) 
         }
         self.forceDisconnect = function() { 
-            $.ajax({ url: "status/disconnect", type: "POST", cache: false, data: { session: apiKey } }).then(function() {$("#modal_options").modal("hide");}) 
+            callSpecialAPI("status/disconnect").then(function() {$("#modal_options").modal("hide");}) 
         }
         
      
@@ -521,13 +569,18 @@ $(function() {
         $('[data-toggle="tooltip"]').tooltip()
 	}
     
+    /**
+        Model for the whole Queue with all it's items
+    **/
    	function QueueListModel( parent ) {
         // Internal var's
 		var self = this;
-		this.parent = parent;
-		var multiEditItems = [];
+		self.parent = parent;
+        self.dragging       = false;
+        self.multiEditItems = [];
         
-        // Because SABNZB returns the name, not the number...
+        // Because SABNZB returns the name
+        // But when you want to set Priority you need the number.. 
         self.priorityName = []; 
     		self.priorityName["Force"] = 2; 
     		self.priorityName["High"] = 1; 
@@ -535,16 +588,16 @@ $(function() {
     		self.priorityName["Low"] = -1; 
     		self.priorityName["Stop"] = -4;
        	self.priorityOptions = ko.observableArray([
-    		{ value: 2, name: "Force" },
-    		{ value: 1, name: "High" },
-    		{ value: 0, name: "Normal" },
-    		{ value: -1, name: "Low" },
-    		{ value: -4, name: "Stop" }]);
+    		{ value: 2,  name: glitterTranslate.priority["Force"] },
+    		{ value: 1,  name: glitterTranslate.priority["High"] },
+    		{ value: 0,  name: glitterTranslate.priority["Normal"] },
+    		{ value: -1, name: glitterTranslate.priority["Low"] },
+    		{ value: -4, name: glitterTranslate.priority["Stop"] }]);
     	self.processingOptions = ko.observableArray([
-    		{ value: 0, name: "Download" },
-    		{ value: 1, name: "+Repair" },
-    		{ value: 2, name: "+Unpack" },
-    		{ value: 3, name: "+Delete" }]);
+    		{ value: 0, name: glitterTranslate.pp["Download"] },
+    		{ value: 1, name: glitterTranslate.pp["+Repair"] },
+    		{ value: 2, name: glitterTranslate.pp["+Unpack"] },
+    		{ value: 3, name: glitterTranslate.pp["+Delete"] }]);
         
         // External var's
         self.queueItems      = ko.observableArray([]);
@@ -552,7 +605,6 @@ $(function() {
         self.isMultiEditing  = ko.observable(false);
         self.categoriesList  = ko.observableArray( [] );
         self.scriptsList     = ko.observableArray( [] );
-        self.dragging        = false;
         self.paginationLimit = ko.observable($.cookie('queuePaginationLimit') ? $.cookie('queuePaginationLimit')  : 20)
         self.pagination      = new paginationModel(self);
 
@@ -561,6 +613,7 @@ $(function() {
         self.dragStart       = function( e ) { self.dragging = true; }
         self.dragStop        = function( e ) { self.dragging = false; }
 
+        // Update slots from API data
 		self.updateFromData = function( data ) {
             // Get all ID's'
 			var itemIds = $.map( self.queueItems(), function(i) { return i.id; } );
@@ -582,14 +635,17 @@ $(function() {
                     // Add new item
                     self.queueItems.push( new QueueModel( self, item ) );
 				}
-                // Sort by item
-				self.queueItems.sort( function(a, b) { return a.index() < b.index() ? -1 : 1; } );	
+                
 			} );
-
-			$.each(itemIds, function() {
+            
+            // Remove items that don't exist anymore
+            $.each(itemIds, function() {
 				var id = this.toString();
 				self.queueItems.remove( ko.utils.arrayFirst( self.queueItems(), function( i ) { return i.id == id; } ) );
 			});
+            
+            // Sort by index
+			self.queueItems.sort( function(a, b) { return a.index() < b.index() ? -1 : 1; } );	
 		};
 
         // Move in sortable
@@ -630,15 +686,15 @@ $(function() {
             // Add or remove from the list?
             if(event.currentTarget.checked) {
                 // Add item
-                multiEditItems.push(item)
+                self.multiEditItems.push(item)
                 // Update them all
                 self.doMultiEditUpdate();
             } else {
                 // Go over them all to know which one to remove 
-                $.each(multiEditItems, function(index) {
+                $.each(self.multiEditItems, function(index) {
     				// Is this the one removed?
                     if(item.id == this.id) {
-                        multiEditItems.splice(index,1)
+                        self.multiEditItems.splice(index,1)
                     }
     			});
             }
@@ -656,7 +712,7 @@ $(function() {
             
             // List all the ID's
             strIDs = '';
-            $.each(multiEditItems, function(index) {
+            $.each(self.multiEditItems, function(index) {
                 strIDs = strIDs + this.id + ',';
             })
             
@@ -669,11 +725,11 @@ $(function() {
         
         // Selete all selected
         self.doMultiDelete = function() {
-            if ( !confirm( "Are you sure you want to remove these downloads?" ) ) return;
+            if (!confirm(glitterTranslate.removeDown) ) return;
             
             // List all the ID's
             strIDs = '';
-            $.each(multiEditItems, function(index) {
+            $.each(self.multiEditItems, function(index) {
                 strIDs = strIDs + this.id + ',';
             })
             
@@ -691,15 +747,16 @@ $(function() {
         self.queueItems.subscribe(function() {
             // We need to wait until the unit is actually finished rendering
             setTimeout(function() {
-                $.each(multiEditItems, function(index) {
+                $.each(self.multiEditItems, function(index) {
                     $('#multiedit_' + this.id).prop('checked', true);
                 }) 
             },100)
-              
-            
         }, null, "arrayChange")
 	}
 
+    /**
+        Model for each Queue item
+    **/
 	function QueueModel( parent, data ) {
 		var self = this;
 		this.parent = parent;
@@ -745,12 +802,13 @@ $(function() {
 
         // Every update
 		self.updateFromData = function( data ) {
+            // Things that need to be set
+            self.id = data.nzo_id;
+            self.name($.trim(data.filename));
+            self.index(data.index);
+
             // General status
-			self.id = data.nzo_id;
-			if( data.status != 'Grabbing' ) {
-				self.name($.trim(data.filename));
-			} else {
-				self.name('Grabbing...');
+			if( data.status == 'Grabbing' ) {
                 self.isGrabbing(true)
                 return; // Important! Otherwise cat/script/priority get magically changed!
             }
@@ -763,7 +821,7 @@ $(function() {
 			self.category(data.cat);
 			self.priority(parent.priorityName[data.priority]);
             self.script(data.script);
-			self.index(data.index);
+			
             self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
 			self.pausedStatus(data.status == 'Paused');
             
@@ -776,18 +834,18 @@ $(function() {
             // Checking
             if(data.status == 'Checking') {
                 self.progressColor('#58A9FA')
-                self.timeLeft("Checking");
+                self.timeLeft(glitterTranslate.checking);
             }
             
             // Check for missing data, the value is arbitrary!
             if(data.missing > 50) {
                 self.progressColor('#F8A34E');
-                self.missingText(data.missing + ' missing articles')
+                self.missingText(data.missing + ' ' + glitterTranslate.misingArt)
             }
             
             // Set color   
 			if( (self.parent.parent.downloadsPaused() && data.priority != 'Force') || self.pausedStatus() ) {
-				self.timeLeft("Paused");
+				self.timeLeft(glitterTranslate.paused);
                 self.progressColor('#B7B7B7');
 			} else if(data.status != 'Checking') {
 			 	self.timeLeft(rewriteTime(data.timeleft));
@@ -829,15 +887,16 @@ $(function() {
         // See items
         self.showFiles = function() {
             // Trigger update
-            
             parent.parent.filelist.loadFiles(self)
-            
-            
         }
         
         // Change of settings
         self.changeCat          = function(itemObj) { callAPI( { mode: 'change_cat', value: itemObj.id, value2: itemObj.category() } )}
-        self.changeScript       = function(itemObj) { callAPI( { mode: 'change_script', value: itemObj.id, value2: itemObj.script() } )}
+        self.changeScript       = function(itemObj) { 
+            // Not on empty handlers
+            if(!itemObj.script()) return; 
+            callAPI( { mode: 'change_script', value: itemObj.id, value2: itemObj.script() } )
+        }
         self.changeProcessing   = function(itemObj) { callAPI( { mode: 'change_opts', value: itemObj.id, value2: itemObj.unpackopts() } ) }
         self.changePriority     = function(itemObj) { 
             // Not if we are fetching extra blocks for repair!
@@ -848,7 +907,7 @@ $(function() {
         
         // Remove
         self.removeDownload = function(data, event) {
-			if ( !confirm( "Are you sure you want to remove this download?" ) )	return;
+			if(!confirm(glitterTranslate.removeDow1))	return;
 			var itemToDelete = this;
 			callAPI( { mode: 'queue', name: 'delete', del_files: 1, value: this.id } ).then( function( response ) {
 				if( response.status ) {
@@ -866,6 +925,9 @@ $(function() {
 		self.updateFromData( data );
 	}
     
+    /**
+        Model for the whole History with all it's items
+    **/
    	function HistoryListModel( parent ) {
 		var self = this;
 		this.parent = parent;
@@ -900,6 +962,7 @@ $(function() {
 				} else {
 				    // Add history item
 					self.historyItems.push( new HistoryModel( self, slot ) );
+                    
                     // Only now sort so newest on top
                     self.historyItems.sort( function( a, b ) { return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1; } );
                 }
@@ -935,6 +998,7 @@ $(function() {
     		data.append("job",        $('#modal_retry_job input[name="retry_job_id"]').val());
     		data.append("password",   $('#retry_job_password').val());  
             data.append("session",    apiKey);
+            
             // Add 
             $.ajax({    url: "history/retry_pp", 
                         type: "POST", 
@@ -982,22 +1046,25 @@ $(function() {
         };
 	}
 
+    /**
+        Model for each History item
+    **/
 	function HistoryModel( parent, data ) {
 		var self = this;
 		self.parent = parent;
 
-        // We only update the whole set of information ONCE
+        // We only update the whole set of information on first add
         // If we update the full set every time it uses lot of CPU
         // The Status/Actionline/scriptline/completed we do update every time
         // When clicked on the more-info button we load the rest again
-        self.historyStatus = ko.mapping.fromJS(data);   
-        self.nzo_id = '';
-        self.updateAllHistory = false;
-        self.status = ko.observable();
-        self.action_line = ko.observable();
-        self.script_line = ko.observable();
-        self.fail_message = ko.observable();
-        self.completed = ko.observable();        
+        self.nzo_id             = '';
+        self.updateAllHistory   = false;
+        self.historyStatus      = ko.mapping.fromJS(data);   
+        self.status             = ko.observable();
+        self.action_line        = ko.observable();
+        self.script_line        = ko.observable();
+        self.fail_message       = ko.observable();
+        self.completed          = ko.observable();        
 
 		self.updateFromData = function( data ) {       
             // Fill all the basic info
@@ -1015,7 +1082,6 @@ $(function() {
             }           
 		};
   
-
         // True/false if failed or not
 		self.failed = ko.computed(function() {
 			return self.status() === 'Failed';
@@ -1027,18 +1093,6 @@ $(function() {
             return (status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing' || status == 'Queued')
         })
 
-        // Quick function for the icon
-		self.iconStatus = ko.computed(function() {
-			var status = self.status();
-     
-			if(status === 'Completed')
-				return 'glyphicon-ok';
-			else if(status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing' || status == 'Queued')
-				return 'glyphicon-refresh glyphicon-spin'; 
-            
-			return 'glyphicon-exclamation-sign';
-		});
-
         // Format status text
 		self.statusText = ko.computed(function() {
 			if(self.action_line() !== '')
@@ -1046,9 +1100,9 @@ $(function() {
 			if(self.status() === 'Failed') // Failed
 				return self.fail_message();
             if(self.status() === 'Queued')
-                return 'Waiting';
+                return glitterTranslate.status['Queued'];
             if(self.script_line() === '') // No script line
-                return 'Completed'
+                return glitterTranslate.status['Completed']
 
 			return self.script_line();
 		});
@@ -1088,7 +1142,7 @@ $(function() {
 
         // Delete button
 		self.deleteSlot = function(item, event) {
-			if ( !confirm( "Are you sure you want to remove this download from history?" ) )
+			if(!confirm(glitterTranslate.removeDow1))
 				return;
 
 			callAPI( {mode:'history', name:'delete', del_files:1, value:self.historyStatus.nzo_id()} ).then( function(response) {
@@ -1110,11 +1164,11 @@ $(function() {
     // For the file-list
     function Fileslisting( parent ) {
 		var self = this;
-		self.parent = parent;
-        self.fileItems = ko.observableArray([]);
-        self.modalNZBId = ko.observable();
-        self.modalTitle = ko.observable();
-        self.modalPassword = ko.observable();
+		self.parent         = parent;
+        self.fileItems      = ko.observableArray([]);
+        self.modalNZBId     = ko.observable();
+        self.modalTitle     = ko.observable();
+        self.modalPassword  = ko.observable();
         
         // Load the function and reset everything
         self.loadFiles = function(queue_item) {
@@ -1131,7 +1185,6 @@ $(function() {
             if(passwordSplit.length == 3 || passwordSplit[0] == 'ENCRYPTED') { 
                 passwordSplitExtra = 1;
             }
-            
             
             // Set files & title
             self.modalNZBId(self.currentItem.id)
@@ -1152,7 +1205,6 @@ $(function() {
 
         // Trigger update
         self.triggerUpdate = function() {
-            
             callAPI( { mode: 'get_files', value: self.currentItem.id, limit: 5 } ).then(function(response) {
                 // When there's no files left we close the modal and the update will be stopped
                 // For example when the job has finished downloading
@@ -1192,9 +1244,7 @@ $(function() {
         self.setUpdate = function () {
             self.updateTimeout = setTimeout(function() {
                 self.triggerUpdate()
-            }, parent.refreshRate()*1000)
-                    
-                    
+            }, parent.refreshRate()*1000)          
         }                
         
         // Remove the update
@@ -1202,7 +1252,6 @@ $(function() {
             clearTimeout(self.updateTimeout)
         }
     
-        
         // Move in sortable
 		self.move = function( e ) {
             // How much did we move?
@@ -1215,13 +1264,9 @@ $(function() {
             dataToSend['session'] = apiKey;
             dataToSend['action_key'] = direction;
             dataToSend['action_size'] = Math.abs(nrMoves);
+            
             // Activate with this weird URL "API"
-            $.ajax({
-    			url: "nzb/" + self.currentItem.id + "/bulk_operation", 
-    			type: "POST", 
-    			cache: false, 
-    			data: dataToSend
-    		})
+            callSpecialAPI("nzb/" + self.currentItem.id + "/bulk_operation", dataToSend)
 		};
         
         // Remove selected files
@@ -1238,12 +1283,7 @@ $(function() {
             }) 
                 
             // Activate with this weird URL "API"
-            $.ajax({
-    			url: "nzb/" + self.currentItem.id + "/bulk_operation", 
-    			type: "POST", 
-    			cache: false, 
-    			data: dataToSend
-    		}).then(function() {
+            callSpecialAPI("nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
                 $('.item-files-table input:checked').parents('tr').fadeOut(fadeOnDeleteDuration)
     		})
             
@@ -1252,16 +1292,10 @@ $(function() {
         // For changing the passwords
         self.setNzbPassword = function() {
             // Activate with this weird URL "API"
-            $.ajax({
-    			url: "nzb/" + self.currentItem.id + "/save", 
-    			type: "POST", 
-    			cache: false, 
-    			data: { 
-                    session: apiKey, 
+            callSpecialAPI("nzb/" + self.currentItem.id + "/save", { 
                     name: self.modalTitle(),
                     password: $('#nzb_password').val() 
-                }
-    		}).then(function() {
+            }).then(function() {
                 $('#modal_item_filelist .glyphicon-floppy-saved').show()
                 $('#modal_item_filelist .glyphicon-lock').hide()
     		})
@@ -1269,6 +1303,7 @@ $(function() {
         }
     }
     
+    // Indiviual file models
     function FileslistingModel(parent, data) {
         var self = this;
         // Define veriables

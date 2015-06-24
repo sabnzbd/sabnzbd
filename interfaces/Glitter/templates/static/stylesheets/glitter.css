@@ -191,9 +191,13 @@ li.dropdown {
     margin-bottom: 30px;
 }
 
+.main-filedrop {
+    display: none;
+}
+
 .main-filedrop.in,
 .main-restarting.in { 
-    display: none; 
+
     text-align: center; 
     opacity: 0.9;
     color:  black;
@@ -204,6 +208,10 @@ li.dropdown {
 
 .main-filedrop.in span {
     font-size: 20em;
+}
+
+.main-restarting {
+    display: block;
 }
 
 .main-restarting.in strong {
@@ -287,6 +295,12 @@ tbody>tr>td:last-child {
     opacity:1;
     color:#474747;
 }
+
+.queue-update-info {
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
 
 .info-container {
     float: right;
@@ -619,8 +633,8 @@ td.delete label {
 .history-table .delete .dropdown-menu .glyphicon {
     position: absolute;
     top: 10px;
-    right: 15px;
-    font-size: 2.5em;
+    right: 10px;
+    font-size: 2em;
 }
 
 .history-status-table,
@@ -651,14 +665,14 @@ td.delete label {
     font-weight: bold;
 }
 
-.history-info span {
-    margin-left: 5px;
-}
-
 .history-info {
-    margin-top: 5px;
+    margin-top: 10px;
     margin-bottom: 10px;
     margin-right: 5px;
+}
+
+.history-info span {
+    margin-left: 5px;
 }
 
 #history-table-search {
@@ -770,16 +784,15 @@ td.delete label {
     font-weight: bold;
 }
 
-#modal_options .options-bad-status-ip:after {
-    content: "Connection error!"
-}
 
 #modal_options .options-status-box .glyphicon {
     top: 2px;
+    margin-left: 3px;
 }
 
 #modal_options .options-status-box small {
-    color: #9E9E9E
+    color: #9E9E9E;
+    margin-left: 5px;
 }
 
 #modal_options .table-server-connections {
@@ -853,6 +866,7 @@ td.delete label {
 #modal_help table td {
     border: 0 !important;
     padding: 2px;
+    background-color: white;
 }
 
 #modal_help table td:first-child {
