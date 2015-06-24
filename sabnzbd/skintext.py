@@ -21,7 +21,7 @@ sabnzbd.skintext - Language strings used in the templates
 """
 
 SKIN_TEXT = {
-
+ 
 # Special texts
     'stage-download'     : TT('Download'), #: Queue status "download"
     'stage-repair'       : TT('Repair'), #: PP phase "repair"
