@@ -23,7 +23,8 @@ nav.main-navbar {
     
 }
 
-nav.main-navbar .sparkline {
+nav.main-navbar .sparkline,
+.sparkline-container svg {
     margin: 10px 15px 8px;
     float:left;
 }
@@ -417,7 +418,8 @@ td.delete input[type="checkbox"] {
     margin: 0;
 }
 
-td.delete label {
+td.delete label,
+.multioperations-selector .add-nzb-inputbox-small label {
     margin: -5px;
     padding: 5px 12px 5px 10px;
     cursor: pointer;
@@ -504,11 +506,36 @@ td.delete label {
 }
 
 .multioperations-selector .add-nzb-inputbox {
-    width: 24%;
+    width: 20%;
 }
 
-.multioperations-selector .add-nzb-inputbox-remove {
-    width: 4%
+.multioperations-selector .add-nzb-inputbox-small {
+    width: 52px;
+    float: right;
+    padding-left: 0;
+    padding-top:  2px;
+}
+
+.multioperations-selector .add-nzb-inputbox-small span {
+    margin-left: 0;
+}
+
+.multioperations-selector .add-nzb-inputbox-small input[type="radio"] {
+    display: none;
+}
+
+.multioperations-selector .add-nzb-inputbox-small input[type="radio"]+span {
+    opacity: 0.3;
+}
+
+.multioperations-selector .add-nzb-inputbox-small input[type="radio"]:checked+span {
+    opacity: 1;
+}
+
+.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
+.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .table-warnings .table-warnings-header-label {
@@ -989,8 +1016,9 @@ td.delete label {
 }
 
 @media screen and (max-width: 1000px) {
-    .sparkline {
-        display: none;
+    .sparkline,
+    .sparkline-container {
+        display: none !important;
     }
     
     .queue-table td.name:hover .row-wrap-text {

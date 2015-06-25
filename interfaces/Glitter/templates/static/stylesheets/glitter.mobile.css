@@ -19,8 +19,9 @@ nav.main-navbar {
     display: inline-block;
 }
 
-.sparkline {
-    display: none ;
+.sparkline,
+.sparkline-container {
+    display: none !important;
 }
 
 h2 {

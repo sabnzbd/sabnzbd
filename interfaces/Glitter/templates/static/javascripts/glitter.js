@@ -31,22 +31,7 @@ $(function() {
     /**
         Base variables and functions
     **/
-    // Set base variables
     var fadeOnDeleteDuration = 400; // ms after deleting a row
-	var sparkline_config = {
-		width:'150px',
-        height: '32px',
-		fillColor: '#9DDB72',
-		spotColor: false,
-		minSpotColor: false,
-		maxSpotColor: false,
-		lineColor: '#AAFFAA',
-		disableTooltips: true,
-		disableHighlight: true,
-		highlightLineColor: '#FFFFFF',
-		highlightSpotColor: false,
-		chartRangeMin: 0
-	};
 
     // Basic API-call
 	function callAPI( data ) {
@@ -142,6 +127,8 @@ $(function() {
 		self.timeLeft          = ko.observable("0:00");
         self.diskSpaceLeft1    = ko.observable();
         self.diskSpaceLeft2    = ko.observable();
+        self.new_release       = ko.observable(); 
+        self.new_rel_url       = ko.observable();
         self.queueDataLeft     = ko.observable();
         self.quotaLimit        = ko.observable();
         self.quotaLimitLeft    = ko.observable();
@@ -202,6 +189,8 @@ $(function() {
             // We also 'have history' if we can't find any results of the search
 			return self.history.historyItems().length>0 || $('#history-table-searchbox').val() != ''
 		});
+        
+        
 
         // Update main queue
 		self.updateQueue = function(response) {
@@ -232,45 +221,21 @@ $(function() {
             self.diskSpaceLeft1(parseFloat(response.queue.diskspace1).toFixed(1))
             
             // Same sizes? Then it's all 1 disk!
-            if(response.queue.diskspace1 != response.queue.diskspace2)
+            if(response.queue.diskspace1 != response.queue.diskspace2) {
                 self.diskSpaceLeft2(parseFloat(response.queue.diskspace2).toFixed(1))
-
+            }
+            
             // Quota
             self.quotaLimit(response.queue.quota)
             self.quotaLimitLeft(response.queue.left_quota)
             
-            /***
-                 Warnings
-            ***/
-            if(parseInt(response.queue.have_warnings) > self.nrWarnings()) {
-                // Get all warnings
-                callAPI( { mode:'warnings' } ).then( function( response ) {
-                    // Reset it all
-                    self.allWarnings.removeAll();
-    				if( response ) {
-    				    // Go over all warnings and add
-    				    $.each(response.warnings, function(index, warning) {
-    				        // Split warning into parts
-    				        var warningSplit = warning.split(/\n/);
-
-                            
-                            // Reformat CSS label and date
-				            var warningData = {
-				                    index: index,
-				                    type: warningSplit[1],
-                                    text: warningSplit.slice(2).join(' '), // Recombine if multiple lines
-                                    date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'), 
-				                    css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"), 
-                                    clear: self.clearWarnings
-                                  };
-			
-    				        self.allWarnings.push(warningData)
-    				    })
-    				}
-    			});
-            }
+            // Update info
+            self.new_release(response.queue.new_release)
+            self.new_rel_url(response.queue.new_rel_url)
+            
+            // Warnings (new warnings will trigger an update of AllWarnings)
             self.nrWarnings(response.queue.have_warnings)
-        
+
             /***
                 Spark line
             ***/
@@ -284,25 +249,39 @@ $(function() {
 			speedSplit = response.queue.speed.split(/\s/);
 			self.speed( parseFloat( speedSplit[0] ) );
 			self.speedMetric( speedSplit[1] );
-
-            // Add to sparkline
-			if(self.speedHistory.length >= 50)
-				self.speedHistory.shift();
-			self.speedHistory.push( parseFloat( response.queue.kbpersec ) );
+            
+            // Update sparkline data
+			if(self.speedHistory.length >= 50) {
+                // Remove first one
+                self.speedHistory.shift();
+			}
+			// Add
+			self.speedHistory.push(response.queue.kbpersec);
 
             // Is sparkline visible? Not on small mobile devices..
-            if($('.sparkline').css('display') != 'none') {
-                $('.sparkline').sparkline(self.speedHistory, sparkline_config);
-            }
+            if($('.sparkline-container').css('display') != 'none') {
+                // Make sparkline
+                if(self.speedHistory.length == 1) {
+                    // Create
+                    $('.sparkline').peity("line", { width: 150, height: 32, fill: '#9DDB72', stroke: '#AAFFAA' })  
+                } else {
+                    // Update
+                    $('.sparkline').text(self.speedHistory.join(",")).change()   
+                }
+            } 
             
-                
             /***
                 Speedlimit
             ***/
             // Nothing = 100%
             response.queue.speedlimit = response.queue.speedlimit=='' ? 100 : response.queue.speedlimit;
             self.speedLimitInt(response.queue.speedlimit)
-            self.speedLimit(response.queue.speedlimit)
+            
+            // Only update from external source when user isn't doing input
+            if(!$('.speedlimit-dropdown .btn-group .btn-group').is('.open')) {
+                self.speedLimit(response.queue.speedlimit)
+            }
+            
 
             /***
                 Download timing and pausing
@@ -364,11 +343,22 @@ $(function() {
             if(!pageIsVisible) {
                 // Request new title 
                 callSpecialAPI('queue/', {}).then(function(data) {
+                    // Split title & speed
+                    dataSplit = data.split('|||');
+                    
                     // Set title
-                    self.title(data);
+                    self.title(dataSplit[0]);
+                    
+                    // Update sparkline data
+        			if(self.speedHistory.length >= 50) {
+                        // Remove first one
+                        self.speedHistory.shift();
+        			}
+        			// Add
+        			self.speedHistory.push(dataSplit[1]);
                     
                     // Does it contain 'Paused'? Update icon!
-                    self.downloadsPaused(data.search(glitterTranslate.paused) !== -1)
+                    self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
                 })
                 // Do not continue!
                 return;
@@ -399,20 +389,49 @@ $(function() {
 			self.downloadsPaused(!self.downloadsPaused());
 		}
 
-        // Pause timer
+        // Set pause timer
 		self.pauseTime = function(e, b) {
-			pauseDuration = $(b.currentTarget).data( 'time' );
-		
+			pauseDuration = $(b.currentTarget).data('time');
 			callAPI( { mode: 'config', name: 'set_pause', value: pauseDuration } );
 			self.downloadsPaused(true);
 		};
+        
+        // Update the warnings
+        self.nrWarnings.subscribe(function(newValue) {
+            // Get all warnings
+            callAPI( { mode:'warnings' } ).then( function( response ) {
+                // Reset it all
+                self.allWarnings.removeAll();
+				if( response ) {
+				    // Go over all warnings and add
+				    $.each(response.warnings, function(index, warning) {
+				        // Split warning into parts
+				        var warningSplit = warning.split(/\n/);
+                        
+                        // Reformat CSS label and date
+			            var warningData = {
+			                    index: index,
+			                    type: warningSplit[1],
+                                text: warningSplit.slice(2).join(' '), // Recombine if multiple lines
+                                date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'), 
+			                    css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"), 
+                                clear: self.clearWarnings
+                              };
+		
+				        self.allWarnings.push(warningData)
+				    })
+				}
+			});
+        })
         
         // Clear warnings through this weird URL..
         self.clearWarnings = function() {
             if ( !confirm(glitterTranslate.clearWarn) )
 				return;
             // Activate
-            callSpecialAPI("status/clearwarnings")
+            callSpecialAPI("status/clearwarnings").then(function() {
+                $('.queue-warnings').slideUp(fadeOnDeleteDuration)
+            })
         }
         
         // Update on speed-limit change
@@ -676,6 +695,9 @@ $(function() {
         self.showMultiEdit = function() { 
             // Update value
             self.isMultiEditing(!self.isMultiEditing()) 
+            // Reset form
+            $('.multioperations-selector')[0].reset();
+            
             // Do update on close, to make sure it's all updated
             if(!self.isMultiEditing()) {
                 self.parent.refresh()
@@ -704,11 +726,14 @@ $(function() {
         
         // Do the actual multi-update immediatly
         self.doMultiEditUpdate = function() {
+            // Anything selected?
+            if(self.multiEditItems.length < 1) return;
             // Retrieve the current settings
             newCat      = $('.multioperations-selector select[name="Category"]').val()
             newScript   = $('.multioperations-selector select[name="Post-processing"]').val()
             newPrior    = $('.multioperations-selector select[name="Priority"]').val() 
             newProc     = $('.multioperations-selector select[name="Processing"]').val()
+            newStatus   = $('.multioperations-selector input[name="multiedit-status"]:checked').val()
             
             // List all the ID's
             strIDs = '';
@@ -721,6 +746,7 @@ $(function() {
             if(newScript != '') { callAPI( { mode: 'change_script', value: strIDs, value2: newScript } )}
             if(newPrior != '')  { callAPI( { mode: 'queue', name:'priority', value: strIDs, value2: newPrior } ) }
             if(newProc != '')   { callAPI( { mode: 'change_opts', value: strIDs, value2: newProc } ) }
+            if(newStatus)       { callAPI( { mode: 'queue', name: newStatus, value: strIDs } )}
         }
         
         // Selete all selected
@@ -1007,7 +1033,7 @@ $(function() {
                         contentType: false, 
                         data: data }).then(function(r) { self.parent.refresh() });
                         
-            // Hide and reset
+
             $("#modal_retry_job").modal("hide");
             form.reset()
             
@@ -1086,6 +1112,11 @@ $(function() {
 		self.failed = ko.computed(function() {
 			return self.status() === 'Failed';
 		});
+        
+        // Waiting?
+        self.processingWaiting = ko.computed(function() {
+            return (self.status() == 'Queued')
+        })
         
         // Processing or done?
         self.processingDownload = ko.computed(function() {
@@ -1217,7 +1248,7 @@ $(function() {
                 var itemIds = $.map( self.fileItems(), function(i) { return i.filename(); } );
                 
                 // Go over them all
-                $.each( response.files, function(index, slot) {
+                $.each(response.files, function(index, slot) {
                     var existingItem = ko.utils.arrayFirst( self.fileItems(), function( i ) {  return i.filename() == slot.filename; } );
     
     				if( existingItem ) {
@@ -1307,11 +1338,11 @@ $(function() {
     function FileslistingModel(parent, data) {
         var self = this;
         // Define veriables
-        self.filename = ko.observable();
-        self.nzf_id = ko.observable();
-        self.file_age = ko.observable();
-        self.percentage  = ko.observable();
-        self.canChange = ko.computed(function() { return self.nzf_id()!=undefined; })
+        self.filename       = ko.observable();
+        self.nzf_id         = ko.observable();
+        self.file_age       = ko.observable();
+        self.percentage     = ko.observable();
+        self.canChange      = ko.computed(function() { return self.nzf_id()!=undefined; })
         self.filenameAndAge = ko.pureComputed(function() { 
             return self.filename() + ' <small>(' + self.file_age() + ')</small>';
         })
@@ -1333,13 +1364,13 @@ $(function() {
         var self = this;
         
         // Var's
-        self.nrPages = ko.observable(0);
-        self.currentPage = ko.observable(1);
-        self.currentStart = ko.observable(0);
-        self.allpages = ko.observableArray([]).extend({ rateLimit: 50 });
+        self.nrPages        = ko.observable(0);
+        self.currentPage    = ko.observable(1);
+        self.currentStart   = ko.observable(0);
+        self.allpages       = ko.observableArray([]).extend({ rateLimit: 50 });
         
         // Has pagination
-        self.hasPagination = ko.pureComputed(function() {
+        self.hasPagination = ko.computed(function() {
             return self.nrPages() > 1;
         })
         
@@ -1400,7 +1431,7 @@ $(function() {
                 }
 
                 // All the cases
-                if(newNrPages > 6 ) {
+                if(newNrPages > 7 ) {
                     // Do we show the first ones 
                     if(self.currentPage() < 5) {
                         // Just add the first 4
@@ -1515,8 +1546,21 @@ function keepOpen(thisItem) {
 
 // Check all functionality
 function checkAllFiles(objCheck) {
-    // Check or uncheck all?
-    $('#modal_item_files input:checkbox:not(:disabled)').prop('checked', $(objCheck).prop('checked'))
+    // Check for main-page or file-list modal?
+    if($(objCheck).prop('name') == 'multieditCheckAll') {
+        // Is checked himself?
+        if($(objCheck).prop('checked')) {
+            // (Un)check all in Queue by simulating click, this also fires the knockout-trigger!
+            $('.queue-table input[name="multiedit"]').trigger("click")
+        } else {
+            // Uncheck all checked ones and fires event
+            $('.queue-table input[name="multiedit"]:checked').trigger("click")
+        }
+        
+    } else {
+        // (Un)check all in file-list
+        $('#modal_item_files input:checkbox:not(:disabled)').prop('checked', $(objCheck).prop('checked'))
+    }
 }
 
 // Hide completed files in files-modal

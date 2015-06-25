@@ -37,7 +37,7 @@
             <link href="./static/bootstrap/css/bootstrap-ie7.css" rel="stylesheet">
         <![endif]-->  
 	</head>
-	<body>
+	<body >
 		<div class="container main-navbar">         
 			<nav class="navbar navbar-inverse main-navbar" role="navigation">
 				<div class="navbar-header">
@@ -71,8 +71,8 @@
 
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav navbar-right">
-                        <li><span class="sparkline"></span></li>
-                        <li class="dropdown">
+                        <li class="sparkline-container"><span class="sparkline"></span></li>
+                        <li class="speedlimit-dropdown dropdown">
 							<div class="btn-group">
         						<div class="btn-group">
                                     <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
@@ -131,10 +131,10 @@
 
 		<div class="container main-content">
 			<div class="queue">
-                <div class="queue-update-info">
-                    <a href="#">
-                        <span class="label label-success">$T('Update Available!')</span>
-                        <span class="label label-default">Version 6</span>
+                <div class="queue-update-info" data-bind="visible: new_release()" style="display: none;">
+                    <a href="#" target="_blank" data-bind="attr: { href: new_rel_url() }">
+                        <span class="label label-success">$T('Glitter-updateAvailable')</span>
+                        <span class="label label-default" data-bind="text: new_release()"></span>
                     </a>
                 </div>
             
@@ -186,7 +186,7 @@
                             </td>
                         </tr>
                     </tbody>
-					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
+					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue table' } }" style="display: none;">
 						<tr class="queueitem">
 							<td><a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }">&nbsp;</a></td>
 							<td class="name">
@@ -218,7 +218,7 @@
 							</td>
 							<td style="text-align: right;" data-bind="text: timeLeft"></td>
 							<td class="delete">
-                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { for: 'multiedit_' + index() }">
+                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { 'for' : 'multiedit_' + index() }">
                                     <input type="checkbox" name="multiedit" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />
                                 </label>
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
@@ -253,8 +253,8 @@
 						</tr>
 					</tbody>
 				</table>
-                
-                <div class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
+
+                <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
@@ -271,11 +271,28 @@
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox add-nzb-inputbox-remove">
-                         <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-checkall">
+                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)"/>
+                        </label> 
+                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
                     </div>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-play">
+                            <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-play"></span>
+                        </label>
+                        <label for="multiedit-pause">
+                            <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-pause"></span>
+                        </label>
+                        
+                    </div>
+                    
                     <div class="clearfix"></div>
-    			</div>
+    			</form>
                 
                 <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
                     <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
@@ -332,17 +349,20 @@
 					<tbody data-bind="foreach: history.historyItems">
 						<tr class="historyitem" data-bind="css: {'history-failed-download':failed()}">
 							<td>
-								<div data-bind="visible: failed()">
-									<a class="retrybutton" href="#" data-bind="click: retry">
-										<span class="glyphicon glyphicon-exclamation-sign"></span>
-									</a>
-								</div>
+                                <div data-bind="visible: processingWaiting()"> 
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
                                 <div data-bind="visible: processingDownload()"> 
                                     <div class="processing-download"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div></div>
                                 </div>
 								<div data-bind="visible: (!failed() && !processingDownload())"> 
                                     <span class="glyphicon glyphicon-ok"></span>
                                 </div>
+                                <div data-bind="visible: failed()">
+									<a class="retrybutton" href="#" data-bind="click: retry">
+										<span class="glyphicon glyphicon-exclamation-sign"></span>
+									</a>
+								</div>
 							</td>
 							<td class="name">
                                 <div class="row-wrap-text">
@@ -518,8 +538,7 @@
             <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.cookie.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
-            
-            <!--#include raw $webdir + "/static/javascripts/jquery.sparkline.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.dateFormat.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-3.3.0.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
