@@ -7,8 +7,13 @@
     padding-right: 8px;
 }
 
-nav.main-navbar {
+.main-navbar {
     margin-top: 0;
+    padding: 0;
+}
+
+.main-content {
+    border: 0;
 }
 
 #navbar-logo-big {
@@ -76,7 +81,7 @@ h2 {
 .info-container a {
     position: absolute;
     right: 10px;
-    top: 70px;
+    top: 58px;
     font-size: 1em;
 }
 
@@ -131,6 +136,23 @@ h2 {
     width: 50%
 }
 
+.multioperations-selector .add-nzb-inputbox-small {
+    width: 52px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny {
+    width: 50%
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny>a {
+    float: right;
+    margin-right: 20px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
+    margin-left: 0px;
+}
+
 .table-warnings .table-warnings-header-label {
     width: 120px;
 }
@@ -156,6 +178,9 @@ h2 {
     width: 0;
 }
 
+.history-status-table .col-sm-2 {
+    text-align: left;
+}
 /**
     MODALS
 **/

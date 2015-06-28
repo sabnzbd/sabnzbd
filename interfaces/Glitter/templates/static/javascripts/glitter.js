@@ -369,7 +369,7 @@ $(function() {
             **/
             // Do requests for full information
             // Catch the fail to display message
-			callAPI( {  mode: "queue", 
+			queueApi = callAPI( {  mode: "queue", 
                         start: self.queue.pagination.currentStart(), 
                         limit: self.queue.paginationLimit() } ).then(
                             self.updateQueue,
@@ -381,6 +381,9 @@ $(function() {
                         search: $('#history-table-searchbox').val(),
                         start: self.history.pagination.currentStart(), 
                         limit: self.history.paginationLimit()} ).then( self.updateHistory );
+            
+            // Return for .then() functionality
+            return queueApi;
 		};
 
         // Set pause action on click of toggle
@@ -484,10 +487,13 @@ $(function() {
                         script:     $('#modal_add_nzb select[name="Post-processing"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val(),  
                         priority:   $('#modal_add_nzb select[name="Priority"]').val()=='' ? -100 : $('#modal_add_nzb select[name="Priority"]').val(),  
                         pp:         $('#modal_add_nzb select[name="Processing"]').val()=='' ? -1 : $('#modal_add_nzb select[name="Processing"]').val(), 
-            }).then(function(r) { self.refresh() });
-            // Hide and reset/refresh
-            $("#modal_add_nzb").modal("hide");
-            form.reset()
+            }).then(function(r) { 
+                // Hide and reset/refresh
+                self.refresh() 
+                $("#modal_add_nzb").modal("hide");
+                form.reset()
+            });
+            
         }
         self.addNZBFromFile = function(file) {
             // Adding a file happens through this special function
@@ -505,9 +511,12 @@ $(function() {
                         cache: false, 
                         processData: false, 
                         contentType: false, 
-                        data: data }).then(function(r) { self.refresh() });
-            // Hide
-            $("#modal_add_nzb").modal("hide");
+                        data: data }).then(function(r) { 
+                            // Hide and reset/refresh
+                            self.refresh()
+                            $("#modal_add_nzb").modal("hide"); 
+                        });
+            
         }
         
         // Load status info
@@ -519,9 +528,9 @@ $(function() {
             callSpecialAPI('status/').then(function(data) { 
                     // Already exists?
                     if(self.hasStatusInfo()) {
-                        ko.mapping.fromJS(JSON.parse(data), self.statusInfo);
+                        ko.mapping.fromJS(ko.utils.parseJson(data), self.statusInfo);
                     } else {
-                        self.statusInfo = ko.mapping.fromJS(JSON.parse(data));
+                        self.statusInfo = ko.mapping.fromJS(ko.utils.parseJson(data));
                     }
                     // Show again
                     self.hasStatusInfo(true)
@@ -643,7 +652,7 @@ $(function() {
             self.totalItems(data.noofslots);
             
             // Go over all items
-			$.each( data.slots, function() {
+			$.each(data.slots, function() {
 				var item = this;
 				var existingItem = ko.utils.arrayFirst( self.queueItems(), function( i ) { return i.id == item.nzo_id; } );
 
@@ -653,18 +662,17 @@ $(function() {
 				} else {
                     // Add new item
                     self.queueItems.push( new QueueModel( self, item ) );
+                    
+                    // Only now sort
+                    self.queueItems.sort( function(a, b) { return a.index() < b.index() ? -1 : 1; } );
 				}
-                
-			} );
+			});
             
             // Remove items that don't exist anymore
             $.each(itemIds, function() {
 				var id = this.toString();
 				self.queueItems.remove( ko.utils.arrayFirst( self.queueItems(), function( i ) { return i.id == id; } ) );
-			});
-            
-            // Sort by index
-			self.queueItems.sort( function(a, b) { return a.index() < b.index() ? -1 : 1; } );	
+			});	
 		};
 
         // Move in sortable
@@ -692,6 +700,26 @@ $(function() {
         /***
             Multi-edit functions
         ***/
+        self.queueSorting = function(data, event) {
+            // What action?
+            var sort, dir;
+            switch ($(event.currentTarget).data('action')) {
+                case 'sortAgeAsc':    sort='avg_age'; dir='asc';  break;
+                case 'sortAgeDesc':   sort='avg_age'; dir='desc'; break;
+                case 'sortNameAsc':   sort='name';    dir='asc';  break;
+                case 'sortNameDesc':  sort='name';    dir='desc'; break;
+                case 'sortSizeAsc':   sort='size';    dir='asc';  break;
+                case 'sortSizeDesc':  sort='size';    dir='desc'; break;
+            }
+            // Send call
+            callAPI({mode:'queue', name:'sort', sort: sort, dir: dir}).then(function() {
+                // Force a refresh and then re-sort
+                parent.refresh().then(function() {
+                    self.queueItems.sort( function(a, b) { return a.index() < b.index() ? -1 : 1; } );
+                })
+            })
+        }
+        
         self.showMultiEdit = function() { 
             // Update value
             self.isMultiEditing(!self.isMultiEditing()) 
@@ -705,6 +733,11 @@ $(function() {
         }
         
         self.addMultiEdit = function(item, event) {
+            // Is it a shift-click?
+            if(event.shiftKey) {
+                checkShiftRange('.queue-table input[name="multiedit"]');
+            }
+            
             // Add or remove from the list?
             if(event.currentTarget.checked) {
                 // Add item
@@ -747,6 +780,10 @@ $(function() {
             if(newPrior != '')  { callAPI( { mode: 'queue', name:'priority', value: strIDs, value2: newPrior } ) }
             if(newProc != '')   { callAPI( { mode: 'change_opts', value: strIDs, value2: newProc } ) }
             if(newStatus)       { callAPI( { mode: 'queue', name: newStatus, value: strIDs } )}
+            
+            // Wat a little and do the refresh
+            setTimeout(parent.refresh, 100)
+            
         }
         
         // Selete all selected
@@ -785,7 +822,7 @@ $(function() {
     **/
 	function QueueModel( parent, data ) {
 		var self = this;
-		this.parent = parent;
+		self.parent = parent;
 
         // Define all knockout variables
         self.id;
@@ -956,7 +993,7 @@ $(function() {
     **/
    	function HistoryListModel( parent ) {
 		var self = this;
-		this.parent = parent;
+		self.parent = parent;
         
         // Variables
 		self.historyItems    = ko.observableArray( [] );
@@ -980,8 +1017,8 @@ $(function() {
 			var itemIds = $.map( self.historyItems(), function(i) { return i.historyStatus.nzo_id(); } );
 
 			$.each( data.slots, function(index, slot) {
-				var existingItem = ko.utils.arrayFirst( self.historyItems(), function( i ) { return i.historyStatus.nzo_id() == slot.nzo_id; } );
-
+				var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) { return i.historyStatus.nzo_id() == slot.nzo_id; });
+                // Update or add?
 				if( existingItem ) {
 					existingItem.updateFromData( slot );
 					itemIds.splice( itemIds.indexOf( slot.nzo_id ), 1 );
@@ -989,16 +1026,17 @@ $(function() {
 				    // Add history item
 					self.historyItems.push( new HistoryModel( self, slot ) );
                     
-                    // Only now sort so newest on top
-                    self.historyItems.sort( function( a, b ) { return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1; } );
+                    // Only now sort so newest on top. completed is updated every time while download is waiting
+                    // so doing the sorting every time would cause it to bounce around
+                    self.historyItems.sort(function( a, b ) { return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1; });
                 }
 			} );
 
             // Remove the un-used ones
-			$.each( itemIds, function() {
+			$.each(itemIds, function() {
 				var id = this.toString();
 				self.historyItems.remove( ko.utils.arrayFirst( self.historyItems(), function( i ) { return i.historyStatus.nzo_id() == id; } ) );
-			} );
+			});
             
             /***
                 History information
@@ -1011,10 +1049,10 @@ $(function() {
 		};
         
         // Save pagination state
-        self.paginationLimit.subscribe( function( newValue ) {
+        self.paginationLimit.subscribe(function( newValue ) {
             $.cookie('historyPaginationLimit', newValue, { expires: 365 });
             self.parent.refresh();
-		} );
+		});
 
         // Retry a job
         self.retryJob = function(form) {
@@ -1121,7 +1159,7 @@ $(function() {
         // Processing or done?
         self.processingDownload = ko.computed(function() {
             var status = self.status();
-            return (status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing' || status == 'Queued')
+            return (status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing')
         })
 
         // Format status text
@@ -1246,7 +1284,8 @@ $(function() {
                 
                 // ID's
                 var itemIds = $.map( self.fileItems(), function(i) { return i.filename(); } );
-                
+                var newItems = [];
+
                 // Go over them all
                 $.each(response.files, function(index, slot) {
                     var existingItem = ko.utils.arrayFirst( self.fileItems(), function( i ) {  return i.filename() == slot.filename; } );
@@ -1256,10 +1295,16 @@ $(function() {
                         itemIds.splice( itemIds.indexOf( slot.filename ), 1 );
     				} else {
     				    // Add files item
-    					self.fileItems.push( new FileslistingModel( self, slot ) );
+    					newItems.push( new FileslistingModel( self, slot ) );
                     }    
                 })
                 
+                // Add new ones in 1 time instead of every single push
+                if(newItems.length > 0) {
+                    ko.utils.arrayPushAll(self.fileItems(), newItems);
+                    self.fileItems.valueHasMutated();
+                }
+
                 // Check if we show/hide completed
                 if($.cookie('showCompletedFiles') == 'No') {
                     $('.item-files-table tr:not(.files-sortable)').hide();
@@ -1308,14 +1353,14 @@ $(function() {
             dataToSend['action_key'] = 'Delete';
             
             // Get all selected ones
-            $('.item-files-table input:checked').each(function() {
+            $('.item-files-table input:checked:not(:disabled)').each(function() {
                 // Add this item
                 dataToSend[$(this).prop('name')] = 'on';
             }) 
                 
             // Activate with this weird URL "API"
             callSpecialAPI("nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
-                $('.item-files-table input:checked').parents('tr').fadeOut(fadeOnDeleteDuration)
+                $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration)
     		})
             
         }
@@ -1346,6 +1391,14 @@ $(function() {
         self.filenameAndAge = ko.pureComputed(function() { 
             return self.filename() + ' <small>(' + self.file_age() + ')</small>';
         })
+        
+        // For selecting range
+        self.checkSelectRange = function(data, event) {
+            if(event.shiftKey) {
+                checkShiftRange('.item-files-table input:not(:disabled)')
+            }
+            return true;
+        }
         
         // Update internally
         self.updateFromData = function(data) {
@@ -1511,10 +1564,8 @@ function fixPercentages(intPercent) {
 }
 
 // Function to re-write 0:09:21 to 9:21
-function rewriteTime(timeString) {
-    
+function rewriteTime(timeString) { 
     var timeSplit = timeString.split(/:/);
-
 	var hours = parseInt(timeSplit[0]);
 	var minutes = parseInt(timeSplit[1]);
 	var seconds = parseInt(timeSplit[2]);
@@ -1561,6 +1612,17 @@ function checkAllFiles(objCheck) {
         // (Un)check all in file-list
         $('#modal_item_files input:checkbox:not(:disabled)').prop('checked', $(objCheck).prop('checked'))
     }
+}
+
+// SHift-range functionality for checkboxes
+function checkShiftRange(strCheckboxes) {
+    // Get them all
+    var arrAllChecks    = $(strCheckboxes);
+    // Get index of the first and last
+    var startCheck      = arrAllChecks.index($(strCheckboxes + ':checked:first'));
+    var endCheck        = arrAllChecks.index($(strCheckboxes + ':checked:last'));
+    // Everything in between click it to trigger addMultiEdit
+    arrAllChecks.slice(startCheck, endCheck).filter(':not(:checked)').trigger('click')
 }
 
 // Hide completed files in files-modal

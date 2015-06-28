@@ -219,7 +219,7 @@
 							<td style="text-align: right;" data-bind="text: timeLeft"></td>
 							<td class="delete">
                                 <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { 'for' : 'multiedit_' + index() }">
-                                    <input type="checkbox" name="multiedit" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />
+                                    <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />
                                 </label>
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
                                     <a role="button" href="#" data-toggle="dropdown" onclick="keepOpen(this)">
@@ -255,6 +255,35 @@
 				</table>
 
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
+                <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-checkall">
+                            <input type="checkbox" name="multieditCheckAll" title="$T('Glitter-checkAll')" id="multiedit-checkall" onclick="checkAllFiles(this)"/>
+                        </label> 
+                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
+                    </div>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-play">
+                            <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-play"></span>
+                        </label>
+                        <label for="multiedit-pause">
+                            <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-pause"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown" title="$T('cmenu-sorting')">
+                        <a role="button" href="#" data-toggle="dropdown" class="hoverbutton"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
+                            <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
+                            <li><a href="#" data-action="sortNameAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameAsc')</a></li>
+                            <li><a href="#" data-action="sortNameDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameDesc')</a></li>
+                            <li><a href="#" data-action="sortSizeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeAsc')</a></li>
+                            <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
+                        </ul>
+                    </div>
                     <div class="add-nzb-inputbox" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
@@ -272,24 +301,7 @@
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
                     
-                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
-                        <label for="multiedit-checkall">
-                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)"/>
-                        </label> 
-                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
-                    </div>
                     
-                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
-                        <label for="multiedit-play">
-                            <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-play"></span>
-                        </label>
-                        <label for="multiedit-pause">
-                            <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-pause"></span>
-                        </label>
-                        
-                    </div>
                     
                     <div class="clearfix"></div>
     			</form>
@@ -383,50 +395,43 @@
                                     </a>
                                     <div class="dropdown-menu">
                                         <span class="glyphicon glyphicon-info-sign"></span>
-                                        <table class="history-status-table">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>$T('name')</td>
-                                                    <td data-bind="text: historyStatus.name"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('post-Completed')</td>
-                                                    <td data-bind="text: completedOn"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('status')</td>
-                                                    <td data-bind="text: glitterTranslate.status[historyStatus.status()]"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('size')</td>
-                                                    <td data-bind="text: historyStatus.size"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('category')</td>
-                                                    <td data-bind="text: historyStatus.category"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('msg-path')</td>
-                                                    <td data-bind="text: historyStatus.path"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$T('Glitter-storage')</td>
-                                                    <td data-bind="text: historyStatus.storage"></td>
-                                                </tr>
-                                                <!-- ko foreach: historyStatus.stage_log -->
-                                                <tr>
-                                                    <td data-bind="text: glitterTranslate.status[name()]"></td>
-                                                    <td data-bind="html: actions" class="history-status-modallink"></td>
-                                                </tr>
-                                                <!-- /ko -->
-                                            </tbody>
-                                        </table>
+                                        <div class="history-status-table">
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('name')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.name"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('post-Completed')</div>
+                                                <div class="col-sm-10" data-bind="text: completedOn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('status')</div>
+                                                <div class="col-sm-10" data-bind="text: glitterTranslate.status[historyStatus.status()]"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('size')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.size"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('category')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.category"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('msg-path')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.path"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('Glitter-storage')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.storage"></div>
+                                            </div>
+                                            
+                                            <!-- ko foreach: historyStatus.stage_log -->
+                                            <div class="row">
+                                                <div class="col-sm-2" data-bind="text: glitterTranslate.status[name()]"></div>
+                                                <div class="col-sm-10 history-status-modallink" data-bind="html: actions"></div>
+                                            </div>
+                                            <!-- /ko -->
+                                        </div>
                                     </div>
                                 </div>
                                 <a href="#" class="hoverbutton" data-bind="click: deleteSlot"><span class="glyphicon glyphicon-trash"></span></a>

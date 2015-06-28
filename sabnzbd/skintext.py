@@ -767,6 +767,8 @@ SKIN_TEXT = {
     'Glitter-free' : TT('Free Space').lower(),
     'Glitter-search' : TT('Search'),
     'Glitter-multiOperations' : TT('Multi-Operations'),
+    'Glitter-multiSelect' : TT('Hold shift key to select a range'),
+    'Glitter-checkAll' : TT('Check all'),
     'Glitter-configure' : TT('SABnzbd settings'),
     'Glitter-restartSab' : TT('Restart SABnzbd'),
     'Glitter-onFinish' : TT('On queue finish'),
@@ -819,6 +821,12 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-grabbing' : TT('Grabbing NZB...'),
     'Glitter-updateAvailable' : TT('Update Available!'),
+    'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
+    'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
+    'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),
+    'Glitter-sortNameDesc' : TT('Sort by Name <small>Z&rarr;A</small>'),
+    'Glitter-sortSizeAsc' : TT('Sort by Size <small>Smallest&rarr;Largest</small>'),
+    'Glitter-sortSizeDesc' : TT('Sort by Size <small>Largest&rarr;Smallest</small>'),
 
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),

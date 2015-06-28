@@ -1,5 +1,5 @@
 body {
-    background-color:#EEE;
+    background-color: #E4E4E4;
 }
 
 h2 {
@@ -10,23 +10,24 @@ h2 {
 /***
     Navbar
 **/
-
-div.main-navbar {
-    padding:0 0 0 0;
+.container {
+    margin-top: 1em;
 }
 
-nav.main-navbar {
-    padding:0 10px 0 10px;
+.main-navbar {
+    padding:0 0 0 0;
     margin-bottom:0px;
     z-index:999;
-    margin-top:1em;
     
 }
 
-nav.main-navbar .sparkline,
 .sparkline-container svg {
     margin: 10px 15px 8px;
     float:left;
+}
+
+.main-navbar .sparkline {
+    display: none;
 }
 
 .navbar-collapse.in {
@@ -45,7 +46,8 @@ nav.main-navbar .sparkline,
 
 .navbar-collapse.in .dropdown-menu {
     position: absolute;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     border: 1px solid #cccccc;
     margin-left: -130px;
@@ -70,6 +72,7 @@ nav.main-navbar .sparkline,
 
 .navbar-header img {
     margin-right:1em;
+    margin-left:  10px;
 }
 
 #navbar-logo-big {
@@ -184,9 +187,10 @@ li.dropdown {
 ***/
 
 .main-content {
-    padding-top: 62px;
+    padding-top: 50px;
     background-color:#FFF;
-    box-shadow:0 0 10px 3px #CCC;
+    /*box-shadow:0 0 10px 3px #CCC;*/
+    border: 1px solid rgba(0, 0, 0, 0.2);
     position:relative;
     top:-52px;
     margin-bottom: 30px;
@@ -386,7 +390,7 @@ td.name .name-ratings .glyphicon-volume-up {
 tbody.nodownloads tr td {
     border:none;
     text-align: center;
-    
+    border-bottom: 1px solid #F0F0F0 !important;
 }
 
 tbody.nodownloads tr td a {
@@ -501,6 +505,7 @@ td.delete label,
     border: 1px solid #F0F0F0;
     margin: -7px 0px 10px;
     background-color: #f9f9f9;
+    
     max-width: 700px;
     float: right;
 }
@@ -536,6 +541,24 @@ td.delete label,
 .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
     padding-left: 6px;
     padding-right: 6px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny {
+    width: 20px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny>a {
+    margin-left: -4px;
+    margin-top: 1px;
+    display: inline-block;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
+    margin-left: -100px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny.open a {
+    opacity: 1;
 }
 
 .table-warnings .table-warnings-header-label {
@@ -664,27 +687,13 @@ td.delete label,
     font-size: 2em;
 }
 
-.history-status-table,
-.history-status-table tr,
-.history-status-table td {
-    border: 0 !important;
-    
-}
-
-.history-status-table td:last-child,
-.history-status-table td:first-child {
-    border: 0 !important;
-    padding-top:0;
-    padding-bottom:0;
-}
-
-.history-status-table td:first-child {
-    text-align: right;
+.history-status-table .col-sm-2 {
     font-weight: bold;
-    padding-right: 5px;
+    text-align: right;
+    padding-right: 0;
 }
 
-.history-status-table td:last-child {
+.history-status-table .col-sm-10 {
     word-break: break-all;
 }
 
@@ -898,7 +907,7 @@ td.delete label,
 
 #modal_help table td:first-child {
     text-align: right;
-    padding-right: 5px;;
+    padding-right: 5px;
 }
 
 #modal_help table td a:hover {
@@ -1032,6 +1041,18 @@ td.delete label,
         width: 350px;
     }  
     
+    
+    .queue .multioperations-selector {
+        min-width: 600px;
+    }
+}
+
+@media screen and (min-height: 800px) {
+    /* Only for AddNZB and AboutModals */    
+    #modal_add_nzb .modal-dialog,
+    #modal_help .modal-dialog {
+        margin-top: 80px;
+    }
 }
 
 /* Targetting Ipad */
@@ -1077,6 +1098,8 @@ a, a:active, a:hover, a:focus {
 
 .dropdown-menu {
     margin-top: 0;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .pagination {
@@ -1126,9 +1149,14 @@ legend {
     background:transparent;
 }
 
+.modal-content {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
 .modal-backdrop {
     background-color: white;
-    
+    opacity: 0.8 !important;
 }
 
 .modal-dialog {
