@@ -403,6 +403,10 @@ tbody.nodownloads tr td a span {
     top: 2px;
 }
 
+td.timeleft {
+    text-align: right;
+}
+
 td.delete {
     overflow: visible !important;
     padding-left: 0 !important;
@@ -554,7 +558,7 @@ td.delete label,
 }
 
 .multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
-    margin-left: -100px;
+    margin-left: -110px;
 }
 
 .multioperations-selector .add-nzb-inputbox-tiny.open a {
@@ -1043,7 +1047,7 @@ td.delete label,
     
     
     .queue .multioperations-selector {
-        min-width: 600px;
+        min-width: 700px;
     }
 }
 
@@ -1059,12 +1063,18 @@ td.delete label,
 @media only screen 
 and (min-device-width : 768px) 
 and (max-device-width : 1024px)  {
-    nav.main-navbar {
+    .main-navbar {
         margin-top: 0;
     }
     
     .container {
         width: 100%;
+       
+    }
+    
+    .sparkline,
+    .sparkline-container {
+        display: block !important;
     }
 }
 

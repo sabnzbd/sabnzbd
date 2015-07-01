@@ -25,7 +25,7 @@
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css" media="all and (max-width: 768px)" />
 
-        <link rel="shortcut icon" type="image/ico" href="./static/images/sabnzbdplus.ico" data-bind="attr: { 'href':SABIcon }" />
+        <link rel="shortcut icon" type="image/ico" href="./static/images/sabnzbdplus.ico" data-bind="attr: { 'href': SABIcon }" />
         
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -216,7 +216,7 @@
                                     <span data-bind="text: progressText"></span>
 								</div>
 							</td>
-							<td style="text-align: right;" data-bind="text: timeLeft"></td>
+							<td class="timeleft" data-bind="text: timeLeft"></td>
 							<td class="delete">
                                 <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { 'for' : 'multiedit_' + index() }">
                                     <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />

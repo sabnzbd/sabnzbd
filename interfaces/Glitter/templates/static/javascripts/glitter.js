@@ -107,8 +107,8 @@ $(function() {
    	function ViewModel() {
 	    // Initialize models
 		var self = this;
-		self.queue = new QueueListModel(this);
-		self.history = new HistoryListModel(this);
+		self.queue    = new QueueListModel(this);
+		self.history  = new HistoryListModel(this);
         self.filelist = new Fileslisting(this);
 
         // Set information varibales
@@ -121,7 +121,7 @@ $(function() {
         self.speedMetric       = ko.observable();
         self.speedMetrics      = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit     = ko.observable(false);
-		self.speedLimit        = ko.observable(100).extend( { rateLimit: 200 } );
+		self.speedLimit        = ko.observable(100).extend({rateLimit: {timeout: 400, method: "notifyWhenChangesStop" }});
         self.speedLimitInt     = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused   = ko.observable(false);
 		self.timeLeft          = ko.observable("0:00");
@@ -251,7 +251,7 @@ $(function() {
 			self.speedMetric( speedSplit[1] );
             
             // Update sparkline data
-			if(self.speedHistory.length >= 50) {
+			if(self.speedHistory.length >= 200) {
                 // Remove first one
                 self.speedHistory.shift();
 			}
@@ -263,7 +263,7 @@ $(function() {
                 // Make sparkline
                 if(self.speedHistory.length == 1) {
                     // Create
-                    $('.sparkline').peity("line", { width: 150, height: 32, fill: '#9DDB72', stroke: '#AAFFAA' })  
+                    $('.sparkline').peity("line", { width: 200, height: 32, fill: '#9DDB72', stroke: '#AAFFAA' })  
                 } else {
                     // Update
                     $('.sparkline').text(self.speedHistory.join(",")).change()   
