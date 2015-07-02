@@ -1,0 +1,192 @@
+/**
+    MAIN & NAVBAR
+**/
+
+.container {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.main-navbar {
+    margin-top: 0;
+    padding: 0;
+}
+
+.main-content {
+    border: 0;
+    margin-top: 1em !important;
+}
+
+#navbar-logo-big {
+    display: none;
+}
+
+#navbar-logo-small {
+    display: inline-block;
+}
+
+
+
+h2 {
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+.max-speed-input {
+    margin-top: 1px !important;
+    margin-left: 0 !important;
+    width: 300px !important;
+}
+
+.max-speed-input .ui-slider {
+    margin-bottom: 10px;
+}
+
+.main-restarting.in strong {
+    font-size: 2em;
+    
+    font-weight: bold;
+}
+
+.main-restarting small {
+    font-size: 0.7em;
+
+}
+
+
+/**
+    QUEUE & HISTORY
+**/
+.info-container {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    margin-left: -5px;
+    float: none;
+    clear: both;
+    line-height: 2.3em;
+    
+}
+
+.history-info {
+    margin-top: 5px;
+}
+
+.info-container-break:after {
+    content:"\A"; 
+    white-space:pre;
+}
+
+.info-container a {
+    position: absolute;
+    right: 10px;
+    top: 58px;
+    font-size: 1em;
+}
+
+
+.queue-table .table-header-progress {
+    width: 0%;
+}
+
+.queue-table tr td {
+    vertical-align: top !important;
+    height: 5em;
+}
+
+.queue-table .nodownloads tr td {
+    height: 2em;
+}
+
+.queue-table .progress-indicator {
+    display: block;
+    position: absolute;
+    width: 92%;
+    left: 4%;
+    margin-top: 2.8em;
+    height: 2em;
+    border: 0 !important;
+    padding: 0 !important;
+    background:  transparent !important;
+}
+
+.queue-table td.name .row-wrap-text {
+    max-width: 70% !important;
+}
+
+/* For Iphone 4/5 */
+@media only screen and (max-width : 320px) {
+    .queue-table td.name .row-wrap-text {
+        max-width: 60% !important;
+    }
+}
+
+.queue-table td.name .name-options {
+    display: block;
+}
+
+.queue-table td.name .glyphicon-folder-open {
+    width: 1.5em;
+    margin-left:  1px;
+}
+
+
+.multioperations-selector .add-nzb-inputbox {
+    width: 50%
+}
+
+.multioperations-selector .add-nzb-inputbox-small {
+    width: 52px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny {
+    width: 50%
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny>a {
+    float: right;
+    margin-right: 20px;
+}
+
+.multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
+    margin-left: 0px;
+}
+
+.table-warnings .table-warnings-header-label {
+    width: 120px;
+}
+
+.table-warnings .label {
+    width: 100%;
+}
+
+.table-warnings strong {
+    display: block;
+    text-align: center;
+}
+
+.history-table .status-header {
+    width: 25%;
+}
+
+.history-table .delete .dropdown-menu {
+    width: 90%;
+}
+
+.history-table .status-header {
+    width: 0;
+}
+
+.history-status-table .col-sm-2 {
+    text-align: left;
+}
+/**
+    MODALS
+**/
+
+#modal_options .col-sm-5 {
+    text-align: left;
+}
+
+#modal_item_files .input-group {
+    clear: left;
+}

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
+	<head>
+		<!--
+                Glitter V1
+                By Safihre (2015)
+                
+                Code extended from Shiny-template
+                Code examples used from Knockstrap-template
+        -->
+        <title data-bind="text: title">SABnzbd</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        
+       	<meta name="apple-mobile-web-app-capable" content="yes" />
+    	<meta name="apple-mobile-web-app-title" content="SABnzbd" />
+ 	
+    	<link rel="apple-touch-icon" sizes="57x57" href="./static/images/apple-touch-icon-57x57.png" />
+    	<link rel="apple-touch-icon" sizes="72x72" href="./static/images/apple-touch-icon-72x72.png" />
+    	<link rel="apple-touch-icon" sizes="114x114" href="./static/images/apple-touch-icon-114x114.png" />
+    	<link rel="apple-touch-icon" sizes="144x144" href="./static/images/apple-touch-icon-144x144.png" />
+        
+        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css" media="all and (max-width: 768px)" />
+
+        <link rel="shortcut icon" type="image/ico" href="./static/images/sabnzbdplus.ico" data-bind="attr: { 'href': SABIcon }" />
+        
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="./static/javascripts/html5shiv.min.js"></script>
+            <script src="./static/javascripts/respond.min.js"></script>
+        <![endif]-->
+        <!--[if lt IE 8]>
+            <link href="./static/bootstrap/css/bootstrap-ie7.css" rel="stylesheet">
+        <![endif]-->  
+	</head>
+	<body >
+		<div class="container main-navbar">         
+			<nav class="navbar navbar-inverse main-navbar" role="navigation">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<img src="./static/images/logo.png" width="120" height="45" alt="" id="navbar-logo-big"/>
+                    <img src="./static/images/logo-small.png" width="45" height="45" alt="" id="navbar-logo-small"/>
+                    
+					<div class="btn-group">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle"><span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span></button>
+							<button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+                                <li><a href="#" data-time="5" data-bind="click: pauseTime">$T('Glitter-pause5m')</a></li>
+								<li><a href="#" data-time="15" data-bind="click: pauseTime">$T('Glitter-pause15m')</a></li>
+								<li><a href="#" data-time="30" data-bind="click: pauseTime">$T('Glitter-pause30m')</a></li>
+								<li><a href="#" data-time="60" data-bind="click: pauseTime">$T('Glitter-pause1h')</a></li>
+								<li><a href="#" data-time="180" data-bind="click: pauseTime">$T('Glitter-pause3h')</a></li>
+								<li><a href="#" data-time="360" data-bind="click: pauseTime">$T('Glitter-pause6h')</a></li>
+							</ul>
+						</div>
+						<span class="btn btn-default navbar-btn  navbar-timeleft" data-bind="text: timeLeft">0:00</span>
+					</div>
+                    
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+                        <li class="sparkline-container"><span class="sparkline"></span></li>
+                        <li class="speedlimit-dropdown dropdown">
+							<div class="btn-group">
+        						<div class="btn-group">
+                                    <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
+                                        <span class="glyphicon glyphicon-link" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;"></span>
+                                        <span data-bind="text: speedText">0 KB/s</span>
+                                    </button>
+        							<button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
+        								<span class="caret"></span>
+        							</button>
+                                    <div class="dropdown-menu max-speed-input">
+                                        <div data-bind="visible: !bandwithLimit()">
+                                            <a href="config/general/">
+                                                <span class="glyphicon glyphicon-cog"></span>
+                                                $T('Glitter-setMaxLinespeed')
+                                            </a>
+                                        </div>
+                                        
+                                        <div data-bind="visible: bandwithLimit()">
+                                            <div class="max-speed-slider" data-bind="slider: speedLimit, sliderOptions: {min: 1, max: 100, range: 'min', step: 1}"></div>
+                                            <span data-bind="text: speedLimit() + '%'"></span> (<span data-bind="text: speedLimitText"></span>)
+                                        </div>
+        							</div>
+                                </div>
+                            </div>
+						</li>
+                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-addNZB')">
+                            <a href="#modal_add_nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                        </li>
+                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
+                            <a href="#modal_options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
+                        </li>
+						<li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-configure')">
+                            <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
+                        </li>
+   
+                        <li class="dropdown">
+                            <a href="#" data-toggle="dropdown" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}"><span class="glyphicon glyphicon-off"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#modal_help" data-toggle="modal">$T('menu-help') <span class="glyphicon glyphicon-question-sign"></span></a></li>
+                                <li class="divider"></li>
+                                <li><a href="shutdown?session=$session" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                                <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">$T('Glitter-onFinish'):</li>
+                                <li><a href="#" data-action="shutdown_program" data-bind="click: setQueueFinish, css: { 'active-on-queue-finish': onQueueFinish() == 'shutdown_program' }">$T('shutdownSab')</a></li>
+                                <li><a href="#" data-action="shutdown_pc" data-bind="click: setQueueFinish, css: { 'active-on-queue-finish': onQueueFinish() == 'shutdown_pc' }">$T('shutdownPc')</a></li>
+                                <li><a href="#" data-action="standby_pc" data-bind="click: setQueueFinish, css: { 'active-on-queue-finish': onQueueFinish() == 'standby_pc' }">$T('standbyPc')</a></li>
+                                <li><a href="#" data-action="hibernate_pc" data-bind="click: setQueueFinish, css: { 'active-on-queue-finish': onQueueFinish() == 'hibernate_pc' }">$T('hibernatePc')</a></li>
+                                <li class="active-on-queue-finish-clear" data-bind="visible: onQueueFinish"><a href="#" data-action="" data-bind="click: setQueueFinish">$T('Glitter-clearAction')</a></li>
+                            </ul>
+                        </li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+
+		<div class="container main-content">
+			<div class="queue">
+                <div class="queue-update-info" data-bind="visible: new_release()" style="display: none;">
+                    <a href="#" target="_blank" data-bind="attr: { href: new_rel_url() }">
+                        <span class="label label-success">$T('Glitter-updateAvailable')</span>
+                        <span class="label label-default" data-bind="text: new_release()"></span>
+                    </a>
+                </div>
+            
+                <h2>$T('menu-queue')</h2>
+                
+                <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
+                    <!-- ko if: (queueDataLeft() != '')  -->
+                    <span class="glyphicon glyphicon-save info-textspacer"></span> 
+                    <span data-bind="text: queueDataLeft"></span> MB $T('Glitter-left')
+                    <!-- /ko -->
+                
+                    <!-- ko if: (quotaLimit() != 0)  -->
+                    <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }" class="info-container-break">
+                        <span class="glyphicon glyphicon-signal info-textspacer"></span> 
+                        <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
+                    </span>
+                    <!-- /ko -->
+    
+                    <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
+                        <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
+                    </span>
+                    <!-- ko if: (diskSpaceLeft2() > 0)  -->
+                    <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
+                        <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
+                    </span>
+                    <!-- /ko -->
+                    
+                    <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations')">
+                        <span class="glyphicon glyphicon-tasks"></span>
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+                
+				<table class="table table-striped table-hover queue-table">
+					<thead>
+						<tr>
+							<th style="width: 25px;"></th>
+							<th></th>
+							<th class="table-header-progress"></th>
+							<th style="width: 80px;"></th>
+							<th style="width: 60px;"></th>
+						</tr>
+					</thead>
+					<tbody class="nodownloads" data-bind="visible: !hasQueue()" style="display: none;">
+                        <tr>
+                            <td colspan="5">
+                                <a href="#modal_add_nzb" title="$T('Glitter-dragAndDrop')" class="hoverbutton" data-toggle="modal">
+                                <span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</a>
+                            </td>
+                        </tr>
+                    </tbody>
+					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue table' } }" style="display: none;">
+						<tr class="queueitem">
+							<td><a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }">&nbsp;</a></td>
+							<td class="name">
+                                <div class="row-wrap-text" data-bind="visible: !editingName()">
+                                    <span data-bind="text: name, attr: { 'title': name() }"></span>
+                                    <!-- ko if: (rating_avg_video() !== false)  -->
+                                    <div class="name-ratings hoverbutton">
+                                        <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
+                                        <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: rating_avg_audio"></span>
+                                    </div>
+                                    <!-- /ko -->
+                                </div>
+                                <form data-bind="submit: editingNameSubmit">
+                                    <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
+                                </form>
+                                <div class="name-options" data-bind="visible: !editingName()">
+                                    <a href="#" data-bind="click: editName" class="hoverbutton"><span class="glyphicon glyphicon-pencil"></span></a>
+                                    <a href="#" data-bind="click: showFiles" class="hoverbutton"><span class="glyphicon glyphicon-folder-open"></span></a>
+                                </div>
+                            </td>
+							<td class="progress-indicator">
+								<div class="progress">
+									<div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentageRounded() + '; background-color: ' + progressColor() + ';' }, c">
+                                        <strong data-bind="text: percentageRounded"></strong>
+                                        <i data-bind="text: missingText"></i>
+                                    </div>
+                                    <span data-bind="text: progressText"></span>
+								</div>
+							</td>
+							<td class="timeleft" data-bind="text: timeLeft"></td>
+							<td class="delete">
+                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { 'for' : 'multiedit_' + index() }">
+                                    <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />
+                                </label>
+                                <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
+                                    <a role="button" href="#" data-toggle="dropdown" onclick="keepOpen(this)">
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu queueitem-settings">
+                                        <li title="$T('category')">
+                                            <span class="glyphicon glyphicon-tag"></span>
+                                            <select name="Category" class="form-control" data-bind="options: parent.categoriesList, value: category, event: { change: changeCat }"></select>
+                                        </li>
+                                        <!-- ko if: (status() != 'Fetching')  -->
+                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching') ">
+                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                            <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>                                     
+                                        </li>
+                                        <!-- /ko -->
+                                        <li title="$T('swtag-pp')">
+                                            <span class="glyphicon glyphicon-check"></span>
+                                            <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, event: { change: changeProcessing }"></select>
+                                        </li>
+                                       
+                                        <li title="$T('eoq-scripts')">
+                                            <span class="glyphicon glyphicon-flash"></span>
+                                            <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 0)"></select>
+                                        </li>
+                                    
+                                    </ul>
+                                </div>
+                                <a href="#" class="hoverbutton" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+
+                <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
+                <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-checkall">
+                            <input type="checkbox" name="multieditCheckAll" title="$T('Glitter-checkAll')" id="multiedit-checkall" onclick="checkAllFiles(this)"/>
+                        </label> 
+                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
+                    </div>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                        <label for="multiedit-play">
+                            <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-play"></span>
+                        </label>
+                        <label for="multiedit-pause">
+                            <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
+                            <span class="glyphicon glyphicon-pause"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown" title="$T('cmenu-sorting')">
+                        <a role="button" href="#" data-toggle="dropdown" class="hoverbutton"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
+                            <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
+                            <li><a href="#" data-action="sortNameAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameAsc')</a></li>
+                            <li><a href="#" data-action="sortNameDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameDesc')</a></li>
+                            <li><a href="#" data-action="sortSizeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeAsc')</a></li>
+                            <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
+                        </ul>
+                    </div>
+                    <div class="add-nzb-inputbox" title="$T('category')">
+                        <span class="glyphicon glyphicon-tag"></span>
+                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                    </div>
+                    <div class="add-nzb-inputbox" title="$T('priority')">
+                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                        <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                    </div>
+                    <div class="add-nzb-inputbox" title="$T('swtag-pp')">
+                        <span class="glyphicon glyphicon-check"></span>
+                        <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                    </div>
+                    <div class="add-nzb-inputbox" title="$T('eoq-scripts')">
+                        <span class="glyphicon glyphicon-flash"></span>
+                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                    </div>
+                    
+                    
+                    
+                    <div class="clearfix"></div>
+    			</form>
+                
+                <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
+                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
+                        <span data-bind="text: page"></span>
+                    </li>
+                </ul>  
+                
+                
+            </div>
+
+            <div class="queue-warnings" data-bind="visible: (nrWarnings() > 0)" style="display: none;">
+                <table class="table table-hover table-warnings"> 
+                    <thead>
+                        <tr>
+                            <th class="table-warnings-header-label"></th>
+                            <th></th>
+                            <th style="width: 30px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2" class="table-warnings-hide"></td>
+                            <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-warnings-remove">
+                                <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-trash"></span></a>
+                            </td>
+                        </tr>
+                        <!-- ko foreach: allWarnings -->
+                        <tr>
+                            <td>
+                                <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                                <strong data-bind="text: date"></strong>                                
+                            </td>
+                            <td><span class="queue-warning-text" data-bind="text: text"></span></td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+            
+			<div class="history" data-bind="visible: hasHistory()" style="display: none;">
+                <h2>$T('menu-history')</h2>
+				<table class="table table-hover history-table paginated">
+					<thead>
+						<tr>
+							<th style="width: 25px;"></th>
+                            <th></th>
+							<th class="status-header"></th>
+                            <th style="width: 108px;"></th>
+							<th style="width: 60px;"></th>
+                            
+						</tr>
+					</thead>
+                    
+					<tbody data-bind="foreach: history.historyItems">
+						<tr class="historyitem" data-bind="css: {'history-failed-download':failed()}">
+							<td>
+                                <div data-bind="visible: processingWaiting()"> 
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
+                                <div data-bind="visible: processingDownload()"> 
+                                    <div class="processing-download"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div></div>
+                                </div>
+								<div data-bind="visible: (!failed() && !processingDownload())"> 
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </div>
+                                <div data-bind="visible: failed()">
+									<a class="retrybutton" href="#" data-bind="click: retry">
+										<span class="glyphicon glyphicon-exclamation-sign"></span>
+									</a>
+								</div>
+							</td>
+							<td class="name">
+                                <div class="row-wrap-text">
+                                    <a class="retrybuttontext" href="#" data-bind="visible: failed(), click: retry">$T('button-retry')</a>
+                                    <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
+                                    <a href="#" class="name-ratings hoverbutton" data-bind="visible: historyStatus.rating_avg_video">
+                                        <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: historyStatus.rating_avg_video"></span>
+                                        <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: historyStatus.rating_avg_audio"></span>
+                                    </a>
+                                </div>
+                            </td>
+							<td class="status row-wrap-text" data-bind="text: statusText()"></td>
+                            <td class="history-completedon" data-bind="text: completedOn()"></td>
+							<td class="delete">
+                                <div class="dropdown">
+                                    <a role="button" href="#" data-toggle="dropdown"  data-bind="click: updateAllHistoryInfo">
+                                        <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <span class="glyphicon glyphicon-info-sign"></span>
+                                        <div class="history-status-table">
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('name')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.name"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('post-Completed')</div>
+                                                <div class="col-sm-10" data-bind="text: completedOn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('status')</div>
+                                                <div class="col-sm-10" data-bind="text: glitterTranslate.status[historyStatus.status()]"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('size')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.size"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('category')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.category"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('msg-path')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.path"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">$T('Glitter-storage')</div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.storage"></div>
+                                            </div>
+                                            
+                                            <!-- ko foreach: historyStatus.stage_log -->
+                                            <div class="row">
+                                                <div class="col-sm-2" data-bind="text: glitterTranslate.status[name()]"></div>
+                                                <div class="col-sm-10 history-status-modallink" data-bind="html: actions"></div>
+                                            </div>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="hoverbutton" data-bind="click: deleteSlot"><span class="glyphicon glyphicon-trash"></span></a>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+                
+                <div class="input-group stylish-input-group" id="history-table-search">
+                    <input type="text" class="form-control"  placeholder="$T('Glitter-search')" id="history-table-searchbox" />
+                    <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>  
+                    </span>
+                </div>
+                
+                <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">
+                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
+                        <span data-bind="text: page"></span>
+                    </li>
+                </ul>
+                
+                <ul id="history-options" class="pagination">
+                    <li><a href="#" data-bind="click: history.emptyHistory"><strong class="glyphicon glyphicon-trash"></strong></a></li>
+                </ul>
+                
+                <div class="info-container history-info">
+                    <span class="glyphicon glyphicon-save"></span>
+                    <span data-bind="text: history.downloadedToday"></span>B $T('Glitter-today')  
+                     
+                    <!-- <span data-bind="text: history.downloadedWeek"></span>B this week  -->
+                    <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')  
+                    <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')  
+                </div>
+			</div>
+		</div>
+        
+        
+        <!-- Filedrop -->
+        <div class="main-filedrop modal-backdrop fade in">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+        </div>
+        <div class="main-restarting modal-backdrop fade in"  data-bind="visible: isRestarting" style="display: none;">
+            <strong><span class="glyphicon glyphicon-retweet"></span> $T('Glitter-lostConnection')</strong><br />
+            <small>$T('Glitter-afterRestart')</small>
+        </div>
+        
+        
+        <!--#include $webdir + "/include_modals.tmpl"#-->
+
+		<script type="text/javascript">
+			apiKey = "$session";
+		</script>
+        
+        <!-- Make translations available in scripts -->
+        <script type="text/javascript">
+            var glitterTranslate = new Object();
+            glitterTranslate.paused     = "$T('post-Paused')";
+            glitterTranslate.left       = "$T('Glitter-left')";
+            glitterTranslate.clearWarn  = "$T('Glitter-confirmClearWarnings')";
+            glitterTranslate.shutdown   = "$T('shutdownOK?')";
+            glitterTranslate.restart    = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
+            glitterTranslate.repair     = "$T('explain-Repair')".replace(/<br \/>/g, "\n");
+            glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
+            glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
+            glitterTranslate.grabbing   = "$T('Glitter-grabbing')";
+            glitterTranslate.checking   = "$T('post-Checking')";
+            glitterTranslate.misingArt  = "$T('missingArt')";
+            glitterTranslate.status     = [];
+            
+            glitterTranslate.status['Completed'] = "$T('post-Completed')";
+            glitterTranslate.status['Failed'] = "$T('post-Failed')";
+            glitterTranslate.status['Queued'] = "$T('post-Queued')";
+            glitterTranslate.status['Repairing...'] = "$T('post-Repairing')";
+            glitterTranslate.status['Extracting...'] = "$T('post-Extracting')";
+            glitterTranslate.status['Moving...']       = "$T('post-Moving')";
+            glitterTranslate.status['Running script...'] = "$T('post-Running')";
+            glitterTranslate.status['Fetching extra blocks...'] = "$T('post-Fetching')";
+            glitterTranslate.status['Quick Check...'] = "$T('post-QuickCheck')";
+            glitterTranslate.status['Verifying...'] = "$T('post-Verifying')";
+            glitterTranslate.status['Checking'] = "$T('post-Checking')";
+            
+            glitterTranslate.status['Download'] = "$T('stage-download')";
+            glitterTranslate.status['Repair'] = "$T('stage-repair')";
+            glitterTranslate.status['Join files'] = "$T('stage-filejoin')";
+            glitterTranslate.status['Unpack'] = "$T('stage-unpack')";
+            glitterTranslate.status['Script'] = "$T('stage-script')";
+            glitterTranslate.status['Source'] = "$T('stage-source')";
+            glitterTranslate.status['Servers'] = "$T('stage-servers')";
+
+            glitterTranslate.pp = [];
+            glitterTranslate.pp['Download'] = "$T('pp-none')";
+            glitterTranslate.pp['+Repair'] = "$T('pp-repair')";
+            glitterTranslate.pp['+Unpack'] = "$T('pp-unpack')";
+            glitterTranslate.pp['+Delete'] = "$T('pp-delete')";
+            
+            glitterTranslate.priority = [];
+            glitterTranslate.priority['Force'] = "$T('pr-force')";
+            glitterTranslate.priority['High'] = "$T('pr-high')";
+            glitterTranslate.priority['Normal'] = "$T('pr-normal')";
+            glitterTranslate.priority['Low'] = "$T('pr-low')";
+            glitterTranslate.priority['Stop'] = "$T('pr-stop')";
+        </script>
+        
+        
+        <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
+        <script type="text/javascript">
+            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.cookie.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.dateFormat.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-3.3.0.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
+            <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
+        </script>
+	</body>
+</html>
