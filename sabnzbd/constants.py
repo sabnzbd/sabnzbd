@@ -146,7 +146,7 @@ date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
 
 year_match = r'[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
-sample_match = r'((^|[\W_])sample\d*[\W_])|(-s\.\w+$)' # something-sample.avi something-s.avi
+sample_match = r'((^|[\W_])sample\d*[\W_])' # something-sample.avi
 
 class Status():
     COMPLETED = 'Completed'
