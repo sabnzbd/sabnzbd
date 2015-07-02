@@ -289,12 +289,12 @@ def sanitize_and_trim_path(path):
     path = path.strip()
     new_path = ''
     if sabnzbd.WIN32:
-        if path.startswith(u'\\\\?\\'):
-            new_path = u'\\\\?\\'
-            path = path[4:]
-        elif path.startswith(u'\\\\?\\UNC\\'):
+        if path.startswith(u'\\\\?\\UNC\\'):
             new_path = u'\\\\?\\UNC\\'
             path = path[8:]
+        elif path.startswith(u'\\\\?\\'):
+            new_path = u'\\\\?\\'
+            path = path[4:]
 
     path = path.replace('\\', '/')
     parts = path.split('/')
@@ -305,8 +305,6 @@ def sanitize_and_trim_path(path):
         new_path = '//'
     elif path.startswith('/'):
         new_path = '/'
-    else:
-        new_path = ''
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
     return os.path.abspath(os.path.normpath(new_path))
