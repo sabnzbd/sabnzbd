@@ -136,6 +136,8 @@ def find_programs(curdir):
             sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
+        if not sabnzbd.newsunpack.SEVEN_COMMAND:
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7z')
 
     if not sabnzbd.newsunpack.PAR2C_COMMAND:
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
