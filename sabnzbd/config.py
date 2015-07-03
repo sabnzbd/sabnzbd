@@ -706,8 +706,12 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        fp = open(path, 'r')
+        fp = open(path, 'rb')
         lines = fp.read().split('\n')
+        if len(lines) == 1:
+            fp.seek(0)
+            lines = fp.read().split('\r')
+        lines = [line.rstrip('\r\n') for line in lines]
         fp.close()
 
         try:
