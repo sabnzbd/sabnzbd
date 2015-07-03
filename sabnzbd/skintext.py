@@ -521,7 +521,7 @@ SKIN_TEXT = {
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
     'srv-priority' : TT('Priority'), #: Server priority
-    'explain-svrprio' : TT('0 is highest priority'), #: Explain server priority
+    'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
     'srv-ssl_type' : TT('SSL type'),
