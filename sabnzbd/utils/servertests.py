@@ -92,17 +92,17 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         else:
             return False, T('Timed out')
     except socket.error, e:
-        return False, xml_name(str(e))
+        return False, unicode(e)
 
     except TypeError, e:
-        return False, xml_name(T('Invalid server address.'))
+        return False, T('Invalid server address.')
 
     except IndexError:
         # No data was received in recv_chunk() call
-        return False, xml_name(T('Server quit during login sequence.'))
+        return False, T('Server quit during login sequence.')
 
     except:
-        return False, xml_name(str(sys.exc_info()[1]))
+        return False, unicode(sys.exc_info()[1])
 
 
     if not username or not password:
@@ -111,7 +111,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             nw.lines = []
             nw.recv_chunk(block=True)
         except:
-            return False, xml_name(str(sys.exc_info()[1]))
+            return False, unicode(sys.exc_info()[1])
 
     # Could do with making a function for return codes to be used by downloader
     try:
@@ -133,7 +133,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         return False, T('Too many connections, please pause downloading or try again later')
 
     else:
-        return False, T('Could not determine connection result (%s)') % xml_name(nw.lines[0])
+        return False, T('Could not determine connection result (%s)') % nw.lines[0]
 
     # Close the connection
     nw.terminate(quit=True)
