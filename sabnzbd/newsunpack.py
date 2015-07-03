@@ -141,7 +141,10 @@ def find_programs(curdir):
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        try:
+            version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        except:
+            version = original = None
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
         sabnzbd.newsunpack.RAR_VERSION = version
         logging.info('UNRAR version %s', version)
