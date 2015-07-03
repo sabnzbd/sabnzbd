@@ -81,6 +81,15 @@
                     <span class="desc">$T('srv-optional')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="categories">$T('srv-categories')</label>
+                    <select name="categories" multiple>
+                    <!--#for $cat in $cats#-->
+                      <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>$cat</option>
+                    <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('srv-explain-categories')</span>
+                </div>
+                <div class="field-pair">
                     <input type="submit" value="$T('button-addServer')" />
                     <input type="button" value="$T('button-testServer')" class="testServer" />
                 </div>
@@ -176,6 +185,15 @@
                     <label class="config" for="send_group$cur">$T('srv-send_group')</label>
                     <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($servers[$server]['send_group']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-explain-send_group')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="categories">$T('srv-categories')</label>
+                    <select name="categories" multiple>
+                    <!--#for $cat in $cats#-->
+                      <option value="$cat" <!--#if $cat in $servers[$server]['categories'] then 'selected' else ""#-->>$cat</option>
+                    <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('srv-explain-categories')</span>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />

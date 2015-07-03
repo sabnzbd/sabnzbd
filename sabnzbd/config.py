@@ -381,6 +381,7 @@ class ConfigServer(object):
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
+        self.categories = OptionList(name, 'categories', default_val=['Default'], add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -388,7 +389,8 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority'):
+                   'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority',
+                   'categories'):
             try:
                 value = values[kw]
             except KeyError:
@@ -416,6 +418,7 @@ class ConfigServer(object):
         dict['ssl_type'] = self.ssl_type()
         dict['send_group'] = self.send_group()
         dict['priority'] = self.priority()
+        dict['categories'] = self.categories()
         return dict
 
     def delete(self):

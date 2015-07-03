@@ -758,13 +758,18 @@ class NzbQueue(TryList):
         ''' Check whether there are any pending articles for the downloader '''
         if not self.__nzo_list:
             return False
-        elif self.__top_only:
+        if self.__top_only:
             for nzo in self.__nzo_list:
                 # Ignore any items that are in a paused or grabbing state
                 if nzo.status not in (Status.PAUSED, Status.GRABBING):
                     return not nzo.server_in_try_list(server)
         else:
-            return not self.server_in_try_list(server)
+            # Check if this server is allowed for any object, then return if we've tried this server.
+            for nzo in self.__nzo_list:
+                if nzo.status not in (Status.PAUSED, Status.GRABBING):
+                    if nzo.server_allowed(server):
+                        return not self.server_in_try_list(server)
+            return False
 
     @synchronized(NZBQUEUE_LOCK)
     def has_forced_items(self):
@@ -780,7 +785,7 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if nzo.status not in (Status.PAUSED, Status.GRABBING):
+                    if nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
                         article = nzo.get_article(server, servers)
                         if article:
                             return article
@@ -788,7 +793,7 @@ class NzbQueue(TryList):
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING):
+                if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
                     article = nzo.get_article(server, servers)
                     if article:
                         return article
