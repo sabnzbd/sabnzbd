@@ -27,7 +27,6 @@
         <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-196x196.png" sizes="196x196" />
         <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-160x160.png" sizes="160x160" />
         <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-96x96.png" sizes="96x96" />
-        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-16x16.png" sizes="16x16" />
         <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-32x32.png" sizes="32x32" />
         
         <meta name="msapplication-TileColor" content="#2b5797" />
@@ -199,7 +198,7 @@
                             </td>
                         </tr>
                     </tbody>
-					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue table' } }" style="display: none;">
+					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
 						<tr class="queueitem">
 							<td><a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }">&nbsp;</a></td>
 							<td class="name">
