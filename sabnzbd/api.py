@@ -52,7 +52,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-                         starts_with_path, cat_convert
+                         starts_with_path, cat_convert, clip_path
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1559,7 +1559,7 @@ def del_hist_job(job, del_files):
             PostProcessor.do.delete(job, del_files=del_files)
             history_db.remove_history(job)
 
-        if path and del_files and path.lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and del_files and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
             remove_all(path, recursive=True)
     return True
 
