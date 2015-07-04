@@ -2291,32 +2291,38 @@ class Status(object):
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
 
-        # For the Dashboard:
+        # Dashboard: Begin
         from utils.getipaddress import localipv4, publicipv4, ipv6
         header['localipv4'] = localipv4()
         header['publicipv4'] = publicipv4()
         header['ipv6'] = ipv6()
-        # DNS-check
+        # Dashboard: DNS-check
         try:
             import socket
             socket.gethostbyname('www.google.com')
             header['dnslookup'] = "OK"
         except:
-            header['dnslookup'] = "Not OK"
+            header['dnslookup'] = None
 
-        # Speed of Download directory:
+        # Dashboard: Speed of System
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        header['pystone'] = getpystone()
+        header['cpumodel'] = getcpu()
+        # Dashboard: Speed of Download directory:
         header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
         try:
             sabnzbd.downloaddirspeed # The persistent var
         except:
-            sabnzbd.downloaddirspeed = None
+            # does not yet exist, so create it:
+            sabnzbd.downloaddirspeed = -1	# -1 means ... not yet determined
         header['downloaddirspeed'] = sabnzbd.downloaddirspeed
-        # Speed of Complete directory:
+        # Dashboard: Speed of Complete directory:
         header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
         try:
             sabnzbd.completedirspeed # The persistent var
         except:
-            sabnzbd.completedirspeed = None
+            # does not yet exist, so create it:
+            sabnzbd.completedirspeed = -1	# -1 means ... not yet determined
         header['completedirspeed'] = sabnzbd.completedirspeed
 
         try:
@@ -2324,6 +2330,7 @@ class Status(object):
         except:
             sabnzbd.dashrefreshcounter = 0
         header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
+        # Dashboard: End
 
 
         header['servers'] = []
@@ -2460,18 +2467,22 @@ class Status(object):
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def dashrefresh(self, **kwargs):		# run if Refresh on Dashboard is clicked
+    def dashrefresh(self, **kwargs):		
+        # This function is run when Refresh button on Dashboard is clicked
+        # Put the time consuming dashboard functions here; they only get executed when the user clicks the Refresh button
         msg = check_session(kwargs)
         if msg: return msg
         try:
-            logging.debug('DashRefresh!!!')
-            sabnzbd.dashrefreshcounter += 1
+            logging.debug('Dashboard: Refresh button pressed')
+
             from utils.diskspeed import diskspeedmeasure
             sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()),1)
             sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()),1)
-            logging.debug('DashRefresh ... End')
+            
+            logging.debug('Dashboard: Refresh finished succesfully')
 
         except:
+            logging.debug('Dashboard: Refresh had a problem')
             pass
         raise dcRaiser(self.__root, kwargs)	# Refresh screen
 

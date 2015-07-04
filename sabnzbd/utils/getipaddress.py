@@ -16,9 +16,9 @@ def localipv4():
 def publicipv4():
     try:
         import urllib2
-        #f = urllib.urlopen("http://api.ipify.org")     # urllib has no timeout parameter, so:
         f = urllib2.urlopen("http://api.ipify.org", timeout=2)    # timeout 2 seconds, in case website is not accessible
         public_ipv4 = f.read()
+        socket.inet_aton(public_ipv4)	# if we got anything else than a plain IPv4 address, this will raise an exception
     except:
         public_ipv4 = None
         pass

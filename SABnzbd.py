@@ -1291,29 +1291,16 @@ def main():
         else:
             logging.debug('Could not determine my IPv6 address')
 
-
-        # measure and log Pystone performance
-        # to avoid a triple nested try/except construction, we use another method:
-        for pystonemodule in ['test.pystone', 'sabnzbd.utils.pystone']:
-            try:
-                exec "from " + pystonemodule + " import pystones"
-                logging.debug('CPU Pystone available performance is %s',int(pystones(1000)[1]))
-                break	# import and calculation worked, so we're done. Get out of the for loop
-            except:
-                pass	# ... the import went wrong, so continue in the for loop
+        # Measure and log system performance measured by pystone and - if possible - CPU model
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        pystoneperf = getpystone()
+        if pystoneperf:
+                logging.debug('CPU Pystone available performance is %s', pystoneperf)
         else:
-            # got to the end of the for (!) loop, so no more pystone modules to try ...
-            logging.debug("Could not import or calculate pystones")
-
-        # On Linux, let's print the CPU model name:
-        try:
-            for myline in open("/proc/cpuinfo"):
-                if myline.startswith(('model name')):
-                    logging.debug('CPU model name is %s', myline[13:].rstrip() )
-                    break
-        except:
-            # probably not on Linux
-            pass
+                logging.debug('CPU Pystone available performance could not be calculated')
+        cpumodel = getcpu()	# Linux only
+        if cpumodel:
+                logging.debug('CPU model name is %s', cpumodel)
 
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:

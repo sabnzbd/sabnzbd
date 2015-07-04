@@ -136,6 +136,8 @@ def find_programs(curdir):
             sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
+        if not sabnzbd.newsunpack.SEVEN_COMMAND:
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7z')
 
     if not sabnzbd.newsunpack.PAR2C_COMMAND:
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
@@ -1689,11 +1691,13 @@ def unrar_check(rar):
         Also return whether an original version is found
         (version, original)
     """
+    version =0
+    original = ''
     if rar:
         try:
             version = run_simple(rar)
         except:
-            return False
+            return version, original
         original = "Alexander Roshal" in version
         m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:

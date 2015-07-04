@@ -30,8 +30,7 @@ def diskspeedmeasure(dirname):
 		try:
 			writetofile(filename, filesize)
 		except:
-			# I have no better idea than:
-			raise	
+			return None
 		loopcounter += 1
 		diff = time.time() - start
 		if diff > maxtime: break

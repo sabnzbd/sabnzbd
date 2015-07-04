@@ -411,7 +411,7 @@ SKIN_TEXT = {
     'explain-ts_join' : TT('Join files ending in .001.ts, .002.ts etc. into one file.'),
     'opt-enable_par_cleanup' : TT('Enable Par Cleanup'),
     'explain-enable_par_cleanup' : TT('Cleanup par files (if verifiying/repairing succeded).'),
-    'opt-overwrite_files' : TT('When unpacking, overwrite exiting files'),
+    'opt-overwrite_files' : TT('When unpacking, overwrite existing files'),
     'explain-overwrite_files' : TT('This will overwrite existing files instead of creating an alternative name.'),
     'opt-top_only' : TT('Only Get Articles for Top of Queue'),
     'explain-top_only' : TT('Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.'),
@@ -521,7 +521,7 @@ SKIN_TEXT = {
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
     'srv-priority' : TT('Priority'), #: Server priority
-    'explain-svrprio' : TT('0 is highest priority'), #: Explain server priority
+    'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
     'srv-ssl_type' : TT('SSL type'),

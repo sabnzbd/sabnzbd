@@ -379,13 +379,15 @@ class ConfigServer(object):
         self.ssl_type = OptionStr(name, 'ssl_type', 't1', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
+        # 'fillserver' field only here in order to set a proper priority when converting
+        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
+        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
                    'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority'):
             try:
                 value = values[kw]
@@ -704,8 +706,12 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        fp = open(path, 'r')
+        fp = open(path, 'rb')
         lines = fp.read().split('\n')
+        if len(lines) == 1:
+            fp.seek(0)
+            lines = fp.read().split('\r')
+        lines = [line.rstrip('\r\n') for line in lines]
         fp.close()
 
         try:
@@ -850,7 +856,11 @@ def define_servers():
     try:
         for server in CFG['servers']:
             svr = CFG['servers'][server]
-            ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+            s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+            if s.fillserver():
+                # One time conversion of backup to priority 1
+                s.priority.set(1)
+                s.fillserver.set(False)
     except KeyError:
         pass
 
