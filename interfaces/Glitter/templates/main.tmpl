@@ -16,10 +16,22 @@
        	<meta name="apple-mobile-web-app-capable" content="yes" />
     	<meta name="apple-mobile-web-app-title" content="SABnzbd" />
  	
-    	<link rel="apple-touch-icon" sizes="57x57" href="./static/images/apple-touch-icon-57x57.png" />
-    	<link rel="apple-touch-icon" sizes="72x72" href="./static/images/apple-touch-icon-72x72.png" />
-    	<link rel="apple-touch-icon" sizes="114x114" href="./static/images/apple-touch-icon-114x114.png" />
-    	<link rel="apple-touch-icon" sizes="144x144" href="./static/images/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="./staticcfg/ico/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="./staticcfg/ico/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="./staticcfg/ico/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="./staticcfg/ico/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="60x60" href="./staticcfg/ico/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152.png" />
+        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-196x196.png" sizes="196x196" />
+        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-160x160.png" sizes="160x160" />
+        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-32x32.png" sizes="32x32" />
+        
+        <meta name="msapplication-TileColor" content="#2b5797" />
+        <meta name="msapplication-TileImage" content="./staticcfg/ico/mstile-144x144.png" />
+        <meta name="msapplication-config" content="./staticcfg/ico/browserconfig.xml" />
         
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
@@ -186,7 +198,7 @@
                             </td>
                         </tr>
                     </tbody>
-					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue table' } }" style="display: none;">
+					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
 						<tr class="queueitem">
 							<td><a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }">&nbsp;</a></td>
 							<td class="name">
@@ -300,9 +312,6 @@
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    
-                    
-                    
                     <div class="clearfix"></div>
     			</form>
                 
@@ -311,8 +320,6 @@
                         <span data-bind="text: page"></span>
                     </li>
                 </ul>  
-                
-                
             </div>
 
             <div class="queue-warnings" data-bind="visible: (nrWarnings() > 0)" style="display: none;">
@@ -370,15 +377,20 @@
 								<div data-bind="visible: (!failed() && !processingDownload())"> 
                                     <span class="glyphicon glyphicon-ok"></span>
                                 </div>
-                                <div data-bind="visible: failed()">
+                                <div data-bind="visible: failed() && canRetry()">
 									<a class="retrybutton" href="#" data-bind="click: retry">
 										<span class="glyphicon glyphicon-exclamation-sign"></span>
 									</a>
 								</div>
+                                <div data-bind="visible: failed() && !canRetry()">
+									<span class="retrybutton-inactive">
+										<span class="glyphicon glyphicon-exclamation-sign"></span>
+									</span>
+								</div>
 							</td>
 							<td class="name">
                                 <div class="row-wrap-text">
-                                    <a class="retrybuttontext" href="#" data-bind="visible: failed(), click: retry">$T('button-retry')</a>
+                                    <a class="retrybuttontext" href="#" data-bind="visible: (failed() && canRetry()), click: retry">$T('button-retry')</a>
                                     <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
                                     <a href="#" class="name-ratings hoverbutton" data-bind="visible: historyStatus.rating_avg_video">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: historyStatus.rating_avg_video"></span>

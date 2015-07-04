@@ -224,6 +224,10 @@ li.dropdown {
     display: block;
 }
 
+.main-restarting.in span {
+    top: 10px;
+}
+
 .main-restarting small {
     font-size: 2rem !important;
 }
@@ -565,6 +569,10 @@ td.delete label,
     opacity: 1;
 }
 
+.multioperations-selector .add-nzb-inputbox-tiny small {
+    color: #AAA;
+}
+
 .table-warnings .table-warnings-header-label {
     width: 220px;
 }
@@ -632,7 +640,8 @@ td.delete label,
     color: red !important;
 }	
 
-.retrybutton {
+.retrybutton, 
+.retrybutton-inactive {
     color: red !important;
     
 }
@@ -1072,7 +1081,6 @@ and (max-device-width : 1024px)  {
        
     }
     
-    .sparkline,
     .sparkline-container {
         display: block !important;
     }
