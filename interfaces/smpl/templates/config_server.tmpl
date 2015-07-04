@@ -60,6 +60,14 @@
   <input class="radio" type="checkbox" name="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></label>
   </label><br class="clear" />
 
+  <label><span class="label">$T('srv-categories'):</span>
+    <select name="categories" multiple>
+    <!--#for $cat in $cats#-->
+      <option value="$cat" <!--#if $cat == "Default" then 'selected' else ""#-->>$cat</option>
+    <!--#end for#-->
+    </select></label>
+<br class="clear" />
+
   <label><span class="label">$T('srv-enable'):</span>
   <input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
 <br class="clear" />
@@ -141,6 +149,14 @@
 
   <label><span class="label">$T('srv-optional'):</span>
     <input class="radio" type="checkbox" name="optional" value="1"></label>
+<br class="clear" />
+
+  <label><span class="label">$T('srv-categories'):</span>
+    <select name="categories" multiple>
+    <!--#for $cat in $cats#-->
+      <option value="$cat" <!--#if $cat in $servers[$server]['categories'] then 'selected' else ""#-->>$cat</option>
+    <!--#end for#-->
+    </select></label>
 <br class="clear" />
 
   <label><span class="label">$T('srv-enable'):</span>

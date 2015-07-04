@@ -116,7 +116,7 @@ class Article(TryList):
                         #if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
                         if (server_check.priority < found_priority):
                             if (server_check.priority < server.priority):
-                                if (not self.server_in_try_list(server_check)):
+                                if (not self.server_in_try_list(server_check)) and self.server_allowed(server_check):
                                     if log: logging.debug('Article %s | Server: %s | setting found priority to %s', self.article, server.host, server_check.priority)
                                     found_priority = server_check.priority
                     if found_priority == 1000:
@@ -138,6 +138,10 @@ class Article(TryList):
         if not self.art_id:
             self.art_id = sabnzbd.get_new_id("article", self.nzf.nzo.workpath)
         return self.art_id
+
+    def server_allowed(self, server):
+        """ Return true if this server is allowed to download this article. """
+        return self.nzf.nzo.server_allowed(server)
 
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
@@ -1189,6 +1193,16 @@ class NzbObject(TryList):
             self.nzo_info[log].append(txt)
         except:
             self.nzo_info[log] = [txt]
+
+    def server_allowed(self, server):
+        if not server.categories:
+            return False
+        if "Default" in server.categories:
+            return True
+        if self.cat in server.categories:
+            return True
+        # There are no default servers, and either we have no category, or no server matches our category
+        return False
 
     def get_article(self, server, servers):
         article = None
