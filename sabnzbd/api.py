@@ -1542,7 +1542,7 @@ def retry_all_jobs():
 def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
-        if path and path.lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
             remove_all(path, recursive=True)
 
 
