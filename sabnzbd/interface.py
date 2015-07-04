@@ -1554,6 +1554,7 @@ class ConfigServer(object):
             if t:
                 new[svr]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
+        conf['cats'] = list_cats(default=True)
 
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1

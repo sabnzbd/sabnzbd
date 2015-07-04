@@ -55,7 +55,7 @@ TIMER_LOCK = RLock()
 #------------------------------------------------------------------------------
 class Server(object):
     def __init__(self, id, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username = None,
-                 password = None, optional=False, retention=0):
+                 password = None, optional=False, retention=0, categories = None):
         self.id = id
         self.newid = None
         self.restart = False
@@ -72,6 +72,8 @@ class Server(object):
 
         self.username = username
         self.password = password
+
+        self.categories = categories
 
         self.busy_threads = []
         self.idle_threads = []
@@ -183,6 +185,7 @@ class Downloader(Thread):
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
+            categories = srv.categories()
             retention = float(srv.retention() * 24 * 3600) # days ==> seconds
             send_group = srv.send_group()
             create = True
@@ -200,7 +203,7 @@ class Downloader(Thread):
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, host, port, timeout, threads, priority, ssl,
                                             ssl_type, send_group,
-                                            username, password, optional, retention))
+                                            username, password, optional, retention, categories=categories))
 
         return
 

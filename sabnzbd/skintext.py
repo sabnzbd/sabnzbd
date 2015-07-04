@@ -535,6 +535,8 @@ SKIN_TEXT = {
     'srv-bandwidth' : TT('Bandwidth'),
     'srv-send_group' : TT('Send Group'),
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
+    'srv-categories' : TT('Categories'),
+    'srv-explain-categories' : TT('Only use this server for these categories.'),
 
 # Config->Scheduling
     'configSchedule' : TT('Scheduling configuration'), #:Config->Scheduling

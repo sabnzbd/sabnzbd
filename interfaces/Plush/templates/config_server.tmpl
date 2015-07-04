@@ -108,18 +108,20 @@
         </label>
       </div>
       <div class="field-pair alt">
-        <input type="checkbox" name="fillserver" id="fillserver" value="1"/>
-        <label class="clearfix" for="fillserver">
-          <span class="component-title">$T('srv-fillserver')</span>
-          <span class="component-desc">&nbsp;</span>
-        </label>
-      </div>
-      <div class="field-pair alt">
         <input type="checkbox" name="optional" id="optional" value="1"/>
         <label class="clearfix" for="optional">
           <span class="component-title">$T('srv-optional')</span>
           <span class="component-desc">&nbsp;</span>
         </label>
+      </div>
+      <div class="field-pair">
+        <label class="config" for="categories">$T('srv-categories')</label>
+          <select name="categories" multiple>
+          <!--#for $cat in $cats#-->
+            <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>$cat</option>
+          <!--#end for#-->
+          </select>
+        <span class="desc">$T('srv-explain-categories')</span>
       </div>
     </fieldset>
     </form>
@@ -246,18 +248,20 @@
     </label>
   </div>
   <div class="field-pair alt">
-    <input type="checkbox" name="fillserver" id="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
-    <label class="clearfix" for="fillserver">
-      <span class="component-title">$T('srv-fillserver')</span>
-      <span class="component-desc">&nbsp;</span>
-    </label>
-  </div>
-  <div class="field-pair alt">
     <input type="checkbox" name="optional" id="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />
     <label class="clearfix" for="optional">
       <span class="component-title">$T('srv-optional')</span>
       <span class="component-desc">&nbsp;</span>
     </label>
+  </div>
+  <div class="field-pair">
+    <label class="config" for="categories">$T('srv-categories')</label>
+      <select name="categories" multiple>
+      <!--#for $cat in $cats#-->
+        <option value="$cat" <!--#if $cat in $servers[$server]['categories'] then 'selected' else ""#-->>$cat</option>
+      <!--#end for#-->
+      </select>
+    <span class="desc">$T('srv-explain-categories')</span>
   </div>
   </fieldset>
   </form>
