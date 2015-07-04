@@ -1128,7 +1128,8 @@ $(function() {
         self.action_line        = ko.observable();
         self.script_line        = ko.observable();
         self.fail_message       = ko.observable();
-        self.completed          = ko.observable();        
+        self.completed          = ko.observable();    
+        self.canRetry           = ko.observable();
 
 		self.updateFromData = function( data ) {       
             // Fill all the basic info
@@ -1138,6 +1139,7 @@ $(function() {
             self.script_line(data.script_line)
             self.fail_message(data.fail_message)
             self.completed(data.completed) 
+            self.canRetry(data.retry) 
 
             // Update all ONCE?
             if(self.updateAllHistory) {
@@ -1187,7 +1189,6 @@ $(function() {
             $('#modal_retry_job input[name="retry_job_id"]').val(self.nzo_id)
             // Open modal
             $('#modal_retry_job').modal("show")
-			//callAPI( {mode:'retry', value:self.historyStatus.nzo_id()} ).then(self.parent.parent.refresh);
 		};
         
         // Update information only on click

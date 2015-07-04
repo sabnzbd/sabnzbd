@@ -300,9 +300,6 @@
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    
-                    
-                    
                     <div class="clearfix"></div>
     			</form>
                 
@@ -311,8 +308,6 @@
                         <span data-bind="text: page"></span>
                     </li>
                 </ul>  
-                
-                
             </div>
 
             <div class="queue-warnings" data-bind="visible: (nrWarnings() > 0)" style="display: none;">
@@ -370,15 +365,20 @@
 								<div data-bind="visible: (!failed() && !processingDownload())"> 
                                     <span class="glyphicon glyphicon-ok"></span>
                                 </div>
-                                <div data-bind="visible: failed()">
+                                <div data-bind="visible: failed() && canRetry()">
 									<a class="retrybutton" href="#" data-bind="click: retry">
 										<span class="glyphicon glyphicon-exclamation-sign"></span>
 									</a>
 								</div>
+                                <div data-bind="visible: failed() && !canRetry()">
+									<span class="retrybutton-inactive">
+										<span class="glyphicon glyphicon-exclamation-sign"></span>
+									</span>
+								</div>
 							</td>
 							<td class="name">
                                 <div class="row-wrap-text">
-                                    <a class="retrybuttontext" href="#" data-bind="visible: failed(), click: retry">$T('button-retry')</a>
+                                    <a class="retrybuttontext" href="#" data-bind="visible: (failed() && canRetry()), click: retry">$T('button-retry')</a>
                                     <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
                                     <a href="#" class="name-ratings hoverbutton" data-bind="visible: historyStatus.rating_avg_video">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: historyStatus.rating_avg_video"></span>
