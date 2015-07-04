@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 0.8.0Alpha2
+Release Notes  -  SABnzbd 0.8.0Alpha3
 =====================================
+
+## Changes since Alpha3
+- New skin: Glitter
+- Assign servers to categories
+- When upgrading from 0.7.x, a backup server will get priority 1
+- Lots of bug fixes
 
 ## Changes since Alpha2
 - Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
