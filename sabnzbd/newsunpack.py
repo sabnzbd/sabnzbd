@@ -1691,11 +1691,13 @@ def unrar_check(rar):
         Also return whether an original version is found
         (version, original)
     """
+    version =0
+    original = ''
     if rar:
         try:
             version = run_simple(rar)
         except:
-            return False
+            return version, original
         original = "Alexander Roshal" in version
         m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:
