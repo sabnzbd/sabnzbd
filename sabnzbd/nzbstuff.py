@@ -1182,7 +1182,7 @@ class NzbObject(TryList):
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
-            if len(self.servercount) > 1:
+            if len(self.servercount) > 0:
                 msgs = [ '%s=%sB' % (server, to_units(self.servercount[server])) for server in self.servercount ]
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
