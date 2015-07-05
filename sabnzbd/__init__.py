@@ -563,7 +563,7 @@ def save_compressed(folder, filename, data):
 ## CV synchronized (notifies downloader)                                      ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False):
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None):
     """ Add disk-based NZB file, optional attributes,
         'reuse' flag will suppress duplicate detection
     """
@@ -622,9 +622,11 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             logging.info("Traceback: ", exc_info = True)
 
     if ext.lower() in VALID_ARCHIVES:
-        return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname)
+        return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
+                                  password=password)
     else:
-        return ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, reuse=reuse)
+        return ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
+                                 keep=keep, reuse=reuse, password=password)
 
 ################################################################################
 ## Unsynchronized methods                                                     ##

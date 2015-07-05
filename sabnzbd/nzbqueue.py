@@ -202,22 +202,20 @@ class NzbQueue(TryList):
                 filename = globber_full(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', name)
-                nzo_id = sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
+                nzo_id = sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name,
+                                             reuse=True, password=password)[1]
             else:
                 logging.debug('Repair job %s without stored NZB', name)
                 nzo = NzbObject(name, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
+                nzo.password = password
                 self.add(nzo)
                 nzo_id = nzo.nzo_id
         else:
             remove_all(path, '*.gz')
             logging.debug('Repair job %s with new NZB (%s)', name, filename)
-            nzo_id = sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)[1]
+            nzo_id = sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name,
+                                         reuse=True, password=password)[1]
 
-        if nzo_id:
-            # Set password, will only work for first job
-            nzo = self.get_nzo(nzo_id[0])
-            if nzo:
-                nzo.password = password
         return nzo_id
 
 

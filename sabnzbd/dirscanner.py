@@ -61,7 +61,7 @@ def CompareStat(tup1, tup2):
 
 
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                       priority=None, url='', nzbname=None):
+                       priority=None, url='', nzbname=None, password=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns (status, nzo_ids)
@@ -120,6 +120,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     try:
                         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
+                        nzo.password = password
                     except:
                         nzo = None
                     if nzo:
@@ -139,7 +140,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                      priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url=''):
+                      priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
+                      password=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns (status, nzo_ids)
@@ -181,6 +183,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
+        nzo.password = password
     except TypeError:
         # Duplicate, ignore
         nzo = None
