@@ -11,34 +11,26 @@
         <title data-bind="text: title">SABnzbd</title>
         
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
         
-       	<meta name="apple-mobile-web-app-capable" content="yes" />
-    	<meta name="apple-mobile-web-app-title" content="SABnzbd" />
- 	
         <link rel="apple-touch-icon" sizes="57x57" href="./staticcfg/ico/apple-touch-icon-57x57.png" />
-        <link rel="apple-touch-icon" sizes="114x114" href="./staticcfg/ico/apple-touch-icon-114x114.png" />
-        <link rel="apple-touch-icon" sizes="72x72" href="./staticcfg/ico/apple-touch-icon-72x72.png" />
-        <link rel="apple-touch-icon" sizes="144x144" href="./staticcfg/ico/apple-touch-icon-144x144.png" />
         <link rel="apple-touch-icon" sizes="60x60" href="./staticcfg/ico/apple-touch-icon-60x60.png" />
-        <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="./staticcfg/ico/apple-touch-icon-72x72.png" />
         <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="./staticcfg/ico/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="./staticcfg/ico/apple-touch-icon-144x144.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152.png" />
-        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-196x196.png" sizes="196x196" />
-        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-160x160.png" sizes="160x160" />
-        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-96x96.png" sizes="96x96" />
-        <link rel="icon" type="image/png" href="./staticcfg/ico/favicon-32x32.png" sizes="32x32" />
-        
-        <meta name="msapplication-TileColor" content="#2b5797" />
-        <meta name="msapplication-TileImage" content="./staticcfg/ico/mstile-144x144.png" />
-        <meta name="msapplication-config" content="./staticcfg/ico/browserconfig.xml" />
+        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico" data-bind="attr: { 'href': SABIcon }" />
         
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css" media="all and (max-width: 768px)" />
 
-        <link rel="shortcut icon" type="image/ico" href="./static/images/sabnzbdplus.ico" data-bind="attr: { 'href': SABIcon }" />
-        
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -49,7 +41,7 @@
             <link href="./static/bootstrap/css/bootstrap-ie7.css" rel="stylesheet">
         <![endif]-->  
 	</head>
-	<body >
+	<body>
 		<div class="container main-navbar">         
 			<nav class="navbar navbar-inverse main-navbar" role="navigation">
 				<div class="navbar-header">

@@ -164,10 +164,6 @@ h2 {
     text-align: center;
 }
 
-.history-table .status-header {
-    width: 25%;
-}
-
 .history-table .delete .dropdown-menu {
     width: 90%;
 }

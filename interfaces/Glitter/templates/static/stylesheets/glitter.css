@@ -96,7 +96,6 @@ li.dropdown {
     opacity:0.4;
     float: right;
     line-height: 18px;
-    z-index: 1000;
 }
 
 .navbar-speed .glyphicon:hover {
@@ -1084,8 +1083,20 @@ and (max-device-width : 1024px)  {
     .sparkline-container {
         display: block !important;
     }
+    
+    .history-table .status-header {
+        width: 25% !important;
+    }
 }
 
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+    .sparkline-container svg {
+        width: 160px !important;
+    }
+}
 
 /***
     Bootstrap overwrites
