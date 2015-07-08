@@ -252,10 +252,14 @@ def _analyse(fn, url):
     wait = 0
     if not fn or fn.code != 200:
         logging.debug('No usable response from indexer, retry after 60 sec')
-        return None, fn.msg, True, 60, data
+        if fn:
+            msg = fn.msg
+        else:
+            msg = ''
+        return None, msg, True, 60, data
 
     # Check for an error response
-    if fn.msg != 'OK':
+    if not fn or fn.msg != 'OK':
         logging.debug('Received nothing from indexer, retry after 60 sec')
         return None, fn.msg, True, 60, data
 
