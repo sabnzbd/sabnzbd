@@ -32,6 +32,7 @@ $(function() {
         Base variables and functions
     **/
     var fadeOnDeleteDuration = 400; // ms after deleting a row
+    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     // Basic API-call
 	function callAPI( data ) {
@@ -173,9 +174,9 @@ $(function() {
         // Dynamic icon
         self.SABIcon = ko.computed(function() {
             if(self.downloadsPaused()) {
-                return './static/images/sabnzbdpluspaused.ico';
+                return './staticcfg/ico/faviconpaused.ico';
             } else {
-                return './static/images/sabnzbdplus.ico';
+                return './staticcfg/ico/favicon.ico';
             }
         })
         
@@ -536,7 +537,7 @@ $(function() {
                     self.hasStatusInfo(true)
                     
                     // Add tooltips again
-                    $('#modal_options [data-toggle="tooltip"]').tooltip()
+                    if(!iOS) $('#modal_options [data-toggle="tooltip"]').tooltip()
                 });
             
         }
@@ -594,7 +595,7 @@ $(function() {
         self.refresh()
         
         // Activate tooltips
-        $('[data-toggle="tooltip"]').tooltip()
+        if(!iOS) $('[data-toggle="tooltip"]').tooltip()
 	}
     
     /**
