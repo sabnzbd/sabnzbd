@@ -7,86 +7,93 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-08-14 18:42+0000\n"
-"PO-Revision-Date: 2011-06-26 10:50+0000\n"
+"POT-Creation-Date: 2015-04-25 09:51+0000\n"
+"PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-15 05:11+0000\n"
-"X-Generator: Launchpad (build 15801)\n"
+"X-Launchpad-Export-Date: 2015-04-26 05:46+0000\n"
+"X-Generator: Launchpad (build 17430)\n"
 
-#: NSIS_Installer.nsi:425
+#: NSIS_Installer.nsi:416
 msgid "Go to the SABnzbd Wiki"
-msgstr ""
+msgstr "Gå til SABnzbd Wiki"
 
-#: NSIS_Installer.nsi:427
+#: NSIS_Installer.nsi:418
 msgid "Show Release Notes"
-msgstr ""
+msgstr "Vis versjonsmerknader"
 
-#: NSIS_Installer.nsi:429
+#: NSIS_Installer.nsi:420
 msgid "Support the project, Donate!"
-msgstr ""
+msgstr "Støtt prosjektet, donèr!"
 
-#: NSIS_Installer.nsi:431
+#: NSIS_Installer.nsi:422
 msgid "Please close \"SABnzbd.exe\" first"
-msgstr ""
+msgstr "Vennligst lukk \"SABnzbd.exe\" først"
 
-#: NSIS_Installer.nsi:433
-msgid ""
-"                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-msgstr ""
-
-#: NSIS_Installer.nsi:435
+#: NSIS_Installer.nsi:424
 msgid "This will uninstall SABnzbd from your system"
-msgstr ""
+msgstr "Dette vil avinstallere SABnzbd fra ditt system"
 
-#: NSIS_Installer.nsi:437
+#: NSIS_Installer.nsi:426
 msgid "Run at startup"
-msgstr ""
+msgstr "Kjør ved oppstart"
 
-#: NSIS_Installer.nsi:439
+#: NSIS_Installer.nsi:428
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Skrivebordsikon"
 
-#: NSIS_Installer.nsi:441
+#: NSIS_Installer.nsi:430
 msgid "NZB File association"
-msgstr ""
+msgstr "NZB-filassosiering"
 
-#: NSIS_Installer.nsi:443
+#: NSIS_Installer.nsi:432
 msgid "Delete Program"
-msgstr ""
+msgstr "Fjern program"
 
-#: NSIS_Installer.nsi:445
+#: NSIS_Installer.nsi:434
 msgid "Delete Settings"
-msgstr ""
+msgstr "Slett innstillinger"
 
-#: NSIS_Installer.nsi:447
+#: NSIS_Installer.nsi:436
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
 msgstr ""
+"Dette sytemet krever at Microsoft runtime library VC90 er installert først. "
+"Ønsker du å gjøre dette nå?"
 
-#: NSIS_Installer.nsi:449
+#: NSIS_Installer.nsi:438
 msgid "Downloading Microsoft runtime installer..."
-msgstr ""
+msgstr "Laster ned Microsoft runtime installer..."
 
-#: NSIS_Installer.nsi:451
+#: NSIS_Installer.nsi:440
 msgid "Download error, retry?"
-msgstr ""
+msgstr "Nedlasting feilet, prøve på nytt?"
 
-#: NSIS_Installer.nsi:453
+#: NSIS_Installer.nsi:442
 msgid "Cannot install without runtime library, retry?"
-msgstr ""
+msgstr "Kan ikke installere uten runtime library, prøve på nytt?"
 
-#: NSIS_Installer.nsi:455
+#: NSIS_Installer.nsi:444
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
+"Du kan ikke overskrive en eksisterende installasjon.  \\n\\nTrykk 'OK' for å "
+"fjerne tidligere installasjon, eller 'Avbryt' for å avbryte denne "
+"oppgraderingen."
 
-#: NSIS_Installer.nsi:457
+#: NSIS_Installer.nsi:446
 msgid "Your settings and data will be preserved."
-msgstr ""
+msgstr "Dine innstillinger og data vil bli tatt vare på."
+
+#~ msgid ""
+#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
+#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
+#~ msgstr ""
+#~ "                  >>>> ADVARSEL <<<<\\r\\n\\r\\nVennligst sjekk "
+#~ "versjonsmerknadene først, eller gå til http://wiki.sabnzbd.org/introducing-0-"
+#~ "7-0 !"

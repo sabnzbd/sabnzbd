@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,8 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME
+from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD
+from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 
 DAY = float(24*60*60)
@@ -97,6 +98,21 @@ def next_month(t):
     return time.mktime(ntime)
 
 
+def fix_keys(data):
+    """ Convert keys of each dictionary in tuple 'data' to unicode """
+    new_data = []
+    if isinstance(data, list):
+        for n in xrange(len(data)):
+            if isinstance(data[n], dict):
+                new = {}
+                for key in data[n]:
+                    new[unicoder(key)] = data[n][key]
+            else:
+                new = data[n]
+            new_data.append(new)
+    return new_data
+
+
 class BPSMeter(object):
     do = None
 
@@ -122,6 +138,7 @@ class BPSMeter(object):
         self.q_time = 0L            # Next reset time for quota
         self.q_hour = 0                   # Quota reset hour
         self.q_minute = 0                 # Quota reset minute
+        self.quota_enabled = True         # Scheduled quota enable/disable
         BPSMeter.do = self
 
 
@@ -161,6 +178,9 @@ class BPSMeter(object):
         quota = self.left = cfg.quota_size.get_float() # Quota for this period
         self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
+        if not data:
+            data = sabnzbd.load_admin(BYTES_FILE_NAME_OLD)
+            data = fix_keys(data)
         try:
             self.last_update, self.grand_total, \
             self.day_total, self.week_total, self.month_total, \
@@ -224,13 +244,13 @@ class BPSMeter(object):
             self.grand_total[server] += amount
 
             # Quota check
-            if self.have_quota:
+            if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
                     from sabnzbd.downloader import Downloader
                     if Downloader.do and not Downloader.do.paused:
                         Downloader.do.pause()
-                        logging.warning(Ta('Quota spent, pausing downloading'))
+                        logging.warning(T('Quota spent, pausing downloading'))
 
         # Speedometer
         try:
@@ -360,10 +380,8 @@ class BPSMeter(object):
             self.quota = self.left = 0L
         self.update(0)
         self.next_reset()
-        if self.left > 0.5:
-            from sabnzbd.downloader import Downloader
-            if allow_resume and cfg.quota_resume() and Downloader.do and Downloader.do.paused:
-                Downloader.do.resume()
+        if self.left > 0.5 and allow_resume:
+            self.resume()
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
@@ -397,6 +415,20 @@ class BPSMeter(object):
         else:
             return None, 0, 0
 
+    def set_status(self, status, action=True):
+        """ Disable/enable quota management
+        """
+        self.quota_enabled = status
+        if action and not status:
+            self.resume()
+
+    def resume(self):
+        """ Resume downloading
+        """
+        from sabnzbd.downloader import Downloader
+        if cfg.quota_resume() and Downloader.do and Downloader.do.paused:
+            Downloader.do.resume()
+            
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """

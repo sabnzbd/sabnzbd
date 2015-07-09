@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,20 +27,20 @@ import time
 
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.downloader
 import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.postproc import PostProcessor
+from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
 __SCHED = None  # Global pointer to Scheduler instance
 
 RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
-
+PP_PAUSE_EVENT = False
 
 def schedule_guard():
     """ Set flag for scheduler restart """
@@ -53,6 +53,8 @@ def pp_pause():
 def pp_resume():
     PostProcessor.do.paused = False
 
+def pp_pause_event():
+    return PP_PAUSE_EVENT
 
 def init():
     """ Create the scheduler and set all required events
@@ -78,7 +80,7 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning(Ta('Bad schedule %s at %s:%s'), action_name, m, h)
+            logging.warning(T('Bad schedule %s at %s:%s'), action_name, m, h)
             continue
 
         if d.isdigit():
@@ -118,11 +120,35 @@ def init():
             rss_planned = True
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
+        elif action_name == 'enable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [True]
+        elif action_name == 'disable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [False]
+        elif action_name == 'pause_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'pause_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'pause_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [HIGH_PRIORITY]
+        elif action_name == 'resume_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'resume_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'resume_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [HIGH_PRIORITY]
         else:
-            logging.warning(Ta('Unknown action: %s'), action_name)
+            logging.warning(T('Unknown action: %s'), action_name)
             continue
 
-        logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
+        logging.debug("scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
 
         __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
                              kronos.method.sequential, arguments, None)
@@ -152,15 +178,6 @@ def init():
                                  kronos.method.sequential, [], None)
 
 
-    if False: #cfg.newzbin_bookmarks():
-        interval = cfg.bookmark_rate()
-        delay = random.randint(0, interval-1)
-        logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
-        __SCHED.add_interval_task(Bookmarks.do.run, 'Bookmarks', delay*60, interval*60,
-                                  kronos.method.sequential, None, None)
-        __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
-
-
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
@@ -173,8 +190,6 @@ def init():
 
 
     # Subscribe to special schedule changes
-    cfg.newzbin_bookmarks.callback(schedule_guard)
-    cfg.bookmark_rate.callback(schedule_guard)
     cfg.rss_rate.callback(schedule_guard)
 
 
@@ -272,17 +287,23 @@ def sort_schedules(all_events, now=None):
     return events
 
 
-def analyse(was_paused=False):
+def analyse(was_paused=False, priority=None):
     """ Determine what pause/resume state we would have now.
+        'priority': evaluate only effect for given priority, return True for paused
     """
+    global PP_PAUSE_EVENT
+    PP_PAUSE_EVENT = False
     paused = None
     paused_all = False
     pause_post = False
-    speedlimit = None
+    pause_low = pause_normal = pause_high = False
+    speedlimit = -1
+    quota = True
     servers = {}
 
     for ev in sort_schedules(all_events=True):
-        logging.debug('Schedule check result = %s', ev)
+        if priority is None:
+            logging.debug('Schedule check result = %s', ev)
         action = ev[1]
         try:
             value = ev[2]
@@ -292,26 +313,56 @@ def analyse(was_paused=False):
             paused = True
         elif action == 'pause_all':
             paused_all = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume':
             paused = False
             paused_all = False
         elif action == 'pause_post':
             pause_post = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume_post':
             pause_post = False
-        elif action == 'speedlimit' and value!=None:
+            PP_PAUSE_EVENT = True
+        elif action == 'speedlimit' and value != None:
             speedlimit = int(ev[2])
+        elif action == 'pause_all_low':
+            pause_low = True
+        elif action == 'pause_all_normal':
+            pause_normal = True
+        elif action == 'pause_all_high':
+            pause_high = True
+        elif action == 'resume_all_low':
+            pause_low = False
+        elif action == 'resume_all_normal':
+            pause_normal = False
+        elif action == 'resume_all_high':
+            pause_high = False
+        elif action == 'enable_quota':
+            quota = True
+        elif action == 'disable_quota':
+            quota = False
         elif action == 'enable_server':
             try:
                 servers[value] = 1
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
 
+    # Special case, a priority was passed, so evaluate only that and return state
+    if priority == LOW_PRIORITY:
+        return pause_low
+    if priority == NORMAL_PRIORITY:
+        return pause_normal
+    if priority == HIGH_PRIORITY:
+        return pause_high
+    if priority is not None:
+        return False
+
+    # Normal analysis
     if not was_paused:
         if paused_all:
             sabnzbd.pause_all()
@@ -320,8 +371,11 @@ def analyse(was_paused=False):
         sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
     PostProcessor.do.paused = pause_post
-    if speedlimit:
+    if speedlimit >= 0:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
+
+    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)
+
     for serv in servers:
         try:
             item = config.get_config('servers', serv)

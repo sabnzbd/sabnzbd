@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ sabnzbd.wizard - Wizard Webinterface
 """
 
 import os
+import logging
 import cherrypy
 from Cheetah.Template import Template
 
@@ -50,9 +51,17 @@ class Wizard(object):
         info = self.info.copy()
         info['num'] = ''
         info['number'] = 0
-        info['lang'] = cfg.language()
+        lng = None
+        if sabnzbd.WIN32:
+            import util.apireg
+            lng = util.apireg.get_install_lng()
+            logging.debug('Installer language code "%s"', lng)
+        info['lang'] = lng or cfg.language()
         info['languages'] = list_languages()
         info['T'] = Ttemplate
+
+        set_language(info['lang'])
+        sabnzbd.api.clear_trans_cache()
 
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
@@ -133,7 +142,7 @@ class Wizard(object):
         host = cfg.cherryhost()
         info['host'] = host
         # Allow special operation if host is not one of the defaults
-        if host not in ('localhost','0.0.0.0'):
+        if host not in ('127.0.0.1', '::1', 'localhost','0.0.0.0'):
             info['custom_host'] = True
         else:
             info['custom_host'] = False
@@ -143,6 +152,7 @@ class Wizard(object):
         info['autobrowser'] = cfg.autobrowser()
         info['web_user'] = cfg.username()
         info['web_pass'] = cfg.password()
+        info['bandwidth'] = cfg.bandwidth_max()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
@@ -157,6 +167,7 @@ class Wizard(object):
                 cfg.cherryhost.set(kwargs['access'])
             cfg.enable_https.set(kwargs.get('enable_https',0))
             cfg.autobrowser.set(kwargs.get('autobrowser',0))
+            cfg.bandwidth_max.set(kwargs.get('bandwidth',''))
             cfg.username.set(kwargs.get('web_user', ''))
             cfg.password.set(kwargs.get('web_pass', ''))
             if not cfg.username() or not cfg.password():

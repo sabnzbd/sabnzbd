@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,20 +29,21 @@ import threading
 import subprocess
 import socket
 import time
-import glob
+import fnmatch
 import stat
 try:
     socket.ssl
     _HAVE_SSL = True
 except:
     _HAVE_SSL = False
+from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, special_fixer, gUTF
 import sabnzbd.growler as growler
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
@@ -71,12 +72,27 @@ def safe_lower(txt):
         return ''
 
 #------------------------------------------------------------------------------
-def globber(path, pattern='*'):
-    """ Do a glob.glob(), disabling the [] pattern in 'path' """
-    if pattern:
-        return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
+def globber(path, pattern=u'*'):
+    """ Return matching base file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    if os.path.exists(path):
+        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
     else:
-        return glob.glob(path.replace('[', '[[]'))
+        return []
+
+def globber_full(path, pattern=u'*'):
+    """ Return matching full file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    if os.path.exists(path):
+        try:
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+        except UnicodeDecodeError:
+            # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
+            path = path.encode('utf-8')
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    else:
+        return []
+
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
@@ -136,8 +152,8 @@ def wildcard_to_re(text):
 
 #------------------------------------------------------------------------------
 def cat_convert(cat):
-    """ Convert newzbin/nzbs.org category/group-name to user categories.
-        If no match found, but newzbin-cat equals user-cat, then return user-cat
+    """ Convert indexer's category/group-name to user categories.
+        If no match found, but indexer-cat equals user-cat, then return user-cat
         If no match found, return None
     """
     newcat = cat
@@ -147,12 +163,12 @@ def cat_convert(cat):
         cats = config.get_categories()
         for ucat in cats:
             try:
-                newzbin = cats[ucat].newzbin()
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin]
+                indexer = cats[ucat].newzbin()
+                if type(indexer) != type([]):
+                    indexer = [indexer]
             except:
-                newzbin = []
-            for name in newzbin:
+                indexer = []
+            for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
                         logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
@@ -222,10 +238,10 @@ def sanitize_filename(name):
 
 FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
 FL_LEGAL   = CH_LEGAL +   "-''"
-uFL_ILLEGAL = FL_ILLEGAL.decode('latin-1')
-uFL_LEGAL   = FL_LEGAL.decode('latin-1')
+uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
+uFL_LEGAL   = FL_LEGAL.decode('cp1252')
 
-def sanitize_foldername(name):
+def sanitize_foldername(name, limit=True):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
@@ -238,6 +254,11 @@ def sanitize_foldername(name):
         illegal = FL_ILLEGAL
         legal   = FL_LEGAL
 
+    if cfg.sanitize_safe():
+        # Remove all bad Windows chars too
+        illegal += r'\/<>?*|":'
+        legal   += r'++{}!@#`;'
+
     repl = cfg.replace_illegal()
     lst = []
     for ch in name.strip():
@@ -249,15 +270,44 @@ def sanitize_foldername(name):
             lst.append(ch)
     name = ''.join(lst)
 
-    name = name.strip('. ')
+    name = name.strip()
+    if name != '.' and name != '..':
+        name = name.rstrip('.')
     if not name:
         name = 'unknown'
 
     maxlen = cfg.folder_max_length()
-    if len(name) > maxlen:
+    if limit and len(name) > maxlen:
         name = name[:maxlen]
 
     return name
+
+#------------------------------------------------------------------------------
+def sanitize_and_trim_path(path):
+    """ Remove illegal characters and trim element size
+    """
+    path = path.strip()
+    new_path = ''
+    if sabnzbd.WIN32:
+        if path.startswith(u'\\\\?\\UNC\\'):
+            new_path = u'\\\\?\\UNC\\'
+            path = path[8:]
+        elif path.startswith(u'\\\\?\\'):
+            new_path = u'\\\\?\\'
+            path = path[4:]
+
+    path = path.replace('\\', '/')
+    parts = path.split('/')
+    if sabnzbd.WIN32 and len(parts[0]) == 2 and ':' in parts[0]:
+        new_path += parts[0] + '/'
+        parts.pop(0)
+    elif path.startswith('//'):
+        new_path = '//'
+    elif path.startswith('/'):
+        new_path = '/'
+    for part in parts:
+        new_path = os.path.join(new_path, sanitize_foldername(part))
+    return os.path.abspath(os.path.normpath(new_path))
 
 
 #------------------------------------------------------------------------------
@@ -327,7 +377,7 @@ def real_path(loc, path):
         path = ''
     if path:
         if not sabnzbd.WIN32 and path.startswith('~/'):
-            path = path.replace('~', sabnzbd.DIR_HOME, 1)
+            path = path.replace('~', os.environ.get('HOME', sabnzbd.DIR_HOME), 1)
         if sabnzbd.WIN32:
             path = path.replace('/', '\\')
             if len(path) > 1 and path[0].isalpha() and path[1] == ':':
@@ -351,11 +401,12 @@ def real_path(loc, path):
 ################################################################################
 # Create_Real_Path                                                             #
 ################################################################################
-def create_real_path(name, loc, path, umask=False):
+def create_real_path(name, loc, path, umask=False, writable=True):
     """ When 'path' is relative, create join of 'loc' and 'path'
         When 'path' is absolute, create normalized path
         'name' is used for logging.
         Optional 'umask' will be applied.
+        'writable' means that an existing folder should be writable
         Returns ('success', 'full path')
     """
     if path:
@@ -363,72 +414,17 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(Ta('Cannot create directory %s'), my_dir)
+                logging.error(T('Cannot create directory %s'), clip_path(my_dir))
                 return (False, my_dir)
 
-        if os.access(my_dir, os.R_OK + os.W_OK):
+        checks = (os.W_OK + os.R_OK) if writable else os.R_OK
+        if os.access(my_dir, checks):
             return (True, my_dir)
         else:
-            logging.error(Ta('%s directory: %s error accessing'), name, my_dir)
+            logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
             return (False, my_dir)
     else:
         return (False, "")
-
-################################################################################
-# get_user_shellfolders
-#
-# Return a dictionary with Windows Special Folders
-# Read info from the registry
-################################################################################
-
-def get_user_shellfolders():
-    """ Return a dictionary with Windows Special Folders
-    """
-    import _winreg
-    values = {}
-
-    # Open registry hive
-    try:
-        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-    except WindowsError:
-        logging.error(Ta('Cannot connect to registry hive HKEY_CURRENT_USER.'))
-        return values
-
-    # Then open the registry key where Windows stores the Shell Folder locations
-    try:
-        key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-    except WindowsError:
-        logging.error(Ta('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-        _winreg.CloseKey(hive)
-        return values
-
-    try:
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
-            try:
-                values[name] = value.encode('latin-1')
-            except UnicodeEncodeError:
-                try:
-                    # If the path name cannot be converted to latin-1 (contains high ASCII value strings)
-                    # then try and use the short name
-                    import win32api
-                    # Need to make sure the path actually exists, otherwise ignore
-                    if os.path.exists(value):
-                        values[name] = win32api.GetShortPathName(value)
-                except:
-                    # probably a pywintypes.error error such as folder does not exist
-                    logging.error("Traceback: ", exc_info = True)
-                    values[name] = 'c:\\'
-            i += 1
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return values
-    except WindowsError:
-        # On error, return empty dict.
-        logging.error(Ta('Failed to read registry keys for special folders'))
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return {}
 
 
 #------------------------------------------------------------------------------
@@ -482,7 +478,7 @@ def get_serv_parms(service):
     except WindowsError:
         pass
     for n in xrange(len(value)):
-        value[n] = latin1(value[n])
+        value[n] = value[n]
     return value
 
 
@@ -782,7 +778,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(Ta('Failed making (%s)'), dirpath)
+            logging.error(T('Failed making (%s)'), clip_path(dirpath))
             return None
     return dirpath
 
@@ -794,6 +790,7 @@ def move_to_path(path, new_path):
     """
     ok = True
     overwrite = cfg.overwrite_files()
+    new_path = os.path.abspath(new_path)
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
@@ -817,7 +814,7 @@ def move_to_path(path, new_path):
                 os.remove(path)
             except:
                 if not (cfg.marker_file() and cfg.marker_file() in path):
-                    logging.error(Ta('Failed moving %s to %s'), path, new_path)
+                    logging.error(T('Failed moving %s to %s'), clip_path(path), clip_path(new_path))
                     logging.info("Traceback: ", exc_info = True)
                 ok = False
     return ok, new_path
@@ -869,16 +866,40 @@ def get_filepath(path, nzo, filename):
         nzo.created = True
 
     fPath = os.path.join(os.path.join(path, dName), filename)
+    fPath, ext = os.path.splitext(fPath)
     n = 0
     while True:
-        fullPath = fPath
-        if n: fullPath += '.' + str(n)
+        if n:
+            fullPath = "%s.%d%s" % (fPath, n, ext)
+        else:
+            fullPath = fPath + ext
         if os.path.exists(fullPath):
             n = n + 1
         else:
             break
 
     return fullPath
+
+
+def trim_win_path(path):
+    """ Make sure Windows path stays below 125 by trimming last part """
+    if sabnzbd.WIN32 and len(path) > 125:
+        path, folder = os.path.split(path)
+        maxlen = 125 - len(path)
+        if len(folder) > maxlen:
+            folder = folder[:maxlen]
+        path = os.path.join(path, folder)
+    return path
+
+
+def check_win_maxpath(folder):
+    """ Return False if any file path in folder exceeds the Windows maximum
+    """
+    if sabnzbd.WIN32:
+        for p in os.listdir(folder):
+            if len(os.path.join(folder, p)) > 259:
+                return False
+    return True
 
 
 def make_script_path(script):
@@ -893,17 +914,14 @@ def make_script_path(script):
     return s_path
 
 
-def get_admin_path(newstyle, name, future):
+def get_admin_path(name, future):
     """ Return news-style full path to job-admin folder of names job
         or else the old cache path
     """
-    if newstyle:
-        if future:
-            return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
-        else:
-            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+    if future:
+        return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return cfg.cache_dir.get_path()
+        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 def bad_fetch(nzo, url, msg='', retry=False, content=False):
     """ Create History entry for failed URL Fetch
@@ -958,8 +976,6 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         nzo.fail_msg = msg
 
-    if isinstance(url, int) or url.isdigit():
-        url = 'Newzbin #%s' % url
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
         #import sabnzbd.emailer
@@ -1039,35 +1055,30 @@ def loadavg():
 
 def format_time_string(seconds, days=0):
     """ Return a formatted and translated time string """
+
+    def unit(single, n):
+        if n == 1:
+            return sabnzbd.api.Ttemplate(single)
+        else:
+            return sabnzbd.api.Ttemplate(single + 's')
+
     seconds = int_conv(seconds)
     completestr = []
     if days:
-        completestr.append('%s %s' % (days, s_returner('day', days)))
+        completestr.append('%s %s' % (days, unit('day', days)))
     if (seconds/3600) >= 1:
-        completestr.append('%s %s' % (seconds/3600, s_returner('hour', (seconds/3600))))
+        completestr.append('%s %s' % (seconds/3600, unit('hour', (seconds/3600))))
         seconds -= (seconds/3600)*3600
     if (seconds/60) >= 1:
-        completestr.append('%s %s' % (seconds/60, s_returner('minute',(seconds/60))))
+        completestr.append('%s %s' % (seconds/60, unit('minute',(seconds/60))))
         seconds -= (seconds/60)*60
     if seconds > 0:
-        completestr.append('%s %s' % (seconds, s_returner('second', seconds)))
+        completestr.append('%s %s' % (seconds, unit('second', seconds)))
     elif not completestr:
-        completestr.append('0 %s' % s_returner('second', 0))
+        completestr.append('0 %s' % unit('second', 0))
 
-    p = ' '.join(completestr)
-    if isinstance(p, unicode):
-        return p.encode('latin-1')
-    else:
-        return p
+    return ' '.join(completestr)
 
-
-def s_returner(item, value):
-    """ Return a plural form of 'item', based on 'value' (english only)
-    """
-    if value == 1:
-        return Tx(item)
-    else:
-        return Tx(item + 's')
 
 def int_conv(value):
     """ Safe conversion to int (can handle None)
@@ -1145,7 +1156,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
              TYPE_RSA, serial
     except:
-        logging.warning(Ta('pyopenssl module missing, please install for https access'))
+        logging.warning(T('pyopenssl module missing, please install for https access'))
         return False
 
     # Create the CA Certificate
@@ -1163,7 +1174,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error(Ta('Error creating SSL key and certificate'))
+        logging.error(T('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info = True)
         return False
 
@@ -1229,13 +1240,21 @@ def ip_extract():
 
 def renamer(old, new):
     """ Rename file/folder with retries for Win32 """
+    # Sanitize last part of new name
+    path, name = os.path.split(new)
+    # Use the more stringent folder rename to end up with a nicer name,
+    # but do not trim size
+    new = os.path.join(path, sanitize_foldername(name, False))
+
+    logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                os.rename(old, new)
+                shutil.move(old, new)
                 return
             except WindowsError, err:
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err[0] == 32:
                     logging.debug('Retry rename %s to %s', old, new)
                     retries -= 1
@@ -1244,7 +1263,7 @@ def renamer(old, new):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        os.rename(old, new)
+        shutil.move(old, new)
 
 
 def remove_dir(path):
@@ -1271,9 +1290,9 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
     """ Remove folder and all its content (optionally recursive)
     """
     if os.path.exists(path):
-        files = globber(path, pattern)
+        files = globber_full(path, pattern)
         if pattern == '*' and not sabnzbd.WIN32:
-            files.extend(globber(path, '.*'))
+            files.extend(globber_full(path, '.*'))
 
         for f in files:
             if os.path.isfile(f):
@@ -1304,10 +1323,7 @@ def format_source_url(url):
         prot = 'https'
     else:
         prot = 'http:'
-    if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
-    else:
-        return url
+    return url
 
 RE_URL = re.compile(r'://([^/]+)/')
 def get_base_url(url):
@@ -1328,7 +1344,9 @@ def starts_with_path(path, prefix):
     ''' Return True if 'path' starts with 'prefix',
         considering case-sensitivity of filesystem
     '''
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.WIN32:
+        return clip_path(path).lower().startswith(prefix.lower())
+    elif sabnzbd.DARWIN:
         return path.lower().startswith(prefix.lower())
     else:
         return path.startswith(prefix)
@@ -1342,7 +1360,7 @@ def set_chmod(path, permissions, report):
     except:
         lpath = path.lower()
         if report and '.appledouble' not in lpath and '.ds_store' not in lpath:
-            logging.error(Ta('Cannot change permissions of %s'), path)
+            logging.error(T('Cannot change permissions of %s'), clip_path(path))
             logging.info("Traceback: ", exc_info = True)
 
 
@@ -1375,3 +1393,64 @@ def set_permissions(path, recursive=True):
                 set_chmod(path, umask, report)
         else:
             set_chmod(path, umask_file, report)
+
+
+def short_path(path, always=True):
+    """ For Windows, return shortended ASCII path, for others same path
+        When `always` is off, only return a short path when size is below 260
+    """
+    if sabnzbd.WIN32:
+        import win32api
+        path = os.path.normpath(path)
+        if always or len(path) > 259:
+            # First make the path "long"
+            path = long_path(path)
+            if os.path.exists(path):
+                # Existing path can always be shortened
+                path = win32api.GetShortPathName(path)
+            else:
+                # For new path, shorten only existing part (recursive)
+                path1, name = os.path.split(path)
+                path = os.path.join(short_path(path1, always), name)
+        path = clip_path(path)
+    return path
+
+
+def clip_path(path):
+    """ Remove \\?\ or \\?\UNC\ prefix from Windows path
+    """
+    if sabnzbd.WIN32 and path and '?' in path:
+        path = path.replace(u'\\\\?\\UNC\\', u'\\\\').replace(u'\\\\?\\', u'')
+    return path
+
+
+def long_path(path):
+    """ For Windows, convert to long style path; others, return same path
+    """
+    if sabnzbd.WIN32 and path and not path.startswith(u'\\\\?\\'):
+        if path.startswith('\\\\'):
+            # Special form for UNC paths
+            path = path.replace(u'\\\\', u'\\\\?\\UNC\\', 1)
+        else:
+            # Normal form for local paths
+            path = u'\\\\?\\' + path
+    return path
+
+
+def fix_unix_encoding(folder):
+    """ Fix bad name encoding for Unix systems """
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and gUTF:
+        for root, dirs, files in os.walk(folder.encode('utf-8')):
+            for name in files:
+                new_name = special_fixer(name).encode('utf-8')
+                if name != new_name:
+                    try:
+                        shutil.move(os.path.join(root, name), os.path.join(root, new_name))
+                    except:
+                        logging.info('Cannot correct name of %s', os.path.join(root, name))
+
+def get_urlbase(url):
+    ''' Return the base URL (like http://server.domain.com/)
+    '''
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)

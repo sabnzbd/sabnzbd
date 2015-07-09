@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@ def test_nntp_server_dict(kwargs):
     if not connections:
         return False, T('There are no connections set. Please set at least one connection.')
     ssl = int_conv(kwargs.get('ssl', 0))
+    ssl_type = kwargs.get('ssl_type', 't1')
     port = int_conv(kwargs.get('port', 0))
     if not port:
         if ssl:
@@ -49,10 +50,10 @@ def test_nntp_server_dict(kwargs):
 
 
     return test_nntp_server(host, port, server, username=username, \
-                        password=password, ssl=ssl)
+                        password=password, ssl=ssl, ssl_type=ssl_type)
 
 
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type='t1'):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
     timeout = 4.0
     if '*' in password and not password.strip('*'):
@@ -73,7 +74,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         if not got_pass:
             return False, T('Password masked in ******, please re-enter')
     try:
-        s = Server(-1, host, port, timeout, 0, 0, ssl, username, password)
+        s = Server(-1, host, port, timeout, 0, 0, ssl, ssl_type, False, username, password)
     except:
         return False, T('Invalid server details')
 
@@ -91,17 +92,17 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         else:
             return False, T('Timed out')
     except socket.error, e:
-        return False, xml_name(str(e))
+        return False, unicode(e)
 
     except TypeError, e:
-        return False, xml_name(T('Invalid server address.'))
+        return False, T('Invalid server address.')
 
     except IndexError:
         # No data was received in recv_chunk() call
-        return False, xml_name(T('Server quit during login sequence.'))
+        return False, T('Server quit during login sequence.')
 
     except:
-        return False, xml_name(str(sys.exc_info()[1]))
+        return False, unicode(sys.exc_info()[1])
 
 
     if not username or not password:
@@ -110,7 +111,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             nw.lines = []
             nw.recv_chunk(block=True)
         except:
-            return False, xml_name(str(sys.exc_info()[1]))
+            return False, unicode(sys.exc_info()[1])
 
     # Could do with making a function for return codes to be used by downloader
     try:
@@ -132,7 +133,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         return False, T('Too many connections, please pause downloading or try again later')
 
     else:
-        return False, T('Could not determine connection result (%s)') % xml_name(nw.lines[0])
+        return False, T('Could not determine connection result (%s)') % nw.lines[0]
 
     # Close the connection
     nw.terminate(quit=True)

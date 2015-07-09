@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ import Queue
 import binascii
 import logging
 import struct
+import re
 from threading import Thread
 from time import sleep
 try:
@@ -34,22 +35,22 @@ except:
     new_md5 = md5.new
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer, \
-                         set_permissions, flag_file
+from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
+                         set_permissions, flag_file, long_path, clip_path
 from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
-from sabnzbd.encoding import latin1, unicoder, is_utf8
+from sabnzbd.encoding import unicoder, is_utf8
 
 
 #------------------------------------------------------------------------------
 class Assembler(Thread):
     do = None # Link to the instance of this method
 
-    def __init__ (self, queue = None):
+    def __init__(self, queue=None):
         Thread.__init__(self)
 
         if queue:
@@ -81,7 +82,7 @@ class Assembler(Thread):
 
                 dupe = nzo.check_for_dupe(nzf)
 
-                filepath = get_filepath(cfg.download_dir.get_path(), nzo, filename)
+                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)
@@ -94,13 +95,13 @@ class Assembler(Thread):
                         else:
                             # 28 == disk full => pause downloader
                             if errno == 28:
-                                logging.error(Ta('Disk full! Forcing Pause'))
+                                logging.error(T('Disk full! Forcing Pause'))
                             else:
-                                logging.error(Ta('Disk error on creating file %s'), latin1(filepath))
+                                logging.error(T('Disk error on creating file %s'), clip_path(filepath))
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
-                        logging.error('Fatal error in Assembler', exc_info = True)
+                        logging.error('Fatal error in Assembler', exc_info=True)
                         break
 
                     nzf.remove_admin()
@@ -113,13 +114,29 @@ class Assembler(Thread):
 
                     if check_encrypted_rar(nzo, filepath):
                         if cfg.pause_on_pwrar() == 1:
-                            logging.warning(Ta('WARNING: Paused job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file'), nzo.final_name)
                             nzo.pause()
                         else:
-                            logging.warning(Ta('WARNING: Aborted job "%s" because of encrypted RAR file'), latin1(nzo.final_name))
+                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file'), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+
+                    unwanted = rar_contains_unwanted_file(filepath)
+                    if unwanted:
+                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted)
+                        logging.debug(T('Unwanted extension is in rar file %s'), filepath)
+                        if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
+                            logging.debug('Unwanted extension ... pausing')
+                            nzo.unwanted_ext = 1
+                            nzo.pause()
+                        if cfg.action_on_unwanted_extensions() == 2:
+                            logging.debug('Unwanted extension ... aborting')
+                            nzo.fail_msg = T('Aborted, unwanted extension detected')
+                            import sabnzbd.nzbqueue
+                            sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+
+
                     nzf.completed = True
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
@@ -128,7 +145,7 @@ class Assembler(Thread):
 
 def _assemble(nzf, path, dupe):
     if os.path.exists(path):
-        unique_path = get_unique_path(path, create_dir = False)
+        unique_path = get_unique_filename(path)
         if dupe:
             path = unique_path
         else:
@@ -151,7 +168,7 @@ def _assemble(nzf, path, dupe):
         data = ArticleCache.do.load_article(article)
 
         if not data:
-            logging.info(Ta('%s missing'), article)
+            logging.info(T('%s missing'), article)
         else:
             # yenc data already decoded, flush it out
             if _type == 'yenc':
@@ -239,7 +256,7 @@ def GetMD5Hashes(fname, force=False):
             table = {}
         except:
             logging.debug('QuickCheck parser crashed in file %s', fname)
-            logging.info('Traceback: ', exc_info = True)
+            logging.info('Traceback: ', exc_info=True)
             table = {}
 
         f.close()
@@ -287,12 +304,19 @@ def ParseFilePacket(f, header):
     return nothing
 
 
+RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
 def is_cloaked(path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(os.path.split(path)[1]).lower()
+    fname = os.path.splitext(fname)[0]
     for name in names:
-        name = unicoder(name.lower())
-        if fname == name or 'password' in name:
+        name = os.path.split(name.lower())[1]
+        name, ext = os.path.splitext(unicoder(name))
+        if ext == u'.rar' and fname.startswith(name) and (len(fname) - len(name)) < 8 and len(names) < 3 and not RE_SUBS.search(fname):
+            logging.debug('File %s is probably encrypted due to RAR with same name inside this RAR', fname)
+            return True
+        elif 'password' in name:
+            logging.debug('RAR %s is probably encrypted: "password" in filename %s', fname, name)
             return True
     return False
 
@@ -313,4 +337,28 @@ def check_encrypted_rar(nzo, filepath):
         except:
             logging.debug('RAR file %s cannot be inspected', filepath)
     return encrypted
+
+
+def rar_contains_unwanted_file(filepath):
+    # checks for unwanted extensions in the rar file 'filepath'
+    # ... unwanted extensions are defined in global variable cfg.unwanted_extensions()
+    # returns False if no unwanted extensions are found in the rar file
+    # returns name of file if unwanted extension is found in the rar file
+    unwanted = None
+    if is_rarfile(filepath):
+        #logging.debug('rar file to check: %s',filepath)
+        #logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
+        try:
+            zf = RarFile(filepath, all_names=True)
+            #logging.debug('files in rar file: %s', zf.namelist())
+            for somefile in zf.namelist() :
+                logging.debug('file in rar file: %s', somefile)
+                if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
+                    logging.debug('Unwanted file %s', somefile)
+                    unwanted = somefile
+                    zf.close()
+        except:
+            logging.debug('RAR file %s cannot be inspected.', filepath)
+    return unwanted
+
 

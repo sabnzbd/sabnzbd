@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,14 +31,14 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         make_script_path, \
-                         on_cleanup_list, renamer, remove_dir, remove_all, globber, \
-                         set_permissions, cleanup_empty_directories
+                         make_script_path, short_path, long_path, clip_path, \
+                         on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
+                         set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
+                         sanitize_and_trim_path
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader
@@ -94,8 +94,8 @@ class PostProcessor(Thread):
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(Ta('Failed to load postprocessing queue: Wrong version (need:%s, found:%s)'), POSTPROC_QUEUE_VERSION, version)
-            if isinstance(history_queue, list):
+                logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+            elif isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
             logging.info('Corrupt %s file, discarding', POSTPROC_QUEUE_FILE_NAME)
@@ -124,14 +124,15 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(Ta('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
+            logging.error(T('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
+            logging.info('Traceback: ', exc_info = True)
         self.save()
 
     def stop(self):
         """ Stop thread after finishing running job """
+        self.__stop = True
         self.queue.put(None)
         self.save()
-        self.__stop = True
 
     def empty(self):
         """ Return True if pp queue is empty """
@@ -160,12 +161,14 @@ class PostProcessor(Thread):
                 continue
 
             try:
-                nzo = self.queue.get(timeout=3)
+                nzo = self.queue.get(timeout=1)
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
                     handle_empty_queue()
-                continue
+                    continue
+                else:
+                    nzo = self.queue.get()
 
             ## Stop job
             if not nzo:
@@ -225,7 +228,6 @@ def process_job(nzo):
 
     # Get the NZB name
     filename = nzo.final_name
-    msgid = nzo.msgid
 
     if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
         # After streaming, force +D
@@ -238,7 +240,8 @@ def process_job(nzo):
         nzo.status = Status.FAILED
         nzo.save_attribs()
         all_ok = False
-        par_error = unpack_error = True
+        par_error = True
+        unpack_error = 1
 
     try:
 
@@ -259,7 +262,7 @@ def process_job(nzo):
                 emsg2 = '%.1f%%' % float(cfg.req_completion_rate())
                 emsg = T('Download might fail, only %s of required %s available') % (emsg, emsg2)
             else:
-                emsg = T('Download failed - Out of your server\'s retention?')
+                emsg = T('Download failed - Not on your server(s)')
                 empty = True
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
@@ -268,7 +271,8 @@ def process_job(nzo):
             flag_repair = flag_unpack = False
             all_ok = cfg.empty_postproc() and empty
             if not all_ok:
-                par_error = unpack_error = True
+                par_error = True
+                unpack_error = 1
 
         script = nzo.script
         cat = nzo.cat
@@ -279,6 +283,9 @@ def process_job(nzo):
 
         ## Par processing, if enabled
         if all_ok and flag_repair:
+            if not check_win_maxpath(workdir):
+                crash_msg = T('Path exceeds 260, repair by "par2" is not possible')
+                raise WindowsError
             par_error, re_add = parring(nzo, workdir)
             if re_add:
                 # Try to get more par files
@@ -294,6 +301,7 @@ def process_job(nzo):
         marker_file = None
 
         if all_ok:
+            fix_unix_encoding(workdir)
             one_folder = False
             ## Determine class directory
             if cfg.create_group_folders():
@@ -305,12 +313,18 @@ def process_job(nzo):
                     catdir = catdir.strip('*')
                     one_folder = True
                 complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
+            complete_dir = long_path(complete_dir)
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
-            file_sorter = Sorter(cat)
+            if cfg.enable_meta():
+                file_sorter = Sorter(nzo, cat)
+            else:
+                file_sorter = Sorter(None, cat)
             complete_dir = file_sorter.detect(dirname, complete_dir)
             if file_sorter.sort_file:
                 one_folder = False
+
+            complete_dir = sanitize_and_trim_path(complete_dir)
 
             if one_folder:
                 workdir_complete = create_dirs(complete_dir)
@@ -338,7 +352,7 @@ def process_job(nzo):
                     #set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), ())
+                    unpack_error, newfiles = unpack_magic(nzo, short_path(workdir), short_path(tmp_workdir_complete), flag_delete, one_folder, (), (), (), (), ())
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
@@ -394,18 +408,19 @@ def process_job(nzo):
                     try:
                         newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
                     except:
-                        logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
+                        logging.error(T('Error renaming "%s" to "%s"'), clip_path(tmp_workdir_complete), clip_path(workdir_complete))
                         logging.info('Traceback: ', exc_info = True)
                         # Better disable sorting because filenames are all off now
                         file_sorter.sort_file = None
                 else:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                    workdir_complete = workdir_complete
 
             if empty:
                 job_result = -1
             else:
-                job_result = int(par_error) + int(unpack_error)*2
+                job_result = int(par_error) + int(bool(unpack_error))*2
 
             if cfg.ignore_samples() > 0:
                 remove_samples(workdir_complete)
@@ -428,8 +443,9 @@ def process_job(nzo):
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
-                                                             msgid, dirname, cat, nzo.group, job_result)
+                script_log, script_ret = external_processing(short_path(script_path, False), short_path(workdir_complete, False), nzo.filename,
+                                                             dirname, cat, nzo.group, job_result,
+                                                             nzo.nzo_info.get('failure', ''))
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
@@ -442,10 +458,18 @@ def process_job(nzo):
                 script_line = ""
                 script_ret = 0
 
+        ## Maybe bad script result should fail job
+        if script_ret and cfg.script_can_fail():
+            script_error = True
+            all_ok = False
+            nzo.fail_msg = T('Script exit code is %s') % script_ret
+        else:
+            script_error = False
+
         ## Email the results
         if (not nzb_list) and cfg.email_endjob():
-            if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error)):
-                emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+            if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+                emailer.endjob(dirname, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                                nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
 
         if script_output:
@@ -467,12 +491,6 @@ def process_job(nzo):
         if all_ok:
             cleanup_list(workdir_complete, False)
 
-        ## Remove newzbin bookmark, if any
-        if msgid and all_ok:
-            Bookmarks.do.del_bookmark(msgid)
-        elif all_ok and isinstance(nzo.url, str):
-            sabnzbd.proxy_rm_bookmark(nzo.url)
-
         ## Force error for empty result
         all_ok = all_ok and not empty
 
@@ -481,21 +499,21 @@ def process_job(nzo):
             growler.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = Status.COMPLETED
         else:
-            growler.send_notification(T('Download Failed'), filename, 'complete')
+            growler.send_notification(T('Download Failed'), filename, 'failed')
             nzo.status = Status.FAILED
 
     except:
-        logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
+        logging.error(T('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
             logging.info("Traceback: ", exc_info = True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        growler.send_notification(T('Download Failed'), filename, 'complete')
+        growler.send_notification(T('Download Failed'), filename, 'failed')
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
         if cfg.email_endjob():
-            emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
+            emailer.endjob(dirname, cat, all_ok, clip_path(workdir_complete), nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
 
 
@@ -512,7 +530,7 @@ def process_job(nzo):
     history_db = database.get_history_handle()
     # Add the nzo to the database. Only the path, script and time taken is passed
     # Other information is obtained from the nzo
-    history_db.add_history_db(nzo, workdir_complete, nzo.downpath, postproc_time, script_log, script_line)
+    history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
     # The connection is only used once, so close it here
     history_db.close()
 
@@ -521,7 +539,7 @@ def process_job(nzo):
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
         sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
-        logging.error(Ta('Cleanup of %s failed.'), nzo.final_name)
+        logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info = True)
 
     ## Remove download folder
@@ -531,8 +549,12 @@ def process_job(nzo):
                 logging.debug('Removing workdir %s', workdir)
                 remove_all(workdir, recursive=True)
         except:
-            logging.error(Ta('Error removing workdir (%s)'), workdir)
+            logging.error(T('Error removing workdir (%s)'), clip_path(workdir))
             logging.info("Traceback: ", exc_info = True)
+
+    # Use automatic retry link on par2 errors and encrypted/bad RARs
+    if par_error or unpack_error in (2, 3):
+        try_alt_nzb(nzo)
 
     return True
 
@@ -559,6 +581,7 @@ def parring(nzo, workdir):
 
     re_add = False
     par_error = False
+    single = len(repair_sets) == 1
 
     if repair_sets:
         for setname in repair_sets:
@@ -567,18 +590,19 @@ def parring(nzo, workdir):
             if not verified.get(setname, False):
                 logging.info("Running repair on set %s", setname)
                 parfile_nzf = par_table[setname]
-                if not os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)):
+                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
+                    need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
+                    re_add = re_add or need_re_add
+                    if not res and not need_re_add and cfg.sfv_check():
+                        res = try_sfv_check(nzo, workdir, setname)
+                    verified[setname] = res
+                else:
                     continue
-                need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname)
-                re_add = re_add or need_re_add
-                if not res and not need_re_add and cfg.sfv_check():
-                    res = try_sfv_check(nzo, workdir, setname)
-                verified[setname] = res
                 par_error = par_error or not res
     else:
         logging.info("No par2 sets for %s", filename)
         nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-        if cfg.sfv_check():
+        if cfg.sfv_check() and not verified.get('', False):
             par_error = not try_sfv_check(nzo, workdir, '')
             verified[''] = not par_error
 
@@ -602,12 +626,12 @@ def try_sfv_check(nzo, workdir, setname):
         When setname is '' and no SFV files are found, True is returned
         """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
-    sfvs = globber(workdir, '*.sfv')
+    sfvs = globber_full(workdir, '*.sfv')
     sfvs.sort(lambda x, y: len(x) - len(y))
     par_error = False
     found = False
     for sfv in sfvs:
-        if setname in os.path.basename(sfv):
+        if setname.lower() in os.path.basename(sfv).lower():
             found = True
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
             failed = sfv_check(sfv)
@@ -673,7 +697,7 @@ def cleanup_list(wdir, skip_nzb):
                         logging.info("Removing unwanted file %s", path)
                         os.remove(path)
                     except:
-                        logging.error(Ta('Removing %s failed'), path)
+                        logging.error(T('Removing %s failed'), clip_path(path))
                         logging.info("Traceback: ", exc_info = True)
         if files:
             try:
@@ -748,7 +772,7 @@ def remove_samples(path):
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(Ta('Removing %s failed'), path)
+                    logging.error(T('Removing %s failed'), clip_path(path))
                     logging.info("Traceback: ", exc_info = True)
 
 
@@ -761,8 +785,8 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     orgpath = oldpath
     items = globber(oldpath)
     if len(items) == 1:
-        folder_path = items[0]
-        folder = os.path.split(folder_path)[1]
+        folder = items[0]
+        folder_path = os.path.join(oldpath, folder)
         if os.path.isdir(folder_path) and folder not in ('VIDEO_TS', 'AUDIO_TS'):
             logging.info('Collapsing %s', os.path.join(newpath, folder))
             oldpath = folder_path
@@ -814,3 +838,9 @@ def remove_from_list(name, lst):
                 logging.debug('Popping %s', lst[n])
                 lst.pop(n)
                 return
+
+def try_alt_nzb(nzo):
+    """ Try to get a new NZB if available """
+    url = nzo.nzo_info.get('failure')
+    if url and cfg.new_nzb_on_failure():
+        sabnzbd.add_url(url, nzo.pp, nzo.script, nzo.cat, nzo.priority)

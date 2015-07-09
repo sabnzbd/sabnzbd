@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="Configure+General-0-7"#-->
+<!--#set global $help_uri="Configure+General-8"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
 
 <form action="saveGeneral" method="post" name="fullform" id="fullform" autocomplete="off">
@@ -193,16 +193,26 @@
     </div>
     <fieldset class="component-group-list">
       <div class="field-pair">
-        <label class="nocheck clearfix" for="bandwidth_limit">
-          <span class="component-title">$T('opt-bandwidth_limit')</span>
-          <input type="text" name="bandwidth_limit" id="bandwidth_limit" value="$bandwidth_limit" size=8 />
+        <label class="nocheck clearfix" for="bandwidth_max">
+          <span class="component-title">$T('opt-bandwidth_max')</span>
+          <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" size=8 />
         </label>
         <label class="nocheck clearfix">
           <span class="component-title">&nbsp;</span>
-          <span class="component-desc">$T('explain-bandwidth_limit')</span>
+          <span class="component-desc">$T('explain-bandwidth_max')</span>
         </label>
       </div>
       <div class="field-pair alt">
+        <label class="nocheck clearfix" for="bandwidth_perc">
+          <span class="component-title">$T('opt-bandwidth_perc')</span>
+          <input type="text" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" size=8 />
+        </label>
+        <label class="nocheck clearfix">
+          <span class="component-title">&nbsp;</span>
+          <span class="component-desc">$T('explain-bandwidth_perc')</span>
+        </label>
+      </div>
+      <div class="field-pair">
         <label class="nocheck clearfix" for="cache_limit">
           <span class="component-title">$T('opt-cache_limitstr')</span>
           <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" size=8 />
@@ -212,7 +222,7 @@
           <span class="component-desc">$T('explain-cache_limitstr')</span>
         </label>
       </div>
-      <div class="field-pair">
+      <div class="field-pair alt">
         <label class="nocheck clearfix" for="cleanup_list">
           <span class="component-title">$T('opt-cleanup_list')</span>
           <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size=40 />

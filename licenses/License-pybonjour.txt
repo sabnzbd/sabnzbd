@@ -1,0 +1,10 @@
+The module pybonjour is (C) Christopher Stawarz <cstawarz@gmail.com>
+
+Version: 1.1.1
+May 8, 2008
+
+Home of the module:
+http://pseudogreen.org/bzr/pybonjour/
+
+It is covered by the following license:
+"pybonjour is free software, distributed under the MIT license."

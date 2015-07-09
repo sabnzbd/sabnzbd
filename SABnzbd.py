@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2013 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,8 +16,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2, 5):
-    print "Sorry, requires Python 2.5, 2.6 or 2.7."
+if sys.version_info[:2] < (2, 6) or sys.version_info[:2] >= (3, 0):
+    print "Sorry, requires Python 2.6 or 2.7."
+    sys.exit(1)
+
+# Make sure UTF-8 is default 8bit encoding
+if not hasattr(sys,"setdefaultencoding"):
+    reload(sys)
+try:
+    sys.setdefaultencoding('utf-8')
+except:
+    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
+    print 'or find another way to force Python to use UTF-8 for string encoding.'
     sys.exit(1)
 
 import logging
@@ -63,23 +73,32 @@ except:
         else:
             SQLITE_DLL = False
 
+import locale, __builtin__
+try:
+    locale.setlocale(locale.LC_ALL, "")
+    __builtin__.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
+except:
+    # Work-around for Python-ports with bad "locale" support
+    __builtin__.__dict__['codepage'] = 'cp1252'
+
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import get_user_shellfolders, real_path, \
+from sabnzbd.misc import real_path, \
      check_latest_version, exit_sab, \
      split_host, get_ext, create_https_certificates, \
-     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
+     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic_fwall, \
      panic_sqlite, panic, launch_a_browser, panic_xport
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.growler as growler
+import sabnzbd.zconfig
 
 from threading import Thread
 
@@ -190,6 +209,11 @@ class guiHandler(logging.Handler):
         """
         Emit a record by adding it to our private queue
         """
+        if record.levelname == 'WARNING':
+            sabnzbd.LAST_WARNING = record.msg % record.args
+        else:
+            sabnzbd.LAST_ERROR = record.msg % record.args
+
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
@@ -240,7 +264,8 @@ def print_help():
         print "  -d  --daemon             Use when run as a service"
     else:
         print "  -d  --daemon             Fork daemon process"
-        print "      --pid <path>         Create a PID file in the listed folder (full path)"
+        print "      --pid <path>         Create a PID file in the given folder (full path)"
+        print "      --pidfile <path>     Create a PID file with the given name (full path)"
     print
     print "      --force              Discard web-port timeout (see Wiki!)"
     print "  -h  --help               Print this message"
@@ -260,7 +285,7 @@ def print_version():
     print """
 %s-%s
 
-Copyright (C) 2008-2013, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2008-2015, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -300,7 +325,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, err=''):
     """Abort program because of CherryPy troubles
     """
-    logging.error(Ta('Failed to start web-interface') + ' : ' + str(err))
+    logging.error(T('Failed to start web-interface') + ' : ' + str(err))
     if not sabnzbd.DAEMON:
         if '13' in err:
             panic_xport(browserhost, cherryport)
@@ -338,7 +363,7 @@ def Web_Template(key, defweb, wdir):
         if defweb == DEF_STDCONFIG:
             return ''
         # end temp fix
-        logging.warning(Ta('Cannot find web template: %s, trying standard template'), full_main)
+        logging.warning(T('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -364,12 +389,13 @@ def CheckColor(color, web_dir):
 #------------------------------------------------------------------------------
 def fix_webname(name):
     if name:
+        name = deunicode(name)
         xname = name.title()
     else:
         xname = ''
     if xname in ('Default', ):
-        return 'Classic'
-    elif xname in ('Classic', 'Plush', 'Mobile'):
+        return 'Plush'
+    elif xname in ('Plush', 'Mobile'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
@@ -397,11 +423,13 @@ def GetProfileInfo(vista_plus):
             pass
         ok = True
     elif sabnzbd.WIN32:
-        specials = get_user_shellfolders()
         try:
-            sabnzbd.DIR_APPDATA = '%s\\%s' % (specials['AppData'], DEF_WORKDIR)
-            sabnzbd.DIR_LCLDATA = '%s\\%s' % (specials['Local AppData'], DEF_WORKDIR)
-            sabnzbd.DIR_HOME = specials['Personal']
+            from win32com.shell import shell, shellcon
+            path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0)
+            sabnzbd.DIR_APPDATA = os.path.join(path, DEF_WORKDIR)
+            path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
+            sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
+            sabnzbd.DIR_HOME = os.environ['USERPROFILE']
             ok = True
         except:
             try:
@@ -409,7 +437,7 @@ def GetProfileInfo(vista_plus):
                     root = os.environ['AppData']
                     user = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root.replace('\\Roaming', '\\Local'), DEF_WORKDIR)
-                    sabnzbd.DIR_HOME    = '%s\\Documents' % user
+                    sabnzbd.DIR_HOME = user
                 else:
                     root = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
@@ -417,8 +445,8 @@ def GetProfileInfo(vista_plus):
 
                 try:
                     # Conversion to 8bit ASCII required for CherryPy
-                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode('latin-1')
-                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode('latin-1')
+                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode(codepage)
+                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode(codepage)
                     ok = True
                 except:
                     # If unconvertible characters exist, use MSDOS name
@@ -463,14 +491,14 @@ def print_modules():
         logging.info("_yenc module... found!")
     else:
         if hasattr(sys, "frozen"):
-            logging.error(Ta('_yenc module... NOT found!'))
+            logging.error(T('_yenc module... NOT found!'))
         else:
             logging.info("_yenc module... NOT found!")
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error(Ta('par2 binary... NOT found!'))
+        logging.error(T('par2 binary... NOT found!'))
 
     if sabnzbd.newsunpack.PAR2C_COMMAND:
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
@@ -478,12 +506,17 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.warning(Ta('unrar binary... NOT found'))
+        logging.warning(T('unrar binary... NOT found'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.warning(Ta('unzip binary... NOT found!'))
+        if sabnzbd.cfg.enable_unzip(): logging.warning(T('unzip binary... NOT found!'))
+
+    if sabnzbd.newsunpack.SEVEN_COMMAND:
+        logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
+    else:
+        if sabnzbd.cfg.enable_7zip(): logging.info(T('7za binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -547,7 +580,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = ''
 
     if cherryhost is None:
-        cherryhost = sabnzbd.cfg.cherryhost()
+        cherryhost = deunicode(sabnzbd.cfg.cherryhost())
     else:
         sabnzbd.cfg.cherryhost.set(cherryhost)
 
@@ -636,7 +669,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
-        logging.warning(Ta('Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access'))
+        logging.warning(T('Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access'))
 
     if cherryhost == 'localhost' and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -666,7 +699,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
-        #logging.error(Ta('HTTP and HTTPS ports cannot be the same'))
+        #logging.error(T('HTTP and HTTPS ports cannot be the same'))
         logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
@@ -731,40 +764,6 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
         exit_sab(0)
         return True
     return False
-
-
-def copy_old_files(newpath):
-    """ OSX only:
-        If no INI file found but old one exists, copy it
-        When copying the INI, also copy rss, bookmarks and watched-data
-    """
-    if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
-        if not os.path.exists(newpath):
-            os.mkdir(newpath)
-        oldpath = os.environ['HOME'] + "/.sabnzbd"
-        oldini = os.path.join(oldpath, DEF_INI_FILE)
-        if os.path.exists(oldini):
-            import shutil
-            try:
-                shutil.copy(oldini, newpath)
-            except:
-                pass
-            oldpath = os.path.join(oldpath, DEF_CACHE_DIR)
-            newpath = os.path.join(newpath, DEF_CACHE_DIR)
-            if not os.path.exists(newpath):
-                os.mkdir(newpath)
-            try:
-                shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
-            except:
-                pass
-            try:
-                shutil.copy(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
-            except:
-                pass
-            try:
-                shutil.copy(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
-            except:
-                pass
 
 
 def evaluate_inipath(path):
@@ -843,7 +842,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates', 'no_ipv6',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console',
+                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console', 'pidfile=',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -915,6 +914,7 @@ def main():
     no_login = False
     re_argv = [sys.argv[0]]
     pid_path = None
+    pid_file = None
     new_instance = False
     force_sessions = False
     osx_console = False
@@ -997,6 +997,10 @@ def main():
             pid_path = arg
             re_argv.append(opt)
             re_argv.append(arg)
+        elif opt in ('--pidfile',):
+            pid_file = arg
+            re_argv.append(opt)
+            re_argv.append(arg)
         elif opt in ('--new',):
             new_instance = True
         elif opt in ('--sessions',):
@@ -1059,13 +1063,9 @@ def main():
         # No ini file given, need profile data
         GetProfileInfo(vista_plus)
         # Find out where INI file is
-        inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
-        if not os.path.exists(inifile) and not os.path.exists(inifile + '.bak'):
-            inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
-            if sabnzbd.DARWIN:
-                copy_old_files(sabnzbd.DIR_LCLDATA)
+        inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
 
-    # If INI file at non-std location, then use program dir as $HOME
+    # If INI file at non-std location, then use INI location as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
         sabnzbd.DIR_HOME = os.path.dirname(inifile)
 
@@ -1183,7 +1183,7 @@ def main():
         sys.exit(1)
 
     if clean_up:
-        xlist= globber(logdir)
+        xlist= globber_full(logdir)
         for x in xlist:
             if RSS_FILE_NAME not in x:
                 try:
@@ -1270,6 +1270,38 @@ def main():
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
+    if sabnzbd.cfg.log_level() > 1:
+        from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
+
+        mylocalipv4 = localipv4()
+        if mylocalipv4 :
+            logging.debug('My local IPv4 address = %s', mylocalipv4)
+        else:
+            logging.debug('Could not determine my local IPv4 address')
+
+        mypublicipv4 = publicipv4()
+        if mypublicipv4 :
+            logging.debug('My public IPv4 address = %s', mypublicipv4)
+        else:
+            logging.debug('Could not determine my public IPv4 address')
+
+        myipv6 = ipv6()
+        if myipv6 :
+            logging.debug('My IPv6 address = %s', myipv6)
+        else:
+            logging.debug('Could not determine my IPv6 address')
+
+        # Measure and log system performance measured by pystone and - if possible - CPU model
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        pystoneperf = getpystone()
+        if pystoneperf:
+                logging.debug('CPU Pystone available performance is %s', pystoneperf)
+        else:
+                logging.debug('CPU Pystone available performance could not be calculated')
+        cpumodel = getcpu()	# Linux only
+        if cpumodel:
+                logging.debug('CPU model name is %s', cpumodel)
+
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
         logging.info('[osx] IO priority setting')
@@ -1318,15 +1350,24 @@ def main():
     sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(),  web_dir2)
     sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
+    logging.debug('Unwanted extensions are ... %s',sabnzbd.cfg.unwanted_extensions())
+
     if fork and not sabnzbd.WIN32:
         daemonize()
 
     # Save the INI file
     config.save_config(force=True)
 
-    if sabnzbd.WIN32 and sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
-        import sabnzbd.sabtray
-        sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+    if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
+        if sabnzbd.WIN32:
+            import sabnzbd.sabtray
+            sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+        elif sabnzbd.LINUX_POWER and os.environ.get('DISPLAY'):
+            try:
+                import gtk, sabnzbd.sabtraylinux
+                sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+            except:
+                logging.info("pygtk2 not found. No SysTray.")
 
     print_modules()
 
@@ -1359,7 +1400,7 @@ def main():
             create_https_certificates(https_cert, https_key)
 
         if not (os.path.exists(https_cert) and os.path.exists(https_key)):
-            logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
+            logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
     # Determine if this system has multiple definitions for 'localhost'
@@ -1506,14 +1547,16 @@ def main():
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+    sabnzbd.zconfig.set_bonjour(cherryhost, cherryport)
 
     if enable_https:
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
-    cherrypy.wsgiserver.REDIRECT_URL = browser_url
 
     sabnzbd.BROWSER_URL = browser_url
+    cherrypy.wsgiserver.redirect_url(browser_url)
+
     if not autorestarted:
         launch_a_browser(browser_url)
         if sabnzbd.FOUNDATION:
@@ -1545,8 +1588,8 @@ def main():
             # Write URL directly to registry
             set_connection_info(api_url)
 
-    if pid_path:
-        sabnzbd.pid_file(pid_path, cherryport)
+    if pid_path or pid_file:
+        sabnzbd.pid_file(pid_path, pid_file, cherryport)
 
     # Start all SABnzbd tasks
     logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
@@ -1565,6 +1608,15 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = timer5 = 0
     while not sabnzbd.SABSTOP:
+        if sabnzbd.LAST_WARNING:
+            msg = sabnzbd.LAST_WARNING
+            sabnzbd.LAST_WARNING = None
+            sabnzbd.growler.send_notification(T('Warning'), msg, 'warning')
+        if sabnzbd.LAST_ERROR:
+            msg = sabnzbd.LAST_ERROR
+            sabnzbd.LAST_ERROR = None
+            sabnzbd.growler.send_notification(T('Error'), msg, 'error')
+
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
                                                     sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
@@ -1669,7 +1721,11 @@ def main():
     sys.stdout.flush()
     sabnzbd.pid_file()
     if getattr(sys, 'frozen', None) == 'macosx_app':
-        AppHelper.stopEventLoop()
+        try:
+            AppHelper.stopEventLoop()
+        except:
+            # Failing AppHelper libary!
+            os._exit(0)
     else:
         growler.send_notification('SABnzbd',T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
@@ -1797,9 +1853,9 @@ if __name__ == '__main__':
     args = []
     for txt in sys.argv:
         if ' ' in txt:
-            txt = '"%s"' % latin1(txt)
+            txt = '"%s"' % unicoder(txt)
         else:
-            txt = latin1(txt)
+            txt = unicoder(txt)
         args.append(txt)
     sabnzbd.CMDLINE = ' '.join(args)
 

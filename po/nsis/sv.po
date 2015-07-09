@@ -7,65 +7,57 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-08-14 18:42+0000\n"
-"PO-Revision-Date: 2012-05-15 19:42+0000\n"
+"POT-Creation-Date: 2015-04-25 09:51+0000\n"
+"PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-15 05:11+0000\n"
-"X-Generator: Launchpad (build 15801)\n"
+"X-Launchpad-Export-Date: 2015-04-26 05:46+0000\n"
+"X-Generator: Launchpad (build 17430)\n"
 
-#: NSIS_Installer.nsi:425
+#: NSIS_Installer.nsi:416
 msgid "Go to the SABnzbd Wiki"
 msgstr "Gå till SABnzbd Wiki"
 
-#: NSIS_Installer.nsi:427
+#: NSIS_Installer.nsi:418
 msgid "Show Release Notes"
 msgstr "Visa releasenoteringar"
 
-#: NSIS_Installer.nsi:429
+#: NSIS_Installer.nsi:420
 msgid "Support the project, Donate!"
 msgstr "Donera och stöd detta projekt!"
 
-#: NSIS_Installer.nsi:431
+#: NSIS_Installer.nsi:422
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Var vänlig stäng \"SABnzbd.exe\" först"
 
-#: NSIS_Installer.nsi:433
-msgid ""
-"                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-"release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-msgstr ""
-"                  >>>> VARNING <<<<\\r\\n\\r\\nVänligen läs först "
-"releasenoteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-7-0 !"
-
-#: NSIS_Installer.nsi:435
+#: NSIS_Installer.nsi:424
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Detta kommer att avinstallera SABnzbd från systemet"
 
-#: NSIS_Installer.nsi:437
+#: NSIS_Installer.nsi:426
 msgid "Run at startup"
 msgstr "Kör vid uppstart"
 
-#: NSIS_Installer.nsi:439
+#: NSIS_Installer.nsi:428
 msgid "Desktop Icon"
 msgstr "Skrivbordsikon"
 
-#: NSIS_Installer.nsi:441
+#: NSIS_Installer.nsi:430
 msgid "NZB File association"
 msgstr "NZB Filassosication"
 
-#: NSIS_Installer.nsi:443
+#: NSIS_Installer.nsi:432
 msgid "Delete Program"
 msgstr "Radera programmet"
 
-#: NSIS_Installer.nsi:445
+#: NSIS_Installer.nsi:434
 msgid "Delete Settings"
 msgstr "Radera inställningar"
 
-#: NSIS_Installer.nsi:447
+#: NSIS_Installer.nsi:436
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
@@ -73,19 +65,19 @@ msgstr ""
 "Detta system kräver att Microsofts runtimebibliotek VC90 är installerat. "
 "Vill du göra detta nu?"
 
-#: NSIS_Installer.nsi:449
+#: NSIS_Installer.nsi:438
 msgid "Downloading Microsoft runtime installer..."
 msgstr "Laddar ned Microsofts runtimeinstaller..."
 
-#: NSIS_Installer.nsi:451
+#: NSIS_Installer.nsi:440
 msgid "Download error, retry?"
 msgstr "Misslyckat nedladdningsförsök, försök igen?"
 
-#: NSIS_Installer.nsi:453
+#: NSIS_Installer.nsi:442
 msgid "Cannot install without runtime library, retry?"
 msgstr "Kan inte installera utan runtimebibliotek, försök igen?"
 
-#: NSIS_Installer.nsi:455
+#: NSIS_Installer.nsi:444
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -94,22 +86,13 @@ msgstr ""
 "avinstallera tidigare version eller 'Avbryt' för att avbryta denna "
 "uppgradering."
 
-#: NSIS_Installer.nsi:457
+#: NSIS_Installer.nsi:446
 msgid "Your settings and data will be preserved."
 msgstr "Dina inställningar och ditt data kommer att bevaras."
 
-#~ msgid "Start SABnzbd (hidden)"
-#~ msgstr "Starta SABnzbd (dold)"
-
-#~ msgid "Delete Logs"
-#~ msgstr "Ta bort logg"
-
-#~ msgid "Delete Cache"
-#~ msgstr "Ta bort temporär-mapp"
-
 #~ msgid ""
 #~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 #~ msgstr ""
-#~ "                  >>>> VARNING <<<<\\r\\n\\r\\nVar vänlig och läs versions "
-#~ "noteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-6-0 !"
+#~ "                  >>>> VARNING <<<<\\r\\n\\r\\nVänligen läs först "
+#~ "releasenoteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-7-0 !"

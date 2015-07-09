@@ -12,7 +12,17 @@
   <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/white.css?smpl$version"/>
   <!--#end if#-->
   <link href="rss?mode=history&apikey=$session" rel="alternate" type="application/rss+xml" title="SABnzbd History" />
-  <link rel="shortcut icon" href="static/images/favicon.ico" />
+  <link rel="shortcut icon" href="./staticcfg/ico/favicon.ico" />
+  
+  <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+  <link rel="apple-touch-icon" sizes="57x57" href="./staticcfg/ico/apple-touch-icon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="60x60" href="./staticcfg/ico/apple-touch-icon-60x60.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="./staticcfg/ico/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="./staticcfg/ico/apple-touch-icon-114x114.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="./staticcfg/ico/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152.png" />
 
   <script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
   <script type="text/javascript" src="static/PlotKit/PlotKit.js"></script>
@@ -755,11 +765,6 @@ function lrb(url, extra, refresh)
     d = doSimpleXMLHttpRequest('status/unblock_server?server='+host+':'+port+'&session='+session);
   }
 
-  function getBookmarks()
-  {
-    d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
-  }
-
   function resetQuota()
   {
     d = doSimpleXMLHttpRequest('tapi?mode=reset_quota&session='+session);
@@ -834,6 +839,11 @@ function lrb(url, extra, refresh)
     var elementt;
     if (element) elementt = document.getElementById(element);
     values = getFormValues(elementt);
+    if (elementt) {
+      elementt.onchange=function(){
+        saveelement.value = "$T('button-saveChanges')"
+      }
+    }
 
   var url = ''+extra;
   var d = doXHR(url+append,
@@ -1129,13 +1139,10 @@ function loadingJSON(){
           <li><a class="config" href="$prefix/config/general/" onclick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
           <li><a class="config" href="$prefix/config/folders/" onclick="lr('config/folders/','', 0, 0);">$T('cmenu-folders')</a> </li>
           <li><a class="config" href="$prefix/config/switches/" onclick="lr('config/switches/','', 0, 0);">$T('cmenu-switches')</a> </li>
-          <li><a class="config" href="$prefix/config/server" onclick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
+          <li><a class="config" href="$prefix/config/server/" onclick="lr('config/server/','', 0, 0);">$T('cmenu-servers')</a> </li>
           <li><a class="config" href="$prefix/config/scheduling/" onclick="lr('config/scheduling/','', 0, 0);">$T('cmenu-scheduling')</a> </li>
           <li><a class="config" href="$prefix/config/rss/" onclick="lr('config/rss/','', 0, 0);">$T('cmenu-rss')</a> </li>
           <li><a class="config" href="$prefix/config/notify/" onclick="lr('config/notify/','', 0, 0);">$T('cmenu-notif')</a></li>
-          <!--#if 0#-->
-          <li><a class="config" href="$prefix/config/indexers/" onclick="lr('config/indexers/', '', 0, 0);">$T('cmenu-newzbin')</a></li>
-          <!--#end if#-->
           <li><a class="config" href="$prefix/config/categories/" onclick="lr('config/categories/', '', 0, 0);">$T('cmenu-cat')</a></li>
           <li><a class="config" href="$prefix/config/sorting/" onclick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
         </ul>
@@ -1182,7 +1189,7 @@ function loadingJSON(){
   <div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
   <form action="addID" method="get">
-    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+    <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL')" onblur="setForm(this, 'Enter URL')">
     <!--#if $cat_list#-->
       <select name="cat" >
         <optgroup label="$T('category')">

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -51,13 +51,12 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
-                         get_filename, int_conv, globber, time_format, remove_all, \
-                         starts_with_path, cat_convert
+                         get_filename, int_conv, globber, globber_full, time_format, remove_all, \
+                         starts_with_path, cat_convert, clip_path
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
 import sabnzbd.growler
@@ -97,7 +96,7 @@ def api_handler(kwargs):
 
     if isinstance(mode, list): mode = mode[0]
     if isinstance(output, list): output = output[0]
-    response = _api_table.get(mode, _api_undefined)(name, output, kwargs)
+    response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
     if output == 'json' and callback:
         response = '%s(%s)' % (callback, response)
     return response
@@ -149,19 +148,19 @@ def _api_qstatus(name, output, kwargs):
 def _api_queue(name, output, kwargs):
     """ API: Dispatcher for mode=queue """
     value = kwargs.get('value', '')
-    return _api_queue_table.get(name, _api_queue_default)(output, value, kwargs)
+    return _api_queue_table.get(name, (_api_queue_default, 2))[0](output, value, kwargs)
 
 
 def _api_queue_delete(output, value, kwargs):
     """ API: accepts output, value """
     if value.lower()=='all':
-        NzbQueue.do.remove_all()
-        return report(output)
+        removed = NzbQueue.do.remove_all(kwargs.get('search'))
+        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
     elif value:
         items = value.split(',')
         del_files = int_conv(kwargs.get('del_files'))
-        NzbQueue.do.remove_multiple(items, del_files)
-        return report(output)
+        removed = NzbQueue.do.remove_multiple(items, del_files)
+        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -170,18 +169,19 @@ def _api_queue_delete_nzf(output, value, kwargs):
     """ API: accepts value(=nzo_id), value2(=nzf_id) """
     value2 = kwargs.get('value2')
     if value and value2:
-        NzbQueue.do.remove_nzf(value, value2)
-        return report(output)
+        removed = NzbQueue.do.remove_nzf(value, value2)
+        return report(output, keyword='', data={'status':bool(removed), 'nzf_ids' : removed})
     else:
         return report(output, _MSG_NO_VALUE2)
 
 
 def _api_queue_rename(output, value, kwargs):
-    """ API: accepts output, value(=old name), value2(=new name) """
+    """ API: accepts output, value(=old name), value2(=new name), value3(=password) """
     value2 = kwargs.get('value2')
+    value3 = kwargs.get('value3')
     if value and value2:
-        NzbQueue.do.change_name(value, special_fixer(value2))
-        return report(output)
+        ret = NzbQueue.do.change_name(value, special_fixer(value2), special_fixer(value3))
+        return report(output, keyword='', data={'status':ret})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -194,24 +194,24 @@ def _api_queue_change_complete_action(output, value, kwargs):
 
 def _api_queue_purge(output, value, kwargs):
     """ API: accepts output """
-    NzbQueue.do.remove_all()
-    return report(output)
+    removed = NzbQueue.do.remove_all(kwargs.get('search'))
+    return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
 
 
 def _api_queue_pause(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        NzbQueue.do.pause_multiple_nzo(items)
-    return report(output)
+        handled = NzbQueue.do.pause_multiple_nzo(items)
+    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
 
 
 def _api_queue_resume(output, value, kwargs):
     """ API: accepts output, value(=list of nzo_id) """
     if value:
         items = value.split(',')
-        NzbQueue.do.resume_multiple_nzo(items)
-    return report(output)
+        handled = NzbQueue.do.resume_multiple_nzo(items)
+    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
 
 
 def _api_queue_priority(output, value, kwargs):
@@ -250,6 +250,7 @@ def _api_queue_default(output, value, kwargs):
     start = kwargs.get('start')
     limit = kwargs.get('limit')
     trans = kwargs.get('trans')
+    search = kwargs.get('search')
 
     if output in ('xml', 'json'):
         if sort and sort != 'index':
@@ -260,7 +261,7 @@ def _api_queue_default(output, value, kwargs):
         history = bool(kwargs.get('history'))
 
         info, pnfo_list, bytespersec, verbose_list, dictn = \
-            build_queue(history=history, start=start, limit=limit, output=output, trans=trans)
+            build_queue(history=history, start=start, limit=limit, output=output, trans=trans, search=search)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
@@ -284,15 +285,22 @@ def _api_translate(name, output, kwargs):
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
     if hasattr(name, 'getvalue'):
         #Side effect of next line is that attribute .value is created
         #which is needed to make add_nzbfile() work
         size = name.length
+    elif hasattr(name, 'file') and hasattr(name, 'filename') and name.filename:
+        # CherryPy 3.2.2 object
+        if hasattr(name.file, 'file'):
+            name.value = name.file.file.read()
+        else:
+            name.value = name.file.read()
+        size = len(name.value)
     elif hasattr(name, 'value'):
         size = len(name.value)
     else:
@@ -311,17 +319,22 @@ def _api_addfile(name, output, kwargs):
 
 
 def _api_retry(name, output, kwargs):
-    """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB) """
+    """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB), password (optional) """
     value = kwargs.get('value')
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, str) or isinstance(name, unicode):
+    if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
+    password = kwargs.get('password')
+    password = password[0] if isinstance(password, list) else password
 
-    if retry_job(value, name):
-        return report(output)
+    nzo_id = retry_job(value, name, password)
+    if nzo_id:
+        if isinstance(nzo_id, list):
+            nzo_id = nzo_id[0]
+        return report(output, keyword='', data={'status' : True, 'nzo_id' : nzo_id})
     else:
         return report(output, _MSG_NO_ITEM)
 
@@ -344,7 +357,7 @@ def _api_addlocalfile(name, output, kwargs):
                 priority = kwargs.get('priority')
                 nzbname = kwargs.get('nzbname')
 
-                if get_ext(name) in ('.zip', '.rar'):
+                if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                 elif get_ext(name) in ('.nzb', '.gz'):
@@ -383,8 +396,8 @@ def _api_change_cat(name, output, kwargs):
         cat = value2
         if cat == 'None':
             cat = None
-        NzbQueue.do.change_cat(nzo_id, cat)
-        return report(output)
+        result = NzbQueue.do.change_cat(nzo_id, cat)
+        return report(output, keyword='status', data=bool(result > 0))
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -398,8 +411,8 @@ def _api_change_script(name, output, kwargs):
         script = value2
         if script.lower() == 'none':
             script = None
-        NzbQueue.do.change_script(nzo_id, script)
-        return report(output)
+        result = NzbQueue.do.change_script(nzo_id, script)
+        return report(output, keyword='status', data=bool(result > 0))
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -408,8 +421,8 @@ def _api_change_opts(name, output, kwargs):
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
     if value and value2 and value2.isdigit():
-        NzbQueue.do.change_opts(value, int(value2))
-    return report(output)
+        result = NzbQueue.do.change_opts(value, int(value2))
+    return report(output, keyword='status', data=bool(result > 0))
 
 
 def _api_fullstatus(name, output, kwargs):
@@ -466,7 +479,6 @@ def _api_get_files(name, output, kwargs):
         return report(output, _MSG_NO_VALUE)
 
 
-_RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
 def _api_addid(names, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     pp = kwargs.get('pp')
@@ -486,15 +498,9 @@ def _api_addid(names, output, kwargs):
         else:
             nzbname = ''
 
-        newzbin_url = _RE_NEWZBIN_URL.search(name.lower())
-
         if name:
             name = name.strip()
-        if name and (name.isdigit() or len(name)==5):
-            sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
-        elif newzbin_url:
-            sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority, nzbname)
-        elif name:
+        if name:
             sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
 
     if len(names) > 0:
@@ -572,9 +578,6 @@ def _api_auth(name, output, kwargs):
 
 def _api_newzbin(name, output, kwargs):
     """ API: accepts output """
-    if name == 'get_bookmarks':
-        Bookmarks.do.run(force=True)
-        return report(output)
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
@@ -632,11 +635,27 @@ def _api_watched_now(name, output, kwargs):
     return report(output)
 
 
+def _api_resume_pp(name, output, kwargs):
+    """ API: accepts output """
+    PostProcessor.do.paused = False
+    return report(output)
+
+
+def _api_pause_pp(name, output, kwargs):
+    """ API: accepts output """
+    PostProcessor.do.paused = True
+    return report(output)
+
+
 def _api_rss_now(name, output, kwargs):
     """ API: accepts output """
     # Run RSS scan async, because it can take a long time
     scheduler.force_rss()
     return report(output)
+
+def _api_retry_all(name, output, kwargs):
+    """ API: Retry all failed items in History"""
+    return report(output, keyword='status', data=retry_all_jobs)
 
 def _api_reset_quota(name, output, kwargs):
     """ Reset quota left """
@@ -648,17 +667,36 @@ def _api_test_email(name, output, kwargs):
     pack = {}
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
-    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                 123*MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
+                                 123*MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+                                 test=kwargs)
     if res == 'Email succeeded':
         res = None
     return report(output, error=res)
 
 def _api_test_notif(name, output, kwargs):
-    """ API: send a test notification, return result """
+    """ API: send a test to Notification Center, return result """
     logging.info("Sending test notification")
-    res = sabnzbd.growler.send_notification('SABnzbd', T('Test Notification'), 'other', wait=True)
+    res = sabnzbd.growler.send_notification_center('SABnzbd', T('Test Notification'), 'other')
+    return report(output, error=res)
+
+def _api_test_growl(name, output, kwargs):
+    """ API: send a test Growl notification, return result """
+    logging.info("Sending Growl notification")
+    res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
+    return report(output, error=res)
+
+def _api_test_osd(name, output, kwargs):
+    """ API: send a test OSD notification, return result """
+    logging.info("Sending OSD notification")
+    res = sabnzbd.growler.send_notify_osd('SABnzbd', T('Test Notification'))
+    return report(output, error=res)
+
+def _api_test_prowl(name, output, kwargs):
+    """ API: send a test Prowl notification, return result """
+    logging.info("Sending Prowl notification")
+    res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
@@ -683,8 +721,8 @@ def _api_browse(name, output, kwargs):
 
 #------------------------------------------------------------------------------
 def _api_config(name, output, kwargs):
-    """ API: Dispather for "config" """
-    return _api_config_table.get(name, _api_config_undefined)(output, kwargs)
+    """ API: Dispatcher for "config" """
+    return _api_config_table.get(name, (_api_config_undefined, 2))[0](output, kwargs)
 
 
 def _api_config_speedlimit(output, kwargs):
@@ -757,74 +795,105 @@ def _api_config_undefined(output, kwargs):
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
+def _api_server_stats(name, output, kwargs):
+    """ API: accepts output """
+    sum_t, sum_m, sum_w, sum_d = BPSMeter.do.get_sums()
+    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d}
+
+    stats['servers'] = {}
+    for svr in config.get_servers():
+        t, m, w, d = BPSMeter.do.amounts(svr)
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+
+    return report(output, keyword='', data=stats)
+
+
 #------------------------------------------------------------------------------
 _api_table = {
-    'get_config'      : _api_get_config,
-    'set_config'      : _api_set_config,
-    'del_config'      : _api_del_config,
-    'qstatus'         : _api_qstatus,
-    'queue'           : _api_queue,
-    'options'         : _api_options,
-    'translate'       : _api_translate,
-    'addfile'         : _api_addfile,
-    'retry'           : _api_retry,
-    'addlocalfile'    : _api_addlocalfile,
-    'switch'          : _api_switch,
-    'change_cat'      : _api_change_cat,
-    'change_script'   : _api_change_script,
-    'change_opts'     : _api_change_opts,
-    'fullstatus'      : _api_fullstatus,
-    'history'         : _api_history,
-    'get_files'       : _api_get_files,
-    'addurl'          : _api_addid,
-    'addid'           : _api_addid,
-    'pause'           : _api_pause,
-    'resume'          : _api_resume,
-    'shutdown'        : _api_shutdown,
-    'warnings'        : _api_warnings,
-    'config'          : _api_config,
-    'get_cats'        : _api_get_cats,
-    'get_scripts'     : _api_get_scripts,
-    'version'         : _api_version,
-    'auth'            : _api_auth,
-    'newzbin'         : _api_newzbin,
-    'restart'         : _api_restart,
-    'restart_repair'  : _api_restart_repair,
-    'disconnect'      : _api_disconnect,
-    'osx_icon'        : _api_osx_icon,
-    'rescan'          : _api_rescan,
-    'eval_sort'       : _api_eval_sort,
-    'watched_now'     : _api_watched_now,
-    'rss_now'         : _api_rss_now,
-    'browse'          : _api_browse,
-    'reset_quota'     : _api_reset_quota,
-    'test_email'      : _api_test_email,
-    'test_notif'      : _api_test_notif,
+    'server_stats'    : (_api_server_stats, 2),
+    'get_config'      : (_api_get_config, 3),
+    'set_config'      : (_api_set_config, 3),
+    'del_config'      : (_api_del_config, 3),
+    'qstatus'         : (_api_qstatus, 2),
+    'queue'           : (_api_queue, 2),
+    'options'         : (_api_options, 2),
+    'translate'       : (_api_translate, 2),
+    'addfile'         : (_api_addfile, 1),
+    'retry'           : (_api_retry, 2),
+    'addlocalfile'    : (_api_addlocalfile, 1),
+    'switch'          : (_api_switch, 2),
+    'change_cat'      : (_api_change_cat, 2),
+    'change_script'   : (_api_change_script, 2),
+    'change_opts'     : (_api_change_opts, 2),
+    'fullstatus'      : (_api_fullstatus, 2),
+    'history'         : (_api_history, 2),
+    'get_files'       : (_api_get_files, 2),
+    'addurl'          : (_api_addid, 1),
+    'addid'           : (_api_addid, 1),
+    'pause'           : (_api_pause, 2),
+    'resume'          : (_api_resume, 2),
+    'shutdown'        : (_api_shutdown, 3),
+    'warnings'        : (_api_warnings, 2),
+    'config'          : (_api_config, 2),
+    'get_cats'        : (_api_get_cats, 2),
+    'get_scripts'     : (_api_get_scripts, 2),
+    'version'         : (_api_version, 1),
+    'auth'            : (_api_auth, 1),
+    'newzbin'         : (_api_newzbin, 2),
+    'restart'         : (_api_restart, 3),
+    'restart_repair'  : (_api_restart_repair, 2),
+    'disconnect'      : (_api_disconnect, 2),
+    'osx_icon'        : (_api_osx_icon, 3),
+    'rescan'          : (_api_rescan, 2),
+    'eval_sort'       : (_api_eval_sort, 2),
+    'watched_now'     : (_api_watched_now, 2),
+    'resume_pp'       : (_api_resume_pp, 2),
+    'pause_pp'        : (_api_pause_pp, 2),
+    'rss_now'         : (_api_rss_now, 2),
+    'browse'          : (_api_browse, 2),
+    'retry_all'       : (_api_retry_all, 2),
+    'reset_quota'     : (_api_reset_quota, 2),
+    'test_email'      : (_api_test_email, 2),
+    'test_notif'      : (_api_test_notif, 2),
+    'test_growl'      : (_api_test_growl, 2),
+    'test_osd'        : (_api_test_osd, 2),
+    'test_prowl'      : (_api_test_prowl, 2)
 }
 
 _api_queue_table = {
-    'delete'                  : _api_queue_delete,
-    'delete_nzf'              : _api_queue_delete_nzf,
-    'rename'                  : _api_queue_rename,
-    'change_complete_action'  : _api_queue_change_complete_action,
-    'purge'                   : _api_queue_purge,
-    'pause'                   : _api_queue_pause,
-    'resume'                  : _api_queue_resume,
-    'priority'                : _api_queue_priority,
-    'sort'                    : _api_queue_sort
+    'delete'                  : (_api_queue_delete, 2),
+    'delete_nzf'              : (_api_queue_delete_nzf, 2),
+    'rename'                  : (_api_queue_rename, 2),
+    'change_complete_action'  : (_api_queue_change_complete_action, 2),
+    'purge'                   : (_api_queue_purge, 2),
+    'pause'                   : (_api_queue_pause, 2) ,
+    'resume'                  : (_api_queue_resume, 2),
+    'priority'                : (_api_queue_priority, 2),
+    'sort'                    : (_api_queue_sort, 2)
 }
 
 _api_config_table = {
-    'speedlimit'       : _api_config_speedlimit,
-    'set_speedlimit'   : _api_config_speedlimit,
-    'get_speedlimit'   : _api_config_get_speedlimit,
-    'set_colorscheme'  : _api_config_set_colorscheme,
-    'set_pause'        : _api_config_set_pause,
-    'set_apikey'       : _api_config_set_apikey,
-    'set_nzbkey'       : _api_config_set_nzbkey,
-    'test_server'      : _api_config_test_server
+    'speedlimit'       : (_api_config_speedlimit, 2),
+    'set_speedlimit'   : (_api_config_speedlimit, 2),
+    'get_speedlimit'   : (_api_config_get_speedlimit, 2),
+    'set_colorscheme'  : (_api_config_set_colorscheme, 2),
+    'set_pause'        : (_api_config_set_pause, 2),
+    'set_apikey'       : (_api_config_set_apikey, 3),
+    'set_nzbkey'       : (_api_config_set_nzbkey, 3),
+    'test_server'      : (_api_config_test_server, 2)
 }
 
+
+#------------------------------------------------------------------------------
+def api_level(cmd, name):
+    """ Return access level required for this API call """
+    if cmd in _api_table:
+        return _api_table[cmd][1]
+    if name == 'queue' and cmd in _api_queue_table:
+        return _api_queue_table[cmd][1]
+    if name == 'config' and cmd in _api_config_table:
+        return _api_config_table[cmd][1]
+    return 4
 
 #------------------------------------------------------------------------------
 def report(output, error=None, keyword='value', data=None, callback=None, compat=False):
@@ -1002,7 +1071,8 @@ def handle_cat_api(output, kwargs):
 
 #------------------------------------------------------------------------------
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None):
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None,
+                search=None):
     if output:
         converter = unicoder
     else:
@@ -1015,16 +1085,13 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         dictn = []
     #build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim, webdir)
+    info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if cookie.has_key('queue_details'):
         info['queue_details'] = str(int_conv(cookie['queue_details'].value))
     else:
         info['queue_details'] = '0'
-
-    if cfg.newzbin_username() and cfg.newzbin_password():
-        info['newzbinDetails'] = True
 
     if cfg.refresh_rate() > 0:
         info['refresh_rate'] = str(cfg.refresh_rate())
@@ -1073,7 +1140,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         if not cat:
             cat = 'None'
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD]
         average_date = pnfo[PNFO_AVG_DATE_FIELD]
@@ -1097,7 +1163,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['script'] = script
         else:
             slot['script'] = 'None'
-        slot['msgid'] = msgid
         slot['filename'] = converter(filename)
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
@@ -1131,7 +1196,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED):
+        if (Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED)) \
+           and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1259,7 +1325,6 @@ def qstatus_data():
     bpsnow = BPSMeter.do.get_bps()
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
@@ -1268,7 +1333,6 @@ def qstatus_data():
                         "mb":bytes,
                         "mbleft":bytesleft,
                         "filename":unicoder(filename),
-                        "msgid":msgid,
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
     state = "IDLE"
@@ -1401,11 +1465,11 @@ def rss_qstatus():
     sum_bytesleft = 0
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
 
 
         if mb == mbleft:
@@ -1418,11 +1482,8 @@ def rss_qstatus():
 
         item = Item()
         item.title = name
-        if msgid:
-            item.link    = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), msgid)
-        else:
-            item.link    = "http://%s:%s/sabnzbd/history" % ( \
-            cfg.cherryhost(), cfg.cherryport() )
+        item.link    = "http://%s:%s/sabnzbd/history" % ( cfg.cherryhost(), cfg.cherryport() )
+        item.guid = nzo_id
         status_line  = []
         status_line.append('<tr>')
         #Total MB/MB left
@@ -1458,23 +1519,30 @@ def options_list(output):
 
 
 #------------------------------------------------------------------------------
-def retry_job(job, new_nzb):
+def retry_job(job, new_nzb, password):
     """ Re enter failed job in the download queue """
     if job:
         history_db = cherrypy.thread_data.history_db
         path = history_db.get_path(job)
         if path:
-            repair_job(platform_encode(path), new_nzb)
+            nzo_id = repair_job(platform_encode(path), new_nzb, password)
             history_db.remove_history(job)
-            return True
-    return False
+            return nzo_id
+    return None
+
+
+#------------------------------------------------------------------------------
+def retry_all_jobs():
+    """ Re enter all failed jobs in the download queue """
+    history_db = cherrypy.thread_data.history_db
+    return NzbQueue.do.retry_all_jobs(history_db)
 
 
 #------------------------------------------------------------------------------
 def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
-        if path and path.lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
             remove_all(path, recursive=True)
 
 
@@ -1491,7 +1559,7 @@ def del_hist_job(job, del_files):
             PostProcessor.do.delete(job, del_files=del_files)
             history_db.remove_history(job)
 
-        if path and del_files and path.lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and del_files and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
             remove_all(path, recursive=True)
     return True
 
@@ -1531,7 +1599,7 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(prim, webdir=''):
+def build_header(prim, webdir='', search=None):
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1552,24 +1620,27 @@ def build_header(prim, webdir=''):
     if speed_limit <= 0:
         speed_limit = ''
 
+    free1 = diskfree(cfg.download_dir.get_path())
+    free2 = diskfree(cfg.complete_dir.get_path())
+
     header['helpuri'] = 'http://wiki.sabnzbd.org/'
-    header['diskspace1'] = "%.2f" % diskfree(cfg.download_dir.get_path())
-    header['diskspace2'] = "%.2f" % diskfree(cfg.complete_dir.get_path())
+    header['diskspace1'] = "%.2f" % free1
+    header['diskspace2'] = "%.2f" % free2
+    header['diskspace1_norm'] = to_units(free1 * GIGI)
+    header['diskspace2_norm'] = to_units(free2 * GIGI)
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.download_dir.get_path())
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
     header['loadavg'] = loadavg()
     header['speedlimit'] = "%s" % speed_limit
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
-    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
+    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
     header['active_lang'] = cfg.language()
-    header['newzbin_url'] = cfg.newzbin_url()
     header['my_lcldata'] = sabnzbd.DIR_LCLDATA
     header['my_home'] = sabnzbd.DIR_HOME
 
 
     header['webdir'] = webdir
-    header['newzbin_url'] = cfg.newzbin_url()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
@@ -1580,7 +1651,7 @@ def build_header(prim, webdir=''):
     header['uniconfig'] = cfg.uniconfig() and sabnzbd.WEB_DIRC
 
     bytespersec = BPSMeter.do.get_bps()
-    qnfo = NzbQueue.do.queue_info()
+    qnfo = NzbQueue.do.queue_info(search=search)
 
     bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
     bytes = qnfo[QNFO_BYTES_FIELD]
@@ -1594,6 +1665,7 @@ def build_header(prim, webdir=''):
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
     header['left_quota'] = to_units(BPSMeter.do.left)
+    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
 
     status = ''
     if Downloader.do.paused or Downloader.do.postproc:
@@ -1649,7 +1721,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         try:
             re_search = re.compile(search_text, re.I)
         except:
-            logging.error(Ta('Failed to compile regex for search term: %s'), search_text)
+            logging.error(T('Failed to compile regex for search term: %s'), search_text)
             return False
         return re_search.search(text)
 
@@ -1767,7 +1839,7 @@ def format_history_for_queue():
 
     for item in history_items:
         slot = {'nzo_id':item['nzo_id'],
-                'msgid':item['report'], 'filename':xml_name(item['name']), 'loaded':False,
+                'bookmark':'', 'filename':xml_name(item['name']), 'loaded':False,
                 'stages':item['stage_log'], 'status':item['status'], 'bytes':item['bytes'],
                 'size':item['size']}
         slotinfo.append(slot)
@@ -1788,7 +1860,8 @@ def get_active_history(queue=None, items=None):
         item['completed'], item['name'], item['nzb_name'], item['category'], item['pp'], item['script'], item['report'], \
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
-            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = history
+            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'], \
+            dummy, dummy = history
         item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
@@ -1881,7 +1954,7 @@ def list_scripts(default=False):
     lst = []
     path = cfg.script_dir.get_path()
     if path and os.access(path, os.R_OK):
-        for script in globber(path):
+        for script in globber_full(path):
             if os.path.isfile(script):
                 if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and \
                                       not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,29 +30,50 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
-from sabnzbd.encoding import EmailFilter, latin1
+from sabnzbd.encoding import EmailFilter
 import sabnzbd.cfg as cfg
 
 def errormsg(msg):
-    logging.error(latin1(msg))
+    logging.error(msg)
     return msg
+
+
 
 ################################################################################
 # EMAIL_SEND
 #
 #
 ################################################################################
-def send(message, recipient):
+def send(message, email_to, test=None):
     """ Send message if message non-empty and email-parms are set """
+
+    # we should not use CFG if we are testing. we should use values
+    # from UI instead.
+
+    if test:
+        email_server  = test.get('email_server')
+        email_from    = test.get('email_from')
+        email_account = test.get('email_account')
+        email_pwd     = test.get('email_pwd')
+        if email_pwd and not email_pwd.replace('*', ''):
+            # If all stars, get stored password instead
+            email_pwd = cfg.email_pwd()
+    else:
+        email_server  = cfg.email_server()
+        email_from    = cfg.email_from()
+        email_account = cfg.email_account()
+        email_pwd     = cfg.email_pwd()
+
+    # email_to is replaced at send_with_template, since it can be an array
 
     if not message.strip('\n\r\t '):
         return "Skipped empty message"
 
-    if cfg.email_server() and recipient and cfg.email_from():
+    if email_server and email_to and email_from:
 
         message = _prepare_message(message)
 
-        server, port = split_host(cfg.email_server())
+        server, port = split_host(email_server)
         if not port:
             port = 25
 
@@ -92,14 +113,20 @@ def send(message, recipient):
                     return errormsg(T('Failed to initiate TLS connection'))
 
         # Authentication
-        if (cfg.email_account() != "") and (cfg.email_pwd() != ""):
+        if (email_account != "") and (email_pwd != ""):
             try:
-                mailconn.login(cfg.email_account(), cfg.email_pwd())
+                mailconn.login(email_account, email_pwd)
+            except smtplib.SMTPHeloError:
+                return errormsg(T("The server didn't reply properly to the helo greeting"))
+            except smtplib.SMTPAuthenticationError:
+                return errormsg(T("Failed to authenticate to mail server"))
+            except smtplib.SMTPException:
+                return errormsg(T("No suitable authentication method was found"))
             except:
-                return errormsg(T('Failed to authenticate to mail server'))
+                return errormsg(T("Unknown authentication failure in mail server"))
 
         try:
-            mailconn.sendmail(cfg.email_from(), recipient, message)
+            mailconn.sendmail(email_from, email_to, message)
             msg = None
         except smtplib.SMTPHeloError:
             msg = errormsg('The server didn\'t reply properly to the helo greeting.')
@@ -139,7 +166,7 @@ def get_email_date():
 ################################################################################
 from Cheetah.Template import Template
 
-def send_with_template(prefix, parm):
+def send_with_template(prefix, parm, test=None):
     """ Send an email using template """
 
     parm['from'] = cfg.email_from()
@@ -151,7 +178,7 @@ def send_with_template(prefix, parm):
         try:
             lst = glob.glob(os.path.join(path, '%s-*.tmpl' % prefix))
         except:
-            logging.error(Ta('Cannot find email templates in %s'), path)
+            logging.error(T('Cannot find email templates in %s'), path)
     else:
         path = os.path.join(sabnzbd.DIR_PROG, DEF_EMAIL_TMPL)
         tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.language()))
@@ -166,15 +193,20 @@ def send_with_template(prefix, parm):
             source = _decode_file(temp)
             if source:
                 sent = True
-                if len(cfg.email_to()):
-                    for recipient in cfg.email_to():
+                if test:
+                    recipients = [ test.get('email_to') ]
+                else:
+                    recipients = cfg.email_to()
+
+                if len(recipients):
+                    for recipient in recipients:
                         parm['to'] = recipient
                         message = Template(source=source,
                                             searchList=[parm],
                                             filter=EmailFilter,
                                             compilerSettings={'directiveStartToken': '<!--#',
                                                               'directiveEndToken': '#-->'})
-                        ret = send(message.respond(), recipient)
+                        ret = send(message.respond(), recipient, test)
                         del message
                 else:
                     ret = T('No recipients given, no email sent')
@@ -187,7 +219,7 @@ def send_with_template(prefix, parm):
     return ret
 
 
-def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret):
+def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret, test=None):
     """ Send end-of-job email """
 
     # Translate the stage names
@@ -196,7 +228,7 @@ def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, 
         xstages = {tr('stage-fail'): (fail_msg,)}
     else:
         xstages = {}
-    
+
     for stage in stages:
         lines = []
         for line in stages[stage]:
@@ -210,7 +242,7 @@ def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, 
     parm['status'] = status
     parm['name'] = filename
     parm['path'] = path
-    parm['msgid'] = str(msgid)
+    parm['msgid'] = ''
     parm['stages'] = xstages
     parm['script'] = script
     parm['script_output'] = script_output
@@ -219,7 +251,7 @@ def endjob(filename, msgid, cat, status, path, bytes, fail_msg, stages, script, 
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time()))
 
-    return send_with_template('email', parm)
+    return send_with_template('email', parm, test)
 
 
 def rss_mail(feed, jobs):

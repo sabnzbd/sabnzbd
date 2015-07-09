@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,13 +26,14 @@ import subprocess
 import logging
 from time import time
 import binascii
+import shutil
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
-     reliable_unpack_names, unicoder, latin1, platform_encode
+     reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-                         flag_file, real_path, globber
+                         flag_file, real_path, globber, globber_full, short_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -62,6 +63,8 @@ TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
+SEVENZIP_RE = re.compile(r'\.7z$', re.I)
+SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
 VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
@@ -71,8 +74,10 @@ PAR2C_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
+SEVEN_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
+RAR_VERSION = 0
 CURL_COMMAND = None
 
 
@@ -92,17 +97,21 @@ def find_programs(curdir):
     save_data = sabnzbd.save_data
 
     if sabnzbd.DARWIN:
-        try:
-            os_version = subprocess.Popen("sw_vers -productVersion", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
+        if sabnzbd.DARWIN_VERSION >= 6:
             #par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
-            if int(os_version.split('.')[1]) >= 6:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+            if sabnzbd.DARWIN_64:
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
             else:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
-        except:
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+        else:
+            sabnzbd.newsunpack.PAR2_COMMAND = sabnzbd.newsunpack.PAR2C_COMMAND
 
-        sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
+        if sabnzbd.DARWIN_INTEL:
+            sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
+            sabnzbd.newsunpack.SEVEN_COMMAND =  check(curdir, 'osx/7zip/7za')
+        else:
+            sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar-ppc')
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
@@ -114,6 +123,7 @@ def find_programs(curdir):
             sabnzbd.newsunpack.RAR_COMMAND =   check(curdir, 'win/unrar/UnRAR.exe')
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
         sabnzbd.newsunpack.ZIP_COMMAND =   check(curdir, 'win/unzip/unzip.exe')
+        sabnzbd.newsunpack.SEVEN_COMMAND =   check(curdir, 'win/7zip/7za.exe')
         sabnzbd.newsunpack.CURL_COMMAND = check(curdir, 'lib/curl.exe')
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -122,17 +132,33 @@ def find_programs(curdir):
             sabnzbd.newsunpack.RAR_COMMAND = find_on_path(('unrar', 'rar', 'unrar3', 'rar3',))
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
-        sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
+        if not sabnzbd.newsunpack.ZIP_COMMAND:
+            sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
+        if not sabnzbd.newsunpack.SEVEN_COMMAND:
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
+        if not sabnzbd.newsunpack.SEVEN_COMMAND:
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7z')
+
+    if not sabnzbd.newsunpack.PAR2C_COMMAND:
+        sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
+        sabnzbd.newsunpack.RAR_VERSION = version
+        logging.info('UNRAR version %s', version)
+        if sabnzbd.newsunpack.RAR_PROBLEM:
+            logging.info('Problematic UNRAR')
 
 #------------------------------------------------------------------------------
-def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
+def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
     """ Run a user postproc script, return console output and exit value
     """
     command = [str(extern_proc), str(complete_dir), str(filename),
-               str(nicename), str(msgid), str(cat), str(group), str(status)]
+               str(nicename), '', str(cat), str(group), str(status)]
+
+    if failure_url:
+        command.extend(str(failure_url))
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
@@ -140,7 +166,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     env = fix_env()
 
     logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)',
-                 extern_proc, complete_dir, filename, nicename, msgid, cat, group, status)
+                 extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
 
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -171,71 +197,82 @@ def SimpleRarExtract(rarfile, name):
     return ret, output
 
 #------------------------------------------------------------------------------
-def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, ts, depth=0):
+def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
-        logging.warning('Unpack nesting too deep [%s]', latin1(nzo.final_name))
+        logging.warning('Unpack nesting too deep [%s]', nzo.final_name)
         return False, []
     depth += 1
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xts = build_filelists(workdir, None)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, None)
     else:
-        xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
 
     rerun = False
     newfiles = []
-    error = False
+    error = 0
+    new_joins = new_rars = new_zips = new_ts = None
 
     if cfg.enable_filejoin():
         new_joins = [jn for jn in xjoinables if jn not in joinables]
         if new_joins:
-            rerun = True
             logging.info('Filejoin starting on %s', workdir)
             error, newf = file_join(nzo, workdir, workdir_complete, dele, new_joins)
             if newf:
                 newfiles.extend(newf)
             logging.info('Filejoin finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_unrar():
         new_rars = [rar for rar in xrars if rar not in rars]
         if new_rars:
-            rerun = True
             logging.info('Unrar starting on %s', workdir)
             error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, one_folder, new_rars)
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_unzip():
         new_zips = [zip for zip in xzips if zip not in zips]
         if new_zips:
-            rerun = True
             logging.info('Unzip starting on %s', workdir)
             if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
-                error = True
+                error = 1
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
+
+    if cfg.enable_7zip():
+        new_sevens = [seven for seven in xsevens if seven not in sevens]
+        if new_sevens:
+            logging.info('7za starting on %s', workdir)
+            if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
+                error = True
+            logging.info('7za finished on %s', workdir)
+            nzo.set_action_line()
+            rerun = not error
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
         if new_ts:
-            rerun = True
             logging.info('TS Joining starting on %s', workdir)
             error, newf = file_join(nzo, workdir, workdir_complete, dele, new_ts)
             if newf:
                 newfiles.extend(newf)
             logging.info('TS Joining finished on %s', workdir)
             nzo.set_action_line()
+            rerun = not error
 
 
-    if rerun:
+    if rerun and (cfg.enable_recursive() or new_ts or new_joins):
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
-                            xjoinables, xzips, xrars, xts, depth)
+                            xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
             error = z
         if y:
@@ -289,7 +326,6 @@ def get_seq_number(name):
         match, set, num = match_ts(name)
     else:
         num = tail[1:]
-    assert isinstance(num, str)
     if num.isdigit():
         return int(num)
     else:
@@ -300,20 +336,18 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         when succesful, delete originals
     """
     newfiles = []
+    bufsize = 24*1024*1024
 
     # Create matching sets from the list of files
     joinable_sets = {}
     joinable_set = None
-    set = num = None
     for joinable in joinables:
         head, tail = os.path.splitext(joinable)
         if tail == '.ts':
-            match, set, num = match_ts(joinable)
-        if not set:
-            set = head
-        if set not in joinable_sets:
-            joinable_sets[set] = []
-        joinable_sets[set].append(joinable)
+            head = match_ts(joinable)[1]
+        if head not in joinable_sets:
+            joinable_sets[head] = []
+        joinable_sets[head].append(joinable)
     logging.debug("joinable_sets: %s", joinable_sets)
 
     try:
@@ -330,6 +364,11 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 # done, go to next set
                 continue
 
+            # Only join when there is more than one file
+            size = len(current)
+            if size < 2:
+                continue
+
             # Prepare joined file
             filename = joinable_set
             if workdir_complete:
@@ -338,7 +377,6 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
             joined_file = open(filename, 'ab')
 
             # Join the segments
-            size = len(current)
             n = get_seq_number(current[0])
             seq_error = n > 1
             for joinable in current:
@@ -348,7 +386,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 logging.debug("Processing %s", joinable)
                 nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
                 f = open(joinable, 'rb')
-                joined_file.write(f.read())
+                shutil.copyfileobj(f, joined_file, bufsize)
                 f.close()
                 if delete:
                     logging.debug("Deleting %s", joinable)
@@ -367,7 +405,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 msg = T('Incomplete sequence of joinable files')
                 nzo.fail_msg = T('File join of %s failed') % unicoder(joinable_set)
                 nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-                logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
+                logging.error(T('Error "%s" while running file_join on %s'), msg, nzo.final_name)
             else:
                 msg = T('[%s] Joined %s files') % (unicoder(joinable_set), size)
                 nzo.set_unpack_info('Filejoin', msg, set=joinable_set)
@@ -375,7 +413,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('File join of %s failed') % msg
         nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
-        logging.error(Ta('Error "%s" while running file_join on %s'), msg, latin1(nzo.final_name))
+        logging.error(T('Error "%s" while running file_join on %s'), msg, nzo.final_name)
         return True, []
 
     return False, newfiles
@@ -424,12 +462,13 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             success = not fail
         except:
             success = False
+            fail = True
             msg = sys.exc_info()[1]
             nzo.set_fail = T('Unpacking failed, %s') % msg
             setname = nzo.final_name
             nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
-            logging.error(Ta('Error "%s" while running rar_unpack on %s'), msg, latin1(setname))
+            logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
             logging.debug("Traceback: ", exc_info = True)
 
         if success:
@@ -444,7 +483,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 try:
                     os.remove(rar)
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), latin1(rar))
+                    logging.warning(T('Deleting %s failed!'), rar)
 
                 brokenrar = '%s.1' % rar
 
@@ -453,9 +492,9 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                     try:
                         os.remove(brokenrar)
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), latin1(brokenrar))
+                        logging.warning(T('Deleting %s failed!'), brokenrar)
 
-    return not success, extracted_files
+    return fail, extracted_files
 
 
 def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
@@ -468,20 +507,24 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     new_files = None
     rars = []
     if nzo.password:
-        passwords = [nzo.password]
+        logging.info('Got a password set by user')
+        passwords = [nzo.password.strip()]
     else:
         passwords = []
         # Append meta passwords, to prevent changing the original list
         passwords.extend(nzo.meta.get('password', []))
+        if passwords:
+            logging.info('Read %s passwords from meta data in NZB', len(passwords))
         pw_file = cfg.password_file.get_path()
         if pw_file:
             try:
                 pwf = open(pw_file, 'r')
                 lines = pwf.read().split('\n')
                 # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords.extend([pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')])
+                pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+                passwords.extend(pws)
                 pwf.close()
-                logging.info('Read the passwords file %s', pw_file)
+                logging.info('Read %s passwords from file %s', len(pws), pw_file)
             except IOError:
                 logging.info('Failed to read the passwords file %s', pw_file)
 
@@ -504,13 +547,13 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
             break
 
     if fail == 2:
-        logging.error('%s (%s)', Ta('Unpacking failed, archive requires a password'), latin1(os.path.split(rarfile)[1]))
+        logging.error('%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(rarfile)[1])
     return fail, new_files, rars
 
 
 def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile' to 'extraction_path'
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time()
 
@@ -532,7 +575,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
 
     ############################################################################
 
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         action = 'e'
     else:
         action = 'x'
@@ -576,6 +619,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     extracted = []
     rarfiles = []
     fail = 0
+    inrecovery = False
 
     while 1:
         line = proc.readline()
@@ -591,63 +635,87 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             curr += 1
             nzo.set_action_line(T('Unpacking'), '%02d/%02d' % (curr, numrars))
 
-        elif line.startswith('Cannot find volume'):
+        elif line.find('recovery volumes found') > -1:
+            inrecovery = True		# and thus start ignoring "Cannot find volume" for a while
+            logging.debug("unrar recovery start: %s" % line)
+        elif line.startswith('Reconstruct'):
+            # end of reconstruction: 'Reconstructing... 100%' or 'Reconstructing... ' (both success), or 'Reconstruction impossible'
+            inrecovery = False
+            logging.debug("unrar recovery result: %s" % line)
+
+        elif line.startswith('Cannot find volume') and not inrecovery:
             filename = os.path.basename(TRANS(line[19:]))
             nzo.fail_msg = T('Unpacking failed, unable to find %s') % unicoder(filename)
-            msg = ('[%s] '+Ta('Unpacking failed, unable to find %s')) % (setname, latin1(filename))
+            msg = (u'[%s] '+T('Unpacking failed, unable to find %s')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: unable to find "%s"'), latin1(filename))
+            logging.warning(T('ERROR: unable to find "%s"'), filename)
             fail = 1
 
         elif line.endswith('- CRC failed'):
             filename = TRANS(line[:-12].strip())
             nzo.fail_msg = T('Unpacking failed, CRC error')
-            msg = ('[%s] '+Ta('ERROR: CRC failed in "%s"')) % (setname, latin1(filename))
+            msg = (u'[%s] '+T('ERROR: CRC failed in "%s"')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.warning(Ta('ERROR: CRC failed in "%s"'), latin1(setname))
-            fail = 1
+            logging.warning(T('ERROR: CRC failed in "%s"'), setname)
+            fail = 2 # Older unrar versions report a wrong password as a CRC error
 
         elif line.startswith('Write error'):
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
-            msg = ('[%s] ' + Ta('Unpacking failed, write error or disk is full?')) % setname
+            msg = (u'[%s] ' + T('Unpacking failed, write error or disk is full?')) % setname
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            logging.error(Ta('ERROR: write error (%s)'), line[11:])
+            logging.error(T('ERROR: write error (%s)'), line[11:])
             fail = 1
 
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
             if 'must not exceed 260' in line2:
                 nzo.fail_msg = T('Unpacking failed, path is too long')
-                msg = '[%s] %s: %s' % (Ta('Unpacking failed, path is too long'), setname, line[13:])
-                logging.error(Ta('ERROR: path too long (%s)'), line[13:])
+                msg = u'[%s] %s: %s' % (T('Unpacking failed, path is too long'), setname, unicoder(line[13:]))
+                logging.error(T('ERROR: path too long (%s)'), unicoder(line[13:]))
             else:
                 nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
-                msg = '[%s] %s: %s' % (Ta('Unpacking failed, write error or disk is full?'), setname, line[13:])
-                logging.error(Ta('ERROR: write error (%s)'), line[13:])
+                msg = u'[%s] %s: %s' % (T('Unpacking failed, write error or disk is full?'), setname, unicoder(line[13:]))
+                logging.error(T('ERROR: write error (%s)'), unicoder(line[13:]))
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
         elif line.startswith('ERROR: '):
             nzo.fail_msg = T('Unpacking failed, see log')
-            logging.warning(Ta('ERROR: %s'), (line[7:]))
-            msg = ('[%s] '+Ta('ERROR: %s')) % (latin1(setname), line[7:])
+            logging.warning(T('ERROR: %s'), (unicoder(line[7:])))
+            msg = (u'[%s] ' + T('ERROR: %s')) % (setname, line[7:])
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 1
 
-        elif 'ncrypted file' in line and 'CRC failed' in line:
-            # unrar 4.x syntax
+        elif 'The specified password is incorrect' in line or \
+             ('ncrypted file' in line and (('CRC failed' in line) or ('Checksum error' in line))):
+            # unrar 3.x: "Encrypted file: CRC failed in oLKQfrcNVivzdzSG22a2xo7t001.part1.rar (password incorrect ?)"
+            # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+            # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+            # unrar 5.01 : "The specified password is incorrect."
             m = re.search('encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
-                m = re.search('Encrypted file:  CRC failed in (.+) \(password', line)
+                m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
+            if m:
+                filename = TRANS(m.group(1)).strip()
+            else:
+                filename = os.path.split(rarfile)[1]
+            nzo.fail_msg = T('Unpacking failed, archive requires a password')
+            msg = (u'[%s][%s] '+ T('Unpacking failed, archive requires a password')) % (setname, filename)
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            fail = 2
+
+        elif 'is not RAR archive' in line:
+            # Unrecognizable RAR file
+            m = re.search('(.+) is not RAR archive', line)
             if m:
                 filename = TRANS(m.group(1)).strip()
             else:
                 filename = '???'
-            nzo.fail_msg = T('Unpacking failed, archive requires a password')
-            msg = ('[%s][%s] '+Ta('Unpacking failed, archive requires a password')) % (setname, latin1(filename))
+            nzo.fail_msg = T('Unusable RAR file')
+            msg = ('[%s][%s] '+ T('Unusable RAR file')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
-            fail = 2
+            fail = 3
 
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
@@ -671,21 +739,21 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             missing = []
             # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
-                if one_folder:
+                if one_folder or cfg.flat_unpack():
                     path = os.path.split(path)[1]
                 path = unicode2local(path)
                 if '?' in path:
                     logging.info('Skipping check of file %s', path)
                     continue
                 fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existence of %s", latin1(fullpath))
+                logging.debug("Checking existence of %s", fullpath)
                 if path.endswith('/'):
                     # Folder
                     continue
                 if not os.path.exists(fullpath):
                     # There was a missing file, show a warning
                     missing.append(path)
-                    logging.info(Ta('Missing expected file: %s => unrar error?'), latin1(path))
+                    logging.info(T('Missing expected file: %s => unrar error?'), path)
 
             if missing:
                 nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
@@ -744,7 +812,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                     os.remove(_zip)
                     i += 1
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), latin1(_zip))
+                    logging.warning(T('Deleting %s failed!'), _zip)
 
                 brokenzip = '%s.1' % _zip
 
@@ -754,19 +822,19 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                         os.remove(brokenzip)
                         i += 1
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), latin1(brokenzip))
+                        logging.warning(T('Deleting %s failed!'), brokenzip)
 
         return unzip_failed
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Unpacking failed, %s') % msg
-        logging.error(Ta('Error "%s" while running unzip() on %s'), msg, latin1(nzo.final_name))
+        logging.error(T('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
         return True
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
     """ Unzip single zip set 'zipfile' to 'extraction_path'
     """
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         option = '-j'  # Unpack without folders
     else:
         option = '-qq' # Dummy option
@@ -780,20 +848,179 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                          startupinfo=stup, creationflags=creationflags)
 
     output = p.stdout.read()
+    logging.debug('unzip output: %s', output)
 
     ret = p.wait()
 
     return ret
 
 #------------------------------------------------------------------------------
+# 7Zip Functions
+#------------------------------------------------------------------------------
+
+def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
+    """ Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
+        When 'delete' is set, originals will be deleted.
+    """
+    i = 0
+    unseven_failed = False
+    tms = time()
+
+    # Find multi-volume sets, because 7zip will not provide actual set members
+    sets = {}
+    for seven in sevens:
+        name, ext = os.path.splitext(seven)
+        ext = ext.strip('.')
+        if not ext.isdigit():
+            name = seven
+            ext = None
+        if name not in sets:
+            sets[name] = []
+        if ext:
+            sets[name].append(ext)
+
+    # Unpack each set
+    for seven in sets:
+        extensions = sets[seven]
+        logging.info("Starting extract on 7zip set/file: %s ", seven)
+        nzo.set_action_line(T('Unpacking'), '%s' % unicoder(seven))
+
+        if workdir_complete and seven.startswith(workdir):
+            extraction_path = workdir_complete
+        else:
+            extraction_path = os.path.split(seven)[0]
+
+        res, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
+        if res:
+            unseven_failed = True
+            nzo.set_unpack_info('Unpack', msg)
+        else:
+            i += 1
+
+    if not unseven_failed:
+        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        nzo.set_unpack_info('Unpack', msg)
+
+    return unseven_failed
+
+
+def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
+    """ Unpack single set 'sevenset' to 'extraction_path',
+        with password tries
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
+    """
+
+    fail = 0
+    if nzo.password:
+        passwords = [nzo.password]
+    else:
+        passwords = []
+        pw_file = cfg.password_file.get_path()
+        if pw_file:
+            try:
+                pwf = open(pw_file, 'r')
+                passwords = pwf.read().split('\n')
+                # Remove empty lines and space-only passwords and remove surrounding spaces
+                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
+                pwf.close()
+                logging.info('Read the passwords file %s', pw_file)
+            except IOError:
+                logging.info('Failed to read the passwords file %s', pw_file)
+
+    if nzo.password:
+        # If an explicit password was set, add a retry without password, just in case.
+        passwords.append('')
+    elif not passwords or not nzo.encrypted:
+        # If we're not sure about encryption, start with empty password
+        # and make sure we have at least the empty password
+        passwords.insert(0, '')
+
+    for password in passwords:
+        if password:
+            logging.debug('Trying 7zip with password "%s"', password)
+            msg = T('Trying 7zip with password "%s"') % unicoder(password)
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg)
+        fail, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
+        if fail != 2:
+            break
+
+    nzo.fail_msg = ''
+    if fail == 2:
+        logging.error(u'%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(sevenset)[1])
+    return fail, msg
+
+
+def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
+    """ Unpack single 7Z set 'sevenset' to 'extraction_path'
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), message
+    """
+    msg = None
+    if one_folder:
+        method = 'e'  # Unpack without folders
+    else:
+        method = 'x'  # Unpack with folders
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        case = '-ssc-' # Case insensitive
+    else:
+        case = '-ssc'  # Case sensitive
+    if password:
+        password = '-p%s' % password
+    else:
+        password = '-p'
+
+
+    if len(extensions) > 0:
+        name = '%s.001' % sevenset
+    else:
+        name = sevenset
+
+    if not os.path.exists(name):
+        return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
+
+    command = [SEVEN_COMMAND, method, '-y', '-aou', case, password,
+               '-o%s' % extraction_path, name]
+
+    stup, need_shell, command, creationflags = build_command(command)
+
+    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         startupinfo=stup, creationflags=creationflags)
+
+    output = p.stdout.read()
+    logging.debug('7za output: %s', output)
+
+    ret = p.wait()
+
+    if ret == 0 and delete:
+        if extensions:
+            for ext in extensions:
+                path = '%s.%s' % (sevenset, ext)
+                try:
+                    os.remove(path)
+                except:
+                    logging.warning(T('Deleting %s failed!'), path)
+        else:
+            try:
+                os.remove(sevenset)
+            except:
+                logging.warning(T('Deleting %s failed!'), sevenset)
+
+    # Always return an error message, even when return code is 0
+    return ret, T('Could not unpack %s') % unicoder(sevenset)
+
+
+#------------------------------------------------------------------------------
 # PAR2 Functions
 #------------------------------------------------------------------------------
 
-def par2_repair(parfile_nzf, nzo, workdir, setname):
+def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     #set the current nzo status to "Repairing". Used in History
 
     parfile = os.path.join(workdir, parfile_nzf.filename)
+    parfile = short_path(parfile)
+    workdir = short_path(workdir)
 
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
@@ -811,6 +1038,17 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         pars = setpars
         result = True
 
+    if not result and cfg.enable_all_par():
+        # Download all par2 files that haven't been downloaded yet
+        readd = False
+        for extrapar in parfile_nzf.extrapars[:]:
+            if extrapar in nzo.files:
+                nzo.add_parfile(extrapar)
+                parfile_nzf.extrapars.remove(extrapar)
+                readd = True
+        if readd:
+            return readd, result
+
     if not result:
         flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
@@ -820,10 +1058,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             nzo.set_action_line(T('Repair'), T('Starting Repair'))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, ts = build_filelists(workdir, None, check_rar=False)
+            joinables, zips, rars, sevens, ts = build_filelists(workdir, None, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables, used_par2 = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                                                     setname, joinables)
+                                                                                     setname, joinables, single=single)
 
             if finished:
                 result = True
@@ -845,7 +1083,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         except:
             msg = sys.exc_info()[1]
             nzo.fail_msg = T('Repairing failed, %s') % msg
-            logging.error(Ta('Error %s while running par2_repair on set %s'), msg, latin1(setname))
+            logging.error(T('Error %s while running par2_repair on set %s'), msg, setname)
             logging.info("Traceback: ", exc_info = True)
             return readd, result
 
@@ -861,7 +1099,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                         logging.info("Deleting %s", path)
                         os.remove(path)
                     except:
-                        logging.warning(Ta('Deleting %s failed!'), latin1(path))
+                        logging.warning(T('Deleting %s failed!'), path)
 
             path = os.path.join(workdir, setname + '.par2')
             path2 = os.path.join(workdir, setname + '.PAR2')
@@ -871,21 +1109,21 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     logging.info("Deleting %s", path)
                     os.remove(path)
                 except:
-                    logging.warning(Ta('Deleting %s failed!'), latin1(path))
+                    logging.warning(T('Deleting %s failed!'), path)
 
             if os.path.exists(path2):
                 try:
                     logging.info("Deleting %s", path2)
                     os.remove(path2)
                 except:
-                    logging.warning(Ta('Deleting %s failed!'), latin1(path2))
+                    logging.warning(T('Deleting %s failed!'), path2)
 
             if os.path.exists(parfile):
                 try:
                     logging.info("Deleting %s", parfile)
                     os.remove(parfile)
                 except OSError:
-                    logging.warning(Ta('Deleting %s failed!'), latin1(parfile))
+                    logging.warning(T('Deleting %s failed!'), parfile)
 
             deletables = []
             for f in pars:
@@ -901,22 +1139,24 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     try:
                         os.remove(filepath)
                     except OSError:
-                        logging.warning(Ta('Deleting %s failed!'), latin1(filepath))
+                        logging.warning(T('Deleting %s failed!'), filepath)
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
-        logging.error(Ta('Error "%s" while running par2_repair on set %s'), msg, latin1(setname))
+        logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname)
 
     return readd, result
 
 
-_RE_BLOCK_FOUND = re.compile('File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
-_RE_IS_MATCH_FOR = re.compile('File: "([^"]+)" - is a match for "([^"]+)"')
-_RE_LOADING_PAR2 = re.compile('Loading "([^"]+)"\.')
-_RE_LOADED_PAR2 = re.compile('Loaded (\d+) new packets')
+_RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
+_RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
+_RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
+_RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
+def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
     """ Run par2 on par-set """
+    import sabnzbd # Python bug requires import here
+    import sabnzbd.assembler
     if cfg.never_repair():
         cmd = 'v'
     else:
@@ -930,29 +1170,35 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     start = time()
 
     classic = classic or not cfg.par2_multicore()
-    logging.debug('Par2-classic = %s', classic)
-
-    import sabnzbd.assembler
-    if (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND:
-        if cfg.par_option():
-            command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
+    if sabnzbd.WIN32:
+        # If filenames are UTF-8 then we must use par2-tbb, unless this is a retry with classic
+        tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND
+    else:
+        tbb = False
+    if tbb and cfg.par_option():
+        command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
+    else:
+        if classic:
+            command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
-        classic = not PAR2C_COMMAND
-    else:
-        command = [str(PAR2C_COMMAND), cmd, parfile]
-        classic = True
-
-    for joinable in joinables:
-        if setname in joinable:
-            command.append(joinable)
+    logging.debug('Par2-classic = %s', classic)
 
     # Append the wildcard for this set
-    wildcard = '%s*' % os.path.join(os.path.split(parfile)[0], setname)
-    if len(globber(wildcard, None)) < 2:
+    parfolder = os.path.split(parfile)[0]
+    if single or len(globber(parfolder, setname + '*')) < 2:
         # Support bizarre naming conventions
-        wildcard = os.path.join(os.path.split(parfile)[0], '*')
-    command.append(wildcard)
+        wildcard = '*'
+    else:
+        # Normal case, everything is named after set
+        wildcard = setname + '*'
+
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        command.append(os.path.join(parfolder, wildcard))
+    else:
+        # For Unix systems, remove folders, due to bug in some par2cmdline versions
+        flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
+        command.extend(flist)
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
@@ -1012,7 +1258,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 continue
             extra_par2_name = None
 
-            if line.startswith('Invalid option specified'):
+            if line.startswith('Invalid option specified') or line.startswith('Cannot specify recovery file count'):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
@@ -1040,7 +1286,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 ## Initialparfile probably didn't decode properly,
-                logging.info(Ta('Main packet not found...'))
+                logging.info(T('Main packet not found...'))
 
                 extrapars = parfile_nzf.extrapars
 
@@ -1112,7 +1358,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = Status.FAILED
+                    nzo.status = Status.FETCHING
                     needed_blocks = avail_blocks
                     force = True
 
@@ -1167,8 +1413,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
                 # Find out if a joinable file has been used for joining
+                uline = unicoder(line)
                 for jn in joinables:
-                    if line.find(os.path.split(jn)[1]) > 0:
+                    if uline.find(os.path.split(jn)[1]) > 0:
                         used_joinables.append(jn)
                         break
                 # Special case of joined RAR files, the "of" and "from" must both be RAR files
@@ -1180,7 +1427,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
-                retry_classic = True
+                retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
                 if not classic and sabnzbd.WIN32:
@@ -1258,7 +1505,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
-        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
+        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
     else:
         return finished, readd, pars, datafiles, used_joinables, used_par2
 
@@ -1280,6 +1527,10 @@ def fix_env():
 def build_command(command):
     """ Prepare list from running an external program
     """
+    for n in xrange(len(command)):
+        if isinstance(command[n], unicode):
+            command[n] = deunicode(command[n])
+
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
@@ -1348,38 +1599,41 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
-    joinables, zips, rars, filelist = ([], [], [], [])
+    joinables, zips, rars, sevens, filelist = ([], [], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
 
     if workdir and not filelist:
         for root, dirs, files in os.walk(workdir):
             for _file in files:
-                filelist.append(os.path.join(root, _file))
+                if '.AppleDouble' not in root and '.DS_Store' not in root:
+                    filelist.append(os.path.join(root, _file))
+
+    sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
+    sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
 
     if check_rar:
-        joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not is_rarfile(f)]
+        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f) and not is_rarfile(f)]
     else:
-        joinables = [f for f in filelist if SPLITFILE_RE.search(f)]
+        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f)]
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
-    if check_rar:
-        rars = [f for f in filelist if RAR_RE.search(f) and is_rarfile(f)]
-    else:
-        rars = [f for f in filelist if RAR_RE.search(f)]
+    rars = [f for f in filelist if RAR_RE.search(f)]
 
-    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
+    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables and f not in sevens]
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): zips: %s", zips)
     logging.debug("build_filelists(): rars: %s", rars)
+    logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return joinables, zips, rars, ts
+    return joinables, zips, rars, sevens, ts
 
 
 def QuickCheck(set, nzo):
@@ -1433,16 +1687,24 @@ def add_s(i):
 
 
 def unrar_check(rar):
-    """ Return True if correct version of unrar is found """
+    """ Return version number of unrar, where "5.01" returns 501
+        Also return whether an original version is found
+        (version, original)
+    """
+    version =0
+    original = ''
     if rar:
         try:
-            version = subprocess.Popen(rar, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+            version = run_simple(rar)
         except:
-            return False
-        m = re.search("RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
+            return version, original
+        original = "Alexander Roshal" in version
+        m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:
-            return (int(m.group(1)), int(m.group(2))) >= (3, 80)
-    return False
+            version = int(m.group(1)) * 100 + int(m.group(2))
+        else:
+            version = 0
+    return version, original
 
 
 #-------------------------------------------------------------------------------
@@ -1471,10 +1733,10 @@ def sfv_check(sfv_path):
                     if crc_check(path, checksum):
                         logging.debug('File %s passed SFV check', path)
                     else:
-                        logging.info('File %s did not pass SFV check', latin1(path))
+                        logging.info('File %s did not pass SFV check', path)
                         failed.append(unicoder(filename))
                 else:
-                    logging.info('File %s missing in SFV check', latin1(path))
+                    logging.info('File %s missing in SFV check', path)
                     failed.append(unicoder(filename))
     fp.close()
     return failed
@@ -1501,12 +1763,14 @@ def crc_check(path, target_crc):
 
 def analyse_show(name):
     """ Do a quick SeasonSort check and return basic facts """
-    job = SeriesSorter(name, None, None)
+    job = SeriesSorter(None, name, None, None)
     job.match(force=True)
     if job.is_match():
         job.get_values()
     info = job.show_info
-    return info.get('show_name', ''), \
+    show_name = info.get('show_name', '').replace('.', ' ').replace('_', ' ')
+    show_name = show_name.replace('  ', ' ')
+    return show_name, \
            info.get('season_num', ''), \
            info.get('episode_num', ''), \
            info.get('ep_name', '')
@@ -1542,6 +1806,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
 
         output = p.stdout.read()
         ret = p.wait()
+        logging.info('Pre-queue script returns %s and output=\n%s', ret, output)
         if ret == 0:
             n = 0
             for line in output.split('\n'):
@@ -1564,7 +1829,7 @@ def list2cmdline(lst):
     for arg in lst:
         if not arg:
             nlst.append('""')
-        elif (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg) or (';' in arg):
+        elif (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg) or (';' in arg) or (',' in arg):
             nlst.append('"%s"' % arg)
         else:
             nlst.append(arg)
@@ -1600,3 +1865,75 @@ def get_from_url(url, timeout=None):
         except:
             output = None
     return output
+
+
+def is_sevenfile(path):
+    """ Return True if path has proper extension and 7Zip is installed
+    """
+    return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == '.7z'
+
+
+class SevenZip(object):
+    """ Minimal emulation of ZipFile class for 7Zip """
+    def __init__(self, path):
+        self.path = path
+
+    def namelist(self):
+        """ Return list of names in 7Zip
+        """
+        names = []
+        # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
+        command = [SEVEN_COMMAND, 'l', '-p', '-y', '-slt', self.path]
+        stup, need_shell, command, creationflags = build_command(command)
+
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             startupinfo=stup, creationflags=creationflags)
+
+        output = p.stdout.read()
+        ret = p.wait()
+        re_path = re.compile('^Path = (.+)')
+        for line in output.split('\n'):
+            m = re_path.search(line)
+            if m:
+                names.append(m.group(1).strip('\r'))
+        if names:
+            # Remove name of archive itself
+            del names[0]
+        return names
+
+
+    def read(self, name):
+        """ Read named file from 7Zip and return data """
+        command = [SEVEN_COMMAND, 'e', '-p', '-y', '-so', self.path, name]
+        stup, need_shell, command, creationflags = build_command(command)
+
+        # Ignore diagnostic output, otherwise it will be appended to content
+        if sabnzbd.WIN32:
+            stderr = open('nul', 'w')
+        else:
+            stderr = open('/dev/null', 'w')
+
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=stderr,
+                             startupinfo=stup, creationflags=creationflags)
+
+        output = p.stdout.read()
+        ret = p.wait()
+        stderr.close()
+        return output
+
+
+    def close(self):
+        """ Close file """
+        pass
+
+
+#------------------------------------------------------------------------------
+def run_simple(cmd):
+    """ Run simple external command and return output
+    """
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    txt = p.stdout.read()
+    p.wait()
+    return txt

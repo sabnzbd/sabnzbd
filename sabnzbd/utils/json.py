@@ -68,7 +68,8 @@ class JsonWriter(object):
                 try:
                     obj.decode('utf-8')
                 except:
-                    obj = obj.decode('latin-1').encode('utf-8', 'replace')
+                    # Should never be needed
+                    obj = obj.decode('cp1252').encode('utf-8', 'replace')
             obj = obj.replace('\\', r'\\')
             if self._escaped_forward_slash:
                 obj = obj.replace('/', r'\/')

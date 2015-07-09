@@ -1,5 +1,5 @@
 
-<a href="${helpuri}Configure+Switches-0-7" id="help" target="_blank">$T('menu-help')</a>
+<a href="${helpuri}configure+switches-0-8" id="help" target="_blank">$T('menu-help')</a>
 <h3>$T('switchesConfig')</h3>
 <div class="EntryBlock">
   <form id="configSwitches" class="cmxform">
@@ -26,6 +26,13 @@
   <span class="tips">$T('explain-enable_unzip')</span></label>
 <br class="clear" />
 
+<!--#if $have_7zip#-->
+  <label><span class="label">$T('opt-enable_7zip'):</span>
+  <input class="radio" type="checkbox" name="enable_7zip" value="1" <!--#if $enable_7zip > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-enable_7zip')</span></label>
+<br class="clear" />
+<!--#end if#-->
+
   <label><span class="label">$T('opt-enable_filejoin'):</span>
   <input class="radio" type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-enable_filejoin')</span></label>
@@ -36,14 +43,19 @@
   <span class="tips">$T('explain-ts_join')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-enable_par_cleanup'):</span>
-  <input class="radio" type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-enable_par_cleanup')</span></label>
+  <label><span class="label">$T('opt-enable_recursive'):</span>
+  <input class="radio" type="checkbox" name="enable_recursive" value="1" <!--#if $enable_recursive > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-enable_recursive')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-fail_on_crc'):</span>
-  <input class="radio" type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-fail_on_crc')</span></label>
+  <label><span class="label">$T('opt-flat_unpack'):</span>
+  <input class="radio" type="checkbox" name="flat_unpack" value="1" <!--#if $flat_unpack > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-flat_unpack')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-overwrite_files'):</span>
+  <input class="radio" type="checkbox" name="overwrite_files" value="1" <!--#if $overwrite_files > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-overwrite_files')</span></label>
 <br class="clear" />
 
   <label><span class="label">$T('opt-top_only'):</span>
@@ -78,6 +90,11 @@
   <span class="tips">$T('explain-unpack_check')</span></label>
 <br class="clear" />
 
+  <label><span class="label">$T('opt-script_can_fail'):</span>
+  <input class="radio" type="checkbox" name="script_can_fail" value="1" <!--#if $script_can_fail > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-script_can_fail')</span></label>
+<br class="clear" />
+
   <label><span class="label">$T('opt-folder_rename'):</span>
   <input class="radio" type="checkbox" name="folder_rename" value="1" <!--#if $folder_rename > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-folder_rename')</span></label>
@@ -96,7 +113,7 @@
   <span class="tips">$T('explain-pre_script')</span>
 <br class="clear" />
 
-  <!--#if $nt#-->
+  <!--#if $have_multicore#-->
     <label><span class="label">$T('opt-par2_multicore'):</span>
     <input class="radio" type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then 'checked="1"' else ""#--> />
     <span class="tips">$T('explain-par2_multicore')</span></label>
@@ -143,19 +160,18 @@
   <span class="tips">$T('explain-auto_disconnect')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-send_group'):</span>
-  <input class="radio" type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-send_group')</span></label>
-<br class="clear" />
-
   <label><span class="label">$T('opt-auto_sort'):</span>
   <input class="radio" type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-auto_sort')</span></label>
 <br class="clear" />
 
-  <label><span class="label">$T('opt-check_new_rel'):</span>
-  <input class="radio" type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then 'checked="1"' else ""#--> />
-  <span class="tips">$T('explain-check_new_rel')</span></label>
+  <span class="label">$T('opt-check_new_rel'):</span>
+  <select name="check_new_rel" id="check_new_rel" class="select">
+      <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
+      <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
+      <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
+  </select>
+    <span class="tips">$T('explain-check_new_rel')</span>
 <br class="clear" />
 
   <label><span class="label">$T('opt-replace_spaces'):</span>
@@ -171,6 +187,16 @@
   <label><span class="label">$T('opt-replace_illegal'):</span>
   <input class="radio" type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then 'checked="1"' else ""#--> />
   <span class="tips">$T('explain-replace_illegal')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-sanitize_safe'):</span>
+  <input class="radio" type="checkbox" name="sanitize_safe" value="1" <!--#if $sanitize_safe > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-sanitize_safe')</span></label>
+<br class="clear" />
+
+  <label><span class="label">$T('opt-enable_meta'):</span>
+  <input class="radio" type="checkbox" name="enable_meta" value="1" <!--#if $enable_meta > 0 then 'checked="1"' else ""#--> />
+  <span class="tips">$T('explain-enable_meta')</span></label>
 <br class="clear" />
 
   <label><span class="label">$T('opt-auto_browser'):</span>
@@ -193,17 +219,7 @@
   <span class="label">$T('opt-ignore_samples'):</span>
   <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')
   <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> $T('igsam-del')
-  <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> $T('igsam-not')
   <span class="tips">$T('explain-ignore_samples')</span>
-<br class="clear" />
-
-  <span class="label">$T('opt-ssl_type'):</span>
-  <select name="ssl_type" id="ssl_type" class="select">
-    <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
-    <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
-    <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
-  </select>
-    <span class="tips">$T('explain-ssl_type')</span>
 <br class="clear" />
 
   </fieldset>

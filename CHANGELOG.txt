@@ -1,4 +1,25 @@
 -------------------------------------------------------------------------------
+ 0.8.0Aplha3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- New skin: Glitter
+- Assign servers to categories
+- Lots of bug fixes
+-------------------------------------------------------------------------------
+ 0.8.0Aplha2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Server priorities instead of primary/backup
+- Work-arounds to avoid bugs in PyOpenSSL 0.14
+- Speedlimit 0 wasn't handled properly (in means no limit)
+- Add 'action_size' parameter to support drag-and-drop of files
+- Remove unnecessary 7zip warnings
+- Support RAR's REV files to some extent
+- Diagnostic dashboard tab for "Status" page
+- Fix UI for Notification Center, Growl and NtfOSD
+-------------------------------------------------------------------------------
+ 0.8.0Aplha1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+See git log and release notes
+-------------------------------------------------------------------------------
  0.7.11Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Bad articles from some servers were accepted as valid data
@@ -30,7 +51,7 @@
 - Fix problem with %fn substitution in Sorting
 - Add special "wait_for_dfolder", enables waiting for external temp download folder
 - Work-around for servers that do not support STAT command
-- Removed articles are now listed seperately in download report
+- Removed articles are now listed separately in download report
 - Add "abort" option to encryption detection
 - Fix missing Retry link for "Out of retention" jobs.
 - Option to abort download when it is clear that not enough data is available

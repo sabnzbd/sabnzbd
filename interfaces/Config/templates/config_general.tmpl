@@ -1,10 +1,11 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configure-general-0-7"#-->
+<!--#set global $help_uri="configure-general-0-8"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
     <form action="saveGeneral" method="post" name="fullform" id="fullform" novalidate>
     <input type="hidden" id="session" name="session" value="$session" />
+    <input type="hidden" id="ajax" name="ajax" value=1 />
     <div class="section">
         <div class="col2">
             <h3>$T('webServer')</h3>
@@ -43,7 +44,7 @@
                             <!--#end if#-->
                         <!--#end for#-->
                     </select>
-                    <span class="desc">$T('explain-web_dir')</span>
+                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url1">$caller_url1</a></span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
@@ -56,7 +57,7 @@
                             <!--#end if#-->
                         <!--#end for#-->
                     </select>
-                    <span class="desc">$T('explain-web_dir2')</span>
+                    <span class="desc">$T('explain-web_dir2')&nbsp;&nbsp;<a href="$caller_url2">$caller_url2</a></span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="language">$T('opt-language')</label>
@@ -70,6 +71,22 @@
                         <!--#end for#-->
                         </select>
                     <span class="desc">$T('explain-language')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
+                    <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" size="30" />
+                    <span class="desc">$T('explain-local_ranges')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
+                        <select name="inet_exposure" id="inet_exposure" id="inet_exposure" class="select">
+                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected" class="selected"' else ""#-->>$T('inet-local')</option>
+                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected" class="selected"' else ""#-->>$T('inet-nzb')</option>
+                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected" class="selected"' else ""#-->>$T('inet-api')</option>
+                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected" class="selected"' else ""#-->>$T('inet-fullapi')</option>
+                            <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected" class="selected"' else ""#-->>$T('inet-ui')</option>
+                        </select>
+                    <span class="desc">$T('explain-inet_exposure')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>
@@ -146,19 +163,19 @@
         <div class="col1">
             <fieldset>
                 <div class="field-pair alt">
-                    <label class="config" for="bandwidth_limit">$T('opt-bandwidth_limit')</label>
-                    <input type="number" name="bandwidth_limit" id="bandwidth_limit" value="$bandwidth_limit" size="8" step="1024" min="0" />
-                    <span class="desc">$T('explain-bandwidth_limit')</span>
+                    <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
+                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max"/>
+                    <span class="desc">$T('explain-bandwidth_max')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
+                    <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" size="8" step="10" min="0" max="100"/>
+                    <span class="desc">$T('explain-bandwidth_perc')</span>
+                </div>
+                <div class="field-pair alt">
                     <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
                     <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" size="8" />
                     <span class="desc">$T('explain-cache_limitstr')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
-                    <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50"/>
-                    <span class="desc">$T('explain-cleanup_list')</span>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,10 +28,9 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, sanitize_foldername
+                         get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import titler
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -46,7 +45,6 @@ REPLACE_AFTER = {
     '..': '.',
     '__': '_',
     '  ': ' ',
-    '//': '/',
     ' .%ext': '.%ext'
 }
 
@@ -96,31 +94,32 @@ def move_to_parent_folder(workdir):
 class Sorter(object):
     """ Generic Sorter class
     """
-    def __init__(self, cat):
+    def __init__(self, nzo, cat):
         self.sorter = None
         self.type = None
         self.sort_file = False
+        self.nzo = nzo
         self.cat = cat
         self.ext = ''
 
     def detect(self, dirname, complete_dir):
         """ Detect which kind of sort applies
         """
-        self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
+        self.sorter = SeriesSorter(self.nzo, dirname, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'tv'
             self.sort_file = True
             return complete_dir
 
-        self.sorter = DateSorter(dirname, complete_dir, self.cat)
+        self.sorter = DateSorter(self.nzo, dirname, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'date'
             self.sort_file = True
             return complete_dir
 
-        self.sorter = GenericSorter(dirname, complete_dir, self.cat)
+        self.sorter = GenericSorter(self.nzo, dirname, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'movie'
@@ -173,7 +172,7 @@ class Sorter(object):
             try:
                 renamer(old, workdir_complete)
             except:
-                logging.error(Ta('Cannot create directory %s'), workdir_complete)
+                logging.error(T('Cannot create directory %s'), clip_path(workdir_complete))
                 workdir_complete = old
                 ok = False
         return workdir_complete, ok
@@ -182,11 +181,12 @@ class Sorter(object):
 class SeriesSorter(object):
     """ Methods for Series Sorting
     """
-    def __init__(self, dirname, path, cat):
+    def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
         self.original_path = path
+        self.nzo = nzo
         self.cat = cat
         self.sort_string = cfg.tv_sort_string()
         self.cats = cfg.tv_categories()
@@ -236,7 +236,7 @@ class SeriesSorter(object):
 
 
     def get_multi_ep_naming(self, one, two, extras):
-        ''' Returns a list of unique values joined into a string and seperated by - (ex:01-02-03-04) '''
+        ''' Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) '''
         extra_list = [one]
         extra2_list = [two]
         for extra in extras:
@@ -252,8 +252,8 @@ class SeriesSorter(object):
     def get_shownames(self):
         ''' Get the show name from the match object and format it '''
         # Get the formatted title and alternate title formats
-        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.match_obj, self.original_dirname, True)
-        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.match_obj, self.original_dirname)
+        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
+        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
 
 
     def get_seasons(self):
@@ -302,7 +302,7 @@ class SeriesSorter(object):
 
     def get_showdescriptions(self):
         ''' Get the show descriptions from the match object and format them '''
-        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.match_obj, self.original_dirname)
+        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_dirname)
 
 
     def get_values(self):
@@ -323,7 +323,7 @@ class SeriesSorter(object):
             return True
 
         except:
-            logging.error(Ta('Error getting TV info (%s)'), self.original_dirname)
+            logging.error(T('Error getting TV info (%s)'), clip_path(self.original_dirname))
             logging.info("Traceback: ", exc_info = True)
             return False
 
@@ -433,16 +433,13 @@ class SeriesSorter(object):
             newpath = os.path.join(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace('%ext', self.ext)
-            if not os.path.exists(newpath):
-                try:
-                    logging.debug("Rename: %s to %s", filepath, newpath)
-                    renamer(filepath, newpath)
-                except:
-                    logging.error("Failed to rename: %s to %s", current_path, newpath)
-                    logging.info("Traceback: ", exc_info = True)
-                rename_similar(current_path, self.ext, self.filename_set, ())
-            else:
-                logging.debug('Current path already exists, skipping rename, %s', newpath)
+            try:
+                logging.debug("Rename: %s to %s", filepath, newpath)
+                renamer(filepath, newpath)
+            except:
+                logging.error("Failed to rename: %s to %s", clip_path(current_path), clip_path(newpath))
+                logging.info("Traceback: ", exc_info = True)
+            rename_similar(current_path, self.ext, self.filename_set, ())
         else:
             logging.debug('Nothing to rename, %s', files)
 
@@ -518,7 +515,7 @@ def check_for_sequence(regex, files):
 class GenericSorter(object):
     """ Methods for Generic Sorting
     """
-    def __init__(self, dirname, path, cat):
+    def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
@@ -527,6 +524,7 @@ class GenericSorter(object):
         self.extra = cfg.movie_sort_extra()
         self.cats = cfg.movie_categories()
         self.cat = cat
+        self.nzo = nzo
         self.filename_set = ''
         self.fname = '' # Value for %fn substitution in folders
         self.final_path = ''
@@ -567,23 +565,30 @@ class GenericSorter(object):
         """ Collect and construct all the values needed for path replacement
         """
         ## - Get Year
-        dirname = self.original_dirname.replace('_', ' ')
-        RE_YEAR = re.compile(year_match, re.I)
-        year_m = RE_YEAR.search(dirname)
-        if year_m:
-            # Find the last matched date
-            # Keep year_m to use in get_titles
-            year = RE_YEAR.findall(dirname)[-1][0]
-            self.movie_info['year'] = year
+        if self.nzo:
+            year = self.nzo.nzo_info.get('year')
         else:
-            self.movie_info['year'] = ''
+            year = ''
+        if year:
+            year_m = None
+        else:
+            dirname = self.original_dirname.replace('_', ' ')
+            RE_YEAR = re.compile(year_match, re.I)
+            year_m = RE_YEAR.search(dirname)
+            if year_m:
+                # Find the last matched date
+                # Keep year_m to use in get_titles
+                year = RE_YEAR.findall(dirname)[-1][0]
+            else:
+                year = ''
+        self.movie_info['year'] = year
 
         ## - Get Decades
-        self.movie_info['decade'], self.movie_info['decade_two'] = get_decades(self.movie_info['year'])
+        self.movie_info['decade'], self.movie_info['decade_two'] = get_decades(year)
 
         ## - Get Title
-        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(year_m, self.original_dirname, True)
-        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(year_m, self.original_dirname)
+        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(self.nzo, year_m, self.original_dirname, True)
+        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(self.nzo, year_m, self.original_dirname)
 
         return True
 
@@ -687,7 +692,7 @@ class GenericSorter(object):
                     logging.debug("Rename: %s to %s", filepath, newpath)
                     renamer(filepath, newpath)
                 except:
-                    logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
+                    logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
                     logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, ())
 
@@ -711,7 +716,7 @@ class GenericSorter(object):
                         logging.debug("Rename: %s to %s", filepath, newpath)
                         renamer(filepath, newpath)
                     except:
-                        logging.error(Ta('Failed to rename: %s to %s'), filepath, newpath)
+                        logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
                         logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, ext, self.filename_set, renamed)
             else:
@@ -721,7 +726,7 @@ class GenericSorter(object):
 class DateSorter(object):
     """ Methods for Date Sorting
     """
-    def __init__(self, dirname, path, cat):
+    def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
@@ -729,6 +734,7 @@ class DateSorter(object):
         self.sort_string = cfg.date_sort_string()
         self.cats = cfg.date_categories()
         self.cat = cat
+        self.nzo = nzo
         self.filename_set = ''
         self.fname = '' # Value for %fn substitution in folders
 
@@ -791,10 +797,10 @@ class DateSorter(object):
         self.date_info['decade'], self.date_info['decade_two'] = get_decades(self.date_info['year'])
 
         ## - Get Title
-        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.match_obj, self.original_dirname, True)
-        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.match_obj, self.original_dirname)
+        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
+        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
 
-        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = get_descriptions(self.match_obj, self.original_dirname)
+        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_dirname)
 
         return True
 
@@ -898,7 +904,7 @@ class DateSorter(object):
                                 logging.debug("Rename: %s to %s", filepath, newpath)
                                 renamer(filepath, newpath)
                             except:
-                                logging.error(Ta('Failed to rename: %s to %s'), current_path, newpath)
+                                logging.error(T('Failed to rename: %s to %s'), clip_path(current_path), clip_path(newpath))
                                 logging.info("Traceback: ", exc_info = True)
                             rename_similar(current_path, ext, self.filename_set, ())
                             break
@@ -927,7 +933,7 @@ def path_subst(path, mapping):
     return ''.join(newpath)
 
 
-def get_titles(match, name, titleing=False):
+def get_titles(nzo, match, name, titleing=False):
     '''
     The title will be the part before the match
     Clean it up and title() it
@@ -935,59 +941,64 @@ def get_titles(match, name, titleing=False):
     ''.title() isn't very good under python so this contains
     a lot of little hacks to make it better and for more control
     '''
-    if match:
-        name = name[:match.start()]
+    if nzo:
+        title = nzo.nzo_info.get('propername')
+    else:
+        title = ''
+    if not title:
+        if match:
+            name = name[:match.start()]
 
-    # Replace .US. with (US)
-    if cfg.tv_sort_countries() == 1:
-        for rep in COUNTRY_REP:
-            # (us) > (US)
-            name = replace_word(name, rep.lower(), rep)
-            # (Us) > (US)
-            name = replace_word(name, titler(rep), rep)
-            # .US. > (US)
-            dotted_country = '.%s.' % (rep.strip('()'))
-            name = replace_word(name, dotted_country, rep)
-    # Remove .US. and (US)
-    elif cfg.tv_sort_countries() == 2:
-        for rep in COUNTRY_REP:
-            # Remove (US)
-            name = replace_word(name, rep, '')
-            dotted_country = '.%s.' % (rep.strip('()'))
-            # Remove .US.
-            name = replace_word(name, dotted_country, '.')
-
-    title = name.replace('.', ' ').replace('_', ' ')
-    title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
-
-    if titleing:
-        title = titler(title) # title the show name so it is in a consistant letter case
-
-        #title applied uppercase to 's Python bug?
-        title = title.replace("'S", "'s")
-
-        # Replace titled country names, (Us) with (US) and so on
+        # Replace .US. with (US)
         if cfg.tv_sort_countries() == 1:
             for rep in COUNTRY_REP:
-                title = title.replace(titler(rep), rep)
-        # Remove country names, ie (Us)
+                # (us) > (US)
+                name = replace_word(name, rep.lower(), rep)
+                # (Us) > (US)
+                name = replace_word(name, rep.title(), rep)
+                # .US. > (US)
+                dotted_country = '.%s.' % (rep.strip('()'))
+                name = replace_word(name, dotted_country, rep)
+        # Remove .US. and (US)
         elif cfg.tv_sort_countries() == 2:
             for rep in COUNTRY_REP:
-                title = title.replace(titler(rep), '').strip()
+                # Remove (US)
+                name = replace_word(name, rep, '')
+                dotted_country = '.%s.' % (rep.strip('()'))
+                # Remove .US.
+                name = replace_word(name, dotted_country, '.')
 
-        # Make sure some words such as 'and' or 'of' stay lowercased.
-        for x in LOWERCASE:
-            xtitled = titler(x)
-            title = replace_word(title, xtitled, x)
+        title = name.replace('.', ' ').replace('_', ' ')
+        title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
-        # Make sure some words such as 'III' or 'IV' stay uppercased.
-        for x in UPPERCASE:
-            xtitled = titler(x)
-            title = replace_word(title, xtitled, x)
+        if titleing:
+            title = title.title() # title the show name so it is in a consistant letter case
 
-        # Make sure the first letter of the title is always uppercase
-        if title:
-            title = titler(title[0]) + title[1:]
+            #title applied uppercase to 's Python bug?
+            title = title.replace("'S", "'s")
+
+            # Replace titled country names, (Us) with (US) and so on
+            if cfg.tv_sort_countries() == 1:
+                for rep in COUNTRY_REP:
+                    title = title.replace(rep.title(), rep)
+            # Remove country names, ie (Us)
+            elif cfg.tv_sort_countries() == 2:
+                for rep in COUNTRY_REP:
+                    title = title.replace(rep.title(), '').strip()
+
+            # Make sure some words such as 'and' or 'of' stay lowercased.
+            for x in LOWERCASE:
+                xtitled = x.title()
+                title = replace_word(title, xtitled, x)
+
+            # Make sure some words such as 'III' or 'IV' stay uppercased.
+            for x in UPPERCASE:
+                xtitled = x.title()
+                title = replace_word(title, xtitled, x)
+
+            # Make sure the first letter of the title is always uppercase
+            if title:
+                title = title[0].title() + title[1:]
 
     # The title with spaces replaced by dots
     dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')
@@ -1007,22 +1018,27 @@ def replace_word(input, one, two):
             input = input.replace(one, two)
     return input
 
-def get_descriptions(match, name):
+def get_descriptions(nzo, match, name):
     '''
     If present, get a description from the nzb name.
-    A description has to be after the matched item, seperated either
+    A description has to be after the matched item, separated either
     like ' - Description' or '_-_Description'
     '''
-    if match:
-        ep_name = name[match.end():] # Need to improve for multi ep support
+    if nzo:
+        ep_name = nzo.nzo_info.get('episodename')
     else:
-        ep_name = name
-    ep_name = ep_name.strip(' _.')
-    if ep_name.startswith('-'):
-        ep_name = ep_name.strip('- _.')
-    if '.' in ep_name and ' ' not in ep_name:
-        ep_name = ep_name.replace('.', ' ')
-    ep_name = ep_name.replace('_', ' ')
+        ep_name = ''
+    if not ep_name:
+        if match:
+            ep_name = name[match.end():] # Need to improve for multi ep support
+        else:
+            ep_name = name
+        ep_name = ep_name.strip(' _.')
+        if ep_name.startswith('-'):
+            ep_name = ep_name.strip('- _.')
+        if '.' in ep_name and ' ' not in ep_name:
+            ep_name = ep_name.replace('.', ' ')
+        ep_name = ep_name.replace('_', ' ')
     ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
     ep_name3 = ep_name.replace(" ", "_")
     return ep_name, ep_name2, ep_name3
@@ -1072,6 +1088,7 @@ def strip_folders(path):
     """ Return 'path' without leading and trailing spaces and underscores in each element
         For Windows, also remove leading and trailing dots
     """
+    unc = sabnzbd.WIN32 and (path.startswith('//') or path.startswith('\\\\'))
     f = path.strip('/').split('/')
 
     # For path beginning with a slash, insert empty element to prevent loss
@@ -1090,7 +1107,11 @@ def strip_folders(path):
         x = x.strip()
         return x
 
-    return os.path.normpath('/'.join([strip_all(x) for x in f]))
+    path = os.path.normpath('/'.join([strip_all(x) for x in f]))
+    if unc:
+        return '\\' + path
+    else:
+        return path
 
 
 def rename_similar(folder, skip_ext, name, skipped_files):
@@ -1123,7 +1144,7 @@ def rename_similar(folder, skip_ext, name, skipped_files):
                     logging.debug("Rename: %s to %s", path, newpath)
                     renamer(path, newpath)
                 except:
-                    logging.error(Ta('Failed to rename similar file: %s to %s'), path, newpath)
+                    logging.error(T('Failed to rename similar file: %s to %s'), clip_path(path), clip_path(newpath))
                     logging.info("Traceback: ", exc_info=True)
     cleanup_empty_directories(folder)
 
@@ -1189,13 +1210,13 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     name = sanitize_foldername(name)
     if sorttype == 'series':
         name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
-        sorter = sabnzbd.tvsort.SeriesSorter(name, path, 'tv')
+        sorter = sabnzbd.tvsort.SeriesSorter(None, name, path, 'tv')
     elif sorttype == 'generic':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
-        sorter = sabnzbd.tvsort.GenericSorter(name, path, 'tv')
+        sorter = sabnzbd.tvsort.GenericSorter(None, name, path, 'tv')
     elif sorttype == 'date':
         name = name or (Ttemplate('show-name') + ' 2009-01-02')
-        sorter = sabnzbd.tvsort.DateSorter(name, path, 'tv')
+        sorter = sabnzbd.tvsort.DateSorter(None, name, path, 'tv')
     else:
         return None
     sorter.sort_string = expression

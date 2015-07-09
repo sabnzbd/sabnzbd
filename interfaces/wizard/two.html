@@ -9,7 +9,7 @@
   <input type="radio" name="access" id="local" value="localhost" <!--#if $host == 'localhost' then 'checked="checked"' else ''#-->> <label for="local">$T('wizard-access-mypc')</label><br />
   <br />
 <!--#end if#-->
-  <input type="checkbox" name="enable_webpass" id="enable_webpass" value="1" <!--#if $web_user then 'checked="checked"' else ''#--> <label for="enable_webpass">$T('wizard-access-pass')</label><br />
+  <input type="checkbox" name="enable_webpass" id="enable_webpass" value="1" <!--#if $web_user then 'checked="checked"' else ''#-->> <label for="enable_webpass">$T('wizard-access-pass')</label><br />
   <br class="clear" />
   <div id="serverDetails">
     <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$web_user" name="web_user" id="web_user">
@@ -22,8 +22,13 @@
 <br />
 <h3>$T('wizard-misc')</h3>
   <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">$T('wizard-misc-browser')</label><br />
-  <!--<input type="checkbox" name="autostart" id="autostart" value="1"> <label for="autostart">Launch SABnzbd when windows starts.</label><br />-->
-</div>
+  <br/>
+  <label class="label">$T('explain-bandwidth_max')<span class="required-star">*</span></label>
+    <input class="clearinput text-input-thin" id="bandwidth" type="text" size="10" value="$bandwidth" name="bandwidth">
+    <div id="bandwidth-tip" class="tips">$T('wizard-bandwidth-explain')</div>
+    <div id="bandwidth-error" class="error-text hidden">$T('wizard-bandwidth-error')</div>
+  <br class="clear" />
+
 <input type="hidden" name="dummyval" value="1" />
 
 
@@ -41,7 +46,7 @@
         <!--#end for#-->
       </div>
     </td>
-    <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+    <td class="align-right"><input id="next-button" class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
   </tr>
 </table>
 </div>

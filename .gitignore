@@ -26,3 +26,7 @@ SABnzbd*.dmg
 *.keep
 *.bak
 *.log
+
+# Some people use Emacs as an editor
+\#*
+.\#*

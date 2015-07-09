@@ -1,0 +1,22 @@
+# copy or _hard_link to
+#   Debian: /lib/systemd/system/sabnzbd@.service
+#   others: /usr/lib/systemd/system/sabnzbd@.service
+#
+# To start SABNzbd once for USER use:
+#   systemctl start sabnzbd@USER.service
+#
+# To start SABNzbd on boot for USER use:
+#   systemctl enable sabnzbd@USER.service
+#
+# Config will be placed in ~USER/.sabnzbd/
+
+[Unit]
+Description=SABnzbd binary newsreader
+
+[Service]
+ExecStart=/opt/sabnzbd/SABnzbd.py --logging 1 --browser 0
+User=%I
+Group=%I
+
+[Install]
+WantedBy=multi-user.target

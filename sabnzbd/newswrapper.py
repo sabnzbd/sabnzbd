@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -57,6 +57,12 @@ import select
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
+def force_bytes(p):
+    """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
+    if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
+        return p.encode('cp1252', 'replace')
+    else:
+        return p
 
 #------------------------------------------------------------------------------
 # getaddrinfo() can be very slow. In some situations this can lead
@@ -150,8 +156,18 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
+try:
+    _SSL_TYPES = {
+        't1' : _ssl.TLSv1_METHOD,
+        'v2' : _ssl.SSLv2_METHOD,
+        'v3' : _ssl.SSLv3_METHOD,
+        'v23': _ssl.SSLv23_METHOD
+    }
+except:
+    _SSL_TYPES = {}
+
 class NNTP(object):
-    def __init__(self, host, port, info, sslenabled, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
         assert isinstance(nw, NewsWrapper)
         self.host = host
         self.port = port
@@ -167,24 +183,16 @@ class NNTP(object):
         af, socktype, proto, canonname, sa = info[0]
 
         if sslenabled and _ssl:
-            # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.ssl_type.get()
-            if ssl_type == 'v2':
-                ctx = _ssl.Context(_ssl.SSLv2_METHOD)
-            elif ssl_type == 'v3':
-                ctx = _ssl.Context(_ssl.SSLv3_METHOD)
-            else:
-                ctx = _ssl.Context(_ssl.SSLv23_METHOD)
-
+            ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error(Ta('Error importing OpenSSL module. Connecting with NON-SSL'))
+            logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            # Windows must do the connection in a seperate thread due to non-blocking issues
+            # Windows must do the connection in a separate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
@@ -222,8 +230,8 @@ class NNTP(object):
             self.error(e)
 
     def error(self, error):
-        if 'SSL23_GET_SERVER_HELLO' in str(error):
-            error = 'This server does not allow SSL on this port'
+        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
+            error = T('This server does not allow SSL on this port')
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
@@ -259,7 +267,8 @@ class NewsWrapper(object):
         self.force_login = False
 
     def init_connect(self, write_fds):
-        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl, self,
+        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
+                         self.server.ssl_type, self.server.send_group, self,
                          self.server.username, self.server.password, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
@@ -291,7 +300,7 @@ class NewsWrapper(object):
         if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
-            command = 'authinfo user %s\r\n' % (self.server.username)
+            command = 'authinfo user %s\r\n' % force_bytes(self.server.username)
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
@@ -305,7 +314,7 @@ class NewsWrapper(object):
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = 'authinfo pass %s\r\n' % (self.server.password)
+            command = 'authinfo pass %s\r\n' % force_bytes(self.server.password)
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:

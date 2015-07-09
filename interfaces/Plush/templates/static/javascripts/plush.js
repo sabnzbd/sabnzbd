@@ -169,33 +169,33 @@ jQuery(function($){
   // Refresh rate
   $("#refreshRate-option").val($.plush.refreshRate).change( function() {
     $.plush.refreshRate = $("#refreshRate-option").val();
-    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365, path: '/'  });
+    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365 });
     $.plush.Refresh();
   });
 
   // Container width
   $("#containerWidth-option").val($.plush.containerWidth).change( function() {
     $.plush.containerWidth = $("#containerWidth-option").val();
-    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365, path: '/' });
+    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365 });
     $('#master-width').css('width',$.plush.containerWidth);
   }).trigger('change');
 
   // Confirm Queue Deletions toggle
   $("#confirmDeleteQueue").prop('checked', $.plush.confirmDeleteQueue ).change( function() {
     $.plush.confirmDeleteQueue = $("#confirmDeleteQueue").prop('checked');
-    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365 });
   });
 
   // Confirm History Deletions toggle
   $("#confirmDeleteHistory").prop('checked', $.plush.confirmDeleteHistory ).change( function() {
     $.plush.confirmDeleteHistory = $("#confirmDeleteHistory").prop('checked');
-    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365 });
   });
 
   // Block Refreshes on Hover toggle
   $("#blockRefresh").prop('checked', $.plush.blockRefresh ).change( function() {
     $.plush.blockRefresh = $("#blockRefresh").prop('checked');
-    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
   });
 
   // Sabnzbd restart
@@ -240,7 +240,28 @@ jQuery(function($){
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
       url: "tapi",
-      data: {mode:'queue', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+      data: {mode:'queue', name:'delete', value:value, del_files:del_files, search: $('#queueSearchBox').val(), apikey: $.plush.apikey},
+      success: function(){
+        $.colorbox.close();
+        $.plush.modalOpen=false;
+        $.plush.RefreshQueue();
+      }
+    });
+  });
+
+  // Retry all failed jobs
+  $('#queue_retry').click(function(event) {
+    $.colorbox({ inline:true, href:"#queue_retry_modal", title:'',
+      innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+    });
+    return false;
+  });
+  $('#queue_retry_modal input:submit').click(function(){
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'retry_all', apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
         $.plush.modalOpen=false;
@@ -329,6 +350,17 @@ jQuery(function($){
     });
   });
 
+  // Resume Post Processing
+  $('#resume_pp').click(function() {
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'resume_pp', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
   $('#multiops_toggle').click(function(){
     if( $('#multiops_bar').is(':visible') ) { // hide
       $('#multiops_bar').hide();
@@ -341,7 +373,7 @@ jQuery(function($){
       $.plush.multiOpsChecks = new Array();
       $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
     }
-    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365 });
   });
   if ($.plush.multiOps)
     $('#multiops_toggle').trigger('click');
@@ -354,7 +386,7 @@ jQuery(function($){
       $('#topmenu_bar').show();
       $.plush.noTopMenu = false;
     }
-    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365 });
   });
   if ($.plush.noTopMenu)
     $('#topmenu_toggle').trigger('click');
@@ -478,6 +510,13 @@ jQuery(function($){
 
   InitQueue : function() {
 
+  // Search
+  $('#queueSearchForm').submit(function(){
+    $.plush.queuecurpage = 0; // default 1st page
+    $.plush.RefreshQueue();
+    return false;
+  });
+
   // Pause/resume toggle (queue)
   $('#pause_resume').click(function(event) {
     $('.queue-buttons-pause .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
@@ -510,7 +549,7 @@ jQuery(function($){
   $("#queue-pagination-perpage").change(function(event){
     $.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
     $.plush.queuePerPage = $(event.target).val();
-    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365, path: '/'  });
+    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365 });
     $.plush.queueforcerepagination = true;
     $.plush.RefreshQueue();
   });
@@ -739,9 +778,9 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   var last1, last2;
   $("#multiops_select_range").click(function(){
-    if (last1 && last2 && last1 < last2)
+    if (last1 >= 0 && last2 >= 0 && last1 < last2)
       $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).prop('checked', true).trigger('change');
-    else if (last1 && last2)
+    else if (last1 >= 0 && last2 >= 0)
       $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).prop('checked', true).trigger('change');
   });
   $("#multiops_select_invert").click(function(){
@@ -754,7 +793,7 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   $("#queue").delegate('.multiops','change',function(event) {
     // range event interaction
-    if (last1) last2 = last1;
+    if (last1 >= 0) last2 = last1;
     last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 
   // checkbox state persistence
@@ -937,7 +976,7 @@ $("a","#multiops_inputs").click(function(e){
   $("#history-pagination-perpage").change(function(event){
     $.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
     $.plush.histPerPage = $(event.target).val();
-    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365, path: '/'  });
+    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365 });
     $.plush.histforcerepagination = true;
     if ($.plush.histPerPage=="1")
       $("#history-pagination").html(''); // pagination rebuild not triggered on blank history (disabled)
@@ -1022,7 +1061,7 @@ $("a","#multiops_inputs").click(function(e){
   // show all / show failed
   $('#failed_only').change(function(){
     $.plush.failedOnly = $("#failed_only").val();
-    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365, path: '/'  });
+    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365 });
     $.plush.RefreshHistory();
   }).val($.plush.failedOnly);
 
@@ -1085,7 +1124,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
 
   // ***************************************************************
-  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl (AHAH)
+  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl
 
   RefreshQueue : function(page) {
 
@@ -1107,34 +1146,53 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
   // Refresh state notification
   $('#manual_refresh_wrapper').removeClass('refresh_skipped').addClass('refreshing');
 
+  if ($('#queueSearchBox').val() )
+    var data = {start: 0, limit: 0, search: $('#queueSearchBox').val() };
+  else
+    var data = {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage};
+
   // Fetch updated content from queue.tmpl
   $.ajax({
     headers: {"Cache-Control": "no-cache"},
     type: "POST",
     url: "queue/",
-    data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
+    data: data,
     success: function(result){
       if (!result) {
         $('#manual_refresh_wrapper').addClass('refresh_skipped'); // Failed refresh notification
         return;
       }
 
-  $('.left_stats .initial-loading').hide();
-  $('#queue').html(result);               // Replace queue contents with queue.tmpl
+      $('.left_stats .initial-loading').hide();
+      $('#queue').html(result);               // Replace queue contents with queue.tmpl
 
-  if ($.plush.multiOps) // add checkboxes
-    $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
-  if ($.plush.multiOpsChecks) // checkbox state persistence
-    for (var nzo_id in $.plush.multiOpsChecks)
-      $('#'+nzo_id+' .multiops').prop('checked',true);
+      if ($.plush.multiOps) // add checkboxes
+        $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+      if ($.plush.multiOpsChecks) // checkbox state persistence
+        for (var nzo_id in $.plush.multiOpsChecks)
+          $('#'+nzo_id+' .multiops').prop('checked',true);
 
-
-  $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
-  $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
-}
-});
+      $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
+      $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
+    }
+  });
 
   }, // end $.plush.RefreshQueue()
+
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
 
 
   // ***************************************************************

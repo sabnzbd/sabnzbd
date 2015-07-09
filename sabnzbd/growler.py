@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,20 +17,23 @@
 #
 """
 sabnzbd.growler - Send notifications to Growl
+
 """
 #------------------------------------------------------------------------------
 from __future__ import with_statement
 import os.path
 import logging
 import socket
+import urllib2
 import time
 import subprocess
 from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import unicoder, latin1
+from sabnzbd.encoding import unicoder
 from sabnzbd.constants import NOTIFY_KEYS
+
 from gntp import GNTPRegister
 from gntp.notifier import GrowlNotifier
 try:
@@ -54,11 +57,16 @@ except:
 # Define translatable message table
 TT = lambda x:x
 NOTIFICATION = {
-    'startup'  : TT('Startup/Shutdown'),        #: Message class for Growl server
-    'download' : TT('Added NZB'),               #: Message class for Growl server
-    'pp'       : TT('Post-processing started'), #: Message class for Growl server
-    'complete' : TT('Job finished'),            #: Message class for Growl server
-    'other'    : TT('Other Messages')           #: Message class for Growl server
+    'startup'   : TT('Startup/Shutdown'),        #: Message class for Growl server
+    'download'  : TT('Added NZB'),               #: Message class for Growl server
+    'pp'        : TT('Post-processing started'), #: Message class for Growl server
+    'complete'  : TT('Job finished'),            #: Message class for Growl server
+    'failed'    : TT('Job failed'),              #: Message class for Growl server
+    'warning'   : TT('Warning'),                 #: Message class for Growl server
+    'error'     : TT('Error'),                   #: Message class for Growl server
+    'disk_full' : TT('Disk full'),               #: Message class for Growl server
+    'queue_done': TT('Queue finished'),          #: Message class for Growl server
+    'other'     : TT('Other Messages')           #: Message class for Growl server
 }
 
 #------------------------------------------------------------------------------
@@ -66,7 +74,7 @@ NOTIFICATION = {
 #
 _GROWL = None       # Instance of the Notifier after registration
 _GROWL_REG = False  # Succesful registration
-
+_GROWL_DATA = (None, None)    # Address and password
 
 #------------------------------------------------------------------------------
 def get_icon():
@@ -102,28 +110,40 @@ def have_ntfosd():
 
 
 #------------------------------------------------------------------------------
-def send_notification(title , msg, gtype, wait=False):
-    """ Send Notification message
-        Return '' when OK, otherwise an error string
-    """
-    res = []
-    if gtype in sabnzbd.cfg.notify_classes() or wait:
-        if sabnzbd.DARWIN_ML and sabnzbd.cfg.ncenter_enable():
-            res.append(send_notification_center(title, msg, gtype))
-        if sabnzbd.cfg.growl_enable():
-            if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
-                return send_local_growl(title, msg, gtype)
-            else:
-                if wait:
-                    res.append(send_growl(title, msg, gtype))
-                else:
-                    res.append('ok')
-                    Thread(target=send_growl, args=(title, msg, gtype)).start()
-                    time.sleep(0.5)
-        if have_ntfosd():
-            res.append(send_notify_osd(title, msg))
+def check_classes(gtype, section):
+    """ Check if `gtype` is enabled in `section` """
+    try:
+        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
+    except TypeError:
+        logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
 
-    return ' / '.join([r for r in res if r])
+#------------------------------------------------------------------------------
+def send_notification(title , msg, gtype):
+    """ Send Notification message
+    """
+    # Notification Center
+    if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
+        if check_classes(gtype, 'ncenter'):
+            send_notification_center(title, msg, gtype)
+
+    # Growl
+    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl'):
+        if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
+            return send_local_growl(title, msg, gtype)
+        else:
+            Thread(target=send_growl, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
+    # Prowl
+    if sabnzbd.cfg.prowl_enable():
+        if sabnzbd.cfg.prowl_apikey():
+            Thread(target=send_prowl, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
+    # NTFOSD
+    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
+        send_notify_osd(title, msg)
+
 
 #------------------------------------------------------------------------------
 def reset_growl():
@@ -135,11 +155,11 @@ def reset_growl():
 
 
 #------------------------------------------------------------------------------
-def register_growl():
+def register_growl(growl_server, growl_password):
     """ Register this app with Growl
     """
     error = None
-    host, port = sabnzbd.misc.split_host(sabnzbd.cfg.growl_server())
+    host, port = sabnzbd.misc.split_host(growl_server or '')
 
     sys_name = hostname(host)
 
@@ -153,7 +173,7 @@ def register_growl():
         notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
         hostname = host or 'localhost',
         port = port or 23053,
-        password = sabnzbd.cfg.growl_password() or None
+        password = growl_password or None
     )
 
     try:
@@ -182,21 +202,33 @@ def register_growl():
 
 
 #------------------------------------------------------------------------------
-def send_growl(title , msg, gtype):
+def send_growl(title , msg, gtype, test=None):
     """ Send Growl message
     """
-    global _GROWL, _GROWL_REG
+    global _GROWL, _GROWL_REG, _GROWL_DATA
+
+    # support testing values from UI
+    if test:
+        growl_server   = test.get('growl_server') or None
+        growl_password = test.get('growl_password') or None
+    else:
+        growl_server   = sabnzbd.cfg.growl_server()
+        growl_password = sabnzbd.cfg.growl_password()
 
     for n in (0, 1):
         if not _GROWL_REG: _GROWL = None
+        if (growl_server, growl_password) != _GROWL_DATA:
+            reset_growl()
         if not _GROWL:
-            _GROWL, error = register_growl()
+            _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
             assert isinstance(_GROWL, GrowlNotifier)
             _GROWL_REG = True
-            if not isinstance(msg, str) and not isinstance(msg, unicode):
+            if isinstance(msg, unicode):
+                msg = msg.decode('utf-8')
+            elif not isinstance(msg, str):
                 msg = str(msg)
-            logging.debug('Send to Growl: %s %s %s', gtype, latin1(title), latin1(msg))
+            logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
             try:
                 ret = _GROWL.notify(
                     noteType = Tx(NOTIFICATION.get(gtype, 'other')),
@@ -253,30 +285,29 @@ if _HAVE_CLASSIC_GROWL:
 #------------------------------------------------------------------------------
 # Ubuntu NotifyOSD Support
 #
-if _HAVE_NTFOSD:
-    _NTFOSD = False
-    def send_notify_osd(title, message):
-        """ Send a message to NotifyOSD
-        """
-        global _NTFOSD
-        error = 'NotifyOSD not working'
-        if sabnzbd.cfg.ntfosd_enable():
-            icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
-            _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
-            if _NTFOSD:
-                logging.info('Send to NotifyOSD: %s / %s', latin1(title), latin1(message))
-                try:
-                    note = pynotify.Notification(title, message, icon)
-                    note.show()
-                except:
-                    # Apparently not implemented on this system
-                    logging.info(error)
-                    return error
-                return None
-            else:
-                return error
-        else:
-            return 'Not enabled'
+_NTFOSD = False
+def send_notify_osd(title, message):
+    """ Send a message to NotifyOSD
+    """
+    global _NTFOSD
+    if not _HAVE_NTFOSD:
+        return T('Not available') #: Function is not available on this OS
+
+    error = 'NotifyOSD not working'
+    icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
+    if _NTFOSD:
+        logging.info('Send to NotifyOSD: %s / %s', title, message)
+        try:
+            note = pynotify.Notification(title, message, icon)
+            note.show()
+        except:
+            # Apparently not implemented on this system
+            logging.info(error)
+            return error
+        return None
+    else:
+        return error
 
 
 def ncenter_path():
@@ -289,14 +320,17 @@ def ncenter_path():
 
 def send_notification_center(title, msg, gtype):
     """ Send message to Mountain Lion's Notification Center """
-    tool = ncenter_path()    
+    if sabnzbd.DARWIN_VERSION < 8:
+        return T('Not available') #: Function is not available on this OS
+    tool = ncenter_path()
     if tool:
         try:
-            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other'))]
+            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other')),
+                       '-sender', 'org.sabnzbd.team']
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
             output = proc.stdout.read()
             proc.wait()
-            if 'Notification delivered' in output:
+            if 'Notification delivered' in output or 'Removing previously' in output:
                 output = ''
         except:
             logging.info('Cannot run notifier "%s"', tool)
@@ -321,3 +355,40 @@ def hostname(host=True):
         return '@%s' % sys_name.lower()
     else:
         return ''
+
+#------------------------------------------------------------------------------
+def send_prowl(title, msg, gtype, force=False, test=None):
+    """ Send message to Prowl """
+
+    if test:
+        apikey = test.get('prowl_apikey')
+    else:
+        apikey = sabnzbd.cfg.prowl_apikey()
+    title = Tx(NOTIFICATION.get(gtype, 'other'))
+    title = urllib2.quote(title.encode('utf8'))
+    msg = urllib2.quote(msg.encode('utf8'))
+    prio = -3
+
+    if gtype == 'startup' :  prio = sabnzbd.cfg.prowl_prio_startup()
+    if gtype == 'download' : prio = sabnzbd.cfg.prowl_prio_download()
+    if gtype == 'pp' :       prio = sabnzbd.cfg.prowl_prio_pp()
+    if gtype == 'complete' : prio = sabnzbd.cfg.prowl_prio_complete()
+    if gtype == 'failed' :   prio = sabnzbd.cfg.prowl_prio_failed()
+    if gtype == 'disk-full': prio = sabnzbd.cfg.prowl_prio_disk_full()
+    if gtype == 'warning':   prio = sabnzbd.cfg.prowl_prio_warning()
+    if gtype == 'error':     prio = sabnzbd.cfg.prowl_prio_error()
+    if gtype == 'queue_done': prio = sabnzbd.cfg.prowl_prio_queue_done()
+    if gtype == 'other':     prio = sabnzbd.cfg.prowl_prio_other()
+    if force: prio = 0
+
+    if prio > -3:
+        url = 'https://api.prowlapp.com/publicapi/add?apikey=%s&application=SABnzbd' \
+              '&event=%s&description=%s&priority=%d' % (apikey, title, msg, prio)
+        try:
+            urllib2.urlopen(url)
+            return ''
+        except:
+            logging.warning('Failed to send Prowl message')
+            logging.info("Traceback: ", exc_info = True)
+            return T('Failed to send Prowl message')
+    return ''

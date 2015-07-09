@@ -1,5 +1,5 @@
 <!--#set global $pane="RSS"#-->
-<!--#set global $help_uri="configure-rss-0-7"#-->
+<!--#set global $help_uri="configure-rss-0-8"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -153,6 +153,9 @@
                   <option value="M"> $T('rss-must')</option>
                   <option value="R"> $T('rss-reject')</option>
                   <option value="C"> $T('rss-mustcat')</option>
+                  <option value=">"> $T('rss-atleast')</option>
+                  <option value="<"> $T('rss-atmost')</option>
+                  <option value="F"> $T('rss-from')</option>
                 </select>
               </td>
               <td>
@@ -223,6 +226,9 @@
                   <option value="M"> $T('rss-must')</option>
                   <option value="R"> $T('rss-reject')</option>
                   <option value="C"> $T('rss-mustcat')</option>
+                  <option value=">"> $T('rss-atleast')</option>
+                  <option value="<"> $T('rss-atmost')</option>
+                  <option value="F"> $T('rss-from')</option>
                 </select>
               </td>
               <td>
@@ -297,6 +303,9 @@
                       <option value="M" <!--#if $filter[3] == "M" then 'selected="selected"' else ""#-->> $T('rss-must')</option>
                       <option value="R" <!--#if $filter[3] == "R" then 'selected="selected"' else ""#-->> $T('rss-reject')</option>
                       <option value="C" <!--#if $filter[3] == "C" then 'selected="selected"' else ""#-->> $T('rss-mustcat')</option>
+                      <option value=">" <!--#if $filter[3] == ">" then 'selected="selected"' else ""#-->> $T('rss-atleast')</option>
+                      <option value="<" <!--#if $filter[3] == "<" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
+                      <option value="F" <!--#if $filter[3] == "F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
                     </select>
                   </td>
                   <td>
@@ -389,6 +398,7 @@
                     <th>$T('link-download')</th>
                     <th>$T('rss-skip')</th>
                     <th>$T('rss-filter')</th>
+                    <th>$T('size')</th>
                     <th>$T('sort-title')</th>
                   </tr>
                 </thead>
@@ -407,6 +417,7 @@
                   <td class="align-center">
                     <span>$job[3]</span>
                   </td>
+                  <td>$job[5]</td>
                   <td>$job[1]</td>
               </tr>
             <!--#end for#-->
@@ -433,6 +444,7 @@
                     <th>$T('link-download')</th>
                     <th>$T('rss-skip')</th>
                     <th>$T('rss-filter')</th>
+                    <th>$T('size')</th>
                     <th>$T('sort-title')</th>
                   </tr>
                 </thead>
@@ -451,6 +463,7 @@
                   <td class="align-center">
                     <span>$job[3]</span>
                   </td>
+                  <td>$job[5]</td>
                   <td>$job[1]</td>
               </tr>
             <!--#end for#-->

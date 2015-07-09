@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@ import threading
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
@@ -60,7 +61,7 @@ def CompareStat(tup1, tup2):
 
 
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                       priority=None, url='', nzbname=None):
+                       priority=None, url='', nzbname=None, password=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns (status, nzo_ids)
@@ -81,6 +82,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     elif is_rarfile(path):
         try:
             zf = RarFile(path)
+        except:
+            return -1, []
+    elif is_sevenfile(path):
+        try:
+            zf = SevenZip(path)
         except:
             return -1, []
     else:
@@ -110,11 +116,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     return -1, []
                 name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
-                name = misc.sanitize_foldername(name)
                 if data:
                     try:
-                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, url=url,
+                        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
+                        nzo.password = password
                     except:
                         nzo = None
                     if nzo:
@@ -123,7 +129,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         try:
             if not keep: os.remove(path)
         except:
-            logging.error(Ta('Error removing %s'), path)
+            logging.error(T('Error removing %s'), misc.clip_path(path))
             logging.info("Traceback: ", exc_info = True)
             status = 1
     else:
@@ -134,7 +140,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                      priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url=''):
+                      priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
+                      password=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns (status, nzo_ids)
@@ -161,7 +168,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         data = f.read()
         f.close()
     except:
-        logging.warning(Ta('Cannot read %s'), path)
+        logging.warning(T('Cannot read %s'), misc.clip_path(path))
         logging.info("Traceback: ", exc_info = True)
         return -2, nzo_ids
 
@@ -169,11 +176,14 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     if name:
         name, cat = name_to_cat(name, catdir)
         # The name is used as the name of the folder, so sanitize it using folder specific santization
-        name = misc.sanitize_foldername(name)
+        if not nzbname:
+            # Prevent embedded password from being damaged by sanitize and trimming
+            nzbname = os.path.split(name)[1]
 
     try:
-        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
+        nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
+        nzo.password = password
     except TypeError:
         # Duplicate, ignore
         nzo = None
@@ -192,7 +202,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         if not keep: os.remove(path)
     except:
-        logging.error(Ta('Error removing %s'), path)
+        logging.error(T('Error removing %s'), misc.clip_path(path))
         logging.info("Traceback: ", exc_info = True)
         return 1, nzo_ids
 
@@ -292,7 +302,7 @@ class DirScanner(threading.Thread):
                 files = os.listdir(folder)
             except:
                 if not self.error_reported and not catdir:
-                    logging.error(Ta('Cannot read Watched Folder %s'), folder)
+                    logging.error(T('Cannot read Watched Folder %s'), misc.clip_path(folder))
                     self.error_reported = True
                 files = []
 
@@ -302,7 +312,7 @@ class DirScanner(threading.Thread):
                     continue
 
                 ext = os.path.splitext(path)[1].lower()
-                candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
+                candidate = ext in ('.nzb', '.gz') or ext in VALID_ARCHIVES
                 if candidate:
                     try:
                         stat_tuple = os.stat(path)
@@ -339,8 +349,8 @@ class DirScanner(threading.Thread):
                     if not stable:
                         continue
 
-                    # Handle ZIP files, but only when containing just NZB files
-                    if ext in ('.zip', '.rar') :
+                    # Handle archive files, but only when containing just NZB files
+                    if ext in VALID_ARCHIVES:
                         res, nzo_ids = ProcessArchiveFile(filename, path, catdir=catdir, url=path)
                         if res == -1:
                             self.suspected[path] = stat_tuple
@@ -375,7 +385,7 @@ class DirScanner(threading.Thread):
                     list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
-                        logging.error(Ta('Cannot read Watched Folder %s'), dirscan_dir)
+                        logging.error(T('Cannot read Watched Folder %s'), misc.clip_path(dirscan_dir))
                         self.error_reported = True
                     list = []
 

@@ -10,7 +10,7 @@
     </table>
     <div class="sabnzbd_logo main_sprite_container sprite_sabnzbdplus_logo"></div>
     <p><strong>SABnzbd $T('version'):</strong> $version</p>
-    <p><small>Copyright (C) 2008-2013, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
+    <p><small>Copyright (C) 2008-2015, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
     <p><small>$T('yourRights')</small></p>
   </div>
 
@@ -116,6 +116,11 @@ $T('Plush-containerWidth'):
     <br/><br/><input type="submit" name="delete" value="$T('purgeNZBs-Files')" class="juiButton" />
   </div>
 
+  <div id="queue_retry_modal" class="center">
+    <br/><br/><strong>$T('retryQueue')</strong>
+    <br/><br/><input type="submit" name="all" value="$T('retryNZBs')" class="juiButton" />
+  </div>
+
   <div id="history_purge_modal" class="center">
     <br/><br/><strong>$T('purgeHist')</strong>
     <!--<br/><br/><input type="submit" name="all" value="Purge All NZBs" class="juiButton" />-->
@@ -130,6 +135,7 @@ $T('Plush-containerWidth'):
       <input type="hidden" name="session" value="$session" />
       <br/><p><strong id="retry_modal_title">title</strong></p>
       <br/><p>$T('opt-extra-NZB'):<br/><input type="file" name="nzbfile" /></p>
+      <br/><p>$T('srv-password'):<br/><input type="text" name="password" /></p>
       <br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
     </form>
   </div>

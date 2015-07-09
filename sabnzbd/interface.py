@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,14 +34,13 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, \
-     diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, globber, remove_all, get_base_url
+     diskfree, sanitize_foldername, time_format, HAVE_AMPM, long_path, \
+     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
-                             platform_encode, latin1, encode_for_xml
+                             platform_encode, encode_for_xml
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
@@ -56,7 +55,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
      api_handler, build_queue, rss_qstatus, \
-     retry_job, build_header, build_history, del_job_files, \
+     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
      format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
      _api_test_email, _api_test_notif
 
@@ -72,23 +71,28 @@ FILTER = LatinFilter
 
 #------------------------------------------------------------------------------
 #
-def check_server(host, port):
+def check_server(host, port, ajax):
     """ Check if server address resolves properly """
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'))
+        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'), ajax)
 
     if GetServerParms(host, int_conv(port)):
         return ""
     else:
-        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port))
+        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
 
-def check_access():
-    """ Check if external address is allowed """
+def check_access(access_type=4):
+    """ Check if external address is allowed given `access_type`
+        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
+    """
     referrer = cherrypy.request.remote.ip
-    return referrer in ('127.0.0.1', '::1') or referrer.startswith(cfg.local_range())
-
+    range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if referrer.startswith(r)])
+    allowed = referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
+    if not allowed:
+        logging.debug('Refused connection to %s', referrer)
+    return allowed
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
@@ -171,10 +175,10 @@ def check_session(kwargs):
         key = kwargs.get('apikey')
     msg = None
     if not key:
-        logging.warning(Ta('Missing Session key'))
+        logging.warning(T('Missing Session key'))
         msg = T('Error: Session Key Required')
     elif key != cfg.api_key():
-        logging.warning(Ta('Error: Session Key Incorrect'))
+        logging.warning(T('Error: Session Key Incorrect'))
         msg = T('Error: Session Key Incorrect')
     return msg
 
@@ -190,6 +194,7 @@ def check_apikey(kwargs, nokey=False):
 
     output = kwargs.get('output')
     mode = kwargs.get('mode', '')
+    name = kwargs.get('name', '')
     callback = kwargs.get('callback')
 
     # Don't give a visible warning: these commands are used by some
@@ -197,10 +202,13 @@ def check_apikey(kwargs, nokey=False):
     # The cfg item can suppress all visible warnings
     special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
 
-    # For NZB upload calls, a separate key can be used
-    nzbkey = kwargs.get('mode', '') in ('addid', 'addurl', 'addfile', 'addlocalfile')
+    # Lookup required access level
+    req_access = sabnzbd.api.api_level(mode, name)
 
-    if not nzbkey and not check_access():
+    if req_access == 1 and check_access(1):
+        # NZB-only actions
+        pass
+    elif not check_access(req_access):
         return report(output, 'No access')
 
     # First check APIKEY, if OK that's sufficient
@@ -208,14 +216,14 @@ def check_apikey(kwargs, nokey=False):
         key = kwargs.get('apikey')
         if not key:
             if not special:
-                log_warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
+                log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)
-        elif nzbkey and key == cfg.nzb_key():
+        elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
-            log_warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
+            log_warning(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect', callback=callback)
 
     # No active APIKEY, check web credentials instead
@@ -224,7 +232,7 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if not special:
-                log_warning(Ta('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
+                log_warning(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication', callback=callback)
     return None
 
@@ -272,10 +280,7 @@ class MainPage(object):
             return panic_old_queue()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
-
-            if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
-                info['newzbinDetails'] = True
+            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
@@ -287,8 +292,12 @@ class MainPage(object):
 
             info['warning'] = ''
             if cfg.enable_unrar():
-                if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar():
-                    info['warning'] = T('Your UNRAR version is not recommended, get it from http://www.rarlab.com/rar_add.htm<br />')
+                version = sabnzbd.newsunpack.RAR_VERSION
+                if version and version < REC_RAR_VERSION and not cfg.ignore_wrong_unrar():
+                    have_str = '%.2f' % (float(version)/100)
+                    want_str = '%.2f' % (float(REC_RAR_VERSION)/100)
+                    info['warning'] = T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % \
+                                         (have_str, want_str)
                 if not sabnzbd.newsunpack.RAR_COMMAND:
                     info['warning'] = T('No UNRAR program found, unpacking RAR files is not possible<br />')
             if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -321,15 +330,8 @@ class MainPage(object):
         redirect = kwargs.get('redirect')
         nzbname = kwargs.get('nzbname')
 
-        RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
-        newzbin_url = RE_NEWZBIN_URL.search(id.lower())
-
         id = Strip(id)
-        if id and (id.isdigit() or len(id)==5):
-            sabnzbd.add_msgid(id, pp, script, cat, priority, nzbname)
-        elif newzbin_url:
-            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat, priority, nzbname)
-        elif id:
+        if id:
             sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
         if not redirect:
             redirect = self.__root
@@ -356,9 +358,10 @@ class MainPage(object):
         if msg: return msg
 
         nzbfile = kwargs.get('nzbfile')
-        if nzbfile is not None and nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
-                                kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
+        if nzbfile is not None and nzbfile.filename:
+            if nzbfile.value or nzbfile.file:
+                sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
+                                    kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -446,9 +449,7 @@ class MainPage(object):
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-        if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat)
-        elif url:
+        if url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
@@ -458,8 +459,14 @@ class MainPage(object):
         # Duplicate of History/retry_pp to please the SMPL skin :(
         msg = check_session(kwargs)
         if msg: return msg
-        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'), kwargs.get('password'))
         raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def robots_txt(self):
+        """ Keep web crawlers out """
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        return 'User-agent: *\nDisallow: /\n'
 
 
 #------------------------------------------------------------------------------
@@ -534,12 +541,19 @@ class NzoPage(object):
                 cat = pnfo[PNFO_EXTRA_FIELD1]
                 if not cat:
                     cat = 'None'
-                filename = xml_name(nzo.final_name_pw_clean)
+                filename_pw = xml_name(nzo.final_name_pw_clean)
+                filename = xml_name(nzo.final_name)
+                if nzo.password:
+                    password = xml_name(nzo.password).replace('"', '&quot;')
+                else:
+                    password = ''
                 priority = pnfo[PNFO_PRIORITY_FIELD]
 
                 slot['nzo_id'] =  str(nzo_id)
                 slot['cat'] = cat
-                slot['filename'] = filename
+                slot['filename'] = filename_pw
+                slot['filename_clean'] = filename
+                slot['password'] = password or ''
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
@@ -587,6 +601,9 @@ class NzoPage(object):
     def save_details(self, nzo_id, args, kwargs):
         index = kwargs.get('index', None)
         name = kwargs.get('name', None)
+        password = kwargs.get('password', None)
+        if password == "":
+            password = None
         pp = kwargs.get('pp', None)
         script = kwargs.get('script', None)
         cat = kwargs.get('cat', None)
@@ -596,14 +613,23 @@ class NzoPage(object):
         if index != None:
             NzbQueue.do.switch(nzo_id, index)
         if name != None:
-            NzbQueue.do.change_name(nzo_id, special_fixer(name))
-        if cat != None:
-            NzbQueue.do.change_cat(nzo_id,cat)
-        if script != None:
-            NzbQueue.do.change_script(nzo_id,script)
-        if pp != None:
-            NzbQueue.do.change_opts(nzo_id,pp)
-        if priority != None and nzo and nzo.priority != int(priority):
+            NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
+
+        if cat != None and nzo.cat != cat and not (nzo.cat == '*' and cat == 'Default'):
+            NzbQueue.do.change_cat(nzo_id, cat, priority)
+            # Category changed, so make sure "Default" attributes aren't set again
+            if script == 'Default':
+                script = None
+            if priority == 'Default':
+                priority = None
+            if pp == 'Default':
+                pp = None
+
+        if script is not None and nzo.script != script:
+            NzbQueue.do.change_script(nzo_id, script)
+        if pp is not None and nzo.pp != pp:
+            NzbQueue.do.change_opts(nzo_id, pp)
+        if priority is not None and nzo.priority != int(priority):
             NzbQueue.do.set_priority(nzo_id, priority)
 
         raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
@@ -615,18 +641,18 @@ class NzoPage(object):
                 if kwargs[key] == 'on':
                     NzbQueue.do.remove_nzf(nzo_id, key)
 
-        elif kwargs['action_key'] == 'Top' or kwargs['action_key'] == 'Up' or \
-             kwargs['action_key'] == 'Down' or kwargs['action_key'] == 'Bottom':
+        elif kwargs['action_key'] in ('Top', 'Up', 'Down', 'Bottom'):
             nzf_ids = []
             for key in kwargs:
                 if kwargs[key] == 'on':
                     nzf_ids.append(key)
+            size = int_conv(kwargs.get('action_size', 1))
             if kwargs['action_key'] == 'Top':
                 NzbQueue.do.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Up':
-                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids, size)
             elif kwargs['action_key'] == 'Down':
-                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids)
+                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids, size)
             elif kwargs['action_key'] == 'Bottom':
                 NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
 
@@ -654,9 +680,12 @@ class QueuePage(object):
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
+        search = kwargs.get('search')
 
         info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
-                                                                                       self.__prim, self.__web_dir, self.__verbose_list, self.__dict__, start=start, limit=limit, dummy2=dummy2, trans=True)
+                                                                                       self.__prim, self.__web_dir, self.__verbose_list, \
+                                                                                       self.__dict__, start=start, limit=limit, \
+                                                                                       dummy2=dummy2, trans=True, search=search)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -678,7 +707,7 @@ class QueuePage(object):
     def purge(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        NzbQueue.do.remove_all()
+        NzbQueue.do.remove_all(kwargs.get('search'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -880,12 +909,6 @@ class HistoryPage(object):
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
 
-        if cfg.newzbin_username() and cfg.newzbin_password():
-            history['newzbinDetails'] = True
-
-        #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-        #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
-
         postfix = T('B') #: Abbreviation for bytes, as in GB
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
@@ -936,7 +959,14 @@ class HistoryPage(object):
     def retry_pp(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'), kwargs.get('password'))
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def retry_all(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        retry_all_jobs()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1005,9 +1035,7 @@ class HistoryPage(object):
         pp = kwargs.get('pp')
         cat = kwargs.get('cat')
         script = kwargs.get('script')
-        if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat)
-        elif url:
+        if url:
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
@@ -1022,7 +1050,6 @@ class ConfigPage(object):
         self.folders = ConfigFolders(web_dir, root+'folders/', prim)
         self.notify = ConfigNotify(web_dir, root+'notify/', prim)
         self.general = ConfigGeneral(web_dir, root+'general/', prim)
-        self.indexers = ConfigIndexers(web_dir, root+'indexers/', prim)
         self.rss = ConfigRss(web_dir, root+'rss/', prim)
         self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
         self.server = ConfigServer(web_dir, root+'server/', prim)
@@ -1044,7 +1071,6 @@ class ConfigPage(object):
         for svr in config.get_servers():
             new[svr] = {}
         conf['servers'] = new
-        conf['news_items'] = cfg.news_items()
 
         conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
 
@@ -1093,20 +1119,20 @@ def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(cfg.download_dir.get_path(), path)
+        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         remove_all(path, recursive=True)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(cfg.download_dir.get_path(), path)
-        sabnzbd.nzbqueue.repair_job(path, None)
+        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
+        sabnzbd.nzbqueue.repair_job(path, None, None)
 
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \
-    'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
+    'download_dir', 'download_free', 'complete_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
     'email_dir', 'permissions', 'log_dir', 'password_file'
 )
@@ -1148,22 +1174,28 @@ class ConfigFolders(object):
                 else:
                     msg = config.get_config('misc', kw).set(value)
                 if msg:
-                    return badParameterResponse(msg)
+                    #return sabnzbd.api.report('json', error=msg)
+                    return badParameterResponse(msg, kwargs.get('ajax'))
 
         sabnzbd.check_incomplete_vs_complete()
         config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        if kwargs.get('ajax'):
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
 
 SWITCH_LIST = \
             ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
-             'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
-             'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
+             'enable_tsjoin', 'overwrite_files', 'top_only',
+             'auto_sort', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-             'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
+             'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless'
+             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
+             'enable_recursive', 'no_series_dupes', 'script_can_fail',
+             'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe'
              )
 
 #------------------------------------------------------------------------------
@@ -1180,12 +1212,17 @@ class ConfigSwitches(object):
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
-        conf['nt'] = sabnzbd.WIN32
+        conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
+        conf['have_unrar'] = bool(sabnzbd.newsunpack.RAR_COMMAND)
+        conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
+        conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf['cleanup_list'] = cfg.cleanup_list.get_string()
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw)()
+        conf['unwanted_extensions'] = cfg.unwanted_extensions.get_string()
 
         conf['script_list'] = list_scripts() or ['None']
         conf['have_ampm'] = HAVE_AMPM
@@ -1202,9 +1239,16 @@ class ConfigSwitches(object):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
             value = platform_encode(kwargs.get(kw))
+            if kw == 'unwanted_extensions' and value:
+                value = value.lower().replace('.', '')
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
+
+        cleanup_list = kwargs.get('cleanup_list')
+        if cleanup_list and sabnzbd.WIN32:
+            cleanup_list = cleanup_list.lower()
+        cfg.cleanup_list.set(cleanup_list)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -1214,11 +1258,13 @@ class ConfigSwitches(object):
 #------------------------------------------------------------------------------
 SPECIAL_BOOL_LIST = \
             ( 'start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
-              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'par2_multicore',
-              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames', 'news_items',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
+              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
-              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'overwrite_files', 'empty_postproc',
-              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb'
+              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
+              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
+              'warn_dupl_jobs', 'new_nzb_on_failure', 'enable_par_cleanup',
+              'enable_https_verification'
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
@@ -1270,7 +1316,7 @@ class ConfigSpecial(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit', 'local_range',
+    'refresh_rate', 'cache_limit', 'local_ranges', 'inet_exposure',
     'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
 
@@ -1289,9 +1335,8 @@ class ConfigGeneral(object):
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
             for color in globber(dd):
-                col = os.path.basename(color).replace('.css','')
-                if col != "_svn" and col != ".svn":
-                    lst.append(col)
+                col = color.replace('.css','')
+                lst.append(col)
             return lst
 
         def add_color(dir, color):
@@ -1322,7 +1367,7 @@ class ConfigGeneral(object):
 
         wlist = []
         wlist2 = ['None']
-        interfaces = globber(sabnzbd.DIR_INTERFACES)
+        interfaces = globber_full(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
             if k.endswith(DEF_STDINTF):
                 interfaces.remove(k)
@@ -1334,7 +1379,7 @@ class ConfigGeneral(object):
                 break
         for web in interfaces:
             rweb = os.path.basename(web)
-            if rweb != '.svn' and rweb != '_svn' and os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
+            if os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:
@@ -1373,13 +1418,17 @@ class ConfigGeneral(object):
         conf['enable_https'] = cfg.enable_https()
         conf['username'] = cfg.username()
         conf['password'] = cfg.password.get_stars()
-        conf['bandwidth_limit'] = cfg.bandwidth_limit()
+        conf['bandwidth_max'] = cfg.bandwidth_max()
+        conf['bandwidth_perc'] = cfg.bandwidth_perc()
         conf['refresh_rate'] = cfg.refresh_rate()
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
-        conf['local_range'] = cfg.local_range()
+        conf['local_ranges'] = cfg.local_ranges.get_string()
+        conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
+        conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
+        conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1428,10 +1477,15 @@ class ConfigGeneral(object):
             cfg.web_dir2.set(web_dir2)
         cfg.web_color2.set(web_color2)
 
-        bandwidth_limit = kwargs.get('bandwidth_limit')
-        if bandwidth_limit != None:
-            bandwidth_limit = int_conv(bandwidth_limit)
-            cfg.bandwidth_limit.set(bandwidth_limit)
+        bandwidth_max = kwargs.get('bandwidth_max')
+        if bandwidth_max != None:
+            cfg.bandwidth_max.set(bandwidth_max)
+        bandwidth_perc = kwargs.get('bandwidth_perc')
+        if bandwidth_perc != None:
+            cfg.bandwidth_perc.set(bandwidth_perc)
+        bandwidth_perc = cfg.bandwidth_perc()
+        if bandwidth_perc and not bandwidth_max:
+            logging.warning(T('You must set a maximum bandwidth before you can set a bandwidth limit'))
 
         config.save_config()
 
@@ -1500,6 +1554,7 @@ class ConfigServer(object):
             if t:
                 new[svr]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
+        conf['cats'] = list_cats(default=True)
 
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1
@@ -1550,9 +1605,10 @@ class ConfigServer(object):
         server = kwargs.get('server')
         if server:
             svr = config.get_config('servers', server)
-            svr.enable.set(not svr.enable())
-            config.save_config()
-            Downloader.do.update_server(server, server)
+            if svr:
+                svr.enable.set(not svr.enable())
+                config.save_config()
+                Downloader.do.update_server(server, server)
         raise dcRaiser(self.__root, kwargs)
 
 
@@ -1578,9 +1634,10 @@ def handle_server(kwargs, root=None, new_svr=False):
     msg = check_session(kwargs)
     if msg: return msg
 
+    ajax = kwargs.get('ajax')
     host = kwargs.get('host', '').strip()
     if not host:
-        return badParameterResponse(T('Server address required'))
+        return badParameterResponse(T('Server address required'), ajax)
 
     port = kwargs.get('port', '').strip()
     if not port:
@@ -1594,7 +1651,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs['connections'] = '1'
 
     if kwargs.get('enable') == '1':
-        msg = check_server(host, port)
+        msg = check_server(host, port, ajax)
         if msg:
             return msg
 
@@ -1613,7 +1670,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ('fillserver', 'ssl', 'enable', 'optional'):
+    for kw in ('ssl', 'send_group', 'enable', 'optional'):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:
@@ -1625,7 +1682,10 @@ def handle_server(kwargs, root=None, new_svr=False):
     config.save_config()
     Downloader.do.update_server(old_server, server)
     if root:
-        raise dcRaiser(root, kwargs)
+        if ajax:
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(root, kwargs)
 
 
 def handle_server_test(kwargs, root):
@@ -1643,6 +1703,7 @@ class ConfigRss(object):
         self.__refresh_download = False
         self.__refresh_force = False
         self.__refresh_ignore = False
+        self.__last_msg = ''
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1670,7 +1731,7 @@ class ConfigRss(object):
 
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
-            rss[feed]['link'] = urllib.quote_plus(feed)
+            rss[feed]['link'] = urllib.quote_plus(feed.encode('utf-8'))
             rss[feed]['baselink'] = get_base_url(rss[feed]['uri'])
 
         active_feed = kwargs.get('feed', '')
@@ -1689,15 +1750,19 @@ class ConfigRss(object):
                                  ignoreFirst=self.__refresh_ignore, readout=readout)
             if readout:
                 sabnzbd.rss.save()
+                self.__last_msg = msg
+            else:
+                msg = self.__last_msg
             self.__refresh_readout = None
             conf['error'] = msg
 
             conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
-
+        else:
+            self.__last_msg = ''
 
         # Find a unique new Feed name
         unum = 1
-        txt = Ta('Feed') #: Used as default Feed name in Config->RSS
+        txt = T('Feed') #: Used as default Feed name in Config->RSS
         while txt + str(unum) in feeds:
             unum += 1
         conf['feed'] = txt + str(unum)
@@ -1727,7 +1792,9 @@ class ConfigRss(object):
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
-        if cfg and Strip(kwargs.get('uri')):
+        uri = Strip(kwargs.get('uri'))
+        if cfg and uri:
+            kwargs['uri'] = uri
             cfg.set_dict(kwargs)
             config.save_config()
 
@@ -1744,7 +1811,9 @@ class ConfigRss(object):
             cfg = None
         if 'enable' not in kwargs:
             kwargs['enable'] = 0
-        if cfg and Strip(kwargs.get('uri')):
+        uri = Strip(kwargs.get('uri'))
+        if cfg and uri:
+            kwargs['uri'] = uri
             cfg.set_dict(kwargs)
             config.save_config()
 
@@ -1780,6 +1849,8 @@ class ConfigRss(object):
             except KeyError:
                 cfg = None
             if (not cfg) and uri:
+                kwargs['feed'] = feed
+                kwargs['uri'] = uri
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
@@ -1902,9 +1973,7 @@ class ConfigRss(object):
             script = att.get('script')
             prio = att.get('prio')
 
-            if url and url.isdigit():
-                sabnzbd.add_msgid(url, pp, script, cat, prio, nzbname)
-            elif url:
+            if url:
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
@@ -1923,7 +1992,11 @@ class ConfigRss(object):
 
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
-                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan', 'remove_failed')
+                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan', 'remove_failed',
+                  'pause_all_low', 'pause_all_normal', 'pause_all_high',
+                  'resume_all_low', 'resume_all_normal', 'resume_all_high',
+                  'enable_quota', 'disable_quota'
+                  )
 
 class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):
@@ -2067,88 +2140,6 @@ class ConfigScheduling(object):
         scheduler.restart(force=True)
         raise dcRaiser(self.__root, kwargs)
 
-#------------------------------------------------------------------------------
-class ConfigIndexers(object):
-    def __init__(self, web_dir, root, prim):
-        self.__root = root
-        self.__web_dir = web_dir
-        self.__prim = prim
-        self.__bookmarks = []
-
-    @cherrypy.expose
-    def index(self, **kwargs):
-        if cfg.configlock() or not check_access():
-            return Protected()
-
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
-
-        conf['username_newzbin'] = cfg.newzbin_username()
-        conf['password_newzbin'] = cfg.newzbin_password.get_stars()
-        conf['newzbin_bookmarks'] = int(cfg.newzbin_bookmarks())
-        conf['newzbin_unbookmark'] = int(cfg.newzbin_unbookmark())
-        conf['bookmark_rate'] = cfg.bookmark_rate()
-
-        conf['bookmarks_list'] = self.__bookmarks
-
-        conf['matrix_username'] = cfg.matrix_username()
-        conf['matrix_apikey'] = cfg.matrix_apikey()
-        conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
-
-        template = Template(file=os.path.join(self.__web_dir, 'config_indexers.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
-        return template.respond()
-
-    @cherrypy.expose
-    def saveNewzbin(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
-        cfg.newzbin_username.set(kwargs.get('username_newzbin'))
-        cfg.newzbin_password.set(kwargs.get('password_newzbin'))
-        cfg.newzbin_bookmarks.set(kwargs.get('newzbin_bookmarks'))
-        cfg.newzbin_unbookmark.set(kwargs.get('newzbin_unbookmark'))
-        cfg.bookmark_rate.set(kwargs.get('bookmark_rate'))
-
-        cfg.matrix_username.set(kwargs.get('matrix_username'))
-        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
-        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
-
-        config.save_config()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def saveMatrix(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
-        cfg.matrix_username.set(kwargs.get('matrix_username'))
-        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
-        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
-
-        config.save_config()
-        raise dcRaiser(self.__root, kwargs)
-
-
-    @cherrypy.expose
-    def getBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        Bookmarks.do.run(force=True)
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def showBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        self.__bookmarks = Bookmarks.do.bookmarksList()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def hideBookmarks(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-        self.__bookmarks = []
-        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 
@@ -2165,9 +2156,6 @@ class ConfigCats(object):
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
-        if cfg.newzbin_username() and cfg.newzbin_password():
-            conf['newzbinDetails'] = True
-
         conf['script_list'] = list_scripts(default=True)
 
         categories = config.get_categories()
@@ -2180,6 +2168,7 @@ class ConfigCats(object):
         for cat in sorted(categories.keys()):
             slot = categories[cat].get_dict()
             slot['name'] = cat
+            slot['newzbin'] = slot['newzbin'].replace('"', '&quot;')
             slotinfo.append(slot)
         slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
@@ -2268,7 +2257,7 @@ class ConfigSorting(object):
 
         for kw in SORT_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -2290,6 +2279,10 @@ class Status(object):
         if not check_access(): return Protected()
         header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
+        # anything in header[] will be known to the python templates
+        # header['blabla'] will be known as $blabla
+        # this function is called on each refresh of the template
+
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
         header['loglevel'] = str(cfg.log_level())
@@ -2298,6 +2291,47 @@ class Status(object):
 
         header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
         header['configfn'] = config.get_filename()
+
+        # Dashboard: Begin
+        from utils.getipaddress import localipv4, publicipv4, ipv6
+        header['localipv4'] = localipv4()
+        header['publicipv4'] = publicipv4()
+        header['ipv6'] = ipv6()
+        # Dashboard: DNS-check
+        try:
+            import socket
+            socket.gethostbyname('www.google.com')
+            header['dnslookup'] = "OK"
+        except:
+            header['dnslookup'] = None
+
+        # Dashboard: Speed of System
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        header['pystone'] = getpystone()
+        header['cpumodel'] = getcpu()
+        # Dashboard: Speed of Download directory:
+        header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+        try:
+            sabnzbd.downloaddirspeed # The persistent var
+        except:
+            # does not yet exist, so create it:
+            sabnzbd.downloaddirspeed = -1	# -1 means ... not yet determined
+        header['downloaddirspeed'] = sabnzbd.downloaddirspeed
+        # Dashboard: Speed of Complete directory:
+        header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+        try:
+            sabnzbd.completedirspeed # The persistent var
+        except:
+            # does not yet exist, so create it:
+            sabnzbd.completedirspeed = -1	# -1 means ... not yet determined
+        header['completedirspeed'] = sabnzbd.completedirspeed
+
+        try:
+            sabnzbd.dashrefreshcounter # The persistent var
+        except:
+            sabnzbd.dashrefreshcounter = 0
+        header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
+        # Dashboard: End
 
 
         header['servers'] = []
@@ -2341,11 +2375,12 @@ class Status(object):
             busy.sort()
 
             header['servers'].append((server.id, '', connected, busy, server.ssl,
-                                      server.active, server.errormsg, server.fillserver, server.optional))
+                                      server.active, server.errormsg, server.priority, server.optional))
+                                      #     5            6                   7               8
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
+            w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
             wlist.insert(0, unicoder(w))
         header['warnings'] = wlist
 
@@ -2365,6 +2400,13 @@ class Status(object):
         msg = check_session(kwargs)
         if msg: return msg
         Downloader.do.disconnect()
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def refresh_conn(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        # No real action, just reload the page
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2425,14 +2467,37 @@ class Status(object):
         orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def dashrefresh(self, **kwargs):		
+        # This function is run when Refresh button on Dashboard is clicked
+        # Put the time consuming dashboard functions here; they only get executed when the user clicks the Refresh button
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            logging.debug('Dashboard: Refresh button pressed')
+
+            from utils.diskspeed import diskspeedmeasure
+            sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()),1)
+            sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()),1)
+            
+            logging.debug('Dashboard: Refresh finished succesfully')
+
+        except:
+            logging.debug('Dashboard: Refresh had a problem')
+            pass
+        raise dcRaiser(self.__root, kwargs)	# Refresh screen
+
 
 def Protected():
     return badParameterResponse("Configuration is locked")
 
-def badParameterResponse(msg):
+def badParameterResponse(msg, ajax=None):
     """Return a html page with error message and a 'back' button
     """
-    return '''
+    if ajax:
+        return sabnzbd.api.report('json', error=msg)
+    else:
+        return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
@@ -2520,19 +2585,21 @@ def GetRssLog(feed):
     def make_item(job):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
-        if url.isdigit():
-            title = '<a href="https://%s/browse/post/%s/" target="_blank">%s</a>' % (cfg.newzbin_url(), url, title)
+        size = job.get('size')
+        if size:
+            size = to_units(size).replace(' ', '&nbsp;')
         else:
-            title = title
+            size = '?'
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
-            nzbname = xml_name(sanitize_foldername(job.get('title', '')))
+            nzbname = xml_name(job.get('title', ''))
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
-               nzbname
+               nzbname, \
+               size
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
@@ -2544,7 +2611,7 @@ def GetRssLog(feed):
 
     # Sort in reverse order of time stamp for 'Done'
     dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
-    dnames.sort(lambda x, y: jobs[y].get('timestamp', 0) - jobs[x].get('timestamp', 0))
+    dnames.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
     done = [xml_name(jobs[job]['title']) for job in dnames]
 
 
@@ -2631,7 +2698,22 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password', 'ntfosd_enable', 'ncenter_enable')
+LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password',
+              'growl_prio_startup', 'growl_prio_download', 'growl_prio_pp', 'growl_prio_complete', 'growl_prio_failed',
+              'growl_prio_disk_full', 'growl_prio_warning', 'growl_prio_error', 'growl_prio_queue_done', 'growl_prio_other'
+              )
+LIST_NCENTER = ('ncenter_enable',
+                'ncenter_prio_startup', 'ncenter_prio_download', 'ncenter_prio_pp', 'ncenter_prio_complete', 'ncenter_prio_failed',
+                'ncenter_prio_disk_full', 'ncenter_prio_warning', 'ncenter_prio_error', 'ncenter_prio_queue_done', 'ncenter_prio_other'
+                )
+LIST_NTFOSD = ('ntfosd_enable',
+               'ntfosd_prio_startup', 'ntfosd_prio_download', 'ntfosd_prio_pp', 'ntfosd_prio_complete', 'ntfosd_prio_failed',
+               'ntfosd_prio_disk_full', 'ntfosd_prio_warning', 'ntfosd_prio_error', 'ntfosd_prio_queue_done', 'ntfosd_prio_other'
+               )
+LIST_PROWL = ('prowl_enable', 'prowl_apikey',
+              'prowl_prio_startup', 'prowl_prio_download', 'prowl_prio_pp', 'prowl_prio_complete', 'prowl_prio_failed',
+              'prowl_prio_disk_full', 'prowl_prio_warning', 'prowl_prio_error', 'prowl_prio_queue_done', 'prowl_prio_other'
+             )
 
 class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
@@ -2651,14 +2733,21 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
-        conf['have_ncenter'] = sabnzbd.DARWIN_ML and bool(sabnzbd.growler.ncenter_path())
+        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.growler.ncenter_path())
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
         for kw in LIST_GROWL:
-            conf[kw] = config.get_config('growl', kw).get_string()
-        conf['notify_list'] = NOTIFY_KEYS
-        conf['notify_classes'] = cfg.notify_classes.get_string()
+            try:
+                conf[kw] = config.get_config('growl', kw)()
+            except:
+                logging.debug('MISSING KW=%s', kw)
+        for kw in LIST_PROWL:
+            conf[kw] = config.get_config('prowl', kw)()
+        for kw in LIST_NCENTER:
+            conf[kw] = config.get_config('ncenter', kw)()
+        for kw in LIST_NTFOSD:
+            conf[kw] = config.get_config('ntfosd', kw)()
         conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
@@ -2669,20 +2758,35 @@ class ConfigNotify(object):
     def saveEmail(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        ajax = kwargs.get('ajax')
 
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_GROWL:
             msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
-        cfg.notify_classes.set(kwargs.get('notify_classes', ''))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_NCENTER:
+            msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_NTFOSD:
+            msg = config.get_config('ntfosd', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_PROWL:
+            msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 
         config.save_config()
         self.__lastmail = None
-        raise dcRaiser(self.__root, kwargs)
+        if ajax:
+            return sabnzbd.api.report('json')
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def testmail(self, **kwargs):
@@ -2723,12 +2827,11 @@ def rss_history(url, limit=50, search=None):
         elif history['completed'] < youngest:
             youngest = history['completed']
 
-        if history['report']:
-            item.link = "https://%s/browse/post/%s/" % (cfg.newzbin_url(), history['report'])
-        elif history['url_info']:
+        if history['url_info']:
             item.link = history['url_info']
         else:
             item.link = url
+            item.guid = history['nzo_id']
 
         stageLine = []
         for stage in history['stage_log']:

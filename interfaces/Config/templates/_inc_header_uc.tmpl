@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>SABnzbd $version - $T('queued'): $mbleft $T('MB')</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,11 +16,18 @@
   #set global $root = '../../'#
 #end if#
 
-        <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico">
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="${root}staticcfg/ico/apple-touch-icon-144x144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="${root}staticcfg/ico/apple-touch-icon-114x114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="${root}staticcfg/ico/apple-touch-icon-72x72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="${root}staticcfg/ico/apple-touch-icon-57x57-precomposed.png">
+        <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico" />
+      
+        <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+        <link rel="apple-touch-icon" sizes="57x57" href="${root}staticcfg/ico/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="60x60" href="${root}staticcfg/ico/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="${root}staticcfg/ico/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="${root}staticcfg/ico/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="${root}staticcfg/ico/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="${root}staticcfg/ico/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152.png" />
+  
 
         <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css" />
         <script src="${root}staticcfg/js/script.js"></script>
@@ -70,13 +77,21 @@
                 });
 
                 \$('#fullform').ajaxForm({
+                    datatype: 'json',
                     beforeSubmit: function () {
                         \$('.saveButton').each(function () {
                             \$(this).attr("disabled", "disabled").attr("value", "$T('smpl-saving')");
                         });
                     },
-                    success: function () {
-                        setTimeout(config_success, 1000);
+                    success: function (json) {
+                        if (json.error) {
+                           \$('#config_err_msg').text(json.error);
+                           setTimeout(config_failure, 1000);
+                           }
+                        else {
+                           \$('#config_err_msg').text(" ");
+                           setTimeout(config_success, 1000);
+                           }
                     },
                     error: function () {
                         setTimeout(config_failure, 1000);
@@ -99,6 +114,22 @@
                 });
 
             });
+	    
+	    /*
+	     * takes the inputs-elements found in the current selector
+	     * and extracts the values into the provided data-object.
+	     */
+	    \$.fn.extractFormDataTo = function(target)
+	    {
+		var inputs = \$("input[type != 'submit'][type != 'button']", this);
+
+		// could use .serializeArray() but that omits unchecked items
+		inputs.each(function (i,elem) {
+		    target[elem.name] = elem.value;
+		});
+
+		return this;
+	    }
 
         </script>
 

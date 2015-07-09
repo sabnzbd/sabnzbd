@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
                               DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
                               NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-                              DEF_ADMIN_DIR, NOTIFY_KEYS
+                              DEF_ADMIN_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
@@ -65,8 +65,6 @@ else:
 # Configuration instances
 #
 quick_check = OptionBool('misc', 'quick_check', True)
-fail_on_crc = OptionBool('misc', 'fail_on_crc', True)
-send_group = OptionBool('misc', 'send_group', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
 email_server  = OptionStr('misc', 'email_server', validation=validate_server)
@@ -80,20 +78,25 @@ email_dir     = OptionDir('misc', 'email_dir', create=True)
 email_rss     = OptionBool('misc', 'email_rss', False)
 
 version_check = OptionNumber('misc', 'check_new_rel', 1)
-news_items = OptionBool('misc', 'news_items', True)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
+script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
+enable_https_verification = OptionBool('misc', 'enable_https_verification', False)
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)
+enable_7zip = OptionBool('misc', 'enable_7zip', True)
+enable_recursive = OptionBool('misc', 'enable_recursive', True)
 enable_filejoin = OptionBool('misc', 'enable_filejoin', True)
 enable_tsjoin = OptionBool('misc', 'enable_tsjoin', True)
 enable_par_cleanup = OptionBool('misc', 'enable_par_cleanup', True)
+enable_all_par = OptionBool('misc', 'enable_all_par', False)
 never_repair = OptionBool('misc', 'never_repair', False)
 ignore_unrar_dates = OptionBool('misc', 'ignore_unrar_dates', False)
 overwrite_files = OptionBool('misc', 'overwrite_files', False)
+flat_unpack = OptionBool('misc', 'flat_unpack', False)
 
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
@@ -106,13 +109,6 @@ pre_check = OptionBool('misc', 'pre_check', False)
 fail_hopeless = OptionBool('misc', 'fail_hopeless', False)
 req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 200)
 
-newzbin_username = OptionStr('newzbin', 'username')
-newzbin_password = OptionPassword('newzbin', 'password')
-newzbin_bookmarks = OptionBool('newzbin', 'bookmarks', False)
-newzbin_unbookmark = OptionBool('newzbin', 'unbookmark', True)
-bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
-newzbin_url = OptionStr('newzbin', 'url', 'www.newzbin2.es')
-
 top_only = OptionBool('misc', 'top_only', False)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
 queue_complete = OptionStr('misc', 'queue_complete')
@@ -121,6 +117,8 @@ queue_complete_pers = OptionBool('misc', 'queue_complete_pers', False)
 replace_spaces = OptionBool('misc', 'replace_spaces', False)
 replace_dots = OptionBool('misc', 'replace_dots', False)
 no_dupes = OptionNumber('misc', 'no_dupes', 0)
+no_series_dupes = OptionNumber('misc', 'no_series_dupes', 0)
+
 ignore_samples = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
 create_group_folders = OptionBool('misc', 'create_group_folders', False)
 auto_sort = OptionBool('misc', 'auto_sort', False)
@@ -128,6 +126,7 @@ folder_rename = OptionBool('misc', 'folder_rename', True)
 folder_max_length = OptionNumber('misc', 'folder_max_length', DEF_FOLDER_MAX, 20, 65000)
 pause_on_pwrar = OptionBool('misc', 'pause_on_pwrar', True)
 prio_sort_list = OptionList('misc', 'prio_sort_list')
+enable_meta = OptionBool('misc', 'enable_meta', True)
 
 safe_postproc = OptionBool('misc', 'safe_postproc', True)
 empty_postproc = OptionBool('misc', 'empty_postproc', False)
@@ -154,12 +153,6 @@ enable_date_sorting = OptionBool('misc', 'enable_date_sorting', False)
 date_sort_string = OptionStr('misc', 'date_sort_string')
 date_categories = OptionStr('misc', 'date_categories', ['tv'])
 
-matrix_username = OptionStr('nzbmatrix', 'username')
-matrix_apikey = OptionStr('nzbmatrix', 'apikey')
-matrix_del_bookmark = OptionBool('nzbmatrix', 'del_bookmark', True)
-xxx_username = OptionStr('nzbxxx', 'username')
-xxx_apikey = OptionStr('nzbxxx', 'apikey')
-
 configlock = OptionBool('misc', 'config_lock', 0)
 
 umask = OptionStr('misc', 'permissions', '', validation=validate_octal)
@@ -167,9 +160,8 @@ download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, create=False,
 download_free = OptionStr('misc', 'download_free')
 complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False, \
                          apply_umask=True, validation=validate_notempty)
-script_dir = OptionDir('misc', 'script_dir', create=True)
+script_dir = OptionDir('misc', 'script_dir', create=True, writable=False)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
-cache_dir = OptionDir('misc', 'cache_dir', 'cache', create=False, validation=validate_safedir)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
@@ -179,6 +171,7 @@ password_file = OptionDir('misc', 'password_file', '', create=False)
 fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
 wait_for_dfolder = OptionBool('misc', 'wait_for_dfolder', False)
 warn_empty_nzb = OptionBool('misc', 'warn_empty_nzb', True)
+sanitize_safe = OptionBool('misc', 'sanitize_safe', False)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:
@@ -193,7 +186,8 @@ else:
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
 login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
-bandwidth_limit = OptionNumber('misc', 'bandwidth_limit', 0)
+bandwidth_perc = OptionNumber('misc', 'bandwidth_perc', 0, 0, 100)
+bandwidth_max = OptionStr('misc', 'bandwidth_max')
 refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
 rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
 cache_limit = OptionStr('misc', 'cache_limit')
@@ -202,7 +196,10 @@ web_dir2 = OptionStr('misc', 'web_dir2')
 web_color = OptionStr('misc', 'web_color', '')
 web_color2 = OptionStr('misc', 'web_color2')
 cleanup_list = OptionList('misc', 'cleanup_list')
-warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
+warned_old_queue = OptionBool('misc', 'warned_old_queue9', False)
+
+unwanted_extensions = OptionList('misc', 'unwanted_extensions')
+action_on_unwanted_extensions = OptionNumber('misc', 'action_on_unwanted_extensions', 0)
 
 log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
 log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
@@ -217,7 +214,6 @@ https_chain = OptionDir('misc','https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
-ssl_type = OptionStr('misc', 'ssl_type', 'v23')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 randomize_server_ip = OptionBool('misc', 'randomize_server_ip', False)
@@ -228,20 +224,69 @@ debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
 api_key = OptionStr('misc', 'api_key', create_api_key())
 nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
-disable_key = OptionBool('misc', 'disable_api_key', False)
-api_warnings = OptionBool('misc', 'api_warnings', True)
-local_range = OptionStr('misc', 'local_range')
+disable_key = OptionBool('misc', 'disable_api_key', False, protect=True)
+api_warnings = OptionBool('misc', 'api_warnings', True, protect=True)
+local_ranges = OptionList('misc', 'local_ranges', protect=True)
+inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True) # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
 no_ipv6 = OptionBool('misc', 'no_ipv6', False)
 
+# [ncenter]
+ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN_VERSION > 7)
+ncenter_prio_startup = OptionBool('ncenter', 'ncenter_prio_startup', True)
+ncenter_prio_download = OptionBool('ncenter', 'ncenter_prio_download', False)
+ncenter_prio_pp = OptionBool('ncenter', 'ncenter_prio_pp', False)
+ncenter_prio_complete = OptionBool('ncenter', 'ncenter_prio_complete', True)
+ncenter_prio_failed = OptionBool('ncenter', 'ncenter_prio_failed', True)
+ncenter_prio_disk_full = OptionBool('ncenter', 'ncenter_prio_disk_full', True)
+ncenter_prio_warning = OptionBool('ncenter', 'ncenter_prio_warning', False)
+ncenter_prio_error = OptionBool('ncenter', 'ncenter_prio_error', False)
+ncenter_prio_queue_done = OptionBool('ncenter', 'ncenter_prio_queue_done', True)
+ncenter_prio_other = OptionBool('ncenter', 'ncenter_prio_other', False)
+
+# [ntfosd]
+ntfosd_enable = OptionBool('ntfosd', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ntfosd_prio_startup = OptionBool('ntfosd', 'ntfosd_prio_startup', True)
+ntfosd_prio_download = OptionBool('ntfosd', 'ntfosd_prio_download', False)
+ntfosd_prio_pp = OptionBool('ntfosd', 'ntfosd_prio_pp', False)
+ntfosd_prio_complete = OptionBool('ntfosd', 'ntfosd_prio_complete', True)
+ntfosd_prio_failed = OptionBool('ntfosd', 'ntfosd_prio_failed', True)
+ntfosd_prio_disk_full = OptionBool('ntfosd', 'ntfosd_prio_disk_full', True)
+ntfosd_prio_warning = OptionBool('ntfosd', 'ntfosd_prio_warning', False)
+ntfosd_prio_error = OptionBool('ntfosd', 'ntfosd_prio_error', False)
+ntfosd_prio_queue_done = OptionBool('ntfosd', 'ntfosd_prio_queue_done', True)
+ntfosd_prio_other = OptionBool('ntfosd', 'ntfosd_prio_other', False)
+
+# [growl]
+growl_enable = OptionBool('growl', 'growl_enable', sabnzbd.DARWIN_VERSION < 8)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
-growl_enable = OptionBool('growl', 'growl_enable', not sabnzbd.DARWIN_ML)
-ntfosd_enable = OptionBool('growl', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
-ncenter_enable = OptionBool('growl', 'ncenter_enable', sabnzbd.DARWIN)
-notify_classes = OptionList('growl', 'notify_classes', NOTIFY_KEYS)
+growl_prio_startup = OptionBool('growl', 'growl_prio_startup', True)
+growl_prio_download = OptionBool('growl', 'growl_prio_download', False)
+growl_prio_pp = OptionBool('growl', 'growl_prio_pp', False)
+growl_prio_complete = OptionBool('growl', 'growl_prio_complete', True)
+growl_prio_failed = OptionBool('growl', 'growl_prio_failed', True)
+growl_prio_disk_full = OptionBool('growl', 'growl_prio_disk_full', True)
+growl_prio_warning = OptionBool('growl', 'growl_prio_warning', False)
+growl_prio_error = OptionBool('growl', 'growl_prio_error', False)
+growl_prio_queue_done = OptionBool('growl', 'growl_prio_queue_done', True)
+growl_prio_other = OptionBool('growl', 'growl_prio_other', False)
+
+# [prowl]
+prowl_enable = OptionBool('prowl', 'prowl_enable', False)
+prowl_apikey = OptionStr('prowl', 'prowl_apikey')
+prowl_prio_startup = OptionNumber('prowl', 'prowl_prio_startup', -3)
+prowl_prio_download = OptionNumber('prowl', 'prowl_prio_download', -3)
+prowl_prio_pp = OptionNumber('prowl', 'prowl_prio_pp', -3)
+prowl_prio_complete = OptionNumber('prowl', 'prowl_prio_complete', 0)
+prowl_prio_failed = OptionNumber('prowl', 'prowl_prio_failed', 1)
+prowl_prio_disk_full = OptionNumber('prowl', 'prowl_prio_disk_full', 1)
+prowl_prio_warning = OptionNumber('prowl', 'prowl_prio_warning', -3)
+prowl_prio_error = OptionNumber('prowl', 'prowl_prio_error', -3)
+prowl_prio_queue_done = OptionNumber('prowl', 'prowl_prio_queue_done', 0)
+prowl_prio_other = OptionNumber('prowl', 'prowl_prio_other', -3)
 
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')
@@ -259,6 +304,10 @@ wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 history_limit = OptionNumber('misc', 'history_limit', 50, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
+enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
+warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
+new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
+
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
@@ -269,7 +318,6 @@ def set_root_folders(home, lcldata):
     complete_dir.set_root(home)
     script_dir.set_root(home)
     nzb_backup_dir.set_root(lcldata)
-    cache_dir.set_root(lcldata)
     admin_dir.set_root(lcldata)
     dirscan_dir.set_root(home)
     log_dir.set_root(lcldata)

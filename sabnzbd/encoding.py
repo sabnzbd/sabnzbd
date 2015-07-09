@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,34 +56,26 @@ def reliable_unpack_names():
         return gUTF
 
 def platform_encode(p):
-    """ Return the correct encoding for the platform:
-        Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
+    """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1
     """
-    if isinstance(p, unicode):
-        if gUTF:
-            return p.encode('utf-8')
-        else:
-            return p.encode('latin-1', 'replace')
-    elif isinstance(p, basestring):
-        if gUTF:
-            try:
-                p.decode('utf-8')
-                return p
-            except:
-                return p.decode('latin-1').encode('utf-8')
-        else:
-            try:
-                return p.decode('utf-8').encode('latin-1', 'replace')
-            except:
-                return p
+    if isinstance(p, str):
+        try:
+            return p.decode('utf-8')
+        except:
+            return p.decode('cp1252')
     else:
         return p
 
 def name_fixer(p):
-    """ Return UTF-8 encoded string, if appropriate for the platform """
-
-    if gUTF and p:
-        return p.decode('Latin-1', 'replace').encode('utf-8', 'replace').replace('?', '_')
+    """ Return Unicode name of 8bit ASCII string, first try UTF-8, then cp1252
+    """
+    if isinstance(p, unicode):
+        return p
+    elif isinstance(p, str):
+        try:
+            return p.decode('utf-8')
+        except:
+            return p.decode('cp1252')
     else:
         return p
 
@@ -104,24 +96,17 @@ def special_fixer(p):
         Also takes care of the situation where a non-Windows/UTF-8 system
         receives a latin-1 encoded name.
     """
-    if sabnzbd.WIN32:
-        try:
-            return p.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
-        except:
-            return p
-    else:
-        if gUTF:
-            try:
-                # First see if it isn't just UTF-8
-                p.decode('utf-8')
-                if sabnzbd.DARWIN and '&#' in p:
-                    p = fixup_ff4(p)
-                return p
-            except:
-                # Now assume it's latin-1
-                return p.decode('Latin-1').encode('utf-8')
-        else:
-            return p
+    if not p or isinstance(p, unicode):
+        return p
+    try:
+        # First see if it isn't just UTF-8
+        p.decode('utf-8')
+        if sabnzbd.DARWIN and '&#' in p:
+            p = fixup_ff4(p)
+        return p.decode('utf-8')
+    except:
+        # Now assume it's 8bit ASCII
+        return p.decode('cp1252')
 
 def unicoder(p):
     """ Make sure a Unicode string is returned """
@@ -132,8 +117,8 @@ def unicoder(p):
             try:
                 return p.decode('utf-8')
             except:
-                return p.decode('latin-1', 'replace')
-        return p.decode('latin-1', 'replace')
+                return p.decode('cp1252', 'replace')
+        return p.decode('cp1252', 'replace')
     else:
         return unicode(str(p))
 
@@ -141,11 +126,7 @@ def unicode2local(p):
     """ Convert Unicode filename to appropriate local encoding
         Leave ? characters for uncovertible characters
     """
-    if sabnzbd.WIN32:
-        return p.encode('Latin-1', 'replace')
-    else:
-        return p.encode('utf-8', 'replace')
-
+    return p
 
 def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
@@ -158,7 +139,7 @@ def xml_name(p, keep_escape=False, encoding=None):
         elif gUTF:
             p = p.decode('utf-8', 'replace')
         else:
-            p = p.decode('Latin-1', 'replace')
+            p = p.decode(codepage, 'replace')
     else:
         p = str(p)
 
@@ -166,17 +147,6 @@ def xml_name(p, keep_escape=False, encoding=None):
         return p.encode('ascii', 'xmlcharrefreplace')
     else:
         return escape(p).encode('ascii', 'xmlcharrefreplace')
-
-
-def latin1(txt):
-    """ When Unicode or UTF-8, convert to Latin-1 """
-    if isinstance(txt, unicode):
-        return txt.encode('latin-1', 'replace').replace('?', '_')
-    elif txt and gUTF:
-        #return unicodedata.normalize('NFC', txt.decode('utf-8')).encode('latin-1', 'replace').replace('?', '_')
-        return txt.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
-    else:
-        return txt
 
 
 def encode_for_xml(ustr, encoding='ascii'):
@@ -187,25 +157,10 @@ def encode_for_xml(ustr, encoding='ascii'):
     if isinstance(ustr, unicode):
         pass
     elif isinstance(ustr, str):
-        ustr = ustr.decode('Latin-1', 'replace')
+        ustr = ustr.decode(codepage, 'replace')
     else:
         ustr = unicode(str(ustr))
     return ustr.encode(encoding, 'xmlcharrefreplace')
-
-
-def titler(p):
-    """ title() replacement
-        Python's title() fails with Latin-1, so use Unicode detour.
-    """
-    if isinstance(p, unicode):
-        return p.title()
-    elif gUTF:
-        try:
-            return p.decode('utf-8').title().encode('utf-8')
-        except:
-            return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
-    else:
-        return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
 
 
 class LatinFilter(Filter):
@@ -216,11 +171,11 @@ class LatinFilter(Filter):
         elif isinstance(val, basestring):
             try:
                 if sabnzbd.WIN32:
-                    return val.decode('latin-1')
+                    return val.decode(codepage)
                 else:
                     return val.decode('utf-8')
             except:
-                return val.decode('latin-1', 'replace')
+                return val.decode(codepage, 'replace')
         elif val is None:
             return u''
         else:
@@ -228,7 +183,7 @@ class LatinFilter(Filter):
 
 class EmailFilter(Filter):
     """ Make sure Cheetah gets only Unicode strings
-        First try utf-8, then latin1
+        First try utf-8, then 8bit ASCII
     """
     def filter(self, val, str=str, **kw):
         if isinstance(val, unicode):
@@ -237,7 +192,7 @@ class EmailFilter(Filter):
             try:
                 return val.decode('utf-8')
             except:
-                return val.decode('latin-1', 'replace')
+                return val.decode(codepage, 'replace')
         elif val is None:
             return u''
         else:
@@ -275,20 +230,22 @@ gTABLE_850_LATIN = string.maketrans(TAB_850, TAB_LATIN)
 gTABLE_LATIN_850 = string.maketrans(TAB_LATIN, TAB_850)
 
 def TRANS(p):
-    """ For Windows: Translate CP850 to Python's Latin-1
+    """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
+        Others: return original string
     """
     global gTABLE_850_LATIN
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_850_LATIN)
+        return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
     else:
         return p
 
 def UNTRANS(p):
     """ For Windows: Translate Python's Latin-1 to CP850
+        Others: return original string
     """
     global gTABLE_LATIN_850
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_LATIN_850)
+        return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
     else:
         return p
 
@@ -338,5 +295,31 @@ def html_escape(txt):
         return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
     else:
         return txt
+
+
+def deunicode(p):
+    """ Return the correct 8bit ASCII encoding for the platform:
+        Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
+    """
+    if isinstance(p, unicode):
+        if gUTF:
+            return p.encode('utf-8')
+        else:
+            return p.encode('cp1252', 'replace')
+    elif isinstance(p, basestring):
+        if gUTF:
+            try:
+                p.decode('utf-8')
+                return p
+            except:
+                return p.decode('cp1252').encode('utf-8')
+        else:
+            try:
+                return p.decode('utf-8').encode('cp1252', 'replace')
+            except:
+                return p
+    else:
+        return p
+
 
 auto_fsys()

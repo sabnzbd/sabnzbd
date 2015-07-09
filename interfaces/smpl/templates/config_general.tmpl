@@ -1,5 +1,5 @@
 
-<a href="${helpuri}Configure+General-0-7" id="help" target="_blank">$T('menu-help')</a><h3>$T('generalConfig')</h3>
+<a href="${helpuri}Configure+General-0-8" id="help" target="_blank">$T('menu-help')</a><h3>$T('generalConfig')</h3>
 <form class="cmxform" id="configGeneral" autocomplete="off">
 
 <fieldset class="EntryFieldSet">
@@ -124,9 +124,14 @@
   <span class="tips">$T('explain-refresh_rate')</span>
 <br class="clear" />
 
-  <label for "bandwidth limit" class="label">$T('opt-bandwidth_limit'):</label>
-  <input type="text" name="bandwidth_limit" value="$bandwidth_limit">
-  <span class="tips">$T('explain-bandwidth_limit')</span>
+  <label for "bandwidth max" class="label">$T('opt-bandwidth_max'):</label>
+  <input type="text" name="bandwidth_max" value="$bandwidth_max">
+  <span class="tips">$T('explain-bandwidth_max')</span>
+<br class="clear" />
+
+  <label for "bandwidth perc" class="label">$T('opt-bandwidth_perc'):</label>
+  <input type="text" name="bandwidth_perc" value="$bandwidth_perc">
+  <span class="tips">$T('explain-bandwidth_perc')</span>
 <br class="clear" />
 
   <label for "cachelimit" class="label">$T('opt-cache_limitstr'):</label>

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2009-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2009-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ import os
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename
 import sabnzbd.newsunpack
+from sabnzbd.constants import VALID_ARCHIVES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 
@@ -55,7 +56,7 @@ def add_local(f):
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
-            if get_ext(fn) in ('.zip', '.rar'):
+            if get_ext(fn) in VALID_ARCHIVES:
                 ProcessArchiveFile(fn, f, keep=True)
             elif get_ext(fn) in ('.nzb', '.gz'):
                 ProcessSingleFile(fn, f, keep=True)

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,8 +24,6 @@ import subprocess
 import logging
 import time
 
-from sabnzbd.encoding import latin1
-
 #------------------------------------------------------------------------------
 # Power management for Windows
 
@@ -36,7 +34,7 @@ def win_hibernate():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
     except:
-        logging.error(Ta('Failed to hibernate system'))
+        logging.error(T('Failed to hibernate system'))
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -47,7 +45,7 @@ def win_standby():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
     except:
-        logging.error(Ta('Failed to standby system'))
+        logging.error(T('Failed to standby system'))
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -78,7 +76,7 @@ def osx_shutdown():
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
-        logging.error(Ta('Error while shutting down system'))
+        logging.error(T('Error while shutting down system'))
         logging.info("Traceback: ", exc_info = True)
     os._exit(0)
 
@@ -90,7 +88,7 @@ def osx_standby():
         subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
-        logging.error(Ta('Failed to standby system'))
+        logging.error(T('Failed to standby system'))
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -174,7 +172,7 @@ def linux_shutdown():
                 try:
                     proxy.Stop(dbus_interface=interface)
                 except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', latin1(msg))
+                    logging.info('Received a DBus exception %s', msg)
         else:
             logging.info('DBus does not support Stop (shutdown)')
     os._exit(0)
@@ -198,7 +196,7 @@ def linux_hibernate():
                 try:
                     proxy.Hibernate(dbus_interface=interface)
                 except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', latin1(msg))
+                    logging.info('Received a DBus exception %s', msg)
         else:
             logging.info('DBus does not support Hibernate')
     time.sleep(10)
@@ -222,7 +220,7 @@ def linux_standby():
                 try:
                     proxy.Suspend(dbus_interface=interface)
                 except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', latin1(msg))
+                    logging.info('Received a DBus exception %s', msg)
         else:
             logging.info('DBus does not support Suspend (standby)')
     time.sleep(10)

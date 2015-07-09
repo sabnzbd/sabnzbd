@@ -18,6 +18,7 @@
     Tstages['repair'] = "$T('stage-repair')";
     Tstages['filejoin'] = "$T('stage-filejoin')";
     Tstages['unpack'] = "$T('stage-unpack')";
+    Tstages['servers'] = "$T('stage-server')";
     Tstages['script'] = "$T('stage-script')";
   </script>
 
@@ -278,11 +279,6 @@
       <li><a href="#" class="grayButton" id="addnzb_enqueue">$T('button-add')</a></li>
       <li><a href="#" class="grayButton" id="addnzb_clear">$T('button-clear')</a></li>
     </ul>
-    <!--#if $varExists('newzbinDetails')#-->
-    <ul>
-      <li><a href="#" class="grayButton" id="fetch_newzbin_bookmarks">$T('link-getBookmarks')</a></li>
-    </ul>
-    <!--#end if#-->
     <div id="addnzb_response" class="info" style="display:none; font-weight: normal;">
       $T('sort-result'): <span class="addnzb_response_text"></span>
     </div>

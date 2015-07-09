@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ sabnzbd.config - Configuration Support
 """
 
 import os
+import re
 import logging
 import threading
 import shutil
@@ -45,19 +46,21 @@ modified = False            # Signals a change in option dictionary
 
 class Option(object):
     """ Basic option class, basic fields """
-    def __init__(self, section, keyword, default_val=None, add=True):
+    def __init__(self, section, keyword, default_val=None, add=True, protect=False):
         """ Basic option
             section     : single section or comma-separated list of sections
                           a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
             keyword     : keyword in the (last) section
             default_val : value returned when no value has been set
             callback    : procedure to call when value is succesfully changed
+            protect     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(',')
         self.__keyword = keyword
         self.__default_val = default_val
         self.__value = None
         self.__callback = None
+        self.__protect = protect
 
         # Add myself to the config dictionary
         if add:
@@ -89,6 +92,8 @@ class Option(object):
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
+        if self.__protect:
+            return False
         try:
             return self.set(dict['value'])
         except KeyError:
@@ -123,8 +128,8 @@ class Option(object):
 
 class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
-    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
+    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False):
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
@@ -154,8 +159,8 @@ class OptionNumber(Option):
 
 class OptionBool(Option):
     """ Boolean option class """
-    def __init__(self, section, keyword, default_val=False, add=True):
-        Option.__init__(self, section, keyword, int(default_val), add=add)
+    def __init__(self, section, keyword, default_val=False, add=True, protect=False):
+        Option.__init__(self, section, keyword, int(default_val), add=add, protect=protect)
 
     def set(self, value):
         if value is None:
@@ -169,12 +174,25 @@ class OptionBool(Option):
 
 class OptionDir(Option):
     """ Directory option class """
-    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, add=True):
+    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, writable=True, add=True):
         self.__validation = validation
         self.__root = ''   # Base directory for relative paths
         self.__apply_umask = apply_umask
         self.__create = create
+        self.__writable = writable
         Option.__init__(self, section, keyword, default_val, add=add)
+
+    def get(self):
+        """ Return value, corrected for platform """
+        if self._Option__value != None:
+            p = self._Option__value
+        else:
+            p = self._Option__default_val
+        if sabnzbd.WIN32:
+            return p.replace('/', '\\') if '/' in p else p
+        else:
+            return p.replace('\\', '/') if '\\' in p else p
+        
 
     def get_path(self):
         """ Return full absolute path """
@@ -183,7 +201,7 @@ class OptionDir(Option):
         if value:
             path = sabnzbd.misc.real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
+                res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
     def test_path(self):
@@ -211,9 +229,9 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, self._Option__default_val)
             if not error:
                 if value and (self.__create or create):
-                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
+                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
                     if not res:
-                        error = Ta("Cannot create %s folder %s") % (self.ident()[1], path)
+                        error = T('Cannot create %s folder %s') % (self.ident()[1], path)
             if not error:
                 self._Option__set(value)
         return error
@@ -222,14 +240,13 @@ class OptionDir(Option):
         """ Set auto-creation value """
         self.__create = value
 
-
 class OptionList(Option):
     """ List option class """
-    def __init__(self, section, keyword, default_val=None, validation=None, add=True):
+    def __init__(self, section, keyword, default_val=None, validation=None, add=True, protect=False):
         self.__validation = validation
         if default_val is None:
             default_val = []
-        Option.__init__(self, section, keyword, default_val, add=add)
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ Set the list given a comma-separated string or a list"""
@@ -261,8 +278,8 @@ class OptionList(Option):
 
 class OptionStr(Option):
     """ String class """
-    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
+    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True, protect=False):
+        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__validation = validation
         self.__strip = strip
 
@@ -355,19 +372,25 @@ class ConfigServer(object):
         self.username = OptionStr(name, 'username', '', add=False)
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
-        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
+        self.ssl_type = OptionStr(name, 'ssl_type', 't1', add=False)
+        self.send_group = OptionBool(name, 'send_group', False, add=False)
+        self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
+        # 'fillserver' field only here in order to set a proper priority when converting
+        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
+        self.categories = OptionList(name, 'categories', default_val=['Default'], add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
-                   'fillserver', 'ssl', 'enable', 'optional', 'retention'):
+        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
+                   'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority',
+                   'categories'):
             try:
                 value = values[kw]
             except KeyError:
@@ -388,11 +411,14 @@ class ConfigServer(object):
         else:
             dict['password'] = self.password()
         dict['connections'] = self.connections()
-        dict['fillserver'] = self.fillserver()
         dict['ssl'] = self.ssl()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
+        dict['ssl_type'] = self.ssl_type()
+        dict['send_group'] = self.send_group()
+        dict['priority'] = self.priority()
+        dict['categories'] = self.categories()
         return dict
 
     def delete(self):
@@ -683,25 +709,48 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        CFG = configobj.ConfigObj(path)
+        fp = open(path, 'rb')
+        lines = fp.read().split('\n')
+        if len(lines) == 1:
+            fp.seek(0)
+            lines = fp.read().split('\r')
+        lines = [line.rstrip('\r\n') for line in lines]
+        fp.close()
+
         try:
-            if int(CFG['__version__']) > int(CONFIG_VERSION):
-                return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
-        except (KeyError, ValueError):
-            CFG['__version__'] = CONFIG_VERSION
-    except configobj.ConfigObjError, strerror:
+            # First try UTF-8 encoding
+            CFG = configobj.ConfigObj(lines, default_encoding='utf-8', encoding='utf-8')
+        except UnicodeDecodeError:
+            # Failed, enable retry
+            CFG = {}
+
+        if not re.search(r'utf[ -]*8', CFG.get('__encoding__', ''), re.I):
+            # INI file is still in 8bit ASCII encoding, so try Latin-1 instead
+            CFG = configobj.ConfigObj(lines, default_encoding='cp1252', encoding='cp1252')
+
+    except (IOError, configobj.ConfigObjError, UnicodeEncodeError), strerror:
         if try_backup:
+            if isinstance(strerror, UnicodeEncodeError):
+                strerror = 'Character encoding of the file is inconsistent'
             return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
         else:
+            # Try backup file
             return _read_config(path, True)
 
-    CFG['__version__'] = CONFIG_VERSION
+    try:
+        version = sabnzbd.misc.int_conv(CFG['__version__'])
+        if version > int(CONFIG_VERSION):
+            return False, "Incorrect version number %s in %s" % (version, path)
+    except (KeyError, ValueError):
+        pass
+
+    CFG.filename = path
+    CFG.encoding = 'utf-8'
+    CFG['__encoding__'] = u'utf-8'
+    CFG['__version__'] = unicode(CONFIG_VERSION)
 
     if 'misc' in CFG:
         compatibility_fix(CFG['misc'])
-
-    if 'rss' in CFG:
-        newzbin_fix(CFG['rss'])
 
     # Use CFG data to set values for all static options
     for section in database:
@@ -771,7 +820,7 @@ def save_config(force=False):
 
     # Check if file is writable
     if not sabnzbd.misc.is_writable(filename):
-        logging.error(Ta('Cannot write to INI file %s'), filename)
+        logging.error(T('Cannot write to INI file %s'), filename)
         return res
 
     # copy current file to backup
@@ -779,8 +828,9 @@ def save_config(force=False):
         shutil.copyfile(filename, bakname)
     except:
         # Something wrong with the backup,
-        logging.warning(Ta('Cannot create backup file for %s'), bakname)
+        logging.error(T('Cannot create backup file for %s'), bakname)
         logging.info("Traceback: ", exc_info = True)
+        return res
 
     # Write new config file
     try:
@@ -788,8 +838,14 @@ def save_config(force=False):
         modified = False
         res = True
     except:
-        logging.error(Ta('Cannot write to INI file %s'), filename)
+        logging.error(T('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info = True)
+        try:
+            os.remove(filename)
+        except:
+            pass
+        # Restore INI file from backup
+        sabnzbd.misc.renamer(bakname, filename)
 
     return res
 
@@ -803,7 +859,11 @@ def define_servers():
     try:
         for server in CFG['servers']:
             svr = CFG['servers'][server]
-            ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+            s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+            if s.fillserver():
+                # One time conversion of backup to priority 1
+                s.priority.set(1)
+                s.fillserver.set(False)
     except KeyError:
         pass
 
@@ -911,7 +971,7 @@ def decode_password(pw, name):
             try:
                 ch = chr( int(pw[n] + pw[n+1], 16) )
             except ValueError:
-                logging.error(Ta('Incorrectly encoded password %s'), name)
+                logging.error(T('Incorrectly encoded password %s'), name)
                 return ''
             decPW += ch
         return decPW
@@ -935,7 +995,7 @@ def validate_octal(value):
         int(value, 8)
         return None, value
     except:
-        return Ta('%s is not a correct octal value') % value, None
+        return T('%s is not a correct octal value') % value, None
 
 
 def validate_no_unc(root, value, default):
@@ -944,15 +1004,19 @@ def validate_no_unc(root, value, default):
     if value and not value.startswith(r'\\'):
         return validate_notempty(root, value, default)
     else:
-        return Ta('UNC path "%s" not allowed here') % value, None
+        return T('UNC path "%s" not allowed here') % value, None
 
 
 def validate_safedir(root, value, default):
-    """ Allow only when queues are empty and no UNC """
+    """ Allow only when queues are empty and no UNC
+        On Windows path should be 80 max
+    """
+    if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) > 80:
+        return T('Error: Path length should be below 80.'), None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:
-        return Ta('Error: Queue not empty, cannot change folder.'), None
+        return T('Error: Queue not empty, cannot change folder.'), None
 
 
 def validate_dir_exists(root, value, default):
@@ -961,7 +1025,7 @@ def validate_dir_exists(root, value, default):
     if os.path.exists(p):
         return None, value
     else:
-        return Ta('Folder "%s" does not exist') % p, None
+        return T('Folder "%s" does not exist') % p, None
 
 
 def validate_notempty(root, value, default):
@@ -996,8 +1060,7 @@ def create_api_key():
 #------------------------------------------------------------------------------
 _FIXES = \
 (
-    ('bandwith_limit', 'bandwidth_limit'),
-    ('enable_par_multicore', 'par2_multicore')
+    ('enable_par_multicore', 'par2_multicore'),
 )
 
 def compatibility_fix(cf):
@@ -1012,10 +1075,3 @@ def compatibility_fix(cf):
                 del cf[old]
             except KeyError:
                 pass
-
-def newzbin_fix(cf):
-    """ Replace old newzbin links """
-    for feed in cf:
-        item = cf[feed].get('uri')
-        if item and 'newzbin.com' in item:
-            cf[feed]['uri'] = item.replace('newzbin.com', 'newzbin2.es')
