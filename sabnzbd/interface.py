@@ -38,6 +38,7 @@ from sabnzbd.misc import real_path, to_units, \
      cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
+from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
                              platform_encode, encode_for_xml
@@ -893,6 +894,7 @@ class HistoryPage(object):
         self.__verbose_list = []
         self.__failed_only = False
         self.__prim = prim
+        self.__edit_rating = None
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -909,6 +911,8 @@ class HistoryPage(object):
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
 
+        history['rating_enable'] = bool(cfg.rating_enable())
+
         postfix = T('B') #: Abbreviation for bytes, as in GB
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
@@ -916,6 +920,12 @@ class HistoryPage(object):
                to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
+
+        for line in history['lines']:
+            if self.__edit_rating is not None and line.get('nzo_id') == self.__edit_rating:
+                line['edit_rating'] = True 
+            else:
+                line['edit_rating'] = '' 
 
         if search:
             history['search'] = escape(search)
@@ -1040,6 +1050,30 @@ class HistoryPage(object):
         del_hist_job(job, del_files=True)
         raise dcRaiser(self.__root, kwargs)
 
+    @cherrypy.expose
+    def show_edit_rating(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        self.__edit_rating = kwargs.get('job');
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def action_edit_rating(self, **kwargs):
+        flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED}    
+        msg = check_session(kwargs)
+        if msg: return msg
+        try:
+            if kwargs.get('send'):
+                video = kwargs.get('video') if kwargs.get('video') != "-" else None 
+                audio = kwargs.get('audio') if kwargs.get('audio') != "-" else None                
+                flag = flag_map.get(kwargs.get('rating_flag'))
+                detail = kwargs.get('expired_host') if kwargs.get('expired_host') != '<Host>' else None
+                if cfg.rating_enable():
+                    Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail) 
+        except:
+            pass
+        self.__edit_rating = None;
+        raise queueRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 class ConfigPage(object):
@@ -1195,7 +1229,14 @@ SWITCH_LIST = \
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail',
-             'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe'
+             'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
+			 'rating_enable', 'rating_api_key', 'rating_feedback', 'rating_filter_enable', 
+             'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
+             'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
+             'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
+             'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
+             'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm', 
+             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords'
              )
 
 #------------------------------------------------------------------------------

@@ -125,6 +125,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                         nzo = None
                     if nzo:
                         nzo_ids.append(add_nzo(nzo))
+                        nzo.update_rating()
         zf.close()
         try:
             if not keep: os.remove(path)
@@ -172,7 +173,6 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         logging.info("Traceback: ", exc_info = True)
         return -2, nzo_ids
 
-
     if name:
         name, cat = name_to_cat(name, catdir)
         # The name is used as the name of the folder, so sanitize it using folder specific santization
@@ -199,6 +199,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     if nzo:
         nzo_ids.append(add_nzo(nzo))
+        nzo.update_rating()
     try:
         if not keep: os.remove(path)
     except:

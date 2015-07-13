@@ -1002,6 +1002,76 @@ tr:hover .history_added { color: black; }
 
 .pointer { cursor: pointer; }
 
+/* ------------------------------- Ratings ------------------------------- */
+.rating_stars_block_r {
+  text-align: right;
+}
+
+.rating_stars_block_c {
+  text-align: center;
+}
+
+.rating_vote_block {
+  float: left;
+}
+
+.rating_stars {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.rating_flag {
+  margin: 4px 10px 0px 85px;
+}
+
+.rating_flag_radio {
+  margin: 5px 15px 5px 5px;
+}
+
+.rating_modal_extra {
+  float: right;
+  width: 330px
+}
+
+.rating_modal_expired {
+  float: right;
+}
+
+.rating_modal_noopt {
+  color: red;
+  margin-left: 10px;
+}
+ 
+.rating_icon_vision {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  background: url('images/vision16.png') no-repeat top center;
+}
+
+.rating_icon_sound {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  background: url('images/sound16.png') no-repeat top center;
+}
+
+.rating_icon_thumbup {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background: url('images/thumbup20.png') no-repeat top center;
+}
+
+.rating_icon_thumbdown {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background: url('images/thumbdown20.png') no-repeat top center;
+}
+
 /* ------------------ MAIN MENU - courtesy jquery superfish plugin w/mods by jbw ---------------- */
 
 #main_menu {
