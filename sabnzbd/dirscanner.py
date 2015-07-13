@@ -120,7 +120,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     try:
                         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
-                        nzo.password = password
+                        if not nzo.password:
+                            nzo.password = password
                     except:
                         nzo = None
                     if nzo:
@@ -183,7 +184,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
-        nzo.password = password
+        if not nzo.password:
+            nzo.password = password
     except TypeError:
         # Duplicate, ignore
         nzo = None
