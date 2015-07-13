@@ -364,11 +364,14 @@ def _api_addlocalfile(name, output, kwargs):
                     res = sabnzbd.dirscanner.ProcessSingleFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
+                logging.info('API-call addlocalfile: "%s" not a proper file name', name)
                 return report(output, _MSG_NO_FILE)
         else:
+            logging.info('API-call addlocalfile: file "%s" not found', name)
             return report(output, _MSG_NO_PATH)
         return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]}, compat=True)
     else:
+        logging.info('API-call addlocalfile: no file name given')
         return report(output, _MSG_NO_VALUE)
 
 
@@ -506,6 +509,7 @@ def _api_addid(names, output, kwargs):
     if len(names) > 0:
         return report(output)
     else:
+        logging.info('API-call addurl: no files retrieved from %s', names)
         return report(output, _MSG_NO_VALUE)
 
 
