@@ -21,7 +21,6 @@ sabnzbd.zconfig - bonjour/zeroconfig support
 
 import os
 import logging
-import socket
 import cherrypy
 
 _HOST_PORT = (None, None)
@@ -86,18 +85,24 @@ def set_bonjour(host=None, port=None):
     else:
         suffix = '.local'
     cherrypy.wsgiserver.redirect_url("https://%s%s:%s/sabnzbd" % (name, suffix, port))
-    refObject = pybonjour.DNSServiceRegister(
-        interfaceIndex = scope,
-        name = 'SABnzbd on %s:%s' % (name, port),
-        regtype = '_http._tcp',
-        domain = domain,
-        host = zhost,
-        port = int(port),
-        txtRecord = pybonjour.TXTRecord({'path': '/sabnzbd/'}),
-        callBack = _zeroconf_callback)
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
-    Thread(target=_bonjour_server, args=(refObject,))
-    _BONJOUR_OBJECT = refObject
+    try:
+        refObject = pybonjour.DNSServiceRegister(
+            interfaceIndex=scope,
+            name='SABnzbd on %s:%s' % (name, port),
+            regtype='_http._tcp',
+            domain=domain,
+            host=zhost,
+            port=int(port),
+            txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/'}),
+            callBack=_zeroconf_callback)
+    except sabnzbd.utils.pybonjour.BonjourError:
+        _BONJOUR_OBJECT = None
+        logging.debug('Failed to start Bonjour service')
+    else:
+        Thread(target=_bonjour_server, args=(refObject,))
+        _BONJOUR_OBJECT = refObject
+        logging.debug('Successfully started Bonjour service')
 
 
 def _bonjour_server(refObject):
