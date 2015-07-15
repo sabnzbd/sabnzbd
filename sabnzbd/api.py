@@ -58,6 +58,7 @@ from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.rating import Rating
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
 import sabnzbd.growler
 import sabnzbd.rss
@@ -270,6 +271,25 @@ def _api_queue_default(output, value, kwargs):
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
+def _api_queue_rating(output, value, kwargs):
+    """ API: accepts output, value(=nzo_id), type, setting, detail """
+    vote_map = {'up': Rating.VOTE_UP, 'down': Rating.VOTE_DOWN}
+    flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED, 'other': Rating.FLAG_OTHER, 'comment': Rating.FLAG_COMMENT}    
+    type = kwargs.get('type')
+    setting = kwargs.get('setting')
+    if value:
+        try:
+            video = setting if type == 'video' and setting != "-" else None
+            audio = setting if type == 'audio' and setting != "-" else None
+            vote = vote_map[setting] if type == 'vote' else None
+            flag = flag_map[setting] if type == 'flag' else None
+            if cfg.rating_enable():
+                Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
+            return report(output)
+        except:
+            return report(output, _MSG_BAD_SERVER_PARMS)
+    else:
+        return report(output, _MSG_NO_VALUE)
 
 #------------------------------------------------------------------------------
 def _api_options(name, output, kwargs):
@@ -873,7 +893,8 @@ _api_queue_table = {
     'pause'                   : (_api_queue_pause, 2) ,
     'resume'                  : (_api_queue_resume, 2),
     'priority'                : (_api_queue_priority, 2),
-    'sort'                    : (_api_queue_sort, 2)
+    'sort'                    : (_api_queue_sort, 2),
+    'rating'                  : (_api_queue_rating, 2)
 }
 
 _api_config_table = {
@@ -1107,6 +1128,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     info['script_list'] = list_scripts()
     info['cat_list'] = list_cats(output is None)
 
+    info['rating_enable'] = bool(cfg.rating_enable())                                                                           
 
     n = 0
     found_active = False
@@ -1275,6 +1297,11 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['active'] = active
             slot['queued'] = queued
 
+            rating = Rating.do.get_rating_by_nzo(nzo_id)
+            slot['has_rating'] = rating is not None
+            if rating:
+                slot['rating_avg_video'] = rating.avg_video
+                slot['rating_avg_audio'] = rating.avg_audio
 
         if (start <= n  and n < start + limit) or not limit:
             slotinfo.append(slot)
@@ -1824,6 +1851,20 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                                  )
         if item['retry']:
             retry_folders.append(path)
+
+        if Rating.do:
+            rating = Rating.do.get_rating_by_nzo(item['nzo_id'])
+        else:
+            rating = None
+        item['has_rating'] = rating is not None
+        if rating:
+            item['rating_avg_video'] = rating.avg_video
+            item['rating_avg_audio'] = rating.avg_audio
+            item['rating_avg_vote_up'] = rating.avg_vote_up
+            item['rating_avg_vote_down'] = rating.avg_vote_down
+            item['rating_user_video'] = rating.user_video
+            item['rating_user_audio'] = rating.user_audio
+            item['rating_user_vote'] = rating.user_vote
 
     total_items += full_queue_size
     fetched_items = len(items)

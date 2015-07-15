@@ -54,6 +54,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, name_fixer
 from sabnzbd.database import get_history_handle
+from sabnzbd.rating import Rating
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
@@ -512,7 +513,7 @@ NzbObjectSaver = (
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
     'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
-    'md5sum', 'servercount', 'unwanted_ext'
+    'md5sum', 'servercount', 'unwanted_ext', 'rating_filtered'
 )
 
 class NzbObject(TryList):
@@ -606,6 +607,7 @@ class NzbObject(TryList):
         self.precheck = False
         self.incomplete = False
         self.unwanted_ext = 0
+        self.rating_filtered = 0
         self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
@@ -1064,6 +1066,8 @@ class NzbObject(TryList):
             prefix += T('INCOMPLETE') + ' / ' #: Queue indicator for incomplete NZB
         if self.unwanted_ext and self.status == 'Paused':
             prefix += T('UNWANTED') + ' / ' #: Queue indicator for unwanted extensions
+        if self.rating_filtered and self.status == 'Paused':
+            prefix += Ta('FILTERED') + ' / ' #: Queue indicator for filtered
         if isinstance(self.wait, float):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
@@ -1101,6 +1105,9 @@ class NzbObject(TryList):
         if self.encrypted:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
+        if self.rating_filtered:
+            # If user resumes after filtered warning, no more auto-pauses
+            self.rating_filtered = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
         self.duplicate = False
         self.oversized = False
@@ -1309,6 +1316,23 @@ class NzbObject(TryList):
                     if tmp_nzf.nzf_id not in nzf_ids:
                         self.files[pos+1] = nzf
                         self.files[pos] = tmp_nzf
+
+	# Determine if rating information (including site identifier so rating can be updated)
+    # is present in metadata and if so store it
+    def update_rating(self):
+        if cfg.rating_enable():
+            try:
+                def _get_first_meta(type):
+                    values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
+                    return values[0] if values else None
+                rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup' ,'votedown', \
+                                'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
+                fields = {}
+                for k in rating_types:
+                    fields[k] = _get_first_meta(k)
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
+            except:
+                pass
 
     ## end nzo.Mutators #######################################################
     ###########################################################################

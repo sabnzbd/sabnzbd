@@ -118,6 +118,16 @@ SKIN_TEXT = {
     'homePage' : TT('Home page'), #: Home page of the SABnzbd project
     'source' : TT('Source'), #: Where to find the SABnzbd sourcecode
     'or' : TT('or'), #: Used in "IRC or IRC-Webaccess"
+    'host' : TT('Host'),
+    'comment' : TT('Comment'),
+    'send' : TT('Send'),
+    'cancel' : TT('Cancel'),
+    'other' : TT('Other'),
+    'report' : TT('Report'),
+    'video' : TT('Video'),
+    'audio' : TT('Audio'),
+    'notUsed' : TT('Not used'),
+    'orLess' : TT('or less'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -250,7 +260,10 @@ SKIN_TEXT = {
     'msg-path' : TT('Path'), #: Path as displayed in History details
     'link-retryAll' : TT('Retry all failed'), #: Retry all failed jobs in History
     'retryNZBs' : TT('Retry All'), #: Retry all button for Retry All Failed Jobs
-
+    'spam' : TT('Virus/spam'),
+    'encrypted' : TT('Passworded'),
+    'expired' : TT('Out of retention'),
+    'otherProblem' : TT('Other problem'),
 
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
@@ -289,6 +302,7 @@ SKIN_TEXT = {
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
+    'oznzb' : TT('OZnzb'),
 
 # Config->General
     'generalConfig' : TT('General configuration'),
@@ -490,6 +504,7 @@ SKIN_TEXT = {
     'swtag-pp' : TT('Post processing'),
     'swtag-naming' : TT('Naming'),
     'swtag-quota' : TT('Quota'),
+    'swtag-indexing' : TT('Indexing'),
     'opt-quota_size' : TT('Size'), #: Size of the download quota
     'explain-quota_size' : TT('How much can be downloaded this month (K/M/G)'),
     'opt-quota_day' : TT('Reset day'), #: Reset day of the download quota
@@ -506,7 +521,25 @@ SKIN_TEXT = {
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless' : TT('When during download it becomes clear that too much data is missing, abort the job'),
-
+    'opt-rating_enable' : TT('Enable OZnzb Integration'),
+    'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
+    'opt-rating_api_key' : TT('Site API Key'),
+    'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
+    'tip-rating_api_key' : TT('Refer to https://www.oznzb.com/profile'),
+    'opt-rating_feedback' : TT('Automatic Feedback'),
+    'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
+    'opt-rating_filter_enable' : TT('Enable Filtering'),
+    'explain-rating_filter_enable' : TT('Action downloads according to filtering rules.'),
+    'opt-rating_filter_abort_if' : TT('Abort If'),
+    'opt-rating_filter_pause_if' : TT('Else Pause If'),
+    'opt-rating_filter_video' : TT('Video rating'),
+    'opt-rating_filter_audio' : TT('Audio rating'),
+    'opt-rating_filter_passworded' : TT('Passworded'),
+    'opt-rating_filter_spam' : TT('Spam'),
+    'opt-rating_filter_confirmed' : TT('Confirmed'),
+    'opt-rating_filter_downvoted' : TT('More thumbs down than up'),
+    'opt-rating_filter_keywords' : TT('Title keywords'),
+    'explain-rating_filter_keywords' : TT('Comma separated list'),
 
 # Config->Server
     'configServer' : TT('Server configuration'), #: Caption
@@ -755,6 +788,7 @@ SKIN_TEXT = {
     'Mobile-left' : TT('Left'),
     'Mobile-confirm-purgeH' : TT('Purge the History?'),
     'Mobile-button-purgeH' : TT('Purge History'),
+
 #Glitter skin
     'Glitter-addNZB' : TT('Add NZB'),
     'Glitter-pause5m' : TT('Pause for 5 minutes'),

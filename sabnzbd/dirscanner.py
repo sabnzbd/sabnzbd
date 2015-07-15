@@ -126,6 +126,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                         nzo = None
                     if nzo:
                         nzo_ids.append(add_nzo(nzo))
+                        nzo.update_rating()
         zf.close()
         try:
             if not keep: os.remove(path)
@@ -201,6 +202,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     if nzo:
         nzo_ids.append(add_nzo(nzo))
+        nzo.update_rating()
     try:
         if not keep: os.remove(path)
     except:

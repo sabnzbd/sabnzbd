@@ -44,6 +44,7 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.encoding import unicoder, is_utf8
+from sabnzbd.rating import Rating
 
 
 #------------------------------------------------------------------------------
@@ -136,6 +137,15 @@ class Assembler(Thread):
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
+                    filter, reason = nzo_filtered_by_rating(nzo)
+                    if filter == 1:
+                        logging.warning(Ta('WARNING: Paused job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        nzo.pause()
+                    elif filter == 2:
+                        logging.warning(Ta('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
+                        import sabnzbd.nzbqueue
+                        sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     nzf.completed = True
             else:
@@ -361,4 +371,40 @@ def rar_contains_unwanted_file(filepath):
             logging.debug('RAR file %s cannot be inspected.', filepath)
     return unwanted
 
-
+def nzo_filtered_by_rating(nzo):
+    if Rating.do and cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):   
+        rating = Rating.do.get_rating_by_nzo(nzo.nzo_id)        
+        if rating is not None:
+            nzo.rating_filtered = 1
+            reason = rating_filtered(rating, nzo.filename.lower(), True)
+            if reason is not None: return (2, reason)
+            reason = rating_filtered(rating, nzo.filename.lower(), False)
+            if reason is not None: return (1, reason)
+    return (0, "")
+    
+def rating_filtered(rating, filename, abort):
+    def check_keyword(keyword):
+        clean_keyword = keyword.strip().lower()
+        return (len(clean_keyword) > 0) and (clean_keyword in filename) 
+    audio = cfg.rating_filter_abort_audio() if abort else cfg.rating_filter_pause_audio()
+    video = cfg.rating_filter_abort_video() if abort else cfg.rating_filter_pause_video()
+    spam = cfg.rating_filter_abort_spam() if abort else cfg.rating_filter_pause_spam()
+    spam_confirm = cfg.rating_filter_abort_spam_confirm() if abort else cfg.rating_filter_pause_spam_confirm()
+    encrypted = cfg.rating_filter_abort_encrypted() if abort else cfg.rating_filter_pause_encrypted()
+    encrypted_confirm = cfg.rating_filter_abort_encrypted_confirm() if abort else cfg.rating_filter_pause_encrypted_confirm()
+    downvoted = cfg.rating_filter_abort_downvoted() if abort else cfg.rating_filter_pause_downvoted()
+    keywords = cfg.rating_filter_abort_keywords() if abort else cfg.rating_filter_pause_keywords()
+    if (video > 0) and (rating.avg_video > 0) and (rating.avg_video <= video):
+        return T('video')
+    if (audio > 0) and (rating.avg_audio > 0) and (rating.avg_audio <= audio):
+        return T('audio')
+    if (spam and ((rating.avg_spam_cnt > 0) or rating.avg_encrypted_confirm)) or (spam_confirm and rating.avg_spam_confirm):
+        return T('spam')
+    if (encrypted and ((rating.avg_encrypted_cnt > 0) or rating.avg_encrypted_confirm)) or (encrypted_confirm and rating.avg_encrypted_confirm):
+        return T('passworded')
+    if downvoted and (rating.avg_vote_up < rating.avg_vote_down):
+        return T('downvoted')
+    if any(check_keyword(k) for k in keywords.split(',')):
+        return T('keywords')
+    return None
+	

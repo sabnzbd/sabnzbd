@@ -78,6 +78,7 @@ from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader
 from sabnzbd.assembler import Assembler
+from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
 import sabnzbd.powersup as powersup
 from sabnzbd.dirscanner import DirScanner,  ProcessArchiveFile, ProcessSingleFile
@@ -320,6 +321,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     DirScanner()
 
+    Rating()
+
     URLGrabber()
 
     scheduler.init()
@@ -352,6 +355,8 @@ def start():
         logging.debug('Starting dirscanner')
         DirScanner.do.start()
 
+        Rating.do.start()
+
         logging.debug('Starting urlgrabber')
         URLGrabber.do.start()
 
@@ -372,6 +377,13 @@ def halt():
         URLGrabber.do.stop()
         try:
             URLGrabber.do.join()
+        except:
+            pass
+
+        logging.debug('Stopping rating')
+        Rating.do.stop()
+        try:
+            Rating.do.join()
         except:
             pass
 
@@ -489,6 +501,7 @@ def save_state(flag=False):
     NzbQueue.do.save()
     BPSMeter.do.save()
     rss.save()
+    Rating.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
     #if flag:
@@ -1031,6 +1044,9 @@ def check_all_tasks():
     if not URLGrabber.do.isAlive():
         logging.info('Restarting crashed urlgrabber')
         URLGrabber.do.__init__()
+    if not Rating.do.isAlive():
+        logging.info('Restarting crashed rating')
+        Rating.do.__init__()        
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()

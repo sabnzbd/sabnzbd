@@ -1075,6 +1075,12 @@ $("a","#multiops_inputs").click(function(e){
     title:function(){return $(this).text();},
     innerWidth:"80%", innerHeight:"300px", initialWidth:"80%", initialHeight:"300px", speed:0, opacity:0.7 });
 
+  // modal for reporting issues  
+  $("#historyTable .modal-report").colorbox({ inline:true,
+    href: function(){return "#report-"+$(this).parent().parent().parent().attr('id');},
+    title:function(){return $(this).text();},
+    innerWidth:"250px", innerHeight:"110px", initialWidth:"250px", initialHeight:"110px", speed:0, opacity:0.7 });
+
   // Build pagination only when needed
   if ($.plush.histPerPage=="1") // disabled history
     $("#history-pagination").html(''); // remove pages if history empty
@@ -1100,6 +1106,55 @@ $("a","#multiops_inputs").click(function(e){
 $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
   }); // end livequery
+
+  $('.user_combo').livequery('change', function(){
+    var nzo_id = $(this).parent().parent().parent().parent().attr('id');
+    var videoAudio = $(this).hasClass('video') ? 'video' : 'audio';
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: videoAudio, setting: $(this).val(), apikey: $.plush.apikey},
+      success: $.plush.RefreshHistory
+    });
+  });
+
+  $('.user_vote').livequery('click', function(){
+    var nzo_id = $(this).parent().parent().parent().attr('id');
+    var upDown = $(this).hasClass('up') ? 'up' : 'down';
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: 'vote', setting: upDown, apikey: $.plush.apikey},
+      success: $.plush.RefreshHistory
+    });
+  });
+
+  $('#history .show_flags').live('click', function(){
+    $('#flag_modal_job').val( $(this).parent().parent().parent().attr('id') );
+    $.colorbox({ inline:true, href:"#flag_modal", title:$(this).text(),
+      innerWidth:"500px", innerHeight:"185px", initialWidth:"500px", initialHeight:"185px", speed:0, opacity:0.7
+    });
+    return false;
+  });
+  $('#flag_modal input:submit').click(function(){
+    var nzo_id = $('#flag_modal_job').val();
+    var flag = $('input[name=rating_flag]:checked', '#flag_modal').val();
+    var expired_host = $('input[name=expired_host]', '#flag_modal').val();
+    var other = $('input[name=other]', '#flag_modal').val();
+    var comment = $('input[name=comment]', '#flag_modal').val();
+    var _detail = (flag == 'comment') ? comment : ((flag == 'other') ? other : expired_host);
+    $.colorbox.close();
+    $.plush.modalOpen=false;
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: 'flag', setting: flag, detail: _detail, apikey: $.plush.apikey},
+      success: $.plush.RefreshHistory
+    });
+  });
 
   }, // end $.plush.InitHistory()
 
@@ -1165,6 +1220,8 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
       $('.left_stats .initial-loading').hide();
       $('#queue').html(result);               // Replace queue contents with queue.tmpl
+      $('#queue .avg_rate').rateit({readonly: true, resetable: false, step: 0.5});
+      $('#queue .avg_rate').each(function() { $(this).rateit('value', $(this).attr('value') / 2); });
 
       if ($.plush.multiOps) // add checkboxes
         $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
@@ -1234,6 +1291,11 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       }
       $('.left_stats .initial-loading').hide();
       $('#history').html(result);               // Replace history contents with history.tmpl
+      $('#history .avg_rate').rateit({readonly: true, resetable: false, step: 0.5});
+      $('#history .avg_rate').each(function() { $(this).rateit('value', $(this).attr('value') / 2); });
+      $('#history .user_combo option').filter(function() {
+        return $(this).attr('value') == $(this).parent().parent().find('input.user_combo').attr('value'); 
+      }).attr('selected', true);
       $('#history-pagination span').removeClass('loading'); // Remove spinner graphic from pagination
     }
   });
