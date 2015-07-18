@@ -380,7 +380,7 @@ def _api_addlocalfile(name, output, kwargs):
                 if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
-                elif get_ext(name) in ('.nzb', '.gz'):
+                elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
                     res = sabnzbd.dirscanner.ProcessSingleFile(\
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:

@@ -859,7 +859,7 @@ def commandline_handler(frozen=True):
     if not service:
         # Get and remove any NZB file names
         for entry in args:
-            if get_ext(entry) in ('.nzb', '.zip','.rar', '.gz'):
+            if get_ext(entry) in ('.nzb', '.zip','.rar', '.gz', '.bz2'):
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
@@ -1599,7 +1599,7 @@ def main():
         logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
 
-    # Upload any nzb/zip/rar/nzb.gz files from file association
+    # Upload any nzb/zip/rar/nzb.gz/nzb.bz2 files from file association
     if upload_nzbs:
         from sabnzbd.utils.upload import add_local
         for f in upload_nzbs:

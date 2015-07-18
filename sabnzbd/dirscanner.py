@@ -25,6 +25,7 @@ import logging
 import re
 import zipfile
 import gzip
+import bz2
 import threading
 
 import sabnzbd
@@ -145,7 +146,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
                       password=None):
     """ Analyse file and create a job from it
-        Supports NZB, NZB.GZ and GZ.NZB-in-disguise
+        Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
         returns (status, nzo_ids)
             status: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
@@ -164,6 +165,10 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             # gzip file or gzip in disguise
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
+        elif (b1 == 'B' and b2 == 'Z'):
+            # bz2 file or bz2 in disguise
+            name = filename.replace('.nzb.bz2', '.nzb')
+            f = bz2.BZ2File(path, 'rb')
         else:
             name = filename
             f = open(path, 'rb')
@@ -316,7 +321,7 @@ class DirScanner(threading.Thread):
                     continue
 
                 ext = os.path.splitext(path)[1].lower()
-                candidate = ext in ('.nzb', '.gz') or ext in VALID_ARCHIVES
+                candidate = ext in ('.nzb', '.gz', '.bz2') or ext in VALID_ARCHIVES
                 if candidate:
                     try:
                         stat_tuple = os.stat(path)
@@ -363,8 +368,8 @@ class DirScanner(threading.Thread):
                         else:
                             self.ignored[path] = 1
 
-                    # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
-                    elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
+                    # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb or .bz2
+                    elif ext == '.nzb' or filename.lower().endswith('.nzb.gz') or filename.lower().endswith('.nzb.bz2'):
                         res, nzo_id = ProcessSingleFile(filename, path, catdir=catdir, url=path)
                         if res < 0:
                             self.suspected[path] = stat_tuple

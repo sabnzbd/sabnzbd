@@ -200,7 +200,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz'):
+                if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
                     res, nzo_ids = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority, \
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False)
                     if res == 0:

@@ -58,7 +58,7 @@ def add_local(f):
         if fn:
             if get_ext(fn) in VALID_ARCHIVES:
                 ProcessArchiveFile(fn, f, keep=True)
-            elif get_ext(fn) in ('.nzb', '.gz'):
+            elif get_ext(fn) in ('.nzb', '.gz', '.bz2'):
                 ProcessSingleFile(fn, f, keep=True)
         else:
             logging.error("Filename not found: %s", f)

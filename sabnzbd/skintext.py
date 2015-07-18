@@ -844,7 +844,7 @@ SKIN_TEXT = {
     'Glitter-deleteJobAndFolders' : TT('Remove NZB & Delete Files'),
     'Glitter-addFromURL' : TT('Fetch NZB from URL'),
     'Glitter-addFromFile' : TT('Upload NZB'),
-    'Glitter-nzbFormats' : TT('Formats: .nzb, .rar, .zip, .gz'),
+    'Glitter-nzbFormats' : TT('Formats: .nzb, .rar, .zip, .gz, .bz2'),
     'Glitter-unpackPassword' : TT('Password for unpacking'),
     'Glitter-submit' : TT('Submit'),
     'Glitter-removeSelected' : TT('Remove all selected files'),
@@ -919,7 +919,7 @@ SKIN_TEXT = {
     'Plush-blockRefresh' : TT('Block Refreshes on Hover'),
     'Plush-fetch' : TT('Fetch'), #: Fetch from URL button in "Add NZB" dialog box
     'Plush-upload' : TT('Upload'), #: Upload button in "Add NZB" dialog box
-    'Plush-uploadTip' : TT('Upload: .nzb .rar .zip .gz'),
+    'Plush-uploadTip' : TT('Upload: .nzb .rar .zip .gz, .bz2'),
     'Plush-addnzb-filename' : TT('Optionally specify a filename'),
     'Plush-progress' : TT('Progress'),
     'Plush-remaining' : TT('Remaining'),

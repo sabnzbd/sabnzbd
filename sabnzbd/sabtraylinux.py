@@ -139,9 +139,10 @@ class StatusIcon(Thread):
         dialog.set_select_multiple(True)
 
         filter = gtk.FileFilter()
-        filter.set_name("*.nbz,*.nbz.gz,*.zip,*.rar")
+        filter.set_name("*.nbz,*.nbz.gz,*.bz2,*.zip,*.rar")
         filter.add_pattern("*.nzb*")
         filter.add_pattern("*.nzb.gz")
+        filter.add_pattern("*.nzb.bz2")
         filter.add_pattern("*.zip")
         filter.add_pattern("*.rar")
         dialog.add_filter(filter)
