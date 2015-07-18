@@ -1317,7 +1317,7 @@ class NzbObject(TryList):
                         self.files[pos+1] = nzf
                         self.files[pos] = tmp_nzf
 
-	# Determine if rating information (including site identifier so rating can be updated)
+        # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
     def update_rating(self):
         if cfg.rating_enable():
@@ -1689,7 +1689,7 @@ def scan_password(name):
     # Look for name/password, but make sure that '/' comes before any {{
     if slash >= 0 and slash < braces and not 'password=' in name:
         return name[:slash].strip('. '), name[slash+1:]
-        
+
     # Look for "name password=password"
     pw = name.find('password=')
     if pw >= 0:
