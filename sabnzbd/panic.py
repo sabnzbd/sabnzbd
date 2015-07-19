@@ -285,4 +285,4 @@ def error_page_404(status, message, traceback, version):
     </head>
     <body><br/></body>
 </html>
-''' % cherrypy.wsgiserver.redirect_url()
+''' % sabnzbd.BROWSER_URL

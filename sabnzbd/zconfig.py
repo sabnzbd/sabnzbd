@@ -84,7 +84,8 @@ def set_bonjour(host=None, port=None):
         suffix = ''
     else:
         suffix = '.local'
-    cherrypy.wsgiserver.redirect_url("https://%s%s:%s/sabnzbd" % (name, suffix, port))
+    if hasattr(cherrypy.wsgiserver, 'redirect_url'):
+        cherrypy.wsgiserver.redirect_url("https://%s%s:%s/sabnzbd" % (name, suffix, port))
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(
