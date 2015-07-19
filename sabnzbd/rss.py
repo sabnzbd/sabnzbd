@@ -682,7 +682,7 @@ def _get_link(uri, entry):
                 try: # nzb.su
                     category = entry.tags[0]['term']
                 except:
-                    try: # nzbmatrix.com
+                    try:
                         category = entry.description
                     except:
                         category = ''

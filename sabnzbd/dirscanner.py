@@ -115,7 +115,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 except:
                     zf.close()
                     return -1, []
-                name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
                 if data:
                     try:

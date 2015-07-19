@@ -600,11 +600,6 @@ def _api_auth(name, output, kwargs):
     return report(output, keyword='auth', data=auth)
 
 
-def _api_newzbin(name, output, kwargs):
-    """ API: accepts output """
-    return report(output, _MSG_NOT_IMPLEMENTED)
-
-
 def _api_restart(name, output, kwargs):
     """ API: accepts output """
     sabnzbd.halt()
@@ -863,7 +858,6 @@ _api_table = {
     'get_scripts'     : (_api_get_scripts, 2),
     'version'         : (_api_version, 1),
     'auth'            : (_api_auth, 1),
-    'newzbin'         : (_api_newzbin, 2),
     'restart'         : (_api_restart, 3),
     'restart_repair'  : (_api_restart_repair, 2),
     'disconnect'      : (_api_disconnect, 2),
