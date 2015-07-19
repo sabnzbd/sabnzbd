@@ -373,7 +373,6 @@ td.name .row-wrap-text {
 td.name .name-ratings {
     display: inline;
     margin-left: 5px;
-    float: right;
     color: black !important;
     text-decoration: none !important;
 }
