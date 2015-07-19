@@ -489,7 +489,7 @@ $(function() {
                         cat:        $('#modal_add_nzb select[name="Category"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val(), 
                         script:     $('#modal_add_nzb select[name="Post-processing"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val(),  
                         priority:   $('#modal_add_nzb select[name="Priority"]').val()=='' ? -100 : $('#modal_add_nzb select[name="Priority"]').val(),  
-                        pp:         $('#modal_add_nzb select[name="Processing"]').val()=='' ? -1 : $('#modal_add_nzb select[name="Processing"]').val(), 
+                        pp:         $('#modal_add_nzb select[name="Processing"]').val()=='' ? -1 : $('#modal_add_nzb select[name="Processing"]').val() 
             }).then(function(r) { 
                 // Hide and reset/refresh
                 self.refresh() 
