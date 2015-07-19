@@ -50,7 +50,10 @@ h2 {
 
 .main-restarting small {
     font-size: 0.7em;
+}
 
+.main-restarting.in span {
+    top: 2px;
 }
 
 
@@ -164,6 +167,15 @@ h2 {
     text-align: center;
 }
 
+.history-table .history-ratings {
+    display: none;
+}
+
+.name-has-ratings .row-wrap-text {
+    max-width: 97% !important;
+}
+
+
 .history-table .delete .dropdown-menu {
     width: 90%;
 }
@@ -175,6 +187,8 @@ h2 {
 .history-status-table .col-sm-2 {
     text-align: left;
 }
+
+
 /**
     MODALS
 **/

@@ -1242,6 +1242,12 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         else:
             slot['avg_age'] = calc_age(average_date, bool(trans))
 
+        rating = Rating.do.get_rating_by_nzo(nzo_id)
+        slot['has_rating'] = rating is not None
+        if rating:
+            slot['rating_avg_video'] = rating.avg_video
+            slot['rating_avg_audio'] = rating.avg_audio
+
         slot['verbosity'] = ""
         if web_dir:
             finished = []
@@ -1296,12 +1302,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['finished'] = finished
             slot['active'] = active
             slot['queued'] = queued
-
-            rating = Rating.do.get_rating_by_nzo(nzo_id)
-            slot['has_rating'] = rating is not None
-            if rating:
-                slot['rating_avg_video'] = rating.avg_video
-                slot['rating_avg_audio'] = rating.avg_audio
 
         if (start <= n  and n < start + limit) or not limit:
             slotinfo.append(slot)

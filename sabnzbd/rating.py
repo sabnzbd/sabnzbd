@@ -191,13 +191,20 @@ class Rating(Thread):
         if flag:
             rating.user_flag = { 'val': int(flag), 'detail': flag_detail }
             rating.changed = rating.changed | Rating.CHANGED_USER_FLAG
-        if vote and not rating.user_vote:
-            rating.user_vote = int(vote)
+        if vote:
             rating.changed = rating.changed | Rating.CHANGED_USER_VOTE
-            if rating.user_vote == Rating.VOTE_UP:
+            if int(vote) == Rating.VOTE_UP:
                 rating.avg_vote_up += 1
+                # Update if already a vote
+                if rating.user_vote and rating.user_vote == Rating.VOTE_DOWN:
+                    rating.avg_vote_down -= 1
             else:
                 rating.avg_vote_down += 1
+                # Update if already a vote
+                if rating.user_vote and rating.user_vote == Rating.VOTE_UP:
+                    rating.avg_vote_up -= 1
+            
+            rating.user_vote = int(vote)
         self.queue.put(indexer_id)
 
     @synchronized(RATING_LOCK)
@@ -260,7 +267,7 @@ class Rating(Thread):
             requests.append(self._flag_request(rating.user_flag.get('val'), rating.user_flag.get('detail'), 0))
         if rating.changed & Rating.CHANGED_AUTO_FLAG:
             requests.append(self._flag_request(rating.auto_flag.get('val'), rating.auto_flag.get('detail'), 1))
-
+        
         try:
             conn = httplib.HTTPSConnection(rating_host)
             for request in filter(lambda r: r is not None, requests):
@@ -276,7 +283,6 @@ class Rating(Thread):
                 elif response.status != httplib.OK:
                     _warn('Ratings server failed to process request (%s, %s)' % (response.status, response.reason))
                     return False
-
             self.ratings[indexer_id].changed = self.ratings[indexer_id].changed & ~rating.changed
             _reset_warn()
             return True
