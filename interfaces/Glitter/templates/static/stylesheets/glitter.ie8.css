@@ -1,0 +1,7 @@
+.history-ratings-report .ratings-report-hidden {
+    display: block !important;
+}
+
+.history-ratings-basic input[type="radio"] {
+    display: block !important;
+}

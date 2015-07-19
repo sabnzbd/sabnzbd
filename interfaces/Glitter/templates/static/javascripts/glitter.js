@@ -1,7 +1,7 @@
 /******
         
         Glitter V1
-        By Safihre (2015)
+        By Safihre (2015) - safihre@sabnzbd.org
         
         Code extended from Shiny-template
         Code examples used from Knockstrap-template
@@ -138,11 +138,13 @@ $(function() {
         self.onQueueFinish     = ko.observable();
         self.speedHistory      = [];
         
-        // Get the speed-limit
-        callAPI({ mode:'get_config', section: 'misc', keyword: 'bandwidth_max' }).then(function(response) {
-            // Set default value if none
+        // Get the speed-limit and server names
+        callAPI({ mode:'get_config' }).then(function(response) {
+            // Set default value if none for bandwidth limit
             if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
             self.bandwithLimit(response.config.misc.bandwidth_max);
+            // Save servers (for reporting functionality of OZnzb)
+            self.servers = response.config.servers;
         })
         
         // Make the speedlimit tekst
@@ -487,7 +489,7 @@ $(function() {
                         cat:        $('#modal_add_nzb select[name="Category"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val(), 
                         script:     $('#modal_add_nzb select[name="Post-processing"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val(),  
                         priority:   $('#modal_add_nzb select[name="Priority"]').val()=='' ? -100 : $('#modal_add_nzb select[name="Priority"]').val(),  
-                        pp:         $('#modal_add_nzb select[name="Processing"]').val()=='' ? -1 : $('#modal_add_nzb select[name="Processing"]').val(), 
+                        pp:         $('#modal_add_nzb select[name="Processing"]').val()=='' ? -1 : $('#modal_add_nzb select[name="Processing"]').val() 
             }).then(function(r) { 
                 // Hide and reset/refresh
                 self.refresh() 
@@ -1209,6 +1211,9 @@ $(function() {
                     return false;
                 })
             },250)
+            
+            // Try to keep open
+            keepOpen(event.target)
         }
 
         // Delete button
@@ -1216,7 +1221,10 @@ $(function() {
 			if(!confirm(glitterTranslate.removeDow1))
 				return;
 
-			callAPI( {mode:'history', name:'delete', del_files:1, value:self.historyStatus.nzo_id()} ).then( function(response) {
+			callAPI( {mode:'history', 
+                      name:'delete', 
+                      del_files:1, 
+                      value: self.nzo_id } ).then( function(response) {
 				if( response.status ) {
 				    // Fade and remove
                     $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
@@ -1227,6 +1235,105 @@ $(function() {
 				}
 			});
 		};
+        
+        // User voting
+        self.setUserVote = function(item, event) {
+            // Send vote
+            callAPI({mode: 'queue',
+                     name: 'rating',
+                     type: 'vote',
+                     setting: $(event.target).val(),
+                     value: self.nzo_id}).then(function(response) {
+                        // Update all info
+                        self.updateAllHistory = true;
+                        parent.parent.refresh()
+                     })
+        }
+        
+        // User rating
+        self.setUserRating = function(item, event) {
+            // Audio or video
+            var changeWhat = 'audio';
+            if($(event.target).attr('name') == 'ratings-video') {
+                changeWhat = 'video';
+            }
+           
+            // Only on user-event, not the auto-fired ones
+            if(!event.originalEvent) return;
+            
+            // Send vote
+            callAPI({mode: 'queue',
+                     name: 'rating',
+                     type: changeWhat,
+                     setting: $(event.target).val(),
+                     value: self.nzo_id}).then(function(response) {
+                        // Update all info
+                        self.updateAllHistory = true;
+                     })
+        }
+        
+        // User comment
+        self.setUserReport = function(form) {
+            // What are we reporting?
+            var userReport = $(form).find('input[name="rating_flag"]:checked').val();
+            var userDetail = '';
+            
+            // Anything selected?
+            if(!userReport) {
+                alert(glitterTranslate.noSelect)
+                return;
+            }
+            
+            // Extra info?
+            if(userReport == 'comment') userDetail = $(form).find('input[name="ratings-report-comment"]').val();
+            if(userReport == 'other') userDetail = $(form).find('input[name="ratings-report-other"]').val();
+            
+            // Exception for servers
+            if(userReport == 'expired') {
+                // Which server?
+                userDetail = $(form).find('select[name="ratings-report-expired-server"]').val();
+                
+                // All?
+                if(userDetail == "") {
+                    // Loop over all servers
+                    $.each(parent.parent.servers, function(index, server) {
+                        // Set timeout because simultanious requests don't work (yet)
+                        setTimeout(function() {
+                            submitUserReport(server.name)
+                        }, index*1500)
+                    })
+                    
+                } else {
+                    // Just the one server
+                    submitUserReport(userDetail)
+                }
+            } else {
+                submitUserReport(userDetail)
+            }
+            
+            // After all, close it
+            form.reset();
+            $(form).parent().parent().dropdown('toggle');
+            alert(glitterTranslate.sendThanks)
+            
+            function submitUserReport(theDetail) {
+                console.log({mode: 'queue',
+                         name: 'rating',
+                         type: 'flag',
+                         setting: userReport,
+                         detail: theDetail,
+                         value: self.nzo_id})
+              // Send note
+                return callAPI({mode: 'queue',
+                         name: 'rating',
+                         type: 'flag',
+                         setting: userReport,
+                         detail: theDetail,
+                         value: self.nzo_id})
+            }
+            
+            return false
+        }
 
         // Update now
 		self.updateFromData( data );
@@ -1592,7 +1699,7 @@ function rewriteTime(timeString) {
 // Keep dropdowns open
 function keepOpen(thisItem) {
     // Onlick so it works for the dynamic items!
-    $(thisItem).siblings('.dropdown-menu').find('input, select, span, div, td').click(function(e) {
+    $(thisItem).siblings('.dropdown-menu').children().click(function(e) {
         e.stopPropagation();
     });
 }
