@@ -88,8 +88,8 @@ class Wizard(object):
         set_language(language)
         sabnzbd.api.clear_trans_cache()
 
-        # Always setup Plush
-        sabnzbd.interface.change_web_dir('Plush - Gold')
+        # Always setup Glitter
+        sabnzbd.interface.change_web_dir('Glitter')
 
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step One')

@@ -263,7 +263,7 @@ class MainPage(object):
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.status = Status(web_dir, root+'status/', prim)
-        if cfg.uniconfig() and web_dirc:
+        if web_dirc and (cfg.uniconfig() or not os.path.exists(os.path.join(web_dir, 'config.tmpl'))):
             self.config = ConfigPage(web_dirc, root+'config/', prim)
         else:
             self.config = ConfigPage(web_dir, root+'config/', prim)

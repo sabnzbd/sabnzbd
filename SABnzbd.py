@@ -394,13 +394,13 @@ def fix_webname(name):
     else:
         xname = ''
     if xname in ('Default', ):
-        return 'Plush'
-    elif xname in ('Plush', 'Mobile'):
+        return 'Glitter'
+    elif xname in ('Glitter', 'Plush', 'Mobile'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
     elif xname in ('Config',):
-        return 'Plush'
+        return 'Glitter'
     else:
         return name
 
