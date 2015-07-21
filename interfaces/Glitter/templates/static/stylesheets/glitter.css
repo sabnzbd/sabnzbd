@@ -1112,6 +1112,13 @@ td.delete label,
 /***
     Dynamic sizing
 ***/
+@media screen and (min-width: 1300px) {
+    .container {
+        width: 90%;
+    }
+}
+
+
 @media screen and (max-width: 1200px) {
     .queue-table td.name:hover .row-wrap-text {
         max-width:85%;
@@ -1126,9 +1133,14 @@ td.delete label,
     
     .queue-table td.name:hover .row-wrap-text {
         max-width:80%;
-    }
+    } 
 }
 
+@media screen and (min-width: 1000px) { 
+    .name-has-ratings .row-wrap-text {
+        max-width: 80% !important;
+    }
+}
 
 @media screen and (min-width: 768px) {
     .modal-small .modal-dialog {
@@ -1139,6 +1151,8 @@ td.delete label,
     .queue .multioperations-selector {
         min-width: 700px;
     }
+    
+    
 }
 
 @media screen and (min-height: 800px) {
@@ -1159,7 +1173,6 @@ and (max-device-width : 1024px)  {
     
     .container {
         width: 100%;
-       
     }
     
     .sparkline-container {
