@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
+<html lang="$active_lang" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
 	<head>
 		<!--
                 Glitter V1
@@ -164,7 +164,7 @@
                     </span>
                     <!-- /ko -->
                     
-                    <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations')">
+                    <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations') &amp; $T('cmenu-sorting')">
                         <span class="glyphicon glyphicon-tasks"></span>
                     </a>
                 </div>
@@ -220,8 +220,8 @@
 							</td>
 							<td class="timeleft" data-bind="text: timeLeft"></td>
 							<td class="delete">
-                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing(), attr: { 'for' : 'multiedit_' + index() }">
-                                    <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="attr: { id: 'multiedit_' + id }, click: parent.addMultiEdit" />
+                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing()">
+                                    <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit" />
                                 </label>
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
                                     <a role="button" href="#" data-toggle="dropdown" onclick="keepOpen(this)">
@@ -275,8 +275,10 @@
                         </label>
                     </div>
                     
-                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown" title="$T('cmenu-sorting')">
-                        <a role="button" href="#" data-toggle="dropdown" class="hoverbutton"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown">
+                        <a role="button" href="#" data-toggle="dropdown" class="hoverbutton">
+                            <span data-toggle="tooltip" data-placement="top" title="$T('cmenu-sorting')" class="glyphicon glyphicon-sort-by-alphabet"></span>
+                        </a>
                         <ul class="dropdown-menu">
                             <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
                             <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
@@ -393,13 +395,13 @@
                                     <ul class="dropdown-menu history-ratings-menu">
                                         <li>
                                             <form class="history-ratings-basic">         
-                                                <label data-bind="attr : { 'for' : 'ratings-up-'+nzo_id }">
-                                                    <input type="radio" value="up" data-bind="attr: { 'id' : 'ratings-up-'+nzo_id, 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 1 }, event: { change: setUserVote }"  />
+                                                <label>
+                                                    <input type="radio" value="up" data-bind="attr: { 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 1 }, event: { change: setUserVote }"  />
                                                     <span class="glyphicon glyphicon-thumbs-up"></span>
                                                     <span data-bind="text: historyStatus.rating_avg_vote_up"></span>
                                                 </label>
-                                                <label data-bind="attr : { 'for' : 'ratings-down-'+nzo_id }">
-                                                    <input type="radio" value="down" data-bind="attr: { 'id' : 'ratings-down-'+nzo_id, 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 2 }, event: { change: setUserVote }" />
+                                                <label>
+                                                    <input type="radio" value="down" data-bind="attr: { 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 2 }, event: { change: setUserVote }" />
                                                     <span class="glyphicon glyphicon-thumbs-down"></span>
                                                     <span data-bind="text: historyStatus.rating_avg_vote_down"></span>
                                                 </label>
@@ -445,22 +447,22 @@
                                         <li>
                                             <form class="history-ratings-report" data-bind="submit: setUserReport"> 
                                                 <strong>$T('report')</strong><br />
-                                                <label data-bind="attr : { 'for' : 'ratings-report-spam-'+nzo_id }">
-                                                    <input type="radio" name="rating_flag" value="spam" data-bind="attr: { 'id' : 'ratings-report-spam-'+nzo_id }" /> $T('spam')
+                                                <label>
+                                                    <input type="radio" name="rating_flag" value="spam" /> $T('spam')
                                                 </label><br />
-                                                <label data-bind="attr : { 'for' : 'ratings-report-encrypted-'+nzo_id }">
-                                                    <input type="radio" name="rating_flag" value="encrypted" data-bind="attr: { 'id' : 'ratings-report-encrypted-'+nzo_id }" /> $T('encrypted')
+                                                <label>
+                                                    <input type="radio" name="rating_flag" value="encrypted" /> $T('encrypted')
                                                 </label><br />
-                                                <label data-bind="attr : { 'for' : 'ratings-report-expired-'+nzo_id }">
-                                                    <input type="radio" name="rating_flag" value="expired" data-bind="attr: { 'id' : 'ratings-report-expired-'+nzo_id }" /> $T('expired')
+                                                <label>
+                                                    <input type="radio" name="rating_flag" value="expired" /> $T('expired')
                                                     <select name="ratings-report-expired-server" class="ratings-report-hidden form-control" data-bind="options: \$parent.servers, optionsText: 'host', optionsValue: 'host', optionsCaption: '$T('nzo-all')'"></select>
                                                 </label><br />
-                                                <label data-bind="attr : { 'for' : 'ratings-report-other-'+nzo_id }">
-                                                    <input type="radio" name="rating_flag" value="other" data-bind="attr: { 'id' : 'ratings-report-other-'+nzo_id }" /> $T('otherProblem')
+                                                <label>
+                                                    <input type="radio" name="rating_flag" value="other" /> $T('otherProblem')
                                                     <input type="text" class="form-control ratings-report-hidden" name="ratings-report-other" />
                                                 </label><br />
-                                                <label data-bind="attr : { 'for' : 'ratings-report-comment-'+nzo_id }">
-                                                    <input type="radio" name="rating_flag" value="comment" data-bind="attr: { 'id' : 'ratings-report-comment-'+nzo_id }" /> $T('comment')
+                                                <label>
+                                                    <input type="radio" name="rating_flag" value="comment" /> $T('comment')
                                                     <input type="text" class="form-control ratings-report-hidden" name="ratings-report-comment" />
                                                 </label><br /> 
                                                 <input type="submit" value="$T('send')" class="btn btn btn-default" />

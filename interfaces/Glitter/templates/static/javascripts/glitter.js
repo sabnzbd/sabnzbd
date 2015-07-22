@@ -254,7 +254,7 @@ $(function() {
 			self.speedMetric( speedSplit[1] );
             
             // Update sparkline data
-			if(self.speedHistory.length >= 200) {
+			if(self.speedHistory.length >= 275) {
                 // Remove first one
                 self.speedHistory.shift();
 			}
@@ -266,7 +266,7 @@ $(function() {
                 // Make sparkline
                 if(self.speedHistory.length == 1) {
                     // Create
-                    $('.sparkline').peity("line", { width: 200, height: 32, fill: '#9DDB72', stroke: '#AAFFAA' })  
+                    $('.sparkline').peity("line", { width: 275, height: 32, fill: '#9DDB72', stroke: '#AAFFAA' })  
                 } else {
                     // Update
                     $('.sparkline').text(self.speedHistory.join(",")).change()   

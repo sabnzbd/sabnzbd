@@ -1112,12 +1112,19 @@ td.delete label,
 /***
     Dynamic sizing
 ***/
-@media screen and (min-width: 1300px) {
+
+/* For large and veryyy large screens */
+@media screen and (min-width: 1500px) {
     .container {
-        width: 90%;
+        width: 1400px;
     }
 }
 
+@media screen and (min-width: 2000px) {
+    .container {
+        width: 1700px;
+    }
+}
 
 @media screen and (max-width: 1200px) {
     .queue-table td.name:hover .row-wrap-text {
@@ -1147,12 +1154,9 @@ td.delete label,
         width: 350px;
     }  
     
-    
     .queue .multioperations-selector {
         min-width: 700px;
     }
-    
-    
 }
 
 @media screen and (min-height: 800px) {
