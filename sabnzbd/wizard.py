@@ -57,6 +57,7 @@ class Wizard(object):
             lng = util.apireg.get_install_lng()
             logging.debug('Installer language code "%s"', lng)
         info['lang'] = lng or cfg.language()
+        info['active_lang'] = info['lang'] 
         info['languages'] = list_languages()
         info['T'] = Ttemplate
 
@@ -96,6 +97,7 @@ class Wizard(object):
         info['number'] = 1
         info['session'] = cfg.api_key()
         info['language'] = cfg.language()
+        info['active_lang'] = info['language']
         info['T'] = Ttemplate
         info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
 
@@ -137,6 +139,7 @@ class Wizard(object):
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Two')
         info['number'] = 2
+        info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
 
         host = cfg.cherryhost()
@@ -183,6 +186,7 @@ class Wizard(object):
         info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()
+        info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
 
         template = Template(file=os.path.join(self.__web_dir, 'three.html'),

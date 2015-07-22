@@ -25,6 +25,7 @@ $(document).ready(function() {
         $('#serverResponse').html(r);
       }
     );
+    return false;
   });
   $(".validate-text").blur(function(){
     if (this.value || this.checked){

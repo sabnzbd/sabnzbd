@@ -1,27 +1,23 @@
 body {
-  font-size:13px;
-  font-family: sans-serif;
-  background:#DEDEAF;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+  background-color: #E4E4E4;
   padding-left:5%;
   padding-right:5%;
   padding-bottom:10px;
   text-align:center;
 }
 
-#page {
-  /*background-color: #ccc;*/
-  /*margin:30px;*/
-  border: 1px solid #000;
-  text-align:left;
-  padding:8px;
-  background-color: #fff;
+.container {
+    max-width:  1000px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    text-align: left;
 }
 
 #inner {
   background-color: #fff;
   padding:4px 32px 20px 32px;
   /*margin:5px;*/
-  border: 1px dotted #999966;
 }
 #content {
   min-height:520px;
@@ -34,17 +30,6 @@ body {
   margin-bottom:-40px;
 }
 
-hr {
-  color:#fff;
-  background-color:#fff;
-  border: 1px dotted #ccc;
-  border-style:none none dotted;
-}
-
-.container {
-  width:700px;
-  margin: 0px auto;
-}
 
 .language {
   width:175px;
@@ -60,13 +45,21 @@ hr {
   clear: left;
 }
 
-.inline{display:inline;}
+.spacer {
+    clear: both;
+}
+
+.inline{
+    display:inline;
+}
 
 
 .quoteBlock {
-  padding:5px;
-  border: 1px dotted #000;
+  padding:8px;
+  border: 1px solid #ccc;
+  margin-top: 1px;
   background-color:#f5f5f5;
+  cursor:  default;
 }
 
 .success {
@@ -94,19 +87,23 @@ hr {
   padding-left:10px;
 }
 
-
-.label {
-  text-align: left;
-  width: 100px;
-  padding-right: 20px;
-  padding-left:10px;
+label {
+    cursor: pointer;
+    text-align: left;
+    padding-right: 20px;
+    padding-left: 0px !important;
+    color: black !important;
+    font-size: 1em !important;
+    line-height: 2em !important;
 }
+
 
 #serverDetails .label{
   display: block;
-  width: 100px;
+  width: 130px;
   float: left;
   margin-bottom: 15px;
+  text-align: left;
 }
 #serverDetails input {
   /*width: 150px;*/
@@ -137,18 +134,18 @@ h1,h2 {
 }
 
 .unselected {
-  padding:1px 5px 1px 5px;
-  border: 1px solid red;
+  padding:6px 10px 6px 10px;
+  border: 1px solid #636363;
   margin-left:8px;
   margin-right:8px;
-  color:red;
+  color:#636363;
 }
 
 .selected {
-  padding:1px 5px 1px 5px;
+  padding:6px 10px 6px 10px;
   color: white;
-  background-color:red;
-  border: 1px solid red;
+  background-color:#636363;
+  border: 1px solid #636363;
   margin-left:8px;
   margin-right:8px;
 }
@@ -200,14 +197,9 @@ h1,h2 {
   width:230px;
 }
 .text-input-thin{
-  width:50px;
+  width:70px;
 }
 /*Fix for inputs messing up when adding a class in chrome */
-.clearinput
-{
-  margin-bottom:6px;
-}
-
 .disabled-text {
   text-decoration: line-through;
   color:#ccc;
@@ -219,16 +211,8 @@ h1,h2 {
   display:inline;
 }
 
-.skin-select {
-  height:190px;
-}
-
-.skin-select img{
-  cursor: pointer;
-}
-
-.skin-select-plush img{
-  margin-top:30px;
+#host-tip {
+    margin-bottom: 5px;
 }
 
 .tips {
@@ -240,4 +224,17 @@ h1,h2 {
 .error-text {
   display:inline;
   color:red;
+}
+
+
+/***
+    Bootstrap overwrites
+***/
+
+* {
+    border-radius: 0 !important;
+}
+
+.btn .glyphicon {
+    top: 2px;
 }

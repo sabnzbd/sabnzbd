@@ -1,6 +1,6 @@
 function complete(){
   $(".hidden").fadeIn("slow");
-  $(".disabled").removeAttr('disabled');
+  $(".disabled").addClass('btn-success').removeClass('btn-default').removeClass('disabled');
   $('#restarting').addClass("hidden");
   $('#complete').removeClass("hidden");
   $('#tips').removeClass("hidden");
