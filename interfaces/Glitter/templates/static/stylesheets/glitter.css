@@ -871,10 +871,17 @@ td.delete label,
     margin-bottom: 1em;
 }
 
-#modal_options legend label {
+#modal_options legend label,
+#modal_options legend a {
     float: right;
     font-size: 1.5rem;
     margin-top: 5px;
+}
+
+#modal_options legend a {
+    font-size: 1.4rem;
+    margin-right: 8px;
+    font-weight: bold;
 }
 
 #modal_options .modal-header a {

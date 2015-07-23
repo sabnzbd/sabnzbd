@@ -841,6 +841,7 @@ SKIN_TEXT = {
     'Glitter-unblockServer' : TT('Unblock'),
     'Glitter-orphanedJobs' : TT('Orphaned jobs'),
     'Glitter-backToQueue' : TT('Send back to queue'),
+    'Glitter-purgeOrphaned' : TT('Delete All'),
     'Glitter-deleteJobAndFolders' : TT('Remove NZB & Delete Files'),
     'Glitter-addFromURL' : TT('Fetch NZB from URL'),
     'Glitter-addFromFile' : TT('Upload NZB'),

@@ -567,6 +567,19 @@ $(function() {
                 $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration /*, function() {self.loadStatusInfo()}*/)
     		})
         }
+        
+        // Abandoned folder deletion of all
+        self.removeAllOrphaned = function() {
+            if ( !confirm(glitterTranslate.clearWarn) )
+				return;
+                
+            // Do them all
+            ko.utils.arrayForEach(self.statusInfo.status.folders(), function(folder) {
+                callSpecialAPI("status/delete", { name: folder.folder() })
+            });
+            // Refresh
+            self.loadStatusInfo()
+        }
       
         // SABnzb options
         self.shutdownSAB = function() { 
