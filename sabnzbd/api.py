@@ -487,7 +487,7 @@ def _api_history(name, output, kwargs):
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                to_units(grand), to_units(month), to_units(week), to_units(day)
-        history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search, failed_only=failed_only)
+        history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search, failed_only=failed_only, output=output)
         return report(output, keyword='history', data=remove_callable(history))
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -1730,7 +1730,13 @@ def build_header(prim, webdir='', search=None):
 
 #------------------------------------------------------------------------------
 
-def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0):
+def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
+                  output=None):
+
+    if output:
+        converter = unicoder
+    else:
+        converter = xml_name
 
     if not verbose_list:
         verbose_list = []
@@ -1822,6 +1828,11 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     retry_folders = []
     for item in items:
+        for key in item:
+            value= item[key]
+            if isinstance(value, basestring):
+                item[key] = converter(value)
+
         if details_show_all:
             item['show_details'] = 'True'
         else:
