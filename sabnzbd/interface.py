@@ -2331,8 +2331,8 @@ class Status(object):
 
         header['lastmail'] = None # Obsolete, keep for compatibility
 
-        header['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
-        header['configfn'] = config.get_filename()
+        header['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
+        header['configfn'] = xml_name(config.get_filename())
 
         # Dashboard: Begin
         from utils.getipaddress import localipv4, publicipv4, ipv6
