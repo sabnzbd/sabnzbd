@@ -75,7 +75,7 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class']
+           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class', 'redirect_url']
 
 import os
 try:
@@ -97,6 +97,7 @@ except ImportError:
     import StringIO
 DEFAULT_BUFFER_SIZE = -1
 
+REDIRECT_URL = None  # Application can write its HTTP-->HTTPS redirection URL here
 
 class FauxSocket(object):
 
@@ -166,6 +167,12 @@ FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
 
 import errno
+
+def redirect_url(url=None):
+    global REDIRECT_URL
+    if url and '%s' in url:
+        REDIRECT_URL = url
+    return REDIRECT_URL
 
 
 def plat_specific_errors(*errnames):
@@ -881,6 +888,9 @@ class HTTPRequest(object):
                "Content-Length: %s\r\n" % len(msg),
                "Content-Type: text/plain\r\n"]
 
+        if status[:3] in ("301",):
+            buf.append("Location: %s" % msg)
+
         if status[:3] in ("413", "414"):
             # Request Entity Too Large / Request-URI Too Long
             self.close_connection = True
@@ -1394,10 +1404,13 @@ class HTTPConnection(object):
                 # Unwrap our wfile
                 self.wfile = CP_fileobject(
                     self.socket._sock, "wb", self.wbufsize)
-                req.simple_response(
-                    "400 Bad Request",
-                    "The client sent a plain HTTP request, but "
-                    "this server only speaks HTTPS on this port.")
+                if REDIRECT_URL:
+                    req.simple_response("301 Moved Permanently", REDIRECT_URL % self.remote_addr)
+                else:
+                    req.simple_response(
+                        "400 Bad Request",
+                        "The client sent a plain HTTP request, but "
+                        "this server only speaks HTTPS on this port.")
                 self.linger = True
         except Exception:
             e = sys.exc_info()[1]
