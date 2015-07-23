@@ -52,8 +52,8 @@ except:
     sys.exit(1)
 
 import cherrypy
-if not cherrypy.__version__.startswith("3.2"):
-    print "Sorry, requires Python module Cherrypy 3.2 (use the included version)"
+if [int(n) for n in cherrypy.__version__.split('.')] < [3, 2, 2]:
+    print 'Sorry, requires Python module Cherrypy 3.2.2+ (use the included version)'
     sys.exit(1)
 
 from cherrypy import _cpserver
