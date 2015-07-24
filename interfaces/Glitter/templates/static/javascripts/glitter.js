@@ -481,11 +481,13 @@ $(function() {
         self.addNZBFromFileForm = function(form) {
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
             form.reset()
+            $('#nzbname').val('')
         }
         self.addNZBFromURL = function(form) {
             // Add 
             callAPI({   mode:       "addid", 
                         name:       $(form.nzbURL).val(), 
+                        nzbname:    $('#nzbname').val(), 
                         cat:        $('#modal_add_nzb select[name="Category"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val(), 
                         script:     $('#modal_add_nzb select[name="Post-processing"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val(),  
                         priority:   $('#modal_add_nzb select[name="Priority"]').val()=='' ? -100 : $('#modal_add_nzb select[name="Priority"]').val(),  
@@ -495,6 +497,7 @@ $(function() {
                 self.refresh() 
                 $("#modal_add_nzb").modal("hide");
                 form.reset()
+                $('#nzbname').val('')
             });
             
         }
@@ -503,6 +506,7 @@ $(function() {
             var data = new FormData();
     		data.append("name",       file);
     		data.append("mode",       "addfile");
+            data.append("nzbname",    $('#nzbname').val());
     		data.append("cat",        $('#modal_add_nzb select[name="Category"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val());    // Default category
     		data.append("script",     $('#modal_add_nzb select[name="Post-processing"]').val()=='' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val()); // Default script
     		data.append("priority",   $('#modal_add_nzb select[name="Priority"]').val()=='' ? -100 : $('#modal_add_nzb select[name="Priority"]').val());  // Default priority
@@ -516,7 +520,7 @@ $(function() {
                         contentType: false, 
                         data: data }).then(function(r) { 
                             // Hide and reset/refresh
-                            self.refresh()
+                            self.refresh();
                             $("#modal_add_nzb").modal("hide"); 
                         });
             
@@ -529,18 +533,18 @@ $(function() {
                     
             // Load the custom status info
             callSpecialAPI('status/').then(function(data) { 
-                    // Already exists?
-                    if(self.hasStatusInfo()) {
-                        ko.mapping.fromJS(ko.utils.parseJson(data), self.statusInfo);
-                    } else {
-                        self.statusInfo = ko.mapping.fromJS(ko.utils.parseJson(data));
-                    }
-                    // Show again
-                    self.hasStatusInfo(true)
-                    
-                    // Add tooltips again
-                    if(!iOS) $('#modal_options [data-toggle="tooltip"]').tooltip()
-                });
+                // Already exists?
+                if(self.hasStatusInfo()) {
+                    ko.mapping.fromJS(ko.utils.parseJson(data), self.statusInfo);
+                } else {
+                    self.statusInfo = ko.mapping.fromJS(ko.utils.parseJson(data));
+                }
+                // Show again
+                self.hasStatusInfo(true)
+                
+                // Add tooltips again
+                if(!iOS) $('#modal_options [data-toggle="tooltip"]').tooltip()
+            });
             
         }
         
@@ -556,7 +560,9 @@ $(function() {
         
         // Unblock server
         self.unblockServer = function(servername) {
-            callSpecialAPI("status/unblock_server",{ server: servername }).then(function() {$("#modal_options").modal("hide");}) 
+            callSpecialAPI("status/unblock_server",{ server: servername }).then(function() {
+                $("#modal_options").modal("hide");
+            }) 
         }
         
         // Abandoned folder processing
@@ -564,7 +570,11 @@ $(function() {
             // Activate
             callSpecialAPI("status/" + $(b.currentTarget).data('action'), {name: $(b.currentTarget).data('folder') }).then(function() {
                 // Remove item and load status data
-                $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration /*, function() {self.loadStatusInfo()}*/)
+                $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
+                // Pop from list
+                self.statusInfo.status.folders.remove(function(item) { 
+                    return item.folder() == $(b.currentTarget).data('folder') 
+                })
     		})
         }
         
@@ -1024,7 +1034,6 @@ $(function() {
         self.downloadedMonth = ko.observable();
         self.downloadedTotal = ko.observable();
 
-        
         // Update function for history list
 		self.updateFromData = function( data ) {
             /***

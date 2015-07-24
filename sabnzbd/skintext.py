@@ -845,6 +845,7 @@ SKIN_TEXT = {
     'Glitter-deleteJobAndFolders' : TT('Remove NZB & Delete Files'),
     'Glitter-addFromURL' : TT('Fetch NZB from URL'),
     'Glitter-addFromFile' : TT('Upload NZB'),
+    'Glitter-addnzbFilename' : TT('Optionally specify a filename'),
     'Glitter-nzbFormats' : TT('Formats: .nzb, .rar, .zip, .gz, .bz2'),
     'Glitter-unpackPassword' : TT('Password for unpacking'),
     'Glitter-submit' : TT('Submit'),

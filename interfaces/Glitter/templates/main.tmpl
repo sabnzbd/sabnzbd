@@ -41,7 +41,7 @@
 	</head>
 	<body>
 		<div class="container main-navbar">         
-			<nav class="navbar navbar-inverse main-navbar" role="navigation">
+			<nav class="navbar navbar-inverse main-navbar">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
 						<span class="icon-bar"></span>
@@ -53,7 +53,9 @@
                     
 					<div class="btn-group">
 						<div class="btn-group">
-							<button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle"><span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span></button>
+							<button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
+                                <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
+                            </button>
 							<button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
 								<span class="caret"></span>
 							</button>
@@ -91,7 +93,6 @@
                                                 $T('Glitter-setMaxLinespeed')
                                             </a>
                                         </div>
-                                        
                                         <div data-bind="visible: bandwithLimit()">
                                             <div class="max-speed-slider" data-bind="slider: speedLimit, sliderOptions: {min: 1, max: 100, range: 'min', step: 1}"></div>
                                             <span data-bind="text: speedLimit() + '%'"></span> (<span data-bind="text: speedLimitText"></span>)
@@ -180,7 +181,8 @@
 							<th style="width: 60px;"></th>
 						</tr>
 					</thead>
-					<tbody class="nodownloads" data-bind="visible: !hasQueue()" style="display: none;">
+                    <!-- ko if: !hasQueue() -->
+					<tbody class="nodownloads">
                         <tr>
                             <td colspan="5">
                                 <a href="#modal_add_nzb" title="$T('Glitter-dragAndDrop')" class="hoverbutton" data-toggle="modal">
@@ -188,9 +190,12 @@
                             </td>
                         </tr>
                     </tbody>
+                    <!-- /ko -->
 					<tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
 						<tr class="queueitem">
-							<td><a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }">&nbsp;</a></td>
+							<td>
+                                <a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">&nbsp;</a>
+                            </td>
 							<td class="name">
                                 <div class="row-wrap-text" data-bind="visible: !editingName()">
                                     <span data-bind="text: name, attr: { 'title': name() }"></span>
@@ -409,7 +414,7 @@
                                                 <label>
                                                     <span class="glyphicon glyphicon-facetime-video"></span>
                                                     <select name="ratings-video" data-bind="value: historyStatus.rating_user_video, event: { change: setUserRating }, disable: historyStatus.rating_user_video">
-                                                        <option value=""></option>
+                                                        <option value="">&nbsp;</option>
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
@@ -425,7 +430,7 @@
                                                 <label>
                                                     <span class="glyphicon glyphicon-volume-up"></span>
                                                     <select name="ratings-audio" data-bind="value: historyStatus.rating_user_audio, event: { change: setUserRating }, disable: historyStatus.rating_user_audio">
-                                                        <option value=""></option>
+                                                        <option value="">&nbsp;</option>
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
