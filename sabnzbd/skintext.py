@@ -80,6 +80,11 @@ SKIN_TEXT = {
     'prowl-high'         : TT('High'), #: Prowl priority
     'prowl-emergency'    : TT('Emergency'), #: Prowl priority
 
+    'pushover-off'       : TT('Off'), #: Prowl priority
+    'pushover-low'       : TT('Low'), #: Prowl priority
+    'pushover-high'      : TT('High'), #: Prowl priority
+    'pushover-confirm'   : TT('Confirm'), #: Prowl priority
+
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
     'none' : TT('None'), #: No value, used in dropdown menus
@@ -659,6 +664,16 @@ SKIN_TEXT = {
     'opt-prowl_apikey' : TT('API key for Prowl'), #: Prowl settings
     'explain-prowl_apikey' : TT('Personal API key for Prowl (required)'), #: Prowl settings
 
+    'section-Pushover' : TT('Pushover'), #: Header for Pushover notification section
+    'opt-pushover_enable' : TT('Enable Pushover notifications'), #: Pushover settings
+    'explain-pushover_enable' : TT('Requires a Pushover account'), #: Pushoversettings
+    'opt-pushover_token' : TT('Application Token'), #: Pushover settings
+    'explain-pushover_token' : TT('Application token (required)'), #: Pushover settings
+    'opt-pushover_userkey' : TT('User Key'), #: Pushover settings
+    'explain-pushover_userkey' : TT('User Key (required)'), #: Pushover settings
+    'opt-pushover_device' : TT('Device(s)'), #: Pushover settings
+    'explain-pushover_device' : TT('Device(s) to which message should be sent'), #: Pushover settings
+
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
@@ -798,7 +813,7 @@ SKIN_TEXT = {
     'Glitter-pause3h' : TT('Pause for 3 hours'),
     'Glitter-pause6h' : TT('Pause for 6 hours'),
     'Glitter-setMaxLinespeed' : TT('Set maximum line speed in configuration'),
-    'Glitter-left' : TT('left'), 
+    'Glitter-left' : TT('left'),
     'Glitter-quota' : TT('quota'),
     'Glitter-free' : TT('Free Space'),
     'Glitter-search' : TT('Search'),
@@ -835,7 +850,7 @@ SKIN_TEXT = {
     'Glitter-downloadDirSpeed' : TT('Download folder speed'),
     'Glitter-completeDirSpeed' : TT('Complete folder speed'),
     'Glitter-repeatTest' : TT('Repeat test'),
-    'Glitter-articles' : TT('articles'),  
+    'Glitter-articles' : TT('articles'),
     'Glitter-repairQueue' : TT('Queue repair'),
     'Glitter-showActiveConnections' : TT('Show active connections'),
     'Glitter-unblockServer' : TT('Unblock'),

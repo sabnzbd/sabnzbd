@@ -2756,6 +2756,11 @@ LIST_PROWL = ('prowl_enable', 'prowl_apikey',
               'prowl_prio_startup', 'prowl_prio_download', 'prowl_prio_pp', 'prowl_prio_complete', 'prowl_prio_failed',
               'prowl_prio_disk_full', 'prowl_prio_warning', 'prowl_prio_error', 'prowl_prio_queue_done', 'prowl_prio_other'
              )
+LIST_PUSHOVER = ('pushover_enable', 'pushover_token', 'pushover_userkey', 'pushover_device',
+              'pushover_prio_startup', 'pushover_prio_download', 'pushover_prio_pp', 'pushover_prio_complete', 'pushover_prio_failed',
+              'pushover_prio_disk_full', 'pushover_prio_warning', 'pushover_prio_error', 'pushover_prio_queue_done', 'pushover_prio_other'
+              )
+
 
 class ConfigNotify(object):
     def __init__(self, web_dir, root, prim):
@@ -2786,6 +2791,8 @@ class ConfigNotify(object):
                 logging.debug('MISSING KW=%s', kw)
         for kw in LIST_PROWL:
             conf[kw] = config.get_config('prowl', kw)()
+        for kw in LIST_PUSHOVER:
+            conf[kw] = config.get_config('pushover', kw)()
         for kw in LIST_NCENTER:
             conf[kw] = config.get_config('ncenter', kw)()
         for kw in LIST_NTFOSD:
@@ -2820,6 +2827,10 @@ class ConfigNotify(object):
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_PROWL:
             msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_PUSHOVER:
+            msg = config.get_config('pushover', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 

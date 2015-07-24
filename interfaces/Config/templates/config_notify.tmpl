@@ -390,6 +390,132 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+
+	<div class="section" id="pushover">
+		<div class="col2">
+			<h3>$T('section-Pushover')</h3>
+		</div><!-- /col2 -->
+		<div class="col1">
+			<fieldset>
+				<div class="field-pair alt" >
+					<label class="config" for="pushover_enable">$T('opt-pushover_enable')</label>
+					<input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if int($pushover_enable) > 0 then 'checked="checked"' else ""#--> />
+					<span class="desc">$T('explain-pushover_enable')</span>
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushover_apikey">$T('opt-pushover_token')</label>
+					<input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" size="50" />
+					<span class="desc">$T('explain-pushover_token')</span>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_userkey">$T('opt-pushover_userkey')</label>
+					<input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" size="50" />
+					<span class="desc">$T('explain-pushover_userkey')</span>
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushover_device">$T('opt-pushover_device')</label>
+					<input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" size="50" />
+					<span class="desc">$T('explain-pushover_device')</span>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_prio_startup">$T($notify_texts['startup'])</label>
+					<select name="pushover_prio_startup" id="pushover_prio_startup">
+						<option value="-2" <!--#if $pushover_prio_startup == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_startup == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_startup == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_startup == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+				<div class="field-pair">
+					<label class="config" for="pushover_prio_download">$T($notify_texts['download'])</label>
+					<select name="pushover_prio_download" id="pushover_prio_download">
+						<option value="-2" <!--#if $pushover_prio_download == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_download == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_download == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_download == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_prio_pp">$T($notify_texts['pp'])</label>
+					<select name="pushover_prio_pp" id="pushover_prio_pp">
+						<option value="-2" <!--#if $pushover_prio_pp == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_pp == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_pp == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_pp == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+				<div class="field-pair">
+					<label class="config" for="pushover_prio_complete">$T($notify_texts['complete'])</label>
+					<select name="pushover_prio_complete" id="pushover_prio_complete">
+						<option value="-2" <!--#if $pushover_prio_complete == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_complete == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_complete == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_complete == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_prio_failed">$T($notify_texts['failed'])</label>
+					<select name="pushover_prio_failed" id="pushover_prio_failed">
+						<option value="-2" <!--#if $pushover_prio_failed == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_failed == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_failed == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_failed == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushover_prio_queue_done">$T($notify_texts['queue_done'])</label>
+					<select name="pushover_prio_queue_done" id="pushover_prio_queue_done">
+						<option value="-2" <!--#if $pushover_prio_queue_done == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_queue_done == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_queue_done == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_queue_done == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_prio_disk_full">$T($notify_texts['disk_full'])</label>
+					<select name="pushover_prio_disk_full" id="pushover_prio_disk_full">
+						<option value="-2" <!--#if $pushover_prio_disk_full == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_disk_full == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_disk_full == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_disk_full == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+				<div class="field-pair">
+					<label class="config" for="pushover_prio_warning">$T($notify_texts['warning'])</label>
+					<select name="pushover_prio_warning" id="pushover_prio_warning">
+						<option value="-2" <!--#if $pushover_prio_warning == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_warning == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_warning == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_warning == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushover_prio_error">$T($notify_texts['error'])</label>
+					<select name="pushover_prio_error" id="pushover_prio_error">
+						<option value="-2" <!--#if $pushover_prio_error == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_error == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_error == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_error == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushover_prio_other">$T($notify_texts['other'])</label>
+					<select name="pushover_prio_other" id="pushover_prio_other">
+						<option value="-2" <!--#if $pushover_prio_other == -2 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-1" <!--#if $pushover_prio_other == -1 then 'selected="selected" class="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="1"  <!--#if $pushover_prio_other == 1  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-high')</option>
+						<option value="2"  <!--#if $pushover_prio_other == 2  then 'selected="selected" class="selected"' else ""#--> >$T('pushover-confirm')</option>
+					</select>
+			   </div>
+
+                 <div class="field-pair">
+                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <input type="button" value="$T('testNotify')" id="test_pushover" />
+                    <span id="testpushover-result" class="icon path darkred">&nbsp;</span>
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
     <div class="padding alt">
         <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
         <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
@@ -444,6 +570,30 @@
                   \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
                 } else {
                   \$('#testnotice-result').addClass("failure").html(data.error);
+                }
+            }
+        });
+    });
+    \$('#test_pushover').click(function () {
+        var data = { mode: 'test_pushover', apikey: '$session', output: 'json' };
+	\$("#pushover").extractFormDataTo(data);
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: data,
+            beforeSend: function () {
+                \$('#test_pushover').attr("disabled", "disabled");
+                \$('#testpushover-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+            },
+            complete: function () {
+                \$('#test_pushover').removeAttr("disabled");
+                \$('#testpushover-result').removeClass("loading");
+            },
+            success: function (data) {
+                if (data.status == true) {
+                  \$('#testpushover-result').addClass("success").html('$T('smpl-notesent')');
+                } else {
+                  \$('#testpushover-result').addClass("failure").html(data.error);
                 }
             }
         });

@@ -274,7 +274,7 @@ def _api_queue_default(output, value, kwargs):
 def _api_queue_rating(output, value, kwargs):
     """ API: accepts output, value(=nzo_id), type, setting, detail """
     vote_map = {'up': Rating.VOTE_UP, 'down': Rating.VOTE_DOWN}
-    flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED, 'other': Rating.FLAG_OTHER, 'comment': Rating.FLAG_COMMENT}    
+    flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED, 'other': Rating.FLAG_OTHER, 'comment': Rating.FLAG_COMMENT}
     type = kwargs.get('type')
     setting = kwargs.get('setting')
     if value:
@@ -718,6 +718,12 @@ def _api_test_prowl(name, output, kwargs):
     res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+def _api_test_pushover(name, output, kwargs):
+    """ API: send a test Pushover notification, return result """
+    logging.info("Sending Pushover notification")
+    res = sabnzbd.growler.send_pushover('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    return report(output, error=res)
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -875,6 +881,7 @@ _api_table = {
     'test_notif'      : (_api_test_notif, 2),
     'test_growl'      : (_api_test_growl, 2),
     'test_osd'        : (_api_test_osd, 2),
+    'test_pushover'   : (_api_test_pushover, 2),
     'test_prowl'      : (_api_test_prowl, 2)
 }
 
@@ -1122,7 +1129,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     info['script_list'] = list_scripts()
     info['cat_list'] = list_cats(output is None)
 
-    info['rating_enable'] = bool(cfg.rating_enable())                                                                           
+    info['rating_enable'] = bool(cfg.rating_enable())
 
     n = 0
     found_active = False

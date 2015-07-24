@@ -310,6 +310,23 @@ prowl_prio_error = OptionNumber('prowl', 'prowl_prio_error', -3)
 prowl_prio_queue_done = OptionNumber('prowl', 'prowl_prio_queue_done', 0)
 prowl_prio_other = OptionNumber('prowl', 'prowl_prio_other', -3)
 
+# [pushover]
+pushover_token = OptionStr('pushover', 'pushover_token')
+pushover_userkey = OptionStr('pushover', 'pushover_userkey')
+pushover_device = OptionStr('pushover', 'pushover_device')
+pushover_enable = OptionBool('pushover', 'pushover_enable')
+pushover_prio_startup = OptionNumber('pushover', 'pushover_prio_startup', -2)
+pushover_prio_download = OptionNumber('pushover', 'pushover_prio_download', -2)
+pushover_prio_pp = OptionNumber('pushover', 'pushover_prio_pp', -2)
+pushover_prio_complete = OptionNumber('pushover', 'pushover_prio_complete', 1)
+pushover_prio_failed = OptionNumber('pushover', 'pushover_prio_failed', 1)
+pushover_prio_disk_full = OptionNumber('pushover', 'pushover_prio_disk_full', 1)
+pushover_prio_warning = OptionNumber('pushover', 'pushover_prio_warning', -2)
+pushover_prio_error = OptionNumber('pushover', 'pushover_prio_error', -2)
+pushover_prio_queue_done = OptionNumber('pushover', 'pushover_prio_queue_done', -1)
+pushover_prio_other = OptionNumber('pushover', 'pushover_prio_other', -2)
+
+
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')
 quota_resume = OptionBool('misc', 'quota_resume', False)

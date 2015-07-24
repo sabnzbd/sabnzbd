@@ -25,6 +25,8 @@ import os.path
 import logging
 import socket
 import urllib2
+import httplib
+import urllib
 import time
 import subprocess
 from threading import Thread
@@ -139,6 +141,13 @@ def send_notification(title , msg, gtype):
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
             time.sleep(0.5)
+
+    # Pushover
+    if sabnzbd.cfg.pushover_enable():
+        if sabnzbd.cfg.pushover_token():
+            Thread(target=send_pushover, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
 
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
@@ -391,4 +400,53 @@ def send_prowl(title, msg, gtype, force=False, test=None):
             logging.warning('Failed to send Prowl message')
             logging.info("Traceback: ", exc_info = True)
             return T('Failed to send Prowl message')
+    return ''
+
+
+#------------------------------------------------------------------------------
+def send_pushover(title, msg, gtype, force=False, test=None):
+    """ Send message to pushover """
+
+    if test:
+        apikey = test.get('pushover_token')
+        userkey = test.get('pushover_userkey')
+        device = test.get('pushover_device')
+    else:
+        apikey = sabnzbd.cfg.pushover_token()
+        userkey = sabnzbd.cfg.pushover_userkey()
+        device = sabnzbd.cfg.pushover_device()
+    title = Tx(NOTIFICATION.get(gtype, 'other'))
+    prio = -2
+
+    if gtype == 'startup' :  prio = sabnzbd.cfg.pushover_prio_startup()
+    if gtype == 'download' : prio = sabnzbd.cfg.pushover_prio_download()
+    if gtype == 'pp' :       prio = sabnzbd.cfg.pushover_prio_pp()
+    if gtype == 'complete' : prio = sabnzbd.cfg.pushover_prio_complete()
+    if gtype == 'failed' :   prio = sabnzbd.cfg.pushover_prio_failed()
+    if gtype == 'disk-full': prio = sabnzbd.cfg.pushover_prio_disk_full()
+    if gtype == 'warning':   prio = sabnzbd.cfg.pushover_prio_warning()
+    if gtype == 'error':     prio = sabnzbd.cfg.pushover_prio_error()
+    if gtype == 'queue_done': prio = sabnzbd.cfg.pushover_prio_queue_done()
+    if gtype == 'other':     prio = sabnzbd.cfg.pushover_prio_other()
+    if force: prio = 1
+
+    if prio > -2:
+        try:
+            conn = httplib.HTTPSConnection("api.pushover.net:443")
+            conn.request("POST", "/1/messages.json", urllib.urlencode({
+                "token": apikey,
+                "user": userkey,
+                "device": device,
+                "title": title,
+                "message": msg,
+                "priority": prio
+                }), { "Content-type": "application/x-www-form-urlencoded" })
+            res = conn.getresponse()
+            if res.status != 200:
+                logging.error("Bad response from Pushover (%s): %s", res.status, res.read())
+
+        except:
+            logging.warning('Failed to send pushover message')
+            logging.info("Traceback: ", exc_info = True)
+            return T('Failed to send pushover message')
     return ''
