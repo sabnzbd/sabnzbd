@@ -167,7 +167,6 @@
                                         </tr>
                                     </thead> 
                                     <tbody>
-                                        
                                         <!-- ko foreach: serverconnections -->
                                         <tr>
                                             <td class="row-wrap-text"><span data-bind="text: articleid, attr: { title: articleid }"></span></td>
@@ -184,8 +183,11 @@
                     
                     
                     <fieldset data-bind="visible: (statusInfo.status.folders().length > 0)">
-                        <legend>$T('Glitter-orphanedJobs')</legend>
-                        <table class="table table-hover"> 
+                        <legend>
+                            <a href="#" class="hoverbutton" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a>
+                            $T('Glitter-orphanedJobs')
+                        </legend>
+                        <table class="table table-hover table-striped"> 
                             <thead>
                                 <tr>
                                     <th style="width: 30px;"></th>
@@ -245,6 +247,14 @@
                 </div>
                 <div class="clearfix"></div>
                 <hr />
+                <div class="row form-horizontal">
+                    <label class="col-sm-6 control-label">$T('Glitter-addnzbFilename')</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="nzbname" id="nzbname" placeholder="$T('nzo-filename')" class="form-control" />
+                    </div>
+                </div>
+                <hr />
+                <div class="clearfix"></div>
                 <div class="add-nzb-inputbox" title="$T('category')">
                     <span class="glyphicon glyphicon-tag"></span>
                     <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '$T('default')'"></select>
