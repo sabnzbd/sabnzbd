@@ -309,7 +309,7 @@ class MainPage(object):
             return template.respond()
         else:
             # Redirect to the setup wizard
-            raise cherrypy.HTTPRedirect('/wizard/')
+            raise cherrypy.HTTPRedirect('/sabnzbd/wizard/')
 
     #@cherrypy.expose
     #def reset_lang(self, **kwargs):
