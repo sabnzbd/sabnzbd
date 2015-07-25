@@ -115,11 +115,16 @@
                                 <span data-bind="text: statusInfo.status.cache.cache_size"></span>  (<span data-bind="text: statusInfo.status.cache.cache_current"></span> $T('Glitter-articles'))
                             </div>
                         </div>
-                        
+                        <div class="clearfix"></div>
                         <div class="options-function-box">
-                            <a href="#" data-bind="click: forceDisconnect" class="btn btn-default">$T('link-forceDisc')</a>
-                            <a href="#" data-bind="click: repairQueue" class="btn btn-default">$T('Glitter-repairQueue')</a>
-                            <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
+                                <a href="#" data-bind="click: forceDisconnect" class="btn btn-default ">$T('link-forceDisc')</a>
+                                <a href="#" data-bind="click: repairQueue" class="btn btn-default">$T('Glitter-repairQueue')</a>
+                                <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
+                                <select class="form-control" data-bind="value: statusInfo.status.loglevel">
+                                    <option value="0">$T('log-errWarn')</option>
+                                    <option value="1">$T('log-info')</option>
+                                    <option value="2">$T('log-debug')</option>
+                                </select>
                         </div>
 
                     </fieldset>

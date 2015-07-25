@@ -537,16 +537,24 @@ $(function() {
                 if(self.hasStatusInfo()) {
                     ko.mapping.fromJS(ko.utils.parseJson(data), self.statusInfo);
                 } else {
+                    // Making the new object
                     self.statusInfo = ko.mapping.fromJS(ko.utils.parseJson(data));
+                    
+                    // Only now we can subscribe to the log-level-changes!
+                    self.statusInfo.status.loglevel.subscribe(function(newValue) {
+                        // Update log-level
+                        callSpecialAPI('status/change_loglevel', { loglevel : newValue});
+                    })
                 }
                 // Show again
                 self.hasStatusInfo(true)
                 
                 // Add tooltips again
                 if(!iOS) $('#modal_options [data-toggle="tooltip"]').tooltip()
-            });
-            
+            });   
         }
+        
+        
         
         // Do a disk-speedtest
         self.testDiskSpeed = function() {
