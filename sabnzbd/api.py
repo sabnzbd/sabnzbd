@@ -724,6 +724,12 @@ def _api_test_pushover(name, output, kwargs):
     res = sabnzbd.growler.send_pushover('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+def _api_test_pushbullet(name, output, kwargs):
+    """ API: send a test Pushbullet notification, return result """
+    logging.info("Sending Pushbullet notification")
+    res = sabnzbd.growler.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    return report(output, error=res)
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
@@ -882,6 +888,7 @@ _api_table = {
     'test_growl'      : (_api_test_growl, 2),
     'test_osd'        : (_api_test_osd, 2),
     'test_pushover'   : (_api_test_pushover, 2),
+    'test_pushbullet' : (_api_test_pushbullet, 2),
     'test_prowl'      : (_api_test_prowl, 2)
 }
 

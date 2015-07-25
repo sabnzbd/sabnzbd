@@ -2760,6 +2760,10 @@ LIST_PUSHOVER = ('pushover_enable', 'pushover_token', 'pushover_userkey', 'pusho
               'pushover_prio_startup', 'pushover_prio_download', 'pushover_prio_pp', 'pushover_prio_complete', 'pushover_prio_failed',
               'pushover_prio_disk_full', 'pushover_prio_warning', 'pushover_prio_error', 'pushover_prio_queue_done', 'pushover_prio_other'
               )
+LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_apikey', 'pushbullet_device',
+                 'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
+                 'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other'
+                 )
 
 
 class ConfigNotify(object):
@@ -2793,6 +2797,8 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('prowl', kw)()
         for kw in LIST_PUSHOVER:
             conf[kw] = config.get_config('pushover', kw)()
+        for kw in LIST_PUSHBULLET:
+            conf[kw] = config.get_config('pushbullet', kw)()
         for kw in LIST_NCENTER:
             conf[kw] = config.get_config('ncenter', kw)()
         for kw in LIST_NTFOSD:
@@ -2831,6 +2837,10 @@ class ConfigNotify(object):
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_PUSHOVER:
             msg = config.get_config('pushover', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_PUSHBULLET:
+            msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 

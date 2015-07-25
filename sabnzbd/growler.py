@@ -29,6 +29,7 @@ import httplib
 import urllib
 import time
 import subprocess
+import json
 from threading import Thread
 
 import sabnzbd
@@ -146,6 +147,12 @@ def send_notification(title , msg, gtype):
     if sabnzbd.cfg.pushover_enable():
         if sabnzbd.cfg.pushover_token():
             Thread(target=send_pushover, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
+    # Pushbullet
+    if sabnzbd.cfg.pushbullet_enable():
+        if sabnzbd.cfg.pushbullet_apikey():
+            Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
 
@@ -449,4 +456,54 @@ def send_pushover(title, msg, gtype, force=False, test=None):
             logging.warning('Failed to send pushover message')
             logging.info("Traceback: ", exc_info = True)
             return T('Failed to send pushover message')
+    return ''
+
+
+
+#------------------------------------------------------------------------------
+def send_pushbullet(title, msg, gtype, force=False, test=None):
+    """ Send message to Pushbullet """
+
+    if test:
+        apikey = test.get('pushbullet_apikey')
+        device = test.get('pushbullet_device')
+    else:
+        apikey = sabnzbd.cfg.pushbullet_apikey()
+        device = sabnzbd.cfg.pushbullet_device()
+    title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+    prio = 0
+
+    if gtype == 'startup' :  prio = sabnzbd.cfg.pushbullet_prio_startup()
+    if gtype == 'download' : prio = sabnzbd.cfg.pushbullet_prio_download()
+    if gtype == 'pp' :       prio = sabnzbd.cfg.pushbullet_prio_pp()
+    if gtype == 'complete' : prio = sabnzbd.cfg.pushbullet_prio_complete()
+    if gtype == 'failed' :   prio = sabnzbd.cfg.pushbullet_prio_failed()
+    if gtype == 'disk-full': prio = sabnzbd.cfg.pushbullet_prio_disk_full()
+    if gtype == 'warning':   prio = sabnzbd.cfg.pushbullet_prio_warning()
+    if gtype == 'error':     prio = sabnzbd.cfg.pushbullet_prio_error()
+    if gtype == 'queue_done': prio = sabnzbd.cfg.pushbullet_prio_queue_done()
+    if gtype == 'other':     prio = sabnzbd.cfg.pushbullet_prio_other()
+    if force: prio = 1
+
+    if prio > 0:
+        try:
+            conn = httplib.HTTPSConnection('api.pushbullet.com:443')
+            conn.request('POST', '/v2/pushes', \
+                json.dumps({
+                'type' : 'note',
+                'device' : device,
+                'title' : title,
+                'body' : msg }),
+                headers={'Authorization' : 'Bearer ' + apikey,
+                         'Content-type': 'application/json'})
+            res = conn.getresponse()
+            if res.status != 200:
+                logging.error('Bad response from Pushbullet (%s): %s', res.status, res.read())
+            else:
+                logging.info('Successfully sent to Pushbullet')
+
+        except:
+            logging.warning('Failed to send pushbullet message')
+            logging.info('Traceback: ', exc_info = True)
+            return T('Failed to send pushbullet message')
     return ''

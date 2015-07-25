@@ -674,6 +674,14 @@ SKIN_TEXT = {
     'opt-pushover_device' : TT('Device(s)'), #: Pushover settings
     'explain-pushover_device' : TT('Device(s) to which message should be sent'), #: Pushover settings
 
+    'section-Pushbullet' : TT('Pushbullet'), #: Header for Pushbullet notification section
+    'opt-pushbullet_enable' : TT('Enable Pushbullet notifications'), #: Pushbullet settings
+    'explain-pushbullet_enable' : TT('Requires a Pushbullet account'), #: Pushbulletsettings
+    'opt-pushbullet_apikey' : TT('Personal API key'), #: Pushbullet settings
+    'explain-pushbullet_apikey' : TT('Your personal Pushbullet API key (required)'), #: Pushbullet settings
+    'opt-pushbullet_device' : TT('Device'), #: Pushbullet settings
+    'explain-pushbullet_device' : TT('Device to which message should be sent'), #: Pushbullet settings
+
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),

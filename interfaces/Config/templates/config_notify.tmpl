@@ -516,6 +516,75 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+	<div class="section" id="pushbullet">
+		<div class="col2">
+			<h3>$T('section-Pushbullet')</h3>
+		</div><!-- /col2 -->
+		<div class="col1">
+			<fieldset>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_enable">$T('opt-pushbullet_enable')</label>
+					<input type="checkbox" name="pushbullet_enable" id="pushbullet_enable" value="1" <!--#if int($pushbullet_enable) > 0 then 'checked="checked"' else ""#--> />
+					<span class="desc">$T('explain-pushbullet_enable')</span>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_apikey">$T('opt-pushbullet_apikey')</label>
+					<input type="text" name="pushbullet_apikey" id="pushbullet_apikey" value="$pushbullet_apikey" size="40" />
+					<span class="desc">$T('explain-pushbullet_apikey')</span>
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_device">$T('opt-pushbullet_device')</label>
+					<input type="device" name="pushbullet_device" id="pushbullet_device" value="$pushbullet_device" size="30" />
+					<span class="desc">$T('explain-pushbullet_device')</span>
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_prio_startup">$T($notify_texts['startup'])</label>
+					<input type="checkbox" name="pushbullet_prio_startup" id="pushbullet_prio_startup" value="1" <!--#if int($pushbullet_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_prio_download">$T($notify_texts['download'])</label>
+					<input type="checkbox" name="pushbullet_prio_download" id="pushbullet_prio_download" value="1" <!--#if int($pushbullet_prio_download) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_prio_pp">$T($notify_texts['pp'])</label>
+					<input type="checkbox" name="pushbullet_prio_pp" id="pushbullet_prio_pp" value="1" <!--#if int($pushbullet_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_prio_complete">$T($notify_texts['complete'])</label>
+					<input type="checkbox" name="pushbullet_prio_complete" id="pushbullet_prio_complete" value="1" <!--#if int($pushbullet_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_prio_failed">$T($notify_texts['failed'])</label>
+					<input type="checkbox" name="pushbullet_prio_failed" id="pushbullet_prio_failed" value="1" <!--#if int($pushbullet_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_prio_queue_done">$T($notify_texts['queue_done'])</label>
+					<input type="checkbox" name="pushbullet_prio_queue_done" id="pushbullet_prio_queue_done" value="1" <!--#if int($pushbullet_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_prio_disk_full">$T($notify_texts['disk_full'])</label>
+					<input type="checkbox" name="pushbullet_prio_disk_full" id="pushbullet_prio_disk_full" value="1" <!--#if int($pushbullet_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_prio_warning">$T($notify_texts['warning'])</label>
+					<input type="checkbox" name="pushbullet_prio_warning" id="pushbullet_prio_warning" value="1" <!--#if int($pushbullet_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair alt">
+					<label class="config" for="pushbullet_prio_error">$T($notify_texts['error'])</label>
+					<input type="checkbox" name="pushbullet_prio_error" id="pushbullet_prio_error" value="1" <!--#if int($pushbullet_prio_error) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+					<label class="config" for="pushbullet_prio_other">$T($notify_texts['other'])</label>
+					<input type="checkbox" name="pushbullet_prio_other" id="pushbullet_prio_other" value="1" <!--#if int($pushbullet_prio_other) > 0 then 'checked="checked"' else ""#--> />
+				</div>
+				<div class="field-pair">
+				   <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+				   <input type="button" value="$T('testNotify')" id="test_pushbullet" />
+				   <span id="testpushbullet-result" class="icon path darkred">&nbsp;</span>
+			   </div>
+		   </fieldset>
+	   </div><!-- /col1 -->
+	</div><!-- /section -->
     <div class="padding alt">
         <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
         <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
@@ -570,6 +639,30 @@
                   \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
                 } else {
                   \$('#testnotice-result').addClass("failure").html(data.error);
+                }
+            }
+        });
+    });
+    \$('#test_pushbullet').click(function () {
+        var data = { mode: 'test_pushbullet', apikey: '$session', output: 'json' };
+	\$("#pushbullet").extractFormDataTo(data);
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: data,
+            beforeSend: function () {
+                \$('#test_pushbullet').attr("disabled", "disabled");
+                \$('#testpushbullet-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+            },
+            complete: function () {
+                \$('#test_pushbullet').removeAttr("disabled");
+                \$('#testpushbullet-result').removeClass("loading");
+            },
+            success: function (data) {
+                if (data.status == true) {
+                  \$('#testpushbullet-result').addClass("success").html('$T('smpl-notesent')');
+                } else {
+                  \$('#testpushbullet-result').addClass("failure").html(data.error);
                 }
             }
         });

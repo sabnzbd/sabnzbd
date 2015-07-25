@@ -326,6 +326,21 @@ pushover_prio_error = OptionNumber('pushover', 'pushover_prio_error', -2)
 pushover_prio_queue_done = OptionNumber('pushover', 'pushover_prio_queue_done', -1)
 pushover_prio_other = OptionNumber('pushover', 'pushover_prio_other', -2)
 
+# [pushbullet]
+pushbullet_enable = OptionBool('pushbullet', 'pushbullet_enable')
+pushbullet_apikey = OptionStr('pushbullet', 'pushbullet_apikey')
+pushbullet_device = OptionStr('pushbullet', 'pushbullet_device')
+pushbullet_prio_startup = OptionNumber('pushbullet', 'pushbullet_prio_startup', 0)
+pushbullet_prio_download = OptionNumber('pushbullet', 'pushbullet_prio_download', 0)
+pushbullet_prio_pp = OptionNumber('pushbullet', 'pushbullet_prio_pp', 0)
+pushbullet_prio_complete = OptionNumber('pushbullet', 'pushbullet_prio_complete', 1)
+pushbullet_prio_failed = OptionNumber('pushbullet', 'pushbullet_prio_failed', 1)
+pushbullet_prio_disk_full = OptionNumber('pushbullet', 'pushbullet_prio_disk_full', 1)
+pushbullet_prio_warning = OptionNumber('pushbullet', 'pushbullet_prio_warning', 0)
+pushbullet_prio_error = OptionNumber('pushbullet', 'pushbullet_prio_error', 0)
+pushbullet_prio_queue_done = OptionNumber('pushbullet', 'pushbullet_prio_queue_done', 0)
+pushbullet_prio_other = OptionNumber('pushbullet', 'pushbullet_prio_other', 0)
+
 
 quota_size = OptionStr('misc', 'quota_size')
 quota_day = OptionStr('misc', 'quota_day')
