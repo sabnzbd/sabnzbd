@@ -380,6 +380,9 @@ def send_prowl(title, msg, gtype, force=False, test=None):
         apikey = test.get('prowl_apikey')
     else:
         apikey = sabnzbd.cfg.prowl_apikey()
+    if not apikey:
+        return T('Cannot send, missing required data')
+
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     title = urllib2.quote(title.encode('utf8'))
     msg = urllib2.quote(msg.encode('utf8'))
@@ -422,6 +425,9 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         apikey = sabnzbd.cfg.pushover_token()
         userkey = sabnzbd.cfg.pushover_userkey()
         device = sabnzbd.cfg.pushover_device()
+    if not apikey or not userkey:
+        return T('Cannot send, missing required data')
+
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     prio = -2
 
@@ -470,6 +476,9 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     else:
         apikey = sabnzbd.cfg.pushbullet_apikey()
         device = sabnzbd.cfg.pushbullet_device()
+    if not apikey:
+        return T('Cannot send, missing required data')
+
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
     prio = 0
 
