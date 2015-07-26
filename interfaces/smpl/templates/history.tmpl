@@ -11,7 +11,7 @@
   <a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0&del_files=1', -1,this.parentNode.parentNode.id);}">$T('purgeFailed-Files')</a> |
   <a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a> |
   <a onClick="javascript:loadSearch('history/tog_failed_only', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $failed_only then $T('showAllHis') else $T('showFailedHis')#--></a> |
-  <a onClick="if(confirm('$T('smpl-retryAllJobs?')')){javascript:loadSearch('history/retry_all', 'historySearch', 'limit=$limit&start=0&del_files=1', -1,this.parentNode.parentNode.id);}">$T('smpl-retryAll')</a> |
+  <a onClick="if(confirm('$T('smpl-retryAllJobs?')')){javascript:loadSearch('history/retry_all', 'historySearch', 'limit=$limit&start=0&del_files=1', -1,this.parentNode.parentNode.id);}">$T('smpl-retryAll')</a>
   </span>
 </div>
 
@@ -165,4 +165,3 @@ $T('smpl-oneresult')
     <!--#end if#-->
   <!--#end if#-->
 </div>
-
