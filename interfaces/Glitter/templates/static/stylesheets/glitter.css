@@ -588,6 +588,10 @@ td.delete label,
     max-height: 200px;
 }
 
+.table-warnings {
+    border-collapse: separate !important;
+}
+
 .table-warnings .table-warnings-hide {
     padding: 0 !important;
     border: 0 !important;
@@ -898,8 +902,11 @@ td.delete label,
     opacity: 0.9;
 }
 
-#modal_options .options-function-box .btn {
+#modal_options .options-function-box .btn,
+#modal_options .options-function-box select {
     margin-top: 10px; 
+    width: auto;
+    display: inline-block;
 }
 
 #modal_options .options-server-box {
