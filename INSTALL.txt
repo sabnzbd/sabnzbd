@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -------------------------------------------------------------------------------
 Just run the downloaded EXE file and the installer will start.
 It's just a simple standard installer.
-After installaton, find the SABnzbd program in the Start menu and start it.
+After installation, find the SABnzbd program in the Start menu and start it.
 
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
@@ -55,7 +55,7 @@ You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
 Unix/Linux/OSX
-    Python-2.6 or 2.7  http://www.python.org
+    Python-2.6 or 2.7       http://www.python.org
 
 OSX Leopard/SnowLeopard
     Python 2.6              http://www.activestate.com
@@ -136,4 +136,4 @@ Visit the WIKI site:
 
 Several parts of SABnzbd were built by other people, illustrating the
 wonderful world of Free Open Source Software.
-See the licences folder of the main program and of the skin folders.
+See the licenses folder of the main program and of the skin folders.

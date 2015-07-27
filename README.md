@@ -1,7 +1,7 @@
 SABnzbd - The automated Usenet download tool
 ============================================
 
-This Unicode release is not compatible with 0.7.x queues!
+This Unicode release is not compatible with 0.7.x queues! ** TODO: 0.8.x **
 
 There is also an issue with upgrading of the "sabnzbd.ini" file.
 Make sure that you have a backup!
@@ -57,7 +57,7 @@ If you want multi-language support, run:
 python tools/make_mo.py
 ```
 
-Our many other commandline options are explained in depth [here](http://wiki.sabnzbd.org/command-line-parameters).
+Our many other command line options are explained in depth [here](http://wiki.sabnzbd.org/command-line-parameters).
 
 ## About Our Repo
 
