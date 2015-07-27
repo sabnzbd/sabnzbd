@@ -34,7 +34,7 @@ else:
                     </select>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="daysofweek">$T('sch-frequency')</label>
+                    <label class="config">$T('sch-frequency')</label>
                     <div class="checkbox-days">
                       <p><input type="checkbox" name="daysofweek" value="1"><label>$T('monday')</label></p>
                       <p><input type="checkbox" name="daysofweek" value="2"><label>$T('tuesday')</label></p>
@@ -62,8 +62,9 @@ else:
                 </div>
             </fieldset>
         </div><!-- /col1 -->
+        </form>
     </div><!-- /section -->
-    </form>
+    
     <div class="section">
         <div class="col2">
             <h3>$T('currentSchedules')</h3>
@@ -76,7 +77,7 @@ else:
                         <!--#for $line in $schedlines#-->
                             <!--#set $odd = not $odd#-->
                             <form action="delSchedule" method="post">
-                                <input type="hidden" name="session" id="session" value="$session">
+                                <input type="hidden" name="session" value="$session"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator<!--#if $odd then "" else " alt"#-->">
                                     <input class="float-left" type="submit" value="$T('button-x')" />

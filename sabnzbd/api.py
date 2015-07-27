@@ -1680,6 +1680,7 @@ def build_header(prim, webdir='', search=None):
 
 
     header['webdir'] = webdir
+    header['pid'] = os.getpid()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
