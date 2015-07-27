@@ -44,7 +44,7 @@
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
-                    <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" size="8" min="2" />
+                    <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                     <span class="desc">$T('explain-max_art_tries')</span>
                 </div>
                 <div class="field-pair">
@@ -375,7 +375,7 @@
                     <span class="desc">$T('explain-rating_filter_enable')</span>
                 </div>
                 <div class="field-pair" id="rating_filter_abort">
-                    <label class="config" for="rating_filter_abort">$T('opt-rating_filter_abort_if')</label>
+                    <label class="config">$T('opt-rating_filter_abort_if')</label>
                     <div class="rating-filter">
                         <p>
                             <label for="rating_filter_abort_video">$T('opt-rating_filter_video')</label>
@@ -423,7 +423,7 @@
                     </div>
                 </div>
                 <div class="field-pair alt" id="rating_filter_pause">
-                    <label class="config" for="rating_filter_pause">$T('opt-rating_filter_pause_if')</label>
+                    <label class="config">$T('opt-rating_filter_pause_if')</label>
                     <div class="rating-filter">
                         <p>
                             <label for="rating_filter_pause_video">$T('opt-rating_filter_video')</label>
