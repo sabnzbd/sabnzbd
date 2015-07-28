@@ -51,3 +51,12 @@ msgstr ""
 #: sabnzbd/skintext.py:251 [Retry all failed jobs in History]
 msgid "Retry all failed"
 msgstr "Retry All Failed"
+
+#: sabnzbd/skintext.py:54 [#: Config->Scheduler]
+msgid "disable server"
+msgstr "Disable server:"
+
+#: sabnzbd/skintext.py:55 [#: Config->Scheduler]
+msgid "enable server"
+msgstr "Enable server:"
+
