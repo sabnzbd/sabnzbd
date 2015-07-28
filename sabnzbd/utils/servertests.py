@@ -74,7 +74,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         if not got_pass:
             return False, T('Password masked in ******, please re-enter')
     try:
-        s = Server(-1, host, port, timeout, 0, 0, ssl, ssl_type, False, username, password)
+        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_type, False, username, password)
     except:
         return False, T('Invalid server details')
 

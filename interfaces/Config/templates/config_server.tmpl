@@ -110,7 +110,7 @@
 
     <div class="section">
         <div class="col2">
-            <h3>$servers[$server]['name']</h3>
+            <h3>$servers[$server]['displayname']</h3>
             <p>
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$server" /></td>
@@ -194,6 +194,14 @@
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
+                </div>
+                <div class="field-pair alt">
+                    <label class="config" for="displayname$cur">$T('srv-displayname')</label>
+                    <input type="text" name="displayname" id="displayname$cur" value="$servers[$server]['displayname']" size="30" />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="notes$cur">$T('srv-notes')</label>
+                    <textarea name="notes" id="notes$cur" rows="3">$servers[$server]['notes']</textarea>
                 </div>
                 <div class="field-pair">
                     <input type="submit" value="$T('button-saveChanges')" class="saveButton" />

@@ -138,7 +138,7 @@
     <input type="hidden" name="session" value="$session">
     <input type="hidden" name="server" value="$server"/>
     <div class="component-group-desc">
-      <h3>$servers[$server]['name']</h3>
+      <h3>$servers[$server]['displayname']</h3>
       <p>
         <input type="submit" class="juiButton" style="padding:4px;" value="$T('button-saveChanges')" />
         <br/><br/>
@@ -255,6 +255,12 @@
     </label>
   </div>
   <div class="field-pair">
+    <label class="nocheck clearfix" for="displayname">
+      <span class="component-title">$T('srv-displayname')</span>
+      <input type="text" size="40" name="displayname" value="$servers[$server]['displayname']" />
+    </label>
+  </div>
+  <div class="field-pair alt">
     <label class="config" for="categories">$T('srv-categories')</label>
       <select name="categories" multiple>
       <!--#for $cat in $cats#-->

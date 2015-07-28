@@ -54,11 +54,12 @@ TIMER_LOCK = RLock()
 
 #------------------------------------------------------------------------------
 class Server(object):
-    def __init__(self, id, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username = None,
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username = None,
                  password = None, optional=False, retention=0, categories = None):
         self.id = id
         self.newid = None
         self.restart = False
+        self.displayname = displayname
         self.host = host
         self.port = port
         self.timeout = timeout
@@ -175,6 +176,7 @@ class Downloader(Thread):
         if newserver in servers:
             srv = servers[newserver]
             enabled = srv.enable()
+            displayname = srv.displayname()
             host = srv.host()
             port = srv.port()
             timeout = srv.timeout()
@@ -201,7 +203,7 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, host, port, timeout, threads, priority, ssl,
+            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl,
                                             ssl_type, send_group,
                                             username, password, optional, retention, categories=categories))
 

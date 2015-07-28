@@ -2092,12 +2092,12 @@ class ConfigScheduling(object):
             if action in actions:
                 action = Ttemplate("sch-" + action)
             else:
-                try:
-                    act, server = action.split()
-                except ValueError:
-                    act = ''
-                if act in ('enable_server', 'disable_server'):
-                    action = Ttemplate("sch-" + act) + ' ' + server
+                if action in ('enable_server', 'disable_server'):
+                    try:
+                        value = '"%s"' % config.get_servers()[value].displayname()
+                    except KeyError:
+                        value = '"%s" <<< %s' % (value, T('Undefined server!'))
+                    action = Ttemplate("sch-" + action)
 
             if day_numbers == "1234567":
                 days_of_week = "Daily"
@@ -2116,9 +2116,11 @@ class ConfigScheduling(object):
         actions_lng = {}
         for action in actions:
             actions_lng[action] = Ttemplate("sch-" + action)
-        for server in config.get_servers():
-            actions.append(server)
-            actions_lng[server] = server
+        servers = config.get_servers()
+        for srv in servers:
+            name = servers[srv].displayname()
+            actions.append(name)
+            actions_lng[name] = name
         conf['actions'] = actions
         conf['actions_lng'] = actions_lng
 
@@ -2130,6 +2132,13 @@ class ConfigScheduling(object):
     def addSchedule(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+
+        # Create server dictionary based on displayname
+        server_names = {}
+        servers = config.get_servers()
+        for srv in servers:
+            srv = servers[srv]
+            server_names[srv.displayname()] = srv.ident()[1]
 
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
@@ -2152,7 +2161,8 @@ class ConfigScheduling(object):
                     arguments = '0'
             elif action in _SCHED_ACTIONS:
                 arguments = ''
-            elif action in config.get_servers():
+            elif action in server_names:
+                action = server_names[action]
                 if arguments == '1':
                     arguments = action
                     action = 'enable_server'
@@ -2420,7 +2430,7 @@ class Status(object):
                 connected = T('&nbsp;Resolving address')
             busy.sort()
 
-            header['servers'].append((server.id, '', connected, busy, server.ssl,
+            header['servers'].append((server.displayname, '', connected, busy, server.ssl,
                                       server.active, server.errormsg, server.priority, server.optional))
                                       #     5            6                   7               8
 

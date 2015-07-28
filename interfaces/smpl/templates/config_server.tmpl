@@ -8,7 +8,7 @@
 <div class="server">
   <form class="cmxform" id="$servers[$server]['host']$servers[$server]['port']" autocomplete="off">
     <fieldset class="EntryFieldSet">
-    <legend>$server</legend>
+    <legend>$servers[$server]['displayname']</legend>
       <hr />
       <label class="label">$T('srv-host'):</label><input type="text" size="25" name="host" value="$servers[$server]['host']">
         <br class="clear" />
@@ -26,6 +26,9 @@
         <br class="clear" />
       <label class="label">$T('srv-retention') ($T('days')):</label><input type="text" size="25" name="retention" value="$servers[$server]['retention']">
         <br class="clear" />
+      <label class="label">$T('srv-displayname'):</label><input type="text" size="25" name="displayname" value="$servers[$server]['displayname']">
+        <br class="clear" />
+
 
   <label><span class="label">$T('srv-ssl'):</span>
   <!--#if int($have_ssl) == 1#-->

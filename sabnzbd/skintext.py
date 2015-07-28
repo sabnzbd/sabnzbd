@@ -550,6 +550,7 @@ SKIN_TEXT = {
     'configServer' : TT('Server configuration'), #: Caption
     'defServer' : TT('Server definition'), # Caption
     'addServer' : TT('Add Server'), #: Caption
+    'srv-displayname' : TT('Server description'), #: User defined name for server
     'srv-host' : TT('Host'), #: Server hostname or IP
     'srv-port' : TT('Port'), #: Server port
     'srv-username' : TT('Username'), #: Server username
@@ -575,6 +576,7 @@ SKIN_TEXT = {
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
     'srv-categories' : TT('Categories'),
     'srv-explain-categories' : TT('Only use this server for these categories.'),
+    'srv-notes' : TT('Personal notes'),
 
 # Config->Scheduling
     'configSchedule' : TT('Scheduling configuration'), #:Config->Scheduling

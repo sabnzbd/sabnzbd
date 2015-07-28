@@ -1189,8 +1189,9 @@ class NzbObject(TryList):
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', format_source_url(self.url), unique=True)
+            servers = config.get_servers()
             if len(self.servercount) > 0:
-                msgs = [ '%s=%sB' % (server, to_units(self.servercount[server])) for server in self.servercount ]
+                msgs = [ '%s=%sB' % (servers[server].displayname(), to_units(self.servercount[server])) for server in self.servercount if server in servers]
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     def inc_log(self, log, txt):

@@ -366,6 +366,7 @@ class ConfigServer(object):
         self.__name = name
         name = 'servers,' + self.__name
 
+        self.displayname = OptionStr(name, 'displayname', '', add=False)
         self.host = OptionStr(name, 'host', '', add=False)
         self.port = OptionNumber(name, 'port', 119, 0, 2**16-1, add=False)
         self.timeout = OptionNumber(name, 'timeout', 120, 30, 240, add=False)
@@ -382,26 +383,30 @@ class ConfigServer(object):
         # 'fillserver' field only here in order to set a proper priority when converting
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.categories = OptionList(name, 'categories', default_val=['Default'], add=False)
+        self.notes = OptionStr(name, 'notes', '', add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
+        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
                    'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority',
-                   'categories'):
+                   'categories', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
                 continue
             exec 'self.%s.set(value)' % kw
+            if not self.displayname():
+                self.displayname.set(self.__name)
         return True
 
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
+        dict['displayname'] = self.displayname()
         dict['host'] = self.host()
         dict['port'] = self.port()
         dict['timeout'] = self.timeout()
@@ -419,6 +424,7 @@ class ConfigServer(object):
         dict['send_group'] = self.send_group()
         dict['priority'] = self.priority()
         dict['categories'] = self.categories()
+        dict['notes'] = self.notes()
         return dict
 
     def delete(self):
@@ -426,10 +432,8 @@ class ConfigServer(object):
         delete_from_database('servers', self.__name)
 
     def rename(self, name):
-        """ Give server new identity """
-        delete_from_database('servers', self.__name)
-        self.__name = name
-        add_to_database('servers', self.__name, self)
+        """ Give server new display name """
+        self.displayname.set(name)
 
     def ident(self):
         return 'servers', self.__name
