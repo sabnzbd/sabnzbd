@@ -1,0 +1,53 @@
+# English corrections for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2015-07-04 10:12+0000\n"
+"PO-Revision-Date: 2015-07-04 12:26+0000\n"
+"Last-Translator: shypike <Unknown>\n"
+"Language-Team: Dutch <nl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: sabnzbd/skintext.py:67 [Config->Scheduler]
+msgid "Pause low prioirty jobs"
+msgstr "Pause low priority jobs"
+
+#: sabnzbd/skintext.py:68 [Config->Scheduler]
+msgid "Pause normal prioirty jobs"
+msgstr "Pause normal priority jobs"
+
+#: sabnzbd/skintext.py:69 [Config->Scheduler]
+msgid "Pause high prioirty jobs"
+msgstr "Pause high priority jobs"
+
+#: sabnzbd/skintext.py:70 [Config->Scheduler]
+msgid "Resume low prioirty jobs"
+msgstr "Resume low priority jobs"
+
+#: sabnzbd/skintext.py:71 [Config->Scheduler]
+msgid "Resume normal prioirty jobs"
+msgstr "Resume normal priority jobs"
+
+#: sabnzbd/skintext.py:72 [Config->Scheduler]
+msgid "Resume high prioirty jobs"
+msgstr "Resume high priority jobs"
+
+msgid ""
+"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
+"click the button below.<br /><br /><strong><a "
+"href=\"..\">Refresh</a></strong><br />"
+msgstr ""
+"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 seconds and then "
+"click the button below.<br /><br /><strong><a "
+"href=\"..\">Refresh</a></strong><br />"
+
+#: sabnzbd/skintext.py:251 [Retry all failed jobs in History]
+msgid "Retry all failed"
+msgstr "Retry All Failed"
