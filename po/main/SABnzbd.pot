@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2015-07-25 14:08+CEST\n"
+"POT-Creation-Date: 2015-07-29 19:47+CEST\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -466,15 +466,19 @@ msgstr ""
 msgid "Not available"
 msgstr ""
 
-#: sabnzbd/growler.py:409
+#: sabnzbd/growler.py:384 # sabnzbd/growler.py:429 # sabnzbd/growler.py:480
+msgid "Cannot send, missing required data"
+msgstr ""
+
+#: sabnzbd/growler.py:412
 msgid "Failed to send Prowl message"
 msgstr ""
 
-#: sabnzbd/growler.py:458
+#: sabnzbd/growler.py:464
 msgid "Failed to send pushover message"
 msgstr ""
 
-#: sabnzbd/growler.py:508
+#: sabnzbd/growler.py:517
 msgid "Failed to send pushbullet message"
 msgstr ""
 
