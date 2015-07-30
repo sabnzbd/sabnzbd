@@ -2084,8 +2084,11 @@ class ConfigScheduling(object):
             except:
                 value = ''
             value = value.strip()
-            if value == '0':
-                value = T('off') #: "Off" value for speedlimit in scheduler
+            if value.isdigit():
+                if int(value) == 0:
+                    value = T('off') #: "Off" value for speedlimit in scheduler
+                else:
+                    value += '%'
             if action in actions:
                 action = Ttemplate("sch-" + action)
             else:
@@ -2144,8 +2147,9 @@ class ConfigScheduling(object):
 
         if minute and hour  and days_of_week and action:
             if action == 'speedlimit':
+                arguments = arguments.strip(' %')
                 if not (arguments and arguments.isdigit()):
-                    action = '0'
+                    arguments = '0'
             elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action in config.get_servers():
