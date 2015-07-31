@@ -150,7 +150,7 @@ import errno
 
 def redirect_url(url=None):
     global REDIRECT_URL
-    if url:
+    if url and '%s' in url:
         REDIRECT_URL = url
     return REDIRECT_URL
 
@@ -1360,7 +1360,7 @@ class HTTPConnection(object):
                 # Unwrap our wfile
                 self.wfile = CP_fileobject(self.socket._sock, "wb", self.wbufsize)
                 if REDIRECT_URL:
-                    req.simple_response("301 Moved Permanently", REDIRECT_URL)
+                    req.simple_response("301 Moved Permanently", REDIRECT_URL % self.remote_addr)
                 else:
                     req.simple_response("400 Bad Request",
                         "The client sent a plain HTTP request, but "

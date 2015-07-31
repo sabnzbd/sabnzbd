@@ -1556,7 +1556,7 @@ def main():
 
     sabnzbd.BROWSER_URL = browser_url
     if hasattr(cherrypy.wsgiserver, 'redirect_url'):
-        cherrypy.wsgiserver.redirect_url(browser_url)
+        cherrypy.wsgiserver.redirect_url('https://%%s:%s/sabnzbd' % cherryport)
 
     if not autorestarted:
         launch_a_browser(browser_url)
