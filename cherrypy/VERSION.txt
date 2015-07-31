@@ -1,3 +1,5 @@
-CherryPy 3.2.2 Official distribution: http://download.cherrypy.org/cherrypy/3.2.2/CherryPy-3.2.2.tar.gz
+CherryPy 3.8.0 Official distribution: https://pypi.python.org/packages/source/C/CherryPy/CherryPy-3.8.0.tar.gz
 The folders 'tutorial', 'test' and 'scaffold' have been removed.
+This file has been added.
+A patch is required to enable proper Bonjour/Zeroconfig support.
 

@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 import cherrypy.daemon
 
 if __name__ == '__main__':
