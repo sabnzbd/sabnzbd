@@ -1,0 +1,76 @@
+From 0f6da83f5acff3fc9c4eda2d3111849ef1429711 Mon Sep 17 00:00:00 2001
+From: shypike <shypike@sabnzbd.org>
+Date: Thu, 23 Jul 2015 18:16:27 +0200
+Subject: [PATCH] Patch CherryPy to support 301 redirection.
+
+Needed to support the broken Bonjour/ZeroConfig protocol that
+only allows an HTTP address to set, even for a HTTPS-only server.
+---
+ cherrypy/wsgiserver/wsgiserver2.py | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/cherrypy/wsgiserver/wsgiserver2.py b/cherrypy/wsgiserver/wsgiserver2.py
+index c0896d3..9367f7b 100644
+--- a/cherrypy/wsgiserver/wsgiserver2.py
++++ b/cherrypy/wsgiserver/wsgiserver2.py
+@@ -75,7 +75,7 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
+            'WorkerThread', 'ThreadPool', 'SSLAdapter',
+            'CherryPyWSGIServer',
+            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
+-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class']
++           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class', 'redirect_url']
+ 
+ import os
+ try:
+@@ -97,6 +97,7 @@ except ImportError:
+     import StringIO
+ DEFAULT_BUFFER_SIZE = -1
+ 
++REDIRECT_URL = None  # Application can write its HTTP-->HTTPS redirection URL here
+ 
+ class FauxSocket(object):
+ 
+@@ -167,6 +168,12 @@ quoted_slash = re.compile(ntob("(?i)%2F"))
+ 
+ import errno
+ 
++def redirect_url(url=None):
++    global REDIRECT_URL
++    if url and '%s' in url:
++        REDIRECT_URL = url
++    return REDIRECT_URL
++
+ 
+ def plat_specific_errors(*errnames):
+     """Return error numbers for all errors in errnames on this platform.
+@@ -881,6 +888,9 @@ class HTTPRequest(object):
+                "Content-Length: %s\r\n" % len(msg),
+                "Content-Type: text/plain\r\n"]
+ 
++        if status[:3] in ("301",):
++            buf.append("Location: %s" % msg)
++
+         if status[:3] in ("413", "414"):
+             # Request Entity Too Large / Request-URI Too Long
+             self.close_connection = True
+@@ -1394,10 +1404,13 @@ class HTTPConnection(object):
+                 # Unwrap our wfile
+                 self.wfile = CP_fileobject(
+                     self.socket._sock, "wb", self.wbufsize)
+-                req.simple_response(
+-                    "400 Bad Request",
+-                    "The client sent a plain HTTP request, but "
+-                    "this server only speaks HTTPS on this port.")
++                if REDIRECT_URL:
++                    req.simple_response("301 Moved Permanently", REDIRECT_URL % self.remote_addr)
++                else:
++                    req.simple_response(
++                        "400 Bad Request",
++                        "The client sent a plain HTTP request, but "
++                        "this server only speaks HTTPS on this port.")
+                 self.linger = True
+         except Exception:
+             e = sys.exc_info()[1]
+-- 
+1.9.5 (Apple Git-50.3)
+
