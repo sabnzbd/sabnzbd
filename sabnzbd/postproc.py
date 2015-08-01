@@ -31,10 +31,10 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         make_script_path, short_path, long_path, clip_path, \
-                         on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
-                         set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
-                         sanitize_and_trim_path
+     make_script_path, short_path, long_path, clip_path, \
+     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
+     set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
+     sanitize_and_trim_path
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -482,7 +482,7 @@ def process_job(nzo):
             if script_line:
                 nzo.set_unpack_info('Script',
                                     u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, unicoder(script_line), urllib.quote(script_output),
-                                     T('More')), unique=True)
+                                    T('More')), unique=True)
             else:
                 nzo.set_unpack_info('Script',
                                     u'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
@@ -495,7 +495,7 @@ def process_job(nzo):
         ## Force error for empty result
         all_ok = all_ok and not empty
 
-		## Update indexer with results
+        ## Update indexer with results
         if cfg.rating_enable():
             if nzo.encrypted > 0:
                 Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
@@ -681,7 +681,7 @@ def handle_empty_queue():
     if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
         logging.info("Queue has finished, launching: %s (%s)", \
-            sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+                     sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
         if sabnzbd.QUEUECOMPLETEARG:
             sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
         else:
