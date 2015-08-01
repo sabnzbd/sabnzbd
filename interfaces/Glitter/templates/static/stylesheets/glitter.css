@@ -320,6 +320,7 @@ tbody>tr>td:last-child {
     color: #888;
     font-size: 12px;
     margin-top: 1em;
+    text-transform: capitalize;
 }
 
 .info-container .glyphicon {
@@ -1004,6 +1005,23 @@ td.delete label,
     display: inline-block;
     margin: 8px 2px 0px 5px;
     margin-left: -20px;    
+}
+
+.btn-file {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    display: none;
+}
+
+.btn-file em {
+    display: inline-block;
+    max-width: 100px;
 }
 
 /* HELP MODAL */

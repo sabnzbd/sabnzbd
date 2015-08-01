@@ -126,7 +126,6 @@
                                     <option value="2">$T('log-debug')</option>
                                 </select>
                         </div>
-
                     </fieldset>
                     
                     <fieldset>
@@ -242,7 +241,11 @@
                         <fieldset>
                             <legend>$T('Glitter-addFromFile')</legend>
                             <div class="input-group" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-nzbFormats')">
-                                <input type="file" name="nzbFile" class="form-control" id="file" />
+                                <label class="btn btn-default btn-file">
+                                    <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')</em>
+                                    <input type="file" name="nzbFile" class="form-control" id="file" data-bind="event : { change: updateBrowseLabel }" />
+                                </label>
+                                
                                 <span class="input-group-btn">
                                      <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
                                 </span>
@@ -260,19 +263,19 @@
                 </div>
                 <hr />
                 <div class="clearfix"></div>
-                <div class="add-nzb-inputbox" title="$T('category')">
+                <div class="add-nzb-inputbox" title="$T('category')" data-toggle="tooltip" data-placement="left">
                     <span class="glyphicon glyphicon-tag"></span>
                     <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '$T('default')'"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('priority')">
+                <div class="add-nzb-inputbox" title="$T('priority')" data-toggle="tooltip" data-placement="left">
                     <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                     <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '$T('default')'"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('swtag-pp')">
+                <div class="add-nzb-inputbox" title="$T('swtag-pp')" data-toggle="tooltip" data-placement="left">
                     <span class="glyphicon glyphicon-check"></span>
                     <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '$T('default')'"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('eoq-scripts')">
+                <div class="add-nzb-inputbox" title="$T('eoq-scripts')" data-toggle="tooltip" data-placement="left">
                     <span class="glyphicon glyphicon-flash"></span>
                     <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')'"></select>
                 </div>

@@ -25,14 +25,16 @@ if (!Array.prototype.indexOf) {
 }
 
 /**
+    Base variables and functions
+**/
+var fadeOnDeleteDuration = 400; // ms after deleting a row
+var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+/**
     GLITTER CODE
 **/
 $(function() {
-    /**
-        Base variables and functions
-    **/
-    var fadeOnDeleteDuration = 400; // ms after deleting a row
-    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
 
     // Basic API-call
 	function callAPI( data ) {
@@ -477,11 +479,24 @@ $(function() {
         /***
              Add NZB's
         ***/
+        // Updating the label
+        self.updateBrowseLabel = function(data, event) {
+            // Get filename
+            var fileName = $(event.target).val().replace(/\\/g, '/').replace(/.*\//, '');
+            // Set label
+            if(fileName) $('.btn-file em').text(fileName)
+        }
+        
+        
         // NOTE: Adjusted from Knockstrap template
         self.addNZBFromFileForm = function(form) {
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
+            
+            // After that, hide and reset
+            $("#modal_add_nzb").modal("hide"); 
             form.reset()
             $('#nzbname').val('')
+            $('.btn-file em').text(glitterTranslate.chooseFile)
         }
         self.addNZBFromURL = function(form) {
             // Add 
@@ -519,9 +534,8 @@ $(function() {
                         processData: false, 
                         contentType: false, 
                         data: data }).then(function(r) { 
-                            // Hide and reset/refresh
+                            // Refresh
                             self.refresh();
-                            $("#modal_add_nzb").modal("hide"); 
                         });
             
         }
@@ -1732,6 +1746,8 @@ function keepOpen(thisItem) {
     $(thisItem).siblings('.dropdown-menu').children().click(function(e) {
         e.stopPropagation();
     });
+    // Add possible tooltips
+    if(!iOS) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip()    
 }
 
 // Check all functionality

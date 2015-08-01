@@ -28,8 +28,8 @@
         <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico" data-bind="attr: { 'href': SABIcon }" />
         
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css"/>
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css" media="all and (max-width: 768px)" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -160,6 +160,7 @@
                         <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
                     </span>
                     <!-- ko if: (diskSpaceLeft2() > 0)  -->
+                    <em>($T('Glitter-freeTemp'))</em>
                     <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
                         <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
                     </span>
@@ -233,22 +234,22 @@
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu queueitem-settings">
-                                        <li title="$T('category')">
+                                        <li title="$T('category')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
                                             <select name="Category" class="form-control" data-bind="options: parent.categoriesList, value: category, event: { change: changeCat }"></select>
                                         </li>
                                         <!-- ko if: (status() != 'Fetching')  -->
-                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching') ">
+                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                             <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>                                     
                                         </li>
                                         <!-- /ko -->
-                                        <li title="$T('swtag-pp')">
+                                        <li title="$T('swtag-pp')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-check"></span>
                                             <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, event: { change: changeProcessing }"></select>
                                         </li>
                                        
-                                        <li title="$T('eoq-scripts')">
+                                        <li title="$T('eoq-scripts')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-flash"></span>
                                             <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 0)"></select>
                                         </li>
@@ -594,6 +595,7 @@
             glitterTranslate.misingArt  = "$T('missingArt')";
             glitterTranslate.noSelect   = "$T('Glitter-noSelect')";
             glitterTranslate.sendThanks = "$T('Glitter-sendThanks')";
+            glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
             glitterTranslate.status     = [];
             
             glitterTranslate.status['Completed'] = "$T('post-Completed')";
