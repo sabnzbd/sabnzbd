@@ -13,7 +13,7 @@
         <div class="col1">
             <fieldset>
                 <div class="field-pair alt">
-                    <label class="config" for="email_endjob_radio">$T('opt-email_endjob')</label>
+                    <label class="config" for="email_endjob">$T('opt-email_endjob')</label>
                     <select name="email_endjob" id="email_endjob">
                         <option value="0" <!--#if int($email_endjob) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('email-never')</option>
                         <option value="1" <!--#if int($email_endjob) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('email-always')</option>
@@ -142,7 +142,7 @@
         <div class="col2">
             <h3>$T('section-NC')</h3>
         </div><!-- /col2 -->
-        <div class="col1" <!--#if $have_ncenter then '' else 'style="display:none;"'#-->">
+        <div class="col1" <!--#if $have_ncenter then '' else 'style="display:none;"'#-->>
             <fieldset>
                 <div class="field-pair <!--#if not $have_ncenter then "disabled" else "" #-->">
                     <label class="config" for="ncenter_enable">$T('opt-ncenter_enable')</label>
@@ -201,7 +201,7 @@
         <div class="col2">
             <h3>$T('section-OSD')</h3>
         </div><!-- /col2 -->
-        <div class="col1" <!--#if $have_ntfosd then '' else 'style="display:none;"'#-->">
+        <div class="col1" <!--#if $have_ntfosd then '' else 'style="display:none;"'#-->>
             <fieldset>
                 <div class="field-pair alt <!--#if not $have_ntfosd then "disabled" else "" #-->">
                     <label class="config" for="ntfosd_enable">$T('opt-ntfosd_enable')</label>
@@ -403,7 +403,7 @@
 					<span class="desc">$T('explain-pushover_enable')</span>
 				</div>
 				<div class="field-pair">
-					<label class="config" for="pushover_apikey">$T('opt-pushover_token')</label>
+					<label class="config" for="pushover_token">$T('opt-pushover_token')</label>
 					<input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" size="50" />
 					<span class="desc">$T('explain-pushover_token')</span>
 				</div>

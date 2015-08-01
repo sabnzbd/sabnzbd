@@ -61,7 +61,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="language">$T('opt-language')</label>
-                        <select name="language" id="language" id="language" class="select">
+                        <select name="language" id="language" class="select">
                         <!--#for $webline in $lang_list#-->
                             <!--#if $webline[0].lower() == $language.lower()#-->
                                 <option value="$webline[0]" selected="selected" class="selected">$webline[1]</option>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
-                        <select name="inet_exposure" id="inet_exposure" id="inet_exposure" class="select">
+                        <select name="inet_exposure" id="inet_exposure" class="select">
                             <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected" class="selected"' else ""#-->>$T('inet-local')</option>
                             <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected" class="selected"' else ""#-->>$T('inet-nzb')</option>
                             <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected" class="selected"' else ""#-->>$T('inet-api')</option>
