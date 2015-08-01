@@ -39,21 +39,21 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections" size="8" min="0" max="100" />
+                    <input type="number" name="connections" id="connections" min="0" max="100" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="priority">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority" size="8" min="0" max="100" /> $T('explain-svrprio')
+                    <input type="number" name="priority" id="priority" min="0" max="100" /> <i>$T('explain-svrprio')</i>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="retention">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention" size="8" min="0" /> <i>$T('days')</i>
+                    <input type="number" name="retention" id="retention" min="0" /> <i>$T('days')</i>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="timeout">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout" size="8" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout" min="30" /> <i>$T('seconds')</i>
                 </div>
-                <div class="field-pair alt" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl">$T('srv-ssl')</label>
                     <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="categories">$T('srv-categories')</label>
-                    <select name="categories" multiple>
+                    <select name="categories" id="categories" multiple>
                     <!--#for $cat in $cats#-->
                       <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>$cat</option>
                     <!--#end for#-->
@@ -113,7 +113,7 @@
             <h3>$servers[$server]['displayname']</h3>
             <p>
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$server" /></td>
+              <td><input type="checkbox" class="toggleServerCheckbox" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
               <td>&nbsp;$T('enabled')</td>
             </tr></table>
             </p>
@@ -129,7 +129,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
-                    <input type="text" name="host" id="host$cur" value="$servers[$server]['host']" size="40" />
+                    <input type="text" name="host" id="host$cur" readonly="readonly" value="$servers[$server]['host']" size="40" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port$cur">$T('srv-port')</label>
@@ -145,19 +145,19 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections$cur" value="$servers[$server]['connections']" size="8" min="0" max="100" />
+                    <input type="number" name="connections" id="connections$cur" value="$servers[$server]['connections']" min="0" max="100" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="priority$cur">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority$cur" value="$servers[$server]['priority']" size="8" min="0" max="100" /> $T('explain-svrprio')
+                    <input type="number" name="priority" id="priority$cur" value="$servers[$server]['priority']" min="0" max="100" /> <i>$T('explain-svrprio')</i>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="retention$cur">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention$cur" value="$servers[$server]['retention']" size="8" min="0" /> <i>$T('days')</i>
+                    <input type="number" name="retention" id="retention$cur" value="$servers[$server]['retention']" min="0" /> <i>$T('days')</i>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout$cur" value="$servers[$server]['timeout']" size="8" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout$cur" value="$servers[$server]['timeout']" min="30" /> <i>$T('seconds')</i>
                 </div>
                 <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
@@ -187,8 +187,8 @@
                     <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="categories">$T('srv-categories')</label>
-                    <select name="categories" multiple>
+                    <label class="config" for="categories$cur">$T('srv-categories')</label>
+                    <select name="categories" id="categories$cur" multiple>
                     <!--#for $cat in $cats#-->
                       <option value="$cat" <!--#if $cat in $servers[$server]['categories'] then 'selected' else ""#-->>$cat</option>
                     <!--#end for#-->
