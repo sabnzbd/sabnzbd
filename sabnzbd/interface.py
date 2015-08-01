@@ -1100,6 +1100,7 @@ class ConfigPage(object):
 
         conf['configfn'] = config.get_filename()
         conf['cmdline'] = sabnzbd.CMDLINE
+        conf['build'] = sabnzbd.version.__baseline__[:7]
 
         new = {}
         for svr in config.get_servers():
@@ -1228,7 +1229,7 @@ SWITCH_LIST = \
              'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
-             'enable_recursive', 'no_series_dupes', 'script_can_fail',
+             'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
 			 'rating_enable', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
@@ -1304,7 +1305,7 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
-              'warn_dupl_jobs', 'new_nzb_on_failure', 'enable_par_cleanup',
+              'warn_dupl_jobs', 'enable_par_cleanup',
               'enable_https_verification'
             )
 SPECIAL_VALUE_LIST = \

@@ -238,27 +238,32 @@
                     <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-script_can_fail')</span>
                 </div>
-                <div class="field-pair <!--#if not $have_multicore then "disabled" else "" #-->">
+                <div class="field-pair">
+                    <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
+                    <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-new_nzb_on_failure')</span>
+                </div>
+                <div class="field-pair alt <!--#if not $have_multicore then "disabled" else "" #-->">
                     <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
                     <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_multicore then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-par2_multicore')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="par_option">$T('opt-par_option')</label>
                     <input type="text" name="par_option" id="par_option" value="$par_option" size="20" />
                     <span class="desc">$T('explain-par_option')</span>
                 </div>
-                <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
+                <div class="field-pair alt <!--#if not $have_nice then "disabled" else "" #-->">
                     <label class="config" for="nice">$T('opt-nice')</label>
                     <input type="text" name="nice" id="nice" value="$nice" size="20" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-nice')</span>
                 </div>
-                <div class="field-pair alt <!--#if not $have_ionice then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_ionice then "disabled" else "" #-->">
                     <label class="config" for="ionice">$T('opt-ionice')</label>
                     <input type="text" name="ionice" id="ionice" value="$ionice" size="20" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ionice')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair alt">
                     <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                     <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50"/>
                     <span class="desc">$T('explain-cleanup_list')</span>
