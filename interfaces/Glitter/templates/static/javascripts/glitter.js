@@ -496,7 +496,7 @@ $(function() {
             $("#modal_add_nzb").modal("hide"); 
             form.reset()
             $('#nzbname').val('')
-            $('.btn-file em').text(glitterTranslate.chooseFile)
+            $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
         }
         self.addNZBFromURL = function(form) {
             // Add 
