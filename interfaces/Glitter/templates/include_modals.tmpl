@@ -13,7 +13,7 @@
                         <div class="form-group">
                             <label class="col-sm-5 control-label">$T('Glitter-interfaceRefresh')</label>
                             <div class="col-sm-4">
-                                <select id="refreshRate-option" class="form-control"  data-bind="value: refreshRate" >
+                                <select id="refreshRate-option" class="form-control" data-bind="value: refreshRate">
                                     <option value="1">1 $T('second')</option>
                                     <option value="2">2 $T('second')</option>
                                     <option value="4">4 $T('second')</option>
@@ -56,7 +56,7 @@
                                 </select>
                             </div>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label class="col-sm-5 control-label">$T('Glitter-dateFormat')</label>
                             <div class="col-sm-4">
                                 <select name="general-date-format" class="form-control" data-bind="value: dateFormat">
@@ -70,7 +70,7 @@
                     <!-- ko if: !hasStatusInfo() -->
                     <strong>$T('Glitter-loading')...</strong>
                     <!-- /ko -->
-                    
+
                     <!-- ko if: hasStatusInfo -->
                     <fieldset class="options-status-box">
                         <legend>
@@ -96,7 +96,7 @@
                         <div class="row">
                             <div class="col-sm-5">$T('Glitter-downloadDirSpeed')</div>
                             <div class="col-sm-7">
-                                <span data-bind="text: (statusInfo.dashboard.downloaddirspeed() > 0 ? statusInfo.dashboard.downloaddirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.downloaddirspeedbad() }"></span> MB/s 
+                                <span data-bind="text: (statusInfo.dashboard.downloaddirspeed() > 0 ? statusInfo.dashboard.downloaddirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.downloaddirspeedbad() }"></span> MB/s
                                 <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('Glitter-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.dashboard.downloaddir, length: 25"></span>)</small>
                             </div>
@@ -112,31 +112,30 @@
                         <div class="row">
                             <div class="col-sm-5">$T('cache')</div>
                             <div class="col-sm-7">
-                                <span data-bind="text: statusInfo.status.cache.cache_size"></span>  (<span data-bind="text: statusInfo.status.cache.cache_current"></span> $T('Glitter-articles'))
+                                <span data-bind="text: statusInfo.status.cache.cache_size"></span> (<span data-bind="text: statusInfo.status.cache.cache_current"></span> $T('Glitter-articles'))
                             </div>
                         </div>
                         <div class="clearfix"></div>
                         <div class="options-function-box">
-                                <a href="#" data-bind="click: forceDisconnect" class="btn btn-default ">$T('link-forceDisc')</a>
-                                <a href="#" data-bind="click: repairQueue" class="btn btn-default">$T('Glitter-repairQueue')</a>
-                                <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
-                                <select class="form-control" data-bind="value: statusInfo.status.loglevel">
-                                    <option value="0">$T('log-errWarn')</option>
-                                    <option value="1">$T('log-info')</option>
-                                    <option value="2">$T('log-debug')</option>
-                                </select>
+                            <a href="#" data-bind="click: forceDisconnect" class="btn btn-default ">$T('link-forceDisc')</a>
+                            <a href="#" data-bind="click: repairQueue" class="btn btn-default">$T('Glitter-repairQueue')</a>
+                            <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
+                            <select class="form-control" data-bind="value: statusInfo.status.loglevel">
+                                <option value="0">$T('log-errWarn')</option>
+                                <option value="1">$T('log-info')</option>
+                                <option value="2">$T('log-debug')</option>
+                            </select>
                         </div>
                     </fieldset>
-                    
+
                     <fieldset>
                         <legend>
                             <label for="options-show-connections">
-                                <input id="options-show-connections" onclick="\$(this).parents('fieldset').find('table').toggle()" type="checkbox" name="showConnections" /> 
-                                $T('Glitter-showActiveConnections')
+                                <input id="options-show-connections" onclick="\$(this).parents('fieldset').find('table').toggle()" type="checkbox" name="showConnections" /> $T('Glitter-showActiveConnections')
                             </label>
                             $T('connections')
                         </legend>
-                        
+
                         <div data-bind="foreach: statusInfo.status.servers">
                             <div class="options-server-box">
                                 <div class="row">
@@ -159,8 +158,8 @@
                                     <div class="col-sm-7" data-bind="text: serveractiveconn"></div>
                                 </div>
                                 <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
-        
-                                
+
+
                                 <!-- ko if: serverconnections().length > 0 -->
                                 <table class="table table-hover table-server-connections" data-bind="visible: \$('#options-show-connections').prop('checked')">
                                     <thead>
@@ -169,7 +168,7 @@
                                             <th><strong>$T('nzo-filename')</strong></th>
                                             <th><strong>$T('file-set')</strong></th>
                                         </tr>
-                                    </thead> 
+                                    </thead>
                                     <tbody>
                                         <!-- ko foreach: serverconnections -->
                                         <tr>
@@ -184,14 +183,13 @@
                             </div>
                         </div>
                     </fieldset>
-                    
-                    
+
+
                     <fieldset data-bind="visible: (statusInfo.status.folders().length > 0)">
                         <legend>
-                            <a href="#" class="hoverbutton" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a>
-                            $T('Glitter-orphanedJobs')
+                            <a href="#" class="hoverbutton" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> $T('Glitter-orphanedJobs')
                         </legend>
-                        <table class="table table-hover table-striped"> 
+                        <table class="table table-hover table-striped">
                             <thead>
                                 <tr>
                                     <th style="width: 30px;"></th>
@@ -245,7 +243,7 @@
                                     <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
                                     <input type="file" name="nzbFile" class="form-control" id="file" data-bind="event : { change: updateBrowseLabel }" />
                                 </label>
-                                
+
                                 <span class="input-group-btn">
                                      <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
                                 </span>
@@ -283,7 +281,7 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 <div id="modal_item_files" class="modal fade">
     <div class="modal-dialog">
@@ -294,14 +292,14 @@
             </div>
             <div class="modal-body">
                 <div id="modal_item_filelist">
-                
+
                     <form data-bind="submit: filelist.setNzbPassword" class="form-inline" role="form">
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-lock"></span> 
-                                    <span class="glyphicon glyphicon-floppy-saved"></span>
-                                </span>                   
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                <span class="glyphicon glyphicon-floppy-saved"></span>
+                                </span>
                                 <input type="text" class="form-control" id="nzb_password" placeholder="$T('Glitter-unpackPassword')" data-bind="value: filelist.modalPassword" />
                                 <button type="submit" class="btn btn-default">$T('Glitter-submit')</button>
                             </div>
@@ -315,12 +313,12 @@
                                 <span class="glyphicon glyphicon-eye-close"></span> 100%
                             </a>
                         </div>
-                        
+
 
                         <table class="table item-files-table">
                             <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.setUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
                                 <tr data-bind="css: { 'files-sortable' : canChange() }">
-                                    <td class="row-wrap-text">  
+                                    <td class="row-wrap-text">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" role="progressbar" data-bind="attr: { 'style': 'width: '+percentage() }">
                                                 <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canChange()  }, click : checkSelectRange" title="$T('Glitter-multiSelect')" />
@@ -332,21 +330,21 @@
                                 </tr>
                             </tbody>
                         </table>
-                        
+
                         <div class="multioperations-selector">
                             <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" />
                             <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="right" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
                         </div>
-                        
+
                         <div class="clearfix"></div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 <div id="modal_retry_job" class="modal modal-small fade">
     <div class="modal-dialog">
@@ -367,8 +365,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-lock"></span> 
-                                </span>                   
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                </span>
                                 <input type="text" class="form-control" id="retry_job_password" placeholder="$T('Glitter-unpackPassword')" />
                             </div>
                         </div>
@@ -390,31 +388,40 @@
             <div class="modal-body"></div>
         </div>
     </div>
-</div> 
+</div>
 
 <div id="modal_help" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <img src="./static/images/logo.png" width="120" height="45" alt=""/>
+                <img src="./static/images/logo.png" width="120" height="45" alt="" />
             </div>
             <div class="modal-body">
                 <table>
                     <tbody>
-                        <tr><td><strong>$T('menu-wiki'):</strong></td><td><a href="http://wiki.sabnzbd.org/" target="_blank">http://wiki.sabnzbd.org/</a></td></tr>
-                        <tr><td><strong>$T('menu-forums'):</strong></td><td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td></tr>
-                        <tr><td><strong>$T('menu-irc'):</strong></td><td><a href="http://www.sabnzbd.org/live-chat/" target="_blank">http://www.sabnzbd.org/live-chat/</a></td></tr>
+                        <tr>
+                            <td><strong>$T('menu-wiki'):</strong></td>
+                            <td><a href="http://wiki.sabnzbd.org/" target="_blank">http://wiki.sabnzbd.org/</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>$T('menu-forums'):</strong></td>
+                            <td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>$T('menu-irc'):</strong></td>
+                            <td><a href="http://www.sabnzbd.org/live-chat/" target="_blank">http://www.sabnzbd.org/live-chat/</a></td>
+                        </tr>
                     </tbody>
                 </table>
-                
+
                 <p><strong>SABnzbd $('version'):</strong> $version</p>
                 <p><small>Copyright (C) 2008-2015, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
                 <p><small>$T('yourRights') </small></p>
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 <div id="modal_purge_history" class="modal modal-small fade">
     <div class="modal-dialog">
@@ -430,4 +437,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>

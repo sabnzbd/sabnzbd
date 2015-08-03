@@ -837,7 +837,6 @@ SKIN_TEXT = {
     'Glitter-configure' : TT('SABnzbd settings'),
     'Glitter-restartSab' : TT('Restart SABnzbd'),
     'Glitter-onFinish' : TT('On queue finish'),
-    'Glitter-clearAction' : TT('Clear action'),
     'Glitter-statusInterfaceOptions' : TT('Status and interface options'),
     'Glitter-dragAndDrop' : TT('Or drag and drop files in the window!'),
     'Glitter-storage' : TT('Storage'),
