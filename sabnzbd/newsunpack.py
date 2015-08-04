@@ -1282,7 +1282,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 # Found an extra par2 file. Only the next line will tell whether it's usable
                 m = _RE_LOADING_PAR2.search(line)
                 if m and m.group(1).lower().endswith('.par2'):
-                    extra_par2_name = m.group(1)
+                    extra_par2_name = TRANS(m.group(1))
 
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 ## Initialparfile probably didn't decode properly,
@@ -1423,7 +1423,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 m = _RE_BLOCK_FOUND.search(line)
                 if m and '.rar' in m.group(1).lower() and '.rar' in m.group(2).lower():
                     workdir = os.path.split(parfile)[0]
-                    used_joinables.append(os.path.join(workdir, m.group(1)))
+                    used_joinables.append(os.path.join(workdir, TRANS(m.group(1))))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
@@ -1444,8 +1444,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             elif 'is a match for' in line:
                 m = _RE_IS_MATCH_FOR.search(line)
                 if m:
-                    old_name = m.group(1)
-                    new_name = m.group(2)
+                    old_name = TRANS(m.group(1))
+                    new_name = TRANS(m.group(2))
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
@@ -1468,7 +1468,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     # Loading parity files
                     m = LOADING_RE.match(line)
                     if m:
-                        pars.append(m.group(1))
+                        pars.append(TRANS(m.group(1)))
                         continue
 
                 # Target files
@@ -1478,7 +1478,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
                         nzo.status = Status.VERIFYING
-                    datafiles.append(m.group(1))
+                    datafiles.append(TRANS(m.group(1)))
                     continue
 
                 # Verify done
