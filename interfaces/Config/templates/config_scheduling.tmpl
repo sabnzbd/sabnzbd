@@ -58,7 +58,7 @@ else:
                     <input type="text" name="arguments" id="arguments" value="" size="20" />
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-addSchedule')" />
+                    <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addSchedule')</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -80,7 +80,7 @@ else:
                                 <input type="hidden" name="session" value="$session"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator<!--#if $odd then "" else " alt"#-->">
-                                    <input class="float-left" type="submit" value="$T('button-x')" />
+                                    <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
                                     <div class="scheduleEntry">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
                                     </div>

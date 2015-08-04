@@ -88,9 +88,9 @@
           <td><input type="text" name="newzbin" value="$slot.newzbin" size="20" /></td>
 
           <td class="nowrap">
-              <input type="submit" class="Save" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->" />
+              <button class="btn btn-default"><!--#if $cur == 2#--><span class="glyphicon glyphicon-plus"></span> $T('button-add')<!--#else#--><span class="glyphicon glyphicon-ok"></span> $T('button-save')<!--#end if#--></button>
               <!--#if $slot.name and $slot.name != '*'#-->
-                <input type="button" class="delCat" value="$T('button-x')" />
+              <button class="btn btn-default delCat" type="button"><span class="glyphicon glyphicon-trash"></span></button>
               <!--#end if#-->
           </td>
 

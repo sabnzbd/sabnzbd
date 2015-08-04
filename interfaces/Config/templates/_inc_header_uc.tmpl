@@ -63,11 +63,13 @@
         function config_success() {
             \$('.saveButton').each(function () {
                 \$(this).removeAttr("disabled").attr("value", "$T('button-saveChanges')");
+                \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')');
             });
         }
         function config_failure() {
             \$('.saveButton').each(function () {
                 \$(this).removeAttr("disabled").attr("value", "$T('smpl-failed')");
+                \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> $T('smpl-failed')');
             });
         }
 
@@ -98,6 +100,7 @@
                 beforeSubmit: function () {
                     \$('.saveButton').each(function () {
                         \$(this).attr("disabled", "disabled").attr("value", "$T('smpl-saving')");
+                        \$(this).attr("disabled", "disabled").html('<span class="glyphicon glyphicon-transfer"></span> $T('smpl-saving')');
                     });
                 },
                 success: function (json) {
@@ -115,21 +118,6 @@
                 },
                 timeout: 3000
             });
-
-            \$("#sidebar-trigger").click(function () {
-                if (\$("#sidebar-trigger").hasClass("trigger-left")) {
-                    \$("#sidebar").animate({marginLeft: "-150px", queue: false}, 250);
-                    \$("#sidebar-pane").animate({marginLeft: "-150px", queue: false}, 250);
-                    \$("#content").animate({left: "6px", queue: false}, 250);
-                    \$("#sidebar-trigger").removeClass("trigger-left").addClass("trigger-right");
-                } else {
-                    \$("#sidebar").animate({marginLeft: "0px", queue: false}, 250);
-                    \$("#sidebar-pane").animate({marginLeft: "0px", queue: false}, 250);
-                    \$("#content").animate({left: "156px", queue: false}, 250);
-                    \$("#sidebar-trigger").removeClass("trigger-right").addClass("trigger-left");
-                }
-            });
-
         });
     
     /*
