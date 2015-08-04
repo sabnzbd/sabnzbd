@@ -3,27 +3,26 @@ body {
 }
 
 h2 {
-    margin-top:0;
+    margin-top: 0;
 }
-
 
 /***
     Navbar
 **/
+
 .container {
     margin-top: 1em;
 }
 
 .main-navbar {
-    padding:0 0 0 0;
-    margin-bottom:0px;
-    z-index:999;
-    
+    padding: 0 0 0 0;
+    margin-bottom: 0px;
+    z-index: 999;
 }
 
 .sparkline-container svg {
     margin: 10px 15px 8px;
-    float:left;
+    float: left;
 }
 
 .main-navbar .sparkline {
@@ -55,24 +54,24 @@ h2 {
 }
 
 .navbar-collapse.in .dropdown-menu a,
-.navbar-collapse.in .dropdown-menu a:hover {
+ .navbar-collapse.in .dropdown-menu a:hover {
     color: black !important;
 }
 
 .navbar-collapse.in .dropdown-menu a.active-on-queue-finish {
-    color:  white !important;
+    color: white !important;
 }
 
 .navbar-timeleft {
-    font-weight:bold;
+    font-weight: bold;
     min-width: 100px;
     background-color: #F5F5F5;
     cursor: inherit;
 }
 
 .navbar-header img {
-    margin-right:1em;
-    margin-left:  10px;
+    margin-right: 1em;
+    margin-left: 10px;
 }
 
 #navbar-logo-big {
@@ -93,7 +92,7 @@ li.dropdown {
 }
 
 .navbar-speed .glyphicon {
-    opacity:0.4;
+    opacity: 0.4;
     float: right;
     line-height: 18px;
 }
@@ -103,7 +102,7 @@ li.dropdown {
 }
 
 .caret {
-    border-top-color:  black !important;
+    border-top-color: black !important;
 }
 
 .max-speed-input {
@@ -124,46 +123,46 @@ li.dropdown {
     display: block;
     text-decoration: underline;
     font-weight: normal;
-    
 }
 
 .max-speed-slider {
     width: 95%;
     margin: 4px 5px 5px;
 }
-.ui-slider { 
-    position: relative; 
-    text-align: left; 
-    height: 10px;  
+
+.ui-slider {
+    position: relative;
+    text-align: left;
+    height: 10px;
     background-color: #E5E5E5;
     margin-top: 5px;
 }
-.ui-slider .ui-slider-handle { 
-    position: absolute; 
-    z-index: 2; 
-    width: 0.5em; 
+
+.ui-slider .ui-slider-handle {
+    position: absolute;
+    z-index: 2;
+    width: 0.5em;
     height: 24px;
-    top: -7px; 
-    cursor: default; 
-    background-color: #767676; 
+    top: -7px;
+    cursor: default;
+    background-color: #767676;
     border: 1px solid white;
-    
-    margin-left: -.25em; 
-   
-}
-.ui-slider .ui-slider-range { 
-    position: absolute; 
-    z-index: 1; 
-    font-size: .7em; 
-    display: block; 
-    border: 0; 
-    top: 0; 
-    height: 100%; 
+    margin-left: -.25em;
 }
 
-.ui-slider-horizontal .ui-slider-range-min { 
+.ui-slider .ui-slider-range {
+    position: absolute;
+    z-index: 1;
+    font-size: .7em;
+    display: block;
+    border: 0;
+    top: 0;
+    height: 100%;
+}
+
+.ui-slider-horizontal .ui-slider-range-min {
     background-color: #9DDB72;
-    left: 0; 
+    left: 0;
 }
 
 .active-on-queue-finish-menu,
@@ -171,14 +170,14 @@ li.dropdown {
     color: red !important;
 }
 
-.active-on-queue-finish {
-    background-color: #777 !important;
-    color: white !important;
+.menu-options {
+    min-width: 200px;
+    padding-bottom: 0;
 }
 
-.active-on-queue-finish-clear {
-    background-color: #F0F0F0;
-    margin-bottom: -5px;
+.menu-options .form-control {
+    border-width: 1px 0px 0px;
+    padding-left: 15px;
 }
 
 /***
@@ -187,11 +186,11 @@ li.dropdown {
 
 .main-content {
     padding-top: 50px;
-    background-color:#FFF;
-    /*box-shadow:0 0 10px 3px #CCC;*/
+    background-color: #FFF;
+    /*box-shadow: 0 0 10px 3px #CCC;*/
     border: 1px solid rgba(0, 0, 0, 0.2);
-    position:relative;
-    top:-52px;
+    position: relative;
+    top: -52px;
     margin-bottom: 30px;
 }
 
@@ -200,14 +199,13 @@ li.dropdown {
 }
 
 .main-filedrop.in,
-.main-restarting.in { 
-
-    text-align: center; 
+.main-restarting.in {
+    text-align: center;
     opacity: 0.9;
-    color:  black;
+    color: black;
     z-index: 2000;
     padding: 1em;
-    padding-top: 15%; 
+    padding-top: 15%;
 }
 
 .main-filedrop.in span {
@@ -232,8 +230,8 @@ li.dropdown {
 }
 
 table {
-    table-layout:fixed;
-    background-color:#FDFDFD;
+    table-layout: fixed;
+    background-color: #FDFDFD;
     border: 0;
     border-collapse: collapse;
     margin-bottom: 10px;
@@ -244,22 +242,21 @@ table {
 }
 
 thead {
-    height:0px;
+    height: 0px;
 }
 
 tr th {
-    border-bottom:none !important;
-    visibility:hidden;
-    padding:0px !important;
-    height:0px;
+    border-bottom: none !important;
+    visibility: hidden;
+    padding: 0px !important;
+    height: 0px;
 }
 
-
 tr td {
-    border-top:1px solid #F0F0F0 !important;
-    vertical-align:middle !important;
-    padding-top:6px;
-    padding-bottom:6px ;
+    border-top: 1px solid #F0F0F0 !important;
+    vertical-align: middle !important;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .table-active-sorting {
@@ -267,9 +264,8 @@ tr td {
     border-bottom: 1px solid #F0F0F0 !important;
 }
 
-tbody>tr:last-child td{
+tbody>tr:last-child td {
     border-bottom: 1px solid #F0F0F0 !important;
-    
 }
 
 tbody>tr>td:first-child {
@@ -295,25 +291,24 @@ tbody>tr>td:last-child {
 }
 
 .hoverbutton {
-    opacity:0.3;
-    text-decoration:none;
+    opacity: 0.3;
+    text-decoration: none;
 }
 
 .hoverbutton:hover {
-    opacity:1;
-    color:inherit;
+    opacity: 1;
+    color: inherit;
 }
 
 .hoverbutton.glyphicon-play {
-    opacity:1;
-    color:#474747;
+    opacity: 1;
+    color: #474747;
 }
 
 .queue-update-info {
     margin-bottom: 5px;
     font-size: 1.1em;
 }
-
 
 .info-container {
     float: right;
@@ -324,7 +319,7 @@ tbody>tr>td:last-child {
 }
 
 .info-container .glyphicon {
-    margin-right:  2px;
+    margin-right: 2px;
 }
 
 .info-container a {
@@ -345,8 +340,8 @@ tbody>tr>td:last-child {
 }
 
 td.name .row-wrap-text {
-    max-width:100%;
-    display:block; 
+    max-width: 100%;
+    display: block;
     float: left;
     margin-right: 6px;
     height: 1.5em;
@@ -357,7 +352,8 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width:90%;/* Change for each size! */
+    max-width: 90%;
+ /* Change for each size! */;
 }
 
 .queue-table td.name:hover .name-options {
@@ -366,13 +362,13 @@ td.name .row-wrap-text {
 
 .queue-table td.name:hover .glyphicon-folder-open {
     width: 1.5em;
-    margin-left:  1px;
+    margin-left: 1px;
 }
 
 .queue-table td.name input {
     width: 100%;
     height: 20px;
-    margin-left:-2px;
+    margin-left: -2px;
     border: 1px solid #ccc;
 }
 
@@ -396,7 +392,7 @@ td.name .name-ratings .glyphicon-volume-up {
 }
 
 tbody.nodownloads tr td {
-    border:none;
+    border: none;
     text-align: center;
     border-bottom: 1px solid #F0F0F0 !important;
 }
@@ -421,7 +417,7 @@ td.delete {
     text-align: right !important;
 }
 
-td.delete .dropdown  {
+td.delete .dropdown {
     float: left;
 }
 
@@ -435,7 +431,7 @@ td.delete input[type="checkbox"] {
 }
 
 td.delete label,
-.multioperations-selector .add-nzb-inputbox-small label {
+ .multioperations-selector .add-nzb-inputbox-small label {
     margin: -5px;
     padding: 5px 12px 5px 10px;
     cursor: pointer;
@@ -465,24 +461,23 @@ td.delete label,
 }
 
 .progress {
-    position:relative;
+    position: relative;
     height: 24px;
     line-height: 24px;
     overflow: visible;
-    margin-bottom:0;
+    margin-bottom: 0;
 }
 
 .progress span {
-    position:absolute;
-    top:0;
-    left:0;
-    z-index:2;
-    text-align:right;
-    font-size:12px;
-    width:100%;
-    color:#404040;
-    padding-right:10px;
-    
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    text-align: right;
+    font-size: 12px;
+    width: 100%;
+    color: #404040;
+    padding-right: 10px;
 }
 
 .progress strong {
@@ -490,7 +485,7 @@ td.delete label,
 }
 
 .progress strong,
-.progress i {
+ .progress i {
     color: black;
     margin-left: 10px;
     line-height: 24px;
@@ -503,7 +498,7 @@ td.delete label,
 }
 
 .progress-bar {
-    z-index:1;
+    z-index: 1;
     text-align: left;
 }
 
@@ -511,13 +506,11 @@ td.delete label,
     background-color: #9DDB72;
 }
 
-
 .multioperations-selector {
     padding-left: 10px;
     border: 1px solid #F0F0F0;
     margin: -7px 0px 10px;
     background-color: #f9f9f9;
-    
     max-width: 700px;
     float: right;
 }
@@ -530,7 +523,7 @@ td.delete label,
     width: 52px;
     float: right;
     padding-left: 0;
-    padding-top:  2px;
+    padding-top: 2px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small span {
@@ -550,7 +543,7 @@ td.delete label,
 }
 
 .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
-.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
+  .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
     padding-left: 6px;
     padding-right: 6px;
 }
@@ -582,6 +575,7 @@ td.delete label,
 }
 
 /* WARNINGS */
+
 .queue-warnings {
     clear: both;
     width: 100%;
@@ -615,12 +609,13 @@ td.delete label,
 }
 
 .table-warnings .label {
-    margin-right:  8px;
+    margin-right: 8px;
 }
 
 .table-warnings td {
     padding: 2px !important;
 }
+
 .table-warnings .label {
     display: inline-block;
     width: 80px;
@@ -631,27 +626,25 @@ td.delete label,
     word-break: break-all;
 }
 
-
 /***
     History Specific
 ***/
 
 .history {
-    margin-top:  18px;
+    margin-top: 18px;
 }
 
 .history-table {
-    border-bottom:1px solid #F0F0F0 !important;
+    border-bottom: 1px solid #F0F0F0 !important;
 }
 
 .history-failed-download td.status {
     color: red !important;
-}	
+}
 
-.retrybutton, 
+.retrybutton,
 .retrybutton-inactive {
     color: red !important;
-    
 }
 
 .retrybuttontext {
@@ -668,13 +661,13 @@ td.delete label,
 
 .history-table tr td {
     vertical-align: top !important;
-    cursor:default;
+    cursor: default;
 }
 
 .history-table tr td.status,
 .history-table tr td.history-completedon {
-    color:#888;
-    font-size:12px;
+    color: #888;
+    font-size: 12px;
     padding-right: 0 !important;
     vertical-align: bottom !important;
 }
@@ -823,56 +816,65 @@ td.delete label,
 }
 
 .processing-download {
-  width: 16px;
-  height: 18px;
-  text-align: center;
-  font-size: 8px;
-  margin-top: 1px;
+    width: 16px;
+    height: 18px;
+    text-align: center;
+    font-size: 8px;
+    margin-top: 1px;
 }
 
 .processing-download > div {
-  background-color: #333;
-  height: 100%;
-  width: 2px;
-  margin-right: 2px;
-  display: inline-block;
-  animation: stretchdelay 1.2s infinite ease-in-out;
+    background-color: #333;
+    height: 100%;
+    width: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    animation: stretchdelay 1.2s infinite ease-in-out;
 }
 
 .processing-download .rect2 {
-  animation-delay: -1.1s;
+    animation-delay: -1.1s;
 }
 
 .processing-download .rect3 {
-  animation-delay: -1.0s;
+    animation-delay: -1.0s;
 }
 
 .processing-download .rect4 {
-  animation-delay: -0.9s;
-  margin-right: 0;
+    animation-delay: -0.9s;
+    margin-right: 0;
 }
 
 @-webkit-keyframes stretchdelay {
-  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
-  20% { -webkit-transform: scaleY(1.0) }
+    0%,
+    40%,
+    100% {
+        -webkit-transform: scaleY(0.4);
+    }
+
+    20% {
+        -webkit-transform: scaleY(1.0);
+    }
 }
 
 @keyframes stretchdelay {
-  0%, 40%, 100% { 
-    transform: scaleY(0.4);
-    -webkit-transform: scaleY(0.4);
-  }  20% { 
-    transform: scaleY(1.0);
-    -webkit-transform: scaleY(1.0);
-  }
-}
+    0%, 40%, 100% {
+        transform: scaleY(0.4);
+        -webkit-transform: scaleY(0.4);
+    }
 
+    20% {
+        transform: scaleY(1.0);
+        -webkit-transform: scaleY(1.0);
+    }
+}
 
 /***
     Modals
 ***/
 
 /* OPTIONS MODAL */
+
 #modal_options .form-group {
     margin-bottom: 5px;
 }
@@ -905,7 +907,7 @@ td.delete label,
 
 #modal_options .options-function-box .btn,
 #modal_options .options-function-box select {
-    margin-top: 10px; 
+    margin-top: 10px;
     width: auto;
     display: inline-block;
 }
@@ -940,7 +942,6 @@ td.delete label,
     font-weight: bold;
 }
 
-
 #modal_options .options-status-box .glyphicon {
     top: 2px;
     margin-left: 3px;
@@ -962,24 +963,23 @@ td.delete label,
 }
 
 #modal_options .table-server-connections td,
-#modal_options .table-server-connections th {
+ #modal_options .table-server-connections th {
     padding: 3px !important;
     height: auto;
     visibility: visible;
 }
 
 /* PURGE MODAL */
+
 #modal_purge_history .modal-body .btn {
     width: 100%;
-    margin-bottom:  10px;
+    margin-bottom: 10px;
     text-align: left;
 }
 
 #modal_purge_history .modal-body .btn .glyphicon {
-   float: right;
+    float: right;
 }
-
-
 
 /* ADD-NZB MODAL */
 
@@ -992,19 +992,17 @@ td.delete label,
     width: 50%;
     margin: 5px 0px;
     padding-left: 20px;
-            
 }
 
 .add-nzb-inputbox select {
     display: inline-block;
     width: 95%;
-        
 }
 
 .add-nzb-inputbox span {
     display: inline-block;
     margin: 8px 2px 0px 5px;
-    margin-left: -20px;    
+    margin-left: -20px;
 }
 
 .btn-file {
@@ -1025,12 +1023,12 @@ td.delete label,
 }
 
 /* HELP MODAL */
+
 #modal_help {
     text-align: center;
 }
 
 #modal_help table {
-
     margin: 1em auto;
     text-align: left;
     border-collapse: collapse;
@@ -1052,20 +1050,20 @@ td.delete label,
 }
 
 /* FILES MODAL */
+
 #modal_item_files .form-group {
-    width:400px;
-   
+    width: 400px;
 }
+
 #modal_item_files .input-group,
 #modal_item_files .input-group input {
     width: auto;
 }
 
-
 #modal_item_files h4 {
-    width:  90%;
+    width: 90%;
     overflow: hidden;
-    height:1.3em;
+    height: 1.3em;
 }
 
 #modal_item_files hr {
@@ -1078,8 +1076,8 @@ td.delete label,
     float: left;
     padding: 5px 8px;
     margin-bottom: 5px;
-    margin-right:  10px;
-    border:  1px solid #cccccc
+    margin-right: 10px;
+    border: 1px solid #cccccc;
 }
 
 #modal_item_files .multioperations-selector a {
@@ -1090,7 +1088,6 @@ td.delete label,
     overflow: hidden;
     box-shadow: none;
     -webkit-box-shadow: none;
-    
 }
 
 #modal_item_files .item-files-table .progress-bar {
@@ -1128,13 +1125,13 @@ td.delete label,
 #modal_retry_job .form-group {
     margin-bottom: 3px;
 }
+
 #modal_retry_job fieldset {
     margin-bottom: 10px !important;
 }
 
-
 /* SCRIPT LOG MODAL */
-#history_script_log .modal-dialog  {
+#history_script_log .modal-dialog {
     width: auto !important;
     max-width: 800px !important;
 }
@@ -1171,7 +1168,7 @@ td.delete label,
 
 @media screen and (max-width: 1200px) {
     .queue-table td.name:hover .row-wrap-text {
-        max-width:85%;
+        max-width: 85%;
     }
 }
 
@@ -1180,13 +1177,13 @@ td.delete label,
     .sparkline-container {
         display: none !important;
     }
-    
+
     .queue-table td.name:hover .row-wrap-text {
-        max-width:80%;
-    } 
+        max-width: 80%;
+    }
 }
 
-@media screen and (min-width: 1000px) { 
+@media screen and (min-width: 1000px) {
     .name-has-ratings .row-wrap-text {
         max-width: 80% !important;
     }
@@ -1195,15 +1192,15 @@ td.delete label,
 @media screen and (min-width: 768px) {
     .modal-small .modal-dialog {
         width: 350px;
-    }  
-    
+    }
+
     .queue .multioperations-selector {
         min-width: 700px;
     }
 }
 
 @media screen and (min-height: 800px) {
-    /* Only for AddNZB and AboutModals */    
+    /* Only for AddNZB and AboutModals */
     #modal_add_nzb .modal-dialog,
     #modal_help .modal-dialog {
         margin-top: 80px;
@@ -1211,30 +1208,25 @@ td.delete label,
 }
 
 /* Targetting Ipad */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px)  {
+@media only screen and (min-device-width:768px) and (max-device-width:1024px) {
     .main-navbar {
         margin-top: 0;
     }
-    
+
     .container {
         width: 100%;
     }
-    
+
     .sparkline-container {
         display: block !important;
     }
-    
+
     .history-table .status-header {
         width: 25% !important;
     }
 }
 
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : portrait) { 
+@media only screen and (min-device-width:768px) and (max-device-width:1024px) and (orientation:portrait) {
     .sparkline-container svg {
         width: 160px !important;
     }
@@ -1248,7 +1240,10 @@ and (orientation : portrait) {
     border-radius: 0 !important;
 }
 
-a, a:active, a:hover, a:focus {
+a,
+a:active,
+a:hover,
+a:focus {
     color: black;
     text-decoration: none;
 }
@@ -1259,7 +1254,7 @@ a, a:active, a:hover, a:focus {
 
 .nav>li {
     display: inline-block;
-    float:left;
+    float: left;
 }
 
 .nav>li>a {
@@ -1274,9 +1269,8 @@ a, a:active, a:hover, a:focus {
 }
 
 .pagination {
-    margin:0;
+    margin: 0;
 }
-
 
 .pagination li {
     cursor: pointer;
@@ -1299,25 +1293,26 @@ legend {
     border: 1px solid #8F8F8F;
 }
 
-
 .progress-bar {
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  -webkit-transition: width 0.3s linear;
-  transition: width 0.3s linear;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: width 0.3s linear;
+    transition: width 0.3s linear;
 }
 
-.stylish-input-group .input-group-addon{
-    background: white !important; 
+.stylish-input-group .input-group-addon {
+    background: white !important;
 }
-.stylish-input-group .form-control{
-	border-right:0; 
-	box-shadow:0 0 0; 
-	border-color:#ccc;
+
+.stylish-input-group .form-control {
+    border-right: 0;
+    box-shadow: 0 0 0;
+    border-color: #ccc;
 }
-.stylish-input-group button{
-    border:0;
-    background:transparent;
+
+.stylish-input-group button {
+    border: 0;
+    background: transparent;
 }
 
 .modal-content {
@@ -1361,7 +1356,7 @@ legend {
 }
 
 .modal-footer {
-    margin-top: 0; 
+    margin-top: 0;
 }
 
 button[data-dismiss="modal"] {

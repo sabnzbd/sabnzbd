@@ -1992,7 +1992,7 @@ input[type="submit"] {
     background-color: #fff;
     display:inline-block;
     padding:6px 12px;
-    margin-bottom:0;
+    margin-bottom: 0;
     font-size:13px;
     font-weight:400;
     line-height:1.42857143;
@@ -2002,6 +2002,7 @@ input[type="submit"] {
     cursor:pointer;
     background-image:none;
     border:1px solid #ccc;
+    height: 34px;
 }
 
 input[type="button"]:hover,
@@ -2009,10 +2010,6 @@ input[type="submit"]:hover {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
-}
-
-input[type="submit"]:before {
-    content: 'sss';
 }
 
 input[type="text"],
@@ -2028,12 +2025,19 @@ select {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     display:inline-block;
     vertical-align:middle;
-    max-width: 100%;    
+    max-width: 100%;  
+    min-height: 34px;
+    font-size: 13px;
 }
 
 select[multiple] {
-    min-width: 200px;
+    width:100%;
     padding: 0 !important;
+    
+}
+
+.col1 select[multiple] {
+    max-width: 300px;
 }
 
 select[multiple] option {
@@ -2049,6 +2053,10 @@ select[multiple] option {
 
 input[type="checkbox"] {
     margin-top: 5px;
+}
+
+.Scheduling input[type="checkbox"] {
+    margin-top: 0px;
 }
  
 label.config {
@@ -2188,7 +2196,5 @@ label.config {
 
     .fileBrowserField {
         max-width: 70% !important;
-    }
-    
-    
+    } 
 }

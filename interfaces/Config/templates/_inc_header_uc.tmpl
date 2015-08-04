@@ -32,6 +32,7 @@
     <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $.noConflict()
+        var browseText = "$T('browse-folder')";
     </script>
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
@@ -58,6 +59,7 @@
         var help_uri = "$help_uri";
         var apikey = "$session";
         var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
+        
         function config_success() {
             \$('.saveButton').each(function () {
                 \$(this).removeAttr("disabled").attr("value", "$T('button-saveChanges')");

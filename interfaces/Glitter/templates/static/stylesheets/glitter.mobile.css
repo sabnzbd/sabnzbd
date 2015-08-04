@@ -25,8 +25,6 @@
     display: inline-block;
 }
 
-
-
 h2 {
     font-size: 25px;
     margin-bottom: 5px;
@@ -44,7 +42,6 @@ h2 {
 
 .main-restarting.in strong {
     font-size: 2em;
-    
     font-weight: bold;
 }
 
@@ -67,7 +64,6 @@ h2 {
     float: none;
     clear: both;
     line-height: 2.3em;
-    
 }
 
 .history-info {
@@ -75,8 +71,8 @@ h2 {
 }
 
 .info-container-break:after {
-    content:"\A"; 
-    white-space:pre;
+    content: "\A";
+    white-space: pre;
 }
 
 .info-container a {
@@ -85,7 +81,6 @@ h2 {
     top: 58px;
     font-size: 1em;
 }
-
 
 .queue-table .table-header-progress {
     width: 0%;
@@ -109,7 +104,7 @@ h2 {
     height: 2em;
     border: 0 !important;
     padding: 0 !important;
-    background:  transparent !important;
+    background: transparent !important;
 }
 
 .queue-table td.name .row-wrap-text {
@@ -129,12 +124,11 @@ h2 {
 
 .queue-table td.name .glyphicon-folder-open {
     width: 1.5em;
-    margin-left:  1px;
+    margin-left: 1px;
 }
 
-
 .multioperations-selector .add-nzb-inputbox {
-    width: 50%
+    width: 50%;
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
@@ -142,7 +136,7 @@ h2 {
 }
 
 .multioperations-selector .add-nzb-inputbox-tiny {
-    width: 50%
+    width: 50%;
 }
 
 .multioperations-selector .add-nzb-inputbox-tiny>a {
@@ -174,7 +168,6 @@ h2 {
 .name-has-ratings .row-wrap-text {
     max-width: 97% !important;
 }
-
 
 .history-table .delete .dropdown-menu {
     width: 90%;
