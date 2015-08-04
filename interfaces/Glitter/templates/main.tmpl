@@ -36,10 +36,9 @@
         <!--[if lt IE 9]>
             <script src="./static/javascripts/html5shiv.min.js"></script>
             <script src="./static/javascripts/respond.min.js"></script>
-             <link href="./static/stylesheets/glitter.ie8.css" rel="stylesheet">
+            <link href="./static/stylesheets/glitter.ie8.css" rel="stylesheet">
         <![endif]-->
     </head>
-
     <body>
         <div class="container main-navbar">
             <nav class="navbar navbar-inverse main-navbar">
@@ -71,7 +70,6 @@
                         </div>
                         <span class="btn btn-default navbar-btn  navbar-timeleft" data-bind="text: timeLeft">0:00</span>
                     </div>
-
                 </div>
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -110,7 +108,6 @@
                         <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-configure')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
-
                         <li class="dropdown">
                             <a href="#" data-toggle="dropdown" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}" onclick="keepOpen(this)"><span class="glyphicon glyphicon-off"></span></a>
                             <ul class="dropdown-menu menu-options" role="menu">
@@ -264,7 +261,6 @@
                                             <span class="glyphicon glyphicon-flash"></span>
                                             <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 0)"></select>
                                         </li>
-
                                     </ul>
                                 </div>
                                 <a href="#" class="hoverbutton" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
@@ -280,7 +276,6 @@
                         </label>
                         <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
                     </div>
-
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-play">
                             <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
@@ -291,7 +286,6 @@
                             <span class="glyphicon glyphicon-pause"></span>
                         </label>
                     </div>
-
                     <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown">
                         <a role="button" href="#" data-toggle="dropdown" class="hoverbutton">
                             <span data-toggle="tooltip" data-placement="top" title="$T('cmenu-sorting')" class="glyphicon glyphicon-sort-by-alphabet"></span>
@@ -323,7 +317,7 @@
                     </div>
                     <div class="clearfix"></div>
                 </form>
-
+                
                 <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
                     <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
                         <span data-bind="text: page"></span>
@@ -370,10 +364,8 @@
                             <th class="status-header"></th>
                             <th style="width: 108px;"></th>
                             <th style="width: 60px;"></th>
-
                         </tr>
                     </thead>
-
                     <tbody data-bind="foreach: history.historyItems">
                         <tr class="historyitem" data-bind="css: {'history-failed-download':failed()}">
                             <td>
@@ -427,7 +419,6 @@
                                                     <span class="glyphicon glyphicon-thumbs-down"></span>
                                                     <span data-bind="text: historyStatus.rating_avg_vote_down"></span>
                                                 </label>
-
                                                 <label>
                                                     <span class="glyphicon glyphicon-facetime-video"></span>
                                                     <select name="ratings-video" data-bind="value: historyStatus.rating_user_video, event: { change: setUserRating }, disable: historyStatus.rating_user_video">
@@ -538,7 +529,6 @@
                                                 <div class="col-sm-2">$T('Glitter-storage')</div>
                                                 <div class="col-sm-10" data-bind="text: historyStatus.storage"></div>
                                             </div>
-
                                             <!-- ko foreach: historyStatus.stage_log -->
                                             <div class="row">
                                                 <div class="col-sm-2" data-bind="text: glitterTranslate.status[name()]"></div>
@@ -559,7 +549,7 @@
                     <span class="input-group-addon">
                         <button type="submit">
                             <span class="glyphicon glyphicon-search"></span>
-                    </button>
+                        </button>
                     </span>
                 </div>
 
@@ -584,26 +574,21 @@
             </div>
         </div>
 
-
         <!-- Filedrop -->
         <div class="main-filedrop modal-backdrop fade in">
             <span class="glyphicon glyphicon-plus-sign"></span>
         </div>
         <div class="main-restarting modal-backdrop fade in" data-bind="visible: isRestarting" style="display: none;">
-            <strong><span class="glyphicon glyphicon-retweet"></span> $T('Glitter-lostConnection')</strong>
-            <br />
+            <strong><span class="glyphicon glyphicon-retweet"></span> $T('Glitter-lostConnection')</strong><br />
             <small>$T('Glitter-afterRestart')</small>
         </div>
 
-
         <!--#include $webdir + "/include_modals.tmpl"#-->
-
-        <script type="text/javascript">
-            apiKey = "$session";
-        </script>
 
         <!-- Make translations available in scripts -->
         <script type="text/javascript">
+            var apiKey = "$session";
+        
             var glitterTranslate = new Object();
             glitterTranslate.paused = "$T('post-Paused')";
             glitterTranslate.left = "$T('Glitter-left')";
@@ -654,7 +639,6 @@
             glitterTranslate.priority['Low'] = "$T('pr-low')";
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
         </script>
-
 
         <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
         <script type="text/javascript">

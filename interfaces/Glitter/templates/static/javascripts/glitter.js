@@ -114,7 +114,7 @@ $(function() {
 
         // Set information varibales
         self.isRestarting = ko.observable(false);
-        self.refreshRate = ko.observable($.cookie('pageRefreshRate') ? $.cookie('pageRefreshRate') : 1)
+        self.refreshRate = ko.observable($.cookie('pageRefreshRate'))
         self.dateFormat = ko.observable($.cookie('pageDateFormat') ? $.cookie('pageDateFormat') : 'dd-MM-yy')
         self.title = ko.observable()
         self.hasStatusInfo = ko.observable(false); // True when we load it
@@ -147,13 +147,24 @@ $(function() {
         self.onQueueFinish = ko.observable('');
         self.speedHistory = [];
 
-        // Get the speed-limit and server names
+        // Get the speed-limit, refresh rate and server names
         callAPI({
             mode: 'get_config'
         }).then(function(response) {
-            // Set default value if none for bandwidth limit
+            // Set refreshrate (defaults to 1/s)
+            if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
+            self.refreshRate(response.config.misc.refresh_rate.toString());
+            
+            // Set history limit
+            self.history.paginationLimit(response.config.misc.history_limit.toString())
+            
+            // Set queue limit
+            self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+            
+            // Set bandwidth limit
             if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
             self.bandwithLimit(response.config.misc.bandwidth_max);
+            
             // Save servers (for reporting functionality of OZnzb)
             self.servers = response.config.servers;
         })
@@ -388,7 +399,7 @@ $(function() {
             queueApi = callAPI({
                 mode: "queue",
                 start: self.queue.pagination.currentStart(),
-                limit: self.queue.paginationLimit()
+                limit: parseInt(self.queue.paginationLimit())
             }).then(
                 self.updateQueue,
                 function() {
@@ -399,7 +410,7 @@ $(function() {
                 mode: "history",
                 search: $('#history-table-searchbox').val(),
                 start: self.history.pagination.currentStart(),
-                limit: self.history.paginationLimit()
+                limit: parseInt(self.history.paginationLimit())
             }).then(self.updateHistory);
 
             // Return for .then() functionality
@@ -427,6 +438,9 @@ $(function() {
 
         // Update the warnings
         self.nrWarnings.subscribe(function(newValue) {
+            // Really any change?
+            if(newValue == self.allWarnings().length) return;
+            
             // Get all warnings
             callAPI({
                 mode: 'warnings'
@@ -497,11 +511,19 @@ $(function() {
 
         // Update refreshrate
         self.refreshRate.subscribe(function(newValue) {
+            // Set in javascript
             clearInterval(self.interval)
             self.interval = setInterval(self.refresh, parseInt(newValue) * 1000);
-            $.cookie('pageRefreshRate', parseInt(newValue), {
+            $.cookie('pageRefreshRate', newValue, {
                 expires: 365
             });
+            // Save in config
+            callAPI({
+                    mode: "set_config",
+                    section: "misc",
+                    keyword: "refresh_rate",
+                    value: newValue
+                })
         })
 
         // Update dateformat
@@ -686,6 +708,7 @@ $(function() {
 
         // Set interval for refreshing queue
         self.interval = setInterval(self.refresh, parseInt(self.refreshRate()) * 1000);
+        
         // And refresh now!
         self.refresh()
 
@@ -747,7 +770,7 @@ $(function() {
         self.isMultiEditing = ko.observable(false);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
-        self.paginationLimit = ko.observable($.cookie('queuePaginationLimit') ? $.cookie('queuePaginationLimit') : 20)
+        self.paginationLimit = ko.observable($.cookie('queuePaginationLimit'))
         self.pagination = new paginationModel(self);
 
         // Don't update while dragging
@@ -827,9 +850,17 @@ $(function() {
 
         // Save pagination state
         self.paginationLimit.subscribe(function(newValue) {
+            // Save in cookie
             $.cookie('queuePaginationLimit', newValue, {
                 expires: 365
             });
+            // Save in config
+            callAPI({
+                    mode: "set_config",
+                    section: "misc",
+                    keyword: "queue_limit",
+                    value: newValue
+                })
             self.parent.refresh();
         });
 
@@ -1228,7 +1259,7 @@ $(function() {
         // Variables
         self.historyItems = ko.observableArray([]);
         self.hasScriptLines = ko.observable(false);
-        self.paginationLimit = ko.observable($.cookie('historyPaginationLimit') ? $.cookie('historyPaginationLimit') : 5);
+        self.paginationLimit = ko.observable($.cookie('historyPaginationLimit'));
         self.totalItems = ko.observable(0);
         self.pagination = new paginationModel(self);
 
@@ -1287,9 +1318,18 @@ $(function() {
 
         // Save pagination state
         self.paginationLimit.subscribe(function(newValue) {
+            // Save in cookie
             $.cookie('historyPaginationLimit', newValue, {
                 expires: 365
             });
+            
+            // Save in config
+            callAPI({
+                    mode: "set_config",
+                    section: "misc",
+                    keyword: "history_limit",
+                    value: newValue
+                })
             self.parent.refresh();
         });
 
@@ -1569,15 +1609,7 @@ $(function() {
             alert(glitterTranslate.sendThanks)
 
             function submitUserReport(theDetail) {
-                console.log({
-                        mode: 'queue',
-                        name: 'rating',
-                        type: 'flag',
-                        setting: userReport,
-                        detail: theDetail,
-                        value: self.nzo_id
-                    })
-                    // Send note
+                // Send note
                 return callAPI({
                     mode: 'queue',
                     name: 'rating',
@@ -1909,8 +1941,6 @@ $(function() {
                 if(newNrPages != self.nrPages()) {
                     // Update
                     self.nrPages(newNrPages);
-                    // Force full update
-                    parent.parent.refresh();
                 }
             }
         }
@@ -1920,7 +1950,7 @@ $(function() {
             // Update page and start
             self.currentPage(page)
             self.currentStart((page - 1) * parent.paginationLimit())
-                // Re-paginate
+            // Re-paginate
             self.updatePages();
             // Force full update
             parent.parent.refresh();
