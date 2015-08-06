@@ -37,6 +37,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
+from sabnzbd.utils.happyeyeballs import *
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
@@ -92,12 +93,27 @@ class Server(object):
 
     @property
     def hostip(self):
-        """ Return a random entry from the possible IPs
+        """ based on value of randomize_server_ip():
+            0: return the host name itself (so: do nothing)
+            1: Return a random entry from the possible IPs
+            2: Return the fastest IP based on the happyeyeballs algorithm
+            In case of problems: return the host name itself
         """
-        if cfg.randomize_server_ip() and self.info and len(self.info) > 1:
+        
+        if cfg.randomize_server_ip()==1 and self.info and len(self.info) > 1:
+            # Return a random entry from the possible IPs
             rnd = random.randint(0, len(self.info)-1)
             ip = self.info[rnd][4][0]
             logging.debug('For server %s, using IP %s' % (self.host, ip))
+        elif cfg.randomize_server_ip()==2 and self.info and len(self.info) > 1:
+            # RFC6555 / Happy Eyeballs:
+            ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
+            if ip:
+                logging.debug('For server %s, using IP %s as server' % (self.host, ip))
+            else:
+                # nothing returned, so there was a connection problem
+                ip = self.host
+                logging.debug('For server %s, no successful IP connection possible' % (self.host))
         else:
             ip = self.host
         return ip
