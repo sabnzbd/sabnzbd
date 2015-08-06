@@ -41,8 +41,6 @@ ko.bindingHandlers.filedrop = {
                 $(options.overlaySelector).hide();
             if(typeof options.onFileDrop === "function")
                 $.each(e.originalEvent.dataTransfer.files, function() {
-                    if(!/^.*\.(nzb)$/ig.test(this.name))
-                        return;
                     options.onFileDrop(this);
                 });
         });

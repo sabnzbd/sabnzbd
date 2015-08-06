@@ -279,7 +279,7 @@ $(function() {
                 self.speedHistory.shift();
             }
             // Add
-            self.speedHistory.push(response.queue.kbpersec);
+            self.speedHistory.push(parseInt(response.queue.kbpersec));
 
             // Is sparkline visible? Not on small mobile devices..
             if($('.sparkline-container').css('display') != 'none') {
@@ -290,8 +290,11 @@ $(function() {
                         width: 275,
                         height: 32,
                         fill: '#9DDB72',
-                        stroke: '#AAFFAA'
+                        stroke: '#AAFFAA',
+                        values: sabSpeedHistory
                     })
+                    // Update internally
+                    self.speedHistory = sabSpeedHistory;
                 } else {
                     // Update
                     $('.sparkline').text(self.speedHistory.join(",")).change()

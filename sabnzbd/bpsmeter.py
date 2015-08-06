@@ -24,8 +24,9 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD
+from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
 from sabnzbd.encoding import unicoder
+from math import floor
 import sabnzbd.cfg as cfg
 
 DAY = float(24*60*60)
@@ -120,8 +121,11 @@ class BPSMeter(object):
         t = time.time()
         self.start_time = t
         self.log_time = t
+        self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
+        self.bps_list = []
+        self.bps_list_max = 275
 
         self.day_total = {}
         self.week_total = {}
@@ -273,13 +277,29 @@ class BPSMeter(object):
             logging.debug("bps: %s", self.bps)
             self.log_time = t
 
-
+        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0    
+        if self.speed_log_time < (t - float(refresh_rate)):
+            self.add_empty_time()
+            self.bps_list.append("%i" % (self.bps / KIBI))  
+            self.speed_log_time = t
+                        
     def reset(self):
         t = time.time()
         self.start_time = t
         self.log_time = t
         self.last_update = t
         self.bps = 0.0
+        
+    def add_empty_time(self):
+        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0   
+        time_diff =  time.time() - self.speed_log_time
+        nr_diffs = int(floor(time_diff / refresh_rate))
+        
+        if nr_diffs > 1:
+            self.bps_list.extend(['0.0'] * nr_diffs)
+        
+        if len(self.bps_list) > self.bps_list_max:
+            self.bps_list = self.bps_list[len(self.bps_list)-self.bps_list_max:]
 
     def get_sums(self):
         """ return tuple of grand, month, week, day totals """
@@ -306,6 +326,9 @@ class BPSMeter(object):
     def get_bps(self):
         return self.bps
 
+    def get_bps_list(self):
+        self.add_empty_time()
+        return self.bps_list
 
     def reset_quota(self, force=False):
         """ Check if it's time to reset the quota, optionally resuming
