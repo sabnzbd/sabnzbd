@@ -98,8 +98,8 @@
                     <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-addServer')" />
-                    <input type="button" value="$T('button-testServer')" class="testServer" />
+                    <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+                    <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -212,9 +212,9 @@
                     <textarea name="notes" id="notes$cur" rows="3" cols="50">$servers[$server]['notes']</textarea>
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                    <input type="button" value="$T('button-testServer')" class="testServer" />
-                    <input type="button" value="$T('button-delServer')" class="delServer" />
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                    <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->

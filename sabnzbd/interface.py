@@ -290,6 +290,9 @@ class MainPage(object):
             info['cat_list'] = list_cats(True)
             info['have_rss_defined'] = bool(config.get_rss())
             info['have_watched_dir'] = bool(cfg.dirscan_dir())
+            
+            bytespersec_list = BPSMeter.do.get_bps_list()
+            info['bytespersec_list'] = ','.join(bytespersec_list)
 
             info['warning'] = ''
             if cfg.enable_unrar():

@@ -1417,7 +1417,7 @@ button.ui-button::-moz-focus-inner {
 #logo {
     display: block;
     margin: auto;
-    margin-top: 5px;
+    margin-top: 2px;
 }
 #tab-container {
     bottom: 0;
@@ -1464,7 +1464,8 @@ button.ui-button::-moz-focus-inner {
     float: left;
     overflow: visible;
     border: 1px solid #dfdede;
-    background: #f4f4f4;
+    background-color: #FFF;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     width: 100%}
 .section, .Servers form, #addFeed, #addFeedContent {
     border-bottom: 1px solid #dfdede;
@@ -1510,6 +1511,7 @@ label.config {
     text-align: left;
     margin-right: 10px;
     margin-left: 20px;
+    padding-top: 5px;
 }
 label.narrow {
     width: 200px!important;
@@ -1584,7 +1586,7 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
     margin-top: 0;
 }
 .alt {
-    background-color: #eee;
+    background-color: #F8F8F8;
 }
 .even {
     background-color: #dfdede;
@@ -1620,7 +1622,7 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
     color: #900;
 }
 .scheduleEntry {
-    padding: 3px 0;
+    padding: 8px 0;
 }
 .time {
     padding: 0 10px;
@@ -1972,15 +1974,6 @@ body {
     background-color: #E4E4E4;
 }
 
-.colmask {
-    background-color: #FFF;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-.alt {
-    background-color: #F8F8F8;
-}
-
 input[type=checkbox], 
 input[type=radio] {
     margin-top: 2px;
@@ -2030,10 +2023,24 @@ select {
     font-size: 13px;
 }
 
+.btn {
+    font-size: 13px;
+    height: 34px;
+}
+
+.btn .glyphicon {
+    top: 2px;
+    color: #5A5A5A
+}
+
+.btn .glyphicon-ok,
+.btn .glyphicon-plus {
+    top: 1px;
+}
+
 select[multiple] {
     width:100%;
     padding: 0 !important;
-    
 }
 
 .col1 select[multiple] {
@@ -2044,27 +2051,12 @@ select[multiple] option {
     padding:6px 12px;
 }
 
-.saveButton[disabled],
-.sabnzbd_restart[disabled] {
-    background-color: #fff !important;
-    border-color: #D6D6D6 !important;
-    color: #D6D6D6 !important;
-}
-
 input[type="checkbox"] {
     margin-top: 5px;
 }
 
 .Scheduling input[type="checkbox"] {
     margin-top: 0px;
-}
- 
-label.config {
-    padding-top: 5px;
-}
-
-#logo {
-    margin-top: 2px;
 }
 
 #content {
@@ -2101,6 +2093,11 @@ label.config {
 
 .col2 table {
     margin: 10px 0px;
+}
+
+.fileBrowser .glyphicon {
+    margin-right: 2px;
+    top: 1px;
 }
 
 @media screen and (min-width: 768px) and (max-width: 1200px) { 
@@ -2195,6 +2192,6 @@ label.config {
     }
 
     .fileBrowserField {
-        max-width: 70% !important;
+        max-width: 65% !important;
     } 
 }
