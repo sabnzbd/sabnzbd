@@ -113,11 +113,13 @@ $(function() {
         self.filelist = new Fileslisting(this);
 
         // Set information varibales
-        self.isRestarting = ko.observable(false);
-        self.refreshRate = ko.observable($.cookie('pageRefreshRate'))
-        self.dateFormat = ko.observable($.cookie('pageDateFormat') ? $.cookie('pageDateFormat') : 'dd-MM-yy')
         self.title = ko.observable()
+        self.isRestarting = ko.observable(false);
+        self.useGlobalOptions = ko.observable(localStorage.getItem('useGlobalOptions') == 'false' ? false : true)      
+        self.refreshRate = ko.observable(localStorage.getItem('pageRefreshRate') ? localStorage.getItem('pageRefreshRate') : 1)
+        self.dateFormat = ko.observable(localStorage.getItem('pageDateFormat') ? localStorage.getItem('pageDateFormat') : 'dd-MM-yy')
         self.hasStatusInfo = ko.observable(false); // True when we load it
+        self.showActiveConnections = ko.observable(false);
         self.speed = ko.observable(0);
         self.speedMetric = ko.observable();
         self.speedMetrics = {
@@ -151,15 +153,18 @@ $(function() {
         callAPI({
             mode: 'get_config'
         }).then(function(response) {
-            // Set refreshrate (defaults to 1/s)
-            if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
-            self.refreshRate(response.config.misc.refresh_rate.toString());
-            
-            // Set history limit
-            self.history.paginationLimit(response.config.misc.history_limit.toString())
-            
-            // Set queue limit
-            self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+            // Do we use global, or local settings?
+            if(self.useGlobalOptions()) {
+                // Set refreshrate (defaults to 1/s)
+                if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
+                self.refreshRate(response.config.misc.refresh_rate.toString());
+                
+                // Set history limit
+                self.history.paginationLimit(response.config.misc.history_limit.toString())
+                
+                // Set queue limit
+                self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+            }
             
             // Set bandwidth limit
             if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
@@ -285,6 +290,15 @@ $(function() {
             if($('.sparkline-container').css('display') != 'none') {
                 // Make sparkline
                 if(self.speedHistory.length == 1) {
+                    // We only use speedhistory from SAB if we use global settings
+                    // Otherwise SAB doesn't know the refresh rate
+                    if(!self.useGlobalOptions()) {
+                        sabSpeedHistory = [];
+                    } else {
+                        // Update internally
+                        self.speedHistory = sabSpeedHistory;
+                    }
+                    
                     // Create
                     $('.sparkline').peity("line", {
                         width: 275,
@@ -293,8 +307,7 @@ $(function() {
                         stroke: '#AAFFAA',
                         values: sabSpeedHistory
                     })
-                    // Update internally
-                    self.speedHistory = sabSpeedHistory;
+                    
                 } else {
                     // Update
                     $('.sparkline').text(self.speedHistory.join(",")).change()
@@ -511,29 +524,37 @@ $(function() {
                 value: newValue
             })
         })
+        
+        // Use global settings or device-specific?
+        self.useGlobalOptions.subscribe(function(newValue) {
+            localStorage.setItem('useGlobalOptions', newValue)
+
+            // Reload in case of enabling global options
+            if(newValue) document.location = document.location;
+        })
 
         // Update refreshrate
         self.refreshRate.subscribe(function(newValue) {
             // Set in javascript
             clearInterval(self.interval)
             self.interval = setInterval(self.refresh, parseInt(newValue) * 1000);
-            $.cookie('pageRefreshRate', newValue, {
-                expires: 365
-            });
-            // Save in config
-            callAPI({
+            localStorage.setItem('pageRefreshRate', newValue);
+            
+            // Save in config if global-settings
+            if(self.useGlobalOptions()) {
+                callAPI({
                     mode: "set_config",
                     section: "misc",
                     keyword: "refresh_rate",
                     value: newValue
                 })
+            }
+            
         })
 
         // Update dateformat
         self.dateFormat.subscribe(function(newValue) {
-            $.cookie('pageDateFormat', newValue, {
-                expires: 365
-            });
+            localStorage.setItem('pageDateFormat', newValue)
         })
 
         /***
@@ -773,7 +794,7 @@ $(function() {
         self.isMultiEditing = ko.observable(false);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
-        self.paginationLimit = ko.observable($.cookie('queuePaginationLimit'))
+        self.paginationLimit = ko.observable(localStorage.getItem('queuePaginationLimit') ? localStorage.getItem('queuePaginationLimit') : 20)
         self.pagination = new paginationModel(self);
 
         // Don't update while dragging
@@ -853,17 +874,19 @@ $(function() {
 
         // Save pagination state
         self.paginationLimit.subscribe(function(newValue) {
-            // Save in cookie
-            $.cookie('queuePaginationLimit', newValue, {
-                expires: 365
-            });
-            // Save in config
-            callAPI({
+            // Save in local storage
+            localStorage.setItem('queuePaginationLimit', newValue)
+            
+            // Save in config if global 
+            if(self.parent.useGlobalOptions()) {
+                callAPI({
                     mode: "set_config",
                     section: "misc",
                     keyword: "queue_limit",
                     value: newValue
                 })
+            }
+            
             self.parent.refresh();
         });
 
@@ -1262,7 +1285,7 @@ $(function() {
         // Variables
         self.historyItems = ko.observableArray([]);
         self.hasScriptLines = ko.observable(false);
-        self.paginationLimit = ko.observable($.cookie('historyPaginationLimit'));
+        self.paginationLimit = ko.observable(localStorage.getItem('historyPaginationLimit') ? localStorage.getItem('historyPaginationLimit') : 10);
         self.totalItems = ko.observable(0);
         self.pagination = new paginationModel(self);
 
@@ -1321,18 +1344,18 @@ $(function() {
 
         // Save pagination state
         self.paginationLimit.subscribe(function(newValue) {
-            // Save in cookie
-            $.cookie('historyPaginationLimit', newValue, {
-                expires: 365
-            });
+            // Save in localstorage
+            localStorage.setItem('historyPaginationLimit', newValue)
             
-            // Save in config
-            callAPI({
+            // Save in config if global config
+            if(self.parent.useGlobalOptions()) {
+                callAPI({
                     mode: "set_config",
                     section: "misc",
                     keyword: "history_limit",
                     value: newValue
                 })
+            }
             self.parent.refresh();
         });
 
@@ -1716,7 +1739,7 @@ $(function() {
                 }
 
                 // Check if we show/hide completed
-                if($.cookie('showCompletedFiles') == 'No') {
+                if(localStorage.getItem('showCompletedFiles') == 'No') {
                     $('.item-files-table tr:not(.files-sortable)').hide();
                     $('#filelist-showcompleted').removeClass('hoverbutton')
                 }
@@ -2044,17 +2067,13 @@ function hideCompletedFiles() {
         // Hide all
         $('.item-files-table tr:not(.files-sortable)').hide();
         $('#filelist-showcompleted').removeClass('hoverbutton')
-            // Set cookie
-        $.cookie('showCompletedFiles', 'No', {
-            expires: 365
-        })
+        // Set storage
+        localStorage.setItem('showCompletedFiles', 'No')
     } else {
         // show all
         $('.item-files-table tr:not(.files-sortable)').show();
         $('#filelist-showcompleted').addClass('hoverbutton')
-            // Set cookie
-        $.cookie('showCompletedFiles', 'Yes', {
-            expires: 365
-        })
+        // Set storage
+        localStorage.setItem('showCompletedFiles', 'Yes')
     }
 }

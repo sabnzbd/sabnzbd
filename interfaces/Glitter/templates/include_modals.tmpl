@@ -9,7 +9,12 @@
             <div class="modal-body">
                 <form class="form-horizontal" onsubmit="return false;">
                     <fieldset>
-                        <legend>$T('Glitter-interfaceOptions')</legend>
+                        <legend>
+                            <label>
+                                <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" /> <span>$T('Glitter-useGlobalOptions')</span>
+                            </label>
+                            $T('Glitter-interfaceOptions')
+                        </legend>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">$T('Glitter-interfaceRefresh')</label>
                             <div class="col-sm-4">
@@ -130,8 +135,8 @@
 
                     <fieldset>
                         <legend>
-                            <label for="options-show-connections">
-                                <input id="options-show-connections" onclick="\$(this).parents('fieldset').find('table').toggle()" type="checkbox" name="showConnections" /> $T('Glitter-showActiveConnections')
+                            <label>
+                                <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> <span>$T('Glitter-showActiveConnections')</span>
                             </label>
                             $T('connections')
                         </legend>
@@ -161,7 +166,7 @@
 
 
                                 <!-- ko if: serverconnections().length > 0 -->
-                                <table class="table table-hover table-server-connections" data-bind="visible: \$('#options-show-connections').prop('checked')">
+                                <table class="table table-hover table-server-connections" data-bind="visible: \$root.showActiveConnections()">
                                     <thead>
                                         <tr>
                                             <th><strong>$T('article-id')</strong></th>

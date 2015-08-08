@@ -886,14 +886,38 @@ td.delete label,
 #modal_options legend label,
 #modal_options legend a {
     float: right;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin-top: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    color: black;
+}
+
+#modal_options legend a,
+#modal_options legend input+span {
+    opacity: 0.6;
+}
+
+#modal_options legend label:hover span,
+#modal_options legend a:hover {
+    opacity: 1;
+}
+
+#modal_options legend input:checked+span {
+    opacity: 1 !important;
+}
+
+#modal_options legend input {
+    width: 14px;
+    height: 14px;
+    display: block;
+    float: left;
+    margin-top: 3px;
+    margin-right: 4px;
 }
 
 #modal_options legend a {
-    font-size: 1.4rem;
     margin-right: 8px;
-    font-weight: bold;
 }
 
 #modal_options .modal-header a {
@@ -1313,6 +1337,10 @@ legend {
 .stylish-input-group button {
     border: 0;
     background: transparent;
+}
+
+.btn {
+    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
 }
 
 .modal-content {
