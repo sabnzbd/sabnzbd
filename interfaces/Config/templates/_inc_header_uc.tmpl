@@ -62,13 +62,11 @@
         
         function config_success() {
             \$('.saveButton').each(function () {
-                \$(this).removeAttr("disabled").attr("value", "$T('button-saveChanges')");
                 \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')');
             });
         }
         function config_failure() {
             \$('.saveButton').each(function () {
-                \$(this).removeAttr("disabled").attr("value", "$T('smpl-failed')");
                 \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> $T('smpl-failed')');
             });
         }

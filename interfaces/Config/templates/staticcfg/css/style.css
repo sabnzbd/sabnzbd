@@ -1647,6 +1647,14 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
 .catTable th {
     text-align: center;
 }
+.RSS .catTable select {
+    max-width: 120px;
+}
+.RSS input[type="checkbox"] {
+    width:16px;
+    height: 16px;
+    margin-top: 0px;
+}
 .default {
     background-color: #ffffe0;
     border-bottom: 1px solid #aaa;
@@ -1654,6 +1662,7 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
 }
 .hidden {
     visibility: hidden;
+    display: block!important;
 }
 .float-left {
     float: left;
@@ -1816,9 +1825,13 @@ h2.activeRSS {
     border: 0 none;
     padding-top: .4em;
 }
+#subscriptions {
+    width: 620px;
+}
 #subscriptions .chk {
-    padding-right: 5px;
-    width: 14px;
+    padding: 5px;
+    padding-top: 8px;
+    vertical-align: middle;
 }
 #subscriptions .title {
     font-weight: bold;
@@ -1854,9 +1867,7 @@ h2.activeRSS {
     background-color: #f8f4e7;
 }
 span.count {
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
+    border-radius: 8px !important;
     background: none repeat scroll 0 0 #aca79c;
     color: #fff;
     margin: -3px 0 0 5px;
@@ -1886,7 +1897,6 @@ ul.tabs a {
     padding: 5px 30px;
     text-decoration: none;
     border: 1px solid #dfdede;
-    height: 18px;
     background-color: #f1ede0;
     color: #777;
     margin-right: 2px;
@@ -2026,6 +2036,7 @@ select {
 .btn {
     font-size: 13px;
     height: 34px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
 }
 
 .btn .glyphicon {
@@ -2111,6 +2122,10 @@ input[type="checkbox"] {
     .navbar-default .navbar-nav:hover>li>a.active>strong {
         display: none;
     }
+    
+    .fileBrowserField {
+        width: 50% !important;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -2138,6 +2153,10 @@ input[type="checkbox"] {
     .navbar-collapse.collapsing .navbar-nav>li>a>span {
         display: inline-block;  
         width: 1.5em; 
+    }
+    
+    .fileBrowserField {
+        width: 50% !important;
     }
 }
 
