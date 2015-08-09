@@ -509,6 +509,7 @@ def _api_addid(names, output, kwargs):
     cat = kwargs.get('cat')
     priority = kwargs.get('priority')
     nzbnames = kwargs.get('nzbname')
+    nzo_ids = []
     if not isinstance(names, list):
         names = [names]
     if not isinstance(nzbnames, list):
@@ -524,10 +525,11 @@ def _api_addid(names, output, kwargs):
         if name:
             name = name.strip()
         if name:
-            sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+            res = sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+            nzo_ids.append(res.nzo_id)
 
     if len(names) > 0:
-        return report(output)
+        return report(output, keyword='', data={'status': True, 'nzo_ids': nzo_ids}, compat=True)
     else:
         logging.info('API-call addurl: no files retrieved from %s', names)
         return report(output, _MSG_NO_VALUE)
