@@ -1456,6 +1456,9 @@ button.ui-button::-moz-focus-inner {
     overflow-y: scroll;
     padding: 15px 20px 20px;
     font-size: 13px;
+    padding-top: 65px;
+    padding-bottom: 20px;
+    overflow-y: auto;
 }
 .colmask {
     z-index: 20;
@@ -2070,16 +2073,11 @@ input[type="checkbox"] {
     margin-top: 0px;
 }
 
-#content {
-    padding-top: 0;
-    padding-bottom: 20px;
-    overflow-y: auto;
-}
-
 .navbar-default {
     background-color: #FFF;
     border: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,.06) !important;
 }
 
 .navbar-default .navbar-brand {
@@ -2110,6 +2108,34 @@ input[type="checkbox"] {
     margin-right: 2px;
     top: 1px;
 }
+
+.main-restarting.in {
+    text-align: center;
+    opacity: 0.9;
+    color: black;
+    z-index: 2000;
+    padding: 1em;
+    padding-top: 25%;
+}
+
+.main-restarting {
+    display: block;
+    background-color: white;
+}
+
+.main-restarting.in strong {
+    font-size: 5em;
+    display: block;
+}
+
+.main-restarting.in span {
+    top: 10px;
+}
+
+.main-restarting small {
+    font-size: 2rem !important;
+}
+
 
 @media screen and (min-width: 768px) and (max-width: 1200px) { 
     .navbar-default .navbar-nav>li>a>span,
@@ -2158,12 +2184,22 @@ input[type="checkbox"] {
     .fileBrowserField {
         width: 50% !important;
     }
+    
+    .main-restarting.in strong {
+        font-size: 2em;
+        font-weight: bold;
+    }
+    
+    .main-restarting.in span {
+        top: 2px;
+    }
 }
 
 @media only screen and (max-width : 480px) {
     #content {
         margin: 0 !important;
         padding: 0 !important;
+        padding-top: 55px !important;
     }
     
     #content fieldset {
@@ -2179,7 +2215,7 @@ input[type="checkbox"] {
     }
     
     .col2 p {
-        margin-left:  5px;
+        margin-left:  0px;
     }
     
     .col1 h5 {
@@ -2207,7 +2243,7 @@ input[type="checkbox"] {
     
     div.field-pair {
         min-width: 0;
-        padding: 10px;
+        padding: 5px;
     }
 
     .fileBrowserField {

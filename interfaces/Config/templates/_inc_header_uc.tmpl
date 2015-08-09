@@ -84,7 +84,37 @@
                 var msg = "$T('explain-Restart')";
                 if (confirm(msg.replace(/\<br(\s*\/|)\>/g, '\n'))) {
                     \$(this).attr("value", "$T('wizard-restarting')");
-                    location.href = '${root}config/restart?session=$session';
+                    // Show overlay
+                    \$('.main-restarting').show()
+                    
+                    // Keep counter of failures
+                    var failureCounter = 0;
+                    
+                    // Initiate restart
+                    \$.ajax({ url: '${root}config/restart?session=$session', 
+                        complete: function() {
+                            // Now we try untill we can connect
+                            var refreshInterval = setInterval(function() {
+                                $.ajax({ url: '${root}', 
+                                    success: function() {
+                                        // Back to base
+                                        location.href = '${root}'
+                                    },
+                                    error: function() {
+                                        failureCounter = failureCounter+1;
+                                        // Too many failuers and we give up
+                                        if(failureCounter >= 7) {
+                                            // Unfortunatly we have no proper way of informing the user..
+                                            \$('.main-restarting strong').html('<span class="glyphicon glyphicon-exclamation-sign"></span> $T('Glitter-lostConnection')').css('color', 'red')
+                                            if(location.origin) \$('.main-restarting small').text(location.origin)
+                                            // Stop trying
+                                            clearInterval(refreshInterval)
+                                        }
+                                    }
+                                })
+                            }, 5000)
+                        }
+                    });
                     return;
                 }
                 \$('.sabnzbd_restart').each(function () {
@@ -137,7 +167,7 @@
 </head>
 
 <body class="$pane">
-<nav class="navbar navbar-default ">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">

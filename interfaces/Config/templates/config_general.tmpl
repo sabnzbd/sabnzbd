@@ -108,7 +108,7 @@
                     <span class="desc">$T('explain-nzbkey')</span>
                 </div>
                 <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
@@ -150,7 +150,7 @@
                     <span class="desc">$T('explain-https_chain')</span>
                 </div>
                 <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
@@ -184,7 +184,7 @@
         </div><!-- /col1 -->
     </div><!-- /section -->
     <div class="padding alt">
-        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+        <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
         <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
     </div>
     </form>
@@ -192,6 +192,14 @@
 
 <script>
 \$(document).ready(function(){
+    \$('.saveButtonRestart').click(function(e) {
+        // Restart also?
+        if(confirm("$T('restartRequired')\n$T('button-restart') SABnzbd?")) {
+            setTimeout(function() {
+                \$('.sabnzbd_restart')[0].click();
+            },500)
+        }
+    })
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
     \$('#generate_new_apikey').click(function () {
       if (confirm("$T('Plush-confirm')")) {
