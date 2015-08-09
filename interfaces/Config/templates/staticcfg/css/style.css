@@ -1488,7 +1488,7 @@ button.ui-button::-moz-focus-inner {
     z-index: 11;
     width: 100%;
     float: none;
-    padding: 12px 0;
+    padding: 12px 0 0;
 }
 .col2 h3 {
     background: none repeat scroll 0 0 #666;
@@ -1572,7 +1572,7 @@ input[type='checkbox'] {
     padding: 0;
     margin-left: 5px;
 }
-textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="email"]:hover, input[type="month"]:hover, input[type="number"]:hover, input[type="password"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="text"]:hover, input[type="time"]:hover, input[type="url"]:hover, input[type="week"]:hover, textarea:focus, select:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="email"]:focus, input[type="month"]:focus, input[type="number"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="time"]:focus, input[type="url"]:focus, input[type="week"]:focus {
+textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="email"]:hover, input[type="month"]:hover, input[type="number"]:hover, input[type="password"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="text"]:hover, input[type="time"]:hover, input[type="url"]:hover, input[type="week"]:hover, textarea:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="email"]:focus, input[type="month"]:focus, input[type="number"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="time"]:focus, input[type="url"]:focus, input[type="week"]:focus {
     background-color: #fffff0;
     border: 1px solid #aaa;
 }
@@ -2052,6 +2052,14 @@ select {
     top: 1px;
 }
 
+select {
+    background-color: transparent;
+}
+
+select[disabled] {
+    background-color: #eee;
+}
+
 select[multiple] {
     width:100%;
     padding: 0 !important;
@@ -2078,6 +2086,10 @@ input[type="checkbox"] {
     border: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     box-shadow: 1px 1px 1px rgba(0,0,0,.06) !important;
+}
+
+.navbar-fixed-top {
+    z-index: 1000;
 }
 
 .navbar-default .navbar-brand {
@@ -2114,8 +2126,13 @@ input[type="checkbox"] {
     opacity: 0.9;
     color: black;
     z-index: 2000;
-    padding: 1em;
-    padding-top: 25%;
+    height: 100%;
+}
+
+.main-restarting.in div {
+    position: relative;
+    top: 30%;
+    transform: translateY(-50%);
 }
 
 .main-restarting {
@@ -2133,9 +2150,28 @@ input[type="checkbox"] {
 }
 
 .main-restarting small {
-    font-size: 2rem !important;
+    font-size: 3rem !important;
 }
 
+.dotOne, .dotTwo, .dotThree {
+    opacity: 0;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.0s;
+}
+
+.dotTwo {
+    animation-delay: 0.2s;
+}
+
+.dotThree {
+    animation-delay: 0.3s;
+}
+
+@keyframes dot {
+    0% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
 
 @media screen and (min-width: 768px) and (max-width: 1200px) { 
     .navbar-default .navbar-nav>li>a>span,
@@ -2192,6 +2228,10 @@ input[type="checkbox"] {
     
     .main-restarting.in span {
         top: 2px;
+    }
+    
+    .main-restarting.in small {
+        font-size: 2rem !important;
     }
 }
 
@@ -2250,3 +2290,4 @@ input[type="checkbox"] {
         max-width: 65% !important;
     } 
 }
+

@@ -20,10 +20,6 @@
     #else#
         #set global $root = '../../'#
     #end if#
-    <!--[if lt IE 9]>
-        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
@@ -70,9 +66,76 @@
                 \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> $T('smpl-failed')');
             });
         }
+        function do_restart() {
+            // Show overlay
+            \$('.main-restarting').show()
+            
+            // What template
+            var arrPath = window.location.pathname.split('/');
+            var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
+
+            // Are we on settings page?
+            if(!\$('body').hasClass('General')) {
+                // Same as before, with fall-back in case location.origin is not supported (<IE9)
+                var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
+            } else {
+                // Protocol and port depend on http(s) setting
+                if(\$('#enable_https').is(':checked') && window.location.protocol == 'https:') {
+                    // Https on and we visited this page from HTTPS
+                    var urlProtocol = 'https:'
+                    var urlPort = \$('#https_port').val();
+                } else {
+                    // Regular
+                    var urlProtocol = 'http:';
+                    var urlPort = \$('#port').val();
+                }
+                
+                // We cannot make a good guess for the IP, so at least we assume that stays the same
+                var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
+            }
+            
+            // Show where we are going to connect
+            \$('.main-restarting .restarting-url').text(urlTotal)
+            
+            // Initiate restart
+            \$.ajax({ url: '${root}config/restart?session=$session', 
+                complete: function() {
+                    // Keep counter of failures
+                    var failureCounter = 0;
+            
+                    // Now we try untill we can connect
+                    var refreshInterval = setInterval(function() {
+                        $.ajax({ url: urlTotal, 
+                            success: function() {
+                                // Back to base
+                                location.href = urlTotal;
+                            },
+                            error: function(status, text) {
+                                failureCounter = failureCounter+1;
+                                // Too many failuers and we give up
+                                if(failureCounter >= 7) {
+                                    // If the port has changed 'Access-Control-Allow-Origin' header will not allow
+                                    // us to check if the server is back up. So after 7 failures we redirect
+                                    // anyway in the hopes it works anyway..
+                                    location.href = urlTotal;
+                                }
+                            }
+                        })
+                    }, 5000)
+                    
+                    // Exception if we go from HTTPS to HTTP 
+                    // (this is not allowed by browsers and all of the above will be ignored)
+                    if(window.location.protocol != urlProtocol) {
+                        // Saftey redirect after 40 sec
+                        setTimeout(function() {
+                            location.href = urlTotal;
+                        }, 40*1000)
+                    }
+                }
+            });
+        }
 
         \$(document).ready(function () {
-
             #if $pane != "Servers"#
                 \$('.col2 H3').click(function () { \$(this).parent().next().toggle() });
             #end if#
@@ -84,38 +147,7 @@
                 var msg = "$T('explain-Restart')";
                 if (confirm(msg.replace(/\<br(\s*\/|)\>/g, '\n'))) {
                     \$(this).attr("value", "$T('wizard-restarting')");
-                    // Show overlay
-                    \$('.main-restarting').show()
-                    
-                    // Keep counter of failures
-                    var failureCounter = 0;
-                    
-                    // Initiate restart
-                    \$.ajax({ url: '${root}config/restart?session=$session', 
-                        complete: function() {
-                            // Now we try untill we can connect
-                            var refreshInterval = setInterval(function() {
-                                $.ajax({ url: '${root}', 
-                                    success: function() {
-                                        // Back to base
-                                        location.href = '${root}'
-                                    },
-                                    error: function() {
-                                        failureCounter = failureCounter+1;
-                                        // Too many failuers and we give up
-                                        if(failureCounter >= 7) {
-                                            // Unfortunatly we have no proper way of informing the user..
-                                            \$('.main-restarting strong').html('<span class="glyphicon glyphicon-exclamation-sign"></span> $T('Glitter-lostConnection')').css('color', 'red')
-                                            if(location.origin) \$('.main-restarting small').text(location.origin)
-                                            // Stop trying
-                                            clearInterval(refreshInterval)
-                                        }
-                                    }
-                                })
-                            }, 5000)
-                        }
-                    });
-                    return;
+                    do_restart();
                 }
                 \$('.sabnzbd_restart').each(function () {
                     \$(this).removeAttr("disabled");
@@ -135,11 +167,19 @@
                     if (json.error) {
                        \$('#config_err_msg').text(json.error);
                        setTimeout(config_failure, 1000);
-                       }
-                    else {
+                    } else if(json.value && json.value.restart_req) {
+                        // Trigger restart question
+                        if(confirm("$T('restartRequired')\n$T('button-restart') SABnzbd?")) {
+                            // No more questions
+                            do_restart();
+                        } else {
+                            \$('#config_err_msg').text(" ");
+                            setTimeout(config_success, 1000);
+                        }
+                    } else {
                        \$('#config_err_msg').text(" ");
                        setTimeout(config_success, 1000);
-                       }
+                    }
                 },
                 error: function () {
                     setTimeout(config_failure, 1000);
@@ -164,6 +204,10 @@
     	return this;
     }
     </script>
+    <!--[if lt IE 9]>
+        <script src="${root}staticcfg/js/html5shiv.min.js"></script>
+        <script src="${root}staticcfg/js/respond.min.js"></script>
+    <![endif]-->
 </head>
 
 <body class="$pane">

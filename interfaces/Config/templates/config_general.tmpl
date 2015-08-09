@@ -95,20 +95,20 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="apikey">$T('opt-apikey')</label>
-                    <input type="text" id="apikey" value="$session" size="35" />
+                    <input type="text" id="apikey" class="fileBrowserField" value="$session" size="35" />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$session" ><span class="glyphicon glyphicon-qrcode"></span></button>
                     <button class="btn btn-default" id="generate_new_apikey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-apikey')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
-                    <input type="text" id="nzbkey" value="$nzb_key" size="35" />
+                    <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" size="35" />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$nzb_key" ><span class="glyphicon glyphicon-qrcode"></span></button>
                     <button class="btn btn-default" id="generate_new_nzbkey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-nzbkey')</span>
                 </div>
                 <div class="field-pair">
-                    <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
@@ -150,7 +150,7 @@
                     <span class="desc">$T('explain-https_chain')</span>
                 </div>
                 <div class="field-pair">
-                    <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
@@ -183,23 +183,11 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="padding alt">
-        <button class="btn btn-default saveButton saveButtonRestart"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-        <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
-    </div>
     </form>
 </div><!-- /colmask -->
 
 <script>
 \$(document).ready(function(){
-    \$('.saveButtonRestart').click(function(e) {
-        // Restart also?
-        if(confirm("$T('restartRequired')\n$T('button-restart') SABnzbd?")) {
-            setTimeout(function() {
-                \$('.sabnzbd_restart')[0].click();
-            },500)
-        }
-    })
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
     \$('#generate_new_apikey').click(function () {
       if (confirm("$T('Plush-confirm')")) {
@@ -209,7 +197,7 @@
           data: {mode:'config', name:'set_apikey', apikey: \$('#apikey').val()},
           success: function(msg){
             \$('#apikey').val(msg);
-            window.location.reload();
+            document.location = document.location;
           }
         });
       }
@@ -222,7 +210,7 @@
           data: {mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val()},
           success: function(msg){
             \$('#nzbkey').val(msg);
-            window.location.reload();
+            document.location = document.location;
           }
         });
       }

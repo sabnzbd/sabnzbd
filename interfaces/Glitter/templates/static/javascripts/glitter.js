@@ -27,7 +27,7 @@ if(!Array.prototype.indexOf) {
     Base variables and functions
 **/
 var fadeOnDeleteDuration = 400; // ms after deleting a row
-var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 
 /**
     GLITTER CODE
@@ -43,7 +43,8 @@ $(function() {
             url: "tapi",
             type: "GET",
             cache: false,
-            data: data
+            data: data,
+            timeout: 1500
         });
 
         return $.when(ajaxQuery);
@@ -60,7 +61,8 @@ $(function() {
             url: url,
             type: "GET",
             cache: false,
-            data: data
+            data: data,
+            timeout: 1500
         });
 
         return $.when(ajaxQuery);
@@ -122,18 +124,10 @@ $(function() {
         self.showActiveConnections = ko.observable(false);
         self.speed = ko.observable(0);
         self.speedMetric = ko.observable();
-        self.speedMetrics = {
-            K: "KB/s",
-            M: "MB/s",
-            G: "GB/s"
-        };
+        self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
-        self.speedLimit = ko.observable(100).extend({
-            rateLimit: {
-                timeout: 400,
-                method: "notifyWhenChangesStop"
-            }
-        });
+        self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
+        self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused = ko.observable(false);
         self.timeLeft = ko.observable("0:00");
@@ -217,7 +211,7 @@ $(function() {
         // Dynamic history length check
         self.hasHistory = ko.computed(function() {
             // We also 'have history' if we can't find any results of the search
-            return self.history.historyItems().length > 0 || $('#history-table-searchbox').val() != ''
+            return self.history.historyItems().length > 0 || self.searchTerm()
         });
 
         // Update main queue
@@ -424,7 +418,7 @@ $(function() {
             );
             callAPI({
                 mode: "history",
-                search: $('#history-table-searchbox').val(),
+                search: self.searchTerm(),
                 start: self.history.pagination.currentStart(),
                 limit: parseInt(self.history.paginationLimit())
             }).then(self.updateHistory);
@@ -514,6 +508,14 @@ $(function() {
         self.clearSpeedLimit = function() {
             self.speedLimit(100);
         }
+        
+        // Searching in history (rate-limited in decleration)
+        self.searchTerm.subscribe(function() {
+            // If the refresh-rate is high we do a forced refresh
+            if(parseInt(self.refreshRate()) >2 ) {
+                self.refresh();
+            }
+        })
 
         // Shutdown options
         self.onQueueFinish.subscribe(function(newValue) {
@@ -649,7 +651,7 @@ $(function() {
                 self.hasStatusInfo(true)
 
                 // Add tooltips again
-                if(!iOS) $('#modal_options [data-toggle="tooltip"]').tooltip()
+                if(!isMobile) $('#modal_options [data-toggle="tooltip"]').tooltip()
             });
         }
 
@@ -737,7 +739,7 @@ $(function() {
         self.refresh()
 
         // Activate tooltips
-        if(!iOS) $('[data-toggle="tooltip"]').tooltip()
+        if(!isMobile) $('[data-toggle="tooltip"]').tooltip()
     }
 
     /**
@@ -2025,10 +2027,13 @@ function rewriteTime(timeString) {
 function keepOpen(thisItem) {
     // Onlick so it works for the dynamic items!
     $(thisItem).siblings('.dropdown-menu').children().click(function(e) {
-        e.stopPropagation();
+        // Not for links
+        if(!$(e.target).is('a')) {
+            e.stopPropagation();
+        }
     });
     // Add possible tooltips
-    if(!iOS) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip()
+    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip()
 }
 
 // Check all functionality

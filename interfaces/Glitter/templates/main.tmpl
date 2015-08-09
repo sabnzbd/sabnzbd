@@ -152,26 +152,36 @@
                 <h2>$T('menu-queue')</h2>
 
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
-                    <!-- ko if: (queueDataLeft() != '')  -->
-                    <span class="glyphicon glyphicon-save info-textspacer"></span>
-                    <span data-bind="text: queueDataLeft"></span> MB $T('Glitter-left')
-                    <!-- /ko -->
+                    <div class="info-container-box">
+                        <!-- ko if: (queueDataLeft() != '')  -->
+                        <span class="glyphicon glyphicon-save"></span>
+                        <span data-bind="text: queueDataLeft"></span> MB $T('Glitter-left')
+                        <!-- /ko -->
+                    </div>
 
                     <!-- ko if: (quotaLimit() != 0)  -->
-                    <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }" class="info-container-break">
-                        <span class="glyphicon glyphicon-signal info-textspacer"></span>
-                    <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
-                    </span>
+                    <div class="info-container-box">
+                        <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }">
+                            <span class="glyphicon glyphicon-log-in"></span> <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
+                        </span>
+                    </div>
                     <!-- /ko -->
-
-                    <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
-                        <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
-                    </span>
+                
+                    <div class="info-container-box">
+                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
+                            <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
+                        </span>
+                        <!-- ko if: (diskSpaceLeft2() > 0)  -->
+                        <em>($T('Glitter-freeTemp'))</em>
+                        <!-- /ko -->
+                    </div>
+                    
                     <!-- ko if: (diskSpaceLeft2() > 0)  -->
-                    <em>($T('Glitter-freeTemp'))</em>
-                    <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
-                        <span class="glyphicon glyphicon-hdd info-textspacer"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
-                    </span>
+                    <div class="info-container-box">
+                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
+                            <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
+                        </span>
+                    </div>
                     <!-- /ko -->
 
                     <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations') &amp; $T('cmenu-sorting')">
@@ -343,7 +353,7 @@
                         </tr>
                         <!-- ko foreach: allWarnings -->
                         <tr>
-                            <td>
+                            <td class="table-warnings-label">
                                 <span class="label" data-bind="css: 'label-' + css, text: type"></span>
                                 <strong data-bind="text: date"></strong>
                             </td>
@@ -353,7 +363,7 @@
                     </tbody>
                 </table>
             </div>
-
+            <div class="clearfix"></div>
             <div class="history" data-bind="visible: hasHistory()" style="display: none;">
                 <h2>$T('menu-history')</h2>
                 <table class="table table-hover history-table paginated">
@@ -511,7 +521,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('status')</div>
-                                                <div class="col-sm-10" data-bind="text: glitterTranslate.status[historyStatus.status()]"></div>
+                                                <div class="col-sm-10" data-bind="text: glitterTranslate.status[historyStatus.status()] ? glitterTranslate.status[historyStatus.status()] : statusText()"></div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('size')</div>
@@ -544,13 +554,9 @@
                     </tbody>
                 </table>
 
-                <div class="input-group stylish-input-group" id="history-table-search">
-                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" id="history-table-searchbox" />
-                    <span class="input-group-addon">
-                        <button type="submit">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
-                    </span>
+                <div class="input-group" id="history-table-search">
+                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" data-bind="textInput: searchTerm" />
+                    <span class="glyphicon glyphicon-search"></span>
                 </div>
 
                 <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">
@@ -579,8 +585,10 @@
             <span class="glyphicon glyphicon-plus-sign"></span>
         </div>
         <div class="main-restarting modal-backdrop fade in" data-bind="visible: isRestarting" style="display: none;">
-            <strong><span class="glyphicon glyphicon-retweet"></span> $T('Glitter-lostConnection')</strong><br />
-            <small>$T('Glitter-afterRestart')</small>
+            <div>
+                <strong><span class="glyphicon glyphicon-retweet"></span> $T('Glitter-lostConnection')</strong><br />
+                <small>$T('Glitter-afterRestart')</small>
+            </div>
         </div>
 
         <!--#include $webdir + "/include_modals.tmpl"#-->

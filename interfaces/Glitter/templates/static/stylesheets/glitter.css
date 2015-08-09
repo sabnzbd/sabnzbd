@@ -185,12 +185,10 @@ li.dropdown {
 ***/
 
 .main-content {
-    padding-top: 50px;
+    padding-top: 8px;
     background-color: #FFF;
-    /*box-shadow: 0 0 10px 3px #CCC;*/
     border: 1px solid rgba(0, 0, 0, 0.2);
-    position: relative;
-    top: -52px;
+    margin-top: 0;
     margin-bottom: 30px;
 }
 
@@ -212,8 +210,16 @@ li.dropdown {
     font-size: 20em;
 }
 
-.main-restarting {
+.main-restarting.in {
     display: block;
+    height: 100%;
+    padding: 0;
+}
+
+.main-restarting.in div {
+    position: relative;
+    top: 30%;
+    transform: translateY(-50%);
 }
 
 .main-restarting.in strong {
@@ -286,6 +292,10 @@ tbody>tr>td:last-child {
     QUEUE Specific
 ***/
 
+.queue {
+    position: relative;
+}
+
 .queue h2 {
     float: left;
 }
@@ -318,16 +328,18 @@ tbody>tr>td:last-child {
     text-transform: capitalize;
 }
 
+.info-container-box {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 3px;
+}
+
 .info-container .glyphicon {
     margin-right: 2px;
 }
 
 .info-container a {
     margin-left: 8px;
-}
-
-.info-textspacer {
-    margin-left: 10px;
 }
 
 .queue-table td.name,
@@ -437,6 +449,10 @@ td.delete label,
     cursor: pointer;
 }
 
+td.delete span {
+    top: 2px;
+}
+
 .queueitem-settings {
     padding: 5px 10px 10px;
     left: -180px;
@@ -520,7 +536,7 @@ td.delete label,
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
-    width: 52px;
+    width: 50px;
     float: right;
     padding-left: 0;
     padding-top: 2px;
@@ -608,6 +624,10 @@ td.delete label,
     opacity: 1;
 }
 
+.table-warnings-label {
+    vertical-align: top !important;
+}
+
 .table-warnings .label {
     margin-right: 8px;
 }
@@ -632,6 +652,7 @@ td.delete label,
 
 .history {
     margin-top: 18px;
+    position: relative;
 }
 
 .history-table {
@@ -669,7 +690,7 @@ td.delete label,
     color: #888;
     font-size: 12px;
     padding-right: 0 !important;
-    vertical-align: bottom !important;
+    vertical-align: middle !important;
 }
 
 .history-table tr td.history-completedon {
@@ -809,15 +830,33 @@ td.delete label,
 }
 
 #history-table-search {
-    width: 130px;
     float: left;
     margin-bottom: 15px;
     margin-right: 5px;
 }
 
-#history-table-search input:focus {
-    width: 200px;
+#history-table-search input {
+    width: 130px;
+    transition: width 0.2s;
+    box-shadow: none;
 }
+
+#history-table-search input:focus {
+    width: 250px;
+}
+
+#history-table-search span {
+    float: right;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    opacity: 0.8;
+}
+
+#history-table-search input:focus+span {
+    opacity: 1;
+}
+
 
 .processing-download {
     width: 16px;
@@ -1286,6 +1325,11 @@ a:focus {
     padding-right: 10px;
 }
 
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
+}
+
 .dropdown-menu {
     margin-top: 0;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
@@ -1322,21 +1366,6 @@ legend {
     box-shadow: none;
     -webkit-transition: width 0.3s linear;
     transition: width 0.3s linear;
-}
-
-.stylish-input-group .input-group-addon {
-    background: white !important;
-}
-
-.stylish-input-group .form-control {
-    border-right: 0;
-    box-shadow: 0 0 0;
-    border-color: #ccc;
-}
-
-.stylish-input-group button {
-    border: 0;
-    background: transparent;
 }
 
 .btn {
