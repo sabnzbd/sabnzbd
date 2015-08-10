@@ -26,6 +26,7 @@ from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
 import random
+import sys
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
@@ -423,8 +424,7 @@ class Downloader(Thread):
                                               nw.thrdnum, server.id)
                             nw.init_connect(self.write_fds)
                         except:
-                            logging.error(T('Failed to initialize %s@%s'), nw.thrdnum, server.id)
-                            logging.info("Traceback: ", exc_info = True)
+                            logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.id, sys.exc_info()[1])
                             self.__reset_nw(nw, "failed to initialize")
 
             # Exit-point
