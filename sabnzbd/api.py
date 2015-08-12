@@ -24,6 +24,7 @@ import logging
 import re
 import datetime
 import time
+import json
 import cherrypy
 import locale
 try:
@@ -48,7 +49,6 @@ import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
 
 from sabnzbd.utils.rsslib import RSS, Item
-from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber, globber_full, time_format, remove_all, \
@@ -947,7 +947,7 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
                 info = data
             else:
                 info = {keyword:data}
-        response = JsonWriter().write(info)
+        response = json.dumps(info)
         if callback:
             response = '%s(%s)' % (callback, response)
 
