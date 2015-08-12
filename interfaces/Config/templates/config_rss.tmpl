@@ -10,7 +10,7 @@
         <p>$T('explain-RSS')</p>
 
                 <form action="add_rss_feed" method="post" novalidate>
-                <input type="hidden" name="session" value="$session">
+                <input type="hidden" name="session" value="$session"/>
                 <table class="catTable">
                     <tr>
                       <th>&nbsp;</th>
@@ -20,10 +20,10 @@
                     </tr>
                     <tr class="even">
                         <td><input type="checkbox" name="enable" value="1" /></td>
-                        <td><input type="text" name="feed" size="20" value="$feed" placeholder="unique feed name" /></td>
+                        <td><input type="text" name="feed" size="20" value="$feed" /></td>
                         <td><input type="url" name="uri" size="35" /></td>
                         <td class="nowrap">
-                            <input type="submit" class="Save" value="$T('button-add')" />
+                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
                         </td>
                     </tr>
                 </table>
@@ -48,17 +48,17 @@
                         <td class="title">
                             <div class="subscription-title">
                                 <a href="?feed=$rss[$feed_item]['link']" class="path feed">
-                                    <div class="favicon" style="background-image: url(&quot;http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed&quot;);"></div>
+                                    <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div>
                                     <span class="<!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled"' else "feed_disabled"#-->">$feed_item</span>
                                 </a>
                             </div>
                             <!-- <input type="text" name="newfeed" value="$feed_item" size="25" readonly="readonly" class="readonly" /> -->
                         </td>
                         <td class="controls">
-                            <input type="button" class="testFeed" value="$T('Read')" rel="$feed_item" />
+                            <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('Read')</button>
                             <input type="hidden" name="uri" value="$rss[$feed_item]['uri']" size="75" />
-                            <input type="button" class="editFeed" value="$T('Edit') URL" rel="$feed_item" />
-                            <input type="button" class="delFeed" value="$T('button-x')" rel="$feed_item" />
+                            <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
+                            <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>                            
                         </td>
                     </tr>
                     <tr class="feed-row <!--#if $odd then "alt" else ""#-->">
@@ -79,7 +79,7 @@
 
                 <form action="rss_now" method="post" novalidate>
                     <input type="hidden" name="session" value="$session" />
-                    <input type="submit" class="readAll" value="$T('button-rssNow')" />
+                    <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
                 </form>
             <!--#end if#-->
 
@@ -94,7 +94,7 @@
                 <div class="field-pair">
                     <label class="config narrow" for="rss_rate">$T('opt-rss_rate')</label>
                     <input type="number" name="rss_rate" id="rss_rate" value="$rss_rate" min="15" max="1440" />
-                    <input type="submit" value="$T('button-save')" />
+                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
                     <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span>
                     <span class="desc narrow">$T('explain-rss_rate')</span>
                 </div>
@@ -199,7 +199,7 @@
                 </td>
               <!--#end if#-->
               <td>
-                <input type="submit" class="Save" value="$T('button-save')" />
+                <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
               </td>
             </tr>
             </tbody>
@@ -272,7 +272,7 @@
                 </td>
               <!--#end if#-->
               <td>
-                <input type="submit" class="Save" value="$T('button-add')" />
+                <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
               </td>
             </tr>
             </tbody>
@@ -349,8 +349,8 @@
                     </td>
                   <!--#end if#-->
                   <td>
-                    <input type="submit" class="Save" value="$T('button-save')" />
-                    <input type="button" class="delFilter" value="$T('button-x')" />
+                    <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
+                    <button class="btn btn-default delFilter" type="button"><span class="glyphicon glyphicon-trash"></span></button>
                     <!--#if not $rss[$feed].filter_states[$fnum]#-->&nbsp;&nbsp;$T('Incorrect filter')<!--#end if#-->
                   </td>
                 </tr>
@@ -365,9 +365,9 @@
               <input type="hidden" name="session" value="$session" />
               <input type="hidden" name="feed" value="$feed" />
                 <div class="padding">
-                    <input type="button" class="testFeed" value="$T('button-preFeed')" rel="$feed" />
-                    <input type="submit" value="$T('button-forceFeed')" />
-                    <input type="button" class="cleanFeed" value="$T('button-clear') $T('link-download')" />
+                    <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
+                    <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
+                    <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('link-download')</button>
                 </div>
               </form>
         </div>
@@ -410,7 +410,7 @@
                         <input type="hidden" name="session" value="$session" />
                         <input type="hidden" name="url" value="$job[0]" />
                         <input type="hidden" name="nzbname" value="$job[4]" />
-                        <input type="submit" value="$T('link-download')" />
+                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                     </form>
                   </td>
                   <td class="align-center">$job[2]</td>
@@ -456,7 +456,7 @@
                         <input type="hidden" name="session" value="$session" />
                         <input type="hidden" name="url" value="$job[0]" />
                         <input type="hidden" name="nzbname" value="$job[4]" />
-                        <input type="submit" value="$T('link-download')" />
+                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                     </form>
                   </td>
                   <td class="align-center">$job[2]</td>

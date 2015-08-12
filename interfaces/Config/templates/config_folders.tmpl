@@ -5,7 +5,7 @@
 <div class="colmask">
     <form action="saveDirectories" method="post" name="fullform" id="fullform">
     <input type="hidden" id="session" name="session" value="$session" />
-    <input type="hidden" id="ajax" name="ajax" value=1 />
+    <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section">
         <div class="col2">
             <h3>$T('userFolders')</h3>
@@ -98,15 +98,11 @@
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
-                </div>
+               </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="padding alt">
-        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-        <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
-    </div>
+
     </form>
 </div><!-- /colmask -->
 

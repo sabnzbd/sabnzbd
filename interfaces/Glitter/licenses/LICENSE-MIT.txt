@@ -3,9 +3,7 @@
 License for:
 jQuery
 jQuery UI
-jQuery Cookie Plugin v1.4.1
 jquery dateFormat
-jQuery UI TouchPlugin
 jQuery Peity
 Knockout JavaScript library
 Knockout sortable

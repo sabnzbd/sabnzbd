@@ -1537,7 +1537,10 @@ class ConfigGeneral(object):
 
         # Update CherryPy authentication
         set_auth(cherrypy.config)
-        raise dcRaiser(self.__root, kwargs)
+        if kwargs.get('ajax'):
+            return sabnzbd.api.report('json', data={'success':True, 'restart_req':sabnzbd.RESTART_REQ})
+        else:
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def generateAPIKey(self, **kwargs):

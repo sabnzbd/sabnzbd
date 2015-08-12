@@ -12,9 +12,13 @@
     padding: 0;
 }
 
+.navbar-collapse {
+    padding-left: 0;
+}
+
 .main-content {
     border: 0;
-    margin-top: 1em !important;
+    margin-bottom: 0 !important;
 }
 
 #navbar-logo-big {
@@ -60,10 +64,13 @@ h2 {
 .info-container {
     margin-top: 0px;
     margin-bottom: 10px;
-    margin-left: -5px;
     float: none;
     clear: both;
     line-height: 2.3em;
+}
+
+.info-container-box {
+    float: left;
 }
 
 .history-info {
@@ -78,7 +85,7 @@ h2 {
 .info-container a {
     position: absolute;
     right: 10px;
-    top: 58px;
+    top: 0px;
     font-size: 1em;
 }
 
@@ -185,6 +192,19 @@ h2 {
 /**
     MODALS
 **/
+
+.close {
+    font-size: 30px;
+    line-height: 0.8em;
+    opacity: 1 !important;
+    margin-right: 4px !important;
+}
+
+#modal_options .modal-header a {
+    opacity: 1;
+    font-size: 1.3em;
+    margin-top: 2px;
+}
 
 #modal_options .col-sm-5 {
     text-align: left;

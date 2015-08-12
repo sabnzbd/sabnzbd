@@ -1456,6 +1456,9 @@ button.ui-button::-moz-focus-inner {
     overflow-y: scroll;
     padding: 15px 20px 20px;
     font-size: 13px;
+    padding-top: 65px;
+    padding-bottom: 20px;
+    overflow-y: auto;
 }
 .colmask {
     z-index: 20;
@@ -1485,7 +1488,7 @@ button.ui-button::-moz-focus-inner {
     z-index: 11;
     width: 100%;
     float: none;
-    padding: 12px 0;
+    padding: 12px 0 0;
 }
 .col2 h3 {
     background: none repeat scroll 0 0 #666;
@@ -1569,7 +1572,7 @@ input[type='checkbox'] {
     padding: 0;
     margin-left: 5px;
 }
-textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="email"]:hover, input[type="month"]:hover, input[type="number"]:hover, input[type="password"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="text"]:hover, input[type="time"]:hover, input[type="url"]:hover, input[type="week"]:hover, textarea:focus, select:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="email"]:focus, input[type="month"]:focus, input[type="number"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="time"]:focus, input[type="url"]:focus, input[type="week"]:focus {
+textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="email"]:hover, input[type="month"]:hover, input[type="number"]:hover, input[type="password"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="text"]:hover, input[type="time"]:hover, input[type="url"]:hover, input[type="week"]:hover, textarea:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="email"]:focus, input[type="month"]:focus, input[type="number"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="time"]:focus, input[type="url"]:focus, input[type="week"]:focus {
     background-color: #fffff0;
     border: 1px solid #aaa;
 }
@@ -1647,6 +1650,14 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
 .catTable th {
     text-align: center;
 }
+.RSS .catTable select {
+    max-width: 120px;
+}
+.RSS input[type="checkbox"] {
+    width:16px;
+    height: 16px;
+    margin-top: 0px;
+}
 .default {
     background-color: #ffffe0;
     border-bottom: 1px solid #aaa;
@@ -1654,6 +1665,7 @@ textarea:hover, select:hover, input[type="date"]:hover, input[type="datetime"]:h
 }
 .hidden {
     visibility: hidden;
+    display: block!important;
 }
 .float-left {
     float: left;
@@ -1816,9 +1828,13 @@ h2.activeRSS {
     border: 0 none;
     padding-top: .4em;
 }
+#subscriptions {
+    width: 620px;
+}
 #subscriptions .chk {
-    padding-right: 5px;
-    width: 14px;
+    padding: 5px;
+    padding-top: 8px;
+    vertical-align: middle;
 }
 #subscriptions .title {
     font-weight: bold;
@@ -1854,9 +1870,7 @@ h2.activeRSS {
     background-color: #f8f4e7;
 }
 span.count {
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
+    border-radius: 8px !important;
     background: none repeat scroll 0 0 #aca79c;
     color: #fff;
     margin: -3px 0 0 5px;
@@ -1886,7 +1900,6 @@ ul.tabs a {
     padding: 5px 30px;
     text-decoration: none;
     border: 1px solid #dfdede;
-    height: 18px;
     background-color: #f1ede0;
     color: #777;
     margin-right: 2px;
@@ -2026,6 +2039,7 @@ select {
 .btn {
     font-size: 13px;
     height: 34px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
 }
 
 .btn .glyphicon {
@@ -2036,6 +2050,14 @@ select {
 .btn .glyphicon-ok,
 .btn .glyphicon-plus {
     top: 1px;
+}
+
+select {
+    background-color: transparent;
+}
+
+select[disabled] {
+    background-color: #eee;
 }
 
 select[multiple] {
@@ -2059,16 +2081,15 @@ input[type="checkbox"] {
     margin-top: 0px;
 }
 
-#content {
-    padding-top: 0;
-    padding-bottom: 20px;
-    overflow-y: auto;
-}
-
 .navbar-default {
     background-color: #FFF;
     border: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,.06) !important;
+}
+
+.navbar-fixed-top {
+    z-index: 1000;
 }
 
 .navbar-default .navbar-brand {
@@ -2100,6 +2121,58 @@ input[type="checkbox"] {
     top: 1px;
 }
 
+.main-restarting.in {
+    text-align: center;
+    opacity: 0.9;
+    color: black;
+    z-index: 2000;
+    height: 100%;
+}
+
+.main-restarting.in div {
+    position: relative;
+    top: 30%;
+    transform: translateY(-50%);
+}
+
+.main-restarting {
+    display: block;
+    background-color: white;
+}
+
+.main-restarting.in strong {
+    font-size: 5em;
+    display: block;
+}
+
+.main-restarting.in span {
+    top: 10px;
+}
+
+.main-restarting small {
+    font-size: 3rem !important;
+}
+
+.dotOne, .dotTwo, .dotThree {
+    opacity: 0;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.0s;
+}
+
+.dotTwo {
+    animation-delay: 0.2s;
+}
+
+.dotThree {
+    animation-delay: 0.3s;
+}
+
+@keyframes dot {
+    0% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 @media screen and (min-width: 768px) and (max-width: 1200px) { 
     .navbar-default .navbar-nav>li>a>span,
     .navbar-default .navbar-nav>li>a:hover>strong,
@@ -2110,6 +2183,10 @@ input[type="checkbox"] {
     .navbar-default .navbar-nav>li>a>strong,
     .navbar-default .navbar-nav:hover>li>a.active>strong {
         display: none;
+    }
+    
+    .fileBrowserField {
+        width: 50% !important;
     }
 }
 
@@ -2139,12 +2216,30 @@ input[type="checkbox"] {
         display: inline-block;  
         width: 1.5em; 
     }
+    
+    .fileBrowserField {
+        width: 50% !important;
+    }
+    
+    .main-restarting.in strong {
+        font-size: 2em;
+        font-weight: bold;
+    }
+    
+    .main-restarting.in span {
+        top: 2px;
+    }
+    
+    .main-restarting.in small {
+        font-size: 2rem !important;
+    }
 }
 
 @media only screen and (max-width : 480px) {
     #content {
         margin: 0 !important;
         padding: 0 !important;
+        padding-top: 55px !important;
     }
     
     #content fieldset {
@@ -2160,7 +2255,7 @@ input[type="checkbox"] {
     }
     
     .col2 p {
-        margin-left:  5px;
+        margin-left:  0px;
     }
     
     .col1 h5 {
@@ -2188,10 +2283,11 @@ input[type="checkbox"] {
     
     div.field-pair {
         min-width: 0;
-        padding: 10px;
+        padding: 5px;
     }
 
     .fileBrowserField {
         max-width: 65% !important;
     } 
 }
+

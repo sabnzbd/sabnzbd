@@ -1,15 +1,18 @@
     <!-- Content end -->
     <div class="clearfix"></div>
     </div>
-<script type="text/javascript">
-    function is_touch_device() {
-        return !!('ontouchstart' in window) ? 1 : 0;
-    }
-    if (is_touch_device() === 1) {
-        // touch device found
-        \$('#content').css('overflow-y', 'inherit');
-        \$('html').css('overflow-y', 'scroll');
-    }
-</script>
+    <div class="main-restarting modal-backdrop fade in" style="display: none;">
+        <div>
+            <strong><span class="glyphicon glyphicon-retweet"></span> $T('wizard-restarting')</strong><br />
+            <small><span class="restarting-url"></span><span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></small>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        // Fix for touch devices needing double click on the menu
+        \$('.navbar-nav li a').on('touchstart', function(e) {
+            \$(this).click()
+        })
+    </script>
 </body>
 </html>

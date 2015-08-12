@@ -7,7 +7,7 @@
     <input type="hidden" name="session" value="$session" />
     <div id="addServer">
         <div class="padding alt">
-            <input type="button" value="$T('button-addServer')" id="addServerButton" />
+            <button type="button" class="btn btn-default"  id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
         </div>
     </div>
     <div class="section" id="addServerContent" style="display: none;">
@@ -125,8 +125,8 @@
               <td>&nbsp;$T('enabled')</td>
             </tr></table>
             
-            <input type="button" value="$T('button-clrServer')" class="clrServer" />
-            <input type="button" value="$T('showDetails')" class="showserver" />
+            <button type="button" class="btn btn-default clrServer">$T('button-clrServer')</button>
+            <button type="button" class="btn btn-default showserver">$T('showDetails')</button>
         </div><!-- /col2 -->
             <div class="col1"  style="display:none;">
             <fieldset>

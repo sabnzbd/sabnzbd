@@ -849,6 +849,7 @@ SKIN_TEXT = {
     'Glitter-disabled' : TT('Disabled'),
     'Glitter-interfaceOptions' : TT('Web Interface').title(),
     'Glitter-interfaceRefresh' : TT('Refresh rate'),
+    'Glitter-useGlobalOptions' : TT('Use global interface settings'),
     'Glitter-queueItemLimit' : TT('Queue item limit'),
     'Glitter-historyItemLimit' : TT('History item limit'),
     'Glitter-dateFormat' : TT('Date format'),
