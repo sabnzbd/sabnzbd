@@ -556,7 +556,7 @@ def check_latest_version():
     # to bad file content.
 
     try:
-        fn = urllib.urlretrieve('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/README.md/latest.txt')[0]
+        fn = urllib.urlretrieve('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt')[0]
         f = open(fn, 'r')
         data = f.read()
         f.close()
