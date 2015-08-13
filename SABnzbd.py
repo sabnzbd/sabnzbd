@@ -52,8 +52,8 @@ except:
     sys.exit(1)
 
 import cherrypy
-if [int(n) for n in cherrypy.__version__.split('.')] < [3, 2, 2]:
-    print 'Sorry, requires Python module Cherrypy 3.2.2+ (use the included version)'
+if [int(n) for n in cherrypy.__version__.split('.')] < [3, 8, 0]:
+    print 'Sorry, requires Python module Cherrypy 3.8.0+ (use the included version)'
     sys.exit(1)
 
 from cherrypy import _cpserver
@@ -1464,8 +1464,8 @@ def main():
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
                             'log.screen': cherrylogtoscreen,
-                            'engine.autoreload_frequency' : 100,
-                            'engine.autoreload_on' : False,
+                            'engine.autoreload.frequency' : 100,
+                            'engine.autoreload.on' : False,
                             'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
                             'tools.gzip.on' : True,
