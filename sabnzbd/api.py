@@ -1463,22 +1463,6 @@ def build_file_list(id):
 
 
 #------------------------------------------------------------------------------
-def json_list(section, lst):
-    """Output a simple list as a JSON object
-    """
-    n = 0
-    d = []
-    for item in lst:
-        c = {}
-        c['id'] = '%s' % n
-        c['name'] = item
-        n += 1
-        d.append(c)
-
-    return { section : d }
-
-
-#------------------------------------------------------------------------------
 def rss_qstatus():
     """ Return a RSS feed with the queue status
     """
@@ -1550,6 +1534,7 @@ def options_list(output):
         'par2c' : sabnzbd.newsunpack.PAR2C_COMMAND,
         'rar' : sabnzbd.newsunpack.RAR_COMMAND,
         'zip' : sabnzbd.newsunpack.ZIP_COMMAND,
+        '7zip' : sabnzbd.newsunpack.SEVEN_COMMAND,
         'nice' : sabnzbd.newsunpack.NICE_COMMAND,
         'ionice' : sabnzbd.newsunpack.IONICE_COMMAND,
         'ssl' : sabnzbd.newswrapper.HAVE_SSL

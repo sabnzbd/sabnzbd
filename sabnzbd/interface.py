@@ -23,7 +23,6 @@ import os
 import time
 import cherrypy
 import logging
-import re
 import urllib
 from xml.sax.saxutils import escape
 
@@ -34,24 +33,29 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, \
-     diskfree, sanitize_foldername, time_format, HAVE_AMPM, long_path, \
+     time_format, HAVE_AMPM, long_path, \
      cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
-                             platform_encode, encode_for_xml
+                             platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
-from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 
-from sabnzbd.constants import *
+from sabnzbd.constants import \
+     REC_RAR_VERSION, NORMAL_PRIORITY, PNFO_NZO_ID_FIELD, PNFO_REPAIR_FIELD, \
+     PNFO_UNPACK_FIELD, PNFO_DELETE_FIELD, PNFO_SCRIPT_FIELD, PNFO_EXTRA_FIELD1, \
+     PNFO_PRIORITY_FIELD, PNFO_NZO_ID_FIELD, PNFO_FILENAME_FIELD, PNFO_ACTIVE_FILES_FIELD, \
+     MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
+     DEF_SKIN_COLORS, DEFAULT_PRIORITY
+
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
@@ -130,7 +134,7 @@ def rssRaiser(root, kwargs):
 #------------------------------------------------------------------------------
 def IsNone(value):
     """ Return True if either None, 'None' or '' """
-    return value==None or value=="" or value.lower()=='none'
+    return value == None or value == "" or value.lower() == 'none'
 
 
 def Strip(txt):
@@ -404,7 +408,7 @@ class MainPage(object):
         if msg: return msg
 
         if kwargs.get('mode') == 'history':
-            return rss_history(cherrypy.url(), limit=kwargs.get('limit',50), search=kwargs.get('search'))
+            return rss_history(cherrypy.url(), limit=kwargs.get('limit', 50), search=kwargs.get('search'))
         elif kwargs.get('mode') == 'queue':
             return rss_qstatus()
         elif kwargs.get('mode') == 'warnings':
@@ -686,7 +690,7 @@ class QueuePage(object):
         dummy2 = kwargs.get('dummy2')
         search = kwargs.get('search')
 
-        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,\
+        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, \
                                                                                        self.__prim, self.__web_dir, self.__verbose_list, \
                                                                                        self.__dict__, start=start, limit=limit, \
                                                                                        dummy2=dummy2, trans=True, search=search)
@@ -1057,7 +1061,7 @@ class HistoryPage(object):
     def show_edit_rating(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        self.__edit_rating = kwargs.get('job');
+        self.__edit_rating = kwargs.get('job')
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1075,7 +1079,7 @@ class HistoryPage(object):
                     Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail)
         except:
             pass
-        self.__edit_rating = None;
+        self.__edit_rating = None
         raise queueRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
@@ -1786,7 +1790,7 @@ class ConfigRss(object):
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed
         conf['rss'] = rss
-        conf['rss_next'] = time.strftime(time_format('%H:%M'),time.localtime(sabnzbd.rss.next_run()))
+        conf['rss_next'] = time.strftime(time_format('%H:%M'), time.localtime(sabnzbd.rss.next_run()))
 
         if active_feed:
             readout = bool(self.__refresh_readout)
@@ -1838,13 +1842,13 @@ class ConfigRss(object):
         if kwargs.get('enable') is not None:
             del kwargs['enable']
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            cf = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            cfg = None
+            cf = None
         uri = Strip(kwargs.get('uri'))
-        if cfg and uri:
+        if cf and uri:
             kwargs['uri'] = uri
-            cfg.set_dict(kwargs)
+            cf.set_dict(kwargs)
             config.save_config()
 
         raise rssRaiser(self.__root, kwargs)
@@ -1855,15 +1859,15 @@ class ConfigRss(object):
         msg = check_session(kwargs)
         if msg: return msg
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            cf = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            cfg = None
+            cf = None
         if 'enable' not in kwargs:
             kwargs['enable'] = 0
         uri = Strip(kwargs.get('uri'))
-        if cfg and uri:
+        if cf and uri:
             kwargs['uri'] = uri
-            cfg.set_dict(kwargs)
+            cf.set_dict(kwargs)
             config.save_config()
 
         raise rssRaiser(self.__root, kwargs)
@@ -1890,7 +1894,7 @@ class ConfigRss(object):
         """ Add one new RSS feed definition """
         msg = check_session(kwargs)
         if msg: return msg
-        feed= Strip(kwargs.get('feed')).strip('[]')
+        feed = Strip(kwargs.get('feed')).strip('[]')
         uri = Strip(kwargs.get('uri'))
         if feed and uri:
             try:
@@ -2356,7 +2360,7 @@ class Status(object):
         header['configfn'] = xml_name(config.get_filename())
 
         # Dashboard: Begin
-        from utils.getipaddress import localipv4, publicipv4, ipv6
+        from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
         header['localipv4'] = localipv4()
         header['publicipv4'] = publicipv4()
         header['ipv6'] = ipv6()
@@ -2539,15 +2543,14 @@ class Status(object):
         try:
             logging.debug('Dashboard: Refresh button pressed')
 
-            from utils.diskspeed import diskspeedmeasure
-            sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()),1)
-            sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()),1)
+            from sabnzbd.utils.diskspeed import diskspeedmeasure
+            sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+            sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
             logging.debug('Dashboard: Refresh finished succesfully')
 
         except:
             logging.debug('Dashboard: Refresh had a problem')
-            pass
         raise dcRaiser(self.__root, kwargs)	# Refresh screen
 
 
@@ -2575,31 +2578,6 @@ def badParameterResponse(msg, ajax=None):
 </html>
 ''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), unicoder(msg), T('Back'))
 
-def ShowFile(name, path):
-    """Return a html page listing a file and a 'back' button
-    """
-    try:
-        f = open(path, "r")
-        msg = TRANS(f.read())
-        f.close()
-    except:
-        msg = "FILE NOT FOUND\n"
-
-    return '''
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>%s</title>
-</head>
-<body>
-<FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-<h3>%s</h3>
-<code><pre>
-%s
-</pre></code><br/><br/>
-</body>
-</html>
-''' % (name, T('Back'), name, escape(msg))
 
 def ShowString(name, string):
     """Return a html page listing a file and a 'back' button
@@ -2624,23 +2602,6 @@ def ShowString(name, string):
 </body>
 </html>
 ''' % (xml_name(name), T('Back'), xml_name(name), escape(unicoder(msg)))
-
-
-def ShowOK(url):
-    return '''
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>%s</title>
-</head>
-<body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-           <br/><br/>
-           %s
-           <br/><br/>
-</body>
-</html>
-''' % (escape(url), T('Back'), T('Job "%s" was re-added to the queue') % escape(url))
 
 
 
@@ -2679,79 +2640,6 @@ def GetRssLog(feed):
 
 
     return done, good, bad
-
-def ShowRssLog(feed, all):
-    """Return a html page listing an RSS log and a 'back' button
-    """
-    jobs = sabnzbd.rss.show_result(feed)
-    names = jobs.keys()
-    # Sort in the order the jobs came from the feed
-    names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
-
-    qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
-
-    doneStr = []
-    for x in names:
-        job = jobs[x]
-        if job['status'][0] == 'D':
-            doneStr.append('%s<br/>' % xml_name(job['title']))
-
-    goodStr = []
-    for x in names:
-        job = jobs[x]
-        if job['status'][0] == 'G':
-            goodStr.append('')
-
-    badStr = []
-    for x in names:
-        job = jobs[x]
-        if job['status'][0] == 'B':
-            badStr.append('')
-
-    if all:
-        return '''
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-               <title>%s</title>
-</head>
-<body>
-               <form>
-               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="%s"/>
-               </form>
-               <h3>%s</h3>
-               %s<br/><br/>
-               <b>%s</b><br/>
-               %s
-               <br/>
-               <b>%s</b><br/>
-               %s
-               <br/>
-               <b>%s</b><br/>
-               %s
-               <br/>
-</body>
-</html>
-''' % (escape(feed), T('Back'), escape(feed), T('Jobs marked with a \'*\' will not be automatically downloaded.'), T('Matched'), \
-       ''.join(goodStr), T('Not matched'), ''.join(badStr), T('Downloaded'), ''.join(doneStr))
-    else:
-        return '''
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-               <title>%s</title>
-</head>
-<body>
-               <form>
-               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="%s"/>
-               </form>
-               <h3>%s</h3>
-               <b>%s</b><br/>
-               %s
-               <br/>
-</body>
-</html>
-''' % (escape(feed), T('Back'), escape(feed), T('Downloaded so far'), ''.join(doneStr))
 
 
 

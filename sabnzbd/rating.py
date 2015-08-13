@@ -34,7 +34,7 @@ from threading import *
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import OrderedSetQueue
+from sabnzbd.utils.ordered import OrderedSetQueue
 import sabnzbd.cfg as cfg
 
 RATING_URL = "/releaseRatings/releaseRatings.php"

@@ -25,15 +25,20 @@ import time
 import re
 import logging
 import Queue
+import urllib
 import urllib2
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import FUTURE_Q_FOLDER
+from sabnzbd.constants import FUTURE_Q_FOLDER, Status
+from sabnzbd.encoding import unicoder
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
+import sabnzbd.emailer as emailer
+import sabnzbd.growler as growler
+
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
 
@@ -100,7 +105,6 @@ class URLGrabber(Thread):
                     req.add_header('Accept-encoding','gzip')
                 filename = None
                 category = None
-                length = 0
                 gzipped = False
                 nzo_info = {}
                 wait = 0
@@ -148,8 +152,6 @@ class URLGrabber(Thread):
                             nzo_info['failure'] = value
                         elif item == 'x-dnzb-details':
                             nzo_info['details'] = value
-                        elif item in ('content-length',):
-                            length = misc.int_conv(value)
                         elif item == 'retry-after':
                             # For NZBFinder
                             wait = misc.int_conv(value)
@@ -170,7 +172,7 @@ class URLGrabber(Thread):
                         logging.info('Retry URL %s', url)
                         self.add(url, future_nzo, wait)
                     else:
-                        misc.bad_fetch(future_nzo, url, msg, retry=True)
+                        bad_fetch(future_nzo, url, msg, retry=True)
                     continue
 
                 if not filename:
@@ -201,8 +203,8 @@ class URLGrabber(Thread):
 
                 # Check if nzb file
                 if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
-                    res, nzo_ids = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority, \
-                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False)
+                    res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority, \
+                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False)[0]
                     if res == 0:
                         NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                     else:
@@ -249,7 +251,6 @@ def _analyse(fn, url):
         returns fn|None, error-message|None, retry, wait-seconds, data
     """
     data = None
-    wait = 0
     if not fn or fn.code != 200:
         logging.debug('No usable response from indexer, retry after 60 sec')
         if fn:
@@ -292,3 +293,63 @@ def dereferring(url, fn):
                 if m:
                     return m.group(1)
     return None
+
+
+def bad_fetch(nzo, url, msg='', retry=False, content=False):
+    """ Create History entry for failed URL Fetch
+        msg : message to be logged
+        retry : make retry link in histort
+        content : report in history that cause is a bad NZB file
+    """
+    if msg:
+        msg = unicoder(msg)
+    else:
+        msg = ''
+
+    pp = nzo.pp
+    if pp is None:
+        pp = ''
+    else:
+        pp = '&pp=%s' % str(pp)
+    cat = nzo.cat
+    if cat:
+        cat = '&cat=%s' % urllib.quote(cat)
+    else:
+        cat = ''
+    script = nzo.script
+    if script:
+        script = '&script=%s' % urllib.quote(script)
+    else:
+        script = ''
+
+    nzo.status = Status.FAILED
+
+
+    if url:
+        nzo.filename = url
+        nzo.final_name = url.strip()
+
+    if content:
+        # Bad content
+        msg = T('Unusable NZB file')
+    else:
+        # Failed fetch
+        msg = ' (' + msg + ')'
+
+    if retry:
+        nzbname = nzo.custom_name
+        if nzbname:
+            nzbname = '&nzbname=%s' % urllib.quote(nzbname)
+        else:
+            nzbname = ''
+        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s&job=%s%s%s%s%s">' + T('Try again') + '</a>'
+        parms = (msg, cfg.api_key(), urllib.quote(url), nzo.nzo_id, pp, cat, script, nzbname)
+        nzo.fail_msg = text % parms
+    else:
+        nzo.fail_msg = msg
+
+    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    if cfg.email_endjob() > 0:
+        emailer.badfetch_mail(msg, url)
+
+    NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
