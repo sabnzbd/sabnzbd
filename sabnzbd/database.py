@@ -367,6 +367,23 @@ class HistoryDB(object):
                 pass
         return path
 
+
+    def get_other(self, nzo_id):
+        t = (nzo_id,)
+        if self.execute('SELECT * FROM history WHERE nzo_id=?', t):
+            try:
+                items = self.c.fetchall()[0]
+                dtype = items.get('report')
+                url = items.get('url')
+                pp = items.get('pp')
+                script = items.get('script')
+                cat = items.get('category')
+            except AttributeError:
+                return '', '', '', '', ''
+        return dtype, url, pp, script, cat
+
+
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -425,6 +442,9 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
+    # Reuse the old 'report' column to indicate a URL-fetch
+    report = 'future' if nzo.futuretype else ''
+
     # Analyse series info only when job is finished
     series = u''
     if postproc_time:
@@ -432,7 +452,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         if seriesname and season and episode:
             series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
 
-    return (completed, name, nzb_name, category, pp, script, '', url, status, nzo_id, storage, path, \
+    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
             fail_message, url_info, bytes, series, nzo.md5sum)
 

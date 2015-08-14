@@ -1547,11 +1547,16 @@ def retry_job(job, new_nzb, password):
     """ Re enter failed job in the download queue """
     if job:
         history_db = cherrypy.thread_data.history_db
-        path = history_db.get_path(job)
-        if path:
-            nzo_id = repair_job(platform_encode(path), new_nzb, password)
+        futuretype, url, pp, script, cat = history_db.get_other(job)
+        if futuretype:
+            sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
-            return nzo_id
+        else:
+            path = history_db.get_path(job)
+            if path:
+                nzo_id = repair_job(platform_encode(path), new_nzb, password)
+                history_db.remove_history(job)
+                return nzo_id
     return None
 
 
@@ -1846,7 +1851,11 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
             item['size'] = ''
         if not item.has_key('loaded'):
             item['loaded'] = False
+
         path = platform_encode(item.get('path', ''))
+        if item.get('status') != 'Failed':
+            item['path'] = ''
+
         item['retry'] = int(bool(item.get('status') == 'Failed' and \
                                  path and \
                                  path not in retry_folders and \
@@ -1854,6 +1863,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                                  os.path.exists(path)) and \
                                  not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
                                  )
+        if item['report'] == 'future':
+            item['retry'] = True
+
         if item['retry']:
             retry_folders.append(path)
 

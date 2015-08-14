@@ -117,6 +117,9 @@ class URLGrabber(Thread):
                     if 'CERTIFICATE_VERIFY_FAILED' in error:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % misc.get_urlbase(url)
                         retry = False
+                    elif 'nodename nor servname provided' in error:
+                        msg = T('Server name does not resolve')
+                        retry = False
                 except:
                     logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
 
@@ -306,24 +309,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     else:
         msg = ''
 
-    pp = nzo.pp
-    if pp is None:
-        pp = ''
-    else:
-        pp = '&pp=%s' % str(pp)
-    cat = nzo.cat
-    if cat:
-        cat = '&cat=%s' % urllib.quote(cat)
-    else:
-        cat = ''
-    script = nzo.script
-    if script:
-        script = '&script=%s' % urllib.quote(script)
-    else:
-        script = ''
-
     nzo.status = Status.FAILED
-
 
     if url:
         nzo.filename = url
@@ -334,19 +320,9 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
         msg = T('Unusable NZB file')
     else:
         # Failed fetch
-        msg = ' (' + msg + ')'
+        msg = T('URL Fetching failed; %s') % msg
 
-    if retry:
-        nzbname = nzo.custom_name
-        if nzbname:
-            nzbname = '&nzbname=%s' % urllib.quote(nzbname)
-        else:
-            nzbname = ''
-        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s&job=%s%s%s%s%s">' + T('Try again') + '</a>'
-        parms = (msg, cfg.api_key(), urllib.quote(url), nzo.nzo_id, pp, cat, script, nzbname)
-        nzo.fail_msg = text % parms
-    else:
-        nzo.fail_msg = msg
+    nzo.fail_msg = msg
 
     growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
