@@ -1339,13 +1339,16 @@ class NzbObject(TryList):
     ###########################################################################
     @property
     def workpath(self):
-        """ Return the full path for my job-admin folder (or old style cache) """
+        """ Return the full path for my job-admin folder """
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
     def downpath(self):
         """ Return the full path for my download folder """
-        return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
+        if self.futuretype:
+            return ''
+        else:
+            return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
 
     @property
     def group(self):
