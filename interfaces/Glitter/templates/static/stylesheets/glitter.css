@@ -484,7 +484,8 @@ td.delete span {
     margin-bottom: 0;
 }
 
-.progress span {
+.progress>span,
+.progress-bar>span {
     position: absolute;
     top: 0;
     left: 0;
@@ -1153,6 +1154,14 @@ td.delete span {
     margin-left: 10px;
 }
 
+#modal_item_files .item-files-table {
+    margin-bottom: 5px;
+}
+
+#modal_item_files .item-files-table.table-active-sorting {
+    border-collapse: collapse !important;
+}
+
 #modal_item_files .item-files-table .progress {
     overflow: hidden;
     box-shadow: none;
@@ -1163,10 +1172,11 @@ td.delete span {
     transition: none;
 }
 
-#modal_item_files .item-files-table .progress span {
+#modal_item_files .item-files-table .progress-bar>span {
     text-align: left;
     margin-left: 80px;
     margin-top: 2px;
+    
 }
 
 #modal_item_files .item-files-table .progress small {
@@ -1186,9 +1196,7 @@ td.delete span {
     margin-left: 8px;
 }
 
-#modal_item_files .item-files-table {
-    margin-bottom: 5px;
-}
+
 
 /* RETRY JOB MODAL */
 #modal_retry_job .form-group {

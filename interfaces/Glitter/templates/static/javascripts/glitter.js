@@ -44,7 +44,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 1500
+            timeout: 2000
         });
 
         return $.when(ajaxQuery);
@@ -62,7 +62,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 1500
+            timeout: 2000
         });
 
         return $.when(ajaxQuery);
@@ -1821,12 +1821,10 @@ $(function() {
         self.filename = ko.observable();
         self.nzf_id = ko.observable();
         self.file_age = ko.observable();
+        self.mb = ko.observable();
         self.percentage = ko.observable();
         self.canChange = ko.computed(function() {
             return self.nzf_id() != undefined;
-        })
-        self.filenameAndAge = ko.pureComputed(function() {
-            return self.filename() + ' <small>(' + self.file_age() + ')</small>';
         })
 
         // For selecting range
@@ -1842,6 +1840,7 @@ $(function() {
             self.filename(data.filename)
             self.nzf_id(data.nzf_id)
             self.file_age(data.age)
+            self.mb(data.mb)
             self.percentage(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
         }
 

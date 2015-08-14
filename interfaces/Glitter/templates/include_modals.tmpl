@@ -319,7 +319,6 @@
                             </a>
                         </div>
 
-
                         <table class="table item-files-table">
                             <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.setUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
                                 <tr data-bind="css: { 'files-sortable' : canChange() }">
@@ -328,7 +327,10 @@
                                             <div class="progress-bar progress-bar-info" role="progressbar" data-bind="attr: { 'style': 'width: '+percentage() }">
                                                 <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canChange()  }, click : checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
-                                                <span data-bind="html: filenameAndAge"></span>
+                                                <span>
+                                                    <span data-bind="truncatedTextCenter: filename"></span>
+                                                    <small>(<span data-bind="text: file_age"></span> - <span data-bind="text: mb"></span> MB)</small>
+                                                </span>
                                             </div>
                                         </div>
                                     </td>
