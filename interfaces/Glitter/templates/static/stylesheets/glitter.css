@@ -461,7 +461,7 @@ td.delete span {
 
 .queueitem-settings select {
     margin-top: 5px;
-    width: 170px;
+    width: 168px;
 }
 
 .queueitem-settings .glyphicon {
@@ -484,7 +484,8 @@ td.delete span {
     margin-bottom: 0;
 }
 
-.progress span {
+.progress>span,
+.progress-bar>span {
     position: absolute;
     top: 0;
     left: 0;
@@ -529,6 +530,8 @@ td.delete span {
     background-color: #f9f9f9;
     max-width: 700px;
     float: right;
+    position: relative;
+    z-index: 999;
 }
 
 .multioperations-selector .add-nzb-inputbox {
@@ -838,7 +841,6 @@ td.delete span {
 #history-table-search input {
     width: 130px;
     transition: width 0.2s;
-    box-shadow: none;
 }
 
 #history-table-search input:focus {
@@ -851,6 +853,7 @@ td.delete span {
     right: 10px;
     top: 10px;
     opacity: 0.8;
+    z-index: 999;
 }
 
 #history-table-search input:focus+span {
@@ -970,9 +973,9 @@ td.delete span {
 
 #modal_options .options-function-box .btn,
 #modal_options .options-function-box select {
-    margin-top: 10px;
     width: auto;
     display: inline-block;
+    margin-top: 10px;
 }
 
 #modal_options .options-server-box {
@@ -1123,6 +1126,10 @@ td.delete span {
     width: auto;
 }
 
+#modal_item_files  #nzb_password {
+    border-right-width: 0;
+}
+
 #modal_item_files h4 {
     width: 90%;
     overflow: hidden;
@@ -1147,6 +1154,14 @@ td.delete span {
     margin-left: 10px;
 }
 
+#modal_item_files .item-files-table {
+    margin-bottom: 5px;
+}
+
+#modal_item_files .item-files-table.table-active-sorting {
+    border-collapse: collapse !important;
+}
+
 #modal_item_files .item-files-table .progress {
     overflow: hidden;
     box-shadow: none;
@@ -1157,10 +1172,11 @@ td.delete span {
     transition: none;
 }
 
-#modal_item_files .item-files-table .progress span {
+#modal_item_files .item-files-table .progress-bar>span {
     text-align: left;
     margin-left: 80px;
     margin-top: 2px;
+    
 }
 
 #modal_item_files .item-files-table .progress small {
@@ -1180,9 +1196,7 @@ td.delete span {
     margin-left: 8px;
 }
 
-#modal_item_files .item-files-table {
-    margin-bottom: 5px;
-}
+
 
 /* RETRY JOB MODAL */
 #modal_retry_job .form-group {
@@ -1336,6 +1350,14 @@ a:focus {
     -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
+.tooltip {
+    z-index: 5000;
+}
+
+.tooltip-inner {
+    max-width: 350px;
+}
+
 .pagination {
     margin: 0;
 }
@@ -1359,6 +1381,11 @@ legend {
 .pagination li.active span:hover {
     background-color: #8F8F8F;
     border: 1px solid #8F8F8F;
+}
+
+.pagination>li>a, 
+.pagination>li>span {
+    color: #333;
 }
 
 .progress-bar {

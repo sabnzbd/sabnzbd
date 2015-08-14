@@ -193,6 +193,10 @@ h2 {
     MODALS
 **/
 
+.modal.fade .modal-dialog, .modal.in .modal-dialog {
+  transform: translate(0, 0);
+}
+
 .close {
     font-size: 30px;
     line-height: 0.8em;

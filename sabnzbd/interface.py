@@ -2596,9 +2596,7 @@ def ShowString(name, string):
 <body>
            <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
            <h3>%s</h3>
-           <code><pre>
-           %s
-           </pre></code><br/><br/>
+           <code><pre>%s</pre></code>
 </body>
 </html>
 ''' % (xml_name(name), T('Back'), xml_name(name), escape(unicoder(msg)))

@@ -9,6 +9,23 @@ ko.bindingHandlers.truncatedText = {
     },
     defaultLength: 15
 };
+ko.bindingHandlers.truncatedTextCenter = {
+    update: function(element, valueAccessor, allBindingsAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor())
+        var maxLength = 60;
+        if(value.length > maxLength) {
+            var charsToShow = maxLength - 3,
+                frontChars = Math.ceil(charsToShow/2),
+                backChars = Math.floor(charsToShow/2);
+            var truncatedValue = value.substr(0, frontChars) + '&hellip;' +  value.substr(value.length - backChars);
+        } else {
+            var truncatedValue = value;
+        }
+        ko.bindingHandlers.html.update(element, function() {
+            return truncatedValue;
+        });
+    }
+};
 ko.bindingHandlers.filedrop = {
     init: function(element, valueAccessor) {
         var options = $.extend({}, {
@@ -196,8 +213,7 @@ $(document).bind('dragover', function(e) {
                             parentEl = ui.item.parent()[0],
                             item = dataGet(el, ITEMKEY) || dragItem;
                         dragItem = null;
-                        // Remove class again for active sorting
-                        $(el).parent().parent().removeClass('table-active-sorting')
+                        
                         //make sure that moves only run once, as update fires on multiple containers
                         if(item && (this === parentEl || $.contains(this, parentEl))) {
                             //identify parents
@@ -260,6 +276,10 @@ $(document).bind('dragover', function(e) {
                         if(updateActual) {
                             updateActual.apply(this, arguments);
                         }
+                    },
+                    stop: function(event, ui) {
+                        // Remove class again for active sorting
+                        $(event.target).parent().removeClass('table-active-sorting')
                     },
                     connectWith: sortable.connectClass ? "." + sortable.connectClass : false,
                     placeholder: 'sortable-placeholder'
