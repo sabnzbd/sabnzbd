@@ -25,7 +25,6 @@ import time
 import re
 import logging
 import Queue
-import urllib
 import urllib2
 from threading import Thread
 
@@ -113,12 +112,16 @@ class URLGrabber(Thread):
                 try:
                     fn = urllib2.urlopen(req)
                 except urllib2.URLError:
-                    error = str(sys.exc_info()[1])
-                    if 'CERTIFICATE_VERIFY_FAILED' in error:
-                        msg = T('Server %s uses an untrusted HTTPS certificate') % misc.get_urlbase(url)
+                    logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
+                    error = str(sys.exc_info()[1]).lower()
+                    if 'certificate_verify_failed' in error:
+                        msg = T('Server %s uses an untrusted HTTPS certificate') % ''
                         retry = False
                     elif 'nodename nor servname provided' in error:
                         msg = T('Server name does not resolve')
+                        retry = False
+                    elif '401' in error or 'unauthorized' in error:
+                        msg = T('Unauthorized access')
                         retry = False
                 except:
                     logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
@@ -175,7 +178,7 @@ class URLGrabber(Thread):
                         logging.info('Retry URL %s', url)
                         self.add(url, future_nzo, wait)
                     else:
-                        bad_fetch(future_nzo, url, msg, retry=True)
+                        bad_fetch(future_nzo, url, msg)
                     continue
 
                 if not filename:
@@ -280,6 +283,9 @@ def _analyse(fn, url):
             logging.debug('nzbsrus says: %s, wait 60m', data)
             return None, data, True, 3600, data
 
+    if '.oznzb.com' in url and 'login?' in fn.url:
+        return None, T('Unauthorized access'), False, 0, data
+
     return fn, fn.msg, False, 0, data
 
 
@@ -298,7 +304,7 @@ def dereferring(url, fn):
     return None
 
 
-def bad_fetch(nzo, url, msg='', retry=False, content=False):
+def bad_fetch(nzo, url, msg='', content=False):
     """ Create History entry for failed URL Fetch
         msg : message to be logged
         retry : make retry link in histort
