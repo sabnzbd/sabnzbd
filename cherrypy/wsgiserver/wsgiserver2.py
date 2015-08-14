@@ -75,6 +75,7 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
+           'socket_errors_to_ignore',
            'WSGIPathInfoDispatcher', 'get_ssl_adapter_class', 'redirect_url']
 
 import os
