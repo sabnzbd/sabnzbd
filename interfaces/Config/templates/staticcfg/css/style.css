@@ -1987,6 +1987,11 @@ body {
     background-color: #E4E4E4;
 }
 
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
+}
+
 input[type=checkbox], 
 input[type=radio] {
     margin-top: 2px;

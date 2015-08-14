@@ -461,7 +461,7 @@ td.delete span {
 
 .queueitem-settings select {
     margin-top: 5px;
-    width: 170px;
+    width: 168px;
 }
 
 .queueitem-settings .glyphicon {
@@ -529,6 +529,8 @@ td.delete span {
     background-color: #f9f9f9;
     max-width: 700px;
     float: right;
+    position: relative;
+    z-index: 999;
 }
 
 .multioperations-selector .add-nzb-inputbox {
@@ -838,7 +840,6 @@ td.delete span {
 #history-table-search input {
     width: 130px;
     transition: width 0.2s;
-    box-shadow: none;
 }
 
 #history-table-search input:focus {
@@ -851,6 +852,7 @@ td.delete span {
     right: 10px;
     top: 10px;
     opacity: 0.8;
+    z-index: 999;
 }
 
 #history-table-search input:focus+span {
@@ -970,9 +972,9 @@ td.delete span {
 
 #modal_options .options-function-box .btn,
 #modal_options .options-function-box select {
-    margin-top: 10px;
     width: auto;
     display: inline-block;
+    margin-top: 10px;
 }
 
 #modal_options .options-server-box {
@@ -1121,6 +1123,10 @@ td.delete span {
 #modal_item_files .input-group,
 #modal_item_files .input-group input {
     width: auto;
+}
+
+#modal_item_files  #nzb_password {
+    border-right-width: 0;
 }
 
 #modal_item_files h4 {
@@ -1336,6 +1342,14 @@ a:focus {
     -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
+.tooltip {
+    z-index: 5000;
+}
+
+.tooltip-inner {
+    max-width: 350px;
+}
+
 .pagination {
     margin: 0;
 }
@@ -1359,6 +1373,11 @@ legend {
 .pagination li.active span:hover {
     background-color: #8F8F8F;
     border: 1px solid #8F8F8F;
+}
+
+.pagination>li>a, 
+.pagination>li>span {
+    color: #333;
 }
 
 .progress-bar {
