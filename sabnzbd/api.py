@@ -460,6 +460,10 @@ def _api_history(name, output, kwargs):
     limit = kwargs.get('limit')
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
+    categories = kwargs.get('category')
+    if categories and not isinstance(categories, list):
+        categories = [categories]
+
     if not limit:
         limit = cfg.history_limit()
 
@@ -487,7 +491,11 @@ def _api_history(name, output, kwargs):
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                to_units(grand), to_units(month), to_units(week), to_units(day)
-        history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search, failed_only=failed_only, output=output)
+        history['slots'], fetched_items, history['noofslots'] = build_history(start=start,
+                                                                              limit=limit, verbose=True,
+                                                                              search=search, failed_only=failed_only,
+                                                                              categories=categories,
+                                                                              output=output)
         return report(output, keyword='history', data=remove_callable(history))
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -1737,7 +1745,7 @@ def build_header(prim, webdir='', search=None):
 #------------------------------------------------------------------------------
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
-                  output=None):
+                  categories=None, output=None):
 
     if output:
         converter = unicoder
@@ -1799,11 +1807,11 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     # Fetch history items
     if not h_limit:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only)
+        items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only, categories)
         items = []
         fetched_items = 0
     else:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only)
+        items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
 
     # Fetch which items should show details from the cookie
     k = []

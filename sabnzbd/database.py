@@ -232,19 +232,25 @@ class HistoryDB(object):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
+    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
 
         search = convert_search(search)
 
-        # Get the number of results
+        post = ''
+        if categories:
+            categories = ['*' if c == 'Default' else c for c in categories]
+            post = ' AND (CATEGORY = "'
+            post += '" OR CATEGORY = "'.join(categories)
+            post += '" )'
         if failed_only:
-            res = self.execute('select count(*) from History WHERE name LIKE ? AND STATUS = "Failed"', (search,))
-        else:
-            res = self.execute('select count(*) from History WHERE name LIKE ?', (search,))
+            post += ' AND STATUS = "Failed"'
+
+        cmd = 'SELECT COUNT(*) FROM history WHERE name LIKE ?'
+        res = self.execute(cmd + post, (search,))
         total_items = -1
         if res:
             try:
-                total_items = self.c.fetchone().get('count(*)')
+                total_items = self.c.fetchone().get('COUNT(*)')
             except AttributeError:
                 pass
 
@@ -254,10 +260,8 @@ class HistoryDB(object):
             limit = total_items
 
         t = (search, start, limit)
-        if failed_only:
-            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? AND STATUS = "Failed" ORDER BY completed desc LIMIT ?, ?''', t)
-        else:
-            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?''', t)
+        cmd = 'SELECT * FROM history WHERE name LIKE ?'
+        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', t)
 
         if fetch_ok:
             items = self.c.fetchall()
