@@ -22,7 +22,6 @@ sabnzbd.dirscanner - Scanner for Watched Folder
 import os
 import time
 import logging
-import re
 import zipfile
 import gzip
 import bz2
@@ -62,7 +61,7 @@ def CompareStat(tup1, tup2):
 
 
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                       priority=None, url='', nzbname=None, password=None):
+                       priority=None, url='', nzbname=None, password=None, nzo_id=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns (status, nzo_ids)
@@ -125,6 +124,10 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     except:
                         nzo = None
                     if nzo:
+                        if nzo_id:
+                            # Re-use existing nzo_id, when a "future" job gets it payload
+                            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
+                            nzo.nzo_id = nzo_id
                         nzo_ids.append(add_nzo(nzo))
                         nzo.update_rating()
         zf.close()
@@ -143,7 +146,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
-                      password=None):
+                      password=None, nzo_id=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
         returns (status, nzo_ids)
@@ -205,6 +208,10 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             return -1, nzo_ids
 
     if nzo:
+        if nzo_id:
+            # Re-use existing nzo_id, when a "future" job gets it payload
+            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
+            nzo.nzo_id = nzo_id
         nzo_ids.append(add_nzo(nzo))
         nzo.update_rating()
     try:

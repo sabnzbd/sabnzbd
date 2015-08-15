@@ -493,6 +493,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     msg = T('Trying to fetch NZB from %s') % url
     future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     URLGrabber.do.add(url, future_nzo)
+    return future_nzo.nzo_id
 
 
 def save_state(flag=False):

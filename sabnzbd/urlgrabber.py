@@ -210,10 +210,9 @@ class URLGrabber(Thread):
                 # Check if nzb file
                 if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority, \
-                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False)[0]
-                    if res == 0:
-                        NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
-                    else:
+                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False, \
+                                                       nzo_id=future_nzo.nzo_id)[0]
+                    if res:
                         if res == -2:
                             logging.info('Incomplete NZB, retry after 5 min %s', url)
                             when = 300
@@ -228,9 +227,8 @@ class URLGrabber(Thread):
                 # Check if a supported archive
                 else:
                     if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority,
-                                                     nzbname=nzbname, url=future_nzo.url, keep=False)[0] == 0:
-                        NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
-                    else:
+                                                     nzbname=nzbname, url=future_nzo.url, keep=False, \
+                                                     nzo_id=future_nzo.nzo_id)[0]:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
                             os.remove(fn)

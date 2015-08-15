@@ -502,7 +502,7 @@ def _api_get_files(name, output, kwargs):
         return report(output, _MSG_NO_VALUE)
 
 
-def _api_addid(names, output, kwargs):
+def _api_addurl(names, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     pp = kwargs.get('pp')
     script = kwargs.get('script')
@@ -514,6 +514,7 @@ def _api_addid(names, output, kwargs):
     if not isinstance(nzbnames, list):
         nzbnames = [nzbnames]
 
+    nzo_ids = []
     for n in xrange(len(names)):
         name = names[n]
         if n < len(nzbnames):
@@ -524,10 +525,10 @@ def _api_addid(names, output, kwargs):
         if name:
             name = name.strip()
         if name:
-            sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+            nzo_ids.append(sabnzbd.add_url(name, pp, script, cat, priority, nzbname))
 
     if len(names) > 0:
-        return report(output)
+        return report(output, keyword='', data={'status':True, 'nzo_ids' : nzo_ids}, compat=True)
     else:
         logging.info('API-call addurl: no files retrieved from %s', names)
         return report(output, _MSG_NO_VALUE)
@@ -859,8 +860,8 @@ _api_table = {
     'fullstatus'      : (_api_fullstatus, 2),
     'history'         : (_api_history, 2),
     'get_files'       : (_api_get_files, 2),
-    'addurl'          : (_api_addid, 1),
-    'addid'           : (_api_addid, 1),
+    'addurl'          : (_api_addurl, 1),
+    'addid'           : (_api_addurl, 1),
     'pause'           : (_api_pause, 2),
     'resume'          : (_api_resume, 2),
     'shutdown'        : (_api_shutdown, 3),
