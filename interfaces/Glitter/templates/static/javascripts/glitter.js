@@ -127,7 +127,6 @@ $(function() {
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
         self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
-        self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused = ko.observable(false);
         self.timeLeft = ko.observable("0:00");
@@ -210,8 +209,8 @@ $(function() {
 
         // Dynamic history length check
         self.hasHistory = ko.computed(function() {
-            // We also 'have history' if we can't find any results of the search
-            return self.history.historyItems().length > 0 || self.searchTerm()
+            // We also 'have history' if we can't find any results of the search or there are no failed ones
+            return self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed()
         });
 
         // Update main queue
@@ -418,7 +417,8 @@ $(function() {
             );
             callAPI({
                 mode: "history",
-                search: self.searchTerm(),
+                search: self.history.searchTerm(),
+                failed_only: self.history.showFailed()*1,
                 start: self.history.pagination.currentStart(),
                 limit: parseInt(self.history.paginationLimit())
             }).then(self.updateHistory);
@@ -508,14 +508,6 @@ $(function() {
         self.clearSpeedLimit = function() {
             self.speedLimit(100);
         }
-        
-        // Searching in history (rate-limited in decleration)
-        self.searchTerm.subscribe(function() {
-            // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.refreshRate()) >2 ) {
-                self.refresh();
-            }
-        })
 
         // Shutdown options
         self.onQueueFinish.subscribe(function(newValue) {
@@ -583,7 +575,7 @@ $(function() {
         self.addNZBFromURL = function(form) {
             // Add 
             callAPI({
-                mode: "addid",
+                mode: "addurl",
                 name: $(form.nzbURL).val(),
                 nzbname: $('#nzbname').val(),
                 cat: $('#modal_add_nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val(),
@@ -1129,6 +1121,9 @@ $(function() {
             if(data.status == 'Grabbing') {
                 self.isGrabbing(true)
                 return; // Important! Otherwise cat/script/priority get magically changed!
+            } else if(self.isGrabbing()) {
+                // Reset after the grabbing is done!
+                self.isGrabbing(false)
             }
 
             // Set stats
@@ -1286,7 +1281,8 @@ $(function() {
 
         // Variables
         self.historyItems = ko.observableArray([]);
-        self.hasScriptLines = ko.observable(false);
+        self.showFailed = ko.observable(false);
+        self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.paginationLimit = ko.observable(localStorage.getItem('historyPaginationLimit') ? localStorage.getItem('historyPaginationLimit') : 10);
         self.totalItems = ko.observable(0);
         self.pagination = new paginationModel(self);
@@ -1384,7 +1380,21 @@ $(function() {
 
             $("#modal_retry_job").modal("hide");
             form.reset()
-
+        }
+              
+        // Searching in history (rate-limited in decleration)
+        self.searchTerm.subscribe(function() {
+            // If the refresh-rate is high we do a forced refresh
+            if(parseInt(self.parent.refreshRate()) >2 ) {
+                self.parent.refresh();
+            }
+        })
+        
+        // Toggle showing failed
+        self.toggleShowFailed = function() {
+            self.showFailed(!self.showFailed())
+            // Force refresh
+            self.parent.refresh()
         }
 
         // Empty history options
@@ -1564,7 +1574,7 @@ $(function() {
             }).then(function(response) {
                 // Update all info
                 self.updateAllHistory = true;
-                parent.parent.refresh()
+                self.parent.parent.refresh()
             })
         }
 

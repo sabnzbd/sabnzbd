@@ -105,7 +105,7 @@
                         <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
                             <a href="#modal_options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-configure')">
+                        <li data-toggle="tooltip" data-placement="bottom" data-container="body" title="$T('Glitter-configure')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
                         <li class="dropdown">
@@ -555,18 +555,19 @@
                 </table>
 
                 <div class="input-group" id="history-table-search">
-                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" data-bind="textInput: searchTerm" />
+                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" data-bind="textInput: history.searchTerm" />
                     <span class="glyphicon glyphicon-search"></span>
+                </div>
+                
+                <div class="multioperations-selector" id="history-options">
+                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-container="body" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-container="body" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
 
                 <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">
                     <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
                         <span data-bind="text: page"></span>
                     </li>
-                </ul>
-
-                <ul id="history-options" class="pagination">
-                    <li><a href="#" data-bind="click: history.emptyHistory"><strong class="glyphicon glyphicon-trash"></strong></a></li>
                 </ul>
 
                 <div class="info-container history-info">
