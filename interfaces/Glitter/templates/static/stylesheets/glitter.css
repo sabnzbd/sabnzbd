@@ -453,7 +453,8 @@ td.delete label,
     cursor: pointer;
 }
 
-td.delete span {
+td.delete span,
+.table-warnings-hide span {
     top: 2px;
 }
 
