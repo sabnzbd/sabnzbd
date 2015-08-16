@@ -188,6 +188,10 @@ h2 {
     text-align: left;
 }
 
+#history-table-search input {
+    width: 210px !important;
+}
+
 
 /**
     MODALS

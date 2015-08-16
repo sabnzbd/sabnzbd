@@ -1496,7 +1496,8 @@ def main():
                  '/sabnzbd/static': static,
                  '/static': static,
                  '/sabnzbd/wizard/static': wizard_static,
-                 '/wizard/static': wizard_static
+                 '/wizard/static': wizard_static,
+                 '/favicon.ico': { 'tools.staticfile.on' : True, 'tools.staticfile.filename' : os.path.join(web_dirc, 'staticcfg', 'ico', 'favicon.ico') }
                  }
     if web_dirc:
         appconfig['/sabnzbd/staticcfg'] = staticcfg
