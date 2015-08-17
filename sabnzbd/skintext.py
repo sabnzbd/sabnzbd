@@ -549,6 +549,11 @@ SKIN_TEXT = {
     'opt-rating_filter_keywords' : TT('Title keywords'),
     'explain-rating_filter_keywords' : TT('Comma separated list'),
 
+    'opt-randomize_server_ip' : TT('Randomize Server'),
+    'happyeyeballs' : TT('happey eyeballs'),
+    'explain-randomize_server_ip' : TT('Select Happy Eyeballs if you use IPv6 enabled newsservers.'),
+
+
 # Config->Server
     'configServer' : TT('Server configuration'), #: Caption
     'defServer' : TT('Server definition'), # Caption
