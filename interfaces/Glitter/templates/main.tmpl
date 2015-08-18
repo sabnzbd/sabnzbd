@@ -112,6 +112,11 @@
                             <a href="#" data-toggle="dropdown" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}" onclick="keepOpen(this)"><span class="glyphicon glyphicon-off"></span></a>
                             <ul class="dropdown-menu menu-options" role="menu">
                                 <li><a href="#modal_help" data-toggle="modal">$T('menu-help') <span class="glyphicon glyphicon-question-sign"></span></a></li>
+                                <!--#if $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
+                                <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
+                                <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
+                                <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
+                                <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                                 <li class="divider"></li>
                                 <li><a href="shutdown?session=$session" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                                 <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
@@ -122,9 +127,11 @@
                                         <option value=""></option>
                                         <optgroup label="$T('eoq-actions')">
                                             <option value="shutdown_program">$T('shutdownSab')</option>
+                                            <!--#if $power_options#-->
                                             <option value="shutdown_pc">$T('shutdownPc')</option>
                                             <option value="standby_pc">$T('standbyPc')</option>
                                             <option value="hibernate_pc">$T('hibernatePc')</option>
+                                            <!--#end if#-->
                                         </optgroup>
                                         <optgroup label="$T('eoq-scripts')">
                                             <!-- ko foreach: queue.scriptsList -->

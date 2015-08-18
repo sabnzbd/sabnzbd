@@ -696,10 +696,14 @@ $(function() {
             self.loadStatusInfo()
         }
 
-        // SABnzb options
+        /**
+             SABnzb options
+        **/
+        // Shutdown
         self.shutdownSAB = function() {
             return confirm(glitterTranslate.shutdown);
         }
+        // Restart
         self.restartSAB = function() {
             if(!confirm(glitterTranslate.restart)) return;
             // Call restart function
@@ -712,12 +716,21 @@ $(function() {
                 setTimeout(self.refresh, 30 * 1000)
             }
         }
+        // Queue actions
+        self.doQueueAction = function(data, event) {
+            // Send to the API
+            callAPI({ mode: $(event.target).data('mode') }).then(function(r) {
+                console.log(r)
+            })
+        }
+        // Repair queue
         self.repairQueue = function() {
             if(!confirm(glitterTranslate.repair)) return;
             callSpecialAPI("config/repair").then(function() {
                 $("#modal_options").modal("hide");
             })
         }
+        // Force disconnect
         self.forceDisconnect = function() {
             callSpecialAPI("status/disconnect").then(function() {
                 $("#modal_options").modal("hide");
@@ -1557,7 +1570,6 @@ $(function() {
                         self.parent.historyItems.remove(self);
                         self.parent.parent.refresh();
                     })
-
                 }
             });
         };
