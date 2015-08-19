@@ -839,7 +839,6 @@ SKIN_TEXT = {
     'Glitter-onFinish' : TT('On queue finish'),
     'Glitter-statusInterfaceOptions' : TT('Status and interface options'),
     'Glitter-dragAndDrop' : TT('Or drag and drop files in the window!'),
-    'Glitter-storage' : TT('Storage'),
     'Glitter-today' : TT('Today'),
     'Glitter-thisMonth' : TT('This month'),
     'Glitter-total' : TT('Total'),

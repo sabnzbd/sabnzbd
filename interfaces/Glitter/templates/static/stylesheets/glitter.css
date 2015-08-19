@@ -97,12 +97,21 @@ li.dropdown {
     line-height: 18px;
 }
 
-.navbar-speed .glyphicon:hover {
-    opacity: 1;
-}
-
 .caret {
     border-top-color: black !important;
+}
+
+.max-speed-input-clear {
+    position: absolute;
+    top: 16px;
+    text-align: center;
+    right: 30px;
+    z-index: 999;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: transparent !important;
+    font-size: 1.1em;
 }
 
 .max-speed-input {
@@ -111,11 +120,6 @@ li.dropdown {
     font-weight: bold;
     width: 190px;
     text-align: center;
-}
-
-.max-speed-input span.glyphicon {
-    float: right;
-    margin-top: 10px;
 }
 
 .max-speed-input a {

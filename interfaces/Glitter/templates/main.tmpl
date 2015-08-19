@@ -79,12 +79,14 @@
                             <div class="btn-group">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
-                                        <span class="glyphicon glyphicon-link" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;"></span>
                                         <span data-bind="text: speedText">0 KB/s</span>
                                     </button>
                                     <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
                                     </button>
+                                    <a href="#" class="max-speed-input-clear hoverbutton" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;">
+                                        <span class="glyphicon glyphicon-link"></span>
+                                    </a>
                                     <div class="dropdown-menu max-speed-input">
                                         <div data-bind="visible: !bandwithLimit()">
                                             <a href="config/general/">
@@ -540,10 +542,6 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('msg-path')</div>
-                                                <div class="col-sm-10" data-bind="text: historyStatus.path"></div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-2">$T('Glitter-storage')</div>
                                                 <div class="col-sm-10" data-bind="text: historyStatus.storage"></div>
                                             </div>
                                             <!-- ko foreach: historyStatus.stage_log -->
