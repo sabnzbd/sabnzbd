@@ -825,7 +825,7 @@ SKIN_TEXT = {
     'Glitter-pause1h' : TT('Pause for 1 hour'),
     'Glitter-pause3h' : TT('Pause for 3 hours'),
     'Glitter-pause6h' : TT('Pause for 6 hours'),
-    'Glitter-setMaxLinespeed' : TT('Set maximum line speed in configuration'),
+    'Glitter-setMaxLinespeed' : TT('You must set a maximum bandwidth before you can set a bandwidth limit'),
     'Glitter-left' : TT('left'),
     'Glitter-quota' : TT('quota'),
     'Glitter-free' : TT('Free Space'),
@@ -891,6 +891,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-grabbing' : TT('Grabbing NZB...'),
     'Glitter-updateAvailable' : TT('Update Available!'),
+    'Glitter-orphanedJobsMsg' : TT('There are orphaned job folders, click on ICON_PLACEHOLDER to take care of them'), #: Don't translate ICON_PLACEHOLDER 
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
     'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),

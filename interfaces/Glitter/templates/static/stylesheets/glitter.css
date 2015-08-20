@@ -66,7 +66,7 @@ h2 {
     font-weight: bold;
     min-width: 100px;
     background-color: #F5F5F5;
-    cursor: inherit;
+    border-left: 0;
 }
 
 .navbar-header img {
@@ -323,11 +323,6 @@ tbody>tr>td:last-child {
     color: #474747;
 }
 
-.queue-update-info {
-    margin-bottom: 5px;
-    font-size: 1.1em;
-}
-
 .info-container {
     float: right;
     color: #888;
@@ -407,10 +402,6 @@ td.name .name-ratings .glyphicon {
     margin-left: 2px;
 }
 
-td.name .name-ratings .glyphicon-volume-up {
-    top: 2px;
-}
-
 tbody.nodownloads tr td {
     border: none;
     text-align: center;
@@ -441,7 +432,7 @@ td.delete .dropdown {
     float: left;
 }
 
-td.delete .dropdown a {
+td.delete .dropdown>a {
     display: inline-block;
     padding: 0px 10px;
 }
@@ -455,11 +446,6 @@ td.delete label,
     margin: -5px;
     padding: 5px 12px 5px 10px;
     cursor: pointer;
-}
-
-td.delete span,
-.table-warnings-hide span {
-    top: 2px;
 }
 
 .queueitem-settings {
@@ -598,29 +584,29 @@ td.delete span,
     color: #AAA;
 }
 
-.table-warnings .table-warnings-header-label {
-    width: 220px;
-}
-
 /* WARNINGS */
-
-.queue-warnings {
+.queue-messages {
     clear: both;
     width: 100%;
     overflow: auto;
     max-height: 200px;
+    margin-bottom: 5px;
 }
 
-.table-warnings {
+.table-messages {
     border-collapse: separate !important;
 }
 
-.table-warnings .table-warnings-hide {
+.table-messages .table-messages-header-label {
+    width: 220px;
+}
+
+.table-messages .table-messages-hide {
     padding: 0 !important;
     border: 0 !important;
 }
 
-.table-warnings .table-warnings-remove {
+.table-messages .table-messages-remove {
     border-bottom: 1px solid #F0F0F0 !important;
     text-align: center;
     vertical-align: top !important;
@@ -628,35 +614,57 @@ td.delete span,
     cursor: pointer;
 }
 
-.table-warnings .table-warnings-remove a {
+.table-messages .table-messages-remove a {
     display: block;
 }
 
-.table-warnings .table-warnings-remove:hover a {
+.table-messages .table-messages-remove:hover a {
     opacity: 1;
 }
 
-.table-warnings-label {
+.table-messages-label {
     vertical-align: top !important;
 }
 
-.table-warnings .label {
+.table-messages .label {
     margin-right: 8px;
 }
 
-.table-warnings td {
+.table-messages td {
     padding: 2px !important;
 }
 
-.table-warnings .label {
+.table-messages .label {
     display: inline-block;
     width: 80px;
     padding: 5px;
 }
 
-.table-warnings .queue-warning-text {
+.table-messages .label-info {
+    background-color: #58A9FA;
+}
+
+.table-messages .queue-message-text {
     word-break: break-all;
 }
+
+.table-messages .table-messages-label-no-date .queue-message-text {
+    word-break: normal;
+}
+
+.table-messages .queue-update-sab {
+    font-weight: bold;
+}
+
+.table-messages .glyphicon {
+    top: 2px;
+}
+
+.table-messages .queue-update-sab:hover {
+    text-decoration: underline;
+}
+
+
 
 /***
     History Specific
@@ -1353,6 +1361,11 @@ a:hover,
 a:focus {
     color: black;
     text-decoration: none;
+}
+
+.glyphicon-volume-up,
+.glyphicon-trash {
+    top: 2px;
 }
 
 .navbar-inverse {
