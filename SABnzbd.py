@@ -1482,8 +1482,7 @@ def main():
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
-    if web_dirc:
-        staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
 
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
@@ -1497,11 +1496,10 @@ def main():
                  '/static': static,
                  '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static,
-                 '/favicon.ico': { 'tools.staticfile.on' : True, 'tools.staticfile.filename' : os.path.join(web_dirc, 'staticcfg', 'ico', 'favicon.ico') }
+                 '/favicon.ico': { 'tools.staticfile.on' : True, 'tools.staticfile.filename' : os.path.join(web_dirc, 'staticcfg', 'ico', 'favicon.ico') },
+                 '/sabnzbd/staticcfg': staticcfg,
+                 '/staticcfg': staticcfg
                  }
-    if web_dirc:
-        appconfig['/sabnzbd/staticcfg'] = staticcfg
-        appconfig['/staticcfg'] = staticcfg
 
     if web_dir2:
         static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
@@ -1512,9 +1510,8 @@ def main():
         appconfig['/m/static'] = static2
         appconfig['/sabnzbd/m/wizard/static'] = wizard_static
         appconfig['/m/wizard/static'] = wizard_static
-        if web_dirc:
-            appconfig['/sabnzbd/m/staticcfg'] = staticcfg
-            appconfig['/m/staticcfg'] = staticcfg
+        appconfig['/sabnzbd/m/staticcfg'] = staticcfg
+        appconfig['/m/staticcfg'] = staticcfg
 
     login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', web_dirc, first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)

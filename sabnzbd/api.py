@@ -1679,7 +1679,6 @@ def build_header(prim, webdir='', search=None):
     header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
 
     header['session'] = cfg.api_key()
-    header['uniconfig'] = cfg.uniconfig() and sabnzbd.WEB_DIRC
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search)

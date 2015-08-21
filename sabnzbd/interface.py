@@ -267,10 +267,7 @@ class MainPage(object):
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.status = Status(web_dir, root+'status/', prim)
-        if web_dirc and (cfg.uniconfig() or not os.path.exists(os.path.join(web_dir, 'config.tmpl'))):
-            self.config = ConfigPage(web_dirc, root+'config/', prim)
-        else:
-            self.config = ConfigPage(web_dir, root+'config/', prim)
+        self.config = ConfigPage(web_dirc, root+'config/', prim)
         self.nzb = NzoPage(web_dir, root+'nzb/', prim)
         self.wizard = sabnzbd.wizard.Wizard(web_dir, root+'wizard/', prim)
 
@@ -1309,7 +1306,7 @@ SPECIAL_BOOL_LIST = \
             ( 'start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
-              'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
+              'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'enable_par_cleanup',
