@@ -55,9 +55,9 @@
                 <div class="field-pair alt">
                     <label class="config" for="randomize_server_ip">$T('opt-randomize_server_ip')</label>
                       <select name="randomize_server_ip" id="randomize_server_ip">
-                          <option value="0" <!--#if $randomize_server_ip == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
-                          <option value="1" <!--#if $randomize_server_ip == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
-                          <option value="2" <!--#if $randomize_server_ip == 2 then 'selected="selected" class="selected"' else ""#--> >$T('happy eyeballs')</option>
+                          <option value="0" <!--#if $randomize_server_ip == 0 then 'selected="selected" class="selected"' else ""#--> >$T('no-load-balancing')</option>
+                          <option value="1" <!--#if $randomize_server_ip == 1 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing')</option>
+                          <option value="2" <!--#if $randomize_server_ip == 2 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
                       </select>
                     <span class="desc">$T('explain-randomize_server_ip')</span>
                 </div>
