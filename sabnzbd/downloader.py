@@ -96,11 +96,10 @@ class Server(object):
     def hostip(self):
         """ based on value of randomize_server_ip():
             0: return the host name itself (so: do nothing)
-            1: Return a random entry from the possible IPs
-            2: Return the fastest IP based on the happyeyeballs algorithm
+            1 and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
+            2 and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
             In case of problems: return the host name itself
-        """
-        
+        """        
         if cfg.randomize_server_ip()==1 and self.info and len(self.info) > 1:
             # Return a random entry from the possible IPs
             rnd = random.randint(0, len(self.info)-1)

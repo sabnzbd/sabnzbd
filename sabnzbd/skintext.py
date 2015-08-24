@@ -549,6 +549,13 @@ SKIN_TEXT = {
     'opt-rating_filter_keywords' : TT('Title keywords'),
     'explain-rating_filter_keywords' : TT('Comma separated list'),
 
+    'opt-randomize_server_ip' : TT('Server load-balancing'),
+    'no-load-balancing' : TT('Prevent load-balancing'),
+    'load-balancing' : TT('Allow load-balancing'),
+    'load-balancing-happy-eyeballs' : TT('Allow load-balancing with optimization for IPv6'),
+    'explain-randomize_server_ip' : TT('Useful if a newsserver has more than one IPv4/IPv6 address'),
+
+
 # Config->Server
     'configServer' : TT('Server configuration'), #: Caption
     'defServer' : TT('Server definition'), # Caption

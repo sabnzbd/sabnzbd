@@ -1244,7 +1244,8 @@ SWITCH_LIST = \
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
-             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords'
+             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
+             'randomize_server_ip'
              )
 
 #------------------------------------------------------------------------------
@@ -1310,7 +1311,7 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'uniconfig', 'use_pickle', 'allow_incomplete_nzb',
-              'randomize_server_ip', 'no_ipv6', 'keep_awake', 'empty_postproc',
+              'no_ipv6', 'keep_awake', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'enable_par_cleanup',
               'enable_https_verification'
