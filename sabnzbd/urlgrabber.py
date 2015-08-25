@@ -112,8 +112,8 @@ class URLGrabber(Thread):
                 try:
                     fn = urllib2.urlopen(req)
                 except urllib2.URLError:
-                    logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
                     error = str(sys.exc_info()[1]).lower()
+                    logging.debug('Error "%s" trying to get the url %s', error, url)
                     if 'certificate_verify_failed' in error:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % ''
                         retry = False
