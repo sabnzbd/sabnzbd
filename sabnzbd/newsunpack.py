@@ -507,7 +507,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     new_files = None
     rars = []
     if nzo.password:
-        logging.info('Got a password set by user')
+        logging.info('Got a password set by user: %s', password)
         passwords = [nzo.password.strip()]
     else:
         passwords = []
@@ -522,6 +522,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
                 lines = pwf.read().split('\n')
                 # Remove empty lines and space-only passwords and remove surrounding spaces
                 pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+                logging.debug('Read these passwords from file: %s', pws)
                 passwords.extend(pws)
                 pwf.close()
                 logging.info('Read %s passwords from file %s', len(pws), pw_file)
