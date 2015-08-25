@@ -48,7 +48,7 @@ python SABnzbd.py
 Or, if you want to run in the background:
 
 ```
-python -d -f /path/to/sabnzbd.ini
+python SABnzbd.py -d -f /path/to/sabnzbd.ini
 ```
 
 If you want multi-language support, run:
