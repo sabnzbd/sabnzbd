@@ -282,10 +282,10 @@ class NewsWrapper(object):
             self.pass_sent = True
             self.pass_ok = True
 
-        if code == '501' and self.user_sent:
-            # Server asked for username, we sent empty one,
-            # but it doesn't accept
+        if code in ('501', '502') and self.user_sent:
+            # Change to a sensible text
             code = '481'
+            self.lines[0] = T('Authentication failed, check username/password.')
             self.user_ok = True
             self.pass_sent = True
 
