@@ -67,8 +67,9 @@
                                 <li><a href="#" data-time="180" data-bind="click: pauseTime">$T('Glitter-pause3h')</a></li>
                                 <li><a href="#" data-time="360" data-bind="click: pauseTime">$T('Glitter-pause6h')</a></li>
                             </ul>
+                            <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft"  data-toggle="dropdown">0:00</span>
                         </div>
-                        <span class="btn btn-default navbar-btn  navbar-timeleft" data-bind="text: timeLeft">0:00</span>
+                        
                     </div>
                 </div>
 
@@ -79,12 +80,14 @@
                             <div class="btn-group">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
-                                        <span class="glyphicon glyphicon-link" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;"></span>
                                         <span data-bind="text: speedText">0 KB/s</span>
                                     </button>
                                     <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
                                     </button>
+                                    <a href="#" class="max-speed-input-clear hoverbutton" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;">
+                                        <span class="glyphicon glyphicon-link"></span>
+                                    </a>
                                     <div class="dropdown-menu max-speed-input">
                                         <div data-bind="visible: !bandwithLimit()">
                                             <a href="config/general/">
@@ -149,13 +152,6 @@
 
         <div class="container main-content">
             <div class="queue">
-                <div class="queue-update-info" data-bind="visible: new_release()" style="display: none;">
-                    <a href="#" target="_blank" data-bind="attr: { href: new_rel_url() }">
-                        <span class="label label-success">$T('Glitter-updateAvailable')</span>
-                        <span class="label label-default" data-bind="text: new_release()"></span>
-                    </a>
-                </div>
-
                 <h2>$T('menu-queue')</h2>
 
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
@@ -211,8 +207,9 @@
                     <tbody class="nodownloads">
                         <tr>
                             <td colspan="5">
-                                <a href="#modal_add_nzb" title="$T('Glitter-dragAndDrop')" class="hoverbutton" data-toggle="modal">
-                                    <span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</a>
+                                <a href="#modal_add_nzb" class="hoverbutton" data-toggle="modal">
+                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
+                                </a>
                             </td>
                         </tr>
                     </tbody>
@@ -342,30 +339,43 @@
                 </ul>
             </div>
 
-            <div class="queue-warnings" data-bind="visible: (nrWarnings() > 0)" style="display: none;">
-                <table class="table table-hover table-warnings">
+            <div class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
+                <table class="table table-hover table-messages">
                     <thead>
                         <tr>
-                            <th class="table-warnings-header-label"></th>
+                            <th class="table-messages-header-label"></th>
                             <th></th>
                             <th style="width: 30px;"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="2" class="table-warnings-hide"></td>
-                            <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-warnings-remove">
-                                <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-trash"></span></a>
-                            </td>
-                        </tr>
-                        <!-- ko foreach: allWarnings -->
-                        <tr>
-                            <td class="table-warnings-label">
-                                <span class="label" data-bind="css: 'label-' + css, text: type"></span>
-                                <strong data-bind="text: date"></strong>
-                            </td>
-                            <td><span class="queue-warning-text" data-bind="text: text"></span></td>
-                        </tr>
+                        <!-- ko if: allWarnings().length > 0 -->
+                            <tr>
+                                <td colspan="2" class="table-messages-hide"></td>
+                                <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
+                                    <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a>
+                                </td>
+                            </tr>
+                            <!-- ko foreach: allWarnings -->
+                            <tr>
+                                <td class="table-messages-label">
+                                    <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                                    <strong data-bind="text: date"></strong>
+                                </td>
+                                <td><span class="queue-message-text" data-bind="html: text"></span></td>
+                            </tr>
+                            <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko foreach: allMessages -->
+                            <tr>
+                                <td class="table-messages-label-no-date" colspan="2">
+                                    <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                                    <span class="queue-message-text" data-bind="html: text"></span>
+                                </td>
+                                <td class="table-messages-remove">
+                                    <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
+                                </td>
+                            </tr>
                         <!-- /ko -->
                     </tbody>
                 </table>
@@ -540,10 +550,6 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('msg-path')</div>
-                                                <div class="col-sm-10" data-bind="text: historyStatus.path"></div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-2">$T('Glitter-storage')</div>
                                                 <div class="col-sm-10" data-bind="text: historyStatus.storage"></div>
                                             </div>
                                             <!-- ko foreach: historyStatus.stage_log -->
@@ -605,6 +611,8 @@
         <script type="text/javascript">
             var apiKey = "$session";
             var sabSpeedHistory = [$bytespersec_list];
+            var newRelease = "$new_release";
+            var newReleaseUrl = "$new_rel_url";
         
             var glitterTranslate = new Object();
             glitterTranslate.paused = "$T('post-Paused')";
@@ -621,6 +629,8 @@
             glitterTranslate.noSelect = "$T('Glitter-noSelect')";
             glitterTranslate.sendThanks = "$T('Glitter-sendThanks')";
             glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
+            glitterTranslate.orphanedJobsMsg = "$T('Glitter-orphanedJobsMsg')";
+            glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
             glitterTranslate.status = [];
 
             glitterTranslate.status['Completed'] = "$T('post-Completed')";

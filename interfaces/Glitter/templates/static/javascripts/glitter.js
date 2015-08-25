@@ -44,7 +44,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 2000
+            timeout: 2000 + (isMobile * 2000) // Wait a little longer on mobile connections
         });
 
         return $.when(ajaxQuery);
@@ -62,7 +62,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 2000
+            timeout: 2000 + (isMobile * 2000) // Wait a little longer on mobile connections
         });
 
         return $.when(ajaxQuery);
@@ -132,40 +132,18 @@ $(function() {
         self.timeLeft = ko.observable("0:00");
         self.diskSpaceLeft1 = ko.observable();
         self.diskSpaceLeft2 = ko.observable();
-        self.new_release = ko.observable();
-        self.new_rel_url = ko.observable();
         self.queueDataLeft = ko.observable();
         self.quotaLimit = ko.observable();
         self.quotaLimitLeft = ko.observable();
         self.nrWarnings = ko.observable(0);
-        self.allWarnings = ko.observableArray([])
+        self.allWarnings = ko.observableArray([]);
+        self.allMessages = ko.observableArray([]);
         self.onQueueFinish = ko.observable('');
         self.speedHistory = [];
-
-        // Get the speed-limit, refresh rate and server names
-        callAPI({
-            mode: 'get_config'
-        }).then(function(response) {
-            // Do we use global, or local settings?
-            if(self.useGlobalOptions()) {
-                // Set refreshrate (defaults to 1/s)
-                if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
-                self.refreshRate(response.config.misc.refresh_rate.toString());
-                
-                // Set history limit
-                self.history.paginationLimit(response.config.misc.history_limit.toString())
-                
-                // Set queue limit
-                self.queue.paginationLimit(response.config.misc.queue_limit.toString())
-            }
-            
-            // Set bandwidth limit
-            if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
-            self.bandwithLimit(response.config.misc.bandwidth_max);
-            
-            // Save servers (for reporting functionality of OZnzb)
-            self.servers = response.config.servers;
-        })
+        
+        /***
+            Dynamic functions
+        ***/
 
         // Make the speedlimit tekst
         self.speedLimitText = ko.computed(function() {
@@ -212,6 +190,11 @@ $(function() {
             // We also 'have history' if we can't find any results of the search or there are no failed ones
             return self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed()
         });
+        
+        // Check for any warnings/messages
+        self.hasMessages = ko.computed(function() {
+            return self.nrWarnings() > 0 || self.allMessages().length > 0;
+        })
 
         // Update main queue
         self.updateQueue = function(response) {
@@ -250,11 +233,7 @@ $(function() {
             self.quotaLimit(response.queue.quota)
             self.quotaLimitLeft(response.queue.left_quota)
 
-            // Update info
-            self.new_release(response.queue.new_release)
-            self.new_rel_url(response.queue.new_rel_url)
-
-            // Warnings (new warnings will trigger an update of AllWarnings)
+            // Warnings (new warnings will trigger an update of allMessages)
             self.nrWarnings(response.queue.have_warnings)
 
             /***
@@ -396,7 +375,7 @@ $(function() {
                         // Does it contain 'Paused'? Update icon!
                         self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
                     })
-                    // Do not continue!
+                // Do not continue!
                 return;
             }
 
@@ -458,6 +437,9 @@ $(function() {
                 // Reset it all
                 self.allWarnings.removeAll();
                 if(response) {
+                    // Newest first
+                    response.warnings.reverse()
+                    
                     // Go over all warnings and add
                     $.each(response.warnings, function(index, warning) {
                         // Split warning into parts
@@ -467,7 +449,7 @@ $(function() {
                         var warningData = {
                             index: index,
                             type: warningSplit[1],
-                            text: warningSplit.slice(2).join(' '), // Recombine if multiple lines
+                            text: warningSplit.slice(2).join('<br/>'), // Recombine if multiple lines
                             date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'),
                             css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"),
                             clear: self.clearWarnings
@@ -484,9 +466,17 @@ $(function() {
             if(!confirm(glitterTranslate.clearWarn))
                 return;
             // Activate
-            callSpecialAPI("status/clearwarnings").then(function() {
-                $('.queue-warnings').slideUp(fadeOnDeleteDuration)
-            })
+            callSpecialAPI("status/clearwarnings")
+        }
+        
+        // Clear messages
+        self.clearMessages = function(whatToRemove) {
+            if(!confirm(glitterTranslate.clearWarn))
+                return;
+            // Remove specifc type of messages
+            self.allMessages.remove(function(item) { return item.index == whatToRemove });
+            // Now so we don't show again today
+            localStorage.setItem(whatToRemove, 'false')
         }
 
         // Update on speed-limit change
@@ -666,7 +656,7 @@ $(function() {
             })
         }
 
-        // Abandoned folder processing
+        // Orphaned folder processing
         self.folderProcess = function(e, b) {
             // Activate
             callSpecialAPI("status/" + $(b.currentTarget).data('action'), {
@@ -679,9 +669,11 @@ $(function() {
                     return item.folder() == $(b.currentTarget).data('folder')
                 })
             })
+            // Remove message
+            self.clearMessages('lastOrphanedMsg')
         }
 
-        // Abandoned folder deletion of all
+        // Orphaned folder deletion of all
         self.removeAllOrphaned = function() {
             if(!confirm(glitterTranslate.clearWarn))
                 return;
@@ -694,6 +686,8 @@ $(function() {
             });
             // Refresh
             self.loadStatusInfo()
+            // Remove message
+            self.clearMessages('lastOrphanedMsg')
         }
 
         /**
@@ -719,9 +713,7 @@ $(function() {
         // Queue actions
         self.doQueueAction = function(data, event) {
             // Send to the API
-            callAPI({ mode: $(event.target).data('mode') }).then(function(r) {
-                console.log(r)
-            })
+            callAPI({ mode: $(event.target).data('mode') })
         }
         // Repair queue
         self.repairQueue = function() {
@@ -736,7 +728,79 @@ $(function() {
                 $("#modal_options").modal("hide");
             })
         }
-
+        
+        /***
+            Retrieve config information and do startup functions
+        ***/
+        // Get the speed-limit, refresh rate and server names
+        callAPI({
+            mode: 'get_config'
+        }).then(function(response) {
+            // Do we use global, or local settings?
+            if(self.useGlobalOptions()) {
+                // Set refreshrate (defaults to 1/s)
+                if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
+                self.refreshRate(response.config.misc.refresh_rate.toString());
+                
+                // Set history limit
+                self.history.paginationLimit(response.config.misc.history_limit.toString())
+                
+                // Set queue limit
+                self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+            }
+            
+            // Set bandwidth limit
+            if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
+            self.bandwithLimit(response.config.misc.bandwidth_max);
+            
+            // Save servers (for reporting functionality of OZnzb)
+            self.servers = response.config.servers;
+        })
+        
+        // Check for Orphaned folders every day
+        if(localStorage.getItem('lastOrphanedCheck')*1 + (1000*3600*72) < Date.now()) {
+            // Update status-info
+            self.loadStatusInfo();
+            // Set check so we don't do it every page load
+            localStorage.setItem('lastOrphanedCheck', Date.now())
+        } 
+        
+        // We don't know exactly when it will finish, so we will wait 4 sec
+        setTimeout(function() {
+            // Done?
+            if(self.hasStatusInfo()) {
+                // Orphaned folders?
+                if(self.statusInfo.status.folders().length >= 3) {
+                    localStorage.setItem('lastOrphanedMsg', 'true')
+                }
+            }
+                
+            // Show message (maybe it was there from before!)
+            if(localStorage.getItem('lastOrphanedMsg') == 'true') {
+                self.allMessages.push({
+                    index: 'lastOrphanedMsg',
+                    type: 'INFO',
+                    text: glitterTranslate.orphanedJobsMsg.replace('ICON_PLACEHOLDER', '<span class="glyphicon glyphicon-wrench"></span>'),
+                    css: 'info',
+                    clear: function() { self.clearMessages('lastOrphanedMsg')}
+                });
+            }
+            // Timeout only when we don't already know there's a message
+        }, (localStorage.getItem('lastOrphanedMsg') != 'true') ? 4000 : 1)
+        
+        // Update message
+        if(localStorage.getItem('lastUpdateMsg') != 'false' && newRelease) {
+            self.allMessages.push({
+                index: 'lastUpdateMsg',
+                type: 'INFO',
+                text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
+                css: 'info'
+            });
+        }
+        
+        /***
+            End of main functions, start of the fun!
+        ***/
         // Set interval for refreshing queue
         self.interval = setInterval(self.refresh, parseInt(self.refreshRate()) * 1000);
         
@@ -765,35 +829,19 @@ $(function() {
         self.priorityName["Normal"] = 0;
         self.priorityName["Low"] = -1;
         self.priorityName["Stop"] = -4;
-        self.priorityOptions = ko.observableArray([{
-            value: 2,
-            name: glitterTranslate.priority["Force"]
-        }, {
-            value: 1,
-            name: glitterTranslate.priority["High"]
-        }, {
-            value: 0,
-            name: glitterTranslate.priority["Normal"]
-        }, {
-            value: -1,
-            name: glitterTranslate.priority["Low"]
-        }, {
-            value: -4,
-            name: glitterTranslate.priority["Stop"]
-        }]);
-        self.processingOptions = ko.observableArray([{
-            value: 0,
-            name: glitterTranslate.pp["Download"]
-        }, {
-            value: 1,
-            name: glitterTranslate.pp["+Repair"]
-        }, {
-            value: 2,
-            name: glitterTranslate.pp["+Unpack"]
-        }, {
-            value: 3,
-            name: glitterTranslate.pp["+Delete"]
-        }]);
+        self.priorityOptions = ko.observableArray([
+            { value: 2,  name: glitterTranslate.priority["Force"] },
+            { value: 1,  name: glitterTranslate.priority["High"] },
+            { value: 0,  name: glitterTranslate.priority["Normal"] },
+            { value: -1, name: glitterTranslate.priority["Low"] },
+            { value: -4, name: glitterTranslate.priority["Stop"] }
+        ]);
+        self.processingOptions = ko.observableArray([
+            { value: 0, name: glitterTranslate.pp["Download"] },
+            { value: 1, name: glitterTranslate.pp["+Repair"] },
+            { value: 2, name: glitterTranslate.pp["+Unpack"] },
+            { value: 3, name: glitterTranslate.pp["+Delete"] }
+        ]);
 
         // External var's
         self.queueItems = ko.observableArray([]);

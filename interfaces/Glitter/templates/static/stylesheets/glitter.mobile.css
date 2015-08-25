@@ -155,15 +155,20 @@ h2 {
     margin-left: 0px;
 }
 
-.table-warnings .table-warnings-header-label {
+.table-messages .table-messages-header-label {
     width: 120px;
 }
 
-.table-warnings .label {
+.table-messages-label-no-date .label {
+    width: 113px;
+    margin-right: 2px;
+}
+
+.table-messages-label .label {
     width: 100%;
 }
 
-.table-warnings strong {
+.table-messages strong {
     display: block;
     text-align: center;
 }
@@ -177,7 +182,17 @@ h2 {
 }
 
 .history-table .delete .dropdown-menu {
-    width: 90%;
+    width: 96%;
+    left: 2%;
+    right: inherit;
+    margin-bottom: 10px;
+}
+
+
+.history-table .delete .dropdown-menu .glyphicon {
+    top: -7px;
+    right: -8px;
+    text-shadow: 2px 0px 8px #ccc;
 }
 
 .history-table .status-header {
@@ -191,7 +206,6 @@ h2 {
 #history-table-search input {
     width: 210px !important;
 }
-
 
 /**
     MODALS
