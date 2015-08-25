@@ -1317,8 +1317,13 @@ td.delete label,
 @media screen and (min-height: 800px) {
     /* Only for AddNZB and AboutModals */
     #modal_add_nzb .modal-dialog,
-    #modal_help .modal-dialog {
+    #modal_help .modal-dialog,
+    #modal_purge_history .modal-dialog {
         margin-top: 80px;
+    }
+    
+    #modal_options .modal-dialog {
+        margin-top: 30px;
     }
 }
 
