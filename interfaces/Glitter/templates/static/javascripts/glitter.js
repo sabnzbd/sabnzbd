@@ -44,7 +44,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 2000 + (isMobile * 2000) // Wait a little longer on mobile connections
+            timeout: 6000 // Wait a little longer on mobile connections
         });
 
         return $.when(ajaxQuery);
@@ -61,8 +61,7 @@ $(function() {
             url: url,
             type: "GET",
             cache: false,
-            data: data,
-            timeout: 2000 + (isMobile * 2000) // Wait a little longer on mobile connections
+            data: data
         });
 
         return $.when(ajaxQuery);
@@ -391,7 +390,7 @@ $(function() {
             }).then(
                 self.updateQueue,
                 function() {
-                    self.isRestarting(true)
+                    self.isRestarting(1)
                 }
             );
             callAPI({
