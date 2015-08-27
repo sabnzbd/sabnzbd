@@ -86,13 +86,13 @@
                             <div class="col-sm-5">$T('Glitter-localIP4')</div>
                             <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.localipv4() ? '$T('Glitter-connectionError')' : statusInfo.dashboard.localipv4(), css: { 'options-bad-status' : !statusInfo.dashboard.localipv4() }"></div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-5">$T('Glitter-publicIP4')</div>
-                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.publicipv4() ? '$T('Glitter-connectionError')' : statusInfo.dashboard.publicipv4(), css: { 'options-bad-status ' : !statusInfo.dashboard.publicipv4() }"></div>
-                        </div>
                         <div class="row" data-bind="visible: (statusInfo.dashboard.ipv6()!=='')">
                             <div class="col-sm-5">$T('Glitter-IP6')</div>
                             <div class="col-sm-7" data-bind="text: statusInfo.dashboard.ipv6"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">$T('Glitter-publicIP4')</div>
+                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.publicipv4() ? '$T('Glitter-connectionError')' : statusInfo.dashboard.publicipv4(), css: { 'options-bad-status ' : !statusInfo.dashboard.publicipv4() }"></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-5">$T('Glitter-NameserverDNS')</div>
