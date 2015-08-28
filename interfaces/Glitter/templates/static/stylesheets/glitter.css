@@ -45,7 +45,6 @@ h2 {
 
 .navbar-collapse.in .dropdown-menu {
     position: absolute;
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     border: 1px solid #cccccc;
@@ -228,6 +227,7 @@ li.dropdown {
     position: relative;
     top: 30%;
     transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
 }
 
 .main-restarting.in strong {
@@ -477,6 +477,8 @@ td.delete label,
     line-height: 24px;
     overflow: visible;
     margin-bottom: 0;
+    box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.3);
 }
 
 .progress>span,
@@ -874,7 +876,7 @@ td.delete label,
 
 #history-table-search input {
     width: 130px;
-    transition: width 0.2s;
+    transition: width 0.2s ease-out;
 }
 
 #history-table-search input:focus {
@@ -950,6 +952,10 @@ td.delete label,
 ***/
 
 /* OPTIONS MODAL */
+
+#modal_options .modal-content {
+    transition: all 0.3s !important;
+}
 
 #modal_options .form-group {
     margin-bottom: 5px;
@@ -1063,10 +1069,34 @@ td.delete label,
 }
 
 #modal_options .table-server-connections td,
- #modal_options .table-server-connections th {
+#modal_options .table-server-connections th {
     padding: 3px !important;
     height: auto;
     visibility: visible;
+}
+
+#modal_options h4 {
+    margin-bottom: 0;
+}
+
+.dotOne, .dotTwo, .dotThree {
+    opacity: 1;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.0s;
+}
+
+.dotTwo {
+    animation-delay: 0.2s;
+}
+
+.dotThree {
+    animation-delay: 0.3s;
+}
+
+@keyframes dot {
+    0% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 /* PURGE MODAL */
@@ -1155,9 +1185,11 @@ td.delete label,
     width: 400px;
 }
 
-#modal_item_files .input-group,
+
 #modal_item_files .input-group input {
     width: auto;
+    display: inline-block;
+    margin-right: -4px;
 }
 
 #modal_item_files  #nzb_password {
@@ -1199,7 +1231,6 @@ td.delete label,
 #modal_item_files .item-files-table .progress {
     overflow: hidden;
     box-shadow: none;
-    -webkit-box-shadow: none;
 }
 
 #modal_item_files .item-files-table .progress-bar {
@@ -1373,6 +1404,10 @@ a:focus {
     top: 2px;
 }
 
+.collapsing {
+    transition: none;
+}
+
 .navbar-inverse {
     background-color: black;
 }
@@ -1387,15 +1422,35 @@ a:focus {
     padding-right: 10px;
 }
 
-.collapsing {
-    -webkit-transition: none;
-    transition: none;
+.collapsing li {
+    overflow: hidden !important;
 }
 
 .dropdown-menu {
     margin-top: 0;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transform-origin: top;
+    animation-fill-mode: forwards; 
+    transform: scale(1, 0.8);
+    transition: all 0.15s ease;
+    -webkit-transform-origin: top;
+    -webkit-animation-fill-mode: forwards; 
+    -webkit-transform: scale(1, 0.8);
+}
+
+.open > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1, 1);
+    -webkit-transform: scale(1, 1);
+}
+
+.ui-slider-handle,
+.ui-slider-range {
+    transition: all 0.2s ease;
 }
 
 .tooltip {
@@ -1437,7 +1492,6 @@ legend {
 }
 
 .progress-bar {
-    -webkit-box-shadow: none;
     box-shadow: none;
     -webkit-transition: width 0.3s linear;
     transition: width 0.3s linear;
@@ -1449,12 +1503,15 @@ legend {
 
 .modal-content {
     box-shadow: none;
-    -webkit-box-shadow: none;
 }
 
 .modal-backdrop {
     background-color: white;
-    opacity: 0.8 !important;
+    
+}
+
+.modal-backdrop.in {
+    opacity: 0.8;
 }
 
 .modal-dialog {
@@ -1490,6 +1547,20 @@ legend {
 .modal-footer {
     margin-top: 0;
 }
+
+.modal-dialog {
+    transform: scale(0.7) !important;
+    -webkit-transform: scale(0.7) !important;
+    opacity: 0 !important;
+    transition: all 0.3s !important;
+}
+
+.modal.in .modal-dialog {
+    transform: scale(1) !important;
+    -webkit-transform: scale(1) !important;
+    opacity: 1 !important;
+}
+
 
 button[data-dismiss="modal"] {
     background-color: #F0F0F0;

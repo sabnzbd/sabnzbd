@@ -864,7 +864,7 @@ SKIN_TEXT = {
     'Glitter-connectionError' : TT('Connection failed!'),
     'Glitter-localIP4' : TT('Local IPv4 address'),
     'Glitter-publicIP4' : TT('Public IPv4 address'),
-    'Glitter-IP6' : TT('IPv6 address'),
+    'Glitter-IP6' : TT('Local IPv6 address'),
     'Glitter-NameserverDNS' : TT('Nameserver / DNS Lookup'),
     'Glitter-downloadDirSpeed' : TT('Download folder speed'),
     'Glitter-completeDirSpeed' : TT('Complete folder speed'),
