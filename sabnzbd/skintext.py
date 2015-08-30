@@ -293,6 +293,23 @@ SKIN_TEXT = {
     'warning' : TT('Warning'), #: Status page, table column header, actual message
     'warnings' : TT('Warnings'), #: Footer: indicator of warnings
     'enabled' : TT('Enabled'), #: Status page, indicator that server is enabled
+    
+# Dashboard
+    'dashboard-title' : TT('Dashboard'),
+    'dashboard-connectionError' : TT('Connection failed!'),
+    'dashboard-localIP4' : TT('Local IPv4 address'),
+    'dashboard-publicIP4' : TT('Public IPv4 address'),
+    'dashboard-IP6' : TT('IPv6 address'),
+    'dashboard-NameserverDNS' : TT('Nameserver / DNS Lookup'),
+    'dashboard-cpuModel' : TT('CPU Model'),
+    'dashboard-systemPerformance' : TT('System Performance (Pystone)'), #: Do not translate Pystone
+    'dashboard-downloadDirSpeed' : TT('Download folder speed'),
+    'dashboard-completeDirSpeed' : TT('Complete folder speed'),
+    'dashboard-writingSpeed' : TT('Writing speed'),
+    'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
+    'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
+    'dashboard-repeatTest' : TT('Repeat test'),
+    
 
 # Configuration
     'configuration' : TT('Configuration'),
@@ -861,14 +878,6 @@ SKIN_TEXT = {
     'Glitter-page' : TT('page'),
     'Glitter-everything' : TT('Everything'),
     'Glitter-loading' : TT('Loading'),
-    'Glitter-connectionError' : TT('Connection failed!'),
-    'Glitter-localIP4' : TT('Local IPv4 address'),
-    'Glitter-publicIP4' : TT('Public IPv4 address'),
-    'Glitter-IP6' : TT('Local IPv6 address'),
-    'Glitter-NameserverDNS' : TT('Nameserver / DNS Lookup'),
-    'Glitter-downloadDirSpeed' : TT('Download folder speed'),
-    'Glitter-completeDirSpeed' : TT('Complete folder speed'),
-    'Glitter-repeatTest' : TT('Repeat test'),
     'Glitter-articles' : TT('articles'),
     'Glitter-repairQueue' : TT('Queue repair'),
     'Glitter-showActiveConnections' : TT('Show active connections'),
