@@ -83,34 +83,34 @@
                         </legend>
 
                         <div class="row">
-                            <div class="col-sm-5">$T('Glitter-localIP4')</div>
-                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.localipv4() ? '$T('Glitter-connectionError')' : statusInfo.dashboard.localipv4(), css: { 'options-bad-status' : !statusInfo.dashboard.localipv4() }"></div>
+                            <div class="col-sm-5">$T('dashboard-localIP4')</div>
+                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.localipv4(), css: { 'options-bad-status' : !statusInfo.dashboard.localipv4() }"></div>
                         </div>
                         <div class="row" data-bind="visible: (statusInfo.dashboard.ipv6()!=='')">
-                            <div class="col-sm-5">$T('Glitter-IP6')</div>
+                            <div class="col-sm-5">$T('dashboard-IP6')</div>
                             <div class="col-sm-7" data-bind="text: statusInfo.dashboard.ipv6"></div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-5">$T('Glitter-publicIP4')</div>
-                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.publicipv4() ? '$T('Glitter-connectionError')' : statusInfo.dashboard.publicipv4(), css: { 'options-bad-status ' : !statusInfo.dashboard.publicipv4() }"></div>
+                            <div class="col-sm-5">$T('dashboard-publicIP4')</div>
+                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.publicipv4() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.publicipv4(), css: { 'options-bad-status ' : !statusInfo.dashboard.publicipv4() }"></div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-5">$T('Glitter-NameserverDNS')</div>
+                            <div class="col-sm-5">$T('dashboard-NameserverDNS')</div>
                             <div class="col-sm-7" data-bind="text: statusInfo.dashboard.dnslookup, css: { 'options-bad-status' : (statusInfo.dashboard.dnslookup() != 'OK') }"></div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-5">$T('Glitter-downloadDirSpeed')</div>
+                            <div class="col-sm-5">$T('dashboard-downloadDirSpeed')</div>
                             <div class="col-sm-7">
                                 <span data-bind="text: (statusInfo.dashboard.downloaddirspeed() > 0 ? statusInfo.dashboard.downloaddirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.downloaddirspeedbad() }"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('Glitter-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
+                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.dashboard.downloaddir, length: 25"></span>)</small>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-5">$T('Glitter-completeDirSpeed')</div>
+                            <div class="col-sm-5">$T('dashboard-completeDirSpeed')</div>
                             <div class="col-sm-7">
                                 <span data-bind="text: (statusInfo.dashboard.completedirspeed() > 0 ? statusInfo.dashboard.completedirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.completedirspeedbad() }"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('Glitter-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
+                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.dashboard.completedir, length: 25"></span>)</small>
                             </div>
                         </div>
@@ -310,16 +310,16 @@
                         </div>
                         <div class="multioperations-selector">
                             <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" onclick="checkAllFiles(this)" />
-                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="right" title="$T('Glitter-removeSelected')">
+                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-container="#modal_item_filelist" data-placement="right" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
-                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hoverbutton" data-toggle="tooltip" data-placement="right" title="$T('Glitter-toggleCompletedFiles')">
+                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hoverbutton" data-toggle="tooltip" data-container="#modal_item_filelist" data-placement="right" title="$T('Glitter-toggleCompletedFiles')">
                                 <span class="glyphicon glyphicon-eye-close"></span> 100%
                             </a>
                         </div>
 
                         <table class="table item-files-table">
-                            <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.setUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
+                            <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
                                 <tr data-bind="css: { 'files-sortable' : canChange() }">
                                     <td class="row-wrap-text">
                                         <div class="progress">
@@ -339,7 +339,7 @@
 
                         <div class="multioperations-selector">
                             <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" />
-                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="right" title="$T('Glitter-removeSelected')">
+                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-container="#modal_item_filelist" data-placement="right" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
                         </div>

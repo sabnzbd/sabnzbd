@@ -175,8 +175,9 @@ $(document).bind('dragover', function(e) {
             ko.bindingHandlers.template.init(element, function() {
                 return templateOptions;
             }, allBindingsAccessor, data, context);
-            //keep a reference to start/update functions that might have been passed in
+            //keep a reference to start/stop/update functions that might have been passed in
             startActual = sortable.options.start;
+            stopActual = sortable.options.stop;
             updateActual = sortable.options.update;
             //initialize sortable binding after template binding has rendered in update function
             var createTimeout = setTimeout(function() {
@@ -280,6 +281,10 @@ $(document).bind('dragover', function(e) {
                     stop: function(event, ui) {
                         // Remove class again for active sorting
                         $(event.target).parent().removeClass('table-active-sorting')
+                        // Do original function that was in the HTML
+                        if(stopActual) {
+                            stopActual.apply(this, arguments);
+                        }
                     },
                     connectWith: sortable.connectClass ? "." + sortable.connectClass : false,
                     placeholder: 'sortable-placeholder'
