@@ -7,7 +7,7 @@
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
     <li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
     <li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
-    <li><a href="#tabs-dashboard">$T('Dashboard')</a></li>
+    <li><a href="#tabs-dashboard">$T('dashboard-title')</a></li>
   </ul>
 
   <div id="tabs-warnings">
@@ -124,74 +124,112 @@
   </div>
 
   <div id="tabs-dashboard">
-      <table class="rssTable">
-      
-        <tr> <th>Item</th> <th>Value</th> </tr>
+    <table class="rssTable">
+        <tr> 
+            <th colspan="2">$T('dashboard-title')</th> 
+        </tr>
         <!--#set $odd = False#-->
 
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Local IPv4 address</td><td>  
-                   <!--#if $publicipv4#-->$localipv4
-                   <!--#else#--><B><font color="red">No local IPv4. That is bad</font></B>
-                   <!--#end if#-->
-               </td></tr>
-
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Public IPv4 address</td><td>  
-                   <!--#if $publicipv4#-->$publicipv4
-                   <!--#else#--><B><font color="red">No public IPv4. That is bad</font></B>
-                   <!--#end if#-->
-               </td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>IPv6 address</td><td>  
-                   <!--#if $ipv6#-->$ipv6
-                   <!--#else#-->No IPv6.
-                   <!--#end if#-->
-               </td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Nameserver / DNS Lookup</td><td>  
-                   <!--#if $dnslookup#-->DNS is OK
-                   <!--#else#-->
-		           <!--#if $publicipv4#-->No DNS
-		           <!--#else#-->First fix your network, then check DNS again
-		           <!--#end if#-->
-                   <!--#end if#-->
-               </td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>System Performance (Pystone)</td><td>$pystone</td></tr>
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>CPU Model (only on Linux)</td><td>$cpumodel</td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Download Directory</td><td>$downloaddir</td></tr>
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Download Directory writing Speed [MB/s]</td><td>  
-                   <!--#if $downloaddirspeed >= 0 #-->$downloaddirspeed
-                   <!--#elif $downloaddirspeed < 0 #-->Click on Refresh button below to determine
-                   <!--#else#--><B><font color="red">Could not write. Check that the directory is writable.</font></B>
-                   <!--#end if#-->
-               </td></tr>
-
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Complete Directory</td><td>$completedir</td></tr>
-        <!--#set $odd = not $odd#-->    <tr class="<!--#if $odd then "odd" else "even"#-->">
-               <td>Complete Directory writing Speed [MB/s]</td><td>  
-                   <!--#if $completedirspeed >=0 #-->$completedirspeed
-                   <!--#elif $completedirspeed < 0 #-->Click on Refresh button below to determine
-                   <!--#else#--><B><font color="red">Could not write. Check that the directory is writable.</font></B>
-                   <!--#end if#-->
-               </td></tr>
-      
-      </table>
-      <BR>
-      If you want to (re)run the tests, click on:
-      <a href="dashrefresh?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-localIP4')</td>
+            <td>  
+                <!--#if $publicipv4#-->
+                    $localipv4
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-publicIP4')</td>
+            <td>  
+                <!--#if $publicipv4#-->
+                    $publicipv4
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-IP6')</td>
+            <td>  
+                <!--#if $ipv6#-->
+                    $ipv6
+                <!--#else#-->
+                    $T('none')
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-NameserverDNS')</td>
+            <td>  
+                <!--#if $dnslookup#-->
+                    $dnslookup
+                <!--#else#-->
+		            <!--#if $publicipv4#-->
+                        <strong style="color: red;">$T('none')</strong>
+		            <!--#else#-->
+                        <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                    <!--#end if#-->
+                <!--#end if#-->
+             </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+           <td>$T('dashboard-systemPerformance')</td>
+           <td>$pystone</td>
+        </tr>
+        <!--#if $cpumodel#-->
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-cpuModel')</td>
+            <td>$cpumodel</td>
+        </tr>
+        <!--#end if#-->
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('opt-download_dir')</td>
+            <td>$downloaddir</td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-writingSpeed')</td>
+            <td>  
+                <!--#if $downloaddirspeed >= 0 #-->
+                    $downloaddirspeed MB/s
+                <!--#elif $downloaddirspeed < 0 #-->
+                   $T('dashboard-clickToStart')
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('opt-complete_dir')</td>
+            <td>$completedir</td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-writingSpeed')</td>
+            <td>  
+                <!--#if $completedirspeed >=0 #-->
+                    $completedirspeed MB/s
+                <!--#elif $completedirspeed < 0 #-->
+                    $T('dashboard-clickToStart')
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+    </table>
+    <br/>
+    <a href="dashrefresh?session=$session" class="juiButton">$T('dashboard-repeatTest')</a>
   </div>
-
 </div>
 
 
