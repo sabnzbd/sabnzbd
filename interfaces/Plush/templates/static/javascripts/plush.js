@@ -560,17 +560,6 @@ jQuery(function($){
     function(){ $.plush.skipRefresh=false; } // out
   );
 
-  // refresh on mouseout after deletion
-  $('#queue').hover(  // $.mouseout was triggering too often
-    function(){}, // over
-    function(){   // out
-      if ($.plush.pendingQueueRefresh) {
-        $.plush.pendingQueueRefresh = false;
-        $.plush.RefreshQueue();
-      }
-    }
-  );
-
   // NZB pause/resume individual toggle
   $('#queue').delegate('.nzb_status','click',function(event){
     var pid = $(this).parent().parent().attr('id');
