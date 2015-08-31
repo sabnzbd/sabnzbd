@@ -207,6 +207,10 @@ h2 {
     width: 210px !important;
 }
 
+#history-table-search {
+    margin-bottom: 5px;
+}
+
 /**
     MODALS
 **/
