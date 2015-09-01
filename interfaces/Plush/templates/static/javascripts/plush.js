@@ -1104,7 +1104,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       type: "POST",
       url: "tapi",
       data: {mode:'queue', name:'rating', value: nzo_id, type: videoAudio, setting: $(this).val(), apikey: $.plush.apikey},
-      success: $.plush.RefreshHistory
+      success: $.plush.Refresh
     });
   });
 
@@ -1116,7 +1116,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       type: "POST",
       url: "tapi",
       data: {mode:'queue', name:'rating', value: nzo_id, type: 'vote', setting: upDown, apikey: $.plush.apikey},
-      success: $.plush.RefreshHistory
+      success: $.plush.Refresh
     });
   });
 
