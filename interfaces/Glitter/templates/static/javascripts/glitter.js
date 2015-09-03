@@ -470,8 +470,6 @@ $(function() {
         
         // Clear messages
         self.clearMessages = function(whatToRemove) {
-            if(!confirm(glitterTranslate.clearWarn))
-                return;
             // Remove specifc type of messages
             self.allMessages.remove(function(item) { return item.index == whatToRemove });
             // Now so we don't show again today
@@ -663,13 +661,15 @@ $(function() {
             }).then(function() {
                 // Remove item and load status data
                 $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
-                    // Pop from list
+                // Pop from list
                 self.statusInfo.status.folders.remove(function(item) {
                     return item.folder() == $(b.currentTarget).data('folder')
                 })
             })
-            // Remove message
-            self.clearMessages('lastOrphanedMsg')
+            // Remove message if now less than 3
+            if(self.statusInfo.status.folders().length < 3) {
+                self.clearMessages('lastOrphanedMsg')
+            }
         }
 
         // Orphaned folder deletion of all
