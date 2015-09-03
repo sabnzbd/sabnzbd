@@ -1384,6 +1384,46 @@ td.delete label,
 }
 
 /***
+    SPECIAL FOR FIREFOX
+    It uses very high CPU for anything animated (Sep 2015)
+    Disable animations on progress-bar and make the History-'processing' a block animation
+    Can be removed if it's performance gets better in the future..
+***/
+@supports (-moz-transform: translate(0, 0)) {
+    .progress-bar {
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    @keyframes stretchdelay {
+        0%, 60% {
+            transform: scaleY(0.4);
+        }
+    
+        61%, 100% {
+            transform: scaleY(1.0);
+        }
+    }
+    
+    .processing-download > div {
+        animation: stretchdelay 2s infinite linear;
+    }
+    
+    .processing-download .rect2 {
+        animation-delay: 0.2s;
+    }
+    
+    .processing-download .rect3 {
+        animation-delay: 0.4s;
+    }
+    
+    .processing-download .rect4 {
+        animation-delay: 0.6s;
+    }
+}
+
+/***
     Bootstrap overwrites
 ***/
 
