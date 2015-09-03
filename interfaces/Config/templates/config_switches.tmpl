@@ -53,13 +53,13 @@
                     <span class="desc">$T('explain-max_art_opt')</span>
                 </div>
                 <div class="field-pair alt">
-                    <label class="config" for="randomize_server_ip">$T('opt-randomize_server_ip')</label>
+                    <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
                       <select name="randomize_server_ip" id="randomize_server_ip">
-                          <option value="0" <!--#if $randomize_server_ip == 0 then 'selected="selected" class="selected"' else ""#--> >$T('no-load-balancing')</option>
-                          <option value="1" <!--#if $randomize_server_ip == 1 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing')</option>
-                          <option value="2" <!--#if $randomize_server_ip == 2 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
+                          <option value="0" <!--#if $load_balancing == 0 then 'selected="selected" class="selected"' else ""#--> >$T('no-load-balancing')</option>
+                          <option value="1" <!--#if $load_balancing == 1 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing')</option>
+                          <option value="2" <!--#if $load_balancing == 2 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
                       </select>
-                    <span class="desc">$T('explain-randomize_server_ip')</span>
+                    <span class="desc">$T('explain-load_balancing')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>

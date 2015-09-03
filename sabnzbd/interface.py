@@ -1242,7 +1242,7 @@ SWITCH_LIST = \
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
              'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
-             'randomize_server_ip'
+             'load_balancing'
              )
 
 #------------------------------------------------------------------------------
