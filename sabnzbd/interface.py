@@ -424,8 +424,9 @@ class MainPage(object):
         """Handler for API over http, with explicit authentication parameters
         """
         if not kwargs.get('tickleme') or not cfg.web_watchdog():
-            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
-                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+            if sabnzbd.API_LOG:
+                logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip, \
+                              cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
