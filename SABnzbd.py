@@ -1448,17 +1448,15 @@ def main():
         sabnzbd.misc.remove_all(sessions, 'session-*.lock', keep_folder=True)
     else:
         sessions = None
-
-    mime_gzip = ('text/html',
-                 'text/plain',
-                 'text/css',
-                 'text/xml',
-                 'text/javascript',
+    
+    mime_gzip = ('text/*',
                  'application/javascript',
-                 'text/x-javascript',
                  'application/x-javascript',
-                 'text/x-json',
-                 'application/json'
+                 'application/json',
+                 'application/xml',
+                 'application/vnd.ms-fontobject',
+                 'application/font*',
+                 'image/svg+xml'
                  )
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
