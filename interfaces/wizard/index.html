@@ -7,8 +7,8 @@
             <br /><h1>$T('wizard-quickstart')</h1><br />
             <hr />
             <div class="bigger">
-                <h3>Language</h3>
-                Please choose your prefered language<br /><br />
+                <h3>$T('opt-language')</h3>
+                $T('explain-language')<br /><br />
                 <div class="main-container">
                   <!--#for $l, $language in $languages#-->
                     <label class="language">
@@ -19,12 +19,12 @@
                 </div>
                 
             </div>
-                <hr />
+            <hr />
             <div class="full-width">
               <table class="full-width">
                 <tr>
-                  <td class="align-center"><a class="btn btn-danger" href="./exit"><span class="glyphicon glyphicon-remove"></span> Exit SABnzbd</a></td>
-                  <td class="align-center"><button class="btn btn-default">Start Wizard <span class="glyphicon glyphicon-chevron-right"></span></button></td>
+                  <td class="align-center"><a class="btn btn-danger" href="./exit"><span class="glyphicon glyphicon-remove"></span> $T('wizard-exit')</a></td>
+                  <td class="align-center"><button class="btn btn-default">$T('wizard-start') <span class="glyphicon glyphicon-chevron-right"></span></button></td>
                 </tr>
               </table>
             </div>

@@ -934,6 +934,8 @@ SKIN_TEXT = {
     'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
+    'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
+    'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
     'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
     'wizard-bandwidth-error' : TT('Enter a speed (e.g. 5M)'), #: Wizard tell user to enter a max bandwidth
 
