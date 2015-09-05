@@ -1551,8 +1551,8 @@ def main():
         browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
     else:
         browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
-
     sabnzbd.BROWSER_URL = browser_url
+
     if hasattr(cherrypy.wsgiserver, 'redirect_url'):
         cherrypy.wsgiserver.redirect_url('https://%%s:%s/sabnzbd' % cherryport)
 
