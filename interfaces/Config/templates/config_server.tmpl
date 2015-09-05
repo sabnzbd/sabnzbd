@@ -121,8 +121,8 @@
             <h3>$servers[$server]['displayname']</h3>
             
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" rel="$server" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
-              <td>&nbsp;$T('enabled')</td>
+              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server" rel="$server" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+              <td><label for="enable_$server">&nbsp;$T('enabled')</label></td>
             </tr></table>
             
             <button type="button" class="btn btn-default clrServer">$T('button-clrServer')</button>

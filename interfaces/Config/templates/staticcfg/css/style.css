@@ -2121,6 +2121,10 @@ input[type="checkbox"] {
     margin: 10px 0px;
 }
 
+.Servers .col2 label {
+    margin: 0;
+}
+
 .fileBrowser .glyphicon {
     margin-right: 2px;
     top: 1px;
