@@ -165,7 +165,7 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
 
-    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)',
+    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
                  extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
 
     try:

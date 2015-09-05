@@ -1345,7 +1345,7 @@ def set_permissions(path, recursive=True):
 
 def short_path(path, always=True):
     """ For Windows, return shortended ASCII path, for others same path
-        When `always` is off, only return a short path when size is below 260
+        When `always` is off, only return a short path when size is above 259
     """
     if sabnzbd.WIN32:
         import win32api
