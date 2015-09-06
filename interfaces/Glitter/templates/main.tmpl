@@ -286,18 +286,18 @@
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-checkall">
-                            <input type="checkbox" name="multieditCheckAll" title="$T('Glitter-checkAll')" id="multiedit-checkall" onclick="checkAllFiles(this)" />
+                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-toggle="tooltip" data-placement="top" />
                         </label>
                         <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
                     </div>
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-play">
                             <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-play"></span>
+                            <span class="glyphicon glyphicon-play" title="$T('link-resume')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
                         <label for="multiedit-pause">
                             <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-pause"></span>
+                            <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
                     </div>
                     <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown">
@@ -313,19 +313,19 @@
                             <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
                         </ul>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('category')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('priority')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('priority')">
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('swtag-pp')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('swtag-pp')">
                         <span class="glyphicon glyphicon-check"></span>
                         <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('eoq-scripts')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('eoq-scripts')">
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
