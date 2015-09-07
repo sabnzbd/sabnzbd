@@ -1497,7 +1497,9 @@ button.ui-button::-moz-focus-inner {
     vertical-align: middle;
     margin: 0;
     font-size: 1.4em;
-
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .example {
     background-color: #fefeee;

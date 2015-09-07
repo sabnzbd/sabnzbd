@@ -2003,11 +2003,11 @@ $(function() {
                     if(self.currentPage() < 5) {
                         // Just add the first 4
                         $.each(new Array(5), function(index) {
-                                self.allpages.push(self.addPaginationPageLink(index + 1))
-                            })
-                            // Dots
+                            self.allpages.push(self.addPaginationPageLink(index + 1))
+                        })
+                        // Dots
                         self.allpages.push(self.addDots())
-                            // Last one
+                        // Last one
                         self.allpages.push(self.addPaginationPageLink(newNrPages))
                     } else {
                         // Always add the first 
