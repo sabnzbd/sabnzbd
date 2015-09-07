@@ -190,6 +190,10 @@ $(function() {
             return self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed()
         });
         
+        self.hasWarnings = ko.computed(function() {
+            return(self.allWarnings().length > 0)
+        })
+        
         // Check for any warnings/messages
         self.hasMessages = ko.computed(function() {
             return self.nrWarnings() > 0 || self.allMessages().length > 0;

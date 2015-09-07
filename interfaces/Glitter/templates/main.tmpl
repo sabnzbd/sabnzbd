@@ -155,38 +155,41 @@
                 <h2>$T('menu-queue')</h2>
 
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
+                    <!-- ko if: hasWarnings()  -->
                     <div class="info-container-box">
-                        <!-- ko if: (queueDataLeft() != '')  -->
+                        <a href="#errors" class="queue-error-info">
+                            <span class="glyphicon glyphicon-exclamation-sign"></span> <strong data-bind="text: allWarnings().length"></strong>
+                        </a>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: (queueDataLeft() != '')  -->
+                    <div class="info-container-box">
                         <span class="glyphicon glyphicon-save"></span>
                         <span data-bind="text: queueDataLeft"></span> MB $T('Glitter-left')
-                        <!-- /ko -->
                     </div>
-
+                    <!-- /ko -->
                     <!-- ko if: (quotaLimit() != 0)  -->
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }">
+                        <span data-bind="css: { 'queue-error-info' : (parseInt(quotaLimitLeft())<=0) }">
                             <span class="glyphicon glyphicon-log-in"></span> <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
                         </span>
                     </div>
                     <!-- /ko -->
-                
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
+                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
                             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
                         </span>
                         <!-- ko if: (diskSpaceLeft2() > 0)  -->
                         <em>($T('Glitter-freeTemp'))</em>
                         <!-- /ko -->
                     </div>
-                    
                     <!-- ko if: (diskSpaceLeft2() > 0)  -->
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
+                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
                             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
                         </span>
                     </div>
                     <!-- /ko -->
-
                     <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations') &amp; $T('cmenu-sorting')">
                         <span class="glyphicon glyphicon-tasks"></span>
                     </a>
@@ -340,6 +343,7 @@
             </div>
 
             <div class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
+                <a name="errors"></a>
                 <table class="table table-hover table-messages">
                     <thead>
                         <tr>
@@ -349,7 +353,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- ko if: allWarnings().length > 0 -->
+                        <!-- ko if: hasWarnings()-->
                             <tr>
                                 <td colspan="2" class="table-messages-hide"></td>
                                 <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
