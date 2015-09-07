@@ -292,7 +292,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    EXTERNAL_IPV6 = test_ipv6()
+    sabnzbd.EXTERNAL_IPV6 = test_ipv6()
+    logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
     if check_repair_request():
         repair = 2
