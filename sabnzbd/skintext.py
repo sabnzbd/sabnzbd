@@ -44,7 +44,6 @@ SKIN_TEXT = {
     'post-QuickCheck'    : TT('Quick Check...'), #: PP status
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
-    'post-Grabbing'      : TT('Get NZB'), #: Pseudo-PP status, in reality used for Grabbing status
     'post-Checking'      : TT('Checking'), #: PP status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
@@ -88,7 +87,6 @@ SKIN_TEXT = {
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
     'none' : TT('None'), #: No value, used in dropdown menus
-    'KBs' : TT('KB/s'), #: Speed indicator kilobytes/sec
     'MB' : TT('MB'), #: Megabytes
     'GB' : TT('GB'), #: Gigabytes
     'B' : TT('B'), #: Bytes (used as postfix, as in "GB", "TB")
@@ -103,7 +101,6 @@ SKIN_TEXT = {
     'week' : TT('week'),
     'month' : TT('Month'),
     'year' : TT('Year'),
-    'daily' : TT('Daily'),
     'monday' : TT('Monday'),
     'tuesday' : TT('Tuesday'),
     'wednesday' : TT('Wednesday'),
@@ -138,8 +135,6 @@ SKIN_TEXT = {
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
     'button-save' : TT('Save'), #: "Save" button
     'queued' : TT('Queued'), #: "Queued" used to show amount of jobs
-    'button-back' : TT('Back'), #: Generic "Back" button
-    'button-x' : TT('X'), #: Generic "Delete" button, short form
     'confirm' : TT('Are you sure?'), #: Used in confirmation popups
     'delFiles' : TT('Delete all downloaded files?'),  #: Used in confirmation popups
 
@@ -167,9 +162,6 @@ SKIN_TEXT = {
 
 # Footer
     'ft-download' : TT('Download Dir'), # Used in Footer
-    'ft-complete' : TT('Complete Dir'), # Used in Footer
-    'ft-speed' : TT('Download speed'), # Used in Footer
-    'ft-queued' : TT('Queued'), # Used in Footer
     'ft-paused' : TT('PAUSED'), # Used in Footer
     'ft-buffer@2' : TT('Cached %s articles (%s)'), # Used in Footer
     'ft-sysload' : TT('Sysload'), # Used in Footer
@@ -177,7 +169,6 @@ SKIN_TEXT = {
     'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
-    'addNewJobs' : TT('Add new downloads'),
     'shutdownOK?' : TT('Are you sure you want to shutdown SABnzbd?'),
     'link-shutdown' : TT('Shutdown'), #: Shutdown SABnzbd
     'link-pause' : TT('Pause'), #: Pause downloading
@@ -193,24 +184,18 @@ SKIN_TEXT = {
     'pp-repair' : TT('+Repair'), #: Post processing pick list
     'pp-unpack' : TT('+Unpack'), #: Post processing pick list
     'pp-delete' : TT('+Delete'), #: Post processing pick list
-    'pp-n' : TT('&nbsp;'),  #: Part of Post processing pick list: abbreviation for "Download"
     'pp-r' : TT('R'),  #: Post processing pick list: abbreviation for "+Repair"
     'pp-u' : TT('U'),  #: Post processing pick list: abbreviation for "+Unpack"
     'pp-d' : TT('D'),  #: Post processing pick list: abbreviation for "+Delete"
     'pr-force' : TT('Force'), #: Priority pick list
-    'pr-repair' : TT('Repair'), #: Priority pick list
     'pr-normal' : TT('Normal'), #: Priority pick list
     'pr-high' : TT('High'), #: Priority pick list
     'pr-low' : TT('Low'), #: Priority pick list
     'pr-paused' : TT('Paused'), #: Priority pick list
     'pr-stop' : TT('Stop'), #: Priority pick list
     'enterURL' : TT('Enter URL'), #: Add NZB Dialog
-    'enterID' : TT('&nbsp;or Report ID'), #: Add NZB Dialog
 
 # Queue page
-    'link-sortByName' : TT('Sort by name'), #: Queue page button
-    'link-sortByAge' : TT('Sort by age'), #: Queue page button
-    'link-sortBySize' : TT('Sort by size'), #: Queue page button
     'link-hideFiles' : TT('Hide files'), #: Queue page button
     'link-showFiles' : TT('Show files'), #: Queue page button
     'onQueueFinish' : TT('On queue finish'),  #: Queue page selection menu
@@ -223,12 +208,9 @@ SKIN_TEXT = {
     'mode' : TT('Processing'), #: Queue page table column header
     'order' : TT('Order'), #: Queue page table column header
     'name' : TT('Name'), #: Queue page table column header
-    'remainTotal' : TT('Remain/Total'), #: Queue page table column header
     'eta' : TT('ETA'), #: Queue page table column header, "estimated time of arrival"
     'age' : TT('AGE'), #: Queue page table column header, "age of the NZB"
     'button-del' : TT('Del'),  #: Queue page table, "Delete" button
-    'button-resume' : TT('Resume'), #: Queue page button
-    'button-pause' : TT('Pause'), #: Queue page button
     'button-retry' : TT('Retry'), #: Queue page button
     'eoq-actions' : TT('Actions'), #: Queue end-of-queue selection box
     'eoq-scripts' : TT('Scripts'), #: Queue page table, script selection menu
@@ -247,12 +229,9 @@ SKIN_TEXT = {
 
 # History page
     'purgeHist' : TT('Purge History'), #: History page button
-    'purgeHistFailed' : TT('Purge Failed History'), #: History page button
     'purgeHistConf' : TT('Delete all completed items from History?'), #: Confirmation popup
-    'purgeHistFailedConf' : TT('Delete all failed items from History?'), #: Confirmation popup
     'hideDetails' : TT('Hide details'), #: Button/link hiding History job details
     'showDetails' : TT('Show details'), #: Button/link showing History job details
-    'sizeHist' : TT('History Size'), #: History: amount of downloaded data
     'showFailedHis' : TT('Show Failed'), #: Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
     'showAllHis' : TT('Show All'), #: Button or link showing all History jobs
     'completed' : TT('Completed'), #: History: job status
@@ -274,14 +253,12 @@ SKIN_TEXT = {
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
     'askTestEmail' : TT('This will send a test email to your account.'),
     'link-showLog' : TT('Show Logging'), #: Status page button
-    'link-showWeblog' : TT('Show Weblogging'), #: Status page button
     'link-testEmail' : TT('Test Email'), #: Status page button
     'logging' : TT('Logging'), #: Status page selection menu
     'log-errWarn' : TT('Errors/Warning'), #: Status page table header
     'log-info' : TT('+ Info'), #: Status page logging selection value
     'log-debug' : TT('+ Debug'), #: Status page logging selection value
     'connections' : TT('Connections'), #: Status page tab header
-    'thread' : TT('Thread'), #: Status page, server threads
     'emailResult' : TT('Email Test Result'), #: Status page, title for email test result
     'lastWarnings' : TT('Latest Warnings'), #: Status page, table header
     'clearWarnings' : TT('clear'),  #: Status page button
@@ -309,10 +286,8 @@ SKIN_TEXT = {
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
-    
 
 # Configuration
-    'configuration' : TT('Configuration'),
     'confgFile' : TT('Config File'),
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
     'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
@@ -324,10 +299,8 @@ SKIN_TEXT = {
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
-    'oznzb' : TT('OZnzb'),
 
 # Config->General
-    'generalConfig' : TT('General configuration'),
     'restartRequired' : TT('Changes will require a SABnzbd restart!'),
     'webServer' : TT('SABnzbd Web Server'),
     'opt-host' : TT('SABnzbd Host'),
@@ -338,7 +311,6 @@ SKIN_TEXT = {
     'explain-web_dir' : TT('Choose a skin.'),
     'opt-web_dir2' : TT('Secondary Web Interface'),
     'explain-web_dir2' : TT('Activate an alternative skin.'),
-    'webAuth' : TT('Web server authentication'),
     'opt-web_username' : TT('SABnzbd Username'),
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
@@ -356,8 +328,6 @@ SKIN_TEXT = {
     'opt-https_chain' : TT('HTTPS Chain Certifcates'),
     'explain-https_chain' : TT('File name or path to HTTPS Chain.'),
     'tuning' : TT('Tuning'),
-    'opt-refresh_rate' : TT('Queue auto refresh interval:'),
-    'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),
     'opt-rss_rate' : TT('RSS Checking Interval'),
     'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
     'opt-bandwidth_max' : TT('Maximum line speed'),
@@ -378,8 +348,6 @@ SKIN_TEXT = {
     'button-apikey' : TT('Generate New Key'),
     'opt-disableApikey' : TT('Disable API-key'),
     'explain-disableApikey' : TT('Do not require the API key.'),
-    'explain-disableApikeyWarn' : TT('USE AT YOUR OWN RISK!'),
-    'qr-code' : TT('QR Code'), #: Button to show QR code of APIKEY
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
     'opt-local_ranges' : TT('List of local network ranges'),
     'explain-local_ranges' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
@@ -392,7 +360,6 @@ SKIN_TEXT = {
     'inet-ui' : TT('Full Web interface'), # Selection value for external access
 
 # Config->Folders
-    'folderConfig' : TT('Folder configuration'),
     'explain-folderConfig' : TT('<em>NOTE:</em> Folders will be created automatically when Saving. You may use absolute paths to save outside of the default folders.'),
     'userFolders' : TT('User Folders'),
     'browse-folder' : TT('Browse'),
@@ -426,8 +393,6 @@ SKIN_TEXT = {
     'base-folder' : TT('Default Base Folder'),
 
 # Config->Switches
-    'switchesConfig' : TT('Switches configuration'),
-    'processingSwitches' : TT('Processing Switches'),
     'opt-quick_check' : TT('Enable Quick Check'),
     'explain-quick_check' : TT('Skip par2 checking when files are 100% valid.'),
     'opt-enable_all_par' : TT('Download all par2 files'),
@@ -446,8 +411,6 @@ SKIN_TEXT = {
     'explain-enable_filejoin' : TT('Join files ending in .001, .002 etc. into one file.'),
     'opt-enable_tsjoin' : TT('Enable TS Joining'),
     'explain-ts_join' : TT('Join files ending in .001.ts, .002.ts etc. into one file.'),
-    'opt-enable_par_cleanup' : TT('Enable Par Cleanup'),
-    'explain-enable_par_cleanup' : TT('Cleanup par files (if verifiying/repairing succeded).'),
     'opt-overwrite_files' : TT('When unpacking, overwrite existing files'),
     'explain-overwrite_files' : TT('This will overwrite existing files instead of creating an alternative name.'),
     'opt-top_only' : TT('Only Get Articles for Top of Queue'),
@@ -480,14 +443,8 @@ SKIN_TEXT = {
     'explain-enable_meta' : TT('Use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
     'opt-folder_rename' : TT('Enable folder rename'),
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
-    'opt-dirscan_opts' : TT('Default Post-Processing'),
-    'explain-dirscan_opts' : TT('Used when no post-processing is defined by the category.'),
-    'opt-dirscan_script' : TT('Default User Script'),
-    'explain-dirscan_script' : TT('Used when no user script is defined by the category.'),
     'opt-pre_script' : TT('Pre-queue user script'),
     'explain-pre_script' : TT('Used before an NZB enters the queue.'),
-    'opt-dirscan_priority' : TT('Default Priority'),
-    'explain-dirscan_priority' : TT('Used when no priority is defined by the category.'),
     'opt-par2_multicore' : TT('Enable MultiCore Par2'),
     'explain-par2_multicore' : TT('Read the Wiki Help on this!'),
     'opt-par_option' : TT('Extra PAR2 Parameters'),
@@ -496,7 +453,6 @@ SKIN_TEXT = {
     'explain-nice' : TT('Read the Wiki Help on this!'),
     'opt-ionice' : TT('IONice Parameters'),
     'explain-ionice' : TT('Read the Wiki Help on this!'),
-    'otherSwitches' : TT('Other Switches'),
     'opt-auto_disconnect' : TT('Disconnect on Empty Queue'),
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
@@ -520,7 +476,6 @@ SKIN_TEXT = {
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
-    'igsam-not' : TT('Do not download'),
     'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
     'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
     'swtag-general' : TT('General'),
@@ -550,7 +505,6 @@ SKIN_TEXT = {
     'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
     'opt-rating_api_key' : TT('Site API Key'),
     'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
-    'tip-rating_api_key' : TT('Refer to https://www.oznzb.com/profile'),
     'opt-rating_feedback' : TT('Automatic Feedback'),
     'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),
@@ -571,10 +525,7 @@ SKIN_TEXT = {
     'load-balancing-happy-eyeballs' : TT('Allow load-balancing with optimization for IPv6'),
     'explain-load_balancing' : TT('Useful if a newsserver has more than one IPv4/IPv6 address'),
 
-
 # Config->Server
-    'configServer' : TT('Server configuration'), #: Caption
-    'defServer' : TT('Server definition'), # Caption
     'addServer' : TT('Add Server'), #: Caption
     'srv-displayname' : TT('Server description'), #: User defined name for server
     'srv-host' : TT('Host'), #: Server hostname or IP
@@ -596,7 +547,6 @@ SKIN_TEXT = {
     'button-testServer' : TT('Test Server'), #: Button: Test server
     'button-clrServer' : TT('Clear Counters'), #: Button: Clear server's byte counters
     'srv-testing' : TT('Testing server details...'),
-    'srv-testHint' : TT('Click below to test.'),
     'srv-bandwidth' : TT('Bandwidth'),
     'srv-send_group' : TT('Send Group'),
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
@@ -605,13 +555,11 @@ SKIN_TEXT = {
     'srv-notes' : TT('Personal notes'),
 
 # Config->Scheduling
-    'configSchedule' : TT('Scheduling configuration'), #:Config->Scheduling
     'addSchedule' : TT('Add Schedule'), #:Config->Scheduling
     'sch-frequency' : TT('Frequency'), #:Config->Scheduling
     'sch-action' : TT('Action'), #:Config->Scheduling
     'sch-arguments' : TT('Arguments'), #:Config->Scheduling
     'button-addSchedule' : TT('Add Schedule'), #:Config->Scheduling
-    'button-delSchedule' : TT('Remove'), #:Config->Scheduling
     'currentSchedules' : TT('Current Schedules'), #:Config->Scheduling
     'sch-resume' : TT('Resume'), #:Config->Scheduling
     'sch-pause' : TT('Pause'), #:Config->Scheduling
@@ -619,12 +567,8 @@ SKIN_TEXT = {
     'sch-restart' : TT('Restart'), #:Config->Scheduling
 
 # Config->RSS
-    'configRSS' : TT('RSS Configuration'),
-    'newFeedURI' : TT('New Feed URL'),
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
-    'addFeed' : TT('Add Feed'), #: Config->RSS button
-    'button-delFeed' : TT('Delete Feed'),#: Config->RSS button
     'button-preFeed' : TT('Read Feed'),#: Config->RSS button
     'button-forceFeed' : TT('Force Download'),#: Config->RSS button
     'rss-order' : TT('Order'), #: Config->RSS table column header
@@ -638,19 +582,13 @@ SKIN_TEXT = {
     'rss-atleast' : TT('At least'), #: Config->RSS filter-type selection menu
     'rss-atmost' : TT('At most'), #: Config->RSS filter-type selection menu
     'rss-from' : TT('From SxxEyy'), #: Config->RSS filter-type selection menu "From Season/Episode"
-    'rss-delFilter' : TT('X'), #: Config->RSS button "Delete filter"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
     'link-download' : TT('Download'), #: Config->RSS button "download item"
-    'tableFeeds' : TT('Feeds'), #: Tab title for Config->Feeds
     'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
-    'feedSettings' : TT('Settings'), #: Tab title for Config->Feeds
-    'filters' : TT('Filters'), #: Tab title for Config->Feeds
 
 # Config->Notifications
-    'configEmail' : TT('Notifications'), #: Main Config page
-    'emailOptions' : TT('Email Options'), #: Section header
     'opt-email_endjob' : TT('Email Notification On Job Completion'),
     'email-never' : TT('Never'), #: When to send email
     'email-always' : TT('Always'),  #: When to send email
@@ -659,7 +597,6 @@ SKIN_TEXT = {
     'explain-email_full' : TT('Send email when disk is full and SABnzbd is paused.'),
     'opt-email_rss' : TT('Send RSS notifications'),
     'explain-email_rss' : TT('Send email when an RSS feed adds jobs to the queue.'),
-    'emailAccount' : TT('Email Account Settings'),
     'opt-email_server' : TT('SMTP Server'),
     'explain-email_server' : TT('Set your ISP\'s server for outgoing email.'),
     'opt-email_to' : TT('Email Recipient'),
@@ -681,8 +618,6 @@ SKIN_TEXT = {
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
     'opt-ncenter_enable' : TT('Notification Center'),
     'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
-    'opt-notify_classes' : TT('Notification classes'),
-    'explain-notify_classes' : TT('Enable classes of messages to be reported (none, one or multiple)'),
     'testNotify' : TT('Test Notification'),
     'section-NC' : TT('Notification Center'), #: Header for OSX Notfication Center section
     'section-OSD' : TT('NotifyOSD'), #: Header for Ubuntu's NotifyOSD notifications section
@@ -691,7 +626,6 @@ SKIN_TEXT = {
     'explain-prowl_enable' : TT('Requires a Prowl account'), #: Prowl settings
     'opt-prowl_apikey' : TT('API key for Prowl'), #: Prowl settings
     'explain-prowl_apikey' : TT('Personal API key for Prowl (required)'), #: Prowl settings
-
     'section-Pushover' : TT('Pushover'), #: Header for Pushover notification section
     'opt-pushover_enable' : TT('Enable Pushover notifications'), #: Pushover settings
     'explain-pushover_enable' : TT('Requires a Pushover account'), #: Pushoversettings
@@ -701,7 +635,6 @@ SKIN_TEXT = {
     'explain-pushover_userkey' : TT('User Key (required)'), #: Pushover settings
     'opt-pushover_device' : TT('Device(s)'), #: Pushover settings
     'explain-pushover_device' : TT('Device(s) to which message should be sent'), #: Pushover settings
-
     'section-Pushbullet' : TT('Pushbullet'), #: Header for Pushbullet notification section
     'opt-pushbullet_enable' : TT('Enable Pushbullet notifications'), #: Pushbullet settings
     'explain-pushbullet_enable' : TT('Requires a Pushbullet account'), #: Pushbulletsettings
@@ -711,8 +644,6 @@ SKIN_TEXT = {
     'explain-pushbullet_device' : TT('Device to which message should be sent'), #: Pushbullet settings
 
 # Config->Cat
-    'configCat' : TT('User-defined categories'),
-    'explain-configCat' : TT('Defines post-processing and storage.'),
     'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
     'explain-catTags2' : TT('Ending the path with an asterisk * will prevent creation of job folders.'),
     'explain-relFolder' : TT('Relative folders are based on'),
@@ -721,19 +652,15 @@ SKIN_TEXT = {
     'button-delCat' : TT('X'), #: Small delete button
 
 # Config->Sorting
-    'configSort' : TT('Sorting configuration'),
     'seriesSorting' : TT('Series Sorting'),
     'opt-tvsort' : TT('Enable TV Sorting'),
-    'explain-tvsort' : TT('Enable sorting and renaming of episodes.'),
     'sort-legenda' : TT('Pattern Key'),
     'button-clear' : TT('Clear'),
     'presetSort' : TT('Presets'),
     'example' : TT('Example'),
-    'genericSort' : TT('Generic Sorting'),
+    'movieSort' : TT('Generic Sorting'),
     'opt-movieSort' : TT('Enable Movie Sorting'),
-    'explain-movieSort' : TT('Enable generic sorting and renaming of files.'),
     'opt-movieExtra' : TT('Keep loose downloads in extra folders'),
-    'explain-movieExtra' : TT('Enable if downloads are not put in their own folders.'),
     'affectedCat' : TT('Affected Categories'),
     'sort-meaning' : TT('Meaning'),
     'sort-pattern' : TT('Pattern'),
@@ -773,7 +700,6 @@ SKIN_TEXT = {
     'button-noFolders' : TT('No folders'),
     'dateSorting' : TT('Date Sorting'),
     'opt-dateSort' : TT('Enable Date Sorting'),
-    'explain-dateSort' : TT('Enable sorting and renaming of date named files.'),
     'button-ShowNameF' : TT('Show Name folder'),
     'button-YMF' : TT('Year-Month Folders'),
     'button-DailyF' : TT('Daily Folders'),
@@ -804,42 +730,6 @@ SKIN_TEXT = {
     'nzo-selection' : TT('Selection'), #: Job details page, section header
     'nzo-action' : TT('Action'), #: Job details page, section header
 
-
-#OSX Menu
-    'Mobile-confirm-delete' : TT('Are you sure you want to delete'),
-    'Mobile-button-refresh' : TT('Refresh'),
-    'Mobile-warnings' : TT('Warnings'),
-    'Mobile-button-options' : TT('Options'),
-    'Mobile-page' : TT('Page'),
-    'Mobile-button-prev' : TT('Prev'),
-    'Mobile-button-next' : TT('Next'),
-    'Mobile-button-first' : TT('First'),
-    'Mobile-button-last' : TT('Last'),
-    'Mobile-button-close' : TT('Close'),
-    'Mobile-button-pauseInterval' : TT('Set Pause Interval'),
-    'Mobile-sort' : TT('Sort'),
-    'Mobile-confirm-purgeQ' : TT('Purge the Queue?'),
-    'Mobile-button-purgeQ' : TT('Purge Queue'),
-    'Mobile-pauseInterval' : TT('Pause Interval'),
-    'Mobile-pause5m' : TT('Pause for 5 minutes'),
-    'Mobile-pause15m' : TT('Pause for 15 minutes'),
-    'Mobile-pause30m' : TT('Pause for 30 minutes'),
-    'Mobile-pause1h' : TT('Pause for 1 hour'),
-    'Mobile-pause3h' : TT('Pause for 3 hours'),
-    'Mobile-pause6h' : TT('Pause for 6 hours'),
-    'Mobile-pause12h' : TT('Pause for 12 hours'),
-    'Mobile-pause24h' : TT('Pause for 24 hours'),
-    'Mobile-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
-    'Mobile-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
-    'Mobile-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),
-    'Mobile-sortNameDesc' : TT('Sort by Name <small>Z&rarr;A</small>'),
-    'Mobile-sortSizeAsc' : TT('Sort by Size <small>Smallest&rarr;Largest</small>'),
-    'Mobile-sortSizeDesc' : TT('Sort by Size <small>Largest&rarr;Smallest</small>'),
-    'Mobile-rename' : TT('Rename'),
-    'Mobile-left' : TT('Left'),
-    'Mobile-confirm-purgeH' : TT('Purge the History?'),
-    'Mobile-button-purgeH' : TT('Purge History'),
-
 #Glitter skin
     'Glitter-addNZB' : TT('Add NZB'),
     'Glitter-pause5m' : TT('Pause for 5 minutes'),
@@ -850,7 +740,6 @@ SKIN_TEXT = {
     'Glitter-pause6h' : TT('Pause for 6 hours'),
     'Glitter-setMaxLinespeed' : TT('You must set a maximum bandwidth before you can set a bandwidth limit'),
     'Glitter-left' : TT('left'),
-    'Glitter-quota' : TT('quota'),
     'Glitter-free' : TT('Free Space'),
     'Glitter-freeTemp' : TT('Temp Folder'),
     'Glitter-search' : TT('Search'),
@@ -867,7 +756,6 @@ SKIN_TEXT = {
     'Glitter-total' : TT('Total'),
     'Glitter-lostConnection' : TT('Lost connection to SABnzbd..'),
     'Glitter-afterRestart' : TT('In case of SABnzbd restart this screen will disappear automatically!'),
-    'Glitter-refresh' : TT('Refresh'),
     'Glitter-disabled' : TT('Disabled'),
     'Glitter-interfaceOptions' : TT('Web Interface').title(),
     'Glitter-interfaceRefresh' : TT('Refresh rate'),
@@ -916,12 +804,8 @@ SKIN_TEXT = {
 
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
-    'Plush-cmenu-scheduling' : TT('Scheduling'),
     'Plush-confirm' : TT('Are you sure?'),
-    'Plush-openSourceURL' : TT('Open Source URL'),
     'Plush-openInfoURL' : TT('Open Informational URL'),
-    'Plush-path' : TT('Path'),
-    'Plush-storage' : TT('Storage'),
     'Plush-viewScriptLog' : TT('View Script Log'),
     'Plush-prev' : TT('Prev'),
     'Plush-next' : TT('Next'),
@@ -930,7 +814,6 @@ SKIN_TEXT = {
     'Plush-addnzb' : TT('Add NZB'),
     'Plush-button-refresh' : TT('Refresh'),
     'Plush-options' : TT('Options'),
-    'Plush-plushoptions' : TT('Plush Options'),
     'Plush-updateAvailable' : TT('Update Available!'),
     'Plush-pause5m' : TT('Pause for 5 minutes'),
     'Plush-pause15m' : TT('Pause for 15 minutes'),
@@ -978,14 +861,8 @@ SKIN_TEXT = {
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
-    'Plush-tab-repair' : TT('Queue repair'),
-    'Plush-rss-delete' : TT('Delete'),
-    'Plush-rss-actions' : TT('Actions'),
-    'Plush-explain-rssActions' : TT('<strong>Read Feed</strong> will get the current feed content. <strong>Force Download</strong> will download all matching NZBs now.'),
-
-
+    
 #smpl skin
-    'smpl-hourmin' : TT('Hour:Min'),
     'smpl-purgehist' : TT('Delete Completed'),
     'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),
     'smpl-purgefailhist' : TT('Delete Failed'),
@@ -1040,16 +917,12 @@ SKIN_TEXT = {
     'wizard-misc-browser' :  TT('Launch my internet browser with the SABnzbd page when the program starts.'),
     'wizard-server' :  TT('Server Details'),
     'wizard-explain-server' :  TT('Please enter in the details of your primary usenet provider.'),
-    'wizard-server-help' :  TT('Help'), #: Wizard help link
-    'wizard-server-help1' :  TT('In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.'),
-    'wizard-server-help2' :  TT('Don\'t have a usenet provider? We recommend trying %s.'),
     'wizard-server-con-explain' :  TT('The number of connections allowed by your provider'),
     'wizard-server-con-eg' : TT('E.g. 8 or 20'), #: Wizard: examples of amount of connections
     'wizard-server-ssl-explain' :  TT('Select only if your provider allows SSL connections.'),
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-server-required' :  TT('This field is required.'),
     'wizard-server-number' :  TT('Please enter a whole number.'),
-    'wizard-optional' :  TT('Optional'), #: As in "this item is optional"
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
     'wizard-restarting' :  TT('Restarting SABnzbd...'), #: Wizard step
@@ -1060,11 +933,6 @@ SKIN_TEXT = {
     'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'), #: Wizard tip
     'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
-    'wizard-step-one' :  TT('Step One'), #: Wizard step
-    'wizard-step-two' :  TT('Step Two'), #: Wizard step
-    'wizard-step-three' :  TT('Step Three'), #: Wizard step
-    'wizard-step-four' :  TT('Step Four'), #: Wizard step
-    'wizard-step-five' :  TT('Step Five'), #: Wizard step
     'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page

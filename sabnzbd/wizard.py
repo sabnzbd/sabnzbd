@@ -84,7 +84,7 @@ class Wizard(object):
     @cherrypy.expose
     def one(self, **kwargs):
         """ Accept language and show server page """
-        language = kwargs.get('lang')
+        language = kwargs.get('lang') if kwargs.get('lang') else cfg.language()
         cfg.language.set(language)
         set_language(language)
         sabnzbd.api.clear_trans_cache()

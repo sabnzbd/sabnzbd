@@ -441,7 +441,7 @@ class SSLConnection(object):
 
 def test_ipv6():
     """ Check if external IPv6 addresses are reachable """
-    # Use google.com to test IPv6 access
+    # Use test-ipv6.sabnzbd.org server to test IPv6 access
     try:
         info = socket.getaddrinfo('test-ipv6.sabnzbd.org', 80, socket.AF_INET6, socket.SOCK_STREAM,
                                   socket.IPPROTO_IP, socket.AI_CANONNAME)
