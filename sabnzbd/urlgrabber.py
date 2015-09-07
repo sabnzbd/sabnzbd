@@ -101,7 +101,7 @@ class URLGrabber(Thread):
                 req = urllib2.Request(url)
                 req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
                 if not [True for item in _BAD_GZ_HOSTS if item in url]:
-                    req.add_header('Accept-encoding','gzip')
+                    req.add_header('Accept-encoding', 'gzip')
                 filename = None
                 category = None
                 gzipped = False
@@ -111,26 +111,26 @@ class URLGrabber(Thread):
                 fn = None
                 try:
                     fn = urllib2.urlopen(req)
-                except urllib2.URLError:
-                    error = str(sys.exc_info()[1]).lower()
-                    logging.debug('Error "%s" trying to get the url %s', error, url)
-                    if 'certificate_verify_failed' in error:
+                except:
+                    # Cannot list exceptions here, because of unpredictability over platforms
+                    error0 = str(sys.exc_info()[0]).lower()
+                    error1 = str(sys.exc_info()[1]).lower()
+                    logging.debug('Error "%s" trying to get the url %s', error1, url)
+                    if 'certificate_verify_failed' in error1 or 'certificateerror' in error0:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % ''
                         retry = False
-                    elif 'nodename nor servname provided' in error:
+                    elif 'nodename nor servname provided' in error1:
                         msg = T('Server name does not resolve')
                         retry = False
-                    elif '401' in error or 'unauthorized' in error:
+                    elif '401' in error1 or 'unauthorized' in error1:
                         msg = T('Unauthorized access')
                         retry = False
-                except:
-                    logging.debug("Exception %s trying to get the url %s", sys.exc_info()[0], url)
 
                 new_url = dereferring(url, fn)
                 if new_url:
                     self.add(new_url, future_nzo)
                     continue
-                    
+
                 if fn:
                     for hdr in fn.headers:
                         try:
