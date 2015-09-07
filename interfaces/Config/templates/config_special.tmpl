@@ -18,9 +18,12 @@
             <!--#for $option in $switches#-->
                 <!--#set $odd = not $odd#-->
                 <div class="field-pair <!--#if $odd then "alt" else ""#-->">
-                    <label class="config wide" for="$option[0]">$option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> )</label>
+                    <label class="config wide" for="$option[0]">
+                        $option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> ) 
+                        <!--#if $option[1] != $option[2] then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
+                    </label>
                     <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if int($option[1]) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">&nbsp;</span>
+                    <span class="desc"></span>
                 </div>
             <!--#end for#-->
                 <div class="field-pair">
@@ -42,6 +45,7 @@
                 <div class="field-pair <!--#if $odd then "alt" else ""#-->">
                     <label class="config narrow" for="$option[0]">$option[0] (&nbsp;<span class="path">$option[2]</span>&nbsp;)</label>
                     <input type="text" name="$option[0]" id="$option[0]" value="$option[1]" />
+                    <!--#if ($option[1] != $option[2]) and ($option[2] != "") then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
                 </div>
             <!--#end for#-->
                 <div class="field-pair">
