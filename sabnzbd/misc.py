@@ -1039,6 +1039,16 @@ def int_conv(value):
 
 #------------------------------------------------------------------------------
 # Diskfree
+
+def find_dir(p):
+    """ Return first folder level that exists in this path
+    """
+    x = 'x'
+    while x and not os.path.exists(p):
+        p, x = os.path.split(p)
+    return p
+
+
 if sabnzbd.WIN32:
     # windows diskfree
     try:
@@ -1049,6 +1059,7 @@ if sabnzbd.WIN32:
     def diskfree(_dir):
         """ Return amount of free diskspace in GBytes
         """
+        _dir = find_dir(_dir)
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return available / GIGI
@@ -1057,6 +1068,7 @@ if sabnzbd.WIN32:
     def disktotal(_dir):
         """ Return amount of free diskspace in GBytes
         """
+        _dir = find_dir(_dir)
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return disk_size / GIGI
@@ -1069,6 +1081,7 @@ else:
         def diskfree(_dir):
             """ Return amount of free diskspace in GBytes
             """
+            _dir = find_dir(_dir)
             try:
                 s = os.statvfs(_dir)
                 if s.f_bavail < 0:
@@ -1080,6 +1093,7 @@ else:
         def disktotal(_dir):
             """ Return amount of total diskspace in GBytes
             """
+            _dir = find_dir(_dir)
             try:
                 s = os.statvfs(_dir)
                 if s.f_blocks < 0:
