@@ -2123,6 +2123,13 @@ input[type="checkbox"] {
 
 .Servers .col2 label {
     margin: 0;
+    cursor: pointer;
+}
+
+.Special .glyphicon-asterisk {
+    margin-left: 8px;
+    top: 3px;
+    color: #666;
 }
 
 .fileBrowser .glyphicon {

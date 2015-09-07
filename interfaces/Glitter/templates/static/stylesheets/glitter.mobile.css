@@ -188,13 +188,6 @@ h2 {
     margin-bottom: 10px;
 }
 
-
-.history-table .delete .dropdown-menu .glyphicon {
-    top: -7px;
-    right: -8px;
-    text-shadow: 2px 0px 8px #ccc;
-}
-
 .history-table .status-header {
     width: 0;
 }

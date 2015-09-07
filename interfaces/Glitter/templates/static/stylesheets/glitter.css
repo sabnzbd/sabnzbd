@@ -169,7 +169,7 @@ li.dropdown {
 }
 
 .active-on-queue-finish-menu,
-.queue-error-no-diskspace {
+.queue-error-info {
     color: red !important;
 }
 
@@ -591,7 +591,7 @@ td.delete label,
     clear: both;
     width: 100%;
     overflow: auto;
-    max-height: 200px;
+    max-height: 180px;
     margin-bottom: 5px;
 }
 
@@ -737,13 +737,6 @@ td.delete label,
     width: 700px;
 }
 
-.history-table .delete .dropdown-menu .glyphicon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 2em;
-}
-
 .history-status-table .col-sm-2 {
     font-weight: bold;
     text-align: right;
@@ -864,8 +857,12 @@ td.delete label,
     margin-right: 5px;
 }
 
-.history-info span {
-    margin-left: 5px;
+.history-info>span {
+    margin-left: 8px;
+}
+
+.history-info>span:nth-child(2) {
+    margin-left: 2px;
 }
 
 #history-table-search {
@@ -1185,7 +1182,6 @@ td.delete label,
     width: 400px;
 }
 
-
 #modal_item_files .input-group input {
     width: auto;
     display: inline-block;
@@ -1196,10 +1192,13 @@ td.delete label,
     border-right-width: 0;
 }
 
-#modal_item_files h4 {
+#modal_item_files h4,
+#history_script_log h4 {
     width: 90%;
     overflow: hidden;
     height: 1.3em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #modal_item_files hr {
@@ -1241,7 +1240,6 @@ td.delete label,
     text-align: left;
     margin-left: 80px;
     margin-top: 2px;
-    
 }
 
 #modal_item_files .item-files-table .progress small {
@@ -1260,8 +1258,6 @@ td.delete label,
 #modal_item_files .item-files-table input[type="checkbox"] {
     margin-left: 8px;
 }
-
-
 
 /* RETRY JOB MODAL */
 #modal_retry_job .form-group {
@@ -1289,6 +1285,14 @@ td.delete label,
 
 #history_script_log code {
     background: none;
+}
+
+#history_script_log pre,
+#history_script_log code {
+    padding: 0;
+    background: 0;
+    margin: 0;
+    border: 0;
 }
 
 /***
@@ -1353,7 +1357,8 @@ td.delete label,
         margin-top: 80px;
     }
     
-    #modal_options .modal-dialog {
+    #modal_options .modal-dialog,
+    #history_script_log .modal-dialog {
         margin-top: 30px;
     }
 }

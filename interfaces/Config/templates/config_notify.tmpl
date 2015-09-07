@@ -138,13 +138,14 @@
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
+    <!--#if $have_ncenter#-->
     <div class="section">
         <div class="col2">
             <h3>$T('section-NC')</h3>
         </div><!-- /col2 -->
-        <div class="col1" <!--#if $have_ncenter then '' else 'style="display:none;"'#-->>
+        <div class="col1">
             <fieldset>
-                <div class="field-pair <!--#if not $have_ncenter then "disabled" else "" #-->">
+                <div class="field-pair">
                     <label class="config" for="ncenter_enable">$T('opt-ncenter_enable')</label>
                     <input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if int($ncenter_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ncenter then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ncenter_enable')</span>
@@ -197,13 +198,15 @@
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
+    <!--#end if#-->
+    <!--#if $have_ntfosd#-->
     <div class="section">
         <div class="col2">
             <h3>$T('section-OSD')</h3>
         </div><!-- /col2 -->
-        <div class="col1" <!--#if $have_ntfosd then '' else 'style="display:none;"'#-->>
+        <div class="col1">
             <fieldset>
-                <div class="field-pair alt <!--#if not $have_ntfosd then "disabled" else "" #-->">
+                <div class="field-pair alt">
                     <label class="config" for="ntfosd_enable">$T('opt-ntfosd_enable')</label>
                     <input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if int($ntfosd_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ntfosd then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ntfosd_enable')</span>
@@ -256,6 +259,7 @@
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
+    <!--#end if#-->
     <div class="section" id="prowl">
         <div class="col2">
             <h3>$T('section-Prowl')</h3>

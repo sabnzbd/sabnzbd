@@ -155,38 +155,41 @@
                 <h2>$T('menu-queue')</h2>
 
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
+                    <!-- ko if: hasWarnings()  -->
                     <div class="info-container-box">
-                        <!-- ko if: (queueDataLeft() != '')  -->
+                        <a href="#errors" class="queue-error-info">
+                            <span class="glyphicon glyphicon-exclamation-sign"></span> <strong data-bind="text: allWarnings().length"></strong>
+                        </a>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: (queueDataLeft() != '')  -->
+                    <div class="info-container-box">
                         <span class="glyphicon glyphicon-save"></span>
                         <span data-bind="text: queueDataLeft"></span> MB $T('Glitter-left')
-                        <!-- /ko -->
                     </div>
-
+                    <!-- /ko -->
                     <!-- ko if: (quotaLimit() != 0)  -->
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : (parseInt(quotaLimitLeft())<=0) }">
+                        <span data-bind="css: { 'queue-error-info' : (parseInt(quotaLimitLeft())<=0) }">
                             <span class="glyphicon glyphicon-log-in"></span> <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
                         </span>
                     </div>
                     <!-- /ko -->
-                
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
+                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
                             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
                         </span>
                         <!-- ko if: (diskSpaceLeft2() > 0)  -->
                         <em>($T('Glitter-freeTemp'))</em>
                         <!-- /ko -->
                     </div>
-                    
                     <!-- ko if: (diskSpaceLeft2() > 0)  -->
                     <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-no-diskspace' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
+                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
                             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
                         </span>
                     </div>
                     <!-- /ko -->
-
                     <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations') &amp; $T('cmenu-sorting')">
                         <span class="glyphicon glyphicon-tasks"></span>
                     </a>
@@ -286,18 +289,18 @@
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-checkall">
-                            <input type="checkbox" name="multieditCheckAll" title="$T('Glitter-checkAll')" id="multiedit-checkall" onclick="checkAllFiles(this)" />
+                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-toggle="tooltip" data-placement="top" />
                         </label>
                         <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
                     </div>
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-play">
                             <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-play"></span>
+                            <span class="glyphicon glyphicon-play" title="$T('link-resume')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
                         <label for="multiedit-pause">
                             <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-pause"></span>
+                            <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
                     </div>
                     <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown">
@@ -313,19 +316,19 @@
                             <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
                         </ul>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('category')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('priority')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('priority')">
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('swtag-pp')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('swtag-pp')">
                         <span class="glyphicon glyphicon-check"></span>
                         <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" title="$T('eoq-scripts')">
+                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('eoq-scripts')">
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
@@ -340,6 +343,7 @@
             </div>
 
             <div class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
+                <a name="errors"></a>
                 <table class="table table-hover table-messages">
                     <thead>
                         <tr>
@@ -349,7 +353,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- ko if: allWarnings().length > 0 -->
+                        <!-- ko if: hasWarnings()-->
                             <tr>
                                 <td colspan="2" class="table-messages-hide"></td>
                                 <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
@@ -526,7 +530,6 @@
                                         <span class="caret"></span>
                                     </a>
                                     <div class="dropdown-menu">
-                                        <span class="glyphicon glyphicon-info-sign"></span>
                                         <div class="history-status-table">
                                             <div class="row">
                                                 <div class="col-sm-2">$T('name')</div>

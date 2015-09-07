@@ -190,6 +190,10 @@ $(function() {
             return self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed()
         });
         
+        self.hasWarnings = ko.computed(function() {
+            return(self.allWarnings().length > 0)
+        })
+        
         // Check for any warnings/messages
         self.hasMessages = ko.computed(function() {
             return self.nrWarnings() > 0 || self.allMessages().length > 0;
@@ -1588,6 +1592,9 @@ $(function() {
                 $(event.currentTarget).parent().find('.history-status-modallink a').click(function() {
                     // Info in modal
                     $('#history_script_log .modal-body').load($(event.currentTarget).parent().find('.history-status-modallink a').attr('href'), function(result) {
+                        // Set title and then remove it
+                        $('#history_script_log .modal-title').text($(this).find("h3").text())
+                        $(this).find("h3, title").remove()
                         $('#history_script_log').modal({
                             show: true
                         });
