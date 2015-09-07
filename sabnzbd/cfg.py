@@ -84,6 +84,7 @@ pre_script = OptionStr('misc', 'pre_script', 'None')
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
 enable_https_verification = OptionBool('misc', 'enable_https_verification', True)
+ipv6_test_host = OptionStr('misc', 'ipv6_test_host', 'test-ipv6.sabnzbd.org')
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)

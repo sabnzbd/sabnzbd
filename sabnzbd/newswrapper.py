@@ -101,14 +101,14 @@ def GetServerParms(host, port):
     try:
         # Standard IPV4 or IPV6
         ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
+        if opt == 2 or (sabnzbd.EXTERNAL_IPV6 and opt == 1):
             # IPv6 reachable and allowed, or forced by user
             return ips
         else:
             # IPv6 unreachable or not allowed by user
             return [ip for ip in ips if ':' not in ip[4][0]]
     except:
-        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
+        if opt == 2 or (sabnzbd.EXTERNAL_IPV6 and opt == 1):
             try:
                 # Try IPV6 explicitly
                 return socket.getaddrinfo(host, port, socket.AF_INET6,
@@ -438,24 +438,3 @@ class SSLConnection(object):
             finally:
                 self._lock.release()\n""" % (f, f)
 
-
-def test_ipv6():
-    """ Check if external IPv6 addresses are reachable """
-    # Use test-ipv6.sabnzbd.org server to test IPv6 access
-    try:
-        info = socket.getaddrinfo('test-ipv6.sabnzbd.org', 80, socket.AF_INET6, socket.SOCK_STREAM,
-                                  socket.IPPROTO_IP, socket.AI_CANONNAME)
-    except:
-        return False
-
-    try:
-        af, socktype, proto, canonname, sa = info[0]
-        sock = socket.socket(af, socktype, proto)
-        sock.settimeout(6)
-        sock.connect(sa[0:2])
-        sock.close()
-        return True
-    except:
-        return False
-
-_EXTERNAL_IPV6 = test_ipv6()

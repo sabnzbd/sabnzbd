@@ -29,6 +29,7 @@ import glob
 import gzip
 import subprocess
 import time
+import socket
 import cherrypy
 import sys
 from threading import RLock, Lock, Condition, Thread
@@ -145,6 +146,7 @@ WINTRAY = None # Thread for the Windows SysTray icon
 WEBUI_READY = False
 LAST_WARNING = None
 LAST_ERROR = None
+EXTERNAL_IPV6 = False
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -289,6 +291,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
         OLD_QUEUE = bool(misc.globber(cfg.admin_dir.get_path(), QUEUE_FILE_TMPL % '?'))
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+
+    EXTERNAL_IPV6 = test_ipv6()
 
     if check_repair_request():
         repair = 2
@@ -1048,7 +1052,7 @@ def check_all_tasks():
         URLGrabber.do.__init__()
     if not Rating.do.isAlive():
         logging.info('Restarting crashed rating')
-        Rating.do.__init__()        
+        Rating.do.__init__()
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
@@ -1111,3 +1115,27 @@ def highest_server(me):
 
 def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
     return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
+
+
+def test_ipv6():
+    """ Check if external IPv6 addresses are reachable """
+    try:
+        info = socket.getaddrinfo(cfg.ipv6_test_host(), 80, socket.AF_INET6, socket.SOCK_STREAM,
+                                  socket.IPPROTO_IP, socket.AI_CANONNAME)
+    except:
+        logging.debug('Unknown error during IPv6 detection, Traceback:', exc_info=True)
+        return False
+
+    try:
+        af, socktype, proto, canonname, sa = info[0]
+        sock = socket.socket(af, socktype, proto)
+        sock.settimeout(6)
+        sock.connect(sa[0:2])
+        sock.close()
+        return True
+    except socket.error:
+        logging.debug('Cannot reach IPv6 test host, disabling IPv6')
+        return False
+    except:
+        logging.debug('Unknown error during IPv6 detection, Traceback:', exc_info=True)
+        return False
