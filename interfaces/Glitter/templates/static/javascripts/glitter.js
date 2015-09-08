@@ -216,7 +216,7 @@ $(function() {
                 Basic information
             ***/
             // Queue left
-            self.queueDataLeft(response.queue.mbleft > 0 ? Math.round(response.queue.mbleft) : '')
+            self.queueDataLeft(response.queue.mbleft > 0 ? response.queue.sizeleft : '')
 
             // Paused?
             self.downloadsPaused(response.queue.paused);
@@ -864,6 +864,7 @@ $(function() {
         }
         self.dragStop = function(e) {
             self.dragging = false;
+            $(e.target).parent().removeClass('table-active-sorting')
         }
 
         // Update slots from API data
@@ -1144,6 +1145,7 @@ $(function() {
         self.isGrabbing = ko.observable(false);
         self.totalMB = ko.observable(0);
         self.remainingMB = ko.observable(0);
+        self.avg_age = ko.observable(0);
         self.timeLeft = ko.observable();
         self.progressColor = ko.observable();
         self.missingText = ko.observable();
@@ -1195,6 +1197,7 @@ $(function() {
             self.status(data.status)
             self.totalMB(parseFloat(data.mb));
             self.remainingMB(parseFloat(data.mbleft));
+            self.avg_age(data.avg_age)
             self.category(data.cat);
             self.priority(parent.priorityName[data.priority]);
             self.script(data.script);
@@ -1777,6 +1780,7 @@ $(function() {
 
         // Trigger update
         self.triggerUpdate = function() {
+            // Call API
             callAPI({
                 mode: 'get_files',
                 value: self.currentItem.id,
@@ -1949,6 +1953,7 @@ $(function() {
 
         // Subscribe to changes of pagination limit
         parent.paginationLimit.subscribe(function(newValue) {
+            self.currentPage(1);
             self.updatePages();
         })
 
@@ -2003,11 +2008,11 @@ $(function() {
                     if(self.currentPage() < 5) {
                         // Just add the first 4
                         $.each(new Array(5), function(index) {
-                                self.allpages.push(self.addPaginationPageLink(index + 1))
-                            })
-                            // Dots
+                            self.allpages.push(self.addPaginationPageLink(index + 1))
+                        })
+                        // Dots
                         self.allpages.push(self.addDots())
-                            // Last one
+                        // Last one
                         self.allpages.push(self.addPaginationPageLink(newNrPages))
                     } else {
                         // Always add the first 

@@ -366,6 +366,10 @@ td.name .row-wrap-text {
     display: none;
 }
 
+.queue-table td.name .name-options small {
+    opacity: 0.5;
+}
+
 .queue-table td.name:hover .row-wrap-text {
     max-width: 90%;
  /* Change for each size! */;
@@ -1268,6 +1272,10 @@ td.delete label,
     margin-bottom: 10px !important;
 }
 
+#modal_retry_job .input-group-addfile {
+    width: 100%;
+}
+
 /* SCRIPT LOG MODAL */
 #history_script_log .modal-dialog {
     width: auto !important;
@@ -1314,7 +1322,7 @@ td.delete label,
 
 @media screen and (max-width: 1200px) {
     .queue-table td.name:hover .row-wrap-text {
-        max-width: 85%;
+        max-width: 77%;
     }
 }
 
@@ -1326,6 +1334,10 @@ td.delete label,
 
     .queue-table td.name:hover .row-wrap-text {
         max-width: 80%;
+    }
+    
+    .queue-table td.name .name-options small {
+        display: none;
     }
     
     .history-info {
@@ -1353,7 +1365,8 @@ td.delete label,
     /* Only for AddNZB and AboutModals */
     #modal_add_nzb .modal-dialog,
     #modal_help .modal-dialog,
-    #modal_purge_history .modal-dialog {
+    #modal_purge_history .modal-dialog,
+    #modal_retry_job .modal-dialog {
         margin-top: 80px;
     }
     
