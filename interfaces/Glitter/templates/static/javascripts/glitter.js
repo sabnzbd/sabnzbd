@@ -864,6 +864,7 @@ $(function() {
         }
         self.dragStop = function(e) {
             self.dragging = false;
+            $(e.target).parent().removeClass('table-active-sorting')
         }
 
         // Update slots from API data
@@ -1777,9 +1778,7 @@ $(function() {
 
         // Trigger update
         self.triggerUpdate = function() {
-            // Safety check
-            if(!self.currentItem.id) retun;
-            
+            // Call API
             callAPI({
                 mode: 'get_files',
                 value: self.currentItem.id,
