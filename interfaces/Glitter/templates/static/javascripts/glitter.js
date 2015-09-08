@@ -1145,6 +1145,7 @@ $(function() {
         self.isGrabbing = ko.observable(false);
         self.totalMB = ko.observable(0);
         self.remainingMB = ko.observable(0);
+        self.avg_age = ko.observable(0);
         self.timeLeft = ko.observable();
         self.progressColor = ko.observable();
         self.missingText = ko.observable();
@@ -1196,6 +1197,7 @@ $(function() {
             self.status(data.status)
             self.totalMB(parseFloat(data.mb));
             self.remainingMB(parseFloat(data.mbleft));
+            self.avg_age(data.avg_age)
             self.category(data.cat);
             self.priority(parent.priorityName[data.priority]);
             self.script(data.script);
