@@ -216,7 +216,7 @@ $(function() {
                 Basic information
             ***/
             // Queue left
-            self.queueDataLeft(response.queue.mbleft > 0 ? Math.round(response.queue.mbleft) : '')
+            self.queueDataLeft(response.queue.mbleft > 0 ? response.queue.sizeleft : '')
 
             // Paused?
             self.downloadsPaused(response.queue.paused);
@@ -1777,6 +1777,9 @@ $(function() {
 
         // Trigger update
         self.triggerUpdate = function() {
+            // Safety check
+            if(!self.currentItem.id) retun;
+            
             callAPI({
                 mode: 'get_files',
                 value: self.currentItem.id,
@@ -1949,6 +1952,7 @@ $(function() {
 
         // Subscribe to changes of pagination limit
         parent.paginationLimit.subscribe(function(newValue) {
+            self.currentPage(1);
             self.updatePages();
         })
 
