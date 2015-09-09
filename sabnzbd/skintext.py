@@ -861,6 +861,7 @@ SKIN_TEXT = {
     'Plush-freeSpaceTemp' : TT('Free (Temp)'),
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
+    'Plush-tab-repair' : TT('Queue repair'),
     
 #smpl skin
     'smpl-purgehist' : TT('Delete Completed'),
