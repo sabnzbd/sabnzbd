@@ -323,17 +323,17 @@ $(function() {
                     seconds -= minutes * 60;
                     timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
                 }
-
+                
                 // Add info about amount of download (if actually downloading)
-                if(response.queue.noofslots > 0 && self.queueDataLeft() > 0) {
-                    self.title(timeString + ' - ' + self.queueDataLeft() + ' MB ' + glitterTranslate.left + ' - SABnzbd')
+                if(response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
+                    self.title(timeString + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
                 } else {
                     // Set title with pause information
                     self.title(timeString + ' - SABnzbd')
                 }
-            } else if(response.queue.noofslots > 0 && self.queueDataLeft() > 0) {
+            } else if(response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
                 // Set title only if we are actually downloading something..
-                self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' MB ' + glitterTranslate.left + ' - SABnzbd')
+                self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
             } else {
                 // Empty title
                 self.title('SABnzbd')
