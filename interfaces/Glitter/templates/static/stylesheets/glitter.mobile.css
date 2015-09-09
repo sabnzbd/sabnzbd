@@ -82,7 +82,7 @@ h2 {
     white-space: pre;
 }
 
-.info-container a {
+.info-container .info-container-box-sorting {
     position: absolute;
     right: 10px;
     top: 0px;
@@ -142,17 +142,8 @@ h2 {
     width: 52px;
 }
 
-.multioperations-selector .add-nzb-inputbox-tiny {
-    width: 50%;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny>a {
-    float: right;
-    margin-right: 20px;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
-    margin-left: 0px;
+.multioperations-selector .add-nzb-inputbox-clear {
+    clear: both;
 }
 
 .table-messages .table-messages-header-label {

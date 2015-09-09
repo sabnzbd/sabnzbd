@@ -59,7 +59,7 @@
                             <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
                                 <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu" role="menu">
+                            <ul class="dropdown-menu">
                                 <li><a href="#" data-time="5" data-bind="click: pauseTime">$T('Glitter-pause5m')</a></li>
                                 <li><a href="#" data-time="15" data-bind="click: pauseTime">$T('Glitter-pause15m')</a></li>
                                 <li><a href="#" data-time="30" data-bind="click: pauseTime">$T('Glitter-pause30m')</a></li>
@@ -113,7 +113,7 @@
                         </li>
                         <li class="dropdown">
                             <a href="#" data-toggle="dropdown" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}" onclick="keepOpen(this)"><span class="glyphicon glyphicon-off"></span></a>
-                            <ul class="dropdown-menu menu-options" role="menu">
+                            <ul class="dropdown-menu menu-options">
                                 <li><a href="#modal_help" data-toggle="modal">$T('menu-help') <span class="glyphicon glyphicon-question-sign"></span></a></li>
                                 <!--#if $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
                                 <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
@@ -190,9 +190,22 @@
                         </span>
                     </div>
                     <!-- /ko -->
-                    <a href="#" data-bind="click: queue.showMultiEdit, visible: hasQueue()" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations') &amp; $T('cmenu-sorting')">
-                        <span class="glyphicon glyphicon-tasks"></span>
-                    </a>
+                    <div class="info-container-box-sorting dropdown" data-bind="visible: hasQueue()">
+                        <a href="#" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-sort-by-alphabet" data-toggle="tooltip" data-placement="left" title="$T('cmenu-sorting')"></span>
+                        </a>
+                        <a href="#" data-bind="click: queue.showMultiEdit">
+                            <span class="glyphicon glyphicon-tasks" data-toggle="tooltip" data-placement="left" data-container="body" title="$T('Glitter-multiOperations')"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
+                            <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
+                            <li><a href="#" data-action="sortNameAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameAsc')</a></li>
+                            <li><a href="#" data-action="sortNameDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameDesc')</a></li>
+                            <li><a href="#" data-action="sortSizeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeAsc')</a></li>
+                            <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="clearfix"></div>
 
@@ -256,7 +269,7 @@
                                     <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit" />
                                 </label>
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
-                                    <a role="button" href="#" data-toggle="dropdown" onclick="keepOpen(this)">
+                                    <a href="#" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu queueitem-settings">
@@ -288,11 +301,13 @@
                 </table>
 
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
-                    <div class="add-nzb-inputbox add-nzb-inputbox-small">
+                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-options">
                         <label for="multiedit-checkall">
                             <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-toggle="tooltip" data-placement="top" />
                         </label>
-                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
                     </div>
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-play">
@@ -304,19 +319,7 @@
                             <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
                     </div>
-                    <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-tiny dropdown">
-                        <a role="button" href="#" data-toggle="dropdown" class="hoverbutton">
-                            <span data-toggle="tooltip" data-placement="top" title="$T('cmenu-sorting')" class="glyphicon glyphicon-sort-by-alphabet"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
-                            <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
-                            <li><a href="#" data-action="sortNameAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameAsc')</a></li>
-                            <li><a href="#" data-action="sortNameDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameDesc')</a></li>
-                            <li><a href="#" data-action="sortSizeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeAsc')</a></li>
-                            <li><a href="#" data-action="sortSizeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortSizeDesc')</a></li>
-                        </ul>
-                    </div>
+                    <div class="add-nzb-inputbox-clear"></div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
@@ -527,7 +530,7 @@
                             <td class="history-completedon" data-bind="text: completedOn()"></td>
                             <td class="delete">
                                 <div class="dropdown">
-                                    <a role="button" href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
+                                    <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
                                         <span class="caret"></span>
                                     </a>
                                     <div class="dropdown-menu">
