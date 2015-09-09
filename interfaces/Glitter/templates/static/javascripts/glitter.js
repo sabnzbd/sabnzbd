@@ -671,7 +671,7 @@ $(function() {
                 })
             })
             // Remove message if now less than 3
-            if(self.statusInfo.status.folders().length < 3) {
+            if(self.statusInfo.status.folders().length < 4) {
                 self.clearMessages('lastOrphanedMsg')
             }
         }
@@ -1000,8 +1000,20 @@ $(function() {
         self.showMultiEdit = function() {
             // Update value
             self.isMultiEditing(!self.isMultiEditing())
-                // Reset form
-            $('.multioperations-selector')[0].reset();
+            // Form
+            $form = $('form.multioperations-selector')
+            
+            // Reset form
+            $form[0].reset();
+            
+            // Is the multi-edit in view?
+            if(($form.offset().top + $form.outerHeight(true)) > ($(window).scrollTop()+$(window).height())) {
+                // Scroll to form
+                $('html, body').animate({
+                    scrollTop: $form.offset().top + $form.outerHeight(true) - $(window).height() + 'px'
+                }, 'fast')
+            }
+            
 
             // Do update on close, to make sure it's all updated
             if(!self.isMultiEditing()) {
@@ -1953,8 +1965,8 @@ $(function() {
 
         // Subscribe to changes of pagination limit
         parent.paginationLimit.subscribe(function(newValue) {
-            self.currentPage(1);
             self.updatePages();
+            self.moveToPage(self.currentPage());
         })
 
         // Easy handler for adding a page-link
@@ -1995,7 +2007,7 @@ $(function() {
             } else {
                 // Calculate number of pages needed
                 newNrPages = Math.ceil(parent.totalItems() / parent.paginationLimit())
-
+                
                 // Make sure the current page still exists
                 if(self.currentPage() > newNrPages) {
                     self.moveToPage(newNrPages);
