@@ -301,7 +301,7 @@ msgstr "Pauze"
 #: sabnzbd/downloader.py:266 [Warning message] # sabnzbd/interface.py:1488 [Warning message]
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
-"Je moet eerst een maximum bandbreedte instellen voordat je een limiet kunt "
+"Je moet eerst een maximum bandbreedte instellen voordat je een limiet kun "
 "instellen"
 
 #: sabnzbd/downloader.py:308 # sabnzbd/downloader.py:309 [Warning message]
@@ -1011,7 +1011,7 @@ msgstr "Rust"
 
 #: sabnzbd/osxmenu.py:148 # sabnzbd/skintext.py:280
 msgid "Configuration"
-msgstr "Instellingen"
+msgstr "Instellen"
 
 #: sabnzbd/osxmenu.py:157 # sabnzbd/skintext.py:133 [Main menu item] # sabnzbd/skintext.py:489
 msgid "Queue"
@@ -1804,7 +1804,7 @@ msgstr "Opdrachten"
 
 #: sabnzbd/skintext.py:135 [Main menu item]
 msgid "Config"
-msgstr "Instellingen"
+msgstr "Instellen"
 
 #: sabnzbd/skintext.py:136 [Main menu item] # sabnzbd/skintext.py:245 [History table header]
 msgid "Status"
