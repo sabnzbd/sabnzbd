@@ -333,8 +333,8 @@ tbody>tr>td:last-child {
 
 .info-container-box {
     display: inline-block;
-    margin-left: 5px;
-    margin-right: 3px;
+    margin-left: 8px;
+    margin-right: 5px;
 }
 
 .info-container .glyphicon {
@@ -370,7 +370,7 @@ tbody>tr>td:last-child {
 }
 
 td.name .row-wrap-text {
-    max-width: 100%;
+    max-width: 98%;
     display: block;
     float: left;
     margin-right: 6px;
@@ -386,8 +386,8 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: 90%;
- /* Change for each size! */;
+    max-width: 85%;
+ /* Change for each size! */
 }
 
 .queue-table td.name:hover .name-options {
@@ -597,7 +597,7 @@ td.delete label,
     width: 100%;
     overflow: auto;
     max-height: 180px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .table-messages {
@@ -671,14 +671,12 @@ td.delete label,
     text-decoration: underline;
 }
 
-
-
 /***
     History Specific
 ***/
 
 .history {
-    margin-top: 18px;
+    margin-top: 2px;
     position: relative;
 }
 
@@ -879,10 +877,13 @@ td.delete label,
 #history-table-search input {
     width: 130px;
     transition: width 0.2s ease-out;
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
 #history-table-search input:focus {
     width: 250px;
+    border-color: #ccc;
 }
 
 #history-table-search span {

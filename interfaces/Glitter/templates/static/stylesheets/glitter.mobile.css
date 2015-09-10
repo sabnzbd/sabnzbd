@@ -105,13 +105,17 @@ h2 {
 .queue-table .progress-indicator {
     display: block;
     position: absolute;
-    width: 92%;
-    left: 4%;
+    width: 100%;
+    left: 0;
     margin-top: 2.8em;
     height: 2em;
     border: 0 !important;
     padding: 0 !important;
     background: transparent !important;
+}
+
+.queue-table .progress {
+    margin: 0px 8px;
 }
 
 .queue-table td.name .row-wrap-text {
