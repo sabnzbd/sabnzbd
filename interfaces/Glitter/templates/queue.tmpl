@@ -29,12 +29,12 @@
     
     $T('post-Paused') <!--#if $pause_int != '0' #-->($timeString) <!--#end if#-->
     <!--#if float($mbleft) > 0#-->
-        - <!--#echo "%.f" % float($mbleft)#--> MB $T('Glitter-left') 
+        - $sizeleft $T('Glitter-left') 
     <!--#end if#-->
     - SABnzbd
 <!--#else if float($mbleft) < 0.1#-->
     SABnzbd
 <!--#else#-->
-    <!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s - <!--#echo "%.0f" % float($mbleft)#--> MB $T('Glitter-left') - SABnzbd
+    <!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s - $sizeleft $T('Glitter-left') - SABnzbd
 <!--#end if#-->
 |||<!--#echo "%.0f" % float($kbpersec)#-->

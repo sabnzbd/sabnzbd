@@ -333,16 +333,31 @@ tbody>tr>td:last-child {
 
 .info-container-box {
     display: inline-block;
-    margin-left: 5px;
-    margin-right: 3px;
+    margin-left: 8px;
+    margin-right: 5px;
 }
 
 .info-container .glyphicon {
     margin-right: 2px;
 }
 
-.info-container a {
-    margin-left: 8px;
+.info-container .info-container-box-sorting {
+    float: right;
+}
+
+.info-container .info-container-box-sorting a {
+    padding-left: 12px;
+}
+
+.info-container .info-container-box-sorting .dropdown-menu {
+    left: auto;
+    right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.info-container .info-container-box-sorting .dropdown-menu small {
+    color: #AAA;
 }
 
 .queue-table td.name,
@@ -355,7 +370,7 @@ tbody>tr>td:last-child {
 }
 
 td.name .row-wrap-text {
-    max-width: 100%;
+    max-width: 98%;
     display: block;
     float: left;
     margin-right: 6px;
@@ -371,8 +386,8 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: 90%;
- /* Change for each size! */;
+    max-width: 85%;
+ /* Change for each size! */
 }
 
 .queue-table td.name:hover .name-options {
@@ -441,8 +456,11 @@ td.delete .dropdown>a {
     padding: 0px 10px;
 }
 
-td.delete input[type="checkbox"] {
+td.delete input[type="checkbox"],
+.add-nzb-inputbox-options input[type="checkbox"]{
     margin: 0;
+    margin-bottom: -2px;
+    display: block;
 }
 
 td.delete label,
@@ -540,7 +558,7 @@ td.delete label,
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
-    width: 50px;
+    width: 60px;
     float: right;
     padding-left: 0;
     padding-top: 2px;
@@ -562,32 +580,15 @@ td.delete label,
     opacity: 1;
 }
 
-.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
-  .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
-    padding-left: 6px;
+.multioperations-selector .add-nzb-inputbox-options {
+    width: auto;
     padding-right: 6px;
 }
 
-.multioperations-selector .add-nzb-inputbox-tiny {
-    width: 20px;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny>a {
-    margin-left: -4px;
-    margin-top: 1px;
-    display: inline-block;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny .dropdown-menu {
-    margin-left: -110px;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny.open a {
-    opacity: 1;
-}
-
-.multioperations-selector .add-nzb-inputbox-tiny small {
-    color: #AAA;
+.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
+.multioperations-selector .add-nzb-inputbox-small label[for="multiedit-play"] {
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 /* WARNINGS */
@@ -596,7 +597,7 @@ td.delete label,
     width: 100%;
     overflow: auto;
     max-height: 180px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .table-messages {
@@ -670,14 +671,12 @@ td.delete label,
     text-decoration: underline;
 }
 
-
-
 /***
     History Specific
 ***/
 
 .history {
-    margin-top: 18px;
+    margin-top: 2px;
     position: relative;
 }
 
@@ -878,10 +877,13 @@ td.delete label,
 #history-table-search input {
     width: 130px;
     transition: width 0.2s ease-out;
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
 #history-table-search input:focus {
     width: 250px;
+    border-color: #ccc;
 }
 
 #history-table-search span {
