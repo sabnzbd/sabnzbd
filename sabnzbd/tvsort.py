@@ -72,7 +72,7 @@ def move_to_parent_folder(workdir):
     """
     # Determine 'folder'/..
     workdir = os.path.abspath(os.path.normpath(workdir))
-    dest = os.path.abspathos.path.normpath(os.path.join(workdir, '..')))
+    dest = os.path.abspath(os.path.normpath(os.path.join(workdir, '..')))
 
     # Check for DVD folders and stop if found
     for item in os.listdir(workdir):
