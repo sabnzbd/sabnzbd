@@ -54,7 +54,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
-                      <select name="randomize_server_ip" id="randomize_server_ip">
+                      <select name="load_balancing" id="load_balancing">
                           <option value="0" <!--#if $load_balancing == 0 then 'selected="selected" class="selected"' else ""#--> >$T('no-load-balancing')</option>
                           <option value="1" <!--#if $load_balancing == 1 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing')</option>
                           <option value="2" <!--#if $load_balancing == 2 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
