@@ -891,7 +891,7 @@ def trim_win_path(path):
         maxlen = 125 - len(path)
         if len(folder) > maxlen:
             folder = folder[:maxlen]
-        path = os.path.join(path, folder)
+        path = os.path.join(path, folder).rstrip('. ')
     return path
 
 
