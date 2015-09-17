@@ -275,7 +275,7 @@
                                     <ul class="dropdown-menu queueitem-settings">
                                         <li title="$T('category')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
-                                            <select name="Category" class="form-control" data-bind="options: parent.categoriesList, value: category, event: { change: changeCat }"></select>
+                                            <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
                                         </li>
                                         <!-- ko if: (status() != 'Fetching')  -->
                                         <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-toggle="tooltip" data-placement="left">
@@ -322,7 +322,7 @@
                     <div class="add-nzb-inputbox-clear"></div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
-                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('priority')">
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
@@ -638,8 +638,9 @@
             glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
             glitterTranslate.orphanedJobsMsg = "$T('Glitter-orphanedJobsMsg')";
             glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
+            glitterTranslate.defaultText = "$T('default')";
+            
             glitterTranslate.status = [];
-
             glitterTranslate.status['Completed'] = "$T('post-Completed')";
             glitterTranslate.status['Failed'] = "$T('post-Failed')";
             glitterTranslate.status['Queued'] = "$T('post-Queued')";
@@ -651,7 +652,6 @@
             glitterTranslate.status['Quick Check...'] = "$T('post-QuickCheck')";
             glitterTranslate.status['Verifying...'] = "$T('post-Verifying')";
             glitterTranslate.status['Checking'] = "$T('post-Checking')";
-
             glitterTranslate.status['Download'] = "$T('stage-download')";
             glitterTranslate.status['Repair'] = "$T('stage-repair')";
             glitterTranslate.status['Join files'] = "$T('stage-filejoin')";
