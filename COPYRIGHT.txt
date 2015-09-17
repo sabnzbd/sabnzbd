@@ -7,6 +7,7 @@ Active team:
     ShyPike <shypike@sabnzbd.org>
     inpheaux <inpheaux@sabnzbd.org>
     zoggy <zoggy@sabnzbd.org>
+    Safihre <safihre@sabnzbd.org>
 Sleeping members
     sw1tch <switch@sabnzbd.org>
     pairofdimes <pairofdimes@sabnzbd.org>
@@ -27,6 +28,7 @@ The main contributors and moderators of the translations
     Portuguese (Brazil): lrrosa
     Russian: Pavel Maryanov
     Polish: Tomasz 'Zen' Napierala
+    Chinese: XsLiDian
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

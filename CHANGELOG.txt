@@ -1,7 +1,19 @@
 -------------------------------------------------------------------------------
- 0.8.0Aplha4 by The SABnzbd-Team
+ 0.8.0Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
+- Glitter fixes and improvements
+- Removed Classic and Mobile Interfaces
+- Removed Config parts of smpl and Plush skins
+- CherryPy upgrade
+- API-call "history" now accepts one or more "category" parameters in order to filter.
+- API-call "addurl" now returns a list of nzo_id's, which will be valid for the actual jobs.
+- Update unrar to release 5.21
+- Enable renaming of Usenet servers.
+- Add Pushbullet support.
+- Implement Pushover support.
+- Restore Rating function
+- API: add "action_size" parameter to file bulk operations.
 -------------------------------------------------------------------------------
  0.8.0Aplha3 by The SABnzbd-Team
 -------------------------------------------------------------------------------

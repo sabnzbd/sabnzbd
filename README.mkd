@@ -1,13 +1,28 @@
-Release Notes  -  SABnzbd 0.8.0Alpha3
-=====================================
+Release Notes  -  SABnzbd 0.8.0Beta1
+====================================
 
-## Changes since Alpha3
+## Changes in Beta1
+- Glitter is now the default skin
+- Glitter fixes and improvements
+- Removed Classic and Mobile skins
+- Removed Config parts of smpl and Plush skins
+- API-call "history" now accepts one or more "category" parameters in order to filter.
+- API-call "addurl" now returns a list of nzo_id's, which will be valid for the actual jobs.
+- Update unrar to release 5.21
+- Enable renaming of Usenet servers.
+- Add Pushbullet support.
+- Implement Pushover support.
+- Restore Rating function
+- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
+- Lots of bug fixes
+
+## Changes in Alpha3
 - New skin: Glitter
 - Assign servers to categories
 - When upgrading from 0.7.x, a backup server will get priority 1
 - Lots of bug fixes
 
-## Changes since Alpha2
+## Changes in Alpha2
 - Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
 - Work-arounds to avoid bugs in PyOpenSSL 0.14
 - Support RAR's REV files to some extent

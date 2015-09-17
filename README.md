@@ -1,7 +1,7 @@
 SABnzbd - The automated Usenet download tool
 ============================================
 
-This Unicode release is not compatible with 0.7.x queues! ** TODO: 0.8.x **
+This Unicode release is not compatible with 0.7.x queues!
 
 There is also an issue with upgrading of the "sabnzbd.ini" file.
 Make sure that you have a backup!

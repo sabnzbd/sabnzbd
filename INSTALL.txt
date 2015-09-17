@@ -89,8 +89,8 @@ Optional modules Unix/Linux/OSX
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
 
-Embedded modules (only use the included version)
-    CherryPy-3.2 rev2138 with patches  http://www.cherrypy.org
+Embedded modules (preferably use the included version)
+    CherryPy-3.8.0 with patches  http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
