@@ -212,7 +212,7 @@
                 <table class="table table-striped table-hover queue-table">
                     <thead>
                         <tr>
-                            <th style="width: 25px;"></th>
+                            <th style="width: 33px;"></th>
                             <th></th>
                             <th class="table-header-progress"></th>
                             <th style="width: 80px;"></th>
@@ -233,7 +233,9 @@
                     <tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
                         <tr class="queueitem">
                             <td>
-                                <a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">&nbsp;</a>
+                                <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
+                                    <span class="hoverbutton glyphicon" data-bind="css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }"></span>
+                                </a>
                             </td>
                             <td class="name">
                                 <div class="row-wrap-text" data-bind="visible: !editingName()">
