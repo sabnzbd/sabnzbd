@@ -900,13 +900,23 @@ tr.queueitem>td:first-child>a {
     border-color: #ccc;
 }
 
-#history-table-search span {
+#history-table-search input::-ms-clear {
+    display: none;
+}
+
+#history-table-search a {
     float: right;
     position: absolute;
-    right: 10px;
-    top: 10px;
+    display: block;
+    top: 0;
+    right: 0;
+    padding: 8px 10px 3px 0px;
     opacity: 0.7;
     z-index: 999;
+}
+
+#history-table-search a span {
+    cursor: pointer;
 }
 
 .history-options-show-failed,

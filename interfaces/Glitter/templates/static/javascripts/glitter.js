@@ -1475,6 +1475,11 @@ $(function() {
             }
         })
         
+        // Clear searchterm
+        self.clearSearchTerm = function() {
+            self.searchTerm('');
+        }
+        
         // Toggle showing failed
         self.toggleShowFailed = function() {
             self.showFailed(!self.showFailed())

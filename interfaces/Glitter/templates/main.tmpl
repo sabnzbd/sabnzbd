@@ -578,7 +578,9 @@
 
                 <div class="input-group" id="history-table-search">
                     <input type="text" class="form-control" placeholder="$T('Glitter-search')" data-bind="textInput: history.searchTerm" />
-                    <span class="glyphicon glyphicon-search"></span>
+                    <a data-bind="event: { mousedown: history.clearSearchTerm }">
+                        <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
+                    </a>
                 </div>
                 
                 <div class="multioperations-selector" id="history-options">
