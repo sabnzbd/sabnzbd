@@ -212,7 +212,7 @@
                 <table class="table table-striped table-hover queue-table">
                     <thead>
                         <tr>
-                            <th style="width: 25px;"></th>
+                            <th style="width: 33px;"></th>
                             <th></th>
                             <th class="table-header-progress"></th>
                             <th style="width: 80px;"></th>
@@ -233,7 +233,9 @@
                     <tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
                         <tr class="queueitem">
                             <td>
-                                <a href="#" class="hoverbutton glyphicon" data-bind="click: pauseToggle, css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">&nbsp;</a>
+                                <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
+                                    <span class="hoverbutton glyphicon" data-bind="css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }"></span>
+                                </a>
                             </td>
                             <td class="name">
                                 <div class="row-wrap-text" data-bind="visible: !editingName()">
@@ -275,7 +277,7 @@
                                     <ul class="dropdown-menu queueitem-settings">
                                         <li title="$T('category')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
-                                            <select name="Category" class="form-control" data-bind="options: parent.categoriesList, value: category, event: { change: changeCat }"></select>
+                                            <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
                                         </li>
                                         <!-- ko if: (status() != 'Fetching')  -->
                                         <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-toggle="tooltip" data-placement="left">
@@ -322,7 +324,7 @@
                     <div class="add-nzb-inputbox-clear"></div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
-                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('priority')">
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
@@ -576,7 +578,9 @@
 
                 <div class="input-group" id="history-table-search">
                     <input type="text" class="form-control" placeholder="$T('Glitter-search')" data-bind="textInput: history.searchTerm" />
-                    <span class="glyphicon glyphicon-search"></span>
+                    <a data-bind="event: { mousedown: history.clearSearchTerm }">
+                        <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
+                    </a>
                 </div>
                 
                 <div class="multioperations-selector" id="history-options">
@@ -638,8 +642,9 @@
             glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
             glitterTranslate.orphanedJobsMsg = "$T('Glitter-orphanedJobsMsg')";
             glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
+            glitterTranslate.defaultText = "$T('default')";
+            
             glitterTranslate.status = [];
-
             glitterTranslate.status['Completed'] = "$T('post-Completed')";
             glitterTranslate.status['Failed'] = "$T('post-Failed')";
             glitterTranslate.status['Queued'] = "$T('post-Queued')";
@@ -651,7 +656,6 @@
             glitterTranslate.status['Quick Check...'] = "$T('post-QuickCheck')";
             glitterTranslate.status['Verifying...'] = "$T('post-Verifying')";
             glitterTranslate.status['Checking'] = "$T('post-Checking')";
-
             glitterTranslate.status['Download'] = "$T('stage-download')";
             glitterTranslate.status['Repair'] = "$T('stage-repair')";
             glitterTranslate.status['Join files'] = "$T('stage-filejoin')";

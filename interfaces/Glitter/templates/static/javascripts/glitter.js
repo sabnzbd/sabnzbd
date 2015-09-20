@@ -873,10 +873,16 @@ $(function() {
             var itemIds = $.map(self.queueItems(), function(i) {
                 return i.id;
             });
+            
+            // Reformat categories
+            self.categoriesList($.map(data.categories, function(cat) {
+                // Default?
+                if(cat == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+                return { catValue: cat, catText: cat };
+            }))
 
             // Set categories and scripts and limit
             self.scriptsList(data.scripts)
-            self.categoriesList(data.categories)
             self.totalItems(data.noofslots);
 
             // Go over all items
@@ -1468,6 +1474,11 @@ $(function() {
                 self.parent.refresh();
             }
         })
+        
+        // Clear searchterm
+        self.clearSearchTerm = function() {
+            self.searchTerm('');
+        }
         
         // Toggle showing failed
         self.toggleShowFailed = function() {

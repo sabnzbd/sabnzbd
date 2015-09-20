@@ -2230,6 +2230,10 @@ input[type="checkbox"] {
     .col2 p {
         margin-left:  20px;
     }
+        
+    .Servers .col2 button:first-of-type {
+        margin-bottom: 0;
+    }
 }
 
 @media screen and (max-width: 768px) {
