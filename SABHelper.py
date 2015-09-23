@@ -24,10 +24,15 @@ import os
 import time
 import subprocess
 
-#------------------------------------------------------------------------------
+
 try:
-    import win32api, win32file
-    import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
+    import win32api
+    import win32file
+    import win32serviceutil
+    import win32evtlogutil
+    import win32event
+    import win32service
+    import pywintypes
 except ImportError:
     print "Sorry, requires Python module PyWin32."
     sys.exit(1)
@@ -35,11 +40,10 @@ except ImportError:
 from util.mailslot import MailSlot
 from util.apireg import del_connection_info, set_connection_info
 
-#------------------------------------------------------------------------------
 
 WIN_SERVICE = None
 
-#------------------------------------------------------------------------------
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
@@ -52,7 +56,6 @@ def start_sab():
     return subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
 
 
-#------------------------------------------------------------------------------
 def main():
 
     mail = MailSlot()
@@ -84,7 +87,7 @@ def main():
 
         if active:
             counter += 1
-            if counter > 120: # 120 seconds
+            if counter > 120:  # 120 seconds
                 counter = 0
                 start_sab()
 
@@ -96,11 +99,14 @@ def main():
             return ''
 
 
-#####################################################################
-#
+##############################################################################
 # Windows Service Support
-#
+##############################################################################
+
+
 import servicemanager
+
+
 class SABHelper(win32serviceutil.ServiceFramework):
     """ Win32 Service Handler """
 
@@ -143,11 +149,11 @@ class SABHelper(win32serviceutil.ServiceFramework):
                                     unicode(text))
 
 
-
-#####################################################################
-#
+##############################################################################
 # Platform specific startup code
-#
+##############################################################################
+
+
 if __name__ == '__main__':
 
     win32serviceutil.HandleCommandLine(SABHelper, argv=sys.argv)

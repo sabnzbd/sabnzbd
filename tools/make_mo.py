@@ -16,7 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Compile PO files to MO files
+"""
+make_mo - Compile PO files to MO files
+"""
 
 import glob
 import os
@@ -36,108 +38,108 @@ DOMAIN = 'SABnzbd'
 DOMAIN_E = 'SABemail'
 DOMAIN_N = 'SABnsis'
 LANG_MARKER = 'language.txt'
-NSIS= 'NSIS_Installer.nsi'
+NSIS = 'NSIS_Installer.nsi'
 
 LanguageTable = {
-    'aa' : ('Afar', 'Afaraf'),
-    'af' : ('Afrikaans', 'Afrikaans'),
-    'ak' : ('Akan', 'Akan'),
-    'sq' : ('Albanian', 'Shqip'),
-    'an' : ('Aragonese', 'Aragonés'),
-    'ae' : ('Avestan', 'Avesta'),
-    'ay' : ('Aymara', 'Aymararu'),
-    'bm' : ('Bambara', 'Bamanankan'),
-    'eu' : ('Basque', 'Euskara'),
-    'bi' : ('Bislama', 'Bislama'),
-    'bs' : ('Bosnian', 'Bosanskijezik'),
-    'br' : ('Breton', 'Brezhoneg'),
-    'ca' : ('Catalan', 'Català'),
-    'ch' : ('Chamorro', 'Chamoru'),
-    'kw' : ('Cornish', 'Kernewek'),
-    'co' : ('Corsican', 'Corsu'),
-    'hr' : ('Croatian', 'Hrvatski'),
-    'cs' : ('Czech', 'Cesky, ceština'),
-    'da' : ('Danish', 'Dansk'),
-    'nl' : ('Dutch', 'Nederlands'),
-    'en' : ('English', 'English'),
-    'eo' : ('Esperanto', 'Esperanto'),
-    'et' : ('Estonian', 'Eesti'),
-    'fo' : ('Faroese', 'Føroyskt'),
-    'fj' : ('Fijian', 'Vosa Vakaviti'),
-    'fi' : ('Finnish', 'Suomi'),
-    'fr' : ('French', 'Français'),
-    'gl' : ('Galician', 'Galego'),
-    'de' : ('German', 'Deutsch'),
-    'hz' : ('Herero', 'Otjiherero'),
-    'ho' : ('Hiri Motu', 'Hiri Motu'),
-    'hu' : ('Hungarian', 'Magyar'),
-    'id' : ('Indonesian', 'Bahasa Indonesia'),
-    'ga' : ('Irish', 'Gaeilge'),
-    'io' : ('Ido', 'Ido'),
-    'is' : ('Icelandic', 'Íslenska'),
-    'it' : ('Italian', 'Italiano'),
-    'jv' : ('Javanese', 'BasaJawa'),
-    'rw' : ('Kinyarwanda', 'Ikinyarwanda'),
-    'kg' : ('Kongo', 'KiKongo'),
-    'kj' : ('Kwanyama', 'Kuanyama'),
-    'la' : ('Latin', 'Lingua latina'),
-    'lb' : ('Luxembourgish', 'Lëtzebuergesch'),
-    'lg' : ('Luganda', 'Luganda'),
-    'li' : ('Limburgish', 'Limburgs'),
-    'ln' : ('Lingala', 'Lingála'),
-    'lt' : ('Lithuanian', 'Lietuviukalba'),
-    'lv' : ('Latvian', 'Latviešuvaloda'),
-    'gv' : ('Manx', 'Gaelg'),
-    'mg' : ('Malagasy', 'Malagasy fiteny'),
-    'mt' : ('Maltese', 'Malti'),
-    'nb' : ('Norwegian', 'Norsk'),  # Bokmål
-    'nn' : ('Norwegian', 'Norsk'),  # Nynorsk
-    'no' : ('Norwegian', 'Norsk'),
-    'oc' : ('Occitan', 'Occitan'),
-    'om' : ('Oromo', 'Afaan Oromoo'),
-    'pl' : ('Polish', 'Polski'),
-    'pt' : ('Portuguese', 'Português'),
-    'pt_BR' : ('PortugueseBR', 'Português, Brasil'), # NSIS uses "PortugueseBR"
-    'rm' : ('Romansh', 'Rumantsch grischun'),
-    'rn' : ('Kirundi', 'kiRundi'),
-    'ro' : ('Romanian', 'Româna'),
-    'sc' : ('Sardinian', 'Sardu'),
-    'se' : ('Northern Sami', 'Davvisámegiella'),
-    'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
-    'gd' : ('Gaelic', 'Gàidhlig'),
-    'ru' : ('Russian', 'русский язык'),
-    'sr' : ('Serbian', 'српски'),
-    'sn' : ('Shona', 'Chi Shona'),
-    'sk' : ('Slovak', 'Slovencina'),
-    'sl' : ('Slovene', 'Slovenšcina'),
-    'st' : ('Southern Sotho', 'Sesotho'),
-    'es' : ('Spanish', 'Español, castellano'), # NSIS cannot handle "Spanish Castilian"
-    'su' : ('Sundanese', 'Basa Sunda'),
-    'sw' : ('Swahili', 'Kiswahili'),
-    'ss' : ('Swati', 'SiSwati'),
-    'sv' : ('Swedish', 'Svenska'),
-    'tn' : ('Tswana', 'Setswana'),
-    'to' : ('Tonga (Tonga Islands)', 'faka Tonga'),
-    'tr' : ('Turkish', 'Türkçe'),
-    'ts' : ('Tsonga', 'Xitsonga'),
-    'tw' : ('Twi', 'Twi'),
-    'ty' : ('Tahitian', 'Reo Tahiti'),
-    'wa' : ('Walloon', 'Walon'),
-    'cy' : ('Welsh', 'Cymraeg'),
-    'wo' : ('Wolof', 'Wollof'),
-    'fy' : ('Western Frisian', 'Frysk'),
-    'xh' : ('Xhosa', 'isi Xhosa'),
-    'yo' : ('Yoruba', 'Yorùbá'),
-    'zu' : ('Zulu', 'isi Zulu'),
-    'zh_CN' : ('SimpChinese', '简体中文'),
+    'aa': ('Afar', 'Afaraf'),
+    'af': ('Afrikaans', 'Afrikaans'),
+    'ak': ('Akan', 'Akan'),
+    'sq': ('Albanian', 'Shqip'),
+    'an': ('Aragonese', 'Aragonés'),
+    'ae': ('Avestan', 'Avesta'),
+    'ay': ('Aymara', 'Aymararu'),
+    'bm': ('Bambara', 'Bamanankan'),
+    'eu': ('Basque', 'Euskara'),
+    'bi': ('Bislama', 'Bislama'),
+    'bs': ('Bosnian', 'Bosanskijezik'),
+    'br': ('Breton', 'Brezhoneg'),
+    'ca': ('Catalan', 'Català'),
+    'ch': ('Chamorro', 'Chamoru'),
+    'kw': ('Cornish', 'Kernewek'),
+    'co': ('Corsican', 'Corsu'),
+    'hr': ('Croatian', 'Hrvatski'),
+    'cs': ('Czech', 'Cesky, ceština'),
+    'da': ('Danish', 'Dansk'),
+    'nl': ('Dutch', 'Nederlands'),
+    'en': ('English', 'English'),
+    'eo': ('Esperanto', 'Esperanto'),
+    'et': ('Estonian', 'Eesti'),
+    'fo': ('Faroese', 'Føroyskt'),
+    'fj': ('Fijian', 'Vosa Vakaviti'),
+    'fi': ('Finnish', 'Suomi'),
+    'fr': ('French', 'Français'),
+    'gl': ('Galician', 'Galego'),
+    'de': ('German', 'Deutsch'),
+    'hz': ('Herero', 'Otjiherero'),
+    'ho': ('Hiri Motu', 'Hiri Motu'),
+    'hu': ('Hungarian', 'Magyar'),
+    'id': ('Indonesian', 'Bahasa Indonesia'),
+    'ga': ('Irish', 'Gaeilge'),
+    'io': ('Ido', 'Ido'),
+    'is': ('Icelandic', 'Íslenska'),
+    'it': ('Italian', 'Italiano'),
+    'jv': ('Javanese', 'BasaJawa'),
+    'rw': ('Kinyarwanda', 'Ikinyarwanda'),
+    'kg': ('Kongo', 'KiKongo'),
+    'kj': ('Kwanyama', 'Kuanyama'),
+    'la': ('Latin', 'Lingua latina'),
+    'lb': ('Luxembourgish', 'Lëtzebuergesch'),
+    'lg': ('Luganda', 'Luganda'),
+    'li': ('Limburgish', 'Limburgs'),
+    'ln': ('Lingala', 'Lingála'),
+    'lt': ('Lithuanian', 'Lietuviukalba'),
+    'lv': ('Latvian', 'Latviešuvaloda'),
+    'gv': ('Manx', 'Gaelg'),
+    'mg': ('Malagasy', 'Malagasy fiteny'),
+    'mt': ('Maltese', 'Malti'),
+    'nb': ('Norwegian', 'Norsk'),  # Bokmål
+    'nn': ('Norwegian', 'Norsk'),  # Nynorsk
+    'no': ('Norwegian', 'Norsk'),
+    'oc': ('Occitan', 'Occitan'),
+    'om': ('Oromo', 'Afaan Oromoo'),
+    'pl': ('Polish', 'Polski'),
+    'pt': ('Portuguese', 'Português'),
+    'pt_BR': ('PortugueseBR', 'Português, Brasil'),  # NSIS uses "PortugueseBR"
+    'rm': ('Romansh', 'Rumantsch grischun'),
+    'rn': ('Kirundi', 'kiRundi'),
+    'ro': ('Romanian', 'Româna'),
+    'sc': ('Sardinian', 'Sardu'),
+    'se': ('Northern Sami', 'Davvisámegiella'),
+    'sm': ('Samoan', 'Gagana fa\'a Samoa'),
+    'gd': ('Gaelic', 'Gàidhlig'),
+    'ru': ('Russian', 'русский язык'),
+    'sr': ('Serbian', 'српски'),
+    'sn': ('Shona', 'Chi Shona'),
+    'sk': ('Slovak', 'Slovencina'),
+    'sl': ('Slovene', 'Slovenšcina'),
+    'st': ('Southern Sotho', 'Sesotho'),
+    'es': ('Spanish', 'Español, castellano'),  # NSIS cannot handle "Spanish Castilian"
+    'su': ('Sundanese', 'Basa Sunda'),
+    'sw': ('Swahili', 'Kiswahili'),
+    'ss': ('Swati', 'SiSwati'),
+    'sv': ('Swedish', 'Svenska'),
+    'tn': ('Tswana', 'Setswana'),
+    'to': ('Tonga (Tonga Islands)', 'faka Tonga'),
+    'tr': ('Turkish', 'Türkçe'),
+    'ts': ('Tsonga', 'Xitsonga'),
+    'tw': ('Twi', 'Twi'),
+    'ty': ('Tahitian', 'Reo Tahiti'),
+    'wa': ('Walloon', 'Walon'),
+    'cy': ('Welsh', 'Cymraeg'),
+    'wo': ('Wolof', 'Wollof'),
+    'fy': ('Western Frisian', 'Frysk'),
+    'xh': ('Xhosa', 'isi Xhosa'),
+    'yo': ('Yoruba', 'Yorùbá'),
+    'zu': ('Zulu', 'isi Zulu'),
+    'zh_CN': ('SimpChinese', '简体中文'),
 }
 
 # Filter for retrieving readable language from PO file
 RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
+
 def process_po_folder(domain, folder, extra=''):
-    """ Process each PO file in folder
-    """
+    """ Process each PO file in folder """
     for fname in glob.glob(os.path.join(folder, '*.po')):
         podir, basename = os.path.split(fname)
         name, ext = os.path.splitext(basename)
@@ -154,13 +156,14 @@ def process_po_folder(domain, folder, extra=''):
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
 
+
 def remove_mo_files():
-    """ Remove MO files in locale
-    """
+    """ Remove MO files in locale """
     for root, dirs, files in os.walk(MO_DIR, topdown=False):
         for f in files:
             if not f.startswith(DOMAIN):
                 os.remove(os.path.join(root, f))
+
 
 def translate_tmpl(prefix, lng):
     """ Translate template 'prefix' into language 'lng' """
@@ -176,8 +179,7 @@ def translate_tmpl(prefix, lng):
 
 
 def make_templates():
-    """ Create email templates
-    """
+    """ Create email templates """
     if not os.path.exists('email'):
         os.makedirs('email')
     for path in glob.glob(os.path.join(MO_DIR, '*')):
@@ -198,8 +200,7 @@ def make_templates():
 
 
 def patch_nsis():
-    """ Patch translation into the NSIS script
-    """
+    """ Patch translation into the NSIS script """
     RE_NSIS = re.compile(r'^(\s*LangString\s+\w+\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     languages = [os.path.split(path)[1] for path in glob.glob(os.path.join(MO_DIR, '*'))]
@@ -240,7 +241,7 @@ def patch_nsis():
             new.append(line)
     src.close()
 
-    dst = open(NSIS+'.tmp', 'w')
+    dst = open(NSIS + '.tmp', 'w')
     for line in new:
         dst.write(line)
     dst.close()

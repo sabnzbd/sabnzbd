@@ -12,4 +12,3 @@ echo "The fifth parameter (category)    =" "$5"
 echo "The sixth parameter (group)       =" "$6"
 echo "The seventh parameter (status)    =" "$7"
 echo "The eight parameter (failure_url) =" "$8"
-

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ util.apireg - Registration of API connection info
 """
 
 import _winreg
+
 
 def reg_info(user):
     """ Return the reg key for API """
@@ -119,7 +120,7 @@ def get_install_lng():
 
 
 if __name__ == '__main__':
-    print 'URL = %s' %get_connection_info()
+    print 'URL = %s' % get_connection_info()
     print 'Language = %s' % get_install_lng()
-    #del_connection_info()
-    #set_connection_info('localhost', '8080', 'blabla', user=False)
+    # del_connection_info()
+    # set_connection_info('localhost', '8080', 'blabla', user=False)
