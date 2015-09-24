@@ -1,0 +1,170 @@
+body,
+.modal-backdrop {
+    background-color: black;
+    color: #EBEBEB
+}
+
+nav {
+    background-color: #444444 !important;
+    border: 0 !important;
+    border-bottom: 1px solid black !important;
+}
+
+nav .btn {
+    background-color: #E4E4E4;
+    border-color: #5D5D5D !important;
+}
+
+@media (max-width: 767px) {
+    nav {
+        background-color: black !important;
+    }
+}
+
+a, a:active, a:hover, a:focus,
+.hoverbutton.glyphicon-play,
+.dropdown-menu>li>a,
+legend, 
+#modal_options legend label, 
+#modal_options legend a,
+#modal_item_files .item-files-table .progress small {
+    color: #EBEBEB;
+}
+
+.dropdown-menu>li>a:hover, 
+.dropdown-menu>li>a:focus,
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover, 
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:focus {
+    background-color: #555555;
+    color: white !important;
+}
+
+.hoverbutton {
+    opacity: 0.7;
+}
+
+.container,
+.modal-body {
+    background-color: #727272;
+}
+
+.dropdown-menu,
+.navbar-collapse.in .dropdown-menu {
+    background-color: #666;
+}
+
+.navbar-collapse.in .dropdown-menu {
+    border: none;
+}
+
+.max-speed-input-clear,
+.max-speed-input-clear:hover {
+    color: black;
+}
+
+.progress {
+    background-color: #B0B0B0;
+}
+
+.processing-download > div {
+    background-color: #EBEBEB;
+}
+
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table>tbody>tr:nth-child(odd)>td,
+.multioperations-selector,
+.pagination li.active span,
+.pagination li span:hover,
+.dropdown-menu .divider {
+    background-color: #444444;
+    color: #EBEBEB;
+}
+
+.table-striped>tbody>tr:nth-child(even)>td,
+.table>tbody>tr:nth-child(even)>td,
+.table th,
+.pagination li span,
+.pagination>.disabled>span,
+.pagination>.disabled>span:hover,
+#history-table-search input,
+input,
+input.form-control,
+.input-group-addon,
+select.form-control,
+.main-content .btn-default,
+.modal-body .btn-default {
+    background-color: #555555;
+    color: #EBEBEB;
+}
+
+.table,
+tr td,
+tbody>tr>td:last-child,
+tbody>tr>td:first-child,
+tbody>tr:last-child td,
+.table-messages .table-messages-remove,
+.multioperations-selector,
+.pagination li span,
+.pagination li a,
+#history-table-search input,
+input,
+input.form-control,
+.input-group-addon,
+select.form-control,
+.main-content .btn-default,
+.modal-body .btn-default {
+    border-color: #252525 !important;
+}
+
+.ui-sortable-helper td {
+    background-color: #555555 !important;
+}
+
+tbody .caret {
+    border-top-color: #EBEBEB !important;
+}
+
+.info-container,
+#modal_options .options-status-box small {
+    color: #D6D6D6;
+}
+
+td.name .name-ratings span,
+.navbar-nav .open .dropdown-menu>li>a,
+.modal-backdrop.in,
+pre {
+    color: #EBEBEB !important;
+    opacity: 1 !important;
+}
+
+legend, hr {
+    border-color: #EBEBEB;
+}
+
+.ui-slider .ui-slider-handle {
+    background-color: #969696;
+    border-color: #969696
+}
+
+#modal_help table td,
+#modal_help table {
+    background-color: transparent;
+}
+
+#modal_item_files .item-files-table td {
+    border-bottom: none !important;
+}
+
+/* Placeholders - Will not work if grouped! */
+::-webkit-input-placeholder {
+   color: #EBEBEB !important;
+}
+
+::-moz-placeholder {  
+   color: #EBEBEB !important;  
+   opacity: 1 !important;
+}
+
+:-ms-input-placeholder {  
+   color: #EBEBEB !important;  
+}
