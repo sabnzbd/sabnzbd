@@ -247,7 +247,7 @@ class NzbQueue(TryList):
             del nzo
             return new_nzo
         except:
-            logging.error('Failed to restart NZB after pre-check (%s)', nzo.nzo_id)
+            logging.error(T('Failed to restart NZB after pre-check (%s)'), nzo.nzo_id)
             logging.info("Traceback: ", exc_info = True)
             return nzo
 

@@ -237,7 +237,7 @@ class URLGrabber(Thread):
                         logging.info('Unknown filetype when fetching NZB, retry after 30s %s', url)
                         self.add(url, future_nzo, 30)
             except:
-                logging.error('URLGRABBER CRASHED', exc_info=True)
+                logging.error(T('URLGRABBER CRASHED'), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
 

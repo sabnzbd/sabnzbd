@@ -423,7 +423,7 @@ def halt():
         try:
             save_state(flag=True)
         except:
-            logging.error('Fatal error at saving state', exc_info=True)
+            logging.error(T('Fatal error at saving state'), exc_info=True)
 
 
         # The Scheduler cannot be stopped when the stop was scheduled.
@@ -573,7 +573,7 @@ def save_compressed(folder, filename, data):
         f.flush()
         f.close()
     except:
-        logging.error("Saving %s failed", os.path.join(folder, filename))
+        logging.error(T('Saving %s failed'), os.path.join(folder, filename))
         logging.info("Traceback: ", exc_info = True)
 
     os.chdir(here)

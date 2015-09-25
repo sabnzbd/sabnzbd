@@ -437,7 +437,7 @@ class SeriesSorter(object):
                 logging.debug("Rename: %s to %s", filepath, newpath)
                 renamer(filepath, newpath)
             except:
-                logging.error("Failed to rename: %s to %s", clip_path(current_path), clip_path(newpath))
+                logging.error(T('Failed to rename: %s to %s'), clip_path(current_path), clip_path(newpath))
                 logging.info("Traceback: ", exc_info = True)
             rename_similar(current_path, self.ext, self.filename_set, ())
         else:

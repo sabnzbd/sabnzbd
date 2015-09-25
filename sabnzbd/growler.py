@@ -407,7 +407,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
             urllib2.urlopen(url)
             return ''
         except:
-            logging.warning('Failed to send Prowl message')
+            logging.warning(T('Failed to send Prowl message'))
             logging.info("Traceback: ", exc_info = True)
             return T('Failed to send Prowl message')
     return ''
@@ -456,10 +456,10 @@ def send_pushover(title, msg, gtype, force=False, test=None):
                 }), { "Content-type": "application/x-www-form-urlencoded" })
             res = conn.getresponse()
             if res.status != 200:
-                logging.error("Bad response from Pushover (%s): %s", res.status, res.read())
+                logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
 
         except:
-            logging.warning('Failed to send pushover message')
+            logging.warning(T('Failed to send pushover message'))
             logging.info("Traceback: ", exc_info = True)
             return T('Failed to send pushover message')
     return ''
@@ -507,12 +507,12 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
                          'Content-type': 'application/json'})
             res = conn.getresponse()
             if res.status != 200:
-                logging.error('Bad response from Pushbullet (%s): %s', res.status, res.read())
+                logging.error(T('Bad response from Pushbullet (%s): %s'), res.status, res.read())
             else:
                 logging.info('Successfully sent to Pushbullet')
 
         except:
-            logging.warning('Failed to send pushbullet message')
+            logging.warning(T('Failed to send pushbullet message'))
             logging.info('Traceback: ', exc_info = True)
             return T('Failed to send pushbullet message')
     return ''

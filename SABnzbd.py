@@ -694,7 +694,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # TODO: Should have a translated message, but that's not available yet
-        logging.error('HTTP and HTTPS ports cannot be the same')
+        logging.error(T('HTTP and HTTPS ports cannot be the same'))
 
     return cherryhost, cherryport, browserhost, https_port
 
@@ -1315,7 +1315,7 @@ def main():
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
 
     if not init_ok:
-        logging.error('Initializing %s-%s failed, aborting',
+        logging.error(T('Initializing %s-%s failed, aborting'),
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         exit_sab(2)
 
@@ -1519,13 +1519,13 @@ def main():
                 sabnzbd.halt()
                 exit_sab(2)
         else:
-            logging.error("Failed to start web-interface: ", exc_info=True)
+            logging.error(T('Failed to start web-interface: '), exc_info=True)
             Bail_Out(browserhost, cherryport, str(error))
     except socket.error, error:
-        logging.error("Failed to start web-interface: ", exc_info=True)
+        logging.error(T('Failed to start web-interface: '), exc_info=True)
         Bail_Out(browserhost, cherryport)
     except:
-        logging.error("Failed to start web-interface: ", exc_info=True)
+        logging.error(T('Failed to start web-interface: '), exc_info=True)
         Bail_Out(browserhost, cherryport)
 
     # Wait for server to become ready
@@ -1566,7 +1566,7 @@ def main():
                 logging.info('Connected to the SABHelper service')
                 mail.send('api %s' % api_url)
             else:
-                logging.error('Cannot reach the SABHelper service')
+                logging.error(T('Cannot reach the SABHelper service'))
                 mail = None
         else:
             # Write URL directly to registry

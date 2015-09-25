@@ -750,7 +750,7 @@ class Downloader(Thread):
             logging.info('Looks like server closed connection: %s', err)
             self.__reset_nw(nw, "server broke off connection", quit=False)
         except:
-            logging.error('Suspect error in downloader')
+            logging.error(T('Suspect error in downloader'))
             logging.info("Traceback: ", exc_info = True)
             self.__reset_nw(nw, "server broke off connection", quit=False)
 

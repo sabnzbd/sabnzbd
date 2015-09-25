@@ -73,11 +73,11 @@ class NzbRatingV2(NzbRating):
         self.avg_spam_confirm = False
         self.avg_encrypted_cnt = 0
         self.avg_encrypted_confirm = False
-        
+
     def to_v2(self, rating):
         self.__dict__.update(rating.__dict__)
         return self
-    
+
 class Rating(Thread):
     VERSION = 2
 
@@ -119,7 +119,7 @@ class Rating(Thread):
             self.nzo_indexer_map = {}
         Thread.__init__(self)
         if not _HAVE_SSL:
-            logging.warning('Ratings server requires secure connection')
+            logging.warning(T('Ratings server requires secure connection'))
             self.stop()
 
     def stop(self):
@@ -164,7 +164,7 @@ class Rating(Thread):
                 if fields['votedown']: rating.avg_vote_down = int(float(fields['votedown']))
                 if fields['spam']: rating.avg_spam_cnt = int(float(fields['spam']))
                 if fields['confirmed-spam']: rating.avg_spam_confirm = (fields['confirmed-spam'].lower() == 'yes')
-                if fields['passworded']: rating.avg_encrypted_cnt = int(float(fields['passworded']))                
+                if fields['passworded']: rating.avg_encrypted_cnt = int(float(fields['passworded']))
                 if fields['confirmed-passworded']: rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
                 rating.host = host[0] if host and isinstance(host, list) else host
                 self.ratings[indexer_id] = rating
@@ -176,7 +176,7 @@ class Rating(Thread):
     def update_user_rating(self, nzo_id, video, audio, vote, flag, flag_detail = None):
         logging.debug('Updating user rating (%s: %s, %s, %s, %s)', nzo_id, video, audio, vote, flag)
         if nzo_id not in self.nzo_indexer_map:
-            logging.warning('indexer id (%s) not found for ratings file', nzo_id)
+            logging.warning(T('Indexer id (%s) not found for ratings file'), nzo_id)
             return
         indexer_id = self.nzo_indexer_map[nzo_id]
         rating = self.ratings[indexer_id]
@@ -203,7 +203,7 @@ class Rating(Thread):
                 # Update if already a vote
                 if rating.user_vote and rating.user_vote == Rating.VOTE_UP:
                     rating.avg_vote_up -= 1
-            
+
             rating.user_vote = int(vote)
         self.queue.put(indexer_id)
 
@@ -267,7 +267,7 @@ class Rating(Thread):
             requests.append(self._flag_request(rating.user_flag.get('val'), rating.user_flag.get('detail'), 0))
         if rating.changed & Rating.CHANGED_AUTO_FLAG:
             requests.append(self._flag_request(rating.auto_flag.get('val'), rating.auto_flag.get('detail'), 1))
-        
+
         try:
             conn = httplib.HTTPSConnection(rating_host)
             for request in filter(lambda r: r is not None, requests):

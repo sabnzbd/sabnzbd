@@ -201,7 +201,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
     """
     if depth > 5:
-        logging.warning('Unpack nesting too deep [%s]', nzo.final_name)
+        logging.warning(T('Unpack nesting too deep [%s]'), nzo.final_name)
         return False, []
     depth += 1
 
@@ -1073,7 +1073,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 nzo.remove_parset(parfile_nzf.setname)
             else:
                 if qc_result:
-                    logging.warning('Par verify failed on %s, while QuickCheck succeeded!', parfile)
+                    logging.warning(T('Par verify failed on %s, while QuickCheck succeeded!'), parfile)
                 else:
                     logging.info('Par verify failed on %s!', parfile)
 

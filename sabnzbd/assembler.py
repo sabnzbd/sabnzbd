@@ -102,7 +102,7 @@ class Assembler(Thread):
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
-                        logging.error('Fatal error in Assembler', exc_info=True)
+                        logging.error(T('Fatal error in Assembler'), exc_info=True)
                         break
 
                     nzf.remove_admin()
