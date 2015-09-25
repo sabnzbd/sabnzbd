@@ -212,7 +212,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             # Re-use existing nzo_id, when a "future" job gets it payload
             sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
             nzo.nzo_id = nzo_id
-        nzo_ids.append(add_nzo(nzo))
+        nzo_ids.append(add_nzo(nzo, quiet=reuse))
         nzo.update_rating()
     try:
         if not keep: os.remove(path)

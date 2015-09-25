@@ -1025,8 +1025,8 @@ def sort_queue_function(nzo_list, method, reverse):
 # Synchronized wrappers
 
 @synchronized_CV
-def add_nzo(nzo):
-    return NzbQueue.do.add(nzo)
+def add_nzo(nzo, quiet=False):
+    return NzbQueue.do.add(nzo, quiet=quiet)
 
 @synchronized_CV
 def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
