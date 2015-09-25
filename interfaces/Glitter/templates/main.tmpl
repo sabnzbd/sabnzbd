@@ -30,6 +30,9 @@
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
+        <!--#if $color_scheme != 'Default'#-->
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
+        <!--#end if#-->
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
