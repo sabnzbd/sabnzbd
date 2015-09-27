@@ -38,14 +38,12 @@ import sabnzbd.cfg as cfg
 
 
 def name_to_cat(fname, cat=None):
-    """
-        Retrieve category from file name, but only if "cat" is None.
-    """
+    """ Retrieve category from file name, but only if "cat" is None. """
     if cat is None and fname.startswith('{{'):
         n = fname.find('}}')
         if n > 2:
             cat = fname[2:n].strip()
-            fname = fname[n+2:].strip()
+            fname = fname[n + 2:].strip()
             logging.debug('Job %s has category %s', fname, cat)
 
     return fname, cat
@@ -53,10 +51,14 @@ def name_to_cat(fname, cat=None):
 
 def CompareStat(tup1, tup2):
     """ Test equality of two stat-tuples, content-related parts only """
-    if tup1.st_ino   != tup2.st_ino:   return False
-    if tup1.st_size  != tup2.st_size:  return False
-    if tup1.st_mtime != tup2.st_mtime: return False
-    if tup1.st_ctime != tup2.st_ctime: return False
+    if tup1.st_ino != tup2.st_ino:
+        return False
+    if tup1.st_size != tup2.st_size:
+        return False
+    if tup1.st_mtime != tup2.st_mtime:
+        return False
+    if tup1.st_ctime != tup2.st_ctime:
+        return False
     return True
 
 
@@ -132,10 +134,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                         nzo.update_rating()
         zf.close()
         try:
-            if not keep: os.remove(path)
+            if not keep:
+                os.remove(path)
         except:
             logging.error(T('Error removing %s'), misc.clip_path(path))
-            logging.info("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info=True)
             status = 1
     else:
         zf.close()
@@ -147,7 +150,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
                       password=None, nzo_id=None):
-    """ Analyse file and create a job from it
+    """ Analyze file and create a job from it
         Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
         returns (status, nzo_ids)
             status: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -178,9 +181,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         f.close()
     except:
         logging.warning(T('Cannot read %s'), misc.clip_path(path))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
         return -2, nzo_ids
-
 
     if name:
         name, cat = name_to_cat(name, catdir)
@@ -215,10 +217,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         nzo_ids.append(add_nzo(nzo, quiet=reuse))
         nzo.update_rating()
     try:
-        if not keep: os.remove(path)
+        if not keep:
+            os.remove(path)
     except:
         logging.error(T('Error removing %s'), misc.clip_path(path))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
         return 1, nzo_ids
 
     return 0, nzo_ids
@@ -238,15 +241,13 @@ def CleanList(list, folder, files):
                 del list[path]
 
 
-#------------------------------------------------------------------------------
 class DirScanner(threading.Thread):
+    """ Thread that periodically scans a given directory and picks up any
+        valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
+        Candidates which turned out wrong, will be remembered and skipped in
+        subsequent scans, unless changed.
     """
-    Thread that periodically scans a given directoty and picks up any
-    valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
-    Candidates which turned out wrong, will be remembered and skipped in
-    subsequent scans, unless changed.
-    """
-    do = None # Access to instance of DirScanner
+    do = None  # Access to instance of DirScanner
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -259,11 +260,11 @@ class DirScanner(threading.Thread):
                 self.suspected = {}
         except:
             self.ignored = {}   # Will hold all unusable files and the
-                                # successfully processed ones that cannot be deleted
-            self.suspected = {} # Will hold name/attributes of suspected candidates
+            # successfully processed ones that cannot be deleted
+            self.suspected = {}  # Will hold name/attributes of suspected candidates
 
         self.shutdown = False
-        self.error_reported = False # Prevents mulitple reporting of missing watched folder
+        self.error_reported = False  # Prevents mulitple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
         self.busy = False

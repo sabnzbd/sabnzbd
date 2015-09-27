@@ -41,17 +41,22 @@ RATING_URL = "/releaseRatings/releaseRatings.php"
 RATING_LOCK = RLock()
 
 _g_warnings = 0
+
+
 def _warn(msg):
     global _g_warnings
     _g_warnings += 1
     if _g_warnings < 3:
         logging.warning(msg)
 
+
 def _reset_warn():
     global _g_warnings
     _g_warnings = 0
 
+
 class NzbRating(object):
+
     def __init__(self):
         self.avg_video = 0
         self.avg_video_cnt = 0
@@ -66,7 +71,9 @@ class NzbRating(object):
         self.auto_flag = {}
         self.changed = 0
 
+
 class NzbRatingV2(NzbRating):
+
     def __init__(self):
         super(NzbRatingV2, self).__init__()
         self.avg_spam_cnt = 0
@@ -77,6 +84,7 @@ class NzbRatingV2(NzbRating):
     def to_v2(self, rating):
         self.__dict__.update(rating.__dict__)
         return self
+
 
 class Rating(Thread):
     VERSION = 2
@@ -124,18 +132,20 @@ class Rating(Thread):
 
     def stop(self):
         self.shutdown = True
-        self.queue.put(None) # Unblock queue
+        self.queue.put(None)  # Unblock queue
 
     def run(self):
         self.shutdown = False
         while not self.shutdown:
             time.sleep(1)
-            if not cfg.rating_enable(): continue
+            if not cfg.rating_enable():
+                continue
             indexer_id = self.queue.get()
             try:
                 if indexer_id and not self._send_rating(indexer_id):
                     for i in range(0, 60):
-                        if self.shutdown: break
+                        if self.shutdown:
+                            break
                         time.sleep(1)
                     self.queue.put(indexer_id)
             except:
@@ -160,12 +170,18 @@ class Rating(Thread):
                 if fields['audio'] and fields['audiocnt']:
                     rating.avg_audio = int(float(fields['audio']))
                     rating.avg_audio_cnt = int(float(fields['audiocnt']))
-                if fields['voteup']: rating.avg_vote_up = int(float(fields['voteup']))
-                if fields['votedown']: rating.avg_vote_down = int(float(fields['votedown']))
-                if fields['spam']: rating.avg_spam_cnt = int(float(fields['spam']))
-                if fields['confirmed-spam']: rating.avg_spam_confirm = (fields['confirmed-spam'].lower() == 'yes')
-                if fields['passworded']: rating.avg_encrypted_cnt = int(float(fields['passworded']))
-                if fields['confirmed-passworded']: rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
+                if fields['voteup']:
+                    rating.avg_vote_up = int(float(fields['voteup']))
+                if fields['votedown']:
+                    rating.avg_vote_down = int(float(fields['votedown']))
+                if fields['spam']:
+                    rating.avg_spam_cnt = int(float(fields['spam']))
+                if fields['confirmed-spam']:
+                    rating.avg_spam_confirm = (fields['confirmed-spam'].lower() == 'yes')
+                if fields['passworded']:
+                    rating.avg_encrypted_cnt = int(float(fields['passworded']))
+                if fields['confirmed-passworded']:
+                    rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
                 rating.host = host[0] if host and isinstance(host, list) else host
                 self.ratings[indexer_id] = rating
                 self.nzo_indexer_map[nzo_id] = indexer_id
@@ -173,7 +189,7 @@ class Rating(Thread):
                 pass
 
     @synchronized(RATING_LOCK)
-    def update_user_rating(self, nzo_id, video, audio, vote, flag, flag_detail = None):
+    def update_user_rating(self, nzo_id, video, audio, vote, flag, flag_detail=None):
         logging.debug('Updating user rating (%s: %s, %s, %s, %s)', nzo_id, video, audio, vote, flag)
         if nzo_id not in self.nzo_indexer_map:
             logging.warning(T('Indexer id (%s) not found for ratings file'), nzo_id)
@@ -189,7 +205,7 @@ class Rating(Thread):
             rating.avg_audio = int((rating.avg_audio_cnt * rating.avg_audio + rating.user_audio) / (rating.avg_audio_cnt + 1))
             rating.changed = rating.changed | Rating.CHANGED_USER_AUDIO
         if flag:
-            rating.user_flag = { 'val': int(flag), 'detail': flag_detail }
+            rating.user_flag = {'val': int(flag), 'detail': flag_detail}
             rating.changed = rating.changed | Rating.CHANGED_USER_FLAG
         if vote:
             rating.changed = rating.changed | Rating.CHANGED_USER_VOTE
@@ -208,13 +224,13 @@ class Rating(Thread):
         self.queue.put(indexer_id)
 
     @synchronized(RATING_LOCK)
-    def update_auto_flag(self, nzo_id, flag, flag_detail = None):
+    def update_auto_flag(self, nzo_id, flag, flag_detail=None):
         if not flag or not cfg.rating_enable() or not cfg.rating_feedback() or (nzo_id not in self.nzo_indexer_map):
             return
         logging.debug('Updating auto flag (%s: %s)', nzo_id, flag)
         indexer_id = self.nzo_indexer_map[nzo_id]
         rating = self.ratings[indexer_id]
-        rating.auto_flag = { 'val': int(flag), 'detail': flag_detail }
+        rating.auto_flag = {'val': int(flag), 'detail': flag_detail}
         rating.changed = rating.changed | Rating.CHANGED_AUTO_FLAG
         self.queue.put(indexer_id)
 
@@ -250,8 +266,8 @@ class Rating(Thread):
             return True
 
         requests = []
-        _headers = {'User-agent' : 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
-        rating = self._get_rating_by_indexer(indexer_id) # Requesting info here ensures always have latest information even on retry
+        _headers = {'User-agent': 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
+        rating = self._get_rating_by_indexer(indexer_id)  # Requesting info here ensures always have latest information even on retry
         if hasattr(rating, 'host') and rating.host:
             rating_host = rating.host
         if not rating_host:
@@ -272,8 +288,8 @@ class Rating(Thread):
             conn = httplib.HTTPSConnection(rating_host)
             for request in filter(lambda r: r is not None, requests):
                 request['apikey'] = api_key
-                request['i'] =  indexer_id
-                conn.request('POST', RATING_URL, urllib.urlencode(request), headers = _headers)
+                request['i'] = indexer_id
+                conn.request('POST', RATING_URL, urllib.urlencode(request), headers=_headers)
 
                 response = conn.getresponse()
                 response.read()

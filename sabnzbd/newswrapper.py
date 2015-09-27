@@ -43,8 +43,10 @@ except ImportError:
 
     # Dummy class so this exception is ignored by clients without ssl installed
     class WantReadError(Exception):
+
         def __init__(self, value):
             self.parameter = value
+
         def __str__(self):
             return repr(self.parameter)
 
@@ -57,6 +59,7 @@ import select
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
+
 def force_bytes(p):
     """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
     if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
@@ -64,14 +67,13 @@ def force_bytes(p):
     else:
         return p
 
-#------------------------------------------------------------------------------
 # getaddrinfo() can be very slow. In some situations this can lead
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
 
+
 def _retrieve_info(server):
-    """ Async attempt to run getaddrinfo() for specified server
-    """
+    """ Async attempt to run getaddrinfo() for specified server """
     info = GetServerParms(server.host, server.port)
 
     if info is None:
@@ -83,16 +85,14 @@ def _retrieve_info(server):
 
 
 def request_server_info(server):
-    """ Launch async request to resolve server address
-    """
+    """ Launch async request to resolve server address """
     if not server.request:
         server.request = True
         Thread(target=_retrieve_info, args=(server,)).start()
 
 
 def GetServerParms(host, port):
-    """ Return processed getaddrinfo() for server
-    """
+    """ Return processed getaddrinfo() for server """
     try:
         int(port)
     except:
@@ -147,7 +147,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 # Are we safe to hardcode the ETIMEDOUT error?
                 (_errno, strerror) = (errno.ETIMEDOUT, str(e))
                 e = (_errno, strerror)
-            #expected, do nothing
+            # expected, do nothing
             if _errno == errno.EINPROGRESS:
                 pass
         finally:
@@ -158,15 +158,17 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
 
 try:
     _SSL_TYPES = {
-        't1' : _ssl.TLSv1_METHOD,
-        'v2' : _ssl.SSLv2_METHOD,
-        'v3' : _ssl.SSLv3_METHOD,
+        't1': _ssl.TLSv1_METHOD,
+        'v2': _ssl.SSLv2_METHOD,
+        'v3': _ssl.SSLv3_METHOD,
         'v23': _ssl.SSLv23_METHOD
     }
 except:
     _SSL_TYPES = {}
 
+
 class NNTP(object):
+
     def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
         assert isinstance(nw, NewsWrapper)
         self.host = host
@@ -220,7 +222,7 @@ class NNTP(object):
                     # Are we safe to hardcode the ETIMEDOUT error?
                     (_errno, strerror) = (errno.ETIMEDOUT, str(e))
                     e = (_errno, strerror)
-                #expected, do nothing
+                # expected, do nothing
                 if _errno == errno.EINPROGRESS:
                     pass
             finally:
@@ -241,7 +243,9 @@ class NNTP(object):
             logging.info(msg)
             self.nw.server.warning = msg
 
+
 class NewsWrapper(object):
+
     def __init__(self, server, thrdnum, block=False):
         self.server = server
         self.thrdnum = thrdnum
@@ -345,8 +349,7 @@ class NewsWrapper(object):
         self.nntp.sock.sendall(command)
 
     def recv_chunk(self, block=False):
-        """ Receive data, return #bytes, done, skip
-        """
+        """ Receive data, return #bytes, done, skip """
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
@@ -357,7 +360,7 @@ class NewsWrapper(object):
                 # Either ignore the connection until it responds
                 # Or wait in a loop until it responds
                 if block:
-                    #time.sleep(0.0001)
+                    # time.sleep(0.0001)
                     continue
                 else:
                     return (0, False, True)
@@ -419,6 +422,7 @@ class NewsWrapper(object):
 
 
 class SSLConnection(object):
+
     def __init__(self, *args):
         self._ssl_conn = apply(_ssl.Connection, args)
         self._lock = _RLock()
@@ -437,4 +441,3 @@ class SSLConnection(object):
                 return apply(self._ssl_conn.%s, args)
             finally:
                 self._lock.release()\n""" % (f, f)
-

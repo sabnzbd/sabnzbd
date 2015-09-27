@@ -18,8 +18,6 @@
 """
 sabnzbd.scheduler - Event Scheduler
 """
-#------------------------------------------------------------------------------
-
 
 import random
 import logging
@@ -42,23 +40,27 @@ RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
 PP_PAUSE_EVENT = False
 
+
 def schedule_guard():
     """ Set flag for scheduler restart """
     global SCHEDULE_GUARD_FLAG
     SCHEDULE_GUARD_FLAG = True
 
+
 def pp_pause():
     PostProcessor.do.paused = True
+
 
 def pp_resume():
     PostProcessor.do.paused = False
 
+
 def pp_pause_event():
     return PP_PAUSE_EVENT
 
+
 def init():
-    """ Create the scheduler and set all required events
-    """
+    """ Create the scheduler and set all required events """
     global __SCHED
 
     reset_guardian()
@@ -160,10 +162,10 @@ def init():
     # Set RSS check interval
     if not rss_planned:
         interval = cfg.rss_rate()
-        delay = random.randint(0, interval-1)
+        delay = random.randint(0, interval - 1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
         sabnzbd.rss.next_run(time.time() + delay * 60)
-        __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
+        __SCHED.add_interval_task(rss.run_method, "RSS", delay * 60, interval * 60,
                                       kronos.method.sequential, None, None)
         __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
 
@@ -177,7 +179,6 @@ def init():
         __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, 'VerCheck', d, None, (h, m),
                                  kronos.method.sequential, [], None)
 
-
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
@@ -188,14 +189,12 @@ def init():
     __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
                              kronos.method.sequential, [], None)
 
-
     # Subscribe to special schedule changes
     cfg.rss_rate.callback(schedule_guard)
 
 
 def start():
-    """ Start the scheduler
-    """
+    """ Start the scheduler """
     global __SCHED
     if __SCHED:
         logging.debug('Starting scheduler')
@@ -203,8 +202,7 @@ def start():
 
 
 def restart(force=False):
-    """ Stop and start scheduler
-    """
+    """ Stop and start scheduler """
     global __PARMS, SCHEDULE_GUARD_FLAG
 
     if force:
@@ -221,8 +219,7 @@ def restart(force=False):
 
 
 def stop():
-    """ Stop the scheduler, destroy instance
-    """
+    """ Stop the scheduler, destroy instance """
     global __SCHED
     if __SCHED:
         logging.debug('Stopping scheduler')
@@ -235,8 +232,7 @@ def stop():
 
 
 def abort():
-    """ Emergency stop, just set the running attribute false
-    """
+    """ Emergency stop, just set the running attribute false """
     global __SCHED
     if __SCHED:
         logging.debug('Terminating scheduler')
@@ -266,12 +262,12 @@ def sort_schedules(all_events, now=None):
             try:
                 m, h, dd, action = schedule.split(None, 3)
             except:
-                continue # Bad schedule, ignore
+                continue  # Bad schedule, ignore
         action = action.strip()
         if dd == '*':
             dd = '1234567'
         if not dd.isdigit():
-            continue # Bad schedule, ignore
+            continue  # Bad schedule, ignore
         for d in dd:
             then = (int(d) - 1) * day_min + int(h) * 60 + int(m)
             dif = then - now
@@ -388,14 +384,12 @@ def analyse(was_paused=False, priority=None):
     config.save_config()
 
 
-#------------------------------------------------------------------------------
 # Support for single shot pause (=delayed resume)
-
 __PAUSE_END = None     # Moment when pause will end
 
+
 def scheduled_resume():
-    """ Scheduled resume, only when no oneshot resume is active
-    """
+    """ Scheduled resume, only when no oneshot resume is active """
     global __PAUSE_END
     if __PAUSE_END is None:
         sabnzbd.unpause_all()
@@ -406,7 +400,7 @@ def __oneshot_resume(when):
         Only resumes if call comes at the planned time
     """
     global __PAUSE_END
-    if __PAUSE_END != None and (when > __PAUSE_END-5) and (when < __PAUSE_END+55):
+    if __PAUSE_END != None and (when > __PAUSE_END - 5) and (when < __PAUSE_END + 55):
         __PAUSE_END = None
         logging.debug('Resume after pause-interval')
         sabnzbd.unpause_all()
@@ -415,13 +409,12 @@ def __oneshot_resume(when):
 
 
 def plan_resume(interval):
-    """ Set a scheduled resume after the interval
-    """
+    """ Set a scheduled resume after the interval """
     global __SCHED, __PAUSE_END
     if interval > 0:
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug('Schedule resume at %s', __PAUSE_END)
-        __SCHED.add_single_task(__oneshot_resume, '', interval*60, kronos.method.sequential, [__PAUSE_END], None)
+        __SCHED.add_single_task(__oneshot_resume, '', interval * 60, kronos.method.sequential, [__PAUSE_END], None)
         sabnzbd.downloader.Downloader.do.pause()
     else:
         __PAUSE_END = None
@@ -441,13 +434,12 @@ def pause_int():
         else:
             sign = ''
         min = int(val / 60L)
-        sec = int(val - min*60)
+        sec = int(val - min * 60)
         return "%s%d:%02d" % (sign, min, sec)
 
 
 def pause_check():
-    """ Unpause when time left is negative, compensate for missed schedule
-    """
+    """ Unpause when time left is negative, compensate for missed schedule """
     global __PAUSE_END
     if __PAUSE_END is not None and (__PAUSE_END - time.time()) < 0:
         __PAUSE_END = None
@@ -455,36 +447,35 @@ def pause_check():
         sabnzbd.unpause_all()
 
 
-#------------------------------------------------------------------------------
 def plan_server(action, parms, interval):
-    """ Plan to re-activate server after "interval" minutes
-    """
-    __SCHED.add_single_task(action, '', interval*60, kronos.method.sequential, parms, None)
+    """ Plan to re-activate server after 'interval' minutes """
+    __SCHED.add_single_task(action, '', interval * 60, kronos.method.sequential, parms, None)
 
-#------------------------------------------------------------------------------
+
 def force_rss():
-    """ Add a one-time RSS scan, one second from now
-    """
+    """ Add a one-time RSS scan, one second from now """
     __SCHED.add_single_task(rss.run_method, 'RSS', 1, kronos.method.sequential, None, None)
 
 
-#------------------------------------------------------------------------------
 # Scheduler Guarding system
 # Each check sets the guardian flag False
-# Each succesful scheduled check sets the flag
-# If 4 consequetive checks fail, the sheduler is assumed to have crashed
+# Each successful scheduled check sets the flag
+# If 4 consecutive checks fail, the scheduler is assumed to have crashed
 
 __SCHED_GUARDIAN = False
 __SCHED_GUARDIAN_CNT = 0
+
 
 def reset_guardian():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
     __SCHED_GUARDIAN = False
     __SCHED_GUARDIAN_CNT = 0
 
+
 def sched_guardian():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
     __SCHED_GUARDIAN = True
+
 
 def sched_check():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
