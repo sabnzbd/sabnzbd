@@ -41,7 +41,6 @@ import sabnzbd.growler as growler
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
 
-#------------------------------------------------------------------------------
 
 class URLGrabber(Thread):
     do = None  # Link to instance of the thread
@@ -80,7 +79,7 @@ class URLGrabber(Thread):
                 # stop signal, go test self.shutdown
                 continue
             if future_nzo and future_nzo.wait and future_nzo.wait > time.time():
-                # Requeue when too early and still active
+                # Re-queue when too early and still active
 
                 self.add(url, future_nzo)
                 continue
@@ -209,8 +208,8 @@ class URLGrabber(Thread):
 
                 # Check if nzb file
                 if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
-                    res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority, \
-                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False, \
+                    res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
+                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
                     if res:
                         if res == -2:
@@ -227,7 +226,7 @@ class URLGrabber(Thread):
                 # Check if a supported archive
                 else:
                     if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority,
-                                                     nzbname=nzbname, url=future_nzo.url, keep=False, \
+                                                     nzbname=nzbname, url=future_nzo.url, keep=False,
                                                      nzo_id=future_nzo.nzo_id)[0]:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
@@ -241,17 +240,8 @@ class URLGrabber(Thread):
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
 
-
-
-RUS_FATAL = ('DENIED_MISSING_CREDENTIALS', 'DENIED_NO_ACCOUNT',
-             'DENIED_INVALID_CREDENTIALS', 'INCORRECT_URL',
-             'NZB_DELETED', 'POST_NUKED', 'FILE_UNAVAILABLE'
-            )
-RUS_15M =   ('SQL_ERROR', 'SERVICE_OFFLINE')
-RUS_60M =   ('MAX_DOWNLOAD_REACHED_UPGRADE_TO_VIP', 'MAX_DOWNLOAD_REACHED')
-
 def _analyse(fn, url):
-    """ Analyse respons of indexer
+    """ Analyze response of indexer
         returns fn|None, error-message|None, retry, wait-seconds, data
     """
     data = None
@@ -267,19 +257,6 @@ def _analyse(fn, url):
     if not fn or fn.msg != 'OK':
         logging.debug('Received nothing from indexer, retry after 60 sec')
         return None, fn.msg, True, 60, data
-
-    if '.nzbsrus.' in url:
-        # Partial support for nzbsrus.com's API
-        data = fn.read()
-        if misc.match_str(data, RUS_FATAL):
-            logging.debug('nzbsrus says: %s, abort', data)
-            return None, data, False, 0, data
-        if misc.match_str(data, RUS_15M):
-            logging.debug('nzbsrus says: %s, wait 15m', data)
-            return None, data, True, 900, data
-        if misc.match_str(data, RUS_60M):
-            logging.debug('nzbsrus says: %s, wait 60m', data)
-            return None, data, True, 3600, data
 
     if '.oznzb.com' in url and 'login?' in fn.url:
         return None, T('Unauthorized access'), False, 0, data
@@ -305,7 +282,7 @@ def dereferring(url, fn):
 def bad_fetch(nzo, url, msg='', content=False):
     """ Create History entry for failed URL Fetch
         msg : message to be logged
-        retry : make retry link in histort
+        retry : make retry link in history
         content : report in history that cause is a bad NZB file
     """
     if msg:
