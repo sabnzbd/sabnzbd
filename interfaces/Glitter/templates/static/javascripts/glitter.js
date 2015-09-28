@@ -132,6 +132,7 @@ $(function() {
         self.diskSpaceLeft1 = ko.observable();
         self.diskSpaceLeft2 = ko.observable();
         self.queueDataLeft = ko.observable();
+        self.queueDataLeftMB = ko.observable(); // To check if we have enough diskspace left
         self.quotaLimit = ko.observable();
         self.quotaLimitLeft = ko.observable();
         self.nrWarnings = ko.observable(0);
@@ -217,6 +218,7 @@ $(function() {
             ***/
             // Queue left
             self.queueDataLeft(response.queue.mbleft > 0 ? response.queue.sizeleft : '')
+            self.queueDataLeftMB(response.queue.mbleft > 0 ? response.queue.mbleft : 0)
 
             // Paused?
             self.downloadsPaused(response.queue.paused);
