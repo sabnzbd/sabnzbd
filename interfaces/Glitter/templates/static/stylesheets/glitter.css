@@ -1534,6 +1534,10 @@ a:focus {
     -webkit-transform: scale(1, 1);
 }
 
+.dropdown-menu .divider {
+    margin: 3px 0px;
+}
+
 .ui-slider-handle,
 .ui-slider-range {
     transition: all 0.2s ease;
