@@ -33,7 +33,8 @@ except:
     # Work-around for Python-ports with bad "locale" support
     pass
 try:
-    import win32api, win32file
+    import win32api
+    import win32file
 except ImportError:
     pass
 
@@ -51,8 +52,8 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
-                         get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-                         starts_with_path, cat_convert, clip_path
+    get_filename, int_conv, globber, globber_full, time_format, remove_all, \
+    starts_with_path, cat_convert, clip_path
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -65,49 +66,50 @@ import sabnzbd.rss
 import sabnzbd.emailer
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # API error messages
-_MSG_NO_VALUE         = 'expect one parameter'
-_MSG_NO_VALUE2        = 'expect two parameters'
-_MSG_INT_VALUE        = 'expect integer value'
-_MSG_NO_ITEM          = 'item does not exist'
-_MSG_NOT_IMPLEMENTED  = 'not implemented'
-_MSG_NO_FILE          = 'no file given'
-_MSG_NO_PATH          = 'file does not exist'
-_MSG_OUTPUT_FORMAT    = 'Format not supported'
-_MSG_NO_SUCH_CONFIG   = 'Config item does not exist'
+##############################################################################
+_MSG_NO_VALUE = 'expect one parameter'
+_MSG_NO_VALUE2 = 'expect two parameters'
+_MSG_INT_VALUE = 'expect integer value'
+_MSG_NO_ITEM = 'item does not exist'
+_MSG_NOT_IMPLEMENTED = 'not implemented'
+_MSG_NO_FILE = 'no file given'
+_MSG_NO_PATH = 'file does not exist'
+_MSG_OUTPUT_FORMAT = 'Format not supported'
+_MSG_NO_SUCH_CONFIG = 'Config item does not exist'
 _MSG_BAD_SERVER_PARMS = 'Incorrect server settings'
 
 
-#------------------------------------------------------------------------------
 # For Windows: determine executable extensions
 if os.name == 'nt':
     PATHEXT = os.environ.get('PATHEXT', '').lower().split(';')
 else:
     PATHEXT = []
 
-#------------------------------------------------------------------------------
+
 def api_handler(kwargs):
-    """ API Dispatcher
-    """
+    """ API Dispatcher """
     mode = kwargs.get('mode', '')
     output = kwargs.get('output')
     name = kwargs.get('name', '')
     callback = kwargs.get('callback', '')
 
-    if isinstance(mode, list): mode = mode[0]
-    if isinstance(output, list): output = output[0]
+    if isinstance(mode, list):
+        mode = mode[0]
+    if isinstance(output, list):
+        output = output[0]
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
     if output == 'json' and callback:
         response = '%s(%s)' % (callback, response)
     return response
 
 
-#------------------------------------------------------------------------------
 def _api_get_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
     res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
+
 
 def _api_set_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
@@ -145,7 +147,6 @@ def _api_qstatus(name, output, kwargs):
     return report(output, keyword=keyword, data=qstatus_data())
 
 
-#------------------------------------------------------------------------------
 def _api_queue(name, output, kwargs):
     """ API: Dispatcher for mode=queue """
     value = kwargs.get('value', '')
@@ -154,14 +155,14 @@ def _api_queue(name, output, kwargs):
 
 def _api_queue_delete(output, value, kwargs):
     """ API: accepts output, value """
-    if value.lower()=='all':
+    if value.lower() == 'all':
         removed = NzbQueue.do.remove_all(kwargs.get('search'))
-        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
+        return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     elif value:
         items = value.split(',')
         del_files = int_conv(kwargs.get('del_files'))
         removed = NzbQueue.do.remove_multiple(items, del_files)
-        return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
+        return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -171,7 +172,7 @@ def _api_queue_delete_nzf(output, value, kwargs):
     value2 = kwargs.get('value2')
     if value and value2:
         removed = NzbQueue.do.remove_nzf(value, value2)
-        return report(output, keyword='', data={'status':bool(removed), 'nzf_ids' : removed})
+        return report(output, keyword='', data={'status': bool(removed), 'nzf_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -182,7 +183,7 @@ def _api_queue_rename(output, value, kwargs):
     value3 = kwargs.get('value3')
     if value and value2:
         ret = NzbQueue.do.change_name(value, special_fixer(value2), special_fixer(value3))
-        return report(output, keyword='', data={'status':ret})
+        return report(output, keyword='', data={'status': ret})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -196,7 +197,7 @@ def _api_queue_change_complete_action(output, value, kwargs):
 def _api_queue_purge(output, value, kwargs):
     """ API: accepts output """
     removed = NzbQueue.do.remove_all(kwargs.get('search'))
-    return report(output, keyword='', data={'status':bool(removed), 'nzo_ids' : removed})
+    return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
 
 
 def _api_queue_pause(output, value, kwargs):
@@ -204,7 +205,7 @@ def _api_queue_pause(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.pause_multiple_nzo(items)
-    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
+    return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
 def _api_queue_resume(output, value, kwargs):
@@ -212,7 +213,7 @@ def _api_queue_resume(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.resume_multiple_nzo(items)
-    return report(output, keyword='', data={'status':bool(handled), 'nzo_ids' : handled})
+    return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
 def _api_queue_priority(output, value, kwargs):
@@ -271,6 +272,7 @@ def _api_queue_default(output, value, kwargs):
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
+
 def _api_queue_rating(output, value, kwargs):
     """ API: accepts output, value(=nzo_id), type, setting, detail """
     vote_map = {'up': Rating.VOTE_UP, 'down': Rating.VOTE_DOWN}
@@ -291,7 +293,7 @@ def _api_queue_rating(output, value, kwargs):
     else:
         return report(output, _MSG_NO_VALUE)
 
-#------------------------------------------------------------------------------
+
 def _api_options(name, output, kwargs):
     """ API: accepts output """
     return options_list(output)
@@ -311,8 +313,8 @@ def _api_addfile(name, output, kwargs):
     if name is None or isinstance(name, basestring):
         name = kwargs.get('nzbfile')
     if hasattr(name, 'getvalue'):
-        #Side effect of next line is that attribute .value is created
-        #which is needed to make add_nzbfile() work
+        # Side effect of next line is that attribute .value is created
+        # which is needed to make add_nzbfile() work
         size = name.length
     elif hasattr(name, 'file') and hasattr(name, 'filename') and name.filename:
         # CherryPy 3.2.2 object
@@ -333,7 +335,7 @@ def _api_addfile(name, output, kwargs):
             cat = cat_convert(xcat)
         res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), cat,
                             kwargs.get('priority'), kwargs.get('nzbname'))
-        return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]}, compat=True)
+        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -354,7 +356,7 @@ def _api_retry(name, output, kwargs):
     if nzo_id:
         if isinstance(nzo_id, list):
             nzo_id = nzo_id[0]
-        return report(output, keyword='', data={'status' : True, 'nzo_id' : nzo_id})
+        return report(output, keyword='', data={'status': True, 'nzo_id': nzo_id})
     else:
         return report(output, _MSG_NO_ITEM)
 
@@ -378,10 +380,10 @@ def _api_addlocalfile(name, output, kwargs):
                 nzbname = kwargs.get('nzbname')
 
                 if get_ext(name) in VALID_ARCHIVES:
-                    res = sabnzbd.dirscanner.ProcessArchiveFile(\
+                    res = sabnzbd.dirscanner.ProcessArchiveFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                 elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
-                    res = sabnzbd.dirscanner.ProcessSingleFile(\
+                    res = sabnzbd.dirscanner.ProcessSingleFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
                 logging.info('API-call addlocalfile: "%s" not a proper file name', name)
@@ -389,7 +391,7 @@ def _api_addlocalfile(name, output, kwargs):
         else:
             logging.info('API-call addlocalfile: file "%s" not found', name)
             return report(output, _MSG_NO_PATH)
-        return report(output, keyword='', data={'status':res[0]==0, 'nzo_ids' : res[1]}, compat=True)
+        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
     else:
         logging.info('API-call addlocalfile: no file name given')
         return report(output, _MSG_NO_VALUE)
@@ -405,7 +407,7 @@ def _api_switch(name, output, kwargs):
         if output not in ('xml', 'json'):
             return report(output, data=(pos, prio))
         else:
-            return report(output, keyword='result', data={'position':pos, 'priority':prio})
+            return report(output, keyword='result', data={'position': pos, 'priority': prio})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -439,6 +441,7 @@ def _api_change_script(name, output, kwargs):
     else:
         return report(output, _MSG_NO_VALUE)
 
+
 def _api_change_opts(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), value2(=pp) """
     value = kwargs.get('value')
@@ -450,7 +453,7 @@ def _api_change_opts(name, output, kwargs):
 
 def _api_fullstatus(name, output, kwargs):
     """ API: not implemented """
-    return report(output, _MSG_NOT_IMPLEMENTED + ' YET') #xml_full()
+    return report(output, _MSG_NOT_IMPLEMENTED + ' YET')  # xml_full()
 
 
 def _api_history(name, output, kwargs):
@@ -536,7 +539,7 @@ def _api_addurl(names, output, kwargs):
             nzo_ids.append(sabnzbd.add_url(name, pp, script, cat, priority, nzbname))
 
     if len(names) > 0:
-        return report(output, keyword='', data={'status':True, 'nzo_ids' : nzo_ids}, compat=True)
+        return report(output, keyword='', data={'status': True, 'nzo_ids': nzo_ids}, compat=True)
     else:
         logging.info('API-call addurl: no files retrieved from %s', names)
         return report(output, _MSG_NO_VALUE)
@@ -582,7 +585,7 @@ def _api_get_cats(name, output, kwargs):
 
 def _api_get_scripts(name, output, kwargs):
     """ API: accepts output """
-    data = [ unicoder(val) for val in list_scripts() ]
+    data = [unicoder(val) for val in list_scripts()]
     return report(output, keyword="scripts", data=data)
 
 
@@ -681,13 +684,16 @@ def _api_rss_now(name, output, kwargs):
     scheduler.force_rss()
     return report(output)
 
+
 def _api_retry_all(name, output, kwargs):
-    """ API: Retry all failed items in History"""
+    """ API: Retry all failed items in History """
     return report(output, keyword='status', data=retry_all_jobs)
+
 
 def _api_reset_quota(name, output, kwargs):
     """ Reset quota left """
     BPSMeter.do.reset_quota(force=True)
+
 
 def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
@@ -697,11 +703,12 @@ def _api_test_email(name, output, kwargs):
     pack['unpack'] = ['action 1', 'action 2']
     res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
                                  os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
-                                 123*MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+                                 123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
     if res == 'Email succeeded':
         res = None
     return report(output, error=res)
+
 
 def _api_test_notif(name, output, kwargs):
     """ API: send a test to Notification Center, return result """
@@ -709,11 +716,13 @@ def _api_test_notif(name, output, kwargs):
     res = sabnzbd.growler.send_notification_center('SABnzbd', T('Test Notification'), 'other')
     return report(output, error=res)
 
+
 def _api_test_growl(name, output, kwargs):
     """ API: send a test Growl notification, return result """
     logging.info("Sending Growl notification")
     res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
     return report(output, error=res)
+
 
 def _api_test_osd(name, output, kwargs):
     """ API: send a test OSD notification, return result """
@@ -721,11 +730,13 @@ def _api_test_osd(name, output, kwargs):
     res = sabnzbd.growler.send_notify_osd('SABnzbd', T('Test Notification'))
     return report(output, error=res)
 
+
 def _api_test_prowl(name, output, kwargs):
     """ API: send a test Prowl notification, return result """
     logging.info("Sending Prowl notification")
     res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
+
 
 def _api_test_pushover(name, output, kwargs):
     """ API: send a test Pushover notification, return result """
@@ -733,18 +744,19 @@ def _api_test_pushover(name, output, kwargs):
     res = sabnzbd.growler.send_pushover('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+
 def _api_test_pushbullet(name, output, kwargs):
     """ API: send a test Pushbullet notification, return result """
     logging.info("Sending Pushbullet notification")
     res = sabnzbd.growler.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
     return report(output, _MSG_NOT_IMPLEMENTED)
 
 
-#------------------------------------------------------------------------------
 def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
@@ -759,7 +771,6 @@ def _api_browse(name, output, kwargs):
         return report(output, keyword='paths', data=paths)
 
 
-#------------------------------------------------------------------------------
 def _api_config(name, output, kwargs):
     """ API: Dispatcher for "config" """
     return _api_config_table.get(name, (_api_config_undefined, 2))[0](output, kwargs)
@@ -813,6 +824,7 @@ def _api_config_set_apikey(output, kwargs):
     config.save_config()
     return report(output, keyword='apikey', data=cfg.api_key())
 
+
 def _api_config_set_nzbkey(output, kwargs):
     """ API: accepts output """
     cfg.nzb_key.set(config.create_api_key())
@@ -848,85 +860,84 @@ def _api_server_stats(name, output, kwargs):
     return report(output, keyword='', data=stats)
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 _api_table = {
-    'server_stats'    : (_api_server_stats, 2),
-    'get_config'      : (_api_get_config, 3),
-    'set_config'      : (_api_set_config, 3),
-    'del_config'      : (_api_del_config, 3),
-    'qstatus'         : (_api_qstatus, 2),
-    'queue'           : (_api_queue, 2),
-    'options'         : (_api_options, 2),
-    'translate'       : (_api_translate, 2),
-    'addfile'         : (_api_addfile, 1),
-    'retry'           : (_api_retry, 2),
-    'addlocalfile'    : (_api_addlocalfile, 1),
-    'switch'          : (_api_switch, 2),
-    'change_cat'      : (_api_change_cat, 2),
-    'change_script'   : (_api_change_script, 2),
-    'change_opts'     : (_api_change_opts, 2),
-    'fullstatus'      : (_api_fullstatus, 2),
-    'history'         : (_api_history, 2),
-    'get_files'       : (_api_get_files, 2),
-    'addurl'          : (_api_addurl, 1),
-    'addid'           : (_api_addurl, 1),
-    'pause'           : (_api_pause, 2),
-    'resume'          : (_api_resume, 2),
-    'shutdown'        : (_api_shutdown, 3),
-    'warnings'        : (_api_warnings, 2),
-    'config'          : (_api_config, 2),
-    'get_cats'        : (_api_get_cats, 2),
-    'get_scripts'     : (_api_get_scripts, 2),
-    'version'         : (_api_version, 1),
-    'auth'            : (_api_auth, 1),
-    'restart'         : (_api_restart, 3),
-    'restart_repair'  : (_api_restart_repair, 2),
-    'disconnect'      : (_api_disconnect, 2),
-    'osx_icon'        : (_api_osx_icon, 3),
-    'rescan'          : (_api_rescan, 2),
-    'eval_sort'       : (_api_eval_sort, 2),
-    'watched_now'     : (_api_watched_now, 2),
-    'resume_pp'       : (_api_resume_pp, 2),
-    'pause_pp'        : (_api_pause_pp, 2),
-    'rss_now'         : (_api_rss_now, 2),
-    'browse'          : (_api_browse, 2),
-    'retry_all'       : (_api_retry_all, 2),
-    'reset_quota'     : (_api_reset_quota, 2),
-    'test_email'      : (_api_test_email, 2),
-    'test_notif'      : (_api_test_notif, 2),
-    'test_growl'      : (_api_test_growl, 2),
-    'test_osd'        : (_api_test_osd, 2),
-    'test_pushover'   : (_api_test_pushover, 2),
-    'test_pushbullet' : (_api_test_pushbullet, 2),
-    'test_prowl'      : (_api_test_prowl, 2)
+    'server_stats': (_api_server_stats, 2),
+    'get_config': (_api_get_config, 3),
+    'set_config': (_api_set_config, 3),
+    'del_config': (_api_del_config, 3),
+    'qstatus': (_api_qstatus, 2),
+    'queue': (_api_queue, 2),
+    'options': (_api_options, 2),
+    'translate': (_api_translate, 2),
+    'addfile': (_api_addfile, 1),
+    'retry': (_api_retry, 2),
+    'addlocalfile': (_api_addlocalfile, 1),
+    'switch': (_api_switch, 2),
+    'change_cat': (_api_change_cat, 2),
+    'change_script': (_api_change_script, 2),
+    'change_opts': (_api_change_opts, 2),
+    'fullstatus': (_api_fullstatus, 2),
+    'history': (_api_history, 2),
+    'get_files': (_api_get_files, 2),
+    'addurl': (_api_addurl, 1),
+    'addid': (_api_addurl, 1),
+    'pause': (_api_pause, 2),
+    'resume': (_api_resume, 2),
+    'shutdown': (_api_shutdown, 3),
+    'warnings': (_api_warnings, 2),
+    'config': (_api_config, 2),
+    'get_cats': (_api_get_cats, 2),
+    'get_scripts': (_api_get_scripts, 2),
+    'version': (_api_version, 1),
+    'auth': (_api_auth, 1),
+    'restart': (_api_restart, 3),
+    'restart_repair': (_api_restart_repair, 2),
+    'disconnect': (_api_disconnect, 2),
+    'osx_icon': (_api_osx_icon, 3),
+    'rescan': (_api_rescan, 2),
+    'eval_sort': (_api_eval_sort, 2),
+    'watched_now': (_api_watched_now, 2),
+    'resume_pp': (_api_resume_pp, 2),
+    'pause_pp': (_api_pause_pp, 2),
+    'rss_now': (_api_rss_now, 2),
+    'browse': (_api_browse, 2),
+    'retry_all': (_api_retry_all, 2),
+    'reset_quota': (_api_reset_quota, 2),
+    'test_email': (_api_test_email, 2),
+    'test_notif': (_api_test_notif, 2),
+    'test_growl': (_api_test_growl, 2),
+    'test_osd': (_api_test_osd, 2),
+    'test_pushover': (_api_test_pushover, 2),
+    'test_pushbullet': (_api_test_pushbullet, 2),
+    'test_prowl': (_api_test_prowl, 2)
 }
 
 _api_queue_table = {
-    'delete'                  : (_api_queue_delete, 2),
-    'delete_nzf'              : (_api_queue_delete_nzf, 2),
-    'rename'                  : (_api_queue_rename, 2),
-    'change_complete_action'  : (_api_queue_change_complete_action, 2),
-    'purge'                   : (_api_queue_purge, 2),
-    'pause'                   : (_api_queue_pause, 2) ,
-    'resume'                  : (_api_queue_resume, 2),
-    'priority'                : (_api_queue_priority, 2),
-    'sort'                    : (_api_queue_sort, 2),
-    'rating'                  : (_api_queue_rating, 2)
+    'delete': (_api_queue_delete, 2),
+    'delete_nzf': (_api_queue_delete_nzf, 2),
+    'rename': (_api_queue_rename, 2),
+    'change_complete_action': (_api_queue_change_complete_action, 2),
+    'purge': (_api_queue_purge, 2),
+    'pause': (_api_queue_pause, 2),
+    'resume': (_api_queue_resume, 2),
+    'priority': (_api_queue_priority, 2),
+    'sort': (_api_queue_sort, 2),
+    'rating': (_api_queue_rating, 2)
 }
 
 _api_config_table = {
-    'speedlimit'       : (_api_config_speedlimit, 2),
-    'set_speedlimit'   : (_api_config_speedlimit, 2),
-    'get_speedlimit'   : (_api_config_get_speedlimit, 2),
-    'set_colorscheme'  : (_api_config_set_colorscheme, 2),
-    'set_pause'        : (_api_config_set_pause, 2),
-    'set_apikey'       : (_api_config_set_apikey, 3),
-    'set_nzbkey'       : (_api_config_set_nzbkey, 3),
-    'test_server'      : (_api_config_test_server, 2)
+    'speedlimit': (_api_config_speedlimit, 2),
+    'set_speedlimit': (_api_config_speedlimit, 2),
+    'get_speedlimit': (_api_config_get_speedlimit, 2),
+    'set_colorscheme': (_api_config_set_colorscheme, 2),
+    'set_pause': (_api_config_set_pause, 2),
+    'set_apikey': (_api_config_set_apikey, 3),
+    'set_nzbkey': (_api_config_set_nzbkey, 3),
+    'test_server': (_api_config_test_server, 2)
 }
 
 
-#------------------------------------------------------------------------------
 def api_level(cmd, name):
     """ Return access level required for this API call """
     if cmd in _api_table:
@@ -937,7 +948,7 @@ def api_level(cmd, name):
         return _api_config_table[cmd][1]
     return 4
 
-#------------------------------------------------------------------------------
+
 def report(output, error=None, keyword='value', data=None, callback=None, compat=False):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
@@ -948,18 +959,17 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
     if output == 'json':
         content = "application/json;charset=UTF-8"
         if error:
-            info = {'status':False, 'error':error}
+            info = {'status': False, 'error': error}
         elif data is None:
-            info = {'status':True}
+            info = {'status': True}
         else:
-            if hasattr(data,'__iter__') and not keyword:
+            if hasattr(data, '__iter__') and not keyword:
                 info = data
             else:
-                info = {keyword:data}
+                info = {keyword: data}
         response = json.dumps(info)
         if callback:
             response = '%s(%s)' % (callback, response)
-
 
     elif output == 'xml':
         if not keyword:
@@ -968,9 +978,9 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         content = "text/xml"
         xmlmaker = xml_factory()
         if error:
-            status_str = xmlmaker.run('result', {'status':False, 'error':error})
+            status_str = xmlmaker.run('result', {'status': False, 'error': error})
         elif data is None:
-            status_str = xmlmaker.run('result', {'status':True})
+            status_str = xmlmaker.run('result', {'status': True})
         else:
             status_str = xmlmaker.run(keyword, data)
         response = '<?xml version="1.0" encoding="UTF-8" ?>\n%s\n' % status_str
@@ -996,14 +1006,13 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
     return response
 
 
-#------------------------------------------------------------------------------
 class xml_factory(object):
+    """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
+        Current limitations:
+            In Two tiered lists hardcoded name of "item": <cat_list><item> </item></cat_list>
+            In Three tiered lists hardcoded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
-    Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
-    Current limitations:
-        In Two tiered lists hardcoded name of "item": <cat_list><item> </item></cat_list>
-        In Three tiered lists hardcoded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
-    """
+
     def __init__(self):
         self.__text = ''
 
@@ -1055,10 +1064,8 @@ class xml_factory(object):
         return text
 
 
-#------------------------------------------------------------------------------
 def handle_server_api(output, kwargs):
-    """ Special handler for API-call 'set_config' [servers]
-    """
+    """ Special handler for API-call 'set_config' [servers] """
     name = kwargs.get('keyword')
     if not name:
         name = kwargs.get('name')
@@ -1075,10 +1082,8 @@ def handle_server_api(output, kwargs):
     return name
 
 
-#------------------------------------------------------------------------------
 def handle_rss_api(output, kwargs):
-    """ Special handler for API-call 'set_config' [rss]
-    """
+    """ Special handler for API-call 'set_config' [rss] """
     name = kwargs.get('keyword')
     if not name:
         name = kwargs.get('name')
@@ -1093,10 +1098,8 @@ def handle_rss_api(output, kwargs):
     return name
 
 
-#------------------------------------------------------------------------------
 def handle_cat_api(output, kwargs):
-    """ Special handler for API-call 'set_config' [categories]
-    """
+    """ Special handler for API-call 'set_config' [categories] """
     name = kwargs.get('keyword')
     if not name:
         name = kwargs.get('name')
@@ -1111,7 +1114,6 @@ def handle_cat_api(output, kwargs):
     return name
 
 
-#------------------------------------------------------------------------------
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None,
                 search=None):
@@ -1126,7 +1128,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         dictn = dictionary
     else:
         dictn = []
-    #build up header full of basic information
+    # build up header full of basic information
     info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
@@ -1157,9 +1159,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     start = int_conv(start)
 
     if history:
-        #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
+        # Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
         slotinfo = format_history_for_queue()
-        #if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
+        # if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
         if len(slotinfo) < start:
             slotinfo = []
     else:
@@ -1198,7 +1200,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
         nzo_ids.append(nzo_id)
 
-        slot = {'index':n, 'nzo_id':str(nzo_id)}
+        slot = {'index': n, 'nzo_id': str(nzo_id)}
         unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
 
         slot['unpackopts'] = str(unpackopts)
@@ -1212,7 +1214,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         slot['mb'] = "%.2f" % mb
         if not output:
             slot['mb_fmt'] = locale.format('%d', int(mb), True)
-            slot['mbdone_fmt'] = locale.format('%d', int(mb-mbleft), True)
+            slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING) and not found_active:
@@ -1236,7 +1238,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         if mb == mbleft:
             slot['percentage'] = "0"
         else:
-            slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
+            slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100))
         slot['missing'] = missing
 
         if (Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED)) \
@@ -1248,7 +1250,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
-                #new eta format: 16:00 Fri 07 Feb
+                # new eta format: 16:00 Fri 07 Feb
                 slot['eta'] = '%s' % datestart.strftime(time_format('%H:%M %a %d %b'))
             except:
                 datestart = datetime.datetime.now()
@@ -1270,7 +1272,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             finished = []
             active = []
             queued = []
-            if verbose or nzo_id in verbose_list:#this will list files in the xml output, wanted yes/no?
+            # this will list files in the xml output, wanted yes/no?
+            if verbose or nzo_id in verbose_list:
                 slot['verbosity'] = "True"
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
@@ -1278,12 +1281,12 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
                     age = calc_age(date)
 
-                    line = {'filename':fn,
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
+                    line = {'filename': fn,
+                            'mbleft': "%.2f" % (bytes_left / MEBI),
+                            'mb': "%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),
                             'sizeleft': format_bytes(bytes_left),
-                            'age':age}
+                            'age': age}
                     finished.append(line)
 
                 for tup in active_files:
@@ -1292,13 +1295,13 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
                     age = calc_age(date)
 
-                    line = {'filename':fn,
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
+                    line = {'filename': fn,
+                            'mbleft': "%.2f" % (bytes_left / MEBI),
+                            'mb': "%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),
                             'sizeleft': format_bytes(bytes_left),
-                            'nzf_id':nzf_id,
-                            'age':age}
+                            'nzf_id': nzf_id,
+                            'age': age}
                     active.append(line)
 
                 for tup in queued_files:
@@ -1308,19 +1311,19 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
 
                     age = calc_age(date)
 
-                    line = {'filename':fn, 'set':_set,
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
+                    line = {'filename': fn, 'set': _set,
+                            'mbleft': "%.2f" % (bytes_left / MEBI),
+                            'mb': "%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),
                             'sizeleft': format_bytes(bytes_left),
-                            'age':age}
+                            'age': age}
                     queued.append(line)
 
             slot['finished'] = finished
             slot['active'] = active
             slot['queued'] = queued
 
-        if (start <= n  and n < start + limit) or not limit:
+        if (start <= n and n < start + limit) or not limit:
             slotinfo.append(slot)
         n += 1
 
@@ -1330,15 +1333,15 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         info['slots'] = []
         verbose_list = []
 
-    #Paging of the queue using limit and/or start values
+    # Paging of the queue using limit and/or start values
     if limit > 0:
         try:
             if start > 0:
                 if start > len(pnfo_list):
                     pnfo_list = []
                 else:
-                    end = start+limit
-                    if start+limit > len(pnfo_list):
+                    end = start + limit
+                    if start + limit > len(pnfo_list):
                         end = len(pnfo_list)
                     pnfo_list = pnfo_list[start:end]
             else:
@@ -1350,7 +1353,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     return info, pnfo_list, bytespersec, verbose_list, dictn
 
 
-#------------------------------------------------------------------------------
 def fast_queue():
     """ Return paused, bytes_left, bpsnow, time_left """
     bytes_left = NzbQueue.do.remaining()
@@ -1360,10 +1362,8 @@ def fast_queue():
     return paused, bytes_left, bpsnow, time_left
 
 
-#------------------------------------------------------------------------------
 def qstatus_data():
-    """Build up the queue status as a nested object and output as a JSON object
-    """
+    """Build up the queue status as a nested object and output as a JSON object """
 
     qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
@@ -1377,11 +1377,11 @@ def qstatus_data():
         bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id,
-                        "mb":bytes,
-                        "mbleft":bytesleft,
-                        "filename":unicoder(filename),
-                        "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
+        jobs.append({"id": nzo_id,
+                        "mb": bytes,
+                        "mbleft": bytesleft,
+                        "filename": unicoder(filename),
+                        "timeleft": calc_timeleft(bytesleftprogess, bpsnow)})
 
     state = "IDLE"
     if Downloader.do.paused:
@@ -1390,26 +1390,25 @@ def qstatus_data():
         state = Status.DOWNLOADING
 
     status = {
-        "state" : state,
-        "pp_active" : not PostProcessor.do.empty(),
-        "paused" : Downloader.do.paused,
-        "pause_int" : scheduler.pause_int(),
-        "kbpersec" : bpsnow / KIBI,
-        "speed" : to_units(bpsnow, dec_limit=1),
-        "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
-        "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
-        "noofslots" : len(pnfo_list),
-        "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1" : diskfree(cfg.download_dir.get_path()),
-        "diskspace2" : diskfree(cfg.complete_dir.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
-        "loadavg" : loadavg(),
-        "jobs" : jobs
+        "state": state,
+        "pp_active": not PostProcessor.do.empty(),
+        "paused": Downloader.do.paused,
+        "pause_int": scheduler.pause_int(),
+        "kbpersec": bpsnow / KIBI,
+        "speed": to_units(bpsnow, dec_limit=1),
+        "mbleft": qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
+        "mb": qnfo[QNFO_BYTES_FIELD] / MEBI,
+        "noofslots": len(pnfo_list),
+        "have_warnings": str(sabnzbd.GUIHANDLER.count()),
+        "diskspace1": diskfree(cfg.download_dir.get_path()),
+        "diskspace2": diskfree(cfg.complete_dir.get_path()),
+        "timeleft": calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
+        "loadavg": loadavg(),
+        "jobs": jobs
     }
     return status
 
 
-#------------------------------------------------------------------------------
 def build_file_list(id):
     qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
@@ -1422,7 +1421,6 @@ def build_file_list(id):
             active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
             queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
 
-
             n = 0
             for tup in finished_files:
                 bytes_left, bytes, fn, date = tup
@@ -1430,11 +1428,11 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':fn,
-                        'mbleft':"%.2f" % (bytes_left / MEBI),
-                        'mb':"%.2f" % (bytes / MEBI),
-                        'bytes':"%.2f" % bytes,
-                        'age':age, 'id':str(n), 'status':'finished'}
+                line = {'filename': fn,
+                        'mbleft': "%.2f" % (bytes_left / MEBI),
+                        'mb': "%.2f" % (bytes / MEBI),
+                        'bytes': "%.2f" % bytes,
+                        'age': age, 'id': str(n), 'status': 'finished'}
                 jobs.append(line)
                 n += 1
 
@@ -1444,12 +1442,12 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':fn,
-                        'mbleft':"%.2f" % (bytes_left / MEBI),
-                        'mb':"%.2f" % (bytes / MEBI),
-                        'bytes':"%.2f" % bytes,
-                        'nzf_id':nzf_id,
-                        'age':age, 'id':str(n), 'status':'active'}
+                line = {'filename': fn,
+                        'mbleft': "%.2f" % (bytes_left / MEBI),
+                        'mb': "%.2f" % (bytes / MEBI),
+                        'bytes': "%.2f" % bytes,
+                        'nzf_id': nzf_id,
+                        'age': age, 'id': str(n), 'status': 'active'}
                 jobs.append(line)
                 n += 1
 
@@ -1460,37 +1458,35 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':fn, 'set':_set,
-                        'mbleft':"%.2f" % (bytes_left / MEBI),
-                        'mb':"%.2f" % (bytes / MEBI),
-                        'bytes':"%.2f" % bytes,
-                        'age':age, 'id':str(n), 'status':'queued'}
+                line = {'filename': fn, 'set': _set,
+                        'mbleft': "%.2f" % (bytes_left / MEBI),
+                        'mb': "%.2f" % (bytes / MEBI),
+                        'bytes': "%.2f" % bytes,
+                        'age': age, 'id': str(n), 'status': 'queued'}
                 jobs.append(line)
                 n += 1
 
     return jobs
 
 
-#------------------------------------------------------------------------------
 def rss_qstatus():
-    """ Return a RSS feed with the queue status
-    """
+    """ Return a RSS feed with the queue status """
     qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     rss = RSS()
     rss.channel.title = "SABnzbd Queue"
     rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s/sabnzbd/queue" % ( \
-        cfg.cherryhost(), cfg.cherryport() )
+    rss.channel.link = "http://%s:%s/sabnzbd/queue" % (
+        cfg.cherryhost(), cfg.cherryport())
     rss.channel.language = "en"
 
     item = Item()
     item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
                  (
-                  calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], BPSMeter.do.get_bps()),
-                  qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
-                  BPSMeter.do.get_bps() / KIBI
+                     calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], BPSMeter.do.get_bps()),
+                     qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
+                     BPSMeter.do.get_bps() / KIBI
                  )
     rss.addItem(item)
 
@@ -1503,24 +1499,23 @@ def rss_qstatus():
         mb = (bytes / MEBI)
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
 
-
         if mb == mbleft:
             percentage = "0%"
         else:
-            percentage = "%s%%" % (int(((mb-mbleft) / mb) * 100))
+            percentage = "%s%%" % (int(((mb - mbleft) / mb) * 100))
 
         filename = xml_name(filename)
         name = u'%s (%s)' % (filename, percentage)
 
         item = Item()
         item.title = name
-        item.link    = "http://%s:%s/sabnzbd/history" % ( cfg.cherryhost(), cfg.cherryport() )
+        item.link = "http://%s:%s/sabnzbd/history" % (cfg.cherryhost(), cfg.cherryport())
         item.guid = nzo_id
-        status_line  = []
+        status_line = []
         status_line.append('<tr>')
-        #Total MB/MB left
+        # Total MB/MB left
         status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
-        #ETA
+        # ETA
         sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
         status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
         status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
@@ -1534,24 +1529,20 @@ def rss_qstatus():
     return rss.write()
 
 
-#------------------------------------------------------------------------------
 def options_list(output):
-    return report(output, keyword='options', data=
-        {
-        'yenc' : sabnzbd.decoder.HAVE_YENC,
-        'par2' : sabnzbd.newsunpack.PAR2_COMMAND,
-        'par2c' : sabnzbd.newsunpack.PAR2C_COMMAND,
-        'rar' : sabnzbd.newsunpack.RAR_COMMAND,
-        'zip' : sabnzbd.newsunpack.ZIP_COMMAND,
-        '7zip' : sabnzbd.newsunpack.SEVEN_COMMAND,
-        'nice' : sabnzbd.newsunpack.NICE_COMMAND,
-        'ionice' : sabnzbd.newsunpack.IONICE_COMMAND,
-        'ssl' : sabnzbd.newswrapper.HAVE_SSL
-        })
+    return report(output, keyword='options', data={
+        'yenc': sabnzbd.decoder.HAVE_YENC,
+        'par2': sabnzbd.newsunpack.PAR2_COMMAND,
+        'par2c': sabnzbd.newsunpack.PAR2C_COMMAND,
+        'rar': sabnzbd.newsunpack.RAR_COMMAND,
+        'zip': sabnzbd.newsunpack.ZIP_COMMAND,
+        '7zip': sabnzbd.newsunpack.SEVEN_COMMAND,
+        'nice': sabnzbd.newsunpack.NICE_COMMAND,
+        'ionice': sabnzbd.newsunpack.IONICE_COMMAND,
+        'ssl': sabnzbd.newswrapper.HAVE_SSL
+    })
 
 
-
-#------------------------------------------------------------------------------
 def retry_job(job, new_nzb, password):
     """ Re enter failed job in the download queue """
     if job:
@@ -1569,14 +1560,12 @@ def retry_job(job, new_nzb, password):
     return None
 
 
-#------------------------------------------------------------------------------
 def retry_all_jobs():
     """ Re enter all failed jobs in the download queue """
     history_db = cherrypy.thread_data.history_db
     return NzbQueue.do.retry_all_jobs(history_db)
 
 
-#------------------------------------------------------------------------------
 def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
@@ -1584,7 +1573,6 @@ def del_job_files(job_paths):
             remove_all(path, recursive=True)
 
 
-#------------------------------------------------------------------------------
 def del_hist_job(job, del_files):
     """ Remove history element """
     if job:
@@ -1601,7 +1589,7 @@ def del_hist_job(job, del_files):
             remove_all(path, recursive=True)
     return True
 
-#------------------------------------------------------------------------------
+
 def Tspec(txt):
     """ Translate special terms """
     if txt == 'None':
@@ -1612,12 +1600,10 @@ def Tspec(txt):
         return txt
 
 _SKIN_CACHE = {}    # Stores pre-translated acronyms
-
 # This special is to be used in interface.py for template processing
 # to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
-    """ Translation function for Skin texts
-    """
+    """ Translation function for Skin texts """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
@@ -1628,8 +1614,7 @@ def Ttemplate(txt):
 
 
 def clear_trans_cache():
-    """ Clean cache for skin translations
-    """
+    """ Clean cache for skin translations """
     global _SKIN_CACHE
     dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
@@ -1650,10 +1635,10 @@ def build_header(prim, webdir='', search=None):
     if not color:
         color = ''
 
-    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__,
+    header = {'T': Ttemplate, 'Tspec': Tspec, 'Tx': Ttemplate, 'version': sabnzbd.__version__,
                'paused': Downloader.do.paused or Downloader.do.postproc,
                'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
-               'uptime':uptime, 'color_scheme':color }
+               'uptime': uptime, 'color_scheme': color}
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
         speed_limit = ''
@@ -1677,7 +1662,6 @@ def build_header(prim, webdir='', search=None):
     header['my_lcldata'] = sabnzbd.DIR_LCLDATA
     header['my_home'] = sabnzbd.DIR_HOME
 
-
     header['webdir'] = webdir
     header['pid'] = os.getpid()
 
@@ -1696,10 +1680,10 @@ def build_header(prim, webdir='', search=None):
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
     header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
-    header['mbleft']   = "%.2f" % (bytesleft / MEBI)
-    header['mb']       = "%.2f" % (bytes / MEBI)
-    header['sizeleft']   = format_bytes(bytesleft)
-    header['size']       = format_bytes(bytes)
+    header['mbleft'] = "%.2f" % (bytesleft / MEBI)
+    header['mb'] = "%.2f" % (bytes / MEBI)
+    header['sizeleft'] = format_bytes(bytesleft)
+    header['size'] = format_bytes(bytes)
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
     header['left_quota'] = to_units(BPSMeter.do.left)
@@ -1714,7 +1698,7 @@ def build_header(prim, webdir='', search=None):
         status = 'Idle'
     header['status'] = status
 
-    anfo  = ArticleCache.do.cache_info()
+    anfo = ArticleCache.do.cache_info()
 
     header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
     header['cache_size'] = format_bytes(anfo[ANFO_CACHE_SIZE_FIELD])
@@ -1732,7 +1716,7 @@ def build_header(prim, webdir='', search=None):
 
     try:
         datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
-        #new eta format: 16:00 Fri 07 Feb
+        # new eta format: 16:00 Fri 07 Feb
         header['eta'] = '%s' % datestart.strftime(time_format('%H:%M %a %d %b'))
     except:
         datestart = datetime.datetime.now()
@@ -1740,8 +1724,6 @@ def build_header(prim, webdir='', search=None):
 
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
 
-
-#------------------------------------------------------------------------------
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
                   categories=None, output=None):
@@ -1755,13 +1737,14 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         verbose_list = []
 
     limit = int_conv(limit)
-    if not limit: limit = 1000000
+    if not limit:
+        limit = 1000000
     start = int_conv(start)
     failed_only = int_conv(failed_only)
 
     def matches_search(text, search_text):
         # Replace * with .* and ' ' with .
-        search_text = search_text.strip().replace('*','.*').replace(' ','.*') + '.*?'
+        search_text = search_text.strip().replace('*', '.*').replace(' ', '.*') + '.*?'
         try:
             re_search = re.compile(search_text, re.I)
         except:
@@ -1785,7 +1768,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     else:
         try:
             if limit:
-                queue = queue[start:start+limit]
+                queue = queue[start:start + limit]
             else:
                 queue = queue[start:]
         except:
@@ -1842,7 +1825,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     retry_folders = []
     for item in items:
         for key in item:
-            value= item[key]
+            value = item[key]
             if isinstance(value, basestring):
                 item[key] = converter(value)
 
@@ -1864,13 +1847,13 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         if item.get('status') != 'Failed':
             item['path'] = ''
 
-        item['retry'] = int(bool(item.get('status') == 'Failed' and \
-                                 path and \
-                                 path not in retry_folders and \
-                                 starts_with_path(path, cfg.download_dir.get_path()) and \
-                                 os.path.exists(path)) and \
-                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
-                                 )
+        item['retry'] = int(bool(item.get('status') == 'Failed' and
+                                 path and
+                                 path not in retry_folders and
+                                 starts_with_path(path, cfg.download_dir.get_path()) and
+                                 os.path.exists(path)) and
+                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
+                            )
         if item['report'] == 'future':
             item['retry'] = True
 
@@ -1900,25 +1883,23 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     return (items, fetched_items, total_items)
 
 
-
-#------------------------------------------------------------------------------
 def format_history_for_queue():
-    ''' Retrieves the information on currently active history items, and formats them for displaying in the queue '''
+    """ Retrieves the information on currently active history items, and formats them for displaying in the queue """
     slotinfo = []
     history_items = get_active_history()
 
     for item in history_items:
-        slot = {'nzo_id':item['nzo_id'],
-                'bookmark':'', 'filename':xml_name(item['name']), 'loaded':False,
-                'stages':item['stage_log'], 'status':item['status'], 'bytes':item['bytes'],
-                'size':item['size']}
+        slot = {'nzo_id': item['nzo_id'],
+                'bookmark': '', 'filename': xml_name(item['name']), 'loaded': False,
+                'stages': item['stage_log'], 'status': item['status'], 'bytes': item['bytes'],
+                'size': item['size']}
         slotinfo.append(slot)
 
     return slotinfo
 
 
 def get_active_history(queue=None, items=None):
-    # Get the currently in progress and active history queue.
+    """ Get the currently in progress and active history queue. """
     if items is None:
         items = []
     if queue is None:
@@ -1951,7 +1932,6 @@ def get_active_history(queue=None, items=None):
     return items
 
 
-#------------------------------------------------------------------------------
 def format_bytes(bytes):
     b = to_units(bytes)
     if b == '':
@@ -1961,9 +1941,7 @@ def format_bytes(bytes):
 
 
 def calc_timeleft(bytesleft, bps):
-    """
-    Calculate the time left in the format HH:MM:SS
-    """
+    """ Calculate the time left in the format HH:MM:SS """
     try:
         totalseconds = int(bytesleft / bps)
         minutes, seconds = divmod(totalseconds, 60)
@@ -1978,34 +1956,33 @@ def calc_timeleft(bytesleft, bps):
 
 
 def calc_age(date, trans=False):
-    """
-    Calculate the age difference between now and date.
-    Value is returned as either days, hours, or minutes.
-    When 'trans' is True, time symbols will be translated.
+    """ Calculate the age difference between now and date.
+        Value is returned as either days, hours, or minutes.
+        When 'trans' is True, time symbols will be translated.
     """
     if trans:
-        d = T('d') #: Single letter abbreviation of day
-        h = T('h') #: Single letter abbreviation of hour
-        m = T('m') #: Single letter abbreviation of minute
+        d = T('d')  # : Single letter abbreviation of day
+        h = T('h')  # : Single letter abbreviation of hour
+        m = T('m')  # : Single letter abbreviation of minute
     else:
         d = 'd'
         h = 'h'
         m = 'm'
     try:
         now = datetime.datetime.now()
-        #age = str(now - date).split(".")[0] #old calc_age
+        # age = str(now - date).split(".")[0] #old calc_age
 
-        #time difference
-        dage = now-date
+        # time difference
+        dage = now - date
         seconds = dage.seconds
-        #only one value should be returned
-        #if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
+        # only one value should be returned
+        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
         if dage.days:
             age = '%s%s' % (dage.days, d)
-        elif seconds/3600:
-            age = '%s%s' % (seconds/3600, h)
+        elif seconds / 3600:
+            age = '%s%s' % (seconds / 3600, h)
         else:
-            age = '%s%s' % (seconds/60, m)
+            age = '%s%s' % (seconds / 60, m)
     except:
         age = "-"
 
@@ -2014,8 +1991,8 @@ def calc_age(date, trans=False):
 
 def std_time(when):
     # Fri, 16 Nov 2007 16:42:01 GMT +0100
-    item  = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when))
-    item += " GMT %+05d" % (-time.timezone/36)
+    item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when))
+    item += " GMT %+05d" % (-time.timezone / 36)
     return item
 
 
@@ -2026,7 +2003,7 @@ def list_scripts(default=False):
     if path and os.access(path, os.R_OK):
         for script in globber_full(path):
             if os.path.isfile(script):
-                if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and \
+                if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and
                                       not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
                    script.endswith('.py') or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
@@ -2054,16 +2031,17 @@ def remove_callable(dic):
     return dic
 
 
-#------------------------------------------------------------------------------
 _PLURAL_TO_SINGLE = {
-    'categories' : 'category',
-    'servers' : 'server',
-    'rss' : 'feed',
-    'scripts' : 'script',
-    'warnings' : 'warning',
-    'files' : 'file',
-    'jobs' : 'job'
-    }
+    'categories': 'category',
+    'servers': 'server',
+    'rss': 'feed',
+    'scripts': 'script',
+    'warnings': 'warning',
+    'files': 'file',
+    'jobs': 'job'
+}
+
+
 def plural_to_single(kw, def_kw=''):
     try:
         return _PLURAL_TO_SINGLE[kw]
@@ -2071,7 +2049,6 @@ def plural_to_single(kw, def_kw=''):
         return def_kw
 
 
-#------------------------------------------------------------------------------
 def del_from_section(kwargs):
     """ Remove keyword in section """
     section = kwargs.get('section', '')
@@ -2090,7 +2067,6 @@ def del_from_section(kwargs):
         return False
 
 
-#------------------------------------------------------------------------------
 def history_remove_failed():
     """ Remove all failed jobs from history, including files """
     logging.info('Scheduled removal of all failed jobs')
