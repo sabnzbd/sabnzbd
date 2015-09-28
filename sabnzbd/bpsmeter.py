@@ -131,17 +131,17 @@ class BPSMeter(object):
         self.month_total = {}
         self.grand_total = {}
 
-        self.end_of_day = tomorrow(t)     # Time that current day will end
-        self.end_of_week = next_week(t)   # Time that current day will end
+        self.end_of_day = tomorrow(t)      # Time that current day will end
+        self.end_of_week = next_week(t)    # Time that current day will end
         self.end_of_month = next_month(t)  # Time that current month will end
-        self.q_day = 1                    # Day of quota reset
-        self.q_period = 'm'               # Daily/Weekly/Monthly quota = d/w/m
-        self.quota = self.left = 0.0      # Quota and remaining quota
-        self.have_quota = False           # Flag for quota active
-        self.q_time = 0L            # Next reset time for quota
-        self.q_hour = 0                   # Quota reset hour
-        self.q_minute = 0                 # Quota reset minute
-        self.quota_enabled = True         # Scheduled quota enable/disable
+        self.q_day = 1                     # Day of quota reset
+        self.q_period = 'm'                # Daily/Weekly/Monthly quota = d/w/m
+        self.quota = self.left = 0.0       # Quota and remaining quota
+        self.have_quota = False            # Flag for quota active
+        self.q_time = 0L                   # Next reset time for quota
+        self.q_hour = 0                    # Quota reset hour
+        self.q_minute = 0                  # Quota reset minute
+        self.quota_enabled = True          # Scheduled quota enable/disable
         BPSMeter.do = self
 
     def save(self):
@@ -253,8 +253,7 @@ class BPSMeter(object):
 
         # Speedometer
         try:
-            self.bps = (self.bps * (self.last_update - self.start_time)
-                        + amount) / (t - self.start_time)
+            self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
         except:
             self.bps = 0.0
 
@@ -406,7 +405,6 @@ class BPSMeter(object):
     # The <day> and <hh:mm> part can both be optional
     __re_day = re.compile('^\s*(\d+)[^:]*')
     __re_hm = re.compile('(\d+):(\d+)\s*$')
-
     def get_quota(self):
         """ If quota active, return check-function, hour, minute """
         if self.have_quota:

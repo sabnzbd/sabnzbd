@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.utils.upload - File assosiation functions for adding nzb files to sabnzbd
+sabnzbd.utils.upload - File association functions for adding nzb files to sabnzbd
 """
 
 import urllib2
@@ -29,6 +29,7 @@ import sabnzbd.newsunpack
 from sabnzbd.constants import VALID_ARCHIVES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
+
 
 def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
@@ -48,7 +49,7 @@ def upload_file(url, fp):
         sabnzbd.newsunpack.get_from_url(url)
     except:
         logging.error("Failed to upload file: %s", fp)
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def add_local(f):

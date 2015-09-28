@@ -2,6 +2,7 @@
 
 import socket
 
+
 def localipv4():
     try:
         s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -13,16 +14,18 @@ def localipv4():
         pass
     return ipv4
 
+
 def publicipv4():
     try:
         import urllib2
         f = urllib2.urlopen("http://api.ipify.org", timeout=2)    # timeout 2 seconds, in case website is not accessible
         public_ipv4 = f.read()
-        socket.inet_aton(public_ipv4)	# if we got anything else than a plain IPv4 address, this will raise an exception
+        socket.inet_aton(public_ipv4)  # if we got anything else than a plain IPv4 address, this will raise an exception
     except:
         public_ipv4 = None
         pass
     return public_ipv4
+
 
 def ipv6():
     try:
@@ -38,4 +41,3 @@ if __name__ == '__main__':
     print localipv4()
     print publicipv4()
     print ipv6()
-

@@ -102,8 +102,6 @@ def main():
 ##############################################################################
 # Windows Service Support
 ##############################################################################
-
-
 import servicemanager
 
 
@@ -152,8 +150,6 @@ class SABHelper(win32serviceutil.ServiceFramework):
 ##############################################################################
 # Platform specific startup code
 ##############################################################################
-
-
 if __name__ == '__main__':
 
     win32serviceutil.HandleCommandLine(SABHelper, argv=sys.argv)
