@@ -40,22 +40,24 @@ import sabnzbd.cfg as cfg
 from sabnzbd.encoding import name_fixer
 from sabnzbd.misc import match_str
 
-#-------------------------------------------------------------------------------
 
 class CrcError(Exception):
+
     def __init__(self, needcrc, gotcrc, data):
         Exception.__init__(self)
         self.needcrc = needcrc
         self.gotcrc = gotcrc
         self.data = data
 
+
 class BadYenc(Exception):
+
     def __init__(self):
         Exception.__init__(self)
 
-#-------------------------------------------------------------------------------
 
 class Decoder(Thread):
+
     def __init__(self, servers):
         Thread.__init__(self)
 
@@ -106,7 +108,7 @@ class Decoder(Thread):
                 except IOError, e:
                     logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
 
@@ -160,7 +162,7 @@ class Decoder(Thread):
                 except:
                     logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info=True)
 
                     new_server_found = self.__search_new_server(article)
                     if new_server_found:
@@ -213,7 +215,7 @@ class Decoder(Thread):
             article.fetcher = None
             article.tries = 0
 
-            ## Allow all servers to iterate over this nzo and nzf again ##
+            # Allow all servers to iterate over this nzo and nzf again
             NzbQueue.do.reset_try_lists(nzf, nzo)
 
             if sabnzbd.LOG_ALL:
@@ -224,21 +226,20 @@ class Decoder(Thread):
             logging.info(msg)
             article.nzf.nzo.inc_log('missing_art_log', msg)
 
-
         return new_server_found
-#-------------------------------------------------------------------------------
+
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data):
     data = strip(data)
-    ## No point in continuing if we don't have any data left
+    # No point in continuing if we don't have any data left
     if data:
         nzf = article.nzf
         yenc, data = yCheck(data)
         ybegin, ypart, yend = yenc
         decoded_data = None
 
-        #Deal with non-yencoded posts
+        # Deal with non-yencoded posts
         if not ybegin:
             found = False
             try:
@@ -249,7 +250,7 @@ def decode(article, data):
                         found = True
                         break
                 if found:
-                    for n in xrange(i+1):
+                    for n in xrange(i + 1):
                         data.pop(0)
                 if data[-1] == 'end':
                     data.pop()
@@ -263,18 +264,17 @@ def decode(article, data):
             else:
                 raise BadYenc()
 
-        #Deal with yenc encoded posts
+        # Deal with yenc encoded posts
         elif (ybegin and yend):
             if 'name' in ybegin:
                 nzf.filename = name_fixer(ybegin['name'])
             else:
-                logging.debug("Possible corrupt header detected " + \
-                              "=> ybegin: %s", ybegin)
+                logging.debug("Possible corrupt header detected => ybegin: %s", ybegin)
             nzf.type = 'yenc'
             # Decode data
             if HAVE_YENC:
                 decoded_data, crc = _yenc.decode_string(''.join(data))[:2]
-                partcrc = '%08X' % ((crc ^ -1) & 2**32L - 1)
+                partcrc = '%08X' % ((crc ^ -1) & 2 ** 32L - 1)
             else:
                 data = ''.join(data)
                 for i in (0, 9, 10, 13, 27, 32, 46, 61):
@@ -282,7 +282,7 @@ def decode(article, data):
                     data = data.replace(j, chr(i))
                 decoded_data = data.translate(YDEC_TRANS)
                 crc = binascii.crc32(decoded_data)
-                partcrc = '%08X' % (crc & 2**32L - 1)
+                partcrc = '%08X' % (crc & 2 ** 32L - 1)
 
             if ypart:
                 crcname = 'pcrc32'
@@ -293,8 +293,7 @@ def decode(article, data):
                 _partcrc = '0' * (8 - len(yend[crcname])) + yend[crcname].upper()
             else:
                 _partcrc = None
-                logging.debug("Corrupt header detected " + \
-                              "=> yend: %s", yend)
+                logging.debug("Corrupt header detected => yend: %s", yend)
 
             if not (_partcrc == partcrc):
                 raise CrcError(_partcrc, partcrc, decoded_data)
@@ -303,12 +302,13 @@ def decode(article, data):
 
         return decoded_data
 
+
 def yCheck(data):
     ybegin = None
     ypart = None
     yend = None
 
-    ## Check head
+    # Check head
     for i in xrange(min(40, len(data))):
         try:
             if data[i].startswith('=ybegin '):
@@ -320,17 +320,17 @@ def yCheck(data):
 
                 ybegin = ySplit(data[i], splits)
 
-                if data[i+1].startswith('=ypart '):
-                    ypart = ySplit(data[i+1])
-                    data = data[i+2:]
+                if data[i + 1].startswith('=ypart '):
+                    ypart = ySplit(data[i + 1])
+                    data = data[i + 2:]
                     break
                 else:
-                    data = data[i+1:]
+                    data = data[i + 1:]
                     break
         except IndexError:
             break
 
-    ## Check tail
+    # Check tail
     for i in xrange(-1, -11, -1):
         try:
             if data[i].startswith('=yend '):
@@ -344,7 +344,7 @@ def yCheck(data):
 
 # Example: =ybegin part=1 line=128 size=123 name=-=DUMMY=- abc.par
 YSPLIT_RE = re.compile(r'([a-zA-Z0-9]+)=')
-def ySplit(line, splits = None):
+def ySplit(line, splits=None):
     fields = {}
 
     if splits:
@@ -356,10 +356,11 @@ def ySplit(line, splits = None):
         return fields
 
     for i in range(0, len(parts), 2):
-        key, value = parts[i], parts[i+1]
+        key, value = parts[i], parts[i + 1]
         fields[key] = value.strip()
 
     return fields
+
 
 def strip(data):
     while data and not data[0]:

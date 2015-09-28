@@ -38,6 +38,7 @@ from sabnzbd.misc import match_str
 
 _BONJOUR_OBJECT = None
 
+
 def hostname():
     """ Return host's pretty name """
     if sabnzbd.WIN32:
@@ -76,7 +77,7 @@ def set_bonjour(host=None, port=None):
     if match_str(host, ('localhost', '127.0.', '::1')):
         logging.info('Bonjour/ZeroConfig does not support "localhost"')
         # All implementations fail to implement "localhost" properly
-        # A false addresss is published even when scope==kDNSServiceInterfaceIndexLocalOnly
+        # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
         return
 
     name = hostname()

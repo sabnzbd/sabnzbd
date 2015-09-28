@@ -15,11 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-"""
-sabnzbd.growler - Send notifications to Growl
 
 """
-#------------------------------------------------------------------------------
+sabnzbd.growler - Send notifications to Growl
+"""
+
 from __future__ import with_statement
 import os.path
 import logging
@@ -56,30 +56,31 @@ try:
 except:
     _HAVE_NTFOSD = False
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Define translatable message table
-TT = lambda x:x
+##############################################################################
+TT = lambda x: x
 NOTIFICATION = {
-    'startup'   : TT('Startup/Shutdown'),        #: Message class for Growl server
-    'download'  : TT('Added NZB'),               #: Message class for Growl server
-    'pp'        : TT('Post-processing started'), #: Message class for Growl server
-    'complete'  : TT('Job finished'),            #: Message class for Growl server
-    'failed'    : TT('Job failed'),              #: Message class for Growl server
-    'warning'   : TT('Warning'),                 #: Message class for Growl server
-    'error'     : TT('Error'),                   #: Message class for Growl server
-    'disk_full' : TT('Disk full'),               #: Message class for Growl server
+    'startup': TT('Startup/Shutdown'),        #: Message class for Growl server
+    'download': TT('Added NZB'),               #: Message class for Growl server
+    'pp': TT('Post-processing started'),  # : Message class for Growl server
+    'complete': TT('Job finished'),            #: Message class for Growl server
+    'failed': TT('Job failed'),              #: Message class for Growl server
+    'warning': TT('Warning'),                 #: Message class for Growl server
+    'error': TT('Error'),                   #: Message class for Growl server
+    'disk_full': TT('Disk full'),               #: Message class for Growl server
     'queue_done': TT('Queue finished'),          #: Message class for Growl server
-    'other'     : TT('Other Messages')           #: Message class for Growl server
+    'other': TT('Other Messages')           #: Message class for Growl server
 }
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Setup platform dependent Growl support
-#
+##############################################################################
 _GROWL = None       # Instance of the Notifier after registration
 _GROWL_REG = False  # Succesful registration
 _GROWL_DATA = (None, None)    # Address and password
 
-#------------------------------------------------------------------------------
+
 def get_icon():
     icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
     if not os.path.isfile(icon):
@@ -97,22 +98,17 @@ def get_icon():
     return icon
 
 
-#------------------------------------------------------------------------------
 def change_value():
-    """ Signal that we should register with a new Growl server
-    """
+    """ Signal that we should register with a new Growl server """
     global _GROWL_REG
     _GROWL_REG = False
 
 
-#------------------------------------------------------------------------------
 def have_ntfosd():
-    """ Return if any PyNotify support is present
-    """
+    """ Return if any PyNotify support is present """
     return bool(_HAVE_NTFOSD)
 
 
-#------------------------------------------------------------------------------
 def check_classes(gtype, section):
     """ Check if `gtype` is enabled in `section` """
     try:
@@ -120,10 +116,9 @@ def check_classes(gtype, section):
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
 
-#------------------------------------------------------------------------------
-def send_notification(title , msg, gtype):
-    """ Send Notification message
-    """
+
+def send_notification(title, msg, gtype):
+    """ Send Notification message """
     # Notification Center
     if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
@@ -155,25 +150,20 @@ def send_notification(title , msg, gtype):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
-
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
 
 
-#------------------------------------------------------------------------------
 def reset_growl():
-    """ Reset Growl (after changing language)
-    """
+    """ Reset Growl (after changing language) """
     global _GROWL, _GROWL_REG
     _GROWL = None
     _GROWL_REG = False
 
 
-#------------------------------------------------------------------------------
 def register_growl(growl_server, growl_password):
-    """ Register this app with Growl
-    """
+    """ Register this app with Growl """
     error = None
     host, port = sabnzbd.misc.split_host(growl_server or '')
 
@@ -184,12 +174,12 @@ def register_growl(growl_server, growl_password):
     GNTPRegister.headers = {}
 
     growler = GrowlNotifier(
-        applicationName = 'SABnzbd%s' % sys_name,
-        applicationIcon = get_icon(),
-        notifications = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
-        hostname = host or 'localhost',
-        port = port or 23053,
-        password = growl_password or None
+        applicationName='SABnzbd%s' % sys_name,
+        applicationIcon=get_icon(),
+        notifications=[Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
+        hostname=host or 'localhost',
+        port=port or 23053,
+        password=growl_password or None
     )
 
     try:
@@ -210,29 +200,28 @@ def register_growl(growl_server, growl_password):
     except:
         error = 'Unknown Growl registration error'
         logging.debug(error)
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
         del growler
         ret = None
 
     return ret, error
 
 
-#------------------------------------------------------------------------------
-def send_growl(title , msg, gtype, test=None):
-    """ Send Growl message
-    """
+def send_growl(title, msg, gtype, test=None):
+    """ Send Growl message """
     global _GROWL, _GROWL_REG, _GROWL_DATA
 
     # support testing values from UI
     if test:
-        growl_server   = test.get('growl_server') or None
+        growl_server = test.get('growl_server') or None
         growl_password = test.get('growl_password') or None
     else:
-        growl_server   = sabnzbd.cfg.growl_server()
+        growl_server = sabnzbd.cfg.growl_server()
         growl_password = sabnzbd.cfg.growl_password()
 
     for n in (0, 1):
-        if not _GROWL_REG: _GROWL = None
+        if not _GROWL_REG:
+            _GROWL = None
         if (growl_server, growl_password) != _GROWL_DATA:
             reset_growl()
         if not _GROWL:
@@ -247,9 +236,9 @@ def send_growl(title , msg, gtype, test=None):
             logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
             try:
                 ret = _GROWL.notify(
-                    noteType = Tx(NOTIFICATION.get(gtype, 'other')),
-                    title = title,
-                    description = unicoder(msg),
+                    noteType=Tx(NOTIFICATION.get(gtype, 'other')),
+                    title=title,
+                    description=unicoder(msg),
                 )
                 if ret is None or isinstance(ret, bool):
                     return None
@@ -270,9 +259,9 @@ def send_growl(title , msg, gtype, test=None):
             return error
     return None
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Local OSX Growl support
-#
+##############################################################################
 if _HAVE_CLASSIC_GROWL:
     _local_growl = None
     if os.path.isfile('sabnzbdplus.icns'):
@@ -282,32 +271,31 @@ if _HAVE_CLASSIC_GROWL:
     else:
         _OSX_ICON = Growl.Image.imageWithIconForApplication('Terminal')
 
-    def send_local_growl(title , msg, gtype):
+    def send_local_growl(title, msg, gtype):
         """ Send to local Growl server, OSX-only """
         global _local_growl
         if not _local_growl:
             notes = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS]
             _local_growl = Growl.GrowlNotifier(
-                applicationName = 'SABnzbd',
-                applicationIcon = _OSX_ICON,
-                notifications = notes,
-                defaultNotifications = notes
-                )
+                applicationName='SABnzbd',
+                applicationIcon=_OSX_ICON,
+                notifications=notes,
+                defaultNotifications=notes
+            )
             _local_growl.register()
         _local_growl.notify(Tx(NOTIFICATION.get(gtype, 'other')), title, msg)
         return None
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Ubuntu NotifyOSD Support
-#
+##############################################################################
 _NTFOSD = False
 def send_notify_osd(title, message):
-    """ Send a message to NotifyOSD
-    """
+    """ Send a message to NotifyOSD """
     global _NTFOSD
     if not _HAVE_NTFOSD:
-        return T('Not available') #: Function is not available on this OS
+        return T('Not available')  # : Function is not available on this OS
 
     error = 'NotifyOSD not working'
     icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
@@ -334,10 +322,11 @@ def ncenter_path():
     else:
         return None
 
+
 def send_notification_center(title, msg, gtype):
     """ Send message to Mountain Lion's Notification Center """
     if sabnzbd.DARWIN_VERSION < 8:
-        return T('Not available') #: Function is not available on this OS
+        return T('Not available')  # : Function is not available on this OS
     tool = ncenter_path()
     if tool:
         try:
@@ -350,14 +339,13 @@ def send_notification_center(title, msg, gtype):
                 output = ''
         except:
             logging.info('Cannot run notifier "%s"', tool)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.debug("Traceback: ", exc_info=True)
             output = 'Notifier tool crashed'
     else:
         output = 'Notifier app not found'
     return output.strip('*\n ')
 
 
-#------------------------------------------------------------------------------
 def hostname(host=True):
     """ Return host's pretty name """
     if sabnzbd.WIN32:
@@ -372,7 +360,7 @@ def hostname(host=True):
     else:
         return ''
 
-#------------------------------------------------------------------------------
+
 def send_prowl(title, msg, gtype, force=False, test=None):
     """ Send message to Prowl """
 
@@ -388,17 +376,28 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     msg = urllib2.quote(msg.encode('utf8'))
     prio = -3
 
-    if gtype == 'startup' :  prio = sabnzbd.cfg.prowl_prio_startup()
-    if gtype == 'download' : prio = sabnzbd.cfg.prowl_prio_download()
-    if gtype == 'pp' :       prio = sabnzbd.cfg.prowl_prio_pp()
-    if gtype == 'complete' : prio = sabnzbd.cfg.prowl_prio_complete()
-    if gtype == 'failed' :   prio = sabnzbd.cfg.prowl_prio_failed()
-    if gtype == 'disk-full': prio = sabnzbd.cfg.prowl_prio_disk_full()
-    if gtype == 'warning':   prio = sabnzbd.cfg.prowl_prio_warning()
-    if gtype == 'error':     prio = sabnzbd.cfg.prowl_prio_error()
-    if gtype == 'queue_done': prio = sabnzbd.cfg.prowl_prio_queue_done()
-    if gtype == 'other':     prio = sabnzbd.cfg.prowl_prio_other()
-    if force: prio = 0
+    if gtype == 'startup':
+        prio = sabnzbd.cfg.prowl_prio_startup()
+    if gtype == 'download':
+        prio = sabnzbd.cfg.prowl_prio_download()
+    if gtype == 'pp':
+        prio = sabnzbd.cfg.prowl_prio_pp()
+    if gtype == 'complete':
+        prio = sabnzbd.cfg.prowl_prio_complete()
+    if gtype == 'failed':
+        prio = sabnzbd.cfg.prowl_prio_failed()
+    if gtype == 'disk-full':
+        prio = sabnzbd.cfg.prowl_prio_disk_full()
+    if gtype == 'warning':
+        prio = sabnzbd.cfg.prowl_prio_warning()
+    if gtype == 'error':
+        prio = sabnzbd.cfg.prowl_prio_error()
+    if gtype == 'queue_done':
+        prio = sabnzbd.cfg.prowl_prio_queue_done()
+    if gtype == 'other':
+        prio = sabnzbd.cfg.prowl_prio_other()
+    if force:
+        prio = 0
 
     if prio > -3:
         url = 'https://api.prowlapp.com/publicapi/add?apikey=%s&application=SABnzbd' \
@@ -408,12 +407,11 @@ def send_prowl(title, msg, gtype, force=False, test=None):
             return ''
         except:
             logging.warning(T('Failed to send Prowl message'))
-            logging.info("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info=True)
             return T('Failed to send Prowl message')
     return ''
 
 
-#------------------------------------------------------------------------------
 def send_pushover(title, msg, gtype, force=False, test=None):
     """ Send message to pushover """
 
@@ -431,17 +429,28 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     prio = -2
 
-    if gtype == 'startup' :  prio = sabnzbd.cfg.pushover_prio_startup()
-    if gtype == 'download' : prio = sabnzbd.cfg.pushover_prio_download()
-    if gtype == 'pp' :       prio = sabnzbd.cfg.pushover_prio_pp()
-    if gtype == 'complete' : prio = sabnzbd.cfg.pushover_prio_complete()
-    if gtype == 'failed' :   prio = sabnzbd.cfg.pushover_prio_failed()
-    if gtype == 'disk-full': prio = sabnzbd.cfg.pushover_prio_disk_full()
-    if gtype == 'warning':   prio = sabnzbd.cfg.pushover_prio_warning()
-    if gtype == 'error':     prio = sabnzbd.cfg.pushover_prio_error()
-    if gtype == 'queue_done': prio = sabnzbd.cfg.pushover_prio_queue_done()
-    if gtype == 'other':     prio = sabnzbd.cfg.pushover_prio_other()
-    if force: prio = 1
+    if gtype == 'startup':
+        prio = sabnzbd.cfg.pushover_prio_startup()
+    if gtype == 'download':
+        prio = sabnzbd.cfg.pushover_prio_download()
+    if gtype == 'pp':
+        prio = sabnzbd.cfg.pushover_prio_pp()
+    if gtype == 'complete':
+        prio = sabnzbd.cfg.pushover_prio_complete()
+    if gtype == 'failed':
+        prio = sabnzbd.cfg.pushover_prio_failed()
+    if gtype == 'disk-full':
+        prio = sabnzbd.cfg.pushover_prio_disk_full()
+    if gtype == 'warning':
+        prio = sabnzbd.cfg.pushover_prio_warning()
+    if gtype == 'error':
+        prio = sabnzbd.cfg.pushover_prio_error()
+    if gtype == 'queue_done':
+        prio = sabnzbd.cfg.pushover_prio_queue_done()
+    if gtype == 'other':
+        prio = sabnzbd.cfg.pushover_prio_other()
+    if force:
+        prio = 1
 
     if prio > -2:
         try:
@@ -453,20 +462,18 @@ def send_pushover(title, msg, gtype, force=False, test=None):
                 "title": title,
                 "message": msg,
                 "priority": prio
-                }), { "Content-type": "application/x-www-form-urlencoded" })
+            }), {"Content-type": "application/x-www-form-urlencoded"})
             res = conn.getresponse()
             if res.status != 200:
                 logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
 
         except:
             logging.warning(T('Failed to send pushover message'))
-            logging.info("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info=True)
             return T('Failed to send pushover message')
     return ''
 
 
-
-#------------------------------------------------------------------------------
 def send_pushbullet(title, msg, gtype, force=False, test=None):
     """ Send message to Pushbullet """
 
@@ -482,28 +489,39 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
     prio = 0
 
-    if gtype == 'startup' :  prio = sabnzbd.cfg.pushbullet_prio_startup()
-    if gtype == 'download' : prio = sabnzbd.cfg.pushbullet_prio_download()
-    if gtype == 'pp' :       prio = sabnzbd.cfg.pushbullet_prio_pp()
-    if gtype == 'complete' : prio = sabnzbd.cfg.pushbullet_prio_complete()
-    if gtype == 'failed' :   prio = sabnzbd.cfg.pushbullet_prio_failed()
-    if gtype == 'disk-full': prio = sabnzbd.cfg.pushbullet_prio_disk_full()
-    if gtype == 'warning':   prio = sabnzbd.cfg.pushbullet_prio_warning()
-    if gtype == 'error':     prio = sabnzbd.cfg.pushbullet_prio_error()
-    if gtype == 'queue_done': prio = sabnzbd.cfg.pushbullet_prio_queue_done()
-    if gtype == 'other':     prio = sabnzbd.cfg.pushbullet_prio_other()
-    if force: prio = 1
+    if gtype == 'startup':
+        prio = sabnzbd.cfg.pushbullet_prio_startup()
+    if gtype == 'download':
+        prio = sabnzbd.cfg.pushbullet_prio_download()
+    if gtype == 'pp':
+        prio = sabnzbd.cfg.pushbullet_prio_pp()
+    if gtype == 'complete':
+        prio = sabnzbd.cfg.pushbullet_prio_complete()
+    if gtype == 'failed':
+        prio = sabnzbd.cfg.pushbullet_prio_failed()
+    if gtype == 'disk-full':
+        prio = sabnzbd.cfg.pushbullet_prio_disk_full()
+    if gtype == 'warning':
+        prio = sabnzbd.cfg.pushbullet_prio_warning()
+    if gtype == 'error':
+        prio = sabnzbd.cfg.pushbullet_prio_error()
+    if gtype == 'queue_done':
+        prio = sabnzbd.cfg.pushbullet_prio_queue_done()
+    if gtype == 'other':
+        prio = sabnzbd.cfg.pushbullet_prio_other()
+    if force:
+        prio = 1
 
     if prio > 0:
         try:
             conn = httplib.HTTPSConnection('api.pushbullet.com:443')
-            conn.request('POST', '/v2/pushes', \
+            conn.request('POST', '/v2/pushes',
                 json.dumps({
-                'type' : 'note',
-                'device' : device,
-                'title' : title,
-                'body' : msg }),
-                headers={'Authorization' : 'Bearer ' + apikey,
+                    'type': 'note',
+                    'device': device,
+                    'title': title,
+                    'body': msg}),
+                headers={'Authorization': 'Bearer ' + apikey,
                          'Content-type': 'application/json'})
             res = conn.getresponse()
             if res.status != 200:
@@ -513,6 +531,6 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
 
         except:
             logging.warning(T('Failed to send pushbullet message'))
-            logging.info('Traceback: ', exc_info = True)
+            logging.info('Traceback: ', exc_info=True)
             return T('Failed to send pushbullet message')
     return ''

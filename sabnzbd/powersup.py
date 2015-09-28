@@ -24,34 +24,33 @@ import subprocess
 import logging
 import time
 
-#------------------------------------------------------------------------------
+
+##############################################################################
 # Power management for Windows
+##############################################################################
 
 def win_hibernate():
-    """ Hibernate Windows system, returns after wakeup
-    """
+    """ Hibernate Windows system, returns after wakeup """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
     except:
         logging.error(T('Failed to hibernate system'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def win_standby():
-    """ Standby Windows system, returns after wakeup
-    """
+    """ Standby Windows system, returns after wakeup """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
     except:
         logging.error(T('Failed to standby system'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def win_shutdown():
-    """ Shutdown Windows system, never returns
-    """
+    """ Shutdown Windows system, never returns """
     try:
         import win32security
         import win32api
@@ -67,40 +66,39 @@ def win_shutdown():
         os._exit(0)
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Power management for OSX
+##############################################################################
 
 def osx_shutdown():
-    """ Shutdown OSX system, never returns
-    """
+    """ Shutdown OSX system, never returns """
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
         logging.error(T('Error while shutting down system'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
     os._exit(0)
 
 
 def osx_standby():
-    """ Make OSX system sleep, returns after wakeup
-    """
+    """ Make OSX system sleep, returns after wakeup """
     try:
-        subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
+        subprocess.call(['osascript', '-e', 'tell app "System Events" to sleep'])
         time.sleep(10)
     except:
         logging.error(T('Failed to standby system'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def osx_hibernate():
-    """ Make OSX system sleep, returns after wakeup
-    """
+    """ Make OSX system sleep, returns after wakeup """
     osx_standby()
 
 
-#------------------------------------------------------------------------------
-# Power management for linux.
-#
+##############################################################################
+# Power management for Linux
+##############################################################################
+
 #    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2] and
 #    DeviceKit(-power) [3]. HAL will eventually be deprecated but older systems
 #    might still use it.
@@ -119,8 +117,7 @@ except ImportError:
 
 
 def _get_sessionproxy():
-    """ Return (proxy-object, interface), (None, None) if not available
-    """
+    """ Return (proxy-object, interface), (None, None) if not available """
     name = 'org.freedesktop.PowerManagement'
     path = '/org/freedesktop/PowerManagement'
     interface = 'org.freedesktop.PowerManagement'
@@ -130,9 +127,9 @@ def _get_sessionproxy():
     except dbus.exceptions.DBusException:
         return None, None
 
+
 def _get_systemproxy(method):
-    """ Return (proxy-object, interface, pinterface), (None, None, None) if not available
-    """
+    """ Return (proxy-object, interface, pinterface), (None, None, None) if not available """
     if method == 'ConsoleKit':
         name = 'org.freedesktop.ConsoleKit'
         path = '/org/freedesktop/ConsoleKit/Manager'
@@ -157,9 +154,9 @@ def _get_systemproxy(method):
 
 
 def linux_shutdown():
-    """ Make Linux system shutdown, never returns
-    """
-    if not HAVE_DBUS: os._exit(0)
+    """ Make Linux system shutdown, never returns """
+    if not HAVE_DBUS:
+        os._exit(0)
 
     proxy, interface = _get_sessionproxy()
     if proxy:
@@ -179,9 +176,9 @@ def linux_shutdown():
 
 
 def linux_hibernate():
-    """ Make Linux system go into hibernate, returns after wakeup
-    """
-    if not HAVE_DBUS: return
+    """ Make Linux system go into hibernate, returns after wakeup """
+    if not HAVE_DBUS:
+        return
 
     proxy, interface = _get_sessionproxy()
     if proxy:
@@ -203,9 +200,9 @@ def linux_hibernate():
 
 
 def linux_standby():
-    """ Make Linux system go into standby, returns after wakeup
-    """
-    if not HAVE_DBUS: return
+    """ Make Linux system go into standby, returns after wakeup """
+    if not HAVE_DBUS:
+        return
 
     proxy, interface = _get_sessionproxy()
     if proxy:

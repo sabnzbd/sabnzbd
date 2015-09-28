@@ -34,15 +34,16 @@ import sabnzbd.interface
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
-#------------------------------------------------------------------------------
+
 class Wizard(object):
+
     def __init__(self, web_dir, root, prim):
         self.__root = root
         # Get the path for the folder named wizard
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':3, 'version':sabnzbd.__version__,
+                     'steps': 3, 'version': sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
@@ -57,7 +58,7 @@ class Wizard(object):
             lng = util.apireg.get_install_lng()
             logging.debug('Installer language code "%s"', lng)
         info['lang'] = lng or cfg.language()
-        info['active_lang'] = info['lang'] 
+        info['active_lang'] = info['lang']
         info['languages'] = list_languages()
         info['T'] = Ttemplate
 
@@ -126,7 +127,6 @@ class Wizard(object):
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
-
     @cherrypy.expose
     def two(self, **kwargs):
         """ Accept server and show internal web server page """
@@ -145,7 +145,7 @@ class Wizard(object):
         host = cfg.cherryhost()
         info['host'] = host
         # Allow special operation if host is not one of the defaults
-        if host not in ('127.0.0.1', '::1', 'localhost','0.0.0.0'):
+        if host not in ('127.0.0.1', '::1', 'localhost', '0.0.0.0'):
             info['custom_host'] = True
         else:
             info['custom_host'] = False
@@ -161,16 +161,15 @@ class Wizard(object):
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
-
     @cherrypy.expose
     def three(self, **kwargs):
         """ Accept webserver parms and show Indexers page """
         if kwargs:
             if 'access' in kwargs:
                 cfg.cherryhost.set(kwargs['access'])
-            cfg.enable_https.set(kwargs.get('enable_https',0))
-            cfg.autobrowser.set(kwargs.get('autobrowser',0))
-            cfg.bandwidth_max.set(kwargs.get('bandwidth',''))
+            cfg.enable_https.set(kwargs.get('enable_https', 0))
+            cfg.autobrowser.set(kwargs.get('autobrowser', 0))
+            cfg.bandwidth_max.set(kwargs.get('bandwidth', ''))
             cfg.username.set(kwargs.get('web_user', ''))
             cfg.password.set(kwargs.get('web_pass', ''))
             if not cfg.username() or not cfg.password():
@@ -194,7 +193,7 @@ class Wizard(object):
         return template.respond()
 
     def get_access_info(self):
-        ''' Build up a list of url's that sabnzbd can be accessed from '''
+        """ Build up a list of url's that sabnzbd can be accessed from """
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.cherryhost()
