@@ -143,11 +143,12 @@
 
                         <div data-bind="foreach: statusInfo.status.servers">
                             <div class="options-server-box">
+                                <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">$T('Glitter-unblockServer')</a>
                                 <div class="row">
                                     <div class="col-sm-5">$T('swtag-server')</div>
                                     <div class="col-sm-7">
-                                        <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">$T('Glitter-unblockServer')</a>
-                                        <span data-bind="text: servername"></span>
+                                        <span data-bind="text: servername"></span><br />
+                                        <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -162,9 +163,7 @@
                                     <div class="col-sm-5"># $T('connections')</div>
                                     <div class="col-sm-7" data-bind="text: serveractiveconn"></div>
                                 </div>
-                                <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
-
-
+                                
                                 <!-- ko if: serverconnections().length > 0 -->
                                 <table class="table table-hover table-server-connections" data-bind="visible: \$root.showActiveConnections()">
                                     <thead>
