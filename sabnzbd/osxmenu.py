@@ -81,7 +81,7 @@ class SABnzbdDelegate(NSObject):
         self.timer.fire()
 
     def buildMenu(self):
-        #logging.info("building menu")
+        # logging.info("building menu")
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
@@ -110,7 +110,7 @@ class SABnzbdDelegate(NSObject):
         # Variables
         self.state = "Idle"
         try:
-            self.speed = sabnzbd.downloader.Downloader.do.get_limit()
+            self.speed = sabnzbd.downloader.Downloader.do.get_limit()  # @UndefinedVariable
         except:
             self.speed = 0
         self.version_notify = 1
@@ -396,7 +396,7 @@ class SABnzbdDelegate(NSObject):
             # Fetch history items
             if not self.history_db:
                 self.history_db = sabnzbd.database.get_history_handle()
-            items, fetched_items, total_items = self.history_db.fetch_history(0, 10, None)
+            items, fetched_items, _total_items = self.history_db.fetch_history(0, 10, None)
 
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = {NSForegroundColorAttributeName: NSColor.redColor(), NSFontAttributeName: NSFont.menuFontOfSize_(14.0)}
@@ -500,7 +500,7 @@ class SABnzbdDelegate(NSObject):
 
     def iconUpdate(self):
         try:
-            if sabnzbd.downloader.Downloader.do.paused:
+            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
                 self.status_item.setImage_(self.icons['pause'])
             else:
                 self.status_item.setImage_(self.icons['idle'])
@@ -509,7 +509,7 @@ class SABnzbdDelegate(NSObject):
 
     def pauseUpdate(self):
         try:
-            if sabnzbd.downloader.Downloader.do.paused:
+            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
                 if self.isLeopard:
                     self.resume_menu_item.setHidden_(NO)
                     self.pause_menu_item.setHidden_(YES)
@@ -528,7 +528,7 @@ class SABnzbdDelegate(NSObject):
 
     def speedlimitUpdate(self):
         try:
-            speed = int(sabnzbd.downloader.Downloader.do.get_limit())
+            speed = int(sabnzbd.downloader.Downloader.do.get_limit())  # @UndefinedVariable
             if self.speed != speed:
                 self.speed = speed
                 speedsValues = self.menu_speed.numberOfItems()
@@ -545,7 +545,7 @@ class SABnzbdDelegate(NSObject):
         try:
             if sabnzbd.NEW_VERSION and self.version_notify:
                 # logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
-                new_release, new_rel_url = sabnzbd.NEW_VERSION.split(';')
+                new_release, _new_rel_url = sabnzbd.NEW_VERSION.split(';')
                 growler.send_notification("SABnzbd", "%s : %s" % (T('New release available'), new_release), 'other')
                 self.version_notify = 0
         except:
@@ -685,14 +685,14 @@ class SABnzbdDelegate(NSObject):
         # logging.info("[osx] speed limit to %s" % (sender.representedObject()))
         speed = int(sender.representedObject())
         if speed != self.speed:
-            sabnzbd.downloader.Downloader.do.limit_speed(speed)
+            sabnzbd.downloader.Downloader.do.limit_speed(speed)  # @UndefinedVariable
             self.speedlimitUpdate()
 
     def purgeAction_(self, sender):
         mode = sender.representedObject()
         # logging.info("[osx] purge %s" % (mode))
         if mode == "queue":
-            NzbQueue.do.remove_all()
+            NzbQueue.do.remove_all()  # @UndefinedVariable
         elif mode == "history":
             if not self.history_db:
                 self.history_db = sabnzbd.database.get_history_handle()
@@ -704,7 +704,7 @@ class SABnzbdDelegate(NSObject):
         if minutes:
             scheduler.plan_resume(minutes)
         else:
-            sabnzbd.downloader.Downloader.do.pause()
+            sabnzbd.downloader.Downloader.do.pause()  # @UndefinedVariable
 
     def resumeAction_(self, sender):
         scheduler.plan_resume(0)

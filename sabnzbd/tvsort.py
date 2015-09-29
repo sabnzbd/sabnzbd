@@ -59,10 +59,10 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)',
                '(AW)', '(AR)', '(AL)', '(AF)')
 
 
-_RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
-_RE_ENDFN = re.compile(r'%fn[{}]*$', re.I)
 def ends_in_file(path):
     """ Return True when path ends with '.%ext' or '%fn' """
+    _RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
+    _RE_ENDFN = re.compile(r'%fn[{}]*$', re.I)
     return bool(_RE_ENDEXT.search(path) or _RE_ENDFN.search(path))
 
 
@@ -363,7 +363,7 @@ class SeriesSorter(object):
         for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
-        # Lowercase all characters encased in {}
+        # Lowercase all characters wrapped in {}
         path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
@@ -612,7 +612,7 @@ class GenericSorter(object):
         for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
-        # Lowercase all characters encased in {}
+        # Lowercase all characters wrapped in {}
         path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
@@ -749,11 +749,13 @@ class DateSorter(object):
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
 
-        if self.date_type == 1:  # 2008-10-16
+        # 2008-10-16
+        if self.date_type == 1:
             self.date_info['year'] = self.match_obj.group(1)
             self.date_info['month'] = self.match_obj.group(2)
             self.date_info['date'] = self.match_obj.group(3)
-        else:  # 10.16.2008
+        # 10.16.2008
+        else:
             self.date_info['year'] = self.match_obj.group(3)
             self.date_info['month'] = self.match_obj.group(1)
             self.date_info['date'] = self.match_obj.group(2)
@@ -829,7 +831,7 @@ class DateSorter(object):
         for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
-        # Lowercase all characters encased in {}
+        # Lowercase all characters wrapped in {}
         path = to_lowercase(path)
 
         # Strip any extra ' ' '.' or '_' around foldernames
@@ -935,7 +937,7 @@ def get_titles(nzo, match, name, titleing=False):
         title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
         if titleing:
-            title = title.title()  # title the show name so it is in a consistant letter case
+            title = title.title()  # title the show name so it is in a consistent letter case
 
             # title applied uppercase to 's Python bug?
             title = title.replace("'S", "'s")
@@ -973,14 +975,14 @@ def get_titles(nzo, match, name, titleing=False):
     return title, dots, underscores
 
 
-def replace_word(input, one, two):
+def replace_word(word_input, one, two):
     """ Regex replace on just words """
     regex = re.compile(r'\W(%s)(\W|$)' % one, re.I)
-    matches = regex.findall(input)
+    matches = regex.findall(word_input)
     if matches:
-        for m in matches:
-            input = input.replace(one, two)
-    return input
+        for unused in matches:
+            word_input = word_input.replace(one, two)
+    return word_input
 
 
 def get_descriptions(nzo, match, name):
@@ -994,7 +996,7 @@ def get_descriptions(nzo, match, name):
         ep_name = ''
     if not ep_name:
         if match:
-            ep_name = name[match.end():]  # Need to improve for multi ep support
+            ep_name = name[match.end():]  # Need to improve for multi-ep support
         else:
             ep_name = name
         ep_name = ep_name.strip(' _.')
@@ -1025,22 +1027,22 @@ def get_decades(year):
 
 def check_for_folder(path):
     """ Return True if any folder is found in the tree at 'path' """
-    for root, dirs, files in os.walk(path):
+    for _root, dirs, _files in os.walk(path):
         if dirs:
             return True
     return False
 
 
-_RE_LOWERCASE = re.compile(r'{([^{]*)}')
 def to_lowercase(path):
     """ Lowercases any characters enclosed in {} """
+    _RE_LOWERCASE = re.compile(r'{([^{]*)}')
     while True:
         m = _RE_LOWERCASE.search(path)
         if not m:
             break
         path = path[:m.start()] + m.group(1).lower() + path[m.end():]
 
-    # just incase
+    # just in case
     path = path.replace('{', '')
     path = path.replace('}', '')
     return path

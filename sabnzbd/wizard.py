@@ -212,7 +212,7 @@ class Wizard(object):
                 # Filter out ipv6 addresses (should not be allowed)
                 if ':' not in address and address not in socks:
                     socks.append(address)
-            if cherrypy.request.headers.has_key('host'):
+            if "host" in cherrypy.request.headers:
                 host = cherrypy.request.headers['host']
                 host = host.rsplit(':')[0]
                 access_uri = host
@@ -233,7 +233,7 @@ class Wizard(object):
                     address = '[%s]' % address
                     if address not in socks:
                         socks.append(address)
-            if cherrypy.request.headers.has_key('host'):
+            if "host" in cherrypy.request.headers:
                 host = cherrypy.request.headers['host']
                 host = host.rsplit(':')[0]
                 access_uri = host
@@ -268,5 +268,5 @@ class Wizard(object):
 
     @cherrypy.expose
     def servertest(self, **kwargs):
-        result, msg = test_nntp_server_dict(kwargs)
+        _result, msg = test_nntp_server_dict(kwargs)
         return msg

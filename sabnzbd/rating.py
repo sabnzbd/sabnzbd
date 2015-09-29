@@ -143,7 +143,7 @@ class Rating(Thread):
             indexer_id = self.queue.get()
             try:
                 if indexer_id and not self._send_rating(indexer_id):
-                    for i in range(0, 60):
+                    for unused in range(0, 60):
                         if self.shutdown:
                             break
                         time.sleep(1)

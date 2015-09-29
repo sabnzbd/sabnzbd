@@ -170,7 +170,7 @@ class SABTrayThread(SysTrayIconThread):
     # adapted from interface.py
     def pause(self):
         scheduler.plan_resume(0)
-        Downloader.do.pause()
+        Downloader.do.pause()  # @UndefinedVariable
 
     # adapted from interface.py
     def resume(self):
@@ -180,6 +180,6 @@ class SABTrayThread(SysTrayIconThread):
 
 def get_codepage():
     import locale
-    lang, code = locale.getlocale()
+    _lang, code = locale.getlocale()
     logging.debug('SysTray uses codepage %s', code)
     return code

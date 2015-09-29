@@ -163,9 +163,8 @@ if sabnzbd.WIN32:
     class NewRotatingFileHandler(logging.handlers.RotatingFileHandler):
 
         def _open(self):
-            """
-            Open the current base file with the (original) mode and encoding.
-            Return the resulting stream.
+            """ Open the current base file with the (original) mode and encoding.
+                Return the resulting stream.
             """
             if self.encoding is None:
                 stream = open(self.baseFilename, self.mode)
@@ -201,9 +200,8 @@ class FilterCP3:
 
 
 class guiHandler(logging.Handler):
-    """
-    Logging handler collects the last warnings/errors/exceptions
-    to be displayed in the web-gui
+    """ Logging handler collects the last warnings/errors/exceptions
+        to be displayed in the web-gui
     """
 
     def __init__(self, size):
@@ -299,7 +297,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 def daemonize():
     try:
-        pid = os.fork()
+        pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -307,13 +305,13 @@ def daemonize():
         sys.exit(1)
 
     os.chdir(sabnzbd.DIR_PROG)
-    os.setsid()
+    os.setsid()  # @UndefinedVariable - only available in UNIX
     # Make sure I can read my own files and shut out others
     prev = os.umask(0)
     os.umask(prev and int('077', 8))
 
     try:
-        pid = os.fork()
+        pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -393,7 +391,7 @@ def fix_webname(name):
         xname = ''
     if xname in ('Default', ):
         return 'Glitter'
-    elif xname in ('Glitter', 'Plush', 'Mobile'):
+    elif xname in ('Glitter', 'Plush'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
@@ -537,7 +535,7 @@ def all_localhosts():
     try:
         # Check whether IPv6 is available and enabled
         info = socket.getaddrinfo('::1', None)
-        af, socktype, proto, canonname, sa = info[0]
+        af, socktype, proto, _canonname, _sa = info[0]
         s = socket.socket(af, socktype, proto)
         s.close()
     except socket.error:
@@ -558,7 +556,7 @@ def all_localhosts():
 def check_resolve(host):
     """ Return True if 'host' resolves """
     try:
-        info = socket.getaddrinfo(host, None)
+        dummy = socket.getaddrinfo(host, None)
     except:
         # Does not resolve
         return False
@@ -770,7 +768,7 @@ def evaluate_inipath(path):
     elif os.path.isfile(path) or os.path.isfile(path + '.bak'):
         return path
     else:
-        dirpart, name = os.path.split(path)
+        _dirpart, name = os.path.split(path)
         if name.find('.') < 1:
             return inipath
         else:
@@ -802,7 +800,6 @@ def commandline_handler(frozen=True):
     """
     service = ''
     sab_opts = []
-    serv_inst = False
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
@@ -908,7 +905,7 @@ def main():
     osx_console = False
     no_ipv6 = False
 
-    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+    _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
 
     for opt, arg in sab_opts:
         if opt == '--servicecall':
@@ -1197,8 +1194,8 @@ def main():
             logsize,
             sabnzbd.cfg.log_backups())
 
-        format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
-        rollover_log.setFormatter(logging.Formatter(format))
+        logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
+        rollover_log.setFormatter(logging.Formatter(logformat))
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
@@ -1231,7 +1228,7 @@ def main():
                 console = logging.StreamHandler()
                 console.addFilter(FilterCP3())
                 console.setLevel(LOGLEVELS[logging_level + 1])
-                console.setFormatter(logging.Formatter(format))
+                console.setFormatter(logging.Formatter(logformat))
                 logger.addHandler(console)
             if noConsoleLoggingOSX:
                 logging.info('Console logging for OSX App disabled')
@@ -1296,14 +1293,14 @@ def main():
         try:
             from ctypes import cdll
             libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult = libc.setiopolicy_np(0, 1, 3)
+            boolSetResult = libc.setiopolicy_np(0, 1, 3)  # @UnusedVariable
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
 
     logging.info('Read INI file %s', inifile)
 
-    if autobrowser != None:
+    if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
     else:
         autobrowser = sabnzbd.cfg.autobrowser()
@@ -1662,7 +1659,7 @@ def main():
                 sabnzbd.halt()
                 cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
-            if sabnzbd.downloader.Downloader.do.paused:
+            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
                 re_argv.append('-p')
             if autorestarted:
                 re_argv.append('--autorestarted')
@@ -1679,7 +1676,7 @@ def main():
                     logging.info(os.getpid())
                     os.system('kill -9 %s && open "%s"' % (os.getpid(), sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")))
                 else:
-                    pid = os.fork()
+                    pid = os.fork()  # @UndefinedVariable - only available in UNIX
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE and mail:
@@ -1739,7 +1736,7 @@ if sabnzbd.WIN32:
             win32serviceutil.ServiceFramework.__init__(self, args)
 
             self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-            self.overlapped = pywintypes.OVERLAPPED()
+            self.overlapped = pywintypes.OVERLAPPED()  # @UndefinedVariable
             self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
             sabnzbd.WIN_SERVICE = self
 
@@ -1800,7 +1797,7 @@ def HandleCommandLine(allow_service=True):
         You MUST set 'cmdline_style':'custom' in the package.py!
         Returns True when any service commands were detected.
     """
-    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+    service, sab_opts, serv_opts, _upload_nzbs = commandline_handler()
     if service and not allow_service:
         # The other frozen apps don't support Services
         print "For service support, use SABnzbd-service.exe"

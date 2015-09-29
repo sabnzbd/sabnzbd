@@ -44,7 +44,7 @@ def hostname():
     if sabnzbd.WIN32:
         return os.environ.get('computername', 'unknown')
     try:
-        return os.uname()[1]
+        return os.uname()[1]  # @UndefinedVariable
     except:
         return 'unknown'
 
@@ -57,8 +57,7 @@ def _zeroconf_callback(sdRef, flags, errorCode, name, regtype, domain):
 
 
 def set_bonjour(host=None, port=None):
-    """ Publish host/port combo through Bonjour
-    """
+    """ Publish host/port combo through Bonjour """
     global _HOST_PORT, _BONJOUR_OBJECT
 
     if not _HAVE_BONJOUR or not cfg.enable_bonjour():
@@ -98,7 +97,7 @@ def set_bonjour(host=None, port=None):
             port=int(port),
             txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/'}),
             callBack=_zeroconf_callback)
-    except sabnzbd.utils.pybonjour.BonjourError:
+    except sabnzbd.utils.pybonjour.BonjourError:  # @UndefinedVariable
         _BONJOUR_OBJECT = None
         logging.debug('Failed to start Bonjour service')
     else:

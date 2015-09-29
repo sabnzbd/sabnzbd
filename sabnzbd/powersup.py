@@ -163,7 +163,7 @@ def linux_shutdown():
         if proxy.CanShutdown():
             proxy.Shutdown(dbus_interface=interface)
     else:
-        proxy, interface, pinterface = _get_systemproxy('ConsoleKit')
+        proxy, interface, _pinterface = _get_systemproxy('ConsoleKit')
         if proxy:
             if proxy.CanStop(dbus_interface=interface):
                 try:

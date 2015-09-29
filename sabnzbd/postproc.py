@@ -183,7 +183,7 @@ class PostProcessor(Thread):
 
             # Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
-                sabnzbd.downloader.Downloader.do.wait_for_postproc()
+                sabnzbd.downloader.Downloader.do.wait_for_postproc()  # @UndefinedVariable
 
             self.__busy = True
             process_job(nzo)
@@ -191,7 +191,7 @@ class PostProcessor(Thread):
             check_eoq = True
 
             # Allow download to proceed
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()
+            sabnzbd.downloader.Downloader.do.resume_from_postproc()  # @UndefinedVariable
 
 
 def process_job(nzo):
@@ -208,9 +208,9 @@ def process_job(nzo):
     # Signal empty download, for when 'empty_postproc' is enabled
     empty = False
     nzb_list = []
-    # These need to be initialized incase of a crash
+    # These need to be initialized in case of a crash
     workdir_complete = ''
-    postproc_time = 0
+    postproc_time = 0  # @UnusedVariable -- pep8 bug?
     script_log = ''
     script_line = ''
     crash_msg = ''
@@ -250,7 +250,7 @@ def process_job(nzo):
         # if no files are present (except __admin__), fail the job
         if all_ok and len(globber(workdir)) < 2:
             if nzo.precheck:
-                enough, ratio = nzo.check_quality()
+                _enough, ratio = nzo.check_quality()
                 req_ratio = float(cfg.req_completion_rate()) / 100.0
                 # Make sure that rounded ratio doesn't equal required ratio
                 # when it is actually below required
@@ -362,7 +362,7 @@ def process_job(nzo):
                 # Move any (left-over) files to destination
                 nzo.status = Status.MOVING
                 nzo.set_action_line(T('Moving'), '...')
-                for root, dirs, files in os.walk(workdir):
+                for root, _dirs, files in os.walk(workdir):
                     if not root.endswith(JOB_ADMIN):
                         for file_ in files:
                             path = os.path.join(root, file_)
@@ -495,13 +495,13 @@ def process_job(nzo):
         # Update indexer with results
         if cfg.rating_enable():
             if nzo.encrypted > 0:
-                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
+                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)  # @UndefinedVariable
             if empty:
-                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
+                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))  # @UndefinedVariable
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
-                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
+                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)  # @UndefinedVariable
 
         # Show final status in history
         if all_ok:
@@ -545,7 +545,7 @@ def process_job(nzo):
     # Clean up the NZO
     try:
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
-        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
+        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)  # @UndefinedVariable
     except:
         logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info=True)
@@ -616,7 +616,7 @@ def parring(nzo, workdir):
         if nzo.priority != TOP_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         sabnzbd.nzbqueue.add_nzo(nzo)
-        sabnzbd.downloader.Downloader.do.resume_from_postproc()
+        sabnzbd.downloader.Downloader.do.resume_from_postproc()  # @UndefinedVariable
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
@@ -670,7 +670,7 @@ def addPrefixes(path, dirprefix):
 
 def handle_empty_queue():
     """ Check if empty queue calls for action """
-    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
+    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:  # @UndefinedVariable
         sabnzbd.save_state()
         logging.info("Queue has finished, launching: %s (%s)",
                      sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
@@ -691,12 +691,12 @@ def cleanup_list(wdir, skip_nzb):
             files = os.listdir(wdir)
         except:
             files = ()
-        for file in files:
-            path = os.path.join(wdir, file)
+        for filename in files:
+            path = os.path.join(wdir, filename)
             if os.path.isdir(path):
                 cleanup_list(path, skip_nzb)
             else:
-                if on_cleanup_list(file, skip_nzb):
+                if on_cleanup_list(filename, skip_nzb):
                     try:
                         logging.info("Removing unwanted file %s", path)
                         os.remove(path)
@@ -724,7 +724,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         Returns list of processed NZB's
     """
     files = []
-    for root, dirs, names in os.walk(wdir):
+    for root, _dirs, names in os.walk(wdir):
         for name in names:
             files.append(os.path.join(root, name))
 
@@ -769,7 +769,7 @@ def get_last_line(txt):
 def remove_samples(path):
     """ Remove all files that match the sample pattern """
     RE_SAMPLE = re.compile(sample_match, re.I)
-    for root, dirs, files in os.walk(path):
+    for root, _dirs, files in os.walk(path):
         for file_ in files:
             if RE_SAMPLE.search(file_):
                 path = os.path.join(root, file_)
