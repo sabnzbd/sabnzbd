@@ -132,6 +132,7 @@ $(function() {
         self.diskSpaceLeft1 = ko.observable();
         self.diskSpaceLeft2 = ko.observable();
         self.queueDataLeft = ko.observable();
+        self.queueDataLeftMB = ko.observable(); // To check if we have enough diskspace left
         self.quotaLimit = ko.observable();
         self.quotaLimitLeft = ko.observable();
         self.nrWarnings = ko.observable(0);
@@ -217,6 +218,7 @@ $(function() {
             ***/
             // Queue left
             self.queueDataLeft(response.queue.mbleft > 0 ? response.queue.sizeleft : '')
+            self.queueDataLeftMB(response.queue.mbleft > 0 ? response.queue.mbleft : 0)
 
             // Paused?
             self.downloadsPaused(response.queue.paused);
@@ -427,6 +429,48 @@ $(function() {
             });
             self.downloadsPaused(true);
         };
+        
+        // Custom pause-timer
+        self.customPauseTime = function() {
+            // Was it loaded already?
+            if(!Date.i18n) {
+                 jQuery.getScript('./static/javascripts/date.min.js').then(function() {
+                    // After loading we start again
+                    self.customPauseTime()
+                 })
+                 return;
+            }
+            
+            // Pop the question
+            var pausePrompt = prompt(glitterTranslate.pausePrompt);
+            var pauseParsed = Date.parse(pausePrompt);
+            
+            // Did we get it?
+            if(pauseParsed) {
+                // Is it just now?
+                if(pauseParsed <= Date.parse('now')) {
+                    // Try again with the '+' in front, the parser doesn't get 100min
+                    pauseParsed = Date.parse('+' + pausePrompt);
+                }
+                
+                // Calculate difference in minutes
+                var pauseDuration = Math.round((pauseParsed - Date.parse('now'))/1000/60);
+                
+                // If in the future
+                if(pauseDuration > 0) {
+                    callAPI({
+                        mode: 'config',
+                        name: 'set_pause',
+                        value: pauseDuration
+                    });
+                    self.downloadsPaused(true);
+                }
+            } else if(pausePrompt) {
+                // No.. And user did not press cancel
+                alert(glitterTranslate.pausePromptFail)
+                self.customPauseTime();
+            }
+        }
 
         // Update the warnings
         self.nrWarnings.subscribe(function(newValue) {

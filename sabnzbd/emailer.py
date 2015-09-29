@@ -18,7 +18,6 @@
 """
 sabnzbd.emailer - Send notification emails
 """
-#------------------------------------------------------------------------------
 
 from sabnzbd.utils import ssmtplib
 import smtplib
@@ -33,17 +32,15 @@ from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.encoding import EmailFilter
 import sabnzbd.cfg as cfg
 
+
 def errormsg(msg):
     logging.error(msg)
     return msg
 
 
-
-################################################################################
+##############################################################################
 # EMAIL_SEND
-#
-#
-################################################################################
+##############################################################################
 def send(message, email_to, test=None):
     """ Send message if message non-empty and email-parms are set """
 
@@ -51,18 +48,18 @@ def send(message, email_to, test=None):
     # from UI instead.
 
     if test:
-        email_server  = test.get('email_server')
-        email_from    = test.get('email_from')
+        email_server = test.get('email_server')
+        email_from = test.get('email_from')
         email_account = test.get('email_account')
-        email_pwd     = test.get('email_pwd')
+        email_pwd = test.get('email_pwd')
         if email_pwd and not email_pwd.replace('*', ''):
             # If all stars, get stored password instead
             email_pwd = cfg.email_pwd()
     else:
-        email_server  = cfg.email_server()
-        email_from    = cfg.email_from()
+        email_server = cfg.email_server()
+        email_from = cfg.email_from()
         email_account = cfg.email_account()
-        email_pwd     = cfg.email_pwd()
+        email_pwd = cfg.email_pwd()
 
     # email_to is replaced at send_with_template, since it can be an array
 
@@ -89,7 +86,7 @@ def send(message, email_to, test=None):
             if errorcode[0]:
 
                 # Non SSL mail server
-                logging.debug("Non-SSL mail server detected " \
+                logging.debug("Non-SSL mail server detected "
                              "reconnecting to server %s:%s", server, port)
 
                 try:
@@ -147,25 +144,21 @@ def send(message, email_to, test=None):
         if msg:
             return msg
         else:
-            logging.info("Notification e-mail succesfully sent")
+            logging.info("Notification e-mail successfully sent")
             return T('Email succeeded')
 
 
 def get_email_date():
-    """ Return un-localized date string for the Date: field
-    """
+    """ Return un-localized date string for the Date: field """
     # Get locale indepedant date/time string: "Sun May 22 20:15:12 2011"
     day, month, dayno, hms, year = time.asctime(time.gmtime()).split()
     return '%s, %s %s %s %s +0000' % (day, dayno, month, year, hms)
 
 
-################################################################################
+##############################################################################
 # email_endjob
-#
-#
-################################################################################
+##############################################################################
 from Cheetah.Template import Template
-
 def send_with_template(prefix, parm, test=None):
     """ Send an email using template """
 
@@ -194,7 +187,7 @@ def send_with_template(prefix, parm, test=None):
             if source:
                 sent = True
                 if test:
-                    recipients = [ test.get('email_to') ]
+                    recipients = [test.get('email_to')]
                 else:
                     recipients = cfg.email_to()
 
@@ -236,7 +229,7 @@ def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_
                 lines.extend(line.replace('<br/>', '\n').split('\n'))
             else:
                 lines.append(line)
-        xstages[tr('stage-'+stage.lower())] = lines
+        xstages[tr('stage-' + stage.lower())] = lines
 
     parm = {}
     parm['status'] = status
@@ -257,22 +250,20 @@ def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_
 def rss_mail(feed, jobs):
     """ Send notification email containing list of files """
 
-    parm = {'amount' : len(jobs), 'feed' : feed, 'jobs' : jobs}
+    parm = {'amount': len(jobs), 'feed': feed, 'jobs': jobs}
     return send_with_template('rss', parm)
 
 
 def badfetch_mail(msg, url):
     """ Send notification email about failed NZB fetch """
 
-    parm = {'url' : url, 'msg' : msg}
+    parm = {'url': url, 'msg': msg}
     return send_with_template('badfetch', parm)
 
 
-################################################################################
+##############################################################################
 # EMAIL_DISKFULL
-#
-#
-################################################################################
+##############################################################################
 def diskfull():
     """ Send email about disk full, no templates """
 
@@ -314,13 +305,12 @@ def _decode_file(path):
         return ''
 
 
-################################################################################
+##############################################################################
 from email.message import Message
 from email.header import Header
 from email.encoders import encode_quopri
 
 RE_HEADER = re.compile(r'^([^:]+):(.*)')
-
 def _prepare_message(txt):
     """ Apply the proper encoding to all email fields.
         The body will be Latin-1, the headers will be 'quopri'd when necessary.

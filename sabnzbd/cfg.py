@@ -22,17 +22,17 @@ import re
 
 import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
-                              DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
-                              NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-                              DEF_ADMIN_DIR
+    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
+    NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
+    DEF_ADMIN_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
-                           OptionDir, OptionStr, OptionList, no_nonsense, \
-                           validate_octal, validate_safedir, validate_dir_exists, \
-                           create_api_key, validate_notempty
+    OptionDir, OptionStr, OptionList, no_nonsense, \
+    validate_octal, validate_safedir, validate_dir_exists, \
+    create_api_key, validate_notempty
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Email validation support
-#
+##############################################################################
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
     global email_endjob, email_full, email_rss
@@ -55,27 +55,26 @@ def validate_server(value):
     else:
         return None, value
 
-#------------------------------------------------------------------------------
 if sabnzbd.WIN32:
     DEF_FOLDER_MAX = 128
 else:
     DEF_FOLDER_MAX = 256
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Configuration instances
-#
+##############################################################################
 quick_check = OptionBool('misc', 'quick_check', True)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
-email_server  = OptionStr('misc', 'email_server', validation=validate_server)
-email_to      = OptionList('misc', 'email_to', validation=validate_email)
-email_from    = OptionStr('misc', 'email_from', validation=validate_email)
+email_server = OptionStr('misc', 'email_server', validation=validate_server)
+email_to = OptionList('misc', 'email_to', validation=validate_email)
+email_from = OptionStr('misc', 'email_from', validation=validate_email)
 email_account = OptionStr('misc', 'email_account')
-email_pwd     = OptionPassword('misc', 'email_pwd')
-email_endjob  = OptionNumber('misc', 'email_endjob', 0, 0, 2)
-email_full    = OptionBool('misc', 'email_full', False)
-email_dir     = OptionDir('misc', 'email_dir', create=True)
-email_rss     = OptionBool('misc', 'email_rss', False)
+email_pwd = OptionPassword('misc', 'email_pwd')
+email_endjob = OptionNumber('misc', 'email_endjob', 0, 0, 2)
+email_full = OptionBool('misc', 'email_full', False)
+email_dir = OptionDir('misc', 'email_dir', create=True)
+email_rss = OptionBool('misc', 'email_rss', False)
 
 version_check = OptionNumber('misc', 'check_new_rel', 1)
 autobrowser = OptionBool('misc', 'auto_browser', True)
@@ -100,8 +99,8 @@ overwrite_files = OptionBool('misc', 'overwrite_files', False)
 flat_unpack = OptionBool('misc', 'flat_unpack', False)
 
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
-nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
-ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
+nice = OptionStr('misc', 'nice', '', validation=no_nonsense)
+ionice = OptionStr('misc', 'ionice', '', validation=no_nonsense)
 ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
 par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
@@ -181,12 +180,12 @@ configlock = OptionBool('misc', 'config_lock', 0)
 umask = OptionStr('misc', 'permissions', '', validation=validate_octal)
 download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
 download_free = OptionStr('misc', 'download_free')
-complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False, \
+complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False,
                          apply_umask=True, validation=validate_notempty)
 script_dir = OptionDir('misc', 'script_dir', create=True, writable=False)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
-#log_dir = OptionDir('misc', 'log_dir', 'logs')
+# log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 size_limit = OptionStr('misc', 'size_limit', '0')
@@ -212,7 +211,7 @@ login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
 bandwidth_perc = OptionNumber('misc', 'bandwidth_perc', 0, 0, 100)
 bandwidth_max = OptionStr('misc', 'bandwidth_max')
 refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
-rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
+rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24 * 60)
 cache_limit = OptionStr('misc', 'cache_limit')
 web_dir = OptionStr('misc', 'web_dir', DEF_STDINTF)
 web_dir2 = OptionStr('misc', 'web_dir2')
@@ -220,6 +219,7 @@ web_color = OptionStr('misc', 'web_color', '')
 web_color2 = OptionStr('misc', 'web_color2')
 cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionBool('misc', 'warned_old_queue9', False)
+notified_new_skin = OptionBool('misc', 'notified_new_skin', False)
 
 unwanted_extensions = OptionList('misc', 'unwanted_extensions')
 action_on_unwanted_extensions = OptionNumber('misc', 'action_on_unwanted_extensions', 0)
@@ -233,7 +233,7 @@ log_new = OptionBool('logging', 'log_new', False)
 
 https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
-https_chain = OptionDir('misc','https_chain', create=False)
+https_chain = OptionDir('misc', 'https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
@@ -250,7 +250,7 @@ nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False, protect=True)
 api_warnings = OptionBool('misc', 'api_warnings', True, protect=True)
 local_ranges = OptionList('misc', 'local_ranges', protect=True)
-inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True) # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui
+inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True)  # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
@@ -364,9 +364,9 @@ warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Set root folders for Folder config-items
-#
+##############################################################################
 def set_root_folders(home, lcldata):
     email_dir.set_root(home)
     download_dir.set_root(home)
@@ -377,6 +377,7 @@ def set_root_folders(home, lcldata):
     dirscan_dir.set_root(home)
     log_dir.set_root(lcldata)
     password_file.set_root(home)
+
 
 def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())

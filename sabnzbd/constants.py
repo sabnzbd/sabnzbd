@@ -54,15 +54,15 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME_OLD  = 'totals9.sab'
-BYTES_FILE_NAME  = 'totals10.sab'
-QUEUE_FILE_TMPL  = 'queue%s.sab'
-QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
-POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
-RSS_FILE_NAME    = 'rss_data.sab'
-SCAN_FILE_NAME    = 'watched_data2.sab'
-TERM_FLAG_FILE    = 'running.sab'
-FUTURE_Q_FOLDER   = 'future'
+BYTES_FILE_NAME_OLD = 'totals9.sab'
+BYTES_FILE_NAME = 'totals10.sab'
+QUEUE_FILE_TMPL = 'queue%s.sab'
+QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
+POSTPROC_QUEUE_FILE_NAME = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
+RSS_FILE_NAME = 'rss_data.sab'
+SCAN_FILE_NAME = 'watched_data2.sab'
+TERM_FLAG_FILE = 'running.sab'
+FUTURE_Q_FOLDER = 'future'
 JOB_ADMIN = '__ADMIN__'
 VERIFIED_FILE = '__verified__'
 QCHECK_FILE = '__skip_qcheck__'
@@ -78,36 +78,36 @@ DB_QUEUE_NAME = 'queue%s.db' % DB_QUEUE_VERSION
 
 DEF_DOWNLOAD_DIR = 'Downloads/incomplete'
 DEF_COMPLETE_DIR = 'Downloads/complete'
-DEF_ADMIN_DIR    = 'admin'
-DEF_LOG_DIR      = 'logs'
-DEF_NZBBACK_DIR  = ''
-DEF_LANGUAGE     = 'locale'
-DEF_INTERFACES   = 'interfaces'
+DEF_ADMIN_DIR = 'admin'
+DEF_LOG_DIR = 'logs'
+DEF_NZBBACK_DIR = ''
+DEF_LANGUAGE = 'locale'
+DEF_INTERFACES = 'interfaces'
 DEF_INT_LANGUAGE = 'locale'
-DEF_EMAIL_TMPL   = 'email'
-DEF_STDCONFIG    = 'Config'
-DEF_STDINTF      = 'Glitter'
-DEF_SKIN_COLORS  = {'smpl':'white','mobile':'light', 'plush' : 'gold'}
-DEF_MAIN_TMPL    = 'templates/main.tmpl'
-DEF_INI_FILE     = 'sabnzbd.ini'
-DEF_HOST         = '127.0.0.1'
-DEF_PORT_WIN     = 8080
-DEF_PORT_UNIX    = 8080
+DEF_EMAIL_TMPL = 'email'
+DEF_STDCONFIG = 'Config'
+DEF_STDINTF = 'Glitter'
+DEF_SKIN_COLORS = {'smpl': 'white', 'Glitter': 'Default', 'plush': 'gold'}
+DEF_MAIN_TMPL = 'templates/main.tmpl'
+DEF_INI_FILE = 'sabnzbd.ini'
+DEF_HOST = '127.0.0.1'
+DEF_PORT_WIN = 8080
+DEF_PORT_UNIX = 8080
 DEF_PORT_WIN_SSL = 9090
-DEF_PORT_UNIX_SSL= 9090
-DEF_WORKDIR      = 'sabnzbd'
-DEF_LOG_FILE     = 'sabnzbd.log'
-DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
-DEF_LOG_CHERRY   = 'cherrypy.log'
-DEF_TIMEOUT      = 60
-MIN_TIMEOUT      = 10
-MAX_TIMEOUT      = 200
-DEF_LOGLEVEL     = 1
-DEF_SCANRATE     = 5
-DEF_QRATE        = 0
+DEF_PORT_UNIX_SSL = 9090
+DEF_WORKDIR = 'sabnzbd'
+DEF_LOG_FILE = 'sabnzbd.log'
+DEF_LOG_ERRFILE = 'sabnzbd.error.log'
+DEF_LOG_CHERRY = 'cherrypy.log'
+DEF_TIMEOUT = 60
+MIN_TIMEOUT = 10
+MAX_TIMEOUT = 200
+DEF_LOGLEVEL = 1
+DEF_SCANRATE = 5
+DEF_QRATE = 0
 MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
-MAX_WARNINGS     = 20
+MAX_WARNINGS = 20
 
 REPAIR_PRIORITY = 3
 TOP_PRIORITY = 2
@@ -123,30 +123,27 @@ VALID_ARCHIVES = ('.zip', '.rar', '.7z')
 
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 
-#(MATCHER, [EXTRA,MATCHERS])
-series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
-                      [ r'^[-\.]+([sS]|[\d])+x(\d+)',
-                        r'^[-\.](\d+)'
-                      ] ),
+# (MATCHER, [EXTRA, MATCHERS])
+series_match = [(r'( [sS]|[\d]+)x(\d+)',  # 1x01
+                [r'^[-\.]+([sS]|[\d])+x(\d+)', r'^[-\.](\d+)']),
 
-                 (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                      [ r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)',
-                        r'^[-\.](\d+)'
-                      ] ),
-                 (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]', # .101. / _101_ / etc.
-                      [
-                      ] ),
-                 (r'[ \-_\.](\d)(\d{2,2})$', # .101 at end of title
-                      [
-                      ] )
+                (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
+                [r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', r'^[-\.](\d+)']),
+
+                (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]',  # .101. / _101_ / etc.
+                []),
+
+                (r'[ \-_\.](\d)(\d{2,2})$',  # .101 at end of title
+                [])
                ]
 
-date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
-              r'(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
+date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})',  # 2008-10-16
+              r'(\d{1,2})\W(\d{1,2})\W(\d{4})']  # 10.16.2008
 
-year_match = r'[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
+year_match = r'[\W]([1|2]\d{3})([^\w]|$)'  # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
-sample_match = r'((^|[\W_])sample\d*[\W_])' # something-sample.avi
+sample_match = r'((^|[\W_])sample\d*[\W_])'  # something-sample.avi
+
 
 class Status():
     COMPLETED = 'Completed'

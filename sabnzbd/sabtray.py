@@ -15,7 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 """
 sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 """
@@ -34,16 +33,16 @@ from sabnzbd.misc import to_units
 import os
 import cherrypy
 
+# contains the tray icon, which demands its own thread
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
-# contains the tray icon, which demands its own thread
+
 class SABTrayThread(SysTrayIconThread):
     sabicons = {
         'default': 'icons/sabnzbd16.ico',
         'green': 'icons/sabnzbd16green.ico',
         'pause': 'icons/sabnzbd16paused.ico'
     }
-
 
     def __init__(self):
         # Wait for translated texts to be loaded

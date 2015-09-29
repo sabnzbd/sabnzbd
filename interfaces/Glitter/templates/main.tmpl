@@ -30,6 +30,9 @@
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
+        <!--#if $color_scheme != 'Default'#-->
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
+        <!--#end if#-->
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -66,6 +69,8 @@
                                 <li><a href="#" data-time="60" data-bind="click: pauseTime">$T('Glitter-pause1h')</a></li>
                                 <li><a href="#" data-time="180" data-bind="click: pauseTime">$T('Glitter-pause3h')</a></li>
                                 <li><a href="#" data-time="360" data-bind="click: pauseTime">$T('Glitter-pause6h')</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" data-bind="click: customPauseTime">$T('Glitter-custom')</a></li>
                             </ul>
                             <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft"  data-toggle="dropdown">0:00</span>
                         </div>
@@ -175,19 +180,15 @@
                         </span>
                     </div>
                     <!-- /ko -->
-                    <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft1()) }">
-                            <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
-                        </span>
+                    <div class="info-container-box" data-bind="css: { 'queue-error-info' : ((queueDataLeftMB()/1024) > diskSpaceLeft1()) }">
+                        <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span> GB $T('Glitter-free')
                         <!-- ko if: (diskSpaceLeft2() > 0)  -->
                         <em>($T('Glitter-freeTemp'))</em>
                         <!-- /ko -->
                     </div>
                     <!-- ko if: (diskSpaceLeft2() > 0)  -->
-                    <div class="info-container-box">
-                        <span data-bind="css: { 'queue-error-info' : ((queueDataLeft()/1024) > diskSpaceLeft2()) }">
-                            <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
-                        </span>
+                    <div class="info-container-box"  data-bind="css: { 'queue-error-info' : ((queueDataLeftMB()/1024) > diskSpaceLeft2()) }">
+                        <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span> GB $T('Glitter-free')
                     </div>
                     <!-- /ko -->
                     <div class="info-container-box-sorting dropdown" data-bind="visible: hasQueue()">
@@ -629,6 +630,8 @@
             glitterTranslate.paused = "$T('post-Paused')";
             glitterTranslate.left = "$T('Glitter-left')";
             glitterTranslate.clearWarn = "$T('Glitter-confirmClearWarnings')";
+            glitterTranslate.pausePrompt = '$T('Glitter-pausePrompt')'.replace(/<br \/>/g, "\n").replace(/&quot;/g, "'");
+            glitterTranslate.pausePromptFail = "$T('Glitter-pausePromptFail')".replace(/<br \/>/g, "\n");
             glitterTranslate.shutdown = "$T('shutdownOK?')";
             glitterTranslate.restart = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
             glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n");

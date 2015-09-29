@@ -20,7 +20,8 @@ sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 """
 
 import os
-import gtk,gobject
+import gtk
+import gobject
 import cherrypy
 from time import sleep
 import subprocess
@@ -46,7 +47,7 @@ class StatusIcon(Thread):
         'pause': 'icons/sabnzbd16paused.ico'
     }
 
-    updatefreq = 1000#ms
+    updatefreq = 1000  # ms
 
     def __init__(self):
         self.mythread = Thread(target=self.dowork)
@@ -97,8 +98,8 @@ class StatusIcon(Thread):
         self.refresh_tooltip()
         return 1
 
-    # menu
-    def right_click_event(self,icon,button,time):
+    def right_click_event(self, icon, button, time):
+        """ menu """
         menu = gtk.Menu()
 
         maddnzb = gtk.MenuItem(T("Add NZB"))
@@ -113,12 +114,12 @@ class StatusIcon(Thread):
         mrestart = gtk.MenuItem(T("Restart"))
         mshutdown = gtk.MenuItem(T("Shutdown"))
 
-        maddnzb.connect("activate",self.addnzb)
-        mshowinterface.connect("activate",self.browse)
-        mopencomplete.connect("activate",self.opencomplete)
+        maddnzb.connect("activate", self.addnzb)
+        mshowinterface.connect("activate", self.browse)
+        mopencomplete.connect("activate", self.opencomplete)
         mrss.connect("activate", self.rss)
-        mpauseresume.connect("activate",self.pauseresume)
-        mrestart.connect("activate",self.restart)
+        mpauseresume.connect("activate", self.pauseresume)
+        mrestart.connect("activate", self.restart)
         mshutdown.connect("activate", self.shutdown)
 
         menu.append(maddnzb)
@@ -132,10 +133,10 @@ class StatusIcon(Thread):
         menu.show_all()
         menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.statusicon)
 
-    # menu handlers
-    def addnzb(self,icon):
-        dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                       buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+    def addnzb(self, icon):
+        """ menu handlers """
+        dialog = gtk.FileChooserDialog(title=None, action=gtk.FILE_CHOOSER_ACTION_OPEN,
+                                       buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         dialog.set_select_multiple(True)
 
         filter = gtk.FileFilter()
@@ -153,24 +154,24 @@ class StatusIcon(Thread):
                 add_local(filename)
         dialog.destroy()
 
-    def opencomplete(self,icon):
+    def opencomplete(self, icon):
         subprocess.Popen(["xdg-open", cfg.complete_dir.get_path()])
 
-    def browse(self,icon):
+    def browse(self, icon):
         launch_a_browser(sabnzbd.BROWSER_URL, True)
 
-    def pauseresume(self,icon):
+    def pauseresume(self, icon):
         if self.sabpaused:
             self.resume()
         else:
             self.pause()
 
-    def restart(self,icon):
+    def restart(self, icon):
         self.hover_text = T('Restart')
         sabnzbd.halt()
         cherrypy.engine.restart()
 
-    def shutdown(self,icon):
+    def shutdown(self, icon):
         self.hover_text = T('Shutdown')
         sabnzbd.halt()
         cherrypy.engine.exit()

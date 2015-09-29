@@ -18,14 +18,12 @@ def getpystone():
         try:
             exec "from " + pystonemodule + " import pystones"
             value = int(pystones(1000)[1])
-            break	# import and calculation worked, so we're done. Get out of the for loop
+            break  # import and calculation worked, so we're done. Get out of the for loop
         except:
-            pass	# ... the import went wrong, so continue in the for loop
+            pass  # ... the import went wrong, so continue in the for loop
     return value
-
 
 
 if __name__ == '__main__':
     print getpystone()
     print getcpu()
-

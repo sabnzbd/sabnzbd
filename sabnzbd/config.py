@@ -46,13 +46,14 @@ modified = False            # Signals a change in option dictionary
 
 class Option(object):
     """ Basic option class, basic fields """
+
     def __init__(self, section, keyword, default_val=None, add=True, protect=False):
         """ Basic option
             section     : single section or comma-separated list of sections
                           a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
             keyword     : keyword in the (last) section
             default_val : value returned when no value has been set
-            callback    : procedure to call when value is succesfully changed
+            callback    : procedure to call when value is successfully changed
             protect     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(',')
@@ -88,7 +89,7 @@ class Option(object):
 
     def get_dict(self, safe=False):
         """ Return value a dictionary """
-        return { self.__keyword : self.get() }
+        return {self.__keyword: self.get()}
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
@@ -125,9 +126,9 @@ class Option(object):
         return self.__sections, self.__keyword
 
 
-
 class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
+
     def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False):
         Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__minval = minval
@@ -159,6 +160,7 @@ class OptionNumber(Option):
 
 class OptionBool(Option):
     """ Boolean option class """
+
     def __init__(self, section, keyword, default_val=False, add=True, protect=False):
         Option.__init__(self, section, keyword, int(default_val), add=add, protect=protect)
 
@@ -174,6 +176,7 @@ class OptionBool(Option):
 
 class OptionDir(Option):
     """ Directory option class """
+
     def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, writable=True, add=True):
         self.__validation = validation
         self.__root = ''   # Base directory for relative paths
@@ -192,7 +195,6 @@ class OptionDir(Option):
             return p.replace('/', '\\') if '/' in p else p
         else:
             return p.replace('\\', '/') if '\\' in p else p
-        
 
     def get_path(self):
         """ Return full absolute path """
@@ -240,8 +242,10 @@ class OptionDir(Option):
         """ Set auto-creation value """
         self.__create = value
 
+
 class OptionList(Option):
     """ List option class """
+
     def __init__(self, section, keyword, default_val=None, validation=None, add=True, protect=False):
         self.__validation = validation
         if default_val is None:
@@ -249,7 +253,7 @@ class OptionList(Option):
         Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
-        """ Set the list given a comma-separated string or a list"""
+        """ Set the list given a comma-separated string or a list """
         error = None
         if value is not None:
             if not isinstance(value, list):
@@ -272,12 +276,14 @@ class OptionList(Option):
         r = len(lst)
         for n in xrange(r):
             txt += lst[n]
-            if n < r-1: txt += ', '
+            if n < r - 1:
+                txt += ', '
         return txt
 
 
 class OptionStr(Option):
     """ String class """
+
     def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True, protect=False):
         Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__validation = validation
@@ -306,6 +312,7 @@ class OptionStr(Option):
 
 class OptionPassword(Option):
     """ Password class """
+
     def __init__(self, section, keyword, default_val='', add=True):
         Option.__init__(self, section, keyword, default_val, add=add)
         self.get_string = self.get_stars
@@ -325,9 +332,9 @@ class OptionPassword(Option):
     def get_dict(self, safe=False):
         """ Return value a dictionary """
         if safe:
-            return { self._Option__keyword : self.get_stars() }
+            return {self._Option__keyword: self.get_stars()}
         else:
-            return { self._Option__keyword : self.get() }
+            return {self._Option__keyword: self.get()}
 
     def set(self, pw):
         """ Set password, encode it """
@@ -361,6 +368,7 @@ def delete_from_database(section, keyword):
 
 class ConfigServer(object):
     """ Class defining a single server """
+
     def __init__(self, name, values):
 
         self.__name = name
@@ -368,7 +376,7 @@ class ConfigServer(object):
 
         self.displayname = OptionStr(name, 'displayname', '', add=False)
         self.host = OptionStr(name, 'host', '', add=False)
-        self.port = OptionNumber(name, 'port', 119, 0, 2**16-1, add=False)
+        self.port = OptionNumber(name, 'port', 119, 0, 2 ** 16 - 1, add=False)
         self.timeout = OptionNumber(name, 'timeout', 120, 30, 240, add=False)
         self.username = OptionStr(name, 'username', '', add=False)
         self.password = OptionPassword(name, 'password', '', add=False)
@@ -441,6 +449,7 @@ class ConfigServer(object):
 
 class ConfigCat(object):
     """ Class defining a single category """
+
     def __init__(self, name, values):
         self.__name = name
         name = 'categories,' + name
@@ -482,6 +491,7 @@ class ConfigCat(object):
 
 class OptionFilters(Option):
     """ Filter list class """
+
     def __init__(self, section, keyword, add=True):
         Option.__init__(self, section, keyword, add=add)
         self.set([])
@@ -521,7 +531,7 @@ class OptionFilters(Option):
         dict = {}
         n = 0
         for filter in self.get():
-            dict['filter'+str(n)] = filter
+            dict['filter' + str(n)] = filter
             n = n + 1
         return dict
 
@@ -545,8 +555,10 @@ class OptionFilters(Option):
             self.set(filters)
         return True
 
+
 class ConfigRSS(object):
     """ Class defining a single Feed definition """
+
     def __init__(self, name, values):
         self.__name = name
         name = 'rss,' + name
@@ -598,7 +610,6 @@ class ConfigRSS(object):
         return 'rss', self.__name
 
 
-
 def get_dconfig(section, keyword, nested=False):
     """ Return a config values dictonary,
         Single item or slices based on 'section', 'keyword'
@@ -633,16 +644,15 @@ def get_dconfig(section, keyword, nested=False):
         data = item.get_dict(safe=True)
         if not nested:
             if section in ('servers', 'categories', 'rss'):
-                data = {section : [ data ]}
+                data = {section: [data]}
             else:
-                data = {section : data}
+                data = {section: data}
 
     return True, data
 
 
 def get_config(section, keyword):
-    """ Return a config object, based on 'section', 'keyword'
-    """
+    """ Return a config object, based on 'section', 'keyword' """
     try:
         return database[section][keyword]
     except KeyError:
@@ -651,8 +661,7 @@ def get_config(section, keyword):
 
 
 def set_config(kwargs):
-    """ Set a config item, using values in dictionary
-    """
+    """ Set a config item, using values in dictionary """
     try:
         item = database[kwargs.get('section')][kwargs.get('keyword')]
     except KeyError:
@@ -662,21 +671,19 @@ def set_config(kwargs):
 
 
 def delete(section, keyword):
-    """ Delete specific config item
-    """
+    """ Delete specific config item """
     try:
         database[section][keyword].delete()
     except KeyError:
         return
 
 
-################################################################################
-#
+##############################################################################
 # INI file support
 #
 # This does input and output of configuration to an INI file.
 # It translates this data structure to the config database.
-
+##############################################################################
 @synchronized(SAVE_CONFIG_LOCK)
 def read_config(path):
     """ Read the complete INI file and check its version number
@@ -775,7 +782,6 @@ def _read_config(path, try_backup=False):
     return True, ""
 
 
-
 @synchronized(SAVE_CONFIG_LOCK)
 def save_config(force=False):
     """ Update Setup file with current option values """
@@ -793,7 +799,7 @@ def save_config(force=False):
                 CFG[section] = {}
             for subsec in database[section]:
                 if section == 'servers':
-                    subsec_mod = subsec.replace('[', '{').replace(']','}')
+                    subsec_mod = subsec.replace('[', '{').replace(']', '}')
                 else:
                     subsec_mod = subsec
                 try:
@@ -833,7 +839,7 @@ def save_config(force=False):
     except:
         # Something wrong with the backup,
         logging.error(T('Cannot create backup file for %s'), bakname)
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
         return res
 
     # Write new config file
@@ -843,7 +849,7 @@ def save_config(force=False):
         res = True
     except:
         logging.error(T('Cannot write to INI file %s'), filename)
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
         try:
             os.remove(filename)
         except:
@@ -852,7 +858,6 @@ def save_config(force=False):
         sabnzbd.misc.renamer(bakname, filename)
 
     return res
-
 
 
 def define_servers():
@@ -870,6 +875,7 @@ def define_servers():
                 s.fillserver.set(False)
     except KeyError:
         pass
+
 
 def get_servers():
     global database
@@ -909,8 +915,8 @@ def get_categories(cat=0):
         database['categories'] = {}
     cats = database['categories']
     if '*' not in cats:
-        ConfigCat('*', {'pp' : old_def('dirscan_opts', '3'), 'script' : old_def('dirscan_script', 'None'), \
-                        'priority' : old_def('dirscan_priority', NORMAL_PRIORITY)})
+        ConfigCat('*', {'pp': old_def('dirscan_opts', '3'), 'script': old_def('dirscan_script', 'None'),
+                        'priority': old_def('dirscan_priority', NORMAL_PRIORITY)})
         save_config(True)
     if not isinstance(cat, int):
         try:
@@ -931,6 +937,7 @@ def define_rss():
     except KeyError:
         pass
 
+
 def get_rss():
     global database
     try:
@@ -938,18 +945,16 @@ def get_rss():
     except KeyError:
         return {}
 
+
 def get_filename():
     global CFG
     return CFG.filename
 
 
-################################################################################
-#
+##############################################################################
 # Default Validation handlers
-#
+##############################################################################
 __PW_PREFIX = '!!!encoded!!!'
-
-#------------------------------------------------------------------------------
 def encode_password(pw):
     """ Encode password in hexadecimal if needed """
     enc = False
@@ -973,7 +978,7 @@ def decode_password(pw, name):
     if pw and pw.startswith(__PW_PREFIX):
         for n in range(len(__PW_PREFIX), len(pw), 2):
             try:
-                ch = chr( int(pw[n] + pw[n+1], 16) )
+                ch = chr(int(pw[n] + pw[n + 1], 16))
             except ValueError:
                 logging.error(T('Incorrectly encoded password %s'), name)
                 return ''
@@ -1041,8 +1046,7 @@ def validate_notempty(root, value, default):
 
 
 def create_api_key():
-    """ Return a new randomized API_KEY
-    """
+    """ Return a new randomized API_KEY """
     import time
     try:
         from hashlib import md5
@@ -1061,11 +1065,10 @@ def create_api_key():
     return m.hexdigest()
 
 
-#------------------------------------------------------------------------------
-_FIXES = \
-(
+_FIXES = (
     ('enable_par_multicore', 'par2_multicore'),
 )
+
 
 def compatibility_fix(cf):
     """ Convert obsolete INI entries """

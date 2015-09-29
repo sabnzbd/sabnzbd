@@ -40,24 +40,25 @@ from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
 from sabnzbd.utils.happyeyeballs import *
 
-#------------------------------------------------------------------------------
+
 # Timeout penalty in minutes for each cause
-_PENALTY_UNKNOWN = 3    # Unknown cause
-_PENALTY_502     = 5    # Unknown 502
-_PENALTY_TIMEOUT = 10   # Server doesn't give an answer (multiple times)
-_PENALTY_SHARE   = 10   # Account sharing detected
-_PENALTY_TOOMANY = 10   # Too many connections
-_PENALTY_PERM    = 10   # Permanent error, like bad username/password
-_PENALTY_SHORT   = 1    # Minimal penalty when no_penalties is set
-_PENALTY_VERYSHORT = 0.1 # Error 400 without cause clues
+_PENALTY_UNKNOWN = 3      # Unknown cause
+_PENALTY_502 = 5          # Unknown 502
+_PENALTY_TIMEOUT = 10     # Server doesn't give an answer (multiple times)
+_PENALTY_SHARE = 10       # Account sharing detected
+_PENALTY_TOOMANY = 10     # Too many connections
+_PENALTY_PERM = 10        # Permanent error, like bad username/password
+_PENALTY_SHORT = 1        # Minimal penalty when no_penalties is set
+_PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
 
 TIMER_LOCK = RLock()
 
-#------------------------------------------------------------------------------
+
 class Server(object):
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username = None,
-                 password = None, optional=False, retention=0, categories = None):
+
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
+                 password=None, optional=False, retention=0, categories=None):
         self.id = id
         self.newid = None
         self.restart = False
@@ -85,12 +86,12 @@ class Server(object):
         self.errormsg = ''
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
-        self.request = False # True if a getaddrinfo() request is pending
+        self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
-        self.have_stat = True # Assume server has "STAT", until proven otherwise
+        self.have_stat = True  # Assume server has "STAT", until proven otherwise
 
         for i in range(threads):
-            self.idle_threads.append(NewsWrapper(self, i+1))
+            self.idle_threads.append(NewsWrapper(self, i + 1))
 
     @property
     def hostip(self):
@@ -99,13 +100,13 @@ class Server(object):
             1 and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
             2 and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
             In case of problems: return the host name itself
-        """        
-        if cfg.load_balancing()==1 and self.info and len(self.info) > 1:
+        """
+        if cfg.load_balancing() == 1 and self.info and len(self.info) > 1:
             # Return a random entry from the possible IPs
-            rnd = random.randint(0, len(self.info)-1)
+            rnd = random.randint(0, len(self.info) - 1)
             ip = self.info[rnd][4][0]
             logging.debug('For server %s, using IP %s' % (self.host, ip))
-        elif cfg.load_balancing()==2 and self.info and len(self.info) > 1:
+        elif cfg.load_balancing() == 2 and self.info and len(self.info) > 1:
             # RFC6555 / Happy Eyeballs:
             ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
             if ip:
@@ -135,11 +136,8 @@ class Server(object):
         return "%s:%s" % (self.host, self.port)
 
 
-#------------------------------------------------------------------------------
-
 class Downloader(Thread):
-    """ Singleton Downloader Thread
-    """
+    """ Singleton Downloader Thread """
     do = None
 
     def __init__(self, paused=False):
@@ -150,7 +148,7 @@ class Downloader(Thread):
         # Used for scheduled pausing
         self.paused = paused
 
-        #used for throttling bandwidth and scheduling bandwidth changes
+        # used for throttling bandwidth and scheduling bandwidth changes
         cfg.bandwidth_perc.callback(self.speed_set)
         cfg.bandwidth_max.callback(self.speed_set)
         self.speed_set()
@@ -204,7 +202,7 @@ class Downloader(Thread):
             password = srv.password()
             optional = srv.optional()
             categories = srv.categories()
-            retention = float(srv.retention() * 24 * 3600) # days ==> seconds
+            retention = float(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
             create = True
 
@@ -227,7 +225,7 @@ class Downloader(Thread):
 
     @synchronized_CV
     def set_paused_state(self, state):
-        """ Set Downloader to specified paused state """
+        """ Set downloader to specified paused state """
         self.paused = state
 
     @synchronized_CV
@@ -237,8 +235,7 @@ class Downloader(Thread):
 
     @synchronized_CV
     def pause(self, save=True):
-        """ Pause the downloader, optionally saving admin
-        """
+        """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
@@ -324,7 +321,7 @@ class Downloader(Thread):
 
     def maybe_block_server(self, server):
         from sabnzbd.nzbqueue import NzbQueue
-        if server.optional and server.active and (server.bad_cons/server.threads) > 3:
+        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             # Optional and active server had too many problems,
             # disable it now and send a re-enable plan to the scheduler
             server.bad_cons = 0
@@ -340,7 +337,6 @@ class Downloader(Thread):
             server.info = None
 
             NzbQueue.do.reset_all_try_lists()
-
 
     def run(self):
         from sabnzbd.nzbqueue import NzbQueue
@@ -635,7 +631,7 @@ class Downloader(Thread):
                         done = True
                         nw.lines = None
 
-                        logging.info('Thread %s@%s: Article ' + \
+                        logging.info('Thread %s@%s: Article ' +
                                         '%s missing (error=%s)',
                                         nw.thrdnum, nw.server.id, article.article, code)
 
@@ -662,7 +658,7 @@ class Downloader(Thread):
                         self.__request_article(nw)
 
                 if done:
-                    server.bad_cons = 0 # Succesful data, clear "bad" counter
+                    server.bad_cons = 0  # Succesful data, clear "bad" counter
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.id, article.article)
                     self.decoder.decode(article, nw.lines)
@@ -672,7 +668,7 @@ class Downloader(Thread):
                     server.idle_threads.append(nw)
 
     def __lookup_nw(self, nw):
-        ''' Find the fileno matching the nw, needed for closed connections '''
+        """ Find the fileno matching the nw, needed for closed connections """
         for f in self.read_fds:
             if self.read_fds[f] == nw:
                 return f
@@ -722,7 +718,7 @@ class Downloader(Thread):
                 nzf = article.nzf
                 nzo = nzf.nzo
 
-                ## Allow all servers to iterate over each nzo/nzf again ##
+                # Allow all servers to iterate over each nzo/nzf again ##
                 NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
@@ -750,8 +746,8 @@ class Downloader(Thread):
             logging.info('Looks like server closed connection: %s', err)
             self.__reset_nw(nw, "server broke off connection", quit=False)
         except:
-            logging.error('Suspect error in downloader')
-            logging.info("Traceback: ", exc_info = True)
+            logging.error(T('Suspect error in downloader'))
+            logging.info("Traceback: ", exc_info=True)
             self.__reset_nw(nw, "server broke off connection", quit=False)
 
     #------------------------------------------------------------------------------
@@ -796,7 +792,6 @@ class Downloader(Thread):
                 self.init_server(server_id, server_id)
                 break
 
-
     def unblock_all(self):
         for server_id in self._timers.keys():
             self.unblock(server_id)
@@ -827,13 +822,12 @@ class Downloader(Thread):
 
     @synchronized_CV
     def wakeup(self):
-        """ Just rattle the semaphore
-        """
+        """ Just rattle the semaphore """
         pass
 
     def stop(self):
         self.shutdown = True
-        growler.send_notification("SABnzbd",T('Shutting down'), 'startup')
+        growler.send_notification("SABnzbd", T('Shutting down'), 'startup')
 
 
 def stop():
@@ -849,10 +843,8 @@ def stop():
         pass
 
 
-#------------------------------------------------------------------------------
 def clues_login(text):
-    """ Check for any "failed login" clues in the response code
-    """
+    """ Check for any "failed login" clues in the response code """
     text = text.lower()
     for clue in ('username', 'password', 'invalid', 'authen', 'access denied'):
         if clue in text:
@@ -861,8 +853,7 @@ def clues_login(text):
 
 
 def clues_too_many(text):
-    """ Check for any "too many connections" clues in the response code
-    """
+    """ Check for any "too many connections" clues in the response code """
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
         if clue in text:
@@ -871,8 +862,7 @@ def clues_too_many(text):
 
 
 def clues_too_many_ip(text):
-    """ Check for any "account sharing" clues in the response code
-    """
+    """ Check for any "account sharing" clues in the response code """
     text = text.lower()
     for clue in ('simultaneous ip', 'multiple ip'):
         if clue in text:
@@ -881,8 +871,7 @@ def clues_too_many_ip(text):
 
 
 def clues_pay(text):
-    """ Check for messages about payments
-    """
+    """ Check for messages about payments """
     text = text.lower()
     for clue in ('credits', 'paym', 'expired'):
         if clue in text:

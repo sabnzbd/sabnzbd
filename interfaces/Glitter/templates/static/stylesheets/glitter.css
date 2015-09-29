@@ -1052,7 +1052,9 @@ tr.queueitem>td:first-child>a {
 }
 
 #modal_options .options-server-box .btn {
-    float: right;
+    position: absolute;
+    right: 10px;
+    z-index:2000;
 }
 
 #modal_options .options-server-box:last-child {
@@ -1530,6 +1532,10 @@ a:focus {
     visibility: visible;
     transform: scale(1, 1);
     -webkit-transform: scale(1, 1);
+}
+
+.dropdown-menu .divider {
+    margin: 3px 0px;
 }
 
 .ui-slider-handle,

@@ -18,7 +18,7 @@
 """
 sabnzbd.tvsort - Sorting Functions
 Series Sorting - Sorting downloads into seasons & episodes
-Date sorting - Sorting downloads by a custom date matching
+Date Sorting - Sorting downloads by a custom date matching
 Generic Sorting - Sorting large files by a custom matching
 """
 
@@ -28,7 +28,7 @@ import re
 
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
-                         get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
+    get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 
@@ -36,7 +36,7 @@ RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
 EXCLUDED_FILE_EXTS = ('.vob', '.bin')
 
-LOWERCASE = ('the', 'of', 'and', 'at', 'vs', 'a', 'an', 'but', 'nor', 'for', 'on', \
+LOWERCASE = ('the', 'of', 'and', 'at', 'vs', 'a', 'an', 'but', 'nor', 'for', 'on',
                          'so', 'yet')
 UPPERCASE = ('III', 'II', 'IV')
 
@@ -49,27 +49,25 @@ REPLACE_AFTER = {
 }
 
 # Title() function messes up country names, so need to replace them instead
-COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
-               '(SE)', '(ES)', '(KR)', '(ZA)', '(SK)', '(SG)', '(RU)', '(RO)', \
-               '(PR)', '(PT)', '(PL)', '(PH)', '(PK)', '(NO)', '(NG)', '(NZ)', \
-               '(NL)', '(MX)', '(MY)', '(MK)', '(KZ)', '(JP)', '(JM)', '(IT)', \
-               '(IL)', '(IE)', '(IN)', '(IS)', '(HU)', '(HK)', '(HN)', '(GR)', \
-               '(GH)', '(DE)', '(FR)', '(FI)', '(DK)', '(CZ)', '(HR)', '(CR)', \
-               '(CO)', '(CN)', '(CL)', '(BG)', '(BR)', '(BE)', '(AT)', '(AU)', \
+COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)',
+               '(SE)', '(ES)', '(KR)', '(ZA)', '(SK)', '(SG)', '(RU)', '(RO)',
+               '(PR)', '(PT)', '(PL)', '(PH)', '(PK)', '(NO)', '(NG)', '(NZ)',
+               '(NL)', '(MX)', '(MY)', '(MK)', '(KZ)', '(JP)', '(JM)', '(IT)',
+               '(IL)', '(IE)', '(IN)', '(IS)', '(HU)', '(HK)', '(HN)', '(GR)',
+               '(GH)', '(DE)', '(FR)', '(FI)', '(DK)', '(CZ)', '(HR)', '(CR)',
+               '(CO)', '(CN)', '(CL)', '(BG)', '(BR)', '(BE)', '(AT)', '(AU)',
                '(AW)', '(AR)', '(AL)', '(AF)')
+
 
 _RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
 _RE_ENDFN = re.compile(r'%fn[{}]*$', re.I)
-
 def ends_in_file(path):
-    """ Return True when path ends with '.%ext' or '%fn'
-    """
+    """ Return True when path ends with '.%ext' or '%fn' """
     return bool(_RE_ENDEXT.search(path) or _RE_ENDFN.search(path))
 
 
 def move_to_parent_folder(workdir):
-    """ Move all in 'workdir' into 'workdir/..'
-    """
+    """ Move all in 'workdir' into 'workdir/..' """
     # Determine 'folder'/..
     workdir = os.path.abspath(os.path.normpath(workdir))
     dest = os.path.abspath(os.path.normpath(os.path.join(workdir, '..')))
@@ -92,8 +90,8 @@ def move_to_parent_folder(workdir):
 
 
 class Sorter(object):
-    """ Generic Sorter class
-    """
+    """ Generic Sorter class """
+
     def __init__(self, nzo, cat):
         self.sorter = None
         self.type = None
@@ -103,8 +101,7 @@ class Sorter(object):
         self.ext = ''
 
     def detect(self, dirname, complete_dir):
-        """ Detect which kind of sort applies
-        """
+        """ Detect which kind of sort applies """
         self.sorter = SeriesSorter(self.nzo, dirname, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
@@ -130,14 +127,12 @@ class Sorter(object):
         return complete_dir
 
     def rename(self, newfiles, workdir_complete):
-        """ Rename files of the job
-        """
+        """ Rename files of the job """
         if self.sorter.rename_or_not:
             self.sorter.rename(newfiles, workdir_complete)
 
     def rename_with_ext(self, workdir_complete):
-        """ Special renamer for %ext
-        """
+        """ Special renamer for %ext """
         if self.sorter.rename_or_not and '%ext' in workdir_complete and self.ext:
             # Replace %ext with extension
             newpath = workdir_complete.replace('%ext', self.ext)
@@ -155,7 +150,7 @@ class Sorter(object):
             move_to_parent = True
             # check if we should leave the files inside an extra folder
             if cfg.movie_extra_folders():
-                #if there is a folder in the download, leave it in an extra folder
+                # if there is a folder in the download, leave it in an extra folder
                 move_to_parent = not check_for_folder(workdir_complete)
             if move_to_parent:
                 workdir_complete, ok = move_to_parent_folder(workdir_complete)
@@ -179,8 +174,8 @@ class Sorter(object):
 
 
 class SeriesSorter(object):
-    """ Methods for Series Sorting
-    """
+    """ Methods for Series Sorting """
+
     def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
@@ -191,7 +186,7 @@ class SeriesSorter(object):
         self.sort_string = cfg.tv_sort_string()
         self.cats = cfg.tv_categories()
         self.filename_set = ''
-        self.fname = '' # Value for %fn substitution in folders
+        self.fname = ''  # Value for %fn substitution in folders
         self.final_path = ''
 
         self.match_obj = None
@@ -202,29 +197,25 @@ class SeriesSorter(object):
 
         self.show_info = {}
 
-        #Check if it is a TV show on init()
+        # Check if it is a TV show on init()
         self.match()
 
-
     def match(self, force=False):
-        ''' Checks the regex for a match, if so set self.match to true '''
+        """ Checks the regex for a match, if so set self.match to true """
         if force or (cfg.enable_tv_sorting() and cfg.tv_sort_string()):
             if force or (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                #First check if the show matches TV episode regular expressions. Returns regex match object
+                # First check if the show matches TV episode regular expressions. Returns regex match object
                 self.match_obj, self.extras = check_regexs(self.original_dirname, series_match)
                 if self.match_obj:
                     logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname)
                     self.matched = True
 
-
     def is_match(self):
-        ''' Returns whether there was a match or not '''
+        """ Returns whether there was a match or not """
         return self.matched
 
-
     def get_final_path(self):
-        """ Collect and construct all the variables such as episode name, show names
-        """
+        """ Collect and construct all the variables such as episode name, show names """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -234,14 +225,13 @@ class SeriesSorter(object):
             # Error Sorting
             return os.path.join(self.original_path, self.original_dirname)
 
-
     def get_multi_ep_naming(self, one, two, extras):
-        ''' Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) '''
+        """ Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) """
         extra_list = [one]
         extra2_list = [two]
         for extra in extras:
             if extra not in (extra_list, extra2_list):
-                ep_no2 = extra.rjust(2,'0')
+                ep_no2 = extra.rjust(2, '0')
                 extra_list.append(extra)
                 extra2_list.append(ep_no2)
 
@@ -250,20 +240,19 @@ class SeriesSorter(object):
         return (one, two)
 
     def get_shownames(self):
-        ''' Get the show name from the match object and format it '''
+        """ Get the show name from the match object and format it """
         # Get the formatted title and alternate title formats
         self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
         self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
 
-
     def get_seasons(self):
-        ''' Get the season number from the match object and format it '''
+        """ Get the season number from the match object and format it """
         try:
-            season = self.match_obj.group(1).strip('_') # season number
+            season = self.match_obj.group(1).strip('_')  # season number
         except AttributeError:
             season = '1'
 
-        # Provide alternatve formatting (0 padding)
+        # Provide alternative formatting (0 padding)
         if season.lower() == 's':
             season2 = season
         else:
@@ -271,22 +260,21 @@ class SeriesSorter(object):
                 season = str(int(season))
             except:
                 pass
-            season2 = season.rjust(2,'0')
+            season2 = season.rjust(2, '0')
 
         self.show_info['season_num'] = season
         self.show_info['season_num_alt'] = season2
 
-
     def get_episodes(self):
-        ''' Get the episode numbers from the match object, format and join them '''
+        """ Get the episode numbers from the match object, format and join them """
         try:
-            ep_no = self.match_obj.group(2) # episode number
+            ep_no = self.match_obj.group(2)  # episode number
         except AttributeError:
             ep_no = '1'
         # Store the original episode number
 
-        # Provide alternatve formatting (0 padding)
-        ep_no2 = ep_no.rjust(2,'0')
+        # Provide alternative formatting (0 padding)
+        ep_no2 = ep_no.rjust(2, '0')
         try:
             ep_no = str(int(ep_no))
         except:
@@ -294,42 +282,39 @@ class SeriesSorter(object):
 
         # Dual episode support
         if self.extras:
-            ep_no,  ep_no2 = self.get_multi_ep_naming(ep_no,  ep_no2, self.extras)
+            ep_no, ep_no2 = self.get_multi_ep_naming(ep_no, ep_no2, self.extras)
 
         self.show_info['episode_num'] = ep_no
         self.show_info['episode_num_alt'] = ep_no2
 
-
     def get_showdescriptions(self):
-        ''' Get the show descriptions from the match object and format them '''
+        """ Get the show descriptions from the match object and format them """
         self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_dirname)
-
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
         try:
-            ## - Show Name
+            # - Show Name
             self.get_shownames()
 
-            ## - Season
+            # - Season
             self.get_seasons()
 
-            ## - Episode Number
+            # - Episode Number
             self.get_episodes()
 
-            ## - Episode Name
+            # - Episode Name
             self.get_showdescriptions()
 
             return True
 
         except:
             logging.error(T('Error getting TV info (%s)'), clip_path(self.original_dirname))
-            logging.info("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info=True)
             return False
 
-
     def construct_path(self):
-        ''' Replaces the sort string with real values such as Show Name and Episode Number '''
+        """ Replaces the sort string with real values such as Show Name and Episode Number """
 
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
@@ -339,7 +324,6 @@ class SeriesSorter(object):
             sorter = sorter.replace('.%ext', '')
         else:
             extension = False
-
 
         # Replace Show name
         mapping.append(('%sn', self.show_info['show_tname']))
@@ -396,8 +380,7 @@ class SeriesSorter(object):
         return os.path.normpath(head)
 
     def rename(self, files, current_path):
-        """ Rename for Series
-        """
+        """ Rename for Series """
         logging.debug("Renaming Series")
         largest = (None, None, 0)
 
@@ -409,7 +392,7 @@ class SeriesSorter(object):
             return filepath
 
         # Create a generator of filepaths, ignore sample files and excluded files (vobs ect)
-        filepaths = ((file, to_filepath(file, current_path)) for file in files if not RE_SAMPLE.search(file) \
+        filepaths = ((file, to_filepath(file, current_path)) for file in files if not RE_SAMPLE.search(file)
                      and get_ext(file) not in EXCLUDED_FILE_EXTS)
 
         # Find the largest existing file
@@ -437,21 +420,22 @@ class SeriesSorter(object):
                 logging.debug("Rename: %s to %s", filepath, newpath)
                 renamer(filepath, newpath)
             except:
-                logging.error("Failed to rename: %s to %s", clip_path(current_path), clip_path(newpath))
-                logging.info("Traceback: ", exc_info = True)
+                logging.error(T('Failed to rename: %s to %s'), clip_path(current_path), clip_path(newpath))
+                logging.info("Traceback: ", exc_info=True)
             rename_similar(current_path, self.ext, self.filename_set, ())
         else:
             logging.debug('Nothing to rename, %s', files)
 
 
-_RE_MULTIPLE = ( \
+_RE_MULTIPLE = (
     re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.avi
     re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.avi blaha.avi
     re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.avi blah-a-ok.avi
 )
+
+
 def check_for_multiple(files):
-    """ Return list of files that looks like a multi-part post
-    """
+    """ Return list of files that looks like a multi-part post """
     for regex in _RE_MULTIPLE:
         matched_files = check_for_sequence(regex, files)
         if matched_files:
@@ -460,8 +444,7 @@ def check_for_multiple(files):
 
 
 def check_for_sequence(regex, files):
-    """ Return list of files that looks like a sequence, using 'regex'
-    """
+    """ Return list of files that looks like a sequence, using 'regex' """
     matches = {}
     prefix = None
     # Build up a dictionary of matches
@@ -471,7 +454,7 @@ def check_for_sequence(regex, files):
         match1 = regex.search(name)
         if match1:
             if not prefix or prefix == name[:match1.start()]:
-                matches[match1.group(1)] = name+ext
+                matches[match1.group(1)] = name + ext
                 prefix = name[:match1.start()]
 
     # Don't do anything if only one or no files matched
@@ -510,11 +493,9 @@ def check_for_sequence(regex, files):
         return {}
 
 
-
-
 class GenericSorter(object):
-    """ Methods for Generic Sorting
-    """
+    """ Methods for Generic Sorting """
+
     def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
@@ -526,7 +507,7 @@ class GenericSorter(object):
         self.cat = cat
         self.nzo = nzo
         self.filename_set = ''
-        self.fname = '' # Value for %fn substitution in folders
+        self.fname = ''  # Value for %fn substitution in folders
         self.final_path = ''
 
         self.match_obj = None
@@ -538,20 +519,16 @@ class GenericSorter(object):
         # Check if we match the category in init()
         self.match()
 
-
     def match(self, force=False):
-        """ Checks the category for a match, if so set self.match to true
-        """
+        """ Checks the category for a match, if so set self.match to true """
         if force or (cfg.enable_movie_sorting() and self.sort_string):
-            #First check if the show matches TV episode regular expressions. Returns regex match object
+            # First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname)
                 self.matched = True
 
-
     def get_final_path(self):
-        """ Collect and construct all the variables such as episode name, show names
-        """
+        """ Collect and construct all the variables such as episode name, show names """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -562,9 +539,8 @@ class GenericSorter(object):
             return os.path.join(self.original_path, self.original_dirname)
 
     def get_values(self):
-        """ Collect and construct all the values needed for path replacement
-        """
-        ## - Get Year
+        """ Collect and construct all the values needed for path replacement """
+        # - Get Year
         if self.nzo:
             year = self.nzo.nzo_info.get('year')
         else:
@@ -583,19 +559,17 @@ class GenericSorter(object):
                 year = ''
         self.movie_info['year'] = year
 
-        ## - Get Decades
+        # - Get Decades
         self.movie_info['decade'], self.movie_info['decade_two'] = get_decades(year)
 
-        ## - Get Title
+        # - Get Title
         self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(self.nzo, year_m, self.original_dirname, True)
         self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(self.nzo, year_m, self.original_dirname)
 
         return True
 
-
     def construct_path(self):
-        """ Return path reconstructed from orginal and sort expression
-        """
+        """ Return path reconstructed from original and sort expression """
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
@@ -638,7 +612,6 @@ class GenericSorter(object):
         for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
-
         # Lowercase all characters encased in {}
         path = to_lowercase(path)
 
@@ -655,11 +628,10 @@ class GenericSorter(object):
 
         return os.path.normpath(head)
 
-
     def rename(self, _files, current_path):
-        """ Rename for Generic files
-        """
+        """ Rename for Generic files """
         logging.debug("Renaming Generic file")
+
         def filter_files(_file, current_path):
             if is_full_path(_file):
                 filepath = os.path.normpath(_file)
@@ -676,7 +648,7 @@ class GenericSorter(object):
         files = [_file for _file in _files if filter_files(_file, current_path)]
 
         length = len(files)
-        ## Single File Handling
+        # Single File Handling
         if length == 1:
             file = files[0]
             if is_full_path(file):
@@ -693,10 +665,10 @@ class GenericSorter(object):
                     renamer(filepath, newpath)
                 except:
                     logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info=True)
                 rename_similar(current_path, ext, self.filename_set, ())
 
-        ## Sequence File Handling
+        # Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
         elif self.extra:
             matched_files = check_for_multiple(files)
@@ -717,15 +689,15 @@ class GenericSorter(object):
                         renamer(filepath, newpath)
                     except:
                         logging.error(T('Failed to rename: %s to %s'), clip_path(filepath), clip_path(newpath))
-                        logging.info("Traceback: ", exc_info = True)
+                        logging.info("Traceback: ", exc_info=True)
                 rename_similar(current_path, ext, self.filename_set, renamed)
             else:
                 logging.debug("Movie files not in sequence %s", _files)
 
 
 class DateSorter(object):
-    """ Methods for Date Sorting
-    """
+    """ Methods for Date Sorting """
+
     def __init__(self, nzo, dirname, path, cat):
         self.matched = False
 
@@ -736,7 +708,7 @@ class DateSorter(object):
         self.cat = cat
         self.nzo = nzo
         self.filename_set = ''
-        self.fname = '' # Value for %fn substitution in folders
+        self.fname = ''  # Value for %fn substitution in folders
 
         self.match_obj = None
 
@@ -749,26 +721,22 @@ class DateSorter(object):
         # Check if we match the category in init()
         self.match()
 
-
     def match(self, force=False):
-        ''' Checks the category for a match, if so set self.matched to true '''
+        """ Checks the category for a match, if so set self.matched to true """
         if force or (cfg.enable_date_sorting() and self.sort_string):
-            #First check if the show matches TV episode regular expressions. Returns regex match object
+            # First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = check_for_date(self.original_dirname, date_match)
                 if self.match_obj:
                     logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname)
                     self.matched = True
 
-
     def is_match(self):
-        ''' Returns whether there was a match or not '''
+        """ Returns whether there was a match or not """
         return self.matched
 
-
     def get_final_path(self):
-        """ Collect and construct all the variables such as episode name, show names
-        """
+        """ Collect and construct all the variables such as episode name, show names """
         if self.get_values():
             # Get the final path
             path = self.construct_path()
@@ -781,22 +749,22 @@ class DateSorter(object):
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
 
-        if self.date_type == 1: #2008-10-16
+        if self.date_type == 1:  # 2008-10-16
             self.date_info['year'] = self.match_obj.group(1)
             self.date_info['month'] = self.match_obj.group(2)
-            self.date_info['date'] =  self.match_obj.group(3)
-        else:                       #10.16.2008
+            self.date_info['date'] = self.match_obj.group(3)
+        else:  # 10.16.2008
             self.date_info['year'] = self.match_obj.group(3)
             self.date_info['month'] = self.match_obj.group(1)
-            self.date_info['date'] =  self.match_obj.group(2)
+            self.date_info['date'] = self.match_obj.group(2)
 
-        self.date_info['month_two'] = self.date_info['month'].rjust(2,'0')
-        self.date_info['date_two'] = self.date_info['date'].rjust(2,'0')
+        self.date_info['month_two'] = self.date_info['month'].rjust(2, '0')
+        self.date_info['date_two'] = self.date_info['date'].rjust(2, '0')
 
-        ## - Get Decades
+        # - Get Decades
         self.date_info['decade'], self.date_info['decade_two'] = get_decades(self.date_info['year'])
 
-        ## - Get Title
+        # - Get Title
         self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
         self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
 
@@ -804,10 +772,8 @@ class DateSorter(object):
 
         return True
 
-
     def construct_path(self):
-        """ Return path reconstructed from orginal and sort expression
-        """
+        """ Return path reconstructed from original and sort expression """
         sorter = self.sort_string.replace('\\', '/')
         mapping = []
 
@@ -879,12 +845,10 @@ class DateSorter(object):
 
         return os.path.normpath(head)
 
-
     def rename(self, files, current_path):
-        """ Renaming Date file
-        """
+        """ Renaming Date file """
         logging.debug("Renaming Date file")
-        #find the master file to rename
+        # find the master file to rename
         for file in files:
             if is_full_path(file):
                 filepath = os.path.normpath(file)
@@ -905,7 +869,7 @@ class DateSorter(object):
                                 renamer(filepath, newpath)
                             except:
                                 logging.error(T('Failed to rename: %s to %s'), clip_path(current_path), clip_path(newpath))
-                                logging.info("Traceback: ", exc_info = True)
+                                logging.info("Traceback: ", exc_info=True)
                             rename_similar(current_path, ext, self.filename_set, ())
                             break
 
@@ -925,7 +889,7 @@ def path_subst(path, mapping):
         if result == '%':
             for key, value in mapping:
                 if path.startswith(key, n) and not path.startswith('%ext', n):
-                    n += len(key)-1
+                    n += len(key) - 1
                     result = value
                     break
         newpath.append(result)
@@ -934,13 +898,12 @@ def path_subst(path, mapping):
 
 
 def get_titles(nzo, match, name, titleing=False):
-    '''
-    The title will be the part before the match
-    Clean it up and title() it
+    """ The title will be the part before the match
+        Clean it up and title() it
 
-    ''.title() isn't very good under python so this contains
-    a lot of little hacks to make it better and for more control
-    '''
+        ''.title() isn't very good under python so this contains
+        a lot of little hacks to make it better and for more control
+    """
     if nzo:
         title = nzo.nzo_info.get('propername')
     else:
@@ -972,9 +935,9 @@ def get_titles(nzo, match, name, titleing=False):
         title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
         if titleing:
-            title = title.title() # title the show name so it is in a consistant letter case
+            title = title.title()  # title the show name so it is in a consistant letter case
 
-            #title applied uppercase to 's Python bug?
+            # title applied uppercase to 's Python bug?
             title = title.replace("'S", "'s")
 
             # Replace titled country names, (Us) with (US) and so on
@@ -1001,16 +964,17 @@ def get_titles(nzo, match, name, titleing=False):
                 title = title[0].title() + title[1:]
 
     # The title with spaces replaced by dots
-    dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')
-    dots = dots.replace('(', '.').replace(')','.').replace('..','.').rstrip('.')
+    dots = title.replace(" - ", "-").replace(' ', '.').replace('_', '.')
+    dots = dots.replace('(', '.').replace(')', '.').replace('..', '.').rstrip('.')
 
     # The title with spaces replaced by underscores
-    underscores = title.replace(' ','_').replace('.','_').replace('__','_').rstrip('_')
+    underscores = title.replace(' ', '_').replace('.', '_').replace('__', '_').rstrip('_')
 
     return title, dots, underscores
 
+
 def replace_word(input, one, two):
-    ''' Regex replace on just words '''
+    """ Regex replace on just words """
     regex = re.compile(r'\W(%s)(\W|$)' % one, re.I)
     matches = regex.findall(input)
     if matches:
@@ -1018,19 +982,19 @@ def replace_word(input, one, two):
             input = input.replace(one, two)
     return input
 
+
 def get_descriptions(nzo, match, name):
-    '''
-    If present, get a description from the nzb name.
-    A description has to be after the matched item, separated either
-    like ' - Description' or '_-_Description'
-    '''
+    """ If present, get a description from the nzb name.
+        A description has to be after the matched item, separated either
+        like ' - Description' or '_-_Description'
+    """
     if nzo:
         ep_name = nzo.nzo_info.get('episodename')
     else:
         ep_name = ''
     if not ep_name:
         if match:
-            ep_name = name[match.end():] # Need to improve for multi ep support
+            ep_name = name[match.end():]  # Need to improve for multi ep support
         else:
             ep_name = name
         ep_name = ep_name.strip(' _.')
@@ -1045,12 +1009,11 @@ def get_descriptions(nzo, match, name):
 
 
 def get_decades(year):
-    """ Return 4 digit and 2 digit decades given 'year'
-    """
+    """ Return 4 digit and 2 digit decades given 'year' """
     if year:
         try:
-            decade = year[2:3]+'0'
-            decade2 = year[:3]+'0'
+            decade = year[2:3] + '0'
+            decade2 = year[:3] + '0'
         except:
             decade = ''
             decade2 = ''
@@ -1061,8 +1024,7 @@ def get_decades(year):
 
 
 def check_for_folder(path):
-    """ Return True if any folder is found in the tree at 'path'
-    """
+    """ Return True if any folder is found in the tree at 'path' """
     for root, dirs, files in os.walk(path):
         if dirs:
             return True
@@ -1071,7 +1033,7 @@ def check_for_folder(path):
 
 _RE_LOWERCASE = re.compile(r'{([^{]*)}')
 def to_lowercase(path):
-    ''' Lowercases any characters enclosed in {} '''
+    """ Lowercases any characters enclosed in {} """
     while True:
         m = _RE_LOWERCASE.search(path)
         if not m:
@@ -1096,9 +1058,7 @@ def strip_folders(path):
         f.insert(0, '')
 
     def strip_all(x):
-        """ Strip all leading/trailing underscores
-            also dots for Windows
-        """
+        """ Strip all leading/trailing underscores also dots for Windows """
         x = x.strip().strip('_')
         if sabnzbd.WIN32:
             # OSX and Linux should keep dots, because leading dots are significant
@@ -1150,10 +1110,9 @@ def rename_similar(folder, skip_ext, name, skipped_files):
 
 
 def check_regexs(filename, matchers):
-    """
-    Regular Expression match for a list of regexes
-    Returns the MatchObject if a match is made
-    This version checks for an additional match
+    """ Regular Expression match for a list of regexes
+        Returns the MatchObject if a match is made
+        This version checks for an additional match
     """
     extras = []
     for expressions in matchers:
@@ -1176,9 +1135,8 @@ def check_regexs(filename, matchers):
 
 
 def check_for_date(filename, matcher):
-    """
-    Regular Expression match for date based files
-    Returns the MatchObject if a match is made
+    """ Regular Expression match for date based files
+        Returns the MatchObject if a match is made
     """
     x = 0
     if matcher:
@@ -1190,9 +1148,9 @@ def check_for_date(filename, matcher):
                 return match1, x
     return None, 0
 
+
 def is_full_path(file):
-    """ Return True if path is absolute
-    """
+    """ Return True if path is absolute """
     if file.startswith('\\') or file.startswith('/'):
         return True
     try:

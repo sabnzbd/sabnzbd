@@ -36,7 +36,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-                         set_permissions, flag_file, long_path, clip_path
+    set_permissions, flag_file, long_path, clip_path
 from sabnzbd.constants import QCHECK_FILE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -47,9 +47,8 @@ from sabnzbd.encoding import unicoder, is_utf8
 from sabnzbd.rating import Rating
 
 
-#------------------------------------------------------------------------------
 class Assembler(Thread):
-    do = None # Link to the instance of this method
+    do = None  # Link to the instance of this method
 
     def __init__(self, queue=None):
         Thread.__init__(self)
@@ -102,7 +101,7 @@ class Assembler(Thread):
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                     except:
-                        logging.error('Fatal error in Assembler', exc_info=True)
+                        logging.error(T('Fatal error in Assembler'), exc_info=True)
                         break
 
                     nzf.remove_admin()
@@ -183,7 +182,8 @@ def _assemble(nzf, path, dupe):
             # yenc data already decoded, flush it out
             if _type == 'yenc':
                 fout.write(data)
-                if md5: md5.update(data)
+                if md5:
+                    md5.update(data)
             # need to decode uu data now
             elif _type == 'uu':
                 data = data.split('\r\n')
@@ -199,9 +199,9 @@ def _assemble(nzf, path, dupe):
                         tmpdata = binascii.a2b_uu(line)
                         chunks.append(tmpdata)
                     except binascii.Error, msg:
-                        ## Workaround for broken uuencoders by
-                        ##/Fredrik Lundh
-                        nbytes = (((ord(line[0])-32) & 63) * 4 + 5) / 3
+                        # Workaround for broken uuencoders by
+                        # /Fredrik Lundh
+                        nbytes = (((ord(line[0]) - 32) & 63) * 4 + 5) / 3
                         try:
                             tmpdata = binascii.a2b_uu(line[:nbytes])
                             chunks.append(tmpdata)
@@ -209,7 +209,8 @@ def _assemble(nzf, path, dupe):
                             logging.info('Decode failed in part %s: %s', article.article, msg)
                 data = ''.join(chunks)
                 fout.write(data)
-                if md5: md5.update(data)
+                if md5:
+                    md5.update(data)
 
     fout.flush()
     fout.close()
@@ -274,7 +275,7 @@ def GetMD5Hashes(fname, force=False):
 
 
 def ParseFilePacket(f, header):
-    """ Look up and analyse a FileDesc package """
+    """ Look up and analyze a FileDesc package """
 
     nothing = None, None
 
@@ -283,14 +284,14 @@ def ParseFilePacket(f, header):
 
     # Length must be multiple of 4 and at least 20
     len = struct.unpack('<Q', f.read(8))[0]
-    if int(len/4)*4 != len or len < 20:
+    if int(len / 4) * 4 != len or len < 20:
         return nothing
 
     # Next 16 bytes is md5sum of this packet
     md5sum = f.read(16)
 
     # Read and check the data
-    data = f.read(len-32)
+    data = f.read(len - 32)
     md5 = new_md5()
     md5.update(data)
     if md5sum != md5.digest():
@@ -306,9 +307,9 @@ def ParseFilePacket(f, header):
 
     # See if it's the right packet and get name + hash
     for offset in range(0, len, 8):
-        if data[offset:offset+16] == "PAR 2.0\0FileDesc":
-            hash = data[offset+32:offset+48]
-            filename = data[offset+72:].strip('\0')
+        if data[offset:offset + 16] == "PAR 2.0\0FileDesc":
+            hash = data[offset + 32:offset + 48]
+            filename = data[offset + 72:].strip('\0')
             return filename, hash
 
     return nothing
@@ -334,7 +335,7 @@ def is_cloaked(path, names):
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
-    if  not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
+    if not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
             zf = RarFile(filepath, all_names=True)
             encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
@@ -356,12 +357,12 @@ def rar_contains_unwanted_file(filepath):
     # returns name of file if unwanted extension is found in the rar file
     unwanted = None
     if is_rarfile(filepath):
-        #logging.debug('rar file to check: %s',filepath)
-        #logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
+        # logging.debug('rar file to check: %s',filepath)
+        # logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
         try:
             zf = RarFile(filepath, all_names=True)
-            #logging.debug('files in rar file: %s', zf.namelist())
-            for somefile in zf.namelist() :
+            # logging.debug('files in rar file: %s', zf.namelist())
+            for somefile in zf.namelist():
                 logging.debug('file in rar file: %s', somefile)
                 if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
                     logging.debug('Unwanted file %s', somefile)
@@ -371,21 +372,25 @@ def rar_contains_unwanted_file(filepath):
             logging.debug('RAR file %s cannot be inspected.', filepath)
     return unwanted
 
+
 def nzo_filtered_by_rating(nzo):
-    if Rating.do and cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):   
-        rating = Rating.do.get_rating_by_nzo(nzo.nzo_id)        
+    if Rating.do and cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):
+        rating = Rating.do.get_rating_by_nzo(nzo.nzo_id)
         if rating is not None:
             nzo.rating_filtered = 1
             reason = rating_filtered(rating, nzo.filename.lower(), True)
-            if reason is not None: return (2, reason)
+            if reason is not None:
+                return (2, reason)
             reason = rating_filtered(rating, nzo.filename.lower(), False)
-            if reason is not None: return (1, reason)
+            if reason is not None:
+                return (1, reason)
     return (0, "")
-    
+
+
 def rating_filtered(rating, filename, abort):
     def check_keyword(keyword):
         clean_keyword = keyword.strip().lower()
-        return (len(clean_keyword) > 0) and (clean_keyword in filename) 
+        return (len(clean_keyword) > 0) and (clean_keyword in filename)
     audio = cfg.rating_filter_abort_audio() if abort else cfg.rating_filter_pause_audio()
     video = cfg.rating_filter_abort_video() if abort else cfg.rating_filter_pause_video()
     spam = cfg.rating_filter_abort_spam() if abort else cfg.rating_filter_pause_spam()
@@ -407,4 +412,3 @@ def rating_filtered(rating, filename, abort):
     if any(check_keyword(k) for k in keywords.split(',')):
         return T('keywords')
     return None
-	

@@ -28,6 +28,7 @@ from sabnzbd.config import get_servers
 from sabnzbd.encoding import xml_name
 from sabnzbd.misc import int_conv
 
+
 def test_nntp_server_dict(kwargs):
     # Grab the host/port/user/pass/connections/ssl
     host = kwargs.get('host', '').strip()
@@ -48,13 +49,12 @@ def test_nntp_server_dict(kwargs):
         else:
             port = 119
 
-
-    return test_nntp_server(host, port, server, username=username, \
+    return test_nntp_server(host, port, server, username=username,
                         password=password, ssl=ssl, ssl_type=ssl_type)
 
 
 def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type='t1'):
-    ''' Will connect (blocking) to the nttp server and report back any errors '''
+    """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
     if '*' in password and not password.strip('*'):
         # If the password is masked, try retrieving it from the config
@@ -103,7 +103,6 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     except:
         return False, unicode(sys.exc_info()[1])
-
 
     if not username or not password:
         nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
