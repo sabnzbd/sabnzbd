@@ -113,7 +113,7 @@ class Article(TryList):
                 return self
             else:
                 if log:
-                    logging.debug('Article %s | Server: %s | not the same priorty', self.article, server.host)
+                    logging.debug('Article %s | Server: %s | not the same priority', self.article, server.host)
                 # No, so is it a lower priority?
                 if (server.priority > self.fetcher_priority):
                     if log:
@@ -140,7 +140,7 @@ class Article(TryList):
                             logging.debug('Article %s | Server: %s | Article-try: %s', self.article, server.host, self.tries)
                         return self
                     else:
-                        # There is a higher priorty server, so set article priority
+                        # There is a higher priority server, so set article priority
                         if log:
                             logging.debug('Article %s | Server: %s | setting self priority', self.article, server.host)
                         self.fetcher_priority = found_priority
@@ -600,7 +600,7 @@ class NzbObject(TryList):
         self.finished_files = []    # List of al finished NZFs
 
         # the current status of the nzo eg:
-        #Queued, Downloading, Repairing, Unpacking, Failed, Complete
+        # Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.status = status
         self.avg_bps_freq = 0
         self.avg_bps_total = 0
@@ -926,7 +926,6 @@ class NzbObject(TryList):
         if fn:
             # We have a real filename now
             fn = fn.strip()
-            lfn = fn.lower()
             if not nzf.is_par2:
                 head, vol, block = analyse_par2(fn)
                 # Is a par2file and repair mode activated
@@ -1260,7 +1259,7 @@ class NzbObject(TryList):
             self.files.remove(nzf)
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
-            sabnzbd.NzbQueue.do.end_job(self)
+            sabnzbd.NzbQueue.do.end_job(self)  # @UndefinedVariable
 
         if not article:
             # No articles for this server, block for next time
@@ -1344,7 +1343,7 @@ class NzbObject(TryList):
                 fields = {}
                 for k in rating_types:
                     fields[k] = _get_first_meta(k)
-                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)  # @UndefinedVariable
             except:
                 pass
 
@@ -1482,7 +1481,7 @@ class NzbObject(TryList):
         found = False
         # Unique messages allow only one line per stage(key)
         if not unique:
-            if not self.unpack_info.has_key(key):
+            if key not in self.unpack_info:
                 self.unpack_info[key] = []
             # If set is present, look for previous message from that set and replace
             if set:
@@ -1593,7 +1592,7 @@ def nzf_get_filename(nzf):
 
 
 def get_ext_list():
-    """ Return priority extenstion list, with extensions starting with a period """
+    """ Return priority extension list, with extensions starting with a period """
     exts = []
     for ext in cfg.prio_sort_list():
         ext = ext.strip()
@@ -1618,7 +1617,6 @@ def nzf_cmp_date(nzf1, nzf2):
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
-RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
 def nzf_cmp_name(nzf1, nzf2, name=True):
     # The comparison will sort .par2 files to the top of the queue followed by .rar files,
     # they will then be sorted by name.
@@ -1654,6 +1652,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)
         # Useful for nzb streaming
+        RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
         m1 = RE_RAR.search(name1)
         m2 = RE_RAR.search(name2)
         if m1 and not (is_par2 or m2):
@@ -1696,7 +1695,7 @@ def scan_password(name):
     slash = name.find('/')
 
     # Look for name/password, but make sure that '/' comes before any {{
-    if slash >= 0 and slash < braces and not 'password=' in name:
+    if slash >= 0 and slash < braces and 'password=' not in name:
         return name[:slash].strip('. '), name[slash + 1:]
 
     # Look for "name password=password"
@@ -1723,9 +1722,9 @@ def get_attrib_file(path, size):
     try:
         f = open(path, 'r')
     except:
-        return [None for n in xrange(size)]
+        return [None for unused in xrange(size)]
 
-    for n in xrange(size):
+    for unused in xrange(size):
         line = f.readline().strip('\r\n ')
         if line:
             if line.lower() == 'none':

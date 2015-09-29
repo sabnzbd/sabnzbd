@@ -254,7 +254,7 @@ def launch_a_browser(url, force=False):
     if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
-    if '::1' in url and not '[::1]' in url:
+    if '::1' in url and '[::1]' not in url:
         # Get around idiosyncrasy in Python runtime
         url = url.replace('::1', '[::1]')
 
@@ -291,7 +291,6 @@ def error_page_401(status, message, traceback, version):
 
 def error_page_404(status, message, traceback, version):
     """ Custom handler for 404 error, redirect to main page """
-    import cherrypy
     return r'''
 <html>
     <head>

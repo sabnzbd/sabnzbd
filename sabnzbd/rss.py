@@ -78,16 +78,16 @@ def show_result(feed):
         return __RSS.show_result(feed)
 
 
-def flag_downloaded(feed, id):
+def flag_downloaded(feed, fid):
     global __RSS
     if __RSS:
-        __RSS.flag_downloaded(feed, id)
+        __RSS.flag_downloaded(feed, fid)
 
 
-def lookup_url(feed, id):
+def lookup_url(feed, fid):
     global __RSS
     if __RSS:
-        return __RSS.lookup_url(feed, id)
+        return __RSS.lookup_url(feed, fid)
 
 
 def run_method():
@@ -159,13 +159,12 @@ def convert_filter(text):
         return None
 
 
-_EXPIRE_SEC = 3 * 24 * 3600  # 3 days (259200 secs)
 def remove_obsolete(jobs, new_jobs):
     """ Expire G/B links that are not in new_jobs (mark them 'X')
         Expired links older than 3 days are removed from 'jobs'
     """
     now = time.time()
-    limit = now - _EXPIRE_SEC
+    limit = now - 259200  # 3days (3x24x3600)
     olds = jobs.keys()
     for old in olds:
         tm = jobs[old]['time']
@@ -572,7 +571,7 @@ class RSSQueue(object):
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
-                        for x in xrange(15):
+                        for unused in xrange(15):
                             if self.shutdown:
                                 return
                             else:
@@ -604,11 +603,11 @@ class RSSQueue(object):
             del self.jobs[feed]
 
     @synchronized(LOCK)
-    def flag_downloaded(self, feed, id):
+    def flag_downloaded(self, feed, fid):
         if feed in self.jobs:
             lst = self.jobs[feed]
             for link in lst:
-                if lst[link].get('url', '') == id:
+                if lst[link].get('url', '') == fid:
                     lst[link]['status'] = 'D'
 
     @synchronized(LOCK)
@@ -673,17 +672,17 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     jobs[link]['rule'] = rule
 
 
-_RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
-_RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    link = None
+    link = None  # @UnusedVariable -- pep8 bug?
     category = ''
     size = 0L
     uri = uri.lower()
 
+    _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
+    _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
     # Try to find size in Description
     try:
         desc = entry.description.replace('\n', ' ')
@@ -729,18 +728,18 @@ def special_rss_site(url):
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
-_ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
 def encl_sites(url, link):
     """ Return True if url or link matches sites that use enclosures """
+    _ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
     for site in _ENCL_SITES:
         if site in url or (link and site in link):
             return True
     return False
 
 
-_RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
 def ep_match(season, episode, expr):
     """ Return True if season, episode is at or above expected """
+    _RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
     m = _RE_SP.search(expr)
     if m:
         req_season = int(m.group(1))

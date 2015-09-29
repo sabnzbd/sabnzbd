@@ -81,7 +81,7 @@ def main():
             elif msg.startswith('api '):
                 active = True
                 counter = 0
-                cmd, url = msg.split()
+                _cmd, url = msg.split()
                 if url:
                     set_connection_info(url.strip(), user=False)
 
@@ -119,7 +119,7 @@ class SABHelper(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
 
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.overlapped = pywintypes.OVERLAPPED()
+        self.overlapped = pywintypes.OVERLAPPED()  # @UndefinedVariable
         self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
         WIN_SERVICE = self
 
