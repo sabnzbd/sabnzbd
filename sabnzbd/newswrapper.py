@@ -25,6 +25,7 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 import time
 import logging
+import re
 
 import sabnzbd
 from sabnzbd.constants import *
@@ -98,17 +99,24 @@ def GetServerParms(host, port):
     except:
         port = 119
     opt = sabnzbd.cfg.ipv6_servers()
+    ''' ... with the following meaning for 'opt':
+    Control the use of IPv6 Usenet server addresses. Meaning: 
+    0 = don't use
+    1 = use when available and reachable (DEFAULT)
+    2 = force usage (when SABnzbd's detection fails)
+    '''
     try:
         # Standard IPV4 or IPV6
         ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (sabnzbd.EXTERNAL_IPV6 and opt == 1):
-            # IPv6 reachable and allowed, or forced by user
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing()==2):
+            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
+            # So return all IP addresses, no matter IPv4 or IPv6:
             return ips
         else:
-            # IPv6 unreachable or not allowed by user
+            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
             return [ip for ip in ips if ':' not in ip[4][0]]
     except:
-        if opt == 2 or (sabnzbd.EXTERNAL_IPV6 and opt == 1):
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing()==2):
             try:
                 # Try IPV6 explicitly
                 return socket.getaddrinfo(host, port, socket.AF_INET6,
@@ -167,6 +175,18 @@ except:
     _SSL_TYPES = {}
 
 
+def probablyipv4(ip):
+    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+        return True
+    else:
+        return False
+
+def probablyipv6(ip):
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '' :
+        return True
+    else:
+        return False
+
 class NNTP(object):
 
     def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
@@ -176,6 +196,7 @@ class NNTP(object):
         self.nw = nw
         self.blocking = block
         self.error_msg = None
+
         if not info:
             if block:
                 info = GetServerParms(host, port)
@@ -183,6 +204,10 @@ class NNTP(object):
                 raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = info[0]
+
+        # there wil be a connect to host (or self.host, so let's force set 'af' to the correct value
+        if probablyipv4(host): af = socket.AF_INET
+        if probablyipv6(host): af = socket.AF_INET6
 
         if sslenabled and _ssl:
             ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))

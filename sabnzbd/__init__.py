@@ -1124,7 +1124,7 @@ def test_ipv6():
     try:
         info = socket.getaddrinfo(cfg.ipv6_test_host(), 80, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
     except:
-        logging.debug('Test IPv6: Problem during IPv6 name lookup. Disabling IPv6. Reason: %s', sys.exc_info()[0])
+        logging.debug("Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0] )
         return False
 
     try:
