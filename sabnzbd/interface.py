@@ -1501,13 +1501,6 @@ class ConfigGeneral(object):
                 else:
                     wlist.append(rweb)
         conf['web_list'] = wlist
-
-        # Obsolete template variables, must exist and have a value
-        conf['web_colors'] = ['None']
-        conf['web_color'] = 'None'
-        conf['web_colors2'] = ['None']
-        conf['web_color2'] = 'None'
-
         conf['web_dir'] = add_color(cfg.web_dir(), cfg.web_color())
         conf['web_dir2'] = add_color(cfg.web_dir2(), cfg.web_color2())
 
