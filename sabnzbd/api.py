@@ -1404,6 +1404,8 @@ def qstatus_data():
         "diskspace2": diskfree(cfg.complete_dir.get_path()),
         "timeleft": calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
         "loadavg": loadavg(),
+        "speedlimit": str(Downloader.do.get_limit() or '100'),
+        "speedlimit_abs": str(Downloader.do.get_limit_abs() or ''),
         "jobs": jobs
     }
     return status
@@ -1641,7 +1643,10 @@ def build_header(prim, webdir='', search=None):
                'uptime': uptime, 'color_scheme': color}
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
-        speed_limit = ''
+        speed_limit = '100'
+    speed_limit_abs = Downloader.do.get_limit_abs()
+    if speed_limit_abs <= 0:
+        speed_limit_abs = ''
 
     free1 = diskfree(cfg.download_dir.get_path())
     free2 = diskfree(cfg.complete_dir.get_path())
@@ -1655,6 +1660,7 @@ def build_header(prim, webdir='', search=None):
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
     header['loadavg'] = loadavg()
     header['speedlimit'] = "%s" % speed_limit
+    header['speedlimit_abs'] = "%s" % speed_limit_abs
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))

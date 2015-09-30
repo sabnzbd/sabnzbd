@@ -285,6 +285,9 @@ class Downloader(Thread):
 
     def get_limit(self):
         return self.bandwidth_perc
+    
+    def get_limit_abs(self):
+        return self.bandwidth_limit
 
     def speed_set(self):
         limit = cfg.bandwidth_max.get_int()
