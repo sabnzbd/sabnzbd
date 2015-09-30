@@ -49,7 +49,7 @@
                 <div class="field-pair">
                     <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
                         <select name="web_dir2" id="web_dir2">
-                        <!--#for $webline in $web_list2#-->
+                        <!--#for $webline in $web_list#-->
                             <!--#if $webline.lower() == $web_dir2.lower()#-->
                                 <option value="$webline" selected="selected" class="selected">$webline</option>
                             <!--#else#-->

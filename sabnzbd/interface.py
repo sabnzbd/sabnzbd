@@ -1481,7 +1481,6 @@ class ConfigGeneral(object):
             conf['have_ssl'] = 0
 
         wlist = []
-        wlist2 = ['None']
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
             if k.endswith(DEF_STDINTF):
@@ -1498,15 +1497,10 @@ class ConfigGeneral(object):
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:
-                        if rweb != 'Mobile':
-                            wlist.append(add_color(rweb, col))
-                        wlist2.append(add_color(rweb, col))
+                        wlist.append(add_color(rweb, col))
                 else:
-                    if rweb != 'Mobile':
-                        wlist.append(rweb)
-                    wlist2.append(rweb)
+                    wlist.append(rweb)
         conf['web_list'] = wlist
-        conf['web_list2'] = wlist2
 
         # Obsolete template variables, must exist and have a value
         conf['web_colors'] = ['None']
