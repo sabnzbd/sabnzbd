@@ -1352,6 +1352,16 @@ tr.queueitem>td:first-child>a {
     .queue-table td.name:hover .row-wrap-text {
         max-width: 77%;
     }
+    
+    td.name .name-ratings {
+        margin-left: 0px;
+        margin-right: -5px;
+        display: block;
+    }
+    
+    td.name .row-wrap-text {
+        margin-right: 4px;
+    }
 }
 
 @media screen and (max-width: 1000px) {
