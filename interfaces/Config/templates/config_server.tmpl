@@ -119,7 +119,7 @@
     <div class="section">
         <div class="col2">
             <h3>$servers[$server]['displayname']</h3>
-            
+            <span class="label label-primary">$T('srv-priority'): $servers[$server]['priority']</span>
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server" rel="$server" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
               <td><label for="enable_$server">&nbsp;$T('enabled')</label></td>

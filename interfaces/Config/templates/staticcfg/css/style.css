@@ -2123,6 +2123,13 @@ input[type="checkbox"] {
     margin: 10px 0px;
 }
 
+.Servers .col2 .label {
+    margin-top: 8px;
+    font-size: 0.85em;
+    float: right;
+    line-height: 1.1em;
+}
+
 .Servers .col2 label {
     margin: 0;
     cursor: pointer;
