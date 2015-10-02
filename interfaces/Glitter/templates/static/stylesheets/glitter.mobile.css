@@ -195,11 +195,11 @@ tr.queueitem>td:first-child>a {
     text-align: left;
 }
 
-#history-table-search input {
+.search-box input {
     width: 210px !important;
 }
 
-#history-table-search {
+.search-box {
     margin-bottom: 5px;
 }
 

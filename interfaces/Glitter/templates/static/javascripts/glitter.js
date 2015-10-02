@@ -182,13 +182,13 @@ $(function() {
 
         // Dynamic queue length check
         self.hasQueue = ko.computed(function() {
-            return(self.queue.queueItems().length > 0)
+            return(self.queue.queueItems().length > 0 || self.queue.searchTerm())
         })
 
         // Dynamic history length check
         self.hasHistory = ko.computed(function() {
             // We also 'have history' if we can't find any results of the search or there are no failed ones
-            return self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed()
+            return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed())
         });
         
         self.hasWarnings = ko.computed(function() {
@@ -391,6 +391,7 @@ $(function() {
             // Catch the fail to display message
             queueApi = callAPI({
                 mode: "queue",
+                search: self.queue.searchTerm(),
                 start: self.queue.pagination.currentStart(),
                 limit: parseInt(self.queue.paginationLimit())
             }).then(
@@ -896,6 +897,7 @@ $(function() {
         self.isMultiEditing = ko.observable(false);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
+        self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.paginationLimit = ko.observable(localStorage.getItem('queuePaginationLimit') ? localStorage.getItem('queuePaginationLimit') : 20)
         self.pagination = new paginationModel(self);
 
@@ -998,6 +1000,25 @@ $(function() {
             
             self.parent.refresh();
         });
+        
+        // Do we show search box. So it doesn't dissapear when nothing is found
+        self.hasQueueSearch = ko.computed(function() {
+            return (self.pagination.hasPagination() || self.searchTerm())
+        })
+        
+        // Searching in queue (rate-limited in decleration)
+        self.searchTerm.subscribe(function() {
+            // If the refresh-rate is high we do a forced refresh
+            if(parseInt(self.parent.refreshRate()) >2 ) {
+                self.parent.refresh();
+            }
+        })
+        
+        // Clear searchterm
+        self.clearSearchTerm = function() {
+            self.searchTerm('');
+            self.parent.refresh();
+        }
 
         /***
             Multi-edit functions
@@ -1522,6 +1543,7 @@ $(function() {
         // Clear searchterm
         self.clearSearchTerm = function() {
             self.searchTerm('');
+            self.parent.refresh();
         }
         
         // Toggle showing failed
