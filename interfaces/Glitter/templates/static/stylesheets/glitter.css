@@ -1,6 +1,5 @@
 body {
     background-color: #E4E4E4;
-    overflow-y: scroll;
 }
 
 h2 {
@@ -753,13 +752,17 @@ tr.queueitem>td:first-child>a {
 }
 
 .history-table .delete .dropdown-menu {
-    top: auto;
+    top: -100000px;
     left: auto;
     right: 20px;
     text-align: left;
     margin-top: 4px;
     padding: 10px;
     width: 700px;
+}
+
+.history-table .delete .open .dropdown-menu {
+    top: auto;
 }
 
 .history-status-table .col-sm-2 {
