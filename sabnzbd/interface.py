@@ -1655,13 +1655,14 @@ class ConfigServer(object):
 
         conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
 
-        new = {}
+        new = []
         servers = config.get_servers()
-        for svr in servers:
-            new[svr] = servers[svr].get_dict(safe=True)
+        server_names = sorted(servers.keys(), key=lambda svr: '%02d%s' % (servers[svr].priority(), servers[svr].displayname))
+        for svr in server_names:
+            new.append(servers[svr].get_dict(safe=True))
             t, m, w, d = BPSMeter.do.amounts(svr)
             if t:
-                new[svr]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
+                new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
 

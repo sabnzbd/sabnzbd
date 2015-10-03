@@ -106,110 +106,108 @@
     </div><!-- /section -->
     </form>
 
-<!--#set $slist = $servers.keys()#-->
-<!--#$slist.sort()#-->
 <!--#set $cur = 0#-->
-<!--#for $server in $slist#-->
+<!--#for $server in $servers#-->
     <!--#set $cur = $cur + 1#-->
 
     <form action="saveServer" method="post" id="fullform" novalidate>
     <input type="hidden" name="session" value="$session" />
-    <input type="hidden" name="server" value="$server" />
+    <input type="hidden" name="server" value="$server['name']" />
 
     <div class="section">
         <div class="col2">
-            <h3>$servers[$server]['displayname']</h3>
-            <span class="label label-primary">$T('srv-priority'): $servers[$server]['priority']</span>
+            <h3>$server['displayname']</h3>
+            <span class="label label-primary">$T('srv-priority'): $server['priority']</span>
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server" rel="$server" name="q_enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server" rel="$server" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
               <td><label for="enable_$server">&nbsp;$T('enabled')</label></td>
             </tr></table>
-            
+
             <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
-            <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>  
+            <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
         </div><!-- /col2 -->
             <div class="col1"  style="display:none;">
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="enable$cur">$T('srv-enable')</label>
-                    <input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-enable')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
-                    <input type="text" name="host" id="host$cur" value="$servers[$server]['host']" size="30" />
+                    <input type="text" name="host" id="host$cur" value="$server['host']" size="30" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port$cur">$T('srv-port')</label>
-                    <input type="text" name="port" id="port$cur" value="$servers[$server]['port']" size="8" />
+                    <input type="text" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="username$cur">$T('srv-username')</label>
-                    <input type="text" name="username" id="username$cur" value="$servers[$server]['username']" size="30" />
+                    <input type="text" name="username" id="username$cur" value="$server['username']" size="30" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="password$cur">$T('srv-password')</label>
-                    <input type="password" name="password" id="password$cur" value="$servers[$server]['password']" size="30" />
+                    <input type="password" name="password" id="password$cur" value="$server['password']" size="30" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections$cur" value="$servers[$server]['connections']" min="0" max="100" />
+                    <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="0" max="100" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="priority$cur">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority$cur" value="$servers[$server]['priority']" min="0" max="100" /> <i>$T('explain-svrprio')</i>
+                    <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="100" /> <i>$T('explain-svrprio')</i>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="retention$cur">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention$cur" value="$servers[$server]['retention']" min="0" /> <i>$T('days')</i>
+                    <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" /> <i>$T('days')</i>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout$cur" value="$servers[$server]['timeout']" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="30" /> <i>$T('seconds')</i>
                 </div>
                 <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
                 </div>
                 <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl_type$cur">$T('srv-ssl_type')</label>
                     <!--#if int($have_ssl) == 1#-->
                         <select name="ssl_type" id="ssl_type$cur">
-                            <option value="t1"  <!--#if $servers[$server]['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
-                            <option value="v23" <!--#if $servers[$server]['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
-                            <option value="v2"  <!--#if $servers[$server]['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
-                            <option value="v3"  <!--#if $servers[$server]['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
+                            <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS1</option>
+                            <option value="v23" <!--#if $server['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
+                            <option value="v2"  <!--#if $server['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
+                            <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
                         </select>
                     <!--#end if#-->
                     <span class="desc">$T('srv-explain-ssl_type')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="optional$cur">$T('srv-optional')</label>
-                    <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-optional')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="send_group$cur">$T('srv-send_group')</label>
-                    <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($servers[$server]['send_group']) != 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="categories$cur">$T('srv-categories')</label>
                     <select name="categories" id="categories$cur" multiple>
                     <!--#for $cat in $cats#-->
-                      <option value="$cat" <!--#if $cat in $servers[$server]['categories'] then 'selected' else ""#-->>$cat</option>
+                      <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>$cat</option>
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                    <input type="text" name="displayname" id="displayname$cur" value="$servers[$server]['displayname']" size="30" />
+                    <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" size="30" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="notes$cur">$T('srv-notes')</label>
-                    <textarea name="notes" id="notes$cur" rows="3" cols="50">$servers[$server]['notes']</textarea>
+                    <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
@@ -219,12 +217,12 @@
             </fieldset>
         </div><!-- /col1 -->
         <div class="col2"  style="display:block;">
-        <!--#if 'amounts' in $servers[$server]#-->
+        <!--#if 'amounts' in $server#-->
             <b>$T('srv-bandwidth'):</b><br/>
-            $T('total'): $(servers[$server]['amounts'][0])B<br/>
-            $T('today'): $(servers[$server]['amounts'][3])B<br/>
-            $T('thisWeek'): $(servers[$server]['amounts'][2])B<br/>
-            $T('thisMonth'): $(servers[$server]['amounts'][1])B
+            $T('total'): $(server['amounts'][0])B<br/>
+            $T('today'): $(server['amounts'][3])B<br/>
+            $T('thisWeek'): $(server['amounts'][2])B<br/>
+            $T('thisMonth'): $(server['amounts'][1])B
         <!--#end if#-->
         </div>
     </div><!-- /section -->
