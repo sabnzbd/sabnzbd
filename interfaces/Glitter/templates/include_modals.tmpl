@@ -7,81 +7,18 @@
                 <h4 class="modal-title">$T('Glitter-statusInterfaceOptions')</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" onsubmit="return false;">
-                    <fieldset>
-                        <legend>
-                            <label>
-                                <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" /> <span>$T('Glitter-useGlobalOptions')</span>
-                            </label>
-                            $T('Glitter-interfaceOptions')
-                        </legend>
-                        <div class="form-group">
-                            <label class="col-sm-5 control-label">$T('Glitter-interfaceRefresh')</label>
-                            <div class="col-sm-4">
-                                <select id="refreshRate-option" class="form-control" data-bind="value: refreshRate">
-                                    <option value="1">1 $T('second')</option>
-                                    <option value="2">2 $T('second')</option>
-                                    <option value="4">4 $T('second')</option>
-                                    <option value="8">8 $T('second')</option>
-                                    <option value="16">16 $T('second')</option>
-                                    <option value="30">30 $T('second')</option>
-                                    <option value="60">1 $T('minute')</option>
-                                    <option value="120">2 $T('minute')</option>
-                                    <option value="900">15 $T('minute')</option>
-                                    <option value="1800">30 $T('minute')</option>
-                                    <option value="100000000000">$T('Glitter-disabled')</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-5 control-label">$T('Glitter-queueItemLimit')</label>
-                            <div class="col-sm-4">
-                                <select name="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
-                                    <option value="5">5 / $T('Glitter-page')</option>
-                                    <option value="10">10 / $T('Glitter-page')</option>
-                                    <option value="20">20 / $T('Glitter-page')</option>
-                                    <option value="30">30 / $T('Glitter-page')</option>
-                                    <option value="40">40 / $T('Glitter-page')</option>
-                                    <option value="50">50 / $T('Glitter-page')</option>
-                                    <option value="9999999">$T('Glitter-everything')</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-5 control-label">$T('Glitter-historyItemLimit')</label>
-                            <div class="col-sm-4">
-                                <select name="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
-                                    <option value="5">5 / $T('Glitter-page')</option>
-                                    <option value="10">10 / $T('Glitter-page')</option>
-                                    <option value="20">20 / $T('Glitter-page')</option>
-                                    <option value="30">30 / $T('Glitter-page')</option>
-                                    <option value="40">40 / $T('Glitter-page')</option>
-                                    <option value="50">50 / $T('Glitter-page')</option>
-                                    <option value="9999999">$T('Glitter-everything')</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-5 control-label">$T('Glitter-dateFormat')</label>
-                            <div class="col-sm-4">
-                                <select name="general-date-format" class="form-control" data-bind="value: dateFormat">
-                                    <option value="dd-MM-yy">DD-MM-YY</option>
-                                    <option value="MM/dd/yy">MM/DD/YY</option>
-                                    <option value="yyyy-dd-MM">YYYY-DD-MM</option>
-                                </select>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <!-- ko if: !hasStatusInfo() -->
-                    <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
-                    <!-- /ko -->
-
-                    <!-- ko if: hasStatusInfo -->
-                    <fieldset class="options-status-box">
-                        <legend>
-                            $T('menu-cons')
-                        </legend>
-
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#options_status" role="tab" data-toggle="tab">$T('menu-cons')</a></li>
+                    <li><a href="#options_connections" role="tab" data-toggle="tab">$T('connections')</a></li>
+                    <li><a href="#options_orphans" role="tab" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: hasStatusInfo() && statusInfo.status.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.status.folders().length"></span><!-- /ko --></a></li>
+                    <li><a href="#options_interface" role="tab" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>  
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="options_status">
+                        <!-- ko if: !hasStatusInfo() -->
+                        <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                        <!-- /ko -->
+                        <!-- ko if: hasStatusInfo() -->
                         <div class="row">
                             <div class="col-sm-5">$T('dashboard-localIP4')</div>
                             <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.localipv4(), css: { 'options-bad-status' : !statusInfo.dashboard.localipv4() }"></div>
@@ -123,7 +60,7 @@
                         <div class="clearfix"></div>
                         <div class="options-function-box">
                             <a href="#" data-bind="click: forceDisconnect" class="btn btn-default ">$T('link-forceDisc')</a>
-                            <a href="#" data-bind="click: repairQueue" class="btn btn-default">$T('Glitter-repairQueue')</a>
+                            <a href="#" data-bind="click: repairQueue" data-toggle="tooltip" data-placement="top" title="$T('explain-Repair').replace('<br>',' ').replace('<br />',' ')" class="btn btn-default">$T('Glitter-repairQueue')</a>
                             <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
                             <select class="form-control" data-bind="value: statusInfo.status.loglevel">
                                 <option value="0">$T('log-errWarn')</option>
@@ -131,16 +68,19 @@
                                 <option value="2">$T('log-debug')</option>
                             </select>
                         </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>
+                        <!-- /ko -->
+                    </div>
+                    <div class="tab-pane fade" id="options_connections">
+                        <!-- ko if: !hasStatusInfo() -->
+                        <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                        <!-- /ko -->
+                        <!-- ko if: hasStatusInfo() -->
+                        <div class="options_switch">
                             <label>
-                                <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> <span>$T('Glitter-showActiveConnections')</span>
+                                <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> 
+                                <span>$T('Glitter-showActiveConnections')</span>
                             </label>
-                            $T('connections')
-                        </legend>
-
+                        </div>
                         <div data-bind="foreach: statusInfo.status.servers">
                             <div class="options-server-box">
                                 <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">$T('Glitter-unblockServer')</a>
@@ -186,33 +126,108 @@
                                 <!-- /ko -->
                             </div>
                         </div>
-                    </fieldset>
-
-                    <fieldset data-bind="visible: (statusInfo.status.folders().length > 0)">
-                        <legend>
-                            <a href="#" class="hoverbutton" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> $T('Glitter-orphanedJobs')
-                        </legend>
-                        <table class="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30px;"></th>
-                                    <th></th>
-                                    <th style="width: 30px;"></th>
-                                    <th style="width: 30px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach: statusInfo.status.folders">
-                                <tr>
-                                    <td><span class="glyphicon glyphicon-folder-open"></span></td>
-                                    <td class="row-wrap-text"><strong data-bind="text: folder"></strong></td>
-                                    <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="add" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                    <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="delete" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </fieldset>
-                    <!-- /ko -->
-                </form>
+                        <!-- /ko -->
+                    </div>
+                    <div class="tab-pane fade" id="options_orphans">
+                        <!-- ko if: !hasStatusInfo() -->
+                            <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                        <!-- /ko -->
+                        <!-- ko if: hasStatusInfo() -->
+                            <!-- ko if: statusInfo.status.folders().length == 0 -->
+                            <h4>$T('none')</h4>
+                            <!-- /ko -->
+                            <!-- ko if: statusInfo.status.folders().length > 0 -->
+                            <a href="#" class="hoverbutton remove_all_orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
+                            <div class="clearfix"></div>
+                            <table class="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 30px;"></th>
+                                        <th></th>
+                                        <th style="width: 30px;"></th>
+                                        <th style="width: 30px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: statusInfo.status.folders">
+                                    <tr>
+                                        <td><span class="glyphicon glyphicon-folder-open"></span></td>
+                                        <td class="row-wrap-text"><strong data-bind="text: folder"></strong></td>
+                                        <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="add" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                        <td><a href="#" data-bind="attr: { 'data-folder': folder }, click: \$root.folderProcess" data-action="delete" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </div>
+                    <div class="tab-pane fade" id="options_interface">
+                        <form class="form-horizontal" onsubmit="return false;">
+                            <div class="options_switch">
+                                <label>
+                                    <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" /> 
+                                    <span>$T('Glitter-useGlobalOptions')</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">$T('Glitter-interfaceRefresh')</label>
+                                <div class="col-sm-4">
+                                    <select id="refreshRate-option" class="form-control" data-bind="value: refreshRate">
+                                        <option value="1">1 $T('second')</option>
+                                        <option value="2">2 $T('second')</option>
+                                        <option value="4">4 $T('second')</option>
+                                        <option value="8">8 $T('second')</option>
+                                        <option value="16">16 $T('second')</option>
+                                        <option value="30">30 $T('second')</option>
+                                        <option value="60">1 $T('minute')</option>
+                                        <option value="120">2 $T('minute')</option>
+                                        <option value="900">15 $T('minute')</option>
+                                        <option value="1800">30 $T('minute')</option>
+                                        <option value="100000000000">$T('Glitter-disabled')</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">$T('Glitter-queueItemLimit')</label>
+                                <div class="col-sm-4">
+                                    <select name="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
+                                        <option value="5">5 / $T('Glitter-page')</option>
+                                        <option value="10">10 / $T('Glitter-page')</option>
+                                        <option value="20">20 / $T('Glitter-page')</option>
+                                        <option value="30">30 / $T('Glitter-page')</option>
+                                        <option value="40">40 / $T('Glitter-page')</option>
+                                        <option value="50">50 / $T('Glitter-page')</option>
+                                        <option value="9999999">$T('Glitter-everything')</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">$T('Glitter-historyItemLimit')</label>
+                                <div class="col-sm-4">
+                                    <select name="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
+                                        <option value="5">5 / $T('Glitter-page')</option>
+                                        <option value="10">10 / $T('Glitter-page')</option>
+                                        <option value="20">20 / $T('Glitter-page')</option>
+                                        <option value="30">30 / $T('Glitter-page')</option>
+                                        <option value="40">40 / $T('Glitter-page')</option>
+                                        <option value="50">50 / $T('Glitter-page')</option>
+                                        <option value="9999999">$T('Glitter-everything')</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">$T('Glitter-dateFormat')</label>
+                                <div class="col-sm-4">
+                                    <select name="general-date-format" class="form-control" data-bind="value: dateFormat">
+                                        <option value="dd-MM-yy">DD-MM-YY</option>
+                                        <option value="MM/dd/yy">MM/DD/YY</option>
+                                        <option value="yyyy-dd-MM">YYYY-DD-MM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
             </div>
         </div>
     </div>
