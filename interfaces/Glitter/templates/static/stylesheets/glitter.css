@@ -993,8 +993,9 @@ tr.queueitem>td:first-child>a {
 
 /* OPTIONS MODAL */
 
-#modal_options .modal-content {
+#modal_options .tab-content {
     transition: all 0.3s !important;
+    min-height: 220px;
 }
 
 #modal_options .form-group {
@@ -1005,31 +1006,40 @@ tr.queueitem>td:first-child>a {
     margin-bottom: 1em;
 }
 
-#modal_options legend label,
-#modal_options legend a {
-    float: right;
+#modal_options .options_switch {
+    text-align: center;
+    border-bottom: 1px solid #F0F0F0;
+    padding-bottom: 3px;
+    margin-bottom: 13px;
+}
+
+#modal_options .options_switch label,
+#modal_options #options_orphans .remove_all_orphaned {
     font-size: 1.4rem;
     margin-top: 5px;
+    margin-bottom: 10px;
     font-weight: bold;
     cursor: pointer;
     color: black;
 }
 
-#modal_options legend a,
-#modal_options legend input+span {
+#modal_options .options_switch a,
+#modal_options #options_orphans .remove_all_orphaned,
+#modal_options .options_switch input+span {
     opacity: 0.6;
 }
 
-#modal_options legend label:hover span,
-#modal_options legend a:hover {
+#modal_options .options_switch label:hover span,
+#modal_options #options_orphans .remove_all_orphaned:hover,
+#modal_options .options_switch a:hover {
     opacity: 1;
 }
 
-#modal_options legend input:checked+span {
+#modal_options .options_switch input:checked+span {
     opacity: 1 !important;
 }
 
-#modal_options legend input {
+#modal_options .options_switch input {
     width: 14px;
     height: 14px;
     display: block;
@@ -1038,8 +1048,9 @@ tr.queueitem>td:first-child>a {
     margin-right: 4px;
 }
 
-#modal_options legend a {
+#modal_options #options_orphans .remove_all_orphaned {
     margin-right: 8px;
+    float: right;
 }
 
 #modal_options .modal-header a {
@@ -1058,6 +1069,7 @@ tr.queueitem>td:first-child>a {
     margin-top: 10px;
     margin-right: 5px;
     float: left;
+    text-transform: capitalize;
 }
 
 #modal_options .options-server-box {
@@ -1078,6 +1090,11 @@ tr.queueitem>td:first-child>a {
     padding-bottom: 0;
 }
 
+#modal_options .col-sm-7,
+#modal_options .col-sm-5 {
+    padding-bottom: 3px;
+}
+
 #modal_options .col-sm-5 {
     text-align: right;
     font-weight: bold;
@@ -1092,12 +1109,12 @@ tr.queueitem>td:first-child>a {
     font-weight: bold;
 }
 
-#modal_options .options-status-box .glyphicon {
+#modal_options #options_status .glyphicon {
     top: 2px;
     margin-left: 3px;
 }
 
-#modal_options .options-status-box small {
+#modal_options #options_status small {
     color: #9E9E9E;
     margin-left: 5px;
 }
@@ -1119,8 +1136,9 @@ tr.queueitem>td:first-child>a {
     visibility: visible;
 }
 
-#modal_options h4 {
-    margin-bottom: 0;
+#modal_options .tab-content h4 {
+    color: black;
+    text-align: center;
 }
 
 .dotOne, .dotTwo, .dotThree {
@@ -1233,10 +1251,6 @@ tr.queueitem>td:first-child>a {
     width: auto;
     display: inline-block;
     margin-right: -4px;
-}
-
-#modal_item_files  #nzb_password {
-    border-right-width: 0;
 }
 
 #modal_item_files h4,
@@ -1586,6 +1600,21 @@ a:focus {
 
 legend {
     margin-bottom: 10px;
+}
+
+.nav-tabs>li>a {
+    text-transform: capitalize;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, 
+.nav-tabs>li.active>a:hover {
+    box-shadow: 0px -1px 2px 0px rgba(0,0,0,0.25);
+}
+
+.tab-content {
+    padding-top: 10px;
 }
 
 .form-control,
