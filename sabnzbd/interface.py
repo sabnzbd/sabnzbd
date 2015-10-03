@@ -32,7 +32,7 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-from sabnzbd.misc import real_path, to_units, \
+from sabnzbd.misc import real_path, to_units, from_units, \
     time_format, HAVE_AMPM, long_path, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
@@ -2164,11 +2164,11 @@ class ConfigScheduling(object):
             except:
                 value = ''
             value = value.strip()
-            if value.isdigit():
-                if int(value) == 0:
+            if value and not value.lower().strip('0123456789kmgtp%.'):
+                if '%' not in value and from_units(value) < 1.0:
                     value = T('off')  # : "Off" value for speedlimit in scheduler
                 else:
-                    value += '%'
+                    value = value.upper()
             if action in actions:
                 action = Ttemplate("sch-" + action)
             else:
@@ -2236,9 +2236,8 @@ class ConfigScheduling(object):
 
         if minute and hour and days_of_week and action:
             if action == 'speedlimit':
-                arguments = arguments.strip(' %')
-                if not (arguments and arguments.isdigit()):
-                    arguments = '0'
+                if not arguments or arguments.strip('0123456789kmgtp%.'):
+                    arguments = 0
             elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action in server_names:

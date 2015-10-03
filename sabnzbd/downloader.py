@@ -38,6 +38,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
+from sabnzbd.misc import from_units, int_conv
 from sabnzbd.utils.happyeyeballs import *
 
 
@@ -273,19 +274,27 @@ class Downloader(Thread):
     @synchronized_CV
     def limit_speed(self, value):
         if value:
-            self.bandwidth_perc = int(value)
             mx = cfg.bandwidth_max.get_int()
-            if mx:
-                self.bandwidth_limit = mx * int(value) / 100
+            if '%' in str(value):
+                limit = value.strip(' %')
+                self.bandwidth_perc = int_conv(limit)
+                if mx:
+                    self.bandwidth_limit = mx * self.bandwidth_perc / 100
+                else:
+                    logging.warning(T('You must set a maximum bandwidth before you can set a bandwidth limit'))
             else:
-                logging.warning(T('You must set a maximum bandwidth before you can set a bandwidth limit'))
+                self.bandwidth_limit = from_units(value)
+                if mx:
+                    self.bandwidth_perc = int(self.bandwidth_limit / mx * 100)
+                else:
+                    self.bandwidth_perc = 100
         else:
             self.speed_set()
-        logging.info("Bandwidth limit set to %s%%", value)
+        logging.info("Bandwidth limit set to %s", value)
 
     def get_limit(self):
         return self.bandwidth_perc
-    
+
     def get_limit_abs(self):
         return self.bandwidth_limit
 

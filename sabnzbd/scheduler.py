@@ -293,7 +293,7 @@ def analyse(was_paused=False, priority=None):
     paused_all = False
     pause_post = False
     pause_low = pause_normal = pause_high = False
-    speedlimit = -1
+    speedlimit = None
     quota = True
     servers = {}
 
@@ -320,7 +320,7 @@ def analyse(was_paused=False, priority=None):
             pause_post = False
             PP_PAUSE_EVENT = True
         elif action == 'speedlimit' and value is not None:
-            speedlimit = int(ev[2])
+            speedlimit = ev[2]
         elif action == 'pause_all_low':
             pause_low = True
         elif action == 'pause_all_normal':
@@ -367,7 +367,7 @@ def analyse(was_paused=False, priority=None):
         sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)  # @UndefinedVariable
 
     PostProcessor.do.paused = pause_post
-    if speedlimit >= 0:
+    if speedlimit is not None:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)  # @UndefinedVariable
 
     sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)  # @UndefinedVariable
