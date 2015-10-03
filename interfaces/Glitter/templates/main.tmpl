@@ -27,7 +27,7 @@
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152.png" />
         <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico" data-bind="attr: { 'href': SABIcon }" />
 
-        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
         <!--#if $color_scheme != 'Default'#-->
@@ -107,13 +107,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-addNZB')">
+                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="$T('Glitter-addNZB')">
                             <a href="#modal_add_nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
+                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
                             <a href="#modal_options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" data-container="body" title="$T('Glitter-configure')">
+                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" data-container="body" title="$T('Glitter-configure')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
                         <li class="dropdown">
@@ -592,8 +592,8 @@
                 </div>
                 
                 <div class="multioperations-selector" id="history-options">
-                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-container="body" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-container="body" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-trigger="hover" data-placement="left" data-container="body" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-trigger="hover" data-container="body" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
 
                 <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">

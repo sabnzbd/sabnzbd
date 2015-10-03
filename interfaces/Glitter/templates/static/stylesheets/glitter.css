@@ -1,5 +1,6 @@
 body {
     background-color: #E4E4E4;
+    overflow-y: scroll;
 }
 
 h2 {
@@ -27,6 +28,10 @@ h2 {
 
 .main-navbar .sparkline {
     display: none;
+}
+
+.navbar-collapse {
+    padding-right: 4px;
 }
 
 .navbar-collapse.in {
@@ -1048,6 +1053,8 @@ tr.queueitem>td:first-child>a {
     width: auto;
     display: inline-block;
     margin-top: 10px;
+    margin-right: 5px;
+    float: left;
 }
 
 #modal_options .options-server-box {

@@ -796,7 +796,7 @@ SKIN_TEXT = {
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-orphanedJobsMsg' : TT('There are orphaned job folders, click on ICON_PLACEHOLDER to take care of them'), #: Don't translate ICON_PLACEHOLDER 
     'Glitter-custom' : TT('Custom'),
-    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!) <br />Example: "2 hours", "20:00" or "tomorrow 7pm"'), #: Don't translate the examples! Keep the ", do not replace by ' !
+    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!) <br />Example: "50min", "3 hours", "20:00" or "tomorrow 7pm"'), #: Don't translate the examples! Keep the ", do not replace by ' !
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. <br />Try again.'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
