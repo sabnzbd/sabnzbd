@@ -275,7 +275,7 @@ class Downloader(Thread):
     def limit_speed(self, value):
         if value:
             mx = cfg.bandwidth_max.get_int()
-            if '%' in str(value):
+            if '%' in str(value) or (int_conv(value) > 0 and int_conv(value) < 101):
                 limit = value.strip(' %')
                 self.bandwidth_perc = int_conv(limit)
                 if mx:

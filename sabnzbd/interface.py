@@ -2168,6 +2168,8 @@ class ConfigScheduling(object):
                 if '%' not in value and from_units(value) < 1.0:
                     value = T('off')  # : "Off" value for speedlimit in scheduler
                 else:
+                    if '%' not in value and int_conv(value) > 1 and int_conv(value) < 101:
+                        value += '%'
                     value = value.upper()
             if action in actions:
                 action = Ttemplate("sch-" + action)

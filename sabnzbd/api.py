@@ -781,15 +781,8 @@ def _api_config_speedlimit(output, kwargs):
     value = kwargs.get('value')
     if not value:
         value = '0'
-    if value.isdigit():
-        try:
-            value = int(value)
-        except:
-            return report(output, _MSG_NO_VALUE)
-        Downloader.do.limit_speed(value)
-        return report(output)
-    else:
-        return report(output, _MSG_NO_VALUE)
+    Downloader.do.limit_speed(value)
+    return report(output)
 
 
 def _api_config_get_speedlimit(output, kwargs):
