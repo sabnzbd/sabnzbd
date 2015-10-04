@@ -872,26 +872,24 @@ class NzbQueue(TryList):
         if search:
             search = search.lower()
         bytes_left = 0
-        bytes = 0
+        bytes_total = 0
         q_size = 0
         pnfo_list = []
         n = 0
         for nzo in self.__nzo_list:
+            if nzo.status != 'Paused':
+                b, b_left = nzo.total_and_remaining()
+                bytes_total += b
+                bytes_left += b_left
+                q_size += 1
+
             if (not search) or search in nzo.final_name_pw_clean.lower():
                 if not max_jobs or n < max_jobs:
                     pnfo = nzo.gather_info(for_cli=for_cli)
                     pnfo_list.append(pnfo)
-                    if nzo.status != 'Paused':
-                        bytes += pnfo[PNFO_BYTES_FIELD]
-                        bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
-                        q_size += 1
-                elif nzo.status != 'Paused':
-                    b, b_left = nzo.total_and_remaining()
-                    bytes += b
-                    bytes_left += b_left
-                    q_size += 1
                 n += 1
-        return (bytes, bytes_left, pnfo_list, q_size)
+
+        return (bytes_total, bytes_left, pnfo_list, q_size, len(self.__nzo_list))
 
     @synchronized(NZBQUEUE_LOCK)
     def remaining(self):
