@@ -214,7 +214,8 @@
                         <tr>
                             <th style="width: 33px;"></th>
                             <th></th>
-                            <th class="table-header-progress"></th>
+                            <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraColumn }"></th>
+                            <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraColumn }"></th>
                             <th style="width: 80px;"></th>
                             <th style="width: 60px;"></th>
                         </tr>
@@ -223,9 +224,9 @@
                     <!-- ko if: !hasQueue() -->
                     <tbody class="nodownloads">
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <a href="#modal_add_nzb" class="hoverbutton" data-toggle="modal">
-                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
+                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip" data-trigger="hover"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                                 </a>
                             </td>
                         </tr>
@@ -255,6 +256,10 @@
                                     <a href="#" data-bind="click: editName" class="hoverbutton"><span class="glyphicon glyphicon-pencil"></span></a>
                                     <a href="#" data-bind="click: showFiles" class="hoverbutton"><span class="glyphicon glyphicon-folder-open"></span></a>
                                     <small data-bind="text: avg_age"></small>
+                                </div>
+                            </td>
+                            <td class="queue-extra-text">
+                                <div class="row-wrap-text" data-bind="text: extraText">
                                 </div>
                             </td>
                             <td class="progress-indicator">

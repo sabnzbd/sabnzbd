@@ -763,6 +763,7 @@ SKIN_TEXT = {
     'Glitter-queueItemLimit' : TT('Queue item limit'),
     'Glitter-historyItemLimit' : TT('History item limit'),
     'Glitter-dateFormat' : TT('Date format'),
+    'Glitter-showExtraColumn' : TT('Extra queue column'),
     'Glitter-page' : TT('page'),
     'Glitter-everything' : TT('Everything'),
     'Glitter-loading' : TT('Loading'),

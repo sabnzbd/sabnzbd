@@ -369,12 +369,23 @@ tbody>tr>td:last-child {
 }
 
 .queue-table td.name,
-.queue-table td.progress-indicator {
+.queue-table td.progress-indicator,
+.queue-table td.queue-extra-text {
     cursor: move;
 }
 
 .queue-table .table-header-progress {
     width: 40%;
+}
+
+.queue-table .table-header-extra {
+    width: 0;
+}
+
+.queue-table .queue-extra-text {
+    text-align: right;
+    color: #888;
+    padding-left: 0;
 }
 
 td.name .row-wrap-text {
@@ -394,7 +405,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: 83%;
+    max-width: 80%;
  /* Change for each size! */
 }
 
@@ -1365,15 +1376,29 @@ tr.queueitem>td:first-child>a {
 ***/
 
 /* For large and veryyy large screens */
+@media screen and (min-width: 2000px) {
+    .container {
+        width: 1700px;
+    }
+}
+
 @media screen and (min-width: 1500px) {
     .container {
         width: 1400px;
     }
 }
 
-@media screen and (min-width: 2000px) {
-    .container {
-        width: 1700px;
+@media screen and (min-width: 1200px) {
+    .queue-table .table-extra-header-visible {
+        width: 10%;
+    }
+    
+    .queue-table .table-header-progress-smaller {
+        width: 35%;
+    }
+    
+    #options_interface .label {
+        display: none;
     }
 }
 
@@ -1433,11 +1458,11 @@ tr.queueitem>td:first-child>a {
     #modal_add_nzb .modal-dialog,
     #modal_help .modal-dialog,
     #modal_purge_history .modal-dialog,
+    #modal_options .modal-dialog,
     #modal_retry_job .modal-dialog {
         margin-top: 80px;
     }
     
-    #modal_options .modal-dialog,
     #history_script_log .modal-dialog {
         margin-top: 30px;
     }

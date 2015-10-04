@@ -119,6 +119,7 @@ $(function() {
         self.useGlobalOptions = ko.observable(localStorage.getItem('useGlobalOptions') == 'false' ? false : true)      
         self.refreshRate = ko.observable(localStorage.getItem('pageRefreshRate') ? localStorage.getItem('pageRefreshRate') : 1)
         self.dateFormat = ko.observable(localStorage.getItem('pageDateFormat') ? localStorage.getItem('pageDateFormat') : 'dd-MM-yy')
+        self.extraColumn = ko.observable(localStorage.getItem('pageExtraColumn') ? localStorage.getItem('pageExtraColumn') : '')
         self.hasStatusInfo = ko.observable(false); // True when we load it
         self.showActiveConnections = ko.observable(false);
         self.speed = ko.observable(0);
@@ -585,6 +586,11 @@ $(function() {
         // Update dateformat
         self.dateFormat.subscribe(function(newValue) {
             localStorage.setItem('pageDateFormat', newValue)
+        })
+        
+        // Update extraColumn
+        self.extraColumn.subscribe(function(newValue) {
+            localStorage.setItem('pageExtraColumn', newValue)
         })
 
         /***
@@ -1258,6 +1264,27 @@ $(function() {
         self.progressText = ko.computed(function() {
             return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
         }, this);
+        
+        self.extraText = ko.computed(function() {
+            // Picked anything?
+            switch(self.parent.parent.extraColumn()) {
+                case 'category':
+                    // Exception for *
+                    if(self.category() == "*") 
+                        return glitterTranslate.defaultText 
+                    return self.category();
+                case 'priority':
+                    // Onload-exception
+                    if(self.priority() == undefined) return;
+                    return ko.utils.arrayFirst(self.parent.priorityOptions(), function(item) { return item.value == self.priority()}).name;
+                case 'processing':
+                    // Onload-exception
+                    if(self.unpackopts() == undefined) return;
+                    return ko.utils.arrayFirst(self.parent.processingOptions(), function(item) { return item.value == self.unpackopts()}).name;
+                case 'scripts':
+                    return self.script();
+            }
+        })
 
         // Every update
         self.updateFromData = function(data) {

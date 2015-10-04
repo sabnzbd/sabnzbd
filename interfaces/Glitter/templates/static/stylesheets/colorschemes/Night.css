@@ -58,7 +58,8 @@ legend,
 }
 
 .max-speed-input-clear,
-.max-speed-input-clear:hover {
+.max-speed-input-clear:hover,
+.nav-tabs>li>a:hover {
     color: black;
 }
 
