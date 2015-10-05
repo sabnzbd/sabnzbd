@@ -198,6 +198,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             nzo.password = password
     except TypeError:
         # Duplicate, ignore
+        if nzo_id:
+            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
         nzo = None
     except ValueError:
         # Empty, but correct file

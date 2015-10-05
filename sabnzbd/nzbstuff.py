@@ -1534,20 +1534,20 @@ class NzbObject(TryList):
 
     def has_duplicates(self):
         """ Return True when this NZB or episode is already in the History """
-        no_dupes = cfg.no_dupes()
-        no_series_dupes = cfg.no_series_dupes()
-        if not no_dupes and not no_series_dupes:
+        dupes = not cfg.no_dupes()
+        series_dupes = not cfg.no_series_dupes()
+        if not dupes and not series_dupes:
             return 0
 
         res = 0
         history_db = get_history_handle()
-        if no_series_dupes:
+        if series_dupes:
             series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
             if history_db.have_episode(series, season, episode):
-                res = no_series_dupes
-        if not res and no_dupes:
+                res = series_dupes
+        if not res and dupes:
             if history_db.have_md5sum(self.md5sum):
-                res = no_dupes
+                res = dupes
         history_db.close()
         return res
 
