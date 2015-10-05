@@ -109,13 +109,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="$T('Glitter-addNZB')">
+                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-addNZB')">
                             <a href="#modal_add_nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
+                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
                             <a href="#modal_options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" data-trigger="hover" data-container="body" title="$T('Glitter-configure')">
+                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-configure')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
                         <li class="dropdown">
@@ -198,7 +198,7 @@
                             <span class="glyphicon glyphicon-sort-by-alphabet" data-toggle="tooltip" data-placement="left" title="$T('cmenu-sorting')"></span>
                         </a>
                         <a href="#" data-bind="click: queue.showMultiEdit">
-                            <span class="glyphicon glyphicon-tasks" data-toggle="tooltip" data-placement="left" data-container="body" title="$T('Glitter-multiOperations')"></span>
+                            <span class="glyphicon glyphicon-tasks" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations')"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
@@ -228,7 +228,7 @@
                         <tr>
                             <td colspan="6">
                                 <a href="#modal_add_nzb" class="hoverbutton" data-toggle="modal">
-                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip" data-trigger="hover"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
+                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                                 </a>
                             </td>
                         </tr>
@@ -599,8 +599,8 @@
                 </div>
                 
                 <div class="multioperations-selector" id="history-options">
-                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-trigger="hover" data-placement="left" data-container="body" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-trigger="hover" data-container="body" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
 
                 <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">

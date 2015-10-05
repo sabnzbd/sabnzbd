@@ -1006,7 +1006,7 @@ tr.queueitem>td:first-child>a {
 
 #modal_options .tab-content {
     transition: all 0.3s !important;
-    min-height: 220px;
+    min-height: 200px;
 }
 
 #modal_options .form-group {

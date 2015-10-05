@@ -685,15 +685,17 @@ $(function() {
                 self.hasStatusInfo(true)
 
                 // Add tooltips again
-                if(!isMobile) $('#modal_options [data-toggle="tooltip"]').tooltip()
+                if(!isMobile) $('#modal_options [data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
             });
         }
 
         // Do a disk-speedtest
         self.testDiskSpeed = function() {
+            // Hide tooltips (otherwise they stay forever..)
+            $('#options_status [data-toggle="tooltip"]').tooltip('hide')
             // Hide before running the test
             self.hasStatusInfo(false)
-                // Run it and then display it
+            // Run it and then display it
             callSpecialAPI('status/dashrefresh').then(function() {
                 self.loadStatusInfo()
             })
@@ -862,7 +864,7 @@ $(function() {
         self.refresh()
 
         // Activate tooltips
-        if(!isMobile) $('[data-toggle="tooltip"]').tooltip()
+        if(!isMobile) $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
     }
 
     /**
@@ -2229,7 +2231,7 @@ function keepOpen(thisItem) {
         }
     });
     // Add possible tooltips
-    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip()
+    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
 }
 
 // Check all functionality
