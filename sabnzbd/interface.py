@@ -1657,7 +1657,7 @@ class ConfigServer(object):
 
         new = []
         servers = config.get_servers()
-        server_names = sorted(servers.keys(), key=lambda svr: '%02d%s' % (servers[svr].priority(), servers[svr].displayname))
+        server_names = sorted(servers.keys(), key=lambda svr: '%02d%s' % (servers[svr].priority(), servers[svr].displayname().lower()))
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
             t, m, w, d = BPSMeter.do.amounts(svr)
@@ -2478,7 +2478,8 @@ class Status(object):
 
         header['servers'] = []
 
-        for server in Downloader.do.servers[:]:
+        servers = sorted(Downloader.do.servers[:], key=lambda svr: '%02d%s' % (svr.priority, svr.displayname.lower()))
+        for server in servers:
             busy = []
             connected = 0
 
