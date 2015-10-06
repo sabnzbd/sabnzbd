@@ -578,7 +578,7 @@ tr.queueitem>td:first-child>a {
     max-width: 700px;
     float: right;
     position: relative;
-    z-index: 999;
+    z-index: 900;
 }
 
 .multioperations-selector .add-nzb-inputbox {

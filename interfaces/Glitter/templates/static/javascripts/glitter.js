@@ -497,7 +497,7 @@ $(function() {
                         // Reformat CSS label and date
                         var warningData = {
                             index: index,
-                            type: warningSplit[1],
+                            type: glitterTranslate.status[warningSplit[1]].slice(0, -1),
                             text: warningSplit.slice(2).join('<br/>'), // Recombine if multiple lines
                             date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'),
                             css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"),
@@ -833,10 +833,11 @@ $(function() {
                 
             // Show message (maybe it was there from before!)
             if(localStorage.getItem('lastOrphanedMsg') == 'true') {
+                console.log('asdas')
                 self.allMessages.push({
                     index: 'lastOrphanedMsg',
                     type: 'INFO',
-                    text: glitterTranslate.orphanedJobsMsg.replace('ICON_PLACEHOLDER', '<span class="glyphicon glyphicon-wrench"></span>'),
+                    text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click()"><span class="glyphicon glyphicon-wrench"></span></a>',
                     css: 'info',
                     clear: function() { self.clearMessages('lastOrphanedMsg')}
                 });
