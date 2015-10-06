@@ -119,14 +119,14 @@
             <h3>$server['displayname']</h3>
             <span class="label label-primary">$T('srv-priority'): $server['priority']</span>
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server" rel="$server" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
-              <td><label for="enable_$server">&nbsp;$T('enabled')</label></td>
+              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server['host']" rel="$server['host']" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+              <td><label for="enable_$server['host']">&nbsp;$T('enabled')</label></td>
             </tr></table>
 
             <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
             <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
         </div><!-- /col2 -->
-            <div class="col1"  style="display:none;">
+        <div class="col1"  style="display:none;">
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="enable$cur">$T('srv-enable')</label>
