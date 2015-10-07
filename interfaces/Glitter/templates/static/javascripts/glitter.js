@@ -116,12 +116,12 @@ $(function() {
         // Set information varibales
         self.title = ko.observable()
         self.isRestarting = ko.observable(false);
-        self.useGlobalOptions = ko.observable(localStorage.getItem('useGlobalOptions') == 'false' ? false : true)      
-        self.refreshRate = ko.observable(localStorage.getItem('pageRefreshRate') ? localStorage.getItem('pageRefreshRate') : 1)
-        self.dateFormat = ko.observable(localStorage.getItem('pageDateFormat') ? localStorage.getItem('pageDateFormat') : 'dd-MM-yy')
-        self.confirmDeleteQueue = ko.observable(localStorage.getItem('confirmDeleteQueue') == 'false' ? false : true)
-        self.confirmDeleteHistory = ko.observable(localStorage.getItem('confirmDeleteHistory') == 'false' ? false : true)
-        self.extraColumn = ko.observable(localStorage.getItem('pageExtraColumn') ? localStorage.getItem('pageExtraColumn') : '')
+        self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
+        self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
+        self.dateFormat = ko.observable('dd-MM-yy').extend({ persist: 'pageDateFormat' });
+        self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
+        self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
+        self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
         self.hasStatusInfo = ko.observable(false); // True when we load it
         self.showActiveConnections = ko.observable(false);
         self.speed = ko.observable(0);
@@ -559,8 +559,6 @@ $(function() {
         
         // Use global settings or device-specific?
         self.useGlobalOptions.subscribe(function(newValue) {
-            localStorage.setItem('useGlobalOptions', newValue)
-
             // Reload in case of enabling global options
             if(newValue) document.location = document.location;
         })
@@ -570,7 +568,6 @@ $(function() {
             // Set in javascript
             clearInterval(self.interval)
             self.interval = setInterval(self.refresh, parseInt(newValue) * 1000);
-            localStorage.setItem('pageRefreshRate', newValue);
             
             // Save in config if global-settings
             if(self.useGlobalOptions()) {
@@ -583,27 +580,7 @@ $(function() {
             }
             
         })
-
-        // Update dateformat
-        self.dateFormat.subscribe(function(newValue) {
-            localStorage.setItem('pageDateFormat', newValue)
-        })
         
-        // Update extraColumn
-        self.extraColumn.subscribe(function(newValue) {
-            localStorage.setItem('pageExtraColumn', newValue)
-        })
-        
-        // Update extraColumn
-        self.confirmDeleteQueue.subscribe(function(newValue) {
-            localStorage.setItem('confirmDeleteQueue', newValue)
-        })
-        
-        // Update confirmDeleteHistory
-        self.confirmDeleteHistory.subscribe(function(newValue) {
-            localStorage.setItem('confirmDeleteHistory', newValue)
-        })
-
         /***
              Add NZB's
         ***/
@@ -723,6 +700,9 @@ $(function() {
 
         // Orphaned folder processing
         self.folderProcess = function(e, b) {
+            // Hide tooltips (otherwise they stay forever..)
+            $('#options_orphans [data-toggle="tooltip"]').tooltip('hide')
+            
             // Activate
             callSpecialAPI("status/" + $(b.currentTarget).data('action'), {
                 name: $(b.currentTarget).data('folder')
@@ -742,7 +722,7 @@ $(function() {
 
         // Orphaned folder deletion of all
         self.removeAllOrphaned = function() {
-            if(!self.cofirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+            if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
                 // Do them all
                 ko.utils.arrayForEach(self.statusInfo.status.folders(), function(folder) {
                     callSpecialAPI("status/delete", {
@@ -917,7 +897,7 @@ $(function() {
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
         self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
-        self.paginationLimit = ko.observable(localStorage.getItem('queuePaginationLimit') ? localStorage.getItem('queuePaginationLimit') : 20)
+        self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
         self.pagination = new paginationModel(self);
 
         // Don't update while dragging
@@ -1003,10 +983,7 @@ $(function() {
         };
 
         // Save pagination state
-        self.paginationLimit.subscribe(function(newValue) {
-            // Save in local storage
-            localStorage.setItem('queuePaginationLimit', newValue)
-            
+        self.paginationLimit.subscribe(function(newValue) {          
             // Save in config if global 
             if(self.parent.useGlobalOptions()) {
                 callAPI({
@@ -1473,7 +1450,7 @@ $(function() {
         self.historyItems = ko.observableArray([]);
         self.showFailed = ko.observable(false);
         self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
-        self.paginationLimit = ko.observable(localStorage.getItem('historyPaginationLimit') ? localStorage.getItem('historyPaginationLimit') : 10);
+        self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
         self.totalItems = ko.observable(0);
         self.pagination = new paginationModel(self);
 
@@ -1531,10 +1508,7 @@ $(function() {
         };
 
         // Save pagination state
-        self.paginationLimit.subscribe(function(newValue) {
-            // Save in localstorage
-            localStorage.setItem('historyPaginationLimit', newValue)
-            
+        self.paginationLimit.subscribe(function(newValue) {         
             // Save in config if global config
             if(self.parent.useGlobalOptions()) {
                 callAPI({

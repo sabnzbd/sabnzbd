@@ -9,6 +9,7 @@ Knockout JavaScript library
 Knockout sortable
 Knockout filedrop
 Knockout slider
+Knockout Persist
 DateJS
 Respond.js
 HTML5 Shiv 3.7.2
