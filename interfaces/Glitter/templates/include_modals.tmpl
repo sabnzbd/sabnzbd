@@ -214,6 +214,7 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="options_switch"></div>
                             <div class="form-group">
                                 <label class="col-sm-5 control-label">$T('Glitter-dateFormat')</label>
                                 <div class="col-sm-4">
@@ -240,6 +241,22 @@
                                         <option value="processing">$T('swtag-pp')</option>
                                         <option value="scripts">$T('eoq-scripts')</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="form-group form-checkbox">
+                                <label class="col-sm-5 control-label">
+                                    $T("Glitter-confirmDeleteQueue")
+                                </label>
+                                <div class="col-sm-4">
+                                    <input type="checkbox" name="confirmDeleteQueue" value="true" data-bind="checked: confirmDeleteQueue" />
+                                </div>
+                            </div>
+                            <div class="form-group form-checkbox">
+                                <label class="col-sm-5 control-label">
+                                    $T("Glitter-confirmDeleteHistory")
+                                </label>
+                                <div class="col-sm-4">
+                                    <input type="checkbox" name="confirmDeleteHistory" value="true" data-bind="checked: confirmDeleteHistory" />
                                 </div>
                             </div>
                         </form>

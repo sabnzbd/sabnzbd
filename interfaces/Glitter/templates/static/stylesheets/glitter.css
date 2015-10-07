@@ -1024,6 +1024,12 @@ tr.queueitem>td:first-child>a {
     margin-bottom: 13px;
 }
 
+#modal_options .form-group+.options_switch {
+    margin-bottom: 13px;
+    margin-top: 8px;
+    clear: both;
+}
+
 #modal_options .options_switch label,
 #modal_options #options_orphans .remove_all_orphaned {
     font-size: 1.4rem;
@@ -1150,6 +1156,13 @@ tr.queueitem>td:first-child>a {
 #modal_options .tab-content h4 {
     color: black;
     text-align: center;
+}
+
+#modal_options .form-checkbox input[type="checkbox"] {
+    height: 14px;
+    width: 14px;
+    display: block;
+    margin-top: 11px;
 }
 
 .dotOne, .dotTwo, .dotThree {

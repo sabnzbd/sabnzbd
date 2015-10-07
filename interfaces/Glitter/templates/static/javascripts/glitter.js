@@ -119,6 +119,8 @@ $(function() {
         self.useGlobalOptions = ko.observable(localStorage.getItem('useGlobalOptions') == 'false' ? false : true)      
         self.refreshRate = ko.observable(localStorage.getItem('pageRefreshRate') ? localStorage.getItem('pageRefreshRate') : 1)
         self.dateFormat = ko.observable(localStorage.getItem('pageDateFormat') ? localStorage.getItem('pageDateFormat') : 'dd-MM-yy')
+        self.confirmDeleteQueue = ko.observable(localStorage.getItem('confirmDeleteQueue') == 'false' ? false : true)
+        self.confirmDeleteHistory = ko.observable(localStorage.getItem('confirmDeleteHistory') == 'false' ? false : true)
         self.extraColumn = ko.observable(localStorage.getItem('pageExtraColumn') ? localStorage.getItem('pageExtraColumn') : '')
         self.hasStatusInfo = ko.observable(false); // True when we load it
         self.showActiveConnections = ko.observable(false);
@@ -512,10 +514,9 @@ $(function() {
 
         // Clear warnings through this weird URL..
         self.clearWarnings = function() {
-            if(!confirm(glitterTranslate.clearWarn))
-                return;
-            // Activate
-            callSpecialAPI("status/clearwarnings")
+            if(!self.confirmDeleteQueue() || confirm(glitterTranslate.clearWarn))
+                // Activate
+                callSpecialAPI("status/clearwarnings")
         }
         
         // Clear messages
@@ -591,6 +592,16 @@ $(function() {
         // Update extraColumn
         self.extraColumn.subscribe(function(newValue) {
             localStorage.setItem('pageExtraColumn', newValue)
+        })
+        
+        // Update extraColumn
+        self.confirmDeleteQueue.subscribe(function(newValue) {
+            localStorage.setItem('confirmDeleteQueue', newValue)
+        })
+        
+        // Update confirmDeleteHistory
+        self.confirmDeleteHistory.subscribe(function(newValue) {
+            localStorage.setItem('confirmDeleteHistory', newValue)
         })
 
         /***
@@ -731,19 +742,18 @@ $(function() {
 
         // Orphaned folder deletion of all
         self.removeAllOrphaned = function() {
-            if(!confirm(glitterTranslate.clearWarn))
-                return;
-
-            // Do them all
-            ko.utils.arrayForEach(self.statusInfo.status.folders(), function(folder) {
-                callSpecialAPI("status/delete", {
-                    name: folder.folder()
-                })
-            });
-            // Refresh
-            self.loadStatusInfo()
-            // Remove message
-            self.clearMessages('lastOrphanedMsg')
+            if(!self.cofirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+                // Do them all
+                ko.utils.arrayForEach(self.statusInfo.status.folders(), function(folder) {
+                    callSpecialAPI("status/delete", {
+                        name: folder.folder()
+                    })
+                });
+                // Refresh
+                self.loadStatusInfo()
+                // Remove message
+                self.clearMessages('lastOrphanedMsg')
+            }     
         }
 
         /**
@@ -1188,27 +1198,27 @@ $(function() {
 
         // Selete all selected
         self.doMultiDelete = function() {
-            if(!confirm(glitterTranslate.removeDown)) return;
-
-            // List all the ID's
-            strIDs = '';
-            $.each(self.multiEditItems, function(index) {
-                strIDs = strIDs + this.id + ',';
-            })
-
-            // Remove
-            callAPI({
-                mode: 'queue',
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
-                        self.parent.refresh();
-                    })
-                }
-            })
+            if(!self.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
+                // List all the ID's
+                strIDs = '';
+                $.each(self.multiEditItems, function(index) {
+                    strIDs = strIDs + this.id + ',';
+                })
+    
+                // Remove
+                callAPI({
+                    mode: 'queue',
+                    name: 'delete',
+                    del_files: 1,
+                    value: strIDs
+                }).then(function(response) {
+                    if(response.status) {
+                        $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
+                            self.parent.refresh();
+                        })
+                    }
+                })
+            }
         }
 
         // On change of page we need to check all those that were in the list!
@@ -1427,25 +1437,25 @@ $(function() {
             })
         }
 
-        // Remove
+        // Remove 1 download from queue
         self.removeDownload = function(data, event) {
-            if(!confirm(glitterTranslate.removeDow1)) return;
-            var itemToDelete = this;
-            callAPI({
-                mode: 'queue',
-                name: 'delete',
-                del_files: 1,
-                value: this.id
-            }).then(function(response) {
-                if(response.status) {
-                    // Fade and remove
-                    $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                        parent.queueItems.remove(itemToDelete);
-                        self.parent.parent.refresh();
-                    })
-
-                }
-            });
+            if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDow1)) {
+                var itemToDelete = this;
+                callAPI({
+                    mode: 'queue',
+                    name: 'delete',
+                    del_files: 1,
+                    value: this.id
+                }).then(function(response) {
+                    if(response.status) {
+                        // Fade and remove
+                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            parent.queueItems.remove(itemToDelete);
+                            self.parent.parent.refresh();
+                        })
+                    }
+                });
+            }
         };
 
         // Update
@@ -1731,23 +1741,22 @@ $(function() {
 
         // Delete button
         self.deleteSlot = function(item, event) {
-            if(!confirm(glitterTranslate.removeDow1))
-                return;
-
-            callAPI({
-                mode: 'history',
-                name: 'delete',
-                del_files: 1,
-                value: self.nzo_id
-            }).then(function(response) {
-                if(response.status) {
-                    // Fade and remove
-                    $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                        self.parent.historyItems.remove(self);
-                        self.parent.parent.refresh();
-                    })
-                }
-            });
+            if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDow1)) {
+                callAPI({
+                    mode: 'history',
+                    name: 'delete',
+                    del_files: 1,
+                    value: self.nzo_id
+                }).then(function(response) {
+                    if(response.status) {
+                        // Fade and remove
+                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            self.parent.historyItems.remove(self);
+                            self.parent.parent.refresh();
+                        })
+                    }
+                });
+            }
         };
 
         // User voting
