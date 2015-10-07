@@ -465,7 +465,7 @@ jQuery(function($){
 };
 
   // static-element tooltips
-  $('body').delegate('#last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+  $('body').delegate('#pausefor_title, #last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
     var link = this,
       $link = $(this);
 

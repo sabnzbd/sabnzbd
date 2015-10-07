@@ -615,7 +615,8 @@ body {
 .queue-buttons ul li ul li:first-child{
   border:0;
 }
-.queue-buttons ul li ul li a{
+.queue-buttons ul li ul li a,
+.queue-buttons ul li ul li span{
   color:#aaa;
   clear:left;
   float:left;
@@ -623,6 +624,9 @@ body {
   padding:4px 6px;
   text-align:left;
   width:188px;
+}
+.queue-buttons ul li ul li span {
+    cursor: auto;
 }
 .queue-buttons ul li ul li a:hover{
   color:#eee;
