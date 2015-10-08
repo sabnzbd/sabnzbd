@@ -108,7 +108,7 @@ def GetServerParms(host, port):
     try:
         # Standard IPV4 or IPV6
         ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing()==2):
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
             # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
             # So return all IP addresses, no matter IPv4 or IPv6:
             return ips
@@ -116,7 +116,7 @@ def GetServerParms(host, port):
             # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
             return [ip for ip in ips if ':' not in ip[4][0]]
     except:
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing()==2):
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
             try:
                 # Try IPV6 explicitly
                 return socket.getaddrinfo(host, port, socket.AF_INET6,
@@ -181,11 +181,13 @@ def probablyipv4(ip):
     else:
         return False
 
+
 def probablyipv6(ip):
-    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '' :
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '':
         return True
     else:
         return False
+
 
 class NNTP(object):
 
@@ -205,9 +207,11 @@ class NNTP(object):
 
         af, socktype, proto, canonname, sa = info[0]
 
-        # there wil be a connect to host (or self.host, so let's force set 'af' to the correct value
-        if probablyipv4(host): af = socket.AF_INET
-        if probablyipv6(host): af = socket.AF_INET6
+        # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
+        if probablyipv4(host):
+            af = socket.AF_INET
+        if probablyipv6(host):
+            af = socket.AF_INET6
 
         if sslenabled and _ssl:
             ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))

@@ -110,7 +110,7 @@ class SABnzbdDelegate(NSObject):
         # Variables
         self.state = "Idle"
         try:
-            self.speed = sabnzbd.downloader.Downloader.do.get_limit()  # @UndefinedVariable
+            self.speed = sabnzbd.downloader.Downloader.do.get_limit()
         except:
             self.speed = 0
         self.version_notify = 1
@@ -500,7 +500,7 @@ class SABnzbdDelegate(NSObject):
 
     def iconUpdate(self):
         try:
-            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
+            if sabnzbd.downloader.Downloader.do.paused:
                 self.status_item.setImage_(self.icons['pause'])
             else:
                 self.status_item.setImage_(self.icons['idle'])
@@ -509,7 +509,7 @@ class SABnzbdDelegate(NSObject):
 
     def pauseUpdate(self):
         try:
-            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
+            if sabnzbd.downloader.Downloader.do.paused:
                 if self.isLeopard:
                     self.resume_menu_item.setHidden_(NO)
                     self.pause_menu_item.setHidden_(YES)
@@ -528,7 +528,7 @@ class SABnzbdDelegate(NSObject):
 
     def speedlimitUpdate(self):
         try:
-            speed = int(sabnzbd.downloader.Downloader.do.get_limit())  # @UndefinedVariable
+            speed = int(sabnzbd.downloader.Downloader.do.get_limit())
             if self.speed != speed:
                 self.speed = speed
                 speedsValues = self.menu_speed.numberOfItems()
@@ -685,14 +685,14 @@ class SABnzbdDelegate(NSObject):
         # logging.info("[osx] speed limit to %s" % (sender.representedObject()))
         speed = int(sender.representedObject())
         if speed != self.speed:
-            sabnzbd.downloader.Downloader.do.limit_speed(speed)  # @UndefinedVariable
+            sabnzbd.downloader.Downloader.do.limit_speed(speed)
             self.speedlimitUpdate()
 
     def purgeAction_(self, sender):
         mode = sender.representedObject()
         # logging.info("[osx] purge %s" % (mode))
         if mode == "queue":
-            NzbQueue.do.remove_all()  # @UndefinedVariable
+            NzbQueue.do.remove_all()
         elif mode == "history":
             if not self.history_db:
                 self.history_db = sabnzbd.database.get_history_handle()
@@ -704,7 +704,7 @@ class SABnzbdDelegate(NSObject):
         if minutes:
             scheduler.plan_resume(minutes)
         else:
-            sabnzbd.downloader.Downloader.do.pause()  # @UndefinedVariable
+            sabnzbd.downloader.Downloader.do.pause()
 
     def resumeAction_(self, sender):
         scheduler.plan_resume(0)

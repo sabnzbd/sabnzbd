@@ -234,16 +234,19 @@ def sanitize_filename(name):
         ext = lowext
     return name + ext
 
-FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
-FL_LEGAL = CH_LEGAL + "-''"
-uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
-uFL_LEGAL = FL_LEGAL.decode('cp1252')
+
 def sanitize_foldername(name, limit=True):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
     if not name:
         return name
+
+    FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
+    FL_LEGAL = CH_LEGAL + "-''"
+    uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
+    uFL_LEGAL = FL_LEGAL.decode('cp1252')
+
     if isinstance(name, unicode):
         illegal = uFL_ILLEGAL
         legal = uFL_LEGAL
@@ -432,7 +435,7 @@ def windows_variant():
     import _winreg
 
     vista_plus = x64 = False
-    maj, minor, buildno, plat, csd = GetVersionEx()
+    maj, _minor, _buildno, plat, _csd = GetVersionEx()
 
     if plat == VER_PLATFORM_WIN32_NT:
         vista_plus = maj > 5
@@ -444,7 +447,7 @@ def windows_variant():
             key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
                     r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
             for n in xrange(_winreg.QueryInfoKey(key)[1]):
-                name, value, val_type = _winreg.EnumValue(key, n)
+                name, value, _val_type = _winreg.EnumValue(key, n)
                 if name == 'PROCESSOR_ARCHITECTURE':
                     x64 = value.upper() == u'AMD64'
                     break
@@ -465,7 +468,7 @@ def get_serv_parms(service):
     try:
         key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
         for n in xrange(_winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, n)
+            name, value, _val_type = _winreg.EnumValue(key, n)
             if name == _SERVICE_PARM:
                 break
         _winreg.CloseKey(key)
@@ -682,7 +685,7 @@ def exit_sab(value):
     sys.stdout.flush()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         sabnzbd.SABSTOP = True
-        from PyObjCTools import AppHelper
+        from PyObjCTools import AppHelper  # @UnresolvedImport
         AppHelper.stopEventLoop()
     sys.exit(value)
 
@@ -1092,7 +1095,7 @@ else:
 
 
 def create_https_certificates(ssl_cert, ssl_key):
-    """ Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key' """
+    """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
     try:
         from OpenSSL import crypto
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
@@ -1263,10 +1266,9 @@ def format_source_url(url):
         prot = 'http:'
     return url
 
-RE_URL = re.compile(r'://([^/]+)/')
-
 
 def get_base_url(url):
+    RE_URL = re.compile(r'://([^/]+)/')
     m = RE_URL.search(url)
     if m:
         return m.group(1)
@@ -1284,7 +1286,7 @@ def match_str(text, matches):
 
 def starts_with_path(path, prefix):
     """ Return True if 'path' starts with 'prefix',
-        considering case-sensitivity of filesystem
+        considering case-sensitivity of the file system
     """
     if sabnzbd.WIN32:
         return clip_path(path).lower().startswith(prefix.lower())
@@ -1326,7 +1328,7 @@ def set_permissions(path, recursive=True):
         if os.path.isdir(path):
             if recursive:
                 # Parse the dir/file tree and set permissions
-                for root, dirs, files in os.walk(path):
+                for root, _dirs, files in os.walk(path):
                     set_chmod(root, umask, report)
                     for name in files:
                         set_chmod(os.path.join(root, name), umask_file, report)
@@ -1337,7 +1339,7 @@ def set_permissions(path, recursive=True):
 
 
 def short_path(path, always=True):
-    """ For Windows, return shortended ASCII path, for others same path
+    """ For Windows, return shortened ASCII path, for others same path
         When `always` is off, only return a short path when size is above 259
     """
     if sabnzbd.WIN32:

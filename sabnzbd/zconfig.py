@@ -44,7 +44,7 @@ def hostname():
     if sabnzbd.WIN32:
         return os.environ.get('computername', 'unknown')
     try:
-        return os.uname()[1]  # @UndefinedVariable
+        return os.uname()[1]
     except:
         return 'unknown'
 
@@ -97,7 +97,7 @@ def set_bonjour(host=None, port=None):
             port=int(port),
             txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/'}),
             callBack=_zeroconf_callback)
-    except sabnzbd.utils.pybonjour.BonjourError:  # @UndefinedVariable
+    except sabnzbd.utils.pybonjour.BonjourError:
         _BONJOUR_OBJECT = None
         logging.debug('Failed to start Bonjour service')
     else:

@@ -1259,7 +1259,7 @@ class NzbObject(TryList):
             self.files.remove(nzf)
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
-            sabnzbd.NzbQueue.do.end_job(self)  # @UndefinedVariable
+            sabnzbd.NzbQueue.do.end_job(self)
 
         if not article:
             # No articles for this server, block for next time
@@ -1343,7 +1343,7 @@ class NzbObject(TryList):
                 fields = {}
                 for k in rating_types:
                     fields[k] = _get_first_meta(k)
-                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)  # @UndefinedVariable
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
             except:
                 pass
 

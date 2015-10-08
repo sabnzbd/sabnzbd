@@ -183,7 +183,7 @@ class PostProcessor(Thread):
 
             # Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
-                sabnzbd.downloader.Downloader.do.wait_for_postproc()  # @UndefinedVariable
+                sabnzbd.downloader.Downloader.do.wait_for_postproc()
 
             self.__busy = True
             process_job(nzo)
@@ -191,7 +191,7 @@ class PostProcessor(Thread):
             check_eoq = True
 
             # Allow download to proceed
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()  # @UndefinedVariable
+            sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
 
 def process_job(nzo):
@@ -495,13 +495,13 @@ def process_job(nzo):
         # Update indexer with results
         if cfg.rating_enable():
             if nzo.encrypted > 0:
-                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)  # @UndefinedVariable
+                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
             if empty:
-                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))  # @UndefinedVariable
+                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
-                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)  # @UndefinedVariable
+                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
 
         # Show final status in history
         if all_ok:
@@ -545,7 +545,7 @@ def process_job(nzo):
     # Clean up the NZO
     try:
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
-        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)  # @UndefinedVariable
+        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
         logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info=True)
@@ -616,7 +616,7 @@ def parring(nzo, workdir):
         if nzo.priority != TOP_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         sabnzbd.nzbqueue.add_nzo(nzo)
-        sabnzbd.downloader.Downloader.do.resume_from_postproc()  # @UndefinedVariable
+        sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
@@ -670,7 +670,7 @@ def addPrefixes(path, dirprefix):
 
 def handle_empty_queue():
     """ Check if empty queue calls for action """
-    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:  # @UndefinedVariable
+    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
         logging.info("Queue has finished, launching: %s (%s)",
                      sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)

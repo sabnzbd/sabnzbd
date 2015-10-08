@@ -430,7 +430,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         rar_set = os.path.splitext(os.path.basename(rar))[0]
         if RAR_RE_V3.search(rar_set):
             rar_set = os.path.splitext(rar_set)[0]
-        if not rar_set in rar_sets:
+        if rar_set not in rar_sets:
             rar_sets[rar_set] = []
         rar_sets[rar_set].append(rar)
 
