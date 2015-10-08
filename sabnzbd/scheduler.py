@@ -94,7 +94,7 @@ def init():
             action = scheduled_resume
             arguments = []
         elif action_name == 'pause':
-            action = sabnzbd.downloader.Downloader.do.pause  # @UndefinedVariable
+            action = sabnzbd.downloader.Downloader.do.pause
             arguments = []
         elif action_name == 'pause_all':
             action = sabnzbd.pause_all
@@ -110,7 +110,7 @@ def init():
         elif action_name == 'resume_post':
             action = pp_resume
         elif action_name == 'speedlimit' and arguments != []:
-            action = sabnzbd.downloader.Downloader.do.limit_speed  # @UndefinedVariable
+            action = sabnzbd.downloader.Downloader.do.limit_speed
         elif action_name == 'enable_server' and arguments != []:
             action = sabnzbd.enable_server
         elif action_name == 'disable_server' and arguments != []:
@@ -123,28 +123,28 @@ def init():
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
         elif action_name == 'enable_quota':
-            action = sabnzbd.bpsmeter.BPSMeter.do.set_status  # @UndefinedVariable
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
             arguments = [True]
         elif action_name == 'disable_quota':
-            action = sabnzbd.bpsmeter.BPSMeter.do.set_status  # @UndefinedVariable
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
             arguments = [False]
         elif action_name == 'pause_all_low':
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [LOW_PRIORITY]
         elif action_name == 'pause_all_normal':
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [NORMAL_PRIORITY]
         elif action_name == 'pause_all_high':
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [HIGH_PRIORITY]
         elif action_name == 'resume_all_low':
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [LOW_PRIORITY]
         elif action_name == 'resume_all_normal':
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [NORMAL_PRIORITY]
         elif action_name == 'resume_all_high':
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio  # @UndefinedVariable
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [HIGH_PRIORITY]
         else:
             logging.warning(T('Unknown action: %s'), action_name)
@@ -179,7 +179,7 @@ def init():
         __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, 'VerCheck', d, None, (h, m),
                                  kronos.method.sequential, [], None)
 
-    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()  # @UndefinedVariable
+    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
         __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
@@ -212,7 +212,7 @@ def restart(force=False):
             SCHEDULE_GUARD_FLAG = False
             stop()
 
-            analyse(sabnzbd.downloader.Downloader.do.paused)  # @UndefinedVariable
+            analyse(sabnzbd.downloader.Downloader.do.paused)
 
             init()
             start()
@@ -364,13 +364,13 @@ def analyse(was_paused=False, priority=None):
             sabnzbd.pause_all()
         else:
             sabnzbd.unpause_all()
-        sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)  # @UndefinedVariable
+        sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
     PostProcessor.do.paused = pause_post
     if speedlimit is not None:
-        sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)  # @UndefinedVariable
+        sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
 
-    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)  # @UndefinedVariable
+    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)
 
     for serv in servers:
         try:
@@ -378,7 +378,7 @@ def analyse(was_paused=False, priority=None):
             value = servers[serv]
             if bool(item.enable()) != bool(value):
                 item.enable.set(value)
-                sabnzbd.downloader.Downloader.do.init_server(serv, serv)  # @UndefinedVariable
+                sabnzbd.downloader.Downloader.do.init_server(serv, serv)
         except:
             pass
     config.save_config()
@@ -415,7 +415,7 @@ def plan_resume(interval):
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug('Schedule resume at %s', __PAUSE_END)
         __SCHED.add_single_task(__oneshot_resume, '', interval * 60, kronos.method.sequential, [__PAUSE_END], None)
-        sabnzbd.downloader.Downloader.do.pause()  # @UndefinedVariable
+        sabnzbd.downloader.Downloader.do.pause()
     else:
         __PAUSE_END = None
         sabnzbd.unpause_all()

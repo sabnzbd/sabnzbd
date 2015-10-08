@@ -297,7 +297,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 def daemonize():
     try:
-        pid = os.fork()  # @UndefinedVariable - only available in UNIX
+        pid = os.fork()
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -305,13 +305,13 @@ def daemonize():
         sys.exit(1)
 
     os.chdir(sabnzbd.DIR_PROG)
-    os.setsid()  # @UndefinedVariable - only available in UNIX
+    os.setsid()
     # Make sure I can read my own files and shut out others
     prev = os.umask(0)
     os.umask(prev and int('077', 8))
 
     try:
-        pid = os.fork()  # @UndefinedVariable - only available in UNIX
+        pid = os.fork()
         if pid > 0:
             sys.exit(0)
     except OSError:
@@ -1659,7 +1659,7 @@ def main():
                 sabnzbd.halt()
                 cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
-            if sabnzbd.downloader.Downloader.do.paused:  # @UndefinedVariable
+            if sabnzbd.downloader.Downloader.do.paused:
                 re_argv.append('-p')
             if autorestarted:
                 re_argv.append('--autorestarted')
@@ -1676,7 +1676,7 @@ def main():
                     logging.info(os.getpid())
                     os.system('kill -9 %s && open "%s"' % (os.getpid(), sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")))
                 else:
-                    pid = os.fork()  # @UndefinedVariable - only available in UNIX
+                    pid = os.fork()
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE and mail:

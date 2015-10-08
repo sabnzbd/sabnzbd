@@ -283,7 +283,7 @@ class NzbQueue(TryList):
                 sabnzbd.remove_data(nzo_id, future.workpath)
                 logging.info("Regenerating item: %s", nzo_id)
                 r, u, d = future.repair_opts
-                if not r is None:
+                if r is not None:
                     pp = sabnzbd.opts_to_pp(r, u, d)
                 scr = future.script
                 if scr is None:
@@ -596,7 +596,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
-            for x in range(size):
+            for unused in range(size):
                 self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
     @synchronized(NZBQUEUE_LOCK)
@@ -607,7 +607,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def move_down_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
-            for x in range(size):
+            for unused in range(size):
                 self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
     @synchronized(NZBQUEUE_LOCK)
@@ -646,7 +646,7 @@ class NzbQueue(TryList):
         elif field.lower() == 'avg_age':
             self.sort_by_avg_age(reverse)
         else:
-            logging.debug("Sort: %s not recognised", field)
+            logging.debug("Sort: %s not recognized", field)
 
     def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the appropriate position """
@@ -842,10 +842,10 @@ class NzbQueue(TryList):
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
-                enough, ratio = nzo.check_quality()
+                enough, _ratio = nzo.check_quality()
                 if enough:
                     # Enough data present, do real download
-                    workdir = nzo.downpath
+                    _workdir = nzo.downpath
                     self.cleanup_nzo(nzo, keep_basic=True)
                     self.send_back(nzo)
                     return

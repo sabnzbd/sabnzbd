@@ -48,7 +48,7 @@ class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
-        for tup in NzbQueue.do.get_urls():  # @UndefinedVariable
+        for tup in NzbQueue.do.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo))
         self.shutdown = False
@@ -217,7 +217,7 @@ class URLGrabber(Thread):
                             when = 300
                         elif res == -1:
                             # Error, but no reason to retry. Warning is already given
-                            NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)  # @UndefinedVariable
+                            NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                             continue
                         else:
                             logging.info('Unknown error fetching NZB, retry after 2 min %s', url)
@@ -309,4 +309,4 @@ def bad_fetch(nzo, url, msg='', content=False):
     if cfg.email_endjob() > 0:
         emailer.badfetch_mail(msg, url)
 
-    NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)  # @UndefinedVariable
+    NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)

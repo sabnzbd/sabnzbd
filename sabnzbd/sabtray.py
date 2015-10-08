@@ -170,7 +170,7 @@ class SABTrayThread(SysTrayIconThread):
     # adapted from interface.py
     def pause(self):
         scheduler.plan_resume(0)
-        Downloader.do.pause()  # @UndefinedVariable
+        Downloader.do.pause()
 
     # adapted from interface.py
     def resume(self):

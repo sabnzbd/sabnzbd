@@ -52,9 +52,9 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, PNFO_NZO_ID_FIELD, PNFO_REPAIR_FIELD, \
     PNFO_UNPACK_FIELD, PNFO_DELETE_FIELD, PNFO_SCRIPT_FIELD, PNFO_EXTRA_FIELD1, \
-    PNFO_PRIORITY_FIELD, PNFO_NZO_ID_FIELD, PNFO_FILENAME_FIELD, PNFO_ACTIVE_FILES_FIELD, \
+    PNFO_PRIORITY_FIELD, PNFO_FILENAME_FIELD, PNFO_ACTIVE_FILES_FIELD, \
     MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
-    DEF_SKIN_COLORS, DEFAULT_PRIORITY
+    DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages, set_language
 
@@ -135,7 +135,7 @@ def rssRaiser(root, kwargs):
 
 def IsNone(value):
     """ Return True if either None, 'None' or '' """
-    return value == None or value == "" or value.lower() == 'none'
+    return value is None or value == "" or value.lower() == 'none'
 
 
 def Strip(txt):
@@ -290,7 +290,7 @@ class MainPage(object):
             config.save_config()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
+            info, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
@@ -333,6 +333,7 @@ class MainPage(object):
     def add_handler(self, kwargs):
         if not check_access():
             return Protected()
+        # TODO: cleanup id / addID / Plush
         id = kwargs.get('id', '')
         if not id:
             id = kwargs.get('url', '')
@@ -516,7 +517,7 @@ class NzoPage(object):
                 break
 
         if nzo_id and NzbQueue.do.get_nzo(nzo_id):
-            info, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+            info, pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
@@ -631,12 +632,12 @@ class NzoPage(object):
         priority = kwargs.get('priority', None)
         nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
 
-        if index != None:
+        if index is not None:
             NzbQueue.do.switch(nzo_id, index)
-        if name != None:
+        if name is not None:
             NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
 
-        if cat != None and nzo.cat != cat and not (nzo.cat == '*' and cat == 'Default'):
+        if cat is not None and nzo.cat is not cat and not (nzo.cat == '*' and cat == 'Default'):
             NzbQueue.do.change_cat(nzo_id, cat, priority)
             # Category changed, so make sure "Default" attributes aren't set again
             if script == 'Default':
@@ -705,7 +706,7 @@ class QueuePage(object):
         dummy2 = kwargs.get('dummy2')
         search = kwargs.get('search')
 
-        info, pnfo_list, bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,
+        info, _pnfo_list, _bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,
                                                                                        self.__prim, self.__web_dir, self.__verbose_list,
                                                                                        self.__dict__, start=start, limit=limit,
                                                                                        dummy2=dummy2, trans=True, search=search)
@@ -949,7 +950,7 @@ class HistoryPage(object):
         if failed_only is None:
             failed_only = self.__failed_only
 
-        history, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        history, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
@@ -1153,7 +1154,7 @@ class ConfigPage(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
         conf['cmdline'] = sabnzbd.CMDLINE
@@ -1246,7 +1247,7 @@ class ConfigFolders(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
@@ -1266,7 +1267,7 @@ class ConfigFolders(object):
 
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
-            if value != None:
+            if value is not None:
                 value = platform_encode(value)
                 if kw in ('complete_dir', 'dirscan_dir'):
                     msg = config.get_config('misc', kw).set(value, create=True)
@@ -1319,7 +1320,7 @@ class ConfigSwitches(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
@@ -1397,7 +1398,7 @@ class ConfigSpecial(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
 
@@ -1454,21 +1455,21 @@ class ConfigGeneral(object):
                 lst.append(col)
             return lst
 
-        def add_color(dir, color):
-            if dir:
+        def add_color(skin_dir, color):
+            if skin_dir:
                 if not color:
                     try:
-                        color = DEF_SKIN_COLORS[dir.lower()]
+                        color = DEF_SKIN_COLORS[skin_dir.lower()]
                     except KeyError:
-                        return dir
-                return '%s - %s' % (dir, color)
+                        return skin_dir
+                return '%s - %s' % (skin_dir, color)
             else:
                 return ''
 
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
 
@@ -1505,10 +1506,10 @@ class ConfigGeneral(object):
         conf['web_dir2'] = add_color(cfg.web_dir2(), cfg.web_color2())
 
         conf['language'] = cfg.language()
-        list = list_languages()
-        if len(list) < 2:
-            list = []
-        conf['lang_list'] = list
+        lang_list = list_languages()
+        if len(lang_list) < 2:
+            lang_list = []
+        conf['lang_list'] = lang_list
 
         conf['disable_api_key'] = cfg.disable_key()
         conf['host'] = cfg.cherryhost()
@@ -1581,10 +1582,10 @@ class ConfigGeneral(object):
         cfg.web_color2.set(web_color2)
 
         bandwidth_max = kwargs.get('bandwidth_max')
-        if bandwidth_max != None:
+        if bandwidth_max is not None:
             cfg.bandwidth_max.set(bandwidth_max)
         bandwidth_perc = kwargs.get('bandwidth_perc')
-        if bandwidth_perc != None:
+        if bandwidth_perc is not None:
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
@@ -1653,7 +1654,7 @@ class ConfigServer(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         new = []
         servers = config.get_servers()
@@ -1798,7 +1799,7 @@ def handle_server(kwargs, root=None, new_svr=False):
 
 
 def handle_server_test(kwargs, root):
-    result, msg = test_nntp_server_dict(kwargs)
+    _result, msg = test_nntp_server_dict(kwargs)
     return msg
 
 
@@ -1820,7 +1821,7 @@ class ConfigRss(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
@@ -2143,7 +2144,7 @@ class ConfigScheduling(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         actions = []
         actions.extend(_SCHED_ACTIONS)
@@ -2292,7 +2293,7 @@ class ConfigCats(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
 
@@ -2367,7 +2368,7 @@ class ConfigSorting(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
@@ -2420,7 +2421,7 @@ class Status(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
-        header, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        header, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         # anything in header[] will be known to the python templates
         # header['blabla'] will be known as $blabla
@@ -2455,7 +2456,7 @@ class Status(object):
         # Dashboard: Speed of Download directory:
         header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
         try:
-            sabnzbd.downloaddirspeed  # The persistent var
+            sabnzbd.downloaddirspeed  # The persistent var @UndefinedVariable
         except:
             # does not yet exist, so create it:
             sabnzbd.downloaddirspeed = -1  # -1 means ... not yet determined
@@ -2463,14 +2464,14 @@ class Status(object):
         # Dashboard: Speed of Complete directory:
         header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
         try:
-            sabnzbd.completedirspeed  # The persistent var
+            sabnzbd.completedirspeed  # The persistent var @UndefinedVariable
         except:
             # does not yet exist, so create it:
             sabnzbd.completedirspeed = -1  # -1 means ... not yet determined
         header['completedirspeed'] = sabnzbd.completedirspeed
 
         try:
-            sabnzbd.dashrefreshcounter  # The persistent var
+            sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
         except:
             sabnzbd.dashrefreshcounter = 0
         header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
@@ -2769,7 +2770,7 @@ class ConfigNotify(object):
         if cfg.configlock() or not check_access():
             return Protected()
 
-        conf, pnfo_list, bytespersec = build_header(self.__prim, self.__web_dir)
+        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['lastmail'] = self.__lastmail
@@ -2871,7 +2872,7 @@ def rss_history(url, limit=50, search=None):
     rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
     rss.channel.language = "en"
 
-    items, fetched_items, max_items = build_history(limit=limit, search=search)
+    items, _fetched_items, _max_items = build_history(limit=limit, search=search)
 
     for history in items:
         item = Item()
