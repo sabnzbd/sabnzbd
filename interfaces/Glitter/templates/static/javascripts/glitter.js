@@ -1008,6 +1008,10 @@ $(function() {
             if(parseInt(self.parent.refreshRate()) >2 ) {
                 self.parent.refresh();
             }
+            // Go back to page 1
+            if(self.pagination.currentPage() != 1) {
+                self.pagination.moveToPage(1);
+            }
         })
         
         // Clear searchterm
@@ -1175,7 +1179,7 @@ $(function() {
 
         // Selete all selected
         self.doMultiDelete = function() {
-            if(!self.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
+            if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
                 // List all the ID's
                 strIDs = '';
                 $.each(self.multiEditItems, function(index) {
@@ -1551,6 +1555,10 @@ $(function() {
             // If the refresh-rate is high we do a forced refresh
             if(parseInt(self.parent.refreshRate()) >2 ) {
                 self.parent.refresh();
+            }
+            // Go back to page 1
+            if(self.pagination.currentPage() != 1) {
+                self.pagination.moveToPage(1);
             }
         })
         
