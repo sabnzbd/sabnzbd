@@ -2233,15 +2233,15 @@ function checkAllFiles(objCheck) {
         // Is checked himself?
         if($(objCheck).prop('checked')) {
             // (Un)check all in Queue by simulating click, this also fires the knockout-trigger!
-            $('.queue-table input[name="multiedit"]').trigger("click")
+            $('.queue-table input[name="multiedit"]').filter(":visible").trigger("click")
         } else {
             // Uncheck all checked ones and fires event
-            $('.queue-table input[name="multiedit"]:checked').trigger("click")
+            $('.queue-table input[name="multiedit"]').filter(":checked:visible").trigger("click")
         }
 
     } else {
         // (Un)check all in file-list
-        $('#modal_item_files input:checkbox:not(:disabled)').prop('checked', $(objCheck).prop('checked'))
+        $('#modal_item_files input').filter(":checkbox:not(:disabled):visible").prop('checked', $(objCheck).prop('checked'))
     }
 }
 
