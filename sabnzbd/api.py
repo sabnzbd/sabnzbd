@@ -1392,7 +1392,7 @@ def qstatus_data():
         "mbleft": qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb": qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots": len(pnfo_list),
-        "noofslots_total" : qnfo[QNFO_Q_FULLSIZE_FIELD],
+        "noofslots_total": qnfo[QNFO_Q_FULLSIZE_FIELD],
         "have_warnings": str(sabnzbd.GUIHANDLER.count()),
         "diskspace1": diskfree(cfg.download_dir.get_path()),
         "diskspace2": diskfree(cfg.complete_dir.get_path()),
@@ -1685,7 +1685,7 @@ def build_header(prim, webdir='', search=None):
     header['sizeleft'] = format_bytes(bytesleft)
     header['size'] = format_bytes(bytes)
     header['noofslots_total'] = qnfo[QNFO_Q_FULLSIZE_FIELD]
-    
+
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
     header['left_quota'] = to_units(BPSMeter.do.left)

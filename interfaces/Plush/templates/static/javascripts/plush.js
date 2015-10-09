@@ -44,7 +44,7 @@ jQuery(function($){
           type: "POST",
           url: "tapi",
           data: {
-            mode:     'addid',
+            mode:     'addurl',
             name:     $("#addID_input").val(),
             pp:       $("#addID_pp").val(),
             script:   $("#addID_script").val(),

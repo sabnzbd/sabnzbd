@@ -333,10 +333,7 @@ class MainPage(object):
     def add_handler(self, kwargs):
         if not check_access():
             return Protected()
-        # TODO: cleanup id / addID / Plush
-        id = kwargs.get('id', '')
-        if not id:
-            id = kwargs.get('url', '')
+        url = kwargs.get('url', '')
         pp = kwargs.get('pp')
         script = kwargs.get('script')
         cat = kwargs.get('cat')
@@ -344,19 +341,12 @@ class MainPage(object):
         redirect = kwargs.get('redirect')
         nzbname = kwargs.get('nzbname')
 
-        id = Strip(id)
-        if id:
-            sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
+        url = Strip(url)
+        if url:
+            sabnzbd.add_url(url, pp, script, cat, priority, nzbname)
         if not redirect:
             redirect = self.__root
         raise cherrypy.HTTPRedirect(redirect)
-
-    @cherrypy.expose
-    def addID(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        raise self.add_handler(kwargs)
 
     @cherrypy.expose
     def addURL(self, **kwargs):
