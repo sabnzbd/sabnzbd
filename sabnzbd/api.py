@@ -1846,8 +1846,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
             item['loaded'] = False
 
         path = platform_encode(item.get('path', ''))
-        if item.get('status') != 'Failed':
-            item['path'] = ''
 
         item['retry'] = int(bool(item.get('status') == 'Failed' and
                                  path and
