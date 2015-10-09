@@ -420,8 +420,10 @@ td.name .row-wrap-text {
 
 .queue-table td.name input {
     width: 100%;
-    height: 20px;
-    margin-left: -2px;
+    display: block;
+    height: 22px;
+    margin-left: -1px;
+    margin-top: -1px;
     border: 1px solid #ccc;
 }
 
@@ -1079,6 +1081,7 @@ tr.queueitem>td:first-child>a {
     opacity: 0.9;
 }
 
+
 #modal_options .options-function-box .btn,
 #modal_options .options-function-box select {
     width: auto;
@@ -1543,6 +1546,10 @@ tr.queueitem>td:first-child>a {
     
     .processing-download .rect4 {
         animation-delay: 0.6s;
+    }
+    
+    .queue-table td.name input {
+        margin-left: -2px;
     }
 }
 

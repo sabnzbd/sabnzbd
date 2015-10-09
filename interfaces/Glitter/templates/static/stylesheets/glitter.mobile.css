@@ -29,6 +29,10 @@
     display: inline-block;
 }
 
+.navbar-inverse .navbar-nav .open .dropdown-menu .divider {
+    background-color: #e5e5e5;
+}
+
 h2 {
     font-size: 25px;
     margin-bottom: 5px;
@@ -226,6 +230,10 @@ tr.queueitem>td:first-child>a {
 
 #modal_options .col-sm-5 {
     text-align: left;
+}
+
+#modal_options .form-checkbox input[type="checkbox"] {
+    margin-top: 0;
 }
 
 #modal_item_files .input-group {
