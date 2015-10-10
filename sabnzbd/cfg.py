@@ -194,6 +194,7 @@ fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
 wait_for_dfolder = OptionBool('misc', 'wait_for_dfolder', False)
 warn_empty_nzb = OptionBool('misc', 'warn_empty_nzb', True)
 sanitize_safe = OptionBool('misc', 'sanitize_safe', False)
+api_logging = OptionBool('misc', 'api_logging', True)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:

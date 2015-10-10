@@ -276,7 +276,6 @@ def print_help():
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
     print "      --log-all            Log all article handling (for developers)"
-    print "      --no-api-log         Do not log API calls (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
     print "      --no_ipv6            Do not listen on IPv6 address [::1]"
@@ -825,7 +824,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates', 'no_ipv6', 'no-api-log',
+                                    'weblogging=', 'server=', 'templates', 'no_ipv6',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console', 'pidfile=',
@@ -976,8 +975,6 @@ def main():
             pause = True
         elif opt in ('--log-all',):
             sabnzbd.LOG_ALL = True
-        elif opt in ('--no-api-log'):
-            sabnzbd.API_LOG = False
         elif opt in ('--no-login',):
             no_login = True
         elif opt in ('--pid',):

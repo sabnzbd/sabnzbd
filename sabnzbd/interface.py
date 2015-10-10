@@ -425,7 +425,7 @@ class MainPage(object):
     def api(self, **kwargs):
         """ Handler for API over http, with explicit authentication parameters """
         if not kwargs.get('tickleme') or not cfg.web_watchdog():
-            if sabnzbd.API_LOG:
+            if cfg.api_logging():
                 logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
                               cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         if kwargs.get('mode', '') not in ('version', 'auth'):
@@ -1364,7 +1364,7 @@ SPECIAL_BOOL_LIST = \
               'no_ipv6', 'keep_awake', 'empty_postproc',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'enable_par_cleanup',
-              'enable_https_verification'
+              'enable_https_verification', 'api_logging'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
