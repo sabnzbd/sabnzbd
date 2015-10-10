@@ -836,7 +836,7 @@ class NzbObject(TryList):
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
-        # So put the last rar immediatly after the first rar file so that it gets detected early
+        # So put the last rar immediately after the first rar file so that it gets detected early
         if cfg.unwanted_extensions() and not cfg.auto_sort():
             # ... only useful if there are unwanted extensions defined and there is no sorting on date
             logging.debug('Unwanted Extension: putting last rar after first rar')
@@ -1534,20 +1534,26 @@ class NzbObject(TryList):
 
     def has_duplicates(self):
         """ Return True when this NZB or episode is already in the History """
-        dupes = not cfg.no_dupes()
-        series_dupes = not cfg.no_series_dupes()
-        if not dupes and not series_dupes:
-            return 0
+        no_dupes = cfg.no_dupes()
+        no_series_dupes = cfg.no_series_dupes()
 
-        res = 0
+        # abort logic if dupe check is off for both nzb+series
+        if not no_dupes and not no_series_dupes:
+            return False
+
+        res = False
         history_db = get_history_handle()
-        if series_dupes:
+
+        # dupe check off nzb contents
+        if no_dupes:
+            res = history_db.have_md5sum(self.md5sum)
+            logging.debug('Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s', self.filename, self.md5sum, res)
+        # dupe check off nzb filename
+        if not res and no_series_dupes:
             series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
-            if history_db.have_episode(series, season, episode):
-                res = series_dupes
-        if not res and dupes:
-            if history_db.have_md5sum(self.md5sum):
-                res = dupes
+            res = history_db.have_episode(series, season, episode)
+            logging.debug('Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s', series, season, episode, res)
+
         history_db.close()
         return res
 
