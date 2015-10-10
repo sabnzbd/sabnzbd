@@ -125,7 +125,7 @@ class Article(TryList):
                         if log:
                             logging.debug('Article %s | Server: %s | checking', self.article, server.host)
                         # if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
-                        if (server_check.priority < found_priority):
+                        if server_check.active and (server_check.priority < found_priority):
                             if (server_check.priority < server.priority):
                                 if (not self.server_in_try_list(server_check)) and self.server_allowed(server_check):
                                     if log:
