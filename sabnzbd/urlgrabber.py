@@ -225,7 +225,7 @@ class URLGrabber(Thread):
                         self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
-                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority,
+                    if dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
                                                      nzbname=nzbname, url=future_nzo.url, keep=False,
                                                      nzo_id=future_nzo.nzo_id)[0]:
                         # Not a supported filetype, not an nzb (text/html ect)
