@@ -729,9 +729,9 @@ class NzbObject(TryList):
 
         # Check against identical checksum or series/season/episode
         if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
-            duplicate = self.has_duplicates()
+            duplicate, series = self.has_duplicates()
         else:
-            duplicate = 0
+            duplicate = series = 0
 
         if not self.files and not reuse:
             self.purge_data(keep_basic=False)
@@ -809,7 +809,7 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        if duplicate and cfg.no_dupes() == 1:
+        if duplicate and ((not series and cfg.no_dupes() == 1) or (series and cfg.no_series_dupes() == 1)):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data(keep_basic=False)
@@ -1533,7 +1533,11 @@ class NzbObject(TryList):
                 nzf_ids.remove(nzf_id)
 
     def has_duplicates(self):
-        """ Return True when this NZB or episode is already in the History """
+        """ Return (res, series)
+            where "res" is True when this is a duplicate
+            where "series" is True when this is an episode
+        """
+        series = False
         no_dupes = cfg.no_dupes()
         no_series_dupes = cfg.no_series_dupes()
 
@@ -1552,10 +1556,11 @@ class NzbObject(TryList):
         if not res and no_series_dupes:
             series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
             res = history_db.have_episode(series, season, episode)
+            series = res
             logging.debug('Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s', series, season, episode, res)
 
         history_db.close()
-        return res
+        return res, series
 
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
