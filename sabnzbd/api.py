@@ -491,6 +491,8 @@ def _api_history(name, output, kwargs):
             return report(output, _MSG_NO_VALUE)
     elif not name:
         history, pnfo_list, bytespersec = build_header(True)
+        if 'noofslots_total' in history:
+            del history['noofslots_total']
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                to_units(grand), to_units(month), to_units(week), to_units(day)
