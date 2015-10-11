@@ -1543,7 +1543,7 @@ class NzbObject(TryList):
 
         # abort logic if dupe check is off for both nzb+series
         if not no_dupes and not no_series_dupes:
-            return False
+            return False, False
 
         res = False
         history_db = get_history_handle()
