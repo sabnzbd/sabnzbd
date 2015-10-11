@@ -1444,20 +1444,6 @@ tr.queueitem>td:first-child>a {
 /***
     Dynamic sizing
 ***/
-
-/* For large and veryyy large screens */
-@media screen and (min-width: 2000px) {
-    .container {
-        width: 1700px;
-    }
-}
-
-@media screen and (min-width: 1500px) {
-    .container {
-        width: 1400px;
-    }
-}
-
 @media screen and (min-width: 1200px) {
     .queue-table .table-extra-header-visible {
         width: 10%;
@@ -1555,11 +1541,29 @@ tr.queueitem>td:first-child>a {
     .history-table .status-header {
         width: 25% !important;
     }
+    
+    #feedback-slider {
+        display: none;
+    }
 }
 
 @media only screen and (min-device-width:768px) and (max-device-width:1024px) and (orientation:portrait) {
     .sparkline-container svg {
         width: 160px !important;
+    }
+}
+
+
+/* For large and veryyy large screens */
+@media screen and (min-width: 1500px) {
+    .container {
+        width: 1400px;
+    }
+}
+
+@media screen and (min-width: 2000px) {
+    .container {
+        width: 1700px;
     }
 }
 
