@@ -34,7 +34,8 @@ legend,
 .dropdown-menu>li>a:hover, 
 .dropdown-menu>li>a:focus,
 .navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover, 
-.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:focus {
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:focus,
+#feedback-slider {
     background-color: #555555;
     color: white !important;
 }

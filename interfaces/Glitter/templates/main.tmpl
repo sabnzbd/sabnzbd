@@ -164,7 +164,7 @@
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
                     <!-- ko if: hasWarnings()  -->
                     <div class="info-container-box">
-                        <a href="#errors" class="queue-error-info">
+                        <a href="#queue-messages" class="queue-error-info">
                             <span class="glyphicon glyphicon-exclamation-sign"></span> <strong data-bind="text: allWarnings().length"></strong>
                         </a>
                     </div>
@@ -363,8 +363,7 @@
                 </ul>
             </div>
 
-            <div class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
-                <a name="errors"></a>
+            <div id="queue-messages" class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
                 <table class="table table-hover table-messages">
                     <thead>
                         <tr>
@@ -620,7 +619,7 @@
             </div>
         </div>
 
-        <!-- Filedrop -->
+        <!-- Filedrop and Restarting overlay -->
         <div class="main-filedrop modal-backdrop fade in">
             <span class="glyphicon glyphicon-plus-sign"></span>
         </div>
@@ -695,6 +694,8 @@
             glitterTranslate.priority['Normal'] = "$T('pr-normal')";
             glitterTranslate.priority['Low'] = "$T('pr-low')";
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
+            
+            glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
         </script>
 
         <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
@@ -708,5 +709,23 @@
             <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
         </script>
+        
+        <!-- Feedback -->
+        <div id="feedback-slider" data-bind="visible: glitterIsBeta" style="display: none;">
+    		<h4>Feedback</h4>
+    		<div id="feedback-slider-inner">
+                <p><strong>If anything is not working as expected, or could be improved, let us know!</strong></p>
+                <p><strong>If you encounter an error, please include the log file (click on <span class="glyphicon glyphicon-wrench"></span> ) when contacting us.</strong></p>
+                <h4>General</h4>
+                <span class="glyphicon glyphicon-home"></span> <a href="http://forums.sabnzbd.org/" target="_blank">SABnzbd Forum</a><br />
+                <span class="glyphicon glyphicon-plane"></span> <a href="https://github.com/sabnzbd/sabnzbd/" target="_blank">SABnzbd on Github</a><br />
+                <span class="glyphicon glyphicon-globe"></span> <a href="https://translations.launchpad.net/sabnzbd" target="_blank">Translations of SABnzbd</a><br />
+                <span class="glyphicon glyphicon-envelope"></span> <a href="mailto:bugs@sabnzbd.org?body=Version:%20$version%20Skin:%20Glitter">Email bugs@sabnzbd.org</a>
+
+                <h4>Interface (Glitter)</h4>
+                <span class="glyphicon glyphicon-home"></span> <a href="http://forums.sabnzbd.org/viewtopic.php?f=15&p=93733" target="_blank">Glitter at SABnzbd Forum</a><br />
+                <span class="glyphicon glyphicon-envelope"></span> <a href="mailto:safihre@sabnzbd.org?body=Version:%20$version">Email safihre@sabnzbd.org</a>
+    		</div>
+    	</div>
     </body>
 </html>

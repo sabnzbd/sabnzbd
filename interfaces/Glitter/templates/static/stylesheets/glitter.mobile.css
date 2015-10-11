@@ -61,6 +61,9 @@ h2 {
     top: 2px;
 }
 
+#feedback-slider {
+    display: none;
+}
 
 /**
     QUEUE & HISTORY
