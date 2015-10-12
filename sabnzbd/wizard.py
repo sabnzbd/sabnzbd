@@ -141,20 +141,6 @@ class Wizard(object):
         info['number'] = 2
         info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
-
-        host = cfg.cherryhost()
-        info['host'] = host
-        # Allow special operation if host is not one of the defaults
-        if host not in ('127.0.0.1', '::1', 'localhost', '0.0.0.0'):
-            info['custom_host'] = True
-        else:
-            info['custom_host'] = False
-
-        info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
-        info['enable_https'] = cfg.enable_https()
-        info['autobrowser'] = cfg.autobrowser()
-        info['web_user'] = cfg.username()
-        info['web_pass'] = cfg.password()
         info['bandwidth'] = cfg.bandwidth_max()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
@@ -165,15 +151,8 @@ class Wizard(object):
     def three(self, **kwargs):
         """ Accept webserver parms and show Indexers page """
         if kwargs:
-            if 'access' in kwargs:
-                cfg.cherryhost.set(kwargs['access'])
-            cfg.enable_https.set(kwargs.get('enable_https', 0))
-            cfg.autobrowser.set(kwargs.get('autobrowser', 0))
             cfg.bandwidth_max.set(kwargs.get('bandwidth', ''))
-            cfg.username.set(kwargs.get('web_user', ''))
-            cfg.password.set(kwargs.get('web_pass', ''))
-            if not cfg.username() or not cfg.password():
-                sabnzbd.interface.set_auth(cherrypy.config)
+            sabnzbd.interface.set_auth(cherrypy.config)
 
         config.save_config()
 
