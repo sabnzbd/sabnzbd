@@ -30,7 +30,7 @@
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
-        <!--#if $color_scheme != 'Default'#-->
+        <!--#if $color_scheme not in ('Default', '') #-->
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
         <!--#end if#-->
 
