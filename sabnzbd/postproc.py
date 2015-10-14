@@ -279,6 +279,11 @@ def process_job(nzo):
                      ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s',
                      filename, flag_repair, flag_unpack, flag_delete, script, cat)
 
+        # Set complete dir to workdir in case we need to abort
+        workdir_complete = workdir
+        dirname = nzo.final_name
+        marker_file = None
+
         # Par processing, if enabled
         if all_ok and flag_repair:
             if not check_win_maxpath(workdir):
@@ -292,11 +297,6 @@ def process_job(nzo):
         # Check if user allows unsafe post-processing
         if flag_repair and cfg.safe_postproc():
             all_ok = all_ok and not par_error
-
-        # Set complete dir to workdir in case we need to abort
-        workdir_complete = workdir
-        dirname = nzo.final_name
-        marker_file = None
 
         if all_ok:
             fix_unix_encoding(workdir)
