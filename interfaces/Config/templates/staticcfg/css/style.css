@@ -2043,6 +2043,10 @@ select {
     font-size: 13px;
 }
 
+input[type="number"][name*="port"] {
+    max-width: 100px !important;
+}
+
 .btn {
     font-size: 13px;
     height: 34px;

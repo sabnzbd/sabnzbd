@@ -13,6 +13,32 @@
         \$('.navbar-nav li a').on('touchstart', function(e) {
             \$(this).click()
         })
+        
+        /*
+         * Notifies the user if he tries to leave without saving
+         * Has to be in footer, otherwise the filebrowser over-writes the change-event
+         */
+        \$(document).ready(function () {
+            \$(document).on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
+                formHasChanged = true;
+                formWasSubmitted = false;
+            });
+            window.onbeforeunload = function (e) {
+                if (formHasChanged && !formWasSubmitted) {
+                    var message = "$T('confirmWithoutSavingPrompt')", e = e || window.event;
+                    if (e) {
+                        e.returnValue = message;
+                    }
+                    return message;
+                }
+            }
+            // Form Submit
+            \$(document).on("submit", "form", function(event){
+                // Let us leave!
+                formWasSubmitted = true;
+                formHasChanged = false;
+            });
+        });
     </script>
 </body>
 </html>

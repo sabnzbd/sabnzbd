@@ -295,6 +295,7 @@ SKIN_TEXT = {
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
+    'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),

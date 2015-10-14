@@ -27,7 +27,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port">$T('srv-port')</label>
-                    <input type="text" name="port" id="port" size="8" />
+                    <input type="number" name="port" id="port" size="8" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="username">$T('srv-username')</label>
@@ -139,7 +139,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port$cur">$T('srv-port')</label>
-                    <input type="text" name="port" id="port$cur" value="$server['port']" size="8" />
+                    <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="username$cur">$T('srv-username')</label>
@@ -251,7 +251,7 @@
       \$.ajax({
         type: "POST",
         url: "../../tapi",
-        data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize() + "&amp;apikey=" + \$('#apikey').val(),
+        data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
         success: function(msg){
           alert(msg);
           \$(event.target).removeAttr("disabled")

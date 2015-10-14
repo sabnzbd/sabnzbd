@@ -44,6 +44,10 @@
 
     <script src="${root}staticcfg/js/script.js"></script>
     <script type="text/javascript">
+        // Keeping track
+        var formHasChanged = false;
+        var formWasSubmitted = false;
+
         \$.Browser = {
             defaults: {
                 title:             'Choose Directory',
@@ -51,20 +55,21 @@
                 autocompleteURL:   '${root}tapi?mode=browse&output=json&compact=1&apikey=$session'
             }
         };
-        var config_pane = "$pane";
-        var help_uri = "$help_uri";
-        var apikey = "$session";
-        var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
         
         function config_success() {
             \$('.saveButton').each(function () {
                 \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')');
             });
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
         }
         function config_failure() {
             \$('.saveButton').each(function () {
                 \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> $T('smpl-failed')');
             });
+            // Can't go yet..
+            formWasSubmitted = false;
         }
         function do_restart() {
             // Show overlay
@@ -147,6 +152,8 @@
                 var msg = "$T('explain-Restart')";
                 if (confirm(msg.replace(/\<br(\s*\/|)\>/g, '\n'))) {
                     \$(this).attr("value", "$T('wizard-restarting')");
+                    // Let us leave!
+                    formWasSubmitted = true;
                     do_restart();
                 }
                 \$('.sabnzbd_restart').each(function () {
@@ -188,21 +195,21 @@
             });
         });
     
-    /*
-     * takes the inputs-elements found in the current selector
-     * and extracts the values into the provided data-object.
-     */
-    \$.fn.extractFormDataTo = function(target)
-    {
-    	var inputs = \$("input[type != 'submit'][type != 'button']", this);
-    
-    	// could use .serializeArray() but that omits unchecked items
-    	inputs.each(function (i,elem) {
-    	    target[elem.name] = elem.value;
-    	});
-    
-    	return this;
-    }
+        /*
+         * Takes the inputs-elements found in the current selector
+         * and extracts the values into the provided data-object.
+         */
+        \$.fn.extractFormDataTo = function(target) {
+        	var inputs = \$("input[type != 'submit'][type != 'button']", this);
+        
+        	// could use .serializeArray() but that omits unchecked items
+        	inputs.each(function (i,elem) {
+        	    target[elem.name] = elem.value;
+        	});
+        
+        	return this;
+        }
+
     </script>
     <!--[if lt IE 9]>
         <script src="${root}staticcfg/js/html5shiv.min.js"></script>
