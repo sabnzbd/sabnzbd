@@ -1015,9 +1015,14 @@ $(function() {
         })
         
         // Clear searchterm
-        self.clearSearchTerm = function() {
-            self.searchTerm('');
-            self.parent.refresh();
+        self.clearSearchTerm = function(objModel, event) {
+            // Was it escape key or click?
+            if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+                self.searchTerm('');
+                self.parent.refresh();
+            }
+            // Need to return true to allow typing
+            return true;
         }
 
         /***
@@ -1563,9 +1568,14 @@ $(function() {
         })
         
         // Clear searchterm
-        self.clearSearchTerm = function() {
-            self.searchTerm('');
-            self.parent.refresh();
+        self.clearSearchTerm = function(objModel, event) {
+            // Was it escape key or click?
+            if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+                self.searchTerm('');
+                self.parent.refresh();
+            }
+            // Need to return true to allow typing
+            return true;
         }
         
         // Toggle showing failed

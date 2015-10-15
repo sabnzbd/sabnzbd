@@ -350,7 +350,7 @@
                 </form>
                 
                 <div class="input-group search-box" data-bind="visible: queue.hasQueueSearch">
-                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: queue.searchTerm" />
+                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: queue.searchTerm, event: { keydown: queue.clearSearchTerm }" />
                     <a data-bind="event: { mousedown: queue.clearSearchTerm }">
                         <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !queue.searchTerm(), 'glyphicon-remove' : queue.searchTerm() }"></span>
                     </a>
@@ -591,7 +591,7 @@
                 </table>
 
                 <div class="input-group search-box">
-                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm" />
+                    <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
                     <a data-bind="event: { mousedown: history.clearSearchTerm }">
                         <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
                     </a>
