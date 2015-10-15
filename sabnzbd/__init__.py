@@ -1120,6 +1120,9 @@ def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
 
 def test_ipv6():
     """ Check if external IPv6 addresses are reachable """
+    if not cfg.ipv6_test_host():
+        # User disabled the test, assume active IPv6
+        return True
     try:
         info = socket.getaddrinfo(cfg.ipv6_test_host(), 80, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
     except:
