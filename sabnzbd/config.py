@@ -25,7 +25,7 @@ import logging
 import threading
 import shutil
 import sabnzbd.misc
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
@@ -1018,10 +1018,10 @@ def validate_no_unc(root, value, default):
 
 def validate_safedir(root, value, default):
     """ Allow only when queues are empty and no UNC
-        On Windows path should be 80 max
+        On Windows path should be small
     """
-    if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) > 80:
-        return T('Error: Path length should be below 80.'), None
+    if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) >= MAX_WIN_DFOLDER:
+        return T('Error: Path length should be below %s.') % MAX_WIN_DFOLDER, None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:
