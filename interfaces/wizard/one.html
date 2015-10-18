@@ -4,10 +4,7 @@
         <div id="inner">
             <div id="content" class="bigger">
                 <div id="rightGreyText">$T('wizard-version') $version</div>
-                <br />
                 <h1>$T('wizard-quickstart')</h1>
-                <h2>$num</h2>
-                <br />
                 <hr />
                 <script type="text/javascript">
                     var txtChecking = "$T('srv-testing')";
@@ -88,16 +85,11 @@
                 <input type="hidden" name="session" value="$session" />
             </div>
             <hr />
-            <br/>
             <div class="row">
                 <div class="col-xs-4 text-center">
                     <a class="btn btn-default" href="./index"><span class="glyphicon glyphicon-chevron-left"></span> $T('wizard-previous')</a>
                 </div>
                 <div class="col-xs-4 text-center">
-                    <!--#for $step in xrange($steps)#-->
-                        <!--#set $step = $step + 1#-->
-                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
-                    <!--#end for#-->
                 </div>
                 <div class="col-xs-4 text-center">
                     <button class="btn btn-default" id="next-button">$T('wizard-next') <span class="glyphicon glyphicon-chevron-right"></span></button>

@@ -43,15 +43,13 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps': 3, 'version': sabnzbd.__version__,
+                     'steps': 2, 'version': sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
     def index(self, **kwargs):
         """ Show the language selection page """
         info = self.info.copy()
-        info['num'] = ''
-        info['number'] = 0
         lng = None
         if sabnzbd.WIN32:
             import util.apireg
@@ -94,8 +92,6 @@ class Wizard(object):
         sabnzbd.interface.change_web_dir('Glitter')
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step One')
-        info['number'] = 1
         info['session'] = cfg.api_key()
         info['language'] = cfg.language()
         info['active_lang'] = info['language']
@@ -129,37 +125,16 @@ class Wizard(object):
 
     @cherrypy.expose
     def two(self, **kwargs):
-        """ Accept server and show internal web server page """
+        """ Accept server and show the final page for restart """
         # Save server details
         if kwargs:
             kwargs['enable'] = 1
             sabnzbd.interface.handle_server(kwargs)
 
-        # Create web server page
-        info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Two')
-        info['number'] = 2
-        info['active_lang'] = cfg.language()
-        info['T'] = Ttemplate
-        info['bandwidth'] = cfg.bandwidth_max()
-
-        template = Template(file=os.path.join(self.__web_dir, 'two.html'),
-                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
-        return template.respond()
-
-    @cherrypy.expose
-    def three(self, **kwargs):
-        """ Accept webserver parms and show Indexers page """
-        if kwargs:
-            cfg.bandwidth_max.set(kwargs.get('bandwidth', ''))
-            sabnzbd.interface.set_auth(cherrypy.config)
-
         config.save_config()
 
         # Show Restart screen
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 3
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()
 
@@ -167,7 +142,7 @@ class Wizard(object):
         info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
 
-        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
+        template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 

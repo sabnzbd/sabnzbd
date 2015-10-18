@@ -1,48 +1,42 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <script type="text/javascript">
-    <!--#include raw $webdir + "/static/javascript/pagetwo.js"#-->
+    <!--#include raw $webdir + "/static/javascript/restart.js"#-->
 </script>
-<form action="./three" method="post" autocomplete="off">
-    <div class="container">
-        <div id="inner">
-            <div id="content" class="bigger">
-                <div id="rightGreyText">$T('wizard-version') $version</div>
-                <br />
-                <h1>$T('wizard-quickstart')</h1>
-                <h2>$num</h2>
-                <br />
-                <hr />
-                <h3>$T('wizard-misc')</h3>
-
-                <div class="row">
-                    <div class="col-sm-8">
-                        <label for="bandwidth">$T('explain-bandwidth_max')</label><br />
-                        <div class="input-group input-group-bw" data-toggle="tooltip" data-placement="right" title="$T('wizard-bandwidth-explain')">
-                            <input class="form-control text-input-thin text-right" id="bandwidth" value="$bandwidth" type="text" size="10" name="bandwidth" />
-                            <div class="input-group-addon">Bytes/s</div>
-                        </div>
-                        <div id="bandwidth-error" class="error-text hidden"><br />$T('wizard-bandwidth-error')</div>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+    <div id="inner">
+        <div id="content" class="bigger">
+            <div id="rightGreyText">$T('wizard-version') $version</div>
+            <h1>$T('wizard-quickstart')</h1>
             <hr />
+            <br/><br/>
+            <h4 id="restarting" class="align-center">$T('wizard-restarting')</h4>
+            <h4 id="complete" class="align-center success hidden">$T('wizard-complete')</h4>
+            <br />
             <br/>
-            <div class="row">
-                <div class="col-xs-4 text-center">
-                    <a class="btn btn-default" href="./one"><span class="glyphicon glyphicon-chevron-left"></span> $T('wizard-previous')</a>
-                </div>
-                <div class="col-xs-4 text-center">
-                    <!--#for $step in xrange($steps)#-->
-                        <!--#set $step = $step + 1#-->
-                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
+            <div id="tips" class="hidden">
+                $T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
+                <!--#set $tip3 = $T('wizard-tip3') % ''#-->
+                $tip3<br/><br/>
+                <div class="quoteBlock">
+                    <!--#set $i = 0#-->
+                    <!--#for $url in $urls#-->
+                    <!--#set $i = $i+1#-->
+                    <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
                     <!--#end for#-->
                 </div>
-                <div class="col-xs-4 text-center">
-                    <button class="btn btn-default" id="next-button" type="submit">$T('wizard-next') <span class="glyphicon glyphicon-chevron-right"></span></button>
-                </div>
+                <br/>
+                $T('wizard-tip4')
+                <br/><br/>
+                $T('wizard-tip-wiki') <a target="_blank" href="$helpuri">wiki</a>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <input type="hidden" name="session" id="apikey" value="$session"/>
+                <a class="btn btn-default disabled" href="$access_url">$T('wizard-goto') <span class="glyphicon glyphicon-chevron-right"></span></a>
             </div>
         </div>
     </div>
-</form>
-
+</div>
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

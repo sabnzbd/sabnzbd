@@ -90,13 +90,7 @@ label {
 .sup {
     vertical-align: sup !important;
 }
-h2 {
-    /*display:inline;*/
-}
-h1,
-h2 {
-    display: inline;
-}
+
 .align-right {
     text-align: right;
 }
