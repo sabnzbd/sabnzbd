@@ -1283,7 +1283,7 @@ def main():
         cpumodel = getcpu()  # Linux only
         if cpumodel:
             logging.debug('CPU model name is %s', cpumodel)
-
+            
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
         logging.info('[osx] IO priority setting')
@@ -1353,6 +1353,10 @@ def main():
                 logging.info("pygtk2 not found. No SysTray.")
 
     print_modules()
+    
+    from sabnzbd.utils.sslinfo import sslversion, sslprotocols
+    logging.info("SSL version %s", sslversion())
+    logging.info("SSL supported protocols %s", str(sslprotocols()))
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
