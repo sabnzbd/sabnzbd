@@ -3,19 +3,27 @@ import logging
 DEBUG = False
 
 def sslversion():
-    return ssl.OPENSSL_VERSION
-    
+    try:
+        return ssl.OPENSSL_VERSION
+    except:
+        return None
+        
 def sslversioninfo():
-    return ssl.OPENSSL_VERSION_INFO    
+    try:
+        return ssl.OPENSSL_VERSION_INFO
+    except:
+        return None
 
 def sslprotocols():
     protocollist = []   
-    for i in dir(ssl):
-        #print i
-        if i.find('PROTOCOL_') == 0:
-            protocollist.append(i)
-    return protocollist
-
+    try:
+        for i in dir(ssl):
+            #print i
+            if i.find('PROTOCOL_') == 0:
+                protocollist.append(i[9:])
+        return protocollist
+    except:
+        return None
 
 if __name__ == '__main__':
 
