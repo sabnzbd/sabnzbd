@@ -682,7 +682,7 @@ class HTTPRequest(object):
 
         # uri may be an abs_path (including "http://host.domain.tld");
         scheme, authority, path = self.parse_request_uri(uri)
-        if NUMBER_SIGN in path:
+        if path and NUMBER_SIGN in path:
             self.simple_response("400 Bad Request",
                                  "Illegal #fragment in Request-URI.")
             return False
@@ -691,7 +691,7 @@ class HTTPRequest(object):
             self.scheme = scheme
 
         qs = EMPTY
-        if QUESTION_MARK in path:
+        if path and QUESTION_MARK in path:
             path, qs = path.split(QUESTION_MARK, 1)
 
         # Unquote the path+params (e.g. "/this%20path" -> "/this path").
