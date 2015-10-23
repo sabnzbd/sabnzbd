@@ -1093,7 +1093,7 @@ $(function() {
 
             // Do update on close, to make sure it's all updated
             if(!self.isMultiEditing()) {
-                self.parent.refresh()
+                self.parent.refresh();
             }
         }
 
@@ -1106,8 +1106,8 @@ $(function() {
             // Add or remove from the list?
             if(event.currentTarget.checked) {
                 // Add item
-                self.multiEditItems.push(item)
-                    // Update them all
+                self.multiEditItems.push(item);
+                // Update them all
                 self.doMultiEditUpdate();
             } else {
                 // Go over them all to know which one to remove 
@@ -1214,6 +1214,12 @@ $(function() {
                 $.each(self.multiEditItems, function(index) {
                     $('#multiedit_' + this.id).prop('checked', true);
                 })
+                // Now let's see if all are checked, based on compare with total
+                if($('.queue input[name="multiedit"]:checked').length == $('.queue input[name="multiedit"]').length) {
+                    $('#multiedit-checkall').prop('checked', true)
+                } else {
+                    $('#multiedit-checkall').prop('checked', false)
+                }
             }, 100)
         }, null, "arrayChange")
     }
@@ -2243,7 +2249,7 @@ function checkAllFiles(objCheck) {
         // Is checked himself?
         if($(objCheck).prop('checked')) {
             // (Un)check all in Queue by simulating click, this also fires the knockout-trigger!
-            $('.queue-table input[name="multiedit"]').filter(":visible").trigger("click")
+            $('.queue-table input[name="multiedit"]').filter(":not(:checked):visible").trigger("click")
         } else {
             // Uncheck all checked ones and fires event
             $('.queue-table input[name="multiedit"]').filter(":checked:visible").trigger("click")
