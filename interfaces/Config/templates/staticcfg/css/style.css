@@ -2107,6 +2107,9 @@ input[type="checkbox"] {
     padding: 0 !important;
     margin: 0 !important;
 }
+.navbar-default .navbar-brand-small {
+    padding-right: 10px !important;
+}
 .navbar-default .navbar-nav>li>a {
     color: black !important;
 }
