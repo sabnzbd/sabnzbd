@@ -2823,7 +2823,7 @@ class ConfigNotify(object):
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_PUSHBULLET:
-            msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw, 0)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 
