@@ -31,6 +31,7 @@ import sys
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
+from sabnzbd.utils.sslinfo import ssl_protocols
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 import sabnzbd.growler as growler
 from sabnzbd.constants import *
@@ -60,6 +61,12 @@ class Server(object):
 
     def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
+
+        # If no ssl is protocol set, used highest available one
+        protocols = ssl_protocols()
+        if ssl and protocols and ssl_type not in protocols:
+            ssl_type = protocols[0]
+
         self.id = id
         self.newid = None
         self.restart = False
