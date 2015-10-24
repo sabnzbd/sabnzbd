@@ -1659,6 +1659,7 @@ class ConfigServer(object):
 
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1
+            conf['ssl_protocols'] = sabnzbd.newswrapper.ssl_protocols()
         else:
             conf['have_ssl'] = 0
 

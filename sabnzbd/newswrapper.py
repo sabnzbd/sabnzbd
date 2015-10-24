@@ -51,6 +51,58 @@ except ImportError:
         def __str__(self):
             return repr(self.parameter)
 
+def ssl_potential():
+    ''' Return a list of potentially supported SSL protocols'''
+    try:
+        import ssl
+    except ImportError:
+        return []
+    return [p[9:] for p in dir(ssl) if p.startswith('PROTOCOL_')]
+
+_SSL_PROTOCOLS = {}
+if _ssl:
+    _potential = ssl_potential()
+    try:
+        if 'TLSv1_2' in _potential:
+            _SSL_PROTOCOLS['t12'] = _ssl.TLSv1_2_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1_1' in _potential:
+            _SSL_PROTOCOLS['t11'] = _ssl.TLSv1_1_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1' in _potential:
+            _SSL_PROTOCOLS['t1'] = _ssl.TLSv1_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv2' in _potential:
+            _SSL_PROTOCOLS['v2'] = _ssl.SSLv2_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv3' in _potential:
+            _SSL_PROTOCOLS['v3'] = _ssl.SSLv3_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv23' in _potential:
+            _SSL_PROTOCOLS['v23'] = _ssl.SSLv23_METHOD
+    except AttributeError:
+        pass
+
+def ssl_protocols():
+    ''' Return acronyms for SSL protocols '''
+    return _SSL_PROTOCOLS.keys()
+
+def ssl_version():
+    if _ssl:
+        return _ssl.SSLeay_version(_ssl.SSLEAY_VERSION)
+    else:
+        return None
+
 import threading
 _RLock = threading.RLock
 del threading
@@ -100,7 +152,7 @@ def GetServerParms(host, port):
         port = 119
     opt = sabnzbd.cfg.ipv6_servers()
     ''' ... with the following meaning for 'opt':
-    Control the use of IPv6 Usenet server addresses. Meaning: 
+    Control the use of IPv6 Usenet server addresses. Meaning:
     0 = don't use
     1 = use when available and reachable (DEFAULT)
     2 = force usage (when SABnzbd's detection fails)
@@ -164,16 +216,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
-try:
-    _SSL_TYPES = {
-        't1': _ssl.TLSv1_METHOD,
-        'v2': _ssl.SSLv2_METHOD,
-        'v3': _ssl.SSLv3_METHOD,
-        'v23': _ssl.SSLv23_METHOD
-    }
-except:
-    _SSL_TYPES = {}
-
 
 def probablyipv4(ip):
     if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
@@ -214,7 +256,7 @@ class NNTP(object):
             af = socket.AF_INET6
 
         if sslenabled and _ssl:
-            ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))
+            ctx = _ssl.Context(_SSL_PROTOCOLS.get(ssl_type, _ssl.TLSv1_METHOD))
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
@@ -470,3 +512,10 @@ class SSLConnection(object):
                 return apply(self._ssl_conn.%s, args)
             finally:
                 self._lock.release()\n""" % (f, f)
+
+
+if __name__ == '__main__':
+
+    print ssl_version()
+    print ssl_protocols()
+    print _SSL_PROTOCOLS
