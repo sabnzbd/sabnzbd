@@ -542,7 +542,7 @@ SKIN_TEXT = {
     'srv-optional' : TT('Optional'), #: Server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
     'srv-ssl_type' : TT('SSL type'),
-    'srv-explain-ssl_type' : TT('Use TLS1 unless your provider requires otherwise!'),
+    'srv-explain-ssl_type' : TT('Use the top value, unless your Usenet provider requires otherwise!'),
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server
     'button-testServer' : TT('Test Server'), #: Button: Test server
@@ -868,7 +868,7 @@ SKIN_TEXT = {
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
     'Plush-tab-repair' : TT('Queue repair'),
-    
+
 #smpl skin
     'smpl-purgehist' : TT('Delete Completed'),
     'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),

@@ -1353,10 +1353,11 @@ def main():
                 logging.info("pygtk2 not found. No SysTray.")
 
     print_modules()
-    
-    from sabnzbd.utils.sslinfo import sslversion, sslprotocols
-    logging.info("SSL version %s", sslversion())
-    logging.info("SSL supported protocols %s", str(sslprotocols()))
+
+    import sabnzbd.newswrapper
+    logging.info("SSL version %s", sabnzbd.newswrapper.ssl_version())
+    logging.info("SSL potentially supported protocols %s", str(sabnzbd.newswrapper.ssl_potential()))
+    logging.info("SSL actually supported protocols %s", str(sabnzbd.newswrapper.ssl_protocols()))
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
