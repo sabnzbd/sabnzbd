@@ -1,36 +1,72 @@
-import ssl
-import logging
 
-def sslversion():
+_ALL_PROTOCOLS = ('t12', 't11', 't1', 'v23', 'v3', 'v2')
+_SSL_PROTOCOLS = {}
+
+def ssl_potential():
+    ''' Return a list of potentially supported SSL protocols'''
     try:
-        return ssl.OPENSSL_VERSION
-    except:
-        logging.info("ssl.OPENSSL_VERSION not defined")
-        return None
-        
-def sslversioninfo():
+        import ssl
+    except ImportError:
+        return []
+    return [p[9:] for p in dir(ssl) if p.startswith('PROTOCOL_')]
+
+try:
+    from OpenSSL import SSL
+
+    _potential = ssl_potential()
     try:
-        return ssl.OPENSSL_VERSION_INFO
-    except:
-        logging.info("ssl.OPENSSL_VERSION_INFO not defined")
+        if 'TLSv1_2' in _potential:
+            _SSL_PROTOCOLS['t12'] = SSL.TLSv1_2_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1_1' in _potential:
+            _SSL_PROTOCOLS['t11'] = SSL.TLSv1_1_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1' in _potential:
+            _SSL_PROTOCOLS['t1'] = SSL.TLSv1_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv23' in _potential:
+            _SSL_PROTOCOLS['v23'] = SSL.SSLv23_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv3' in _potential:
+            _SSL_PROTOCOLS['v3'] = SSL.SSLv3_METHOD
+    except AttributeError:
+        pass
+    try:
+        if 'SSLv2' in _potential:
+            _SSL_PROTOCOLS['v2'] = SSL.SSLv2_METHOD
+    except AttributeError:
+        pass
+except ImportError:
+    SSL = None
+
+def ssl_method(method):
+    ''' Translate SSL acronym to a method value '''
+    if method in _SSL_PROTOCOLS:
+        return _SSL_PROTOCOLS[method]
+    else:
+        return _SSL_PROTOCOLS[0]
+
+def ssl_protocols():
+    ''' Return acronyms for SSL protocols, highest quality first '''
+    return [p for p in _ALL_PROTOCOLS if p in _SSL_PROTOCOLS]
+
+def ssl_version():
+    if SSL:
+        return SSL.SSLeay_version(SSL.SSLEAY_VERSION)
+    else:
         return None
 
-def sslprotocols():
-    protocollist = []   
-    try:
-        for i in dir(ssl):
-            if i.find('PROTOCOL_') == 0:
-                protocollist.append(i[9:])
-        return protocollist
-    except:
-        return None
 
 if __name__ == '__main__':
 
-    logger = logging.getLogger('')
-    logger.setLevel(logging.INFO)
-
-    print sslversion()
-    print sslversioninfo()
-    print sslprotocols()
-
+    print 'SSL version: %s' % ssl_version()
+    print 'Potentials: %s' % ssl_potential()
+    print 'Actuals: %s' % ssl_protocols()

@@ -30,6 +30,7 @@ import re
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
+from sabnzbd.utils.sslinfo import ssl_method
 
 try:
     from OpenSSL import SSL
@@ -50,6 +51,8 @@ except ImportError:
 
         def __str__(self):
             return repr(self.parameter)
+
+
 
 import threading
 _RLock = threading.RLock
@@ -100,7 +103,7 @@ def GetServerParms(host, port):
         port = 119
     opt = sabnzbd.cfg.ipv6_servers()
     ''' ... with the following meaning for 'opt':
-    Control the use of IPv6 Usenet server addresses. Meaning: 
+    Control the use of IPv6 Usenet server addresses. Meaning:
     0 = don't use
     1 = use when available and reachable (DEFAULT)
     2 = force usage (when SABnzbd's detection fails)
@@ -164,16 +167,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
-try:
-    _SSL_TYPES = {
-        't1': _ssl.TLSv1_METHOD,
-        'v2': _ssl.SSLv2_METHOD,
-        'v3': _ssl.SSLv3_METHOD,
-        'v23': _ssl.SSLv23_METHOD
-    }
-except:
-    _SSL_TYPES = {}
-
 
 def probablyipv4(ip):
     if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
@@ -214,7 +207,7 @@ class NNTP(object):
             af = socket.AF_INET6
 
         if sslenabled and _ssl:
-            ctx = _ssl.Context(_SSL_TYPES.get(ssl_type, _ssl.TLSv1_METHOD))
+            ctx = _ssl.Context(ssl_method(ssl_type))
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
@@ -470,3 +463,4 @@ class SSLConnection(object):
                 return apply(self._ssl_conn.%s, args)
             finally:
                 self._lock.release()\n""" % (f, f)
+
