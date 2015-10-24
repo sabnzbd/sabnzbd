@@ -7,6 +7,7 @@
         Code examples used from Knockstrap-template
 
 ********/
+
 /**
     FIX for IE8 and below not having IndexOf for array's
 **/
@@ -28,6 +29,20 @@ if(!Array.prototype.indexOf) {
 **/
 var fadeOnDeleteDuration = 400; // ms after deleting a row
 var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+
+// For mobile we disable zoom while a modal is being opened 
+// so it will not zoom unnecessarily on the modal
+if(isMobile) {
+    $('.modal').on('show.bs.modal', function (e) {
+        $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+    })
+    // Restore on modal-close. Need timeout, otherwise it doesn't work
+    $('.modal').on('hidden.bs.modal', function (e) {
+        setTimeout(function() {
+            $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1');
+        },500)
+    })
+}
 
 /**
     GLITTER CODE
