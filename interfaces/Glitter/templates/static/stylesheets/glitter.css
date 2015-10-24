@@ -269,8 +269,18 @@ li.dropdown {
     letter-spacing: 1px;
 }
 
+#feedback-slider>h4>a {
+    display: none;
+}
+
 #feedback-slider:hover>h4 {
     right: -25px;
+}
+
+#feedback-slider:hover>h4>a {
+    display: block;
+    position: absolute;
+    margin: -20px -25px;
 }
 
 #feedback-slider:hover {

@@ -697,22 +697,10 @@
             
             glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
         </script>
-
-        <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
-        <script type="text/javascript">
-            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery.dateFormat.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
-            <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
-        </script>
-        
+  
         <!-- Feedback -->
-        <div id="feedback-slider" data-bind="visible: glitterIsBeta" style="display: none;">
-    		<h4>Feedback</h4>
+        <div id="feedback-slider" data-bind="visible: glitterIsBeta && !localStorage.getItem('showFeedback')" style="display: none;">
+    		<h4>Feedback <a href="#" onclick="localStorage.setItem('showFeedback', 'No'); \$(this).parent().parent().hide()">&times;</a></h4>
     		<div id="feedback-slider-inner">
                 <p><strong>If anything is not working as expected, or could be improved, let us know!</strong></p>
                 <p><strong>If you encounter an error, please include the log file (click on <span class="glyphicon glyphicon-wrench"></span> ) when contacting us.</strong></p>
@@ -727,5 +715,17 @@
                 <span class="glyphicon glyphicon-envelope"></span> <a href="mailto:safihre@sabnzbd.org?body=Version:%20$version">Email safihre@sabnzbd.org</a>
     		</div>
     	</div>
+        
+        <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
+        <script type="text/javascript">
+            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.dateFormat.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
+            <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
+        </script>
     </body>
 </html>
