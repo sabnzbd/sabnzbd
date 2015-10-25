@@ -161,24 +161,6 @@ tr.queueitem>td:first-child>a {
     clear: both;
 }
 
-.table-messages .table-messages-header-label {
-    width: 120px;
-}
-
-.table-messages-label-no-date .label {
-    width: 113px;
-    margin-right: 2px;
-}
-
-.table-messages-label .label {
-    width: 100%;
-}
-
-.table-messages strong {
-    display: block;
-    text-align: center;
-}
-
 .history-table .history-ratings {
     display: none;
 }

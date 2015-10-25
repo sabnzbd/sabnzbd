@@ -699,7 +699,7 @@ tr.queueitem>td:first-child>a {
 }
 
 .table-messages .table-messages-header-label {
-    width: 220px;
+    width: 130px;
 }
 
 .table-messages .table-messages-hide {
@@ -729,6 +729,7 @@ tr.queueitem>td:first-child>a {
 
 .table-messages .label {
     margin-right: 8px;
+    min-width: 80px;
 }
 
 .table-messages td {
@@ -737,7 +738,6 @@ tr.queueitem>td:first-child>a {
 
 .table-messages .label {
     display: inline-block;
-    width: 80px;
     padding: 5px;
 }
 
@@ -747,10 +747,6 @@ tr.queueitem>td:first-child>a {
 
 .table-messages .queue-message-text {
     word-break: break-all;
-}
-
-.table-messages .table-messages-label-no-date .queue-message-text {
-    word-break: normal;
 }
 
 .table-messages .queue-update-sab {
@@ -763,6 +759,15 @@ tr.queueitem>td:first-child>a {
 
 .table-messages .queue-update-sab:hover {
     text-decoration: underline;
+}
+
+.table-messages-label .label {
+    width: 100%;
+}
+
+.table-messages strong {
+    display: block;
+    text-align: center;
 }
 
 /***
@@ -814,10 +819,6 @@ tr.queueitem>td:first-child>a {
     font-size: 12px;
     padding-right: 0 !important;
     vertical-align: middle !important;
-}
-
-.history-table tr td.history-completedon {
-    text-align: center;
 }
 
 .history-table .status-header {
@@ -1744,7 +1745,8 @@ legend {
 }
 
 .pagination>li>a, 
-.pagination>li>span {
+.pagination>li>span,
+.pagination>li>span:hover {
     color: #333;
 }
 

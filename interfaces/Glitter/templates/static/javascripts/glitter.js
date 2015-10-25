@@ -133,7 +133,7 @@ $(function() {
         self.isRestarting = ko.observable(false);
         self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
         self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
-        self.dateFormat = ko.observable('dd-MM-yy').extend({ persist: 'pageDateFormat' });
+        self.dateFormat = ko.observable('DD/MM/YYYY HH:mm').extend({ persist: 'pageDateFormat' });
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
         self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
@@ -510,13 +510,14 @@ $(function() {
                     $.each(response.warnings, function(index, warning) {
                         // Split warning into parts
                         var warningSplit = warning.split(/\n/);
-
+                        
                         // Reformat CSS label and date
                         var warningData = {
                             index: index,
                             type: glitterTranslate.status[warningSplit[1]].slice(0, -1),
-                            text: warningSplit.slice(2).join('<br/>'), // Recombine if multiple lines
-                            date: $.format.date(warningSplit[0], self.dateFormat() + ' HH:mm'),
+                            text: warningSplit.slice(2).join('<br/>').replace(/ /g, '\u00A0'), // Recombine if multiple lines
+                            date: displayDateTime(warningSplit[0], self.dateFormat(), 'YYYY-MM-DD HH:mm'),
+                            timestamp: moment(warningSplit[0], 'YYYY-MM-DD HH:mm').unix(),
                             css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"),
                             clear: self.clearWarnings
                         };
@@ -838,11 +839,10 @@ $(function() {
                 
             // Show message (maybe it was there from before!)
             if(localStorage.getItem('lastOrphanedMsg') == 'true') {
-                console.log('asdas')
                 self.allMessages.push({
                     index: 'lastOrphanedMsg',
                     type: 'INFO',
-                    text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click()"><span class="glyphicon glyphicon-wrench"></span></a>',
+                    text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click(); $(\'a[href=#options_orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
                     css: 'info',
                     clear: function() { self.clearMessages('lastOrphanedMsg')}
                 });
@@ -859,6 +859,23 @@ $(function() {
                 css: 'info'
             });
         }
+        
+        /***
+            Date-stuff
+        ***/
+        moment.locale(displayLang);
+        
+        // Fill the basic info for date-formats with current date-time
+        $('[name="general-date-format"] option').each(function() {
+            $(this).text(displayDateTime('', $(this).val()), '')
+        })
+               
+        // Update the date every minute
+        setInterval(function() {
+            $('[data-timestamp]').each(function() {
+                $(this).text(displayDateTime($(this).data('timestamp'), self.dateFormat(), 'X'))
+            })
+        }, 60*1000)
         
         /***
             End of main functions, start of the fun!
@@ -1714,7 +1731,7 @@ $(function() {
 
         // Format completion time
         self.completedOn = ko.computed(function() {
-            return $.format.date(parseInt(self.completed()) * 1000, parent.parent.dateFormat() + ' HH:mm')
+            return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
         });
 
         // Re-try button
@@ -2244,6 +2261,22 @@ function rewriteTime(timeString) {
     return hours + ':' + minutes + ':' + seconds;
 }
 
+// How to display the date-time?
+function displayDateTime(inDate, outFormat, inFormat) {
+    // What input?
+    if(inDate == '') {
+        var theMoment = moment()
+    } else {
+        var theMoment = moment(inDate, inFormat)
+    }
+    // Special format or regular format?
+    if(outFormat == 'fromNow') {
+        return theMoment.fromNow()
+    } else {
+        return theMoment.format(outFormat)
+    }
+}
+
 // Keep dropdowns open
 function keepOpen(thisItem) {
     // Onlick so it works for the dynamic items!
@@ -2276,7 +2309,7 @@ function checkAllFiles(objCheck) {
     }
 }
 
-// SHift-range functionality for checkboxes
+// Shift-range functionality for checkboxes
 function checkShiftRange(strCheckboxes) {
     // Get them all
     var arrAllChecks = $(strCheckboxes);
