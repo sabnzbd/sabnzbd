@@ -76,7 +76,6 @@
                             </ul>
                             <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft"  data-toggle="dropdown">0:00</span>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -162,6 +161,9 @@
                 <h2>$T('menu-queue')</h2>
 
                 <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
+                    <div class="info-container-box" id="localstorage-error">
+                        <span class="queue-error-info"></span>
+                    </div>
                     <!-- ko if: hasWarnings()  -->
                     <div class="info-container-box">
                         <a href="#queue-messages" class="queue-error-info">
@@ -697,11 +699,15 @@
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
             
             glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
+            
+            // To avoid problems when localStorage is disabled
+            function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) { \$('#localstorage-error span').text('Cannot store settings locally'); return false; } }
+            function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  \$('#localstorage-error span').text('Cannot store settings locally'); return false; } }
         </script>
   
         <!-- Feedback -->
-        <div id="feedback-slider" data-bind="visible: glitterIsBeta && !localStorage.getItem('showFeedback')" style="display: none;">
-    		<h4>Feedback <a href="#" onclick="localStorage.setItem('showFeedback', 'No'); \$(this).parent().parent().hide()">&times;</a></h4>
+        <div id="feedback-slider" data-bind="visible: glitterIsBeta && !localStorageGetItem('showFeedback')" style="display: none;">
+    		<h4>Feedback <a href="#" onclick="localStorageSetItem('showFeedback', 'No'); \$(this).parent().parent().hide()">&times;</a></h4>
     		<div id="feedback-slider-inner">
                 <p><strong>If anything is not working as expected, or could be improved, let us know!</strong></p>
                 <p><strong>If you encounter an error, please include the log file (click on <span class="glyphicon glyphicon-wrench"></span> ) when contacting us.</strong></p>

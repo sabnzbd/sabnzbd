@@ -540,7 +540,7 @@ $(function() {
             // Remove specifc type of messages
             self.allMessages.remove(function(item) { return item.index == whatToRemove });
             // Now so we don't show again today
-            localStorage.setItem(whatToRemove, 'false')
+            localStorageSetItem(whatToRemove, 'false')
         }
 
         // Update on speed-limit change
@@ -820,11 +820,11 @@ $(function() {
         })
         
         // Check for Orphaned folders every day
-        if(localStorage.getItem('lastOrphanedCheck')*1 + (1000*3600*72) < Date.now()) {
+        if(localStorageGetItem('lastOrphanedCheck')*1 + (1000*3600*72) < Date.now()) {
             // Update status-info
             self.loadStatusInfo();
             // Set check so we don't do it every page load
-            localStorage.setItem('lastOrphanedCheck', Date.now())
+            localStorageSetItem('lastOrphanedCheck', Date.now())
         } 
         
         // We don't know exactly when it will finish, so we will wait 4 sec
@@ -833,12 +833,12 @@ $(function() {
             if(self.hasStatusInfo()) {
                 // Orphaned folders?
                 if(self.statusInfo.status.folders().length >= 3) {
-                    localStorage.setItem('lastOrphanedMsg', 'true')
+                    localStorageSetItem('lastOrphanedMsg', 'true')
                 }
             }
                 
             // Show message (maybe it was there from before!)
-            if(localStorage.getItem('lastOrphanedMsg') == 'true') {
+            if(localStorageGetItem('lastOrphanedMsg') == 'true') {
                 self.allMessages.push({
                     index: 'lastOrphanedMsg',
                     type: 'INFO',
@@ -848,10 +848,10 @@ $(function() {
                 });
             }
             // Timeout only when we don't already know there's a message
-        }, (localStorage.getItem('lastOrphanedMsg') != 'true') ? 4000 : 1)
+        }, (localStorageGetItem('lastOrphanedMsg') != 'true') ? 4000 : 1)
         
         // Update message
-        if(localStorage.getItem('lastUpdateMsg') != 'false' && newRelease) {
+        if(localStorageGetItem('lastUpdateMsg') != 'false' && newRelease) {
             self.allMessages.push({
                 index: 'lastUpdateMsg',
                 type: 'INFO',
@@ -1979,7 +1979,7 @@ $(function() {
                 }
 
                 // Check if we show/hide completed
-                if(localStorage.getItem('showCompletedFiles') == 'No') {
+                if(localStorageGetItem('showCompletedFiles') == 'No') {
                     $('.item-files-table tr:not(.files-sortable)').hide();
                     $('#filelist-showcompleted').removeClass('hoverbutton')
                 }
@@ -2327,12 +2327,12 @@ function hideCompletedFiles() {
         $('.item-files-table tr:not(.files-sortable)').hide();
         $('#filelist-showcompleted').removeClass('hoverbutton')
         // Set storage
-        localStorage.setItem('showCompletedFiles', 'No')
+        localStorageSetItem('showCompletedFiles', 'No')
     } else {
         // show all
         $('.item-files-table tr:not(.files-sortable)').show();
         $('#filelist-showcompleted').addClass('hoverbutton')
         // Set storage
-        localStorage.setItem('showCompletedFiles', 'Yes')
+        localStorageSetItem('showCompletedFiles', 'Yes')
     }
 }
