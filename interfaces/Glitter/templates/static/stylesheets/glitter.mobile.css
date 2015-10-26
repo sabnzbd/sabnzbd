@@ -161,6 +161,11 @@ tr.queueitem>td:first-child>a {
     clear: both;
 }
 
+.table-messages strong {
+    margin-right: 5px;
+    min-width: 0px;
+}
+
 .history-table .history-ratings {
     display: none;
 }

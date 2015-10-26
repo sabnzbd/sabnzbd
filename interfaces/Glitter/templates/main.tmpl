@@ -351,14 +351,14 @@
                     <div class="clearfix"></div>
                 </form>
                 
-                <div class="input-group search-box" data-bind="visible: queue.hasQueueSearch">
+                <div class="input-group search-box" data-bind="visible: queue.hasQueueSearch" style="display: none;">
                     <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: queue.searchTerm, event: { keydown: queue.clearSearchTerm }" />
                     <a data-bind="event: { mousedown: queue.clearSearchTerm }">
                         <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !queue.searchTerm(), 'glyphicon-remove' : queue.searchTerm() }"></span>
                     </a>
                 </div>
                 
-                <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination">
+                <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination" style="display: none;">
                     <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
                         <span data-bind="text: page"></span>
                     </li>
@@ -370,14 +370,13 @@
                     <thead>
                         <tr>
                             <th class="table-messages-header-label"></th>
-                            <th></th>
                             <th style="width: 30px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- ko if: hasWarnings()-->
                             <tr>
-                                <td colspan="2" class="table-messages-hide"></td>
+                                <td class="table-messages-hide"></td>
                                 <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
                                     <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a>
                                 </td>
@@ -387,8 +386,8 @@
                                 <td class="table-messages-label">
                                     <span class="label" data-bind="css: 'label-' + css, text: type"></span>
                                     <strong data-bind="text: date, attr: { 'data-timestamp': timestamp }"></strong>
+                                    <span class="queue-message-text" data-bind="html: text"></span>
                                 </td>
-                                <td><span class="queue-message-text" data-bind="html: text"></span></td>
                             </tr>
                             <!-- /ko -->
                         <!-- /ko -->
@@ -396,8 +395,8 @@
                             <tr>
                                 <td class="table-messages-label">
                                     <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                                    <span class="queue-message-text" data-bind="html: text"></span>
                                 </td>
-                                <td><span class="queue-message-text" data-bind="html: text"></span></td>
                                 <td class="table-messages-remove">
                                     <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
                                 </td>
@@ -598,17 +597,17 @@
                         <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
                     </a>
                 </div>
+
+                <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination" style="display: none;">
+                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
+                        <span data-bind="text: page"></span>
+                    </li>
+                </ul>
                 
                 <div class="multioperations-selector" id="history-options">
                     <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
                     <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
-
-                <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination">
-                    <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
-                        <span data-bind="text: page"></span>
-                    </li>
-                </ul>
 
                 <div class="info-container history-info">
                     <span class="glyphicon glyphicon-save"></span>
@@ -718,7 +717,7 @@
                 <span class="glyphicon glyphicon-envelope"></span> <a href="mailto:bugs@sabnzbd.org?body=Version:%20$version%20Skin:%20Glitter">Email bugs@sabnzbd.org</a>
 
                 <h4>Interface (Glitter)</h4>
-                <span class="glyphicon glyphicon-home"></span> <a href="http://forums.sabnzbd.org/viewtopic.php?f=15&p=93733" target="_blank">Glitter at SABnzbd Forum</a><br />
+                <span class="glyphicon glyphicon-home"></span> <a href="http://forums.sabnzbd.org/viewtopic.php?f=15&amp;p=93733" target="_blank">Glitter at SABnzbd Forum</a><br />
                 <span class="glyphicon glyphicon-envelope"></span> <a href="mailto:safihre@sabnzbd.org?body=Version:%20$version">Email safihre@sabnzbd.org</a>
     		</div>
     	</div>

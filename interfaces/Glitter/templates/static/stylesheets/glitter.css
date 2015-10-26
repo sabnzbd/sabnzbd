@@ -698,10 +698,6 @@ tr.queueitem>td:first-child>a {
     border-collapse: separate !important;
 }
 
-.table-messages .table-messages-header-label {
-    width: 130px;
-}
-
 .table-messages .table-messages-hide {
     padding: 0 !important;
     border: 0 !important;
@@ -723,13 +719,10 @@ tr.queueitem>td:first-child>a {
     opacity: 1;
 }
 
-.table-messages-label {
-    vertical-align: top !important;
-}
 
 .table-messages .label {
     margin-right: 8px;
-    min-width: 80px;
+    min-width: 100px;
 }
 
 .table-messages td {
@@ -761,13 +754,9 @@ tr.queueitem>td:first-child>a {
     text-decoration: underline;
 }
 
-.table-messages-label .label {
-    width: 100%;
-}
-
 .table-messages strong {
-    display: block;
-    text-align: center;
+    display: inline-block;
+    min-width: 150px;
 }
 
 /***
