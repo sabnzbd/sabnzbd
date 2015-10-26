@@ -715,20 +715,18 @@ $(function() {
         }
 
         // Orphaned folder processing
-        self.folderProcess = function(e, b) {
+        self.folderProcess = function(folder, htmlElement) {
             // Hide tooltips (otherwise they stay forever..)
             $('#options_orphans [data-toggle="tooltip"]').tooltip('hide')
             
             // Activate
-            callSpecialAPI("status/" + $(b.currentTarget).data('action'), {
-                name: $(b.currentTarget).data('folder')
+            callSpecialAPI("status/" + $(htmlElement.currentTarget).data('action'), {
+                name: folder.folder()
             }).then(function() {
                 // Remove item and load status data
-                $(b.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
+                $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
                 // Pop from list
-                self.statusInfo.status.folders.remove(function(item) {
-                    return item.folder() == $(b.currentTarget).data('folder')
-                })
+                self.statusInfo.status.folders.remove(folder)
             })
             // Remove message if now less than 3
             if(self.statusInfo.status.folders().length < 4) {
