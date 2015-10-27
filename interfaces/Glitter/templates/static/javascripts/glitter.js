@@ -1318,6 +1318,8 @@ $(function() {
                     return ko.utils.arrayFirst(self.parent.processingOptions(), function(item) { return item.value == self.unpackopts()}).name;
                 case 'scripts':
                     return self.script();
+                case 'age':
+                    return self.avg_age();
             }
         })
 
