@@ -275,34 +275,37 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
-      \$(this).attr("disabled", "disabled")
-      \$.ajax({
-        type: "POST",
-        url: "../../tapi",
-        data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
-        success: function(msg){
-          alert(msg);
-          \$(event.target).removeAttr("disabled")
-        }
-      });
+        \$(this).attr("disabled", "disabled")
+        \$.ajax({
+            type: "POST",
+            url: "../../tapi",
+            data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
+            success: function(msg){
+                alert(msg);
+                \$(event.target).removeAttr("disabled")
+            }
+        });
     });
     \$('.delServer').click(function(){
-      if( confirm("$T('Plush-confirm')") )
-        \$(this).parents('form:first').attr('action','delServer').submit();
-      return false;
+        if( confirm("$T('Plush-confirm')") )
+            \$(this).parents('form:first').attr('action','delServer').submit();
+        return false;
     });
     \$('.clrServer').click(function(){
-      if( confirm("$T('Plush-confirm')") )
-        \$(this).parents('form:first').attr('action','clrServer').submit();
-      return false;
+        if( confirm("$T('Plush-confirm')") )
+            \$(this).parents('form:first').attr('action','clrServer').submit();
+        return false;
     });
     \$('.toggleServerCheckbox').click(function(){
         var whichServer = \$(this).attr("rel");
         \$.ajax({
-          type: "POST",
-          url: "toggleServer",
-          data: {server: whichServer, session: "$session" }
+            type: "POST",
+            url: "toggleServer",
+            data: {server: whichServer, session: "$session" }
         }).done(function() {
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
           location.reload();
         });
     });
