@@ -1562,11 +1562,11 @@ textarea, select, input[type="date"], input[type="datetime"], input[type="dateti
     padding-left: 5px;
     border: 1px solid #d4d0c8;
 }
-select .selected {
-    font-weight: 700;
-}
 select option {
     padding-left: 5px;
+}
+#check_new_rel option, #check_new_rel {
+    text-transform: capitalize;
 }
 input[type='checkbox'] {
     display: block;
@@ -2043,8 +2043,14 @@ select {
     font-size: 13px;
 }
 
-input[type="number"][name*="port"] {
-    max-width: 100px !important;
+input[type="text"]:not([size]),
+textarea {
+    width: 300px;
+}
+
+input[type="number"],
+input[type="text"].smaller_input {
+    width: 120px;
 }
 
 .btn {
@@ -2065,6 +2071,7 @@ input[type="number"][name*="port"] {
 
 select {
     background-color: transparent;
+    min-width: 200px;
 }
 
 select[disabled] {
@@ -2088,8 +2095,15 @@ input[type="checkbox"] {
     margin-top: 5px;
 }
 
+.Scheduling select,
+.Categories select,
+.RSS select {
+    min-width: 20px;
+}
+
 .Scheduling input[type="checkbox"] {
     margin-top: 0px;
+    margin-left: -20px;
 }
 
 .navbar-default {
@@ -2275,7 +2289,7 @@ input[type="checkbox"] {
     }
 }
 
-@media only screen and (max-width : 480px) {
+@media only screen and (max-width : 768px) {
     #content {
         margin: 0 !important;
         padding: 0 !important;

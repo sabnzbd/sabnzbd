@@ -15,7 +15,7 @@
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="host">$T('opt-host')</label>
-                    <input type="url" name="host" id="host" value="$host" size="40" />
+                    <input type="text" name="host" id="host" value="$host" />
                     <span class="desc">$T('explain-host')</span>
                 </div>
                 <div class="field-pair">
@@ -25,12 +25,12 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="username">$T('opt-web_username')</label>
-                    <input type="text" name="username" id="username" value="$username" size="30" />
+                    <input type="text" name="username" id="username" value="$username" />
                     <span class="desc">$T('explain-web_username')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="password">$T('opt-web_password')</label>
-                    <input type="password" name="password" id="password" value="$password" size="30" />
+                    <input type="text" name="password" id="password" value="$password" />
                     <span class="desc">$T('explain-web_password')</span>
                 </div>
                 <div class="field-pair alt">
@@ -38,7 +38,7 @@
                         <select name="web_dir" id="web_dir">
                         <!--#for $webline in $web_list#-->
                             <!--#if $webline.lower() == $web_dir.lower()#-->
-                                <option value="$webline" selected="selected" class="selected">$webline</option>
+                                <option value="$webline" selected="selected">$webline</option>
                             <!--#else#-->
                                 <option value="$webline">$webline</option>
                             <!--#end if#-->
@@ -51,7 +51,7 @@
                         <select name="web_dir2" id="web_dir2">
                         <!--#for $webline in $web_list#-->
                             <!--#if $webline.lower() == $web_dir2.lower()#-->
-                                <option value="$webline" selected="selected" class="selected">$webline</option>
+                                <option value="$webline" selected="selected">$webline</option>
                             <!--#else#-->
                                 <option value="$webline">$webline</option>
                             <!--#end if#-->
@@ -64,7 +64,7 @@
                         <select name="language" id="language" class="select">
                         <!--#for $webline in $lang_list#-->
                             <!--#if $webline[0].lower() == $language.lower()#-->
-                                <option value="$webline[0]" selected="selected" class="selected">$webline[1]</option>
+                                <option value="$webline[0]" selected="selected">$webline[1]</option>
                             <!--#else#-->
                                 <option value="$webline[0]">$webline[1]</option>
                             <!--#end if#-->
@@ -74,17 +74,17 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
-                    <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" size="30" />
+                    <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" />
                     <span class="desc">$T('explain-local_ranges')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
-                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected" class="selected"' else ""#-->>$T('inet-local')</option>
-                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected" class="selected"' else ""#-->>$T('inet-nzb')</option>
-                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected" class="selected"' else ""#-->>$T('inet-api')</option>
-                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected" class="selected"' else ""#-->>$T('inet-fullapi')</option>
-                            <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected" class="selected"' else ""#-->>$T('inet-ui')</option>
+                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
+                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
+                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
+                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
+                            <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
                         </select>
                     <span class="desc">$T('explain-inet_exposure')</span>
                 </div>
@@ -95,14 +95,14 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="apikey">$T('opt-apikey')</label>
-                    <input type="text" id="apikey" class="fileBrowserField" value="$session" size="35" />
+                    <input type="text" id="apikey" class="fileBrowserField" value="$session" />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$session" ><span class="glyphicon glyphicon-qrcode"></span></button>
                     <button class="btn btn-default" id="generate_new_apikey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-apikey')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
-                    <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" size="35" />
+                    <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$nzb_key" ><span class="glyphicon glyphicon-qrcode"></span></button>
                     <button class="btn btn-default" id="generate_new_nzbkey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-nzbkey')</span>
@@ -136,17 +136,17 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="https_cert">$T('opt-https_cert')</label>
-                    <input type="text" name="https_cert" id="https_cert" value="$https_cert" size="50" />
+                    <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
                     <span class="desc">$T('explain-https_cert')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="https_key">$T('opt-https_key')</label>
-                    <input type="text" name="https_key" id="https_key" value="$https_key" size="50" />
+                    <input type="text" name="https_key" id="https_key" value="$https_key" />
                     <span class="desc">$T('explain-https_key')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="https_chain">$T('opt-https_chain')</label>
-                    <input type="text" name="https_chain" id="https_chain" value="$https_chain" size="50" />
+                    <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
                     <span class="desc">$T('explain-https_chain')</span>
                 </div>
                 <div class="field-pair">
@@ -164,17 +164,17 @@
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
-                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max"/>
+                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" class="smaller_input" />
                     <span class="desc">$T('explain-bandwidth_max')<br />$T('wizard-bandwidth-explain')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
-                    <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" size="8" step="10" min="0" max="100"/>
+                    <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" step="10" min="0" max="100"/>
                     <span class="desc">$T('explain-bandwidth_perc')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
-                    <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" size="8" />
+                    <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
                     <span class="desc">$T('explain-cache_limitstr')</span>
                 </div>
                 <div class="field-pair">

@@ -23,7 +23,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="host">$T('srv-host')</label>
-                    <input type="text" name="host" id="host" size="40" />
+                    <input type="text" name="host" id="host" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port">$T('srv-port')</label>
@@ -31,11 +31,11 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="username">$T('srv-username')</label>
-                    <input type="text" name="username" id="username" size="30" />
+                    <input type="text" name="username" id="username" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="password">$T('srv-password')</label>
-                    <input type="password" name="password" id="password" size="30" />
+                    <input type="text" name="password" id="password" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="displayname">$T('srv-displayname')</label>
-                    <input type="text" name="displayname" id="displayname" size="30" />
+                    <input type="text" name="displayname" id="displayname" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="notes">$T('srv-notes')</label>
@@ -149,7 +149,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
-                    <input type="text" name="host" id="host$cur" value="$server['host']" size="30" />
+                    <input type="text" name="host" id="host$cur" value="$server['host']" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="port$cur">$T('srv-port')</label>
@@ -157,11 +157,11 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="username$cur">$T('srv-username')</label>
-                    <input type="text" name="username" id="username$cur" value="$server['username']" size="30" />
+                    <input type="text" name="username" id="username$cur" value="$server['username']" />
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="password$cur">$T('srv-password')</label>
-                    <input type="password" name="password" id="password$cur" value="$server['password']" size="30" />
+                    <input type="text" name="password" id="password$cur" value="$server['password']" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
@@ -189,22 +189,22 @@
                     <!--#if int($have_ssl) == 1#-->
                         <select name="ssl_type" id="ssl_type$cur">
                             <!--#if 't12' in $ssl_protocols#-->
-                                <option value="t12"  <!--#if $server['ssl_type'] == "t12"  then 'selected="selected" class="selected"' else ""#--> >TLS v1.2</option>
+                                <option value="t12"  <!--#if $server['ssl_type'] == "t12"  then 'selected="selected"' else ""#--> >TLS v1.2</option>
                             <!--#end if#-->
                             <!--#if 't11' in $ssl_protocols#-->
-                                <option value="t11"  <!--#if $server['ssl_type'] == "t11"  then 'selected="selected" class="selected"' else ""#--> >TLS v1.1</option>
+                                <option value="t11"  <!--#if $server['ssl_type'] == "t11"  then 'selected="selected"' else ""#--> >TLS v1.1</option>
                             <!--#end if#-->
                             <!--#if 't1' in $ssl_protocols#-->
-                                <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected" class="selected"' else ""#--> >TLS v1</option>
+                                <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected"' else ""#--> >TLS v1</option>
                             <!--#end if#-->
                             <!--#if 'v23' in $ssl_protocols#-->
-                                <option value="v23" <!--#if $server['ssl_type'] == "v23" then 'selected="selected" class="selected"' else ""#--> >SSL v23</option>
+                                <option value="v23" <!--#if $server['ssl_type'] == "v23" then 'selected="selected"' else ""#--> >SSL v23</option>
                             <!--#end if#-->
                             <!--#if 'v3' in $ssl_protocols#-->
-                                <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected" class="selected"' else ""#--> >SSL v3</option>
+                                <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected"' else ""#--> >SSL v3</option>
                             <!--#end if#-->
                             <!--#if 'v2' in $ssl_protocols#-->
-                                <option value="v2"  <!--#if $server['ssl_type'] == "v2"  then 'selected="selected" class="selected"' else ""#--> >SSL v2</option>
+                                <option value="v2"  <!--#if $server['ssl_type'] == "v2"  then 'selected="selected"' else ""#--> >SSL v2</option>
                             <!--#end if#-->
                         </select>
                     <!--#end if#-->
@@ -231,7 +231,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                    <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" size="30" />
+                    <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="notes$cur">$T('srv-notes')</label>

@@ -570,7 +570,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('category')</div>
-                                                <div class="col-sm-10" data-bind="text: historyStatus.category"></div>
+                                                <div class="col-sm-10" data-bind="text: historyStatus.category() == '*' ? glitterTranslate.defaultText : historyStatus.category"></div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-2">$T('msg-path')</div>
