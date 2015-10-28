@@ -14,9 +14,9 @@
                 <div class="field-pair alt">
                     <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
                     <select name="check_new_rel" id="check_new_rel">
-                        <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
-                        <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
-                        <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
+                        <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
+                        <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
+                        <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
                     </select>
                     <span class="desc">$T('explain-check_new_rel')</span>
                 </div>
@@ -55,9 +55,9 @@
                 <div class="field-pair alt">
                     <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
                       <select name="load_balancing" id="load_balancing">
-                          <option value="0" <!--#if $load_balancing == 0 then 'selected="selected" class="selected"' else ""#--> >$T('no-load-balancing')</option>
-                          <option value="1" <!--#if $load_balancing == 1 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing')</option>
-                          <option value="2" <!--#if $load_balancing == 2 then 'selected="selected" class="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
+                          <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
+                          <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
+                          <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
                       </select>
                     <span class="desc">$T('explain-load_balancing')</span>
                 </div>
@@ -91,18 +91,18 @@
                 <div class="field-pair">
                     <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
                     <select name="no_dupes" id="no_dupes">
-                        <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-ignore')</option>
-                        <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
+                        <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                     </select>
                     <span class="desc">$T('explain-no_dupes')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
                     <select name="no_series_dupes" id="no_series_dupes">
-                        <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-ignore')</option>
-                        <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
+                        <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                     </select>
                     <span class="desc">$T('explain-no_series_dupes')</span>
                 </div>
@@ -114,24 +114,24 @@
                 <div class="field-pair">
                     <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
                     <select name="pause_on_pwrar" id="pause_on_pwrar">
-                        <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
-                        <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('abort')</option>
+                        <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
                     </select>
                     <span class="desc">$T('explain-pause_on_pwrar')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="action_on_unwanted_extensions">$T('opt-action_on_unwanted_extensions')</label>
                     <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
-                        <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
-                        <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('abort')</option>
+                        <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                        <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
                     </select>
                     <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
-                    <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions" size="50"/>
+                    <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                     <span class="desc">$T('explain-unwanted_extensions')</span>
                 </div>
                 <div class="field-pair alt">
@@ -149,7 +149,7 @@
                     <select name="pre_script" id="pre_script">
                     <!--#for $sc in $script_list#-->
                         <!--#if $sc.lower() == $pre_script.lower()#-->
-                            <option value="$sc" selected="selected" class="selected">$Tspec($sc)</option>
+                            <option value="$sc" selected="selected">$Tspec($sc)</option>
                         <!--#else#-->
                             <option value="$sc">$Tspec($sc)</option>
                         <!--#end if#-->
@@ -172,8 +172,8 @@
                 <div class="field-pair alt">
                     <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
                     <select name="ignore_samples" id="ignore_samples">
-                        <option value="0" <!--#if int($ignore_samples) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('igsam-off')</option>
-                        <option value="1" <!--#if int($ignore_samples) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('igsam-del')</option>
+                        <option value="0" <!--#if int($ignore_samples) == 0 then 'selected="selected"' else ""#--> >$T('igsam-off')</option>
+                        <option value="1" <!--#if int($ignore_samples) == 1 then 'selected="selected"' else ""#--> >$T('igsam-del')</option>
                     </select>
                     <span class="desc">$T('explain-ignore_samples')</span>
                 </div>
@@ -259,22 +259,22 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="par_option">$T('opt-par_option')</label>
-                    <input type="text" name="par_option" id="par_option" value="$par_option" size="20" />
+                    <input type="text" name="par_option" id="par_option" value="$par_option" />
                     <span class="desc">$T('explain-par_option')</span>
                 </div>
                 <div class="field-pair alt <!--#if not $have_nice then "disabled" else "" #-->">
                     <label class="config" for="nice">$T('opt-nice')</label>
-                    <input type="text" name="nice" id="nice" value="$nice" size="20" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-nice')</span>
                 </div>
                 <div class="field-pair <!--#if not $have_ionice then "disabled" else "" #-->">
                     <label class="config" for="ionice">$T('opt-ionice')</label>
-                    <input type="text" name="ionice" id="ionice" value="$ionice" size="20" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ionice')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
-                    <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list" size="50"/>
+                    <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
                     <span class="desc">$T('explain-cleanup_list')</span>
                 </div>
                 <div class="field-pair">
@@ -333,22 +333,22 @@
             <fieldset>
                 <div class="field-pair alt">
                     <label class="config" for="quota_size">$T('opt-quota_size')</label>
-                    <input type="text" name="quota_size" id="quota_size" value="$quota_size" size="8" />
+                    <input type="text" name="quota_size" id="quota_size" value="$quota_size" class="smaller_input" />
                     <span class="desc">$T('explain-quota_size')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="quota_period">$T('opt-quota_period')</label>
                     <select name="quota_period" id="quota_period">
-                        <option value="d" <!--#if $quota_period == "d" then 'selected="selected" class="selected"' else ""#--> >$T('day').capitalize()</option>
-                        <option value="w" <!--#if $quota_period == "w" then 'selected="selected" class="selected"' else ""#--> >$T('week').capitalize()</option>
-                        <option value="m" <!--#if $quota_period == "m" then 'selected="selected" class="selected"' else ""#--> >$T('month').capitalize()</option>
-                        <option value="x" <!--#if $quota_period == "x" then 'selected="selected" class="selected"' else ""#--> >$T('manual').capitalize()</option>
+                        <option value="d" <!--#if $quota_period == "d" then 'selected="selected"' else ""#--> >$T('day').capitalize()</option>
+                        <option value="w" <!--#if $quota_period == "w" then 'selected="selected"' else ""#--> >$T('week').capitalize()</option>
+                        <option value="m" <!--#if $quota_period == "m" then 'selected="selected"' else ""#--> >$T('month').capitalize()</option>
+                        <option value="x" <!--#if $quota_period == "x" then 'selected="selected"' else ""#--> >$T('manual').capitalize()</option>
                     </select>
                     <span class="desc">$T('explain-quota_period')</span>
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="quota_day">$T('opt-quota_day')</label>
-                    <input type="text" name="quota_day" id="quota_day" value="$quota_day" size="20" />
+                    <input type="text" name="quota_day" id="quota_day" value="$quota_day" class="smaller_input" />
                     <span class="desc">$T('explain-quota_day')</span>
                 </div>
                 <div class="field-pair">
@@ -375,7 +375,7 @@
                 </div>
                 <div class="field-pair alt">
                     <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
-                    <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" size="35" />
+                    <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" />
                     <span class="desc">$T('explain-rating_api_key')</span>
                 </div>
                 <div class="field-pair">
@@ -394,15 +394,15 @@
                         <p>
                             <label for="rating_filter_abort_video">$T('opt-rating_filter_video')</label>
                             <select name="rating_filter_abort_video" id="rating_filter_abort_video">
-                                <option value="0" <!--#if $rating_filter_abort_video == 0 then 'selected="selected" class="selected"' else ""#--> >$T('notUsed')</option>                                
-                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_video == $val then 'selected="selected" class="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                <option value="0" <!--#if $rating_filter_abort_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>                                
+                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_video == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
                             </select>
                         </p>
                         <p>
                             <label for="rating_filter_abort_audio">$T('opt-rating_filter_audio')</label>
                             <select name="rating_filter_abort_audio" id="rating_filter_abort_audio">
-                                <option value="0" <!--#if $rating_filter_abort_audio == 0 then 'selected="selected" class="selected"' else ""#--> >$T('notUsed')</option>
-                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_audio == $val then 'selected="selected" class="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                <option value="0" <!--#if $rating_filter_abort_audio == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_audio == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
                             </select>
                         </p>
                         <p>
@@ -431,7 +431,7 @@
                         </p>
                         <p>
                             <label for="rating_filter_abort_keywords">$T('opt-rating_filter_keywords')</label>
-                            <input type="text" name="rating_filter_abort_keywords" id="rating_filter_abort_keywords" value="$rating_filter_abort_keywords" size="35"/>
+                            <input type="text" name="rating_filter_abort_keywords" id="rating_filter_abort_keywords" value="$rating_filter_abort_keywords"/>
                             <span class="desc">$T('explain-rating_filter_keywords')</span>
                         </p>
                     </div>
@@ -442,15 +442,15 @@
                         <p>
                             <label for="rating_filter_pause_video">$T('opt-rating_filter_video')</label>
                             <select name="rating_filter_pause_video" id="rating_filter_pause_video">
-                                <option value="0" <!--#if $rating_filter_pause_video == 0 then 'selected="selected" class="selected"' else ""#--> >$T('notUsed')</option>
-                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_video == $val then 'selected="selected" class="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                <option value="0" <!--#if $rating_filter_pause_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_video == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
                             </select>
                         </p>
                         <p>
                             <label for="rating_filter_pause_audio">$T('opt-rating_filter_audio')</label>
                             <select name="rating_filter_pause_audio" id="rating_filter_pause_audio">
-                                <option value="0" <!--#if $rating_filter_pause_audio == 0 then 'selected="selected" class="selected"' else ""#--> >$T('notUsed')</option>
-                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_audio == $val then 'selected="selected" class="selected"' else ""#--> >$val $T('orLess') </option><!--#end for#-->
+                                <option value="0" <!--#if $rating_filter_pause_audio == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_audio == $val then 'selected="selected"' else ""#--> >$val $T('orLess') </option><!--#end for#-->
                             </select>
                         </p>
                         <p>
@@ -479,7 +479,7 @@
                         </p>
                         <p>
                             <label for="rating_filter_pause_keywords">$T('opt-rating_filter_keywords')</label>
-                            <input type="text" name="rating_filter_pause_keywords" id="rating_filter_pause_keywords" value="$rating_filter_pause_keywords" size="35"/>
+                            <input type="text" name="rating_filter_pause_keywords" id="rating_filter_pause_keywords" value="$rating_filter_pause_keywords"/>
                             <span class="desc">$T('explain-rating_filter_keywords')</span>
                         </p>
                     </div>
