@@ -192,6 +192,23 @@ def cat_convert(cat):
 ##############################################################################
 # sanitize_filename
 ##############################################################################
+_DEVICES = ('con', 'prn', 'aux', 'nul',
+            'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
+            'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9')
+
+def replace_win_devices(name):
+    ''' Remove reserved Windows device names from a name.
+        aux.txt ==> _aux.txt
+        txt.aux ==> txt.aux
+    '''
+    if name:
+        lname = name.lower()
+        for dev in _DEVICES:
+            if lname == dev or lname.startswith(dev + '.'):
+                name = '_' + name
+                break
+    return name
+
 if sabnzbd.WIN32:
     # the colon should be here too, but we'll handle that separately
     CH_ILLEGAL = r'\/<>?*|"'
@@ -280,6 +297,8 @@ def sanitize_foldername(name, limit=True):
     if limit and len(name) > maxlen:
         name = name[:maxlen]
 
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
+        name = replace_win_devices(name)
     return name
 
 
