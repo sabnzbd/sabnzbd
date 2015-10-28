@@ -60,7 +60,14 @@ def ssl_protocols():
 
 def ssl_version():
     if SSL:
-        return SSL.SSLeay_version(SSL.SSLEAY_VERSION)
+        try:
+            return SSL.SSLeay_version(SSL.SSLEAY_VERSION)
+        except AttributeError:
+            try:
+                import ssl
+                return ssl.OPENSSL_VERSION
+            except (ImportError, AttributeError):
+                return 'No OpenSSL installed'
     else:
         return None
 
