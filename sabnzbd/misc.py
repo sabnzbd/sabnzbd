@@ -1331,8 +1331,8 @@ def set_permissions(path, recursive=True):
     if not sabnzbd.WIN32:
         umask = cfg.umask()
         try:
-            # Make sure that user R is on
-            umask = int(umask, 8) | int('0400', 8)
+            # Make sure that user R+W+X is on
+            umask = int(umask, 8) | int('0700', 8)
             report = True
         except ValueError:
             # No or no valid permissions
