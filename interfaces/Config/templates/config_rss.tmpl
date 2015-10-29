@@ -19,9 +19,9 @@
                       <th>&nbsp;</th>
                     </tr>
                     <tr class="even">
-                        <td><input type="checkbox" name="enable" value="1" /></td>
-                        <td><input type="text" name="feed" size="20" value="$feed" /></td>
-                        <td><input type="url" name="uri" /></td>
+                        <td><input type="checkbox" name="enable" value="1" checked /></td>
+                        <td><input type="text" name="feed" class="smaller_input" value="$feed" /></td>
+                        <td><input type="text" name="uri" /></td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
                         </td>
@@ -110,7 +110,10 @@
 
     <div class="section">
         <div class="padTable">
-          <h2 class="nomargin activeRSS"><a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a></h2>
+          <h2 class="nomargin activeRSS">
+            <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; 
+            <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
+          </h2>
           <!--#if $error#-->
             <h3 class="darkred">$error</h3>
           <!--#end if#-->
@@ -539,11 +542,14 @@ function urlencode(str) {
         if ( confirm("$T('confirm')") ) {
             var whichFeed = \$(this).attr("rel");
             \$.ajax({
-              type: "POST",
-              url: "del_rss_feed",
-              data: {feed: whichFeed, session: "$session" }
+                type: "POST",
+                url: "del_rss_feed",
+                data: {feed: whichFeed, session: "$session" }
             }).done(function( msg ) {
-              location.reload();
+                // Let us leave!
+                formWasSubmitted = true;
+                formHasChanged = false;            
+                location.reload();
             });
         }
     });
@@ -551,23 +557,28 @@ function urlencode(str) {
     \$('.testFeed').click(function(){
         var whichFeed = \$(this).attr("rel");
         \$.ajax({
-          type: "POST",
-          url: "test_rss_feed",
-          data: {feed: whichFeed, session: "$session" }
+            type: "POST",
+            url: "test_rss_feed",
+            data: {feed: whichFeed, session: "$session" }
         }).done(function( msg ) {
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;            
             location = '?feed=' + urlencode(whichFeed);
-          // location.reload();
         });
     });
 
     \$('.toggleFeedCheckbox').click(function(){
         var whichFeed = \$(this).attr("rel");
         \$.ajax({
-          type: "POST",
-          url: "toggle_rss_feed",
-          data: {feed: whichFeed, session: "$session" }
+            type: "POST",
+            url: "toggle_rss_feed",
+            data: {feed: whichFeed, session: "$session" }
         }).done(function() {
-          location.reload();
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;            
+            location.reload();
         });
     });
 
