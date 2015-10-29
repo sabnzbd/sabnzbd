@@ -158,6 +158,7 @@ $(function() {
         self.allMessages = ko.observableArray([]);
         self.onQueueFinish = ko.observable('');
         self.speedHistory = [];
+        self.statusInfo = {};
         
         /***
             Dynamic functions
@@ -540,7 +541,7 @@ $(function() {
             // Remove specifc type of messages
             self.allMessages.remove(function(item) { return item.index == whatToRemove });
             // Now so we don't show again today
-            localStorageSetItem(whatToRemove, 'false')
+            localStorageSetItem(whatToRemove, Date.now())
         }
 
         // Update on speed-limit change
@@ -664,27 +665,33 @@ $(function() {
         }
 
         // Load status info
-        self.loadStatusInfo = function() {
+        self.loadStatusInfo = function(b, event) {
             // Reset
             self.hasStatusInfo(false)
+            
+            // Full refresh? Only on click and for the status-screen
+            var statusFullRefresh = (event != undefined) && $('#options_status').hasClass('active');
+            var strStatusUrl = statusFullRefresh ? 'status/' : 'status/?skip_dashboard=1';
 
             // Load the custom status info
-            callSpecialAPI('status/').then(function(data) {
-                // Already exists?
-                if(self.hasStatusInfo()) {
-                    ko.mapping.fromJS(ko.utils.parseJson(data), self.statusInfo);
-                } else {
-                    // Making the new object
-                    self.statusInfo = ko.mapping.fromJS(ko.utils.parseJson(data));
+            callSpecialAPI(strStatusUrl).then(function(data) {
+                // Parse JSON
+                parsedJSON = ko.utils.parseJson(data);
+                
+                // Making the new objects
+                self.statusInfo.status = ko.mapping.fromJS(parsedJSON.status);
+                
+                // Only when we do full refresh we have dashboard-info
+                if(statusFullRefresh) self.statusInfo.dashboard = ko.mapping.fromJS(parsedJSON.dashboard);
 
-                    // Only now we can subscribe to the log-level-changes!
-                    self.statusInfo.status.loglevel.subscribe(function(newValue) {
-                        // Update log-level
-                        callSpecialAPI('status/change_loglevel', {
-                            loglevel: newValue
-                        });
-                    })
-                }
+                // Only now we can subscribe to the log-level-changes!
+                self.statusInfo.status.loglevel.subscribe(function(newValue) {
+                    // Update log-level
+                    callSpecialAPI('status/change_loglevel', {
+                        loglevel: newValue
+                    });
+                })
+                
                 // Show again
                 self.hasStatusInfo(true)
 
@@ -701,7 +708,7 @@ $(function() {
             self.hasStatusInfo(false)
             // Run it and then display it
             callSpecialAPI('status/dashrefresh').then(function() {
-                self.loadStatusInfo()
+                self.loadStatusInfo(true, true)
             })
         }
 
@@ -725,13 +732,9 @@ $(function() {
             }).then(function() {
                 // Remove item and load status data
                 $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
-                // Pop from list
-                self.statusInfo.status.folders.remove(folder)
+                // Refresh
+                self.loadStatusInfo()
             })
-            // Remove message if now less than 3
-            if(self.statusInfo.status.folders().length < 4) {
-                self.clearMessages('lastOrphanedMsg')
-            }
         }
 
         // Orphaned folder deletion of all
@@ -745,8 +748,6 @@ $(function() {
                 });
                 // Refresh
                 self.loadStatusInfo()
-                // Remove message
-                self.clearMessages('lastOrphanedMsg')
             }     
         }
 
@@ -817,41 +818,42 @@ $(function() {
             self.servers = response.config.servers;
         })
         
-        // Check for Orphaned folders every day
-        if(localStorageGetItem('lastOrphanedCheck')*1 + (1000*3600*72) < Date.now()) {
-            // Update status-info
-            self.loadStatusInfo();
-            // Set check so we don't do it every page load
-            localStorageSetItem('lastOrphanedCheck', Date.now())
-        } 
+        // Orphaned folder check - Not for 5 days if user ignored it
+        var orphanMsg = localStorageGetItem('OrphanedMsg')*1+(1000*3600*24*5) < Date.now();
+        // Delay the check
+        if(orphanMsg) {
+            setTimeout(self.loadStatusInfo, 2000);
+        }
         
-        // We don't know exactly when it will finish, so we will wait 4 sec
-        setTimeout(function() {
-            // Done?
-            if(self.hasStatusInfo()) {
-                // Orphaned folders?
-                if(self.statusInfo.status.folders().length >= 3) {
-                    localStorageSetItem('lastOrphanedMsg', 'true')
+        // On any status load we check Orphaned folders 
+        self.hasStatusInfo.subscribe(function(finishedLoading) { 
+            // Loaded or just starting?
+            if(!finishedLoading) return;
+            
+            // Orphaned folders? If user clicked away we check again in 5 days
+            if(self.statusInfo.status.folders().length >= 3 && orphanMsg) {
+                // Check if not already there
+                if(!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
+                    self.allMessages.push({
+                        index: 'OrphanedMsg',
+                        type: 'INFO',
+                        text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click(); $(\'a[href=#options_orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
+                        css: 'info',
+                        clear: function() { self.clearMessages('OrphanedMsg')}
+                    });
                 }
+            } else {
+                // Remove any message, if it was there
+                self.allMessages.remove(function(item) {
+                   return item.index == 'OrphanedMsg';
+                })
             }
-                
-            // Show message (maybe it was there from before!)
-            if(localStorageGetItem('lastOrphanedMsg') == 'true') {
-                self.allMessages.push({
-                    index: 'lastOrphanedMsg',
-                    type: 'INFO',
-                    text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click(); $(\'a[href=#options_orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
-                    css: 'info',
-                    clear: function() { self.clearMessages('lastOrphanedMsg')}
-                });
-            }
-            // Timeout only when we don't already know there's a message
-        }, (localStorageGetItem('lastOrphanedMsg') != 'true') ? 4000 : 1)
+        })
         
         // Update message
-        if(localStorageGetItem('lastUpdateMsg') != 'false' && newRelease) {
+        if(newRelease) {
             self.allMessages.push({
-                index: 'lastUpdateMsg',
+                index: 'UpdateMsg',
                 type: 'INFO',
                 text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
                 css: 'info'

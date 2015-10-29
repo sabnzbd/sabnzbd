@@ -18,7 +18,7 @@
                         <!-- ko if: !hasStatusInfo() -->
                         <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
                         <!-- /ko -->
-                        <!-- ko if: hasStatusInfo() -->
+                        <!-- ko if: hasStatusInfo() && statusInfo.hasOwnProperty('dashboard') -->
                         <div class="row">
                             <div class="col-sm-5">$T('dashboard-localIP4')</div>
                             <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.localipv4(), css: { 'options-bad-status' : !statusInfo.dashboard.localipv4() }"></div>

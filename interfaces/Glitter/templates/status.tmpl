@@ -43,8 +43,9 @@
                 <!--#end for#-->
             <!--#end if#-->
         ]
-    },
-    "dashboard": {
+    }
+    <!--#if $varExists('localipv4')#-->
+    ,"dashboard": {
         "localipv4": "$localipv4",
         "publicipv4": "$publicipv4",
         "ipv6": "$ipv6",
@@ -60,6 +61,5 @@
         <!--#if not $completedirspeed#--><!--#set $completedirspeed = -1#--><!--#end if#-->
         "completedirspeedbad": <!--#if 0 < float($completedirspeed) < 5#-->true<!--#else#-->false<!--#end if#-->
     }
+    <!--#end if#-->
 }
-
-

@@ -2427,50 +2427,49 @@ class Status(object):
 
         header['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
         header['configfn'] = xml_name(config.get_filename())
-
+    
         # Dashboard: Begin
-        from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
-        header['localipv4'] = localipv4()
-        header['publicipv4'] = publicipv4()
-        header['ipv6'] = ipv6()
-        # Dashboard: DNS-check
-        try:
-            import socket
-            socket.gethostbyname('www.google.com')
-            header['dnslookup'] = "OK"
-        except:
-            header['dnslookup'] = None
-
-        # Dashboard: Speed of System
-        from sabnzbd.utils.getperformance import getpystone, getcpu
-        header['pystone'] = getpystone()
-        header['cpumodel'] = getcpu()
-        # Dashboard: Speed of Download directory:
-        header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
-        try:
-            sabnzbd.downloaddirspeed  # The persistent var @UndefinedVariable
-        except:
-            # does not yet exist, so create it:
-            sabnzbd.downloaddirspeed = -1  # -1 means ... not yet determined
-        header['downloaddirspeed'] = sabnzbd.downloaddirspeed
-        # Dashboard: Speed of Complete directory:
-        header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
-        try:
-            sabnzbd.completedirspeed  # The persistent var @UndefinedVariable
-        except:
-            # does not yet exist, so create it:
-            sabnzbd.completedirspeed = -1  # -1 means ... not yet determined
-        header['completedirspeed'] = sabnzbd.completedirspeed
-
-        try:
-            sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
-        except:
-            sabnzbd.dashrefreshcounter = 0
-        header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
-        # Dashboard: End
+        if not kwargs.get('skip_dashboard'):
+            from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
+            header['localipv4'] = localipv4()
+            header['publicipv4'] = publicipv4()
+            header['ipv6'] = ipv6()
+            # Dashboard: DNS-check
+            try:
+                import socket
+                socket.gethostbyname('www.google.com')
+                header['dnslookup'] = "OK"
+            except:
+                header['dnslookup'] = None
+    
+            # Dashboard: Speed of System
+            from sabnzbd.utils.getperformance import getpystone, getcpu
+            header['pystone'] = getpystone()
+            header['cpumodel'] = getcpu()
+            # Dashboard: Speed of Download directory:
+            header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+            try:
+                sabnzbd.downloaddirspeed  # The persistent var @UndefinedVariable
+            except:
+                # does not yet exist, so create it:
+                sabnzbd.downloaddirspeed = -1  # -1 means ... not yet determined
+            header['downloaddirspeed'] = sabnzbd.downloaddirspeed
+            # Dashboard: Speed of Complete directory:
+            header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+            try:
+                sabnzbd.completedirspeed  # The persistent var @UndefinedVariable
+            except:
+                # does not yet exist, so create it:
+                sabnzbd.completedirspeed = -1  # -1 means ... not yet determined
+            header['completedirspeed'] = sabnzbd.completedirspeed
+    
+            try:
+                sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
+            except:
+                sabnzbd.dashrefreshcounter = 0
+            header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
 
         header['servers'] = []
-
         servers = sorted(Downloader.do.servers[:], key=lambda svr: '%02d%s' % (svr.priority, svr.displayname.lower()))
         for server in servers:
             busy = []
