@@ -287,13 +287,23 @@
         });
     });
     \$('.delServer').click(function(){
-        if( confirm("$T('Plush-confirm')") )
+        if( confirm("$T('Plush-confirm')") ) {
             \$(this).parents('form:first').attr('action','delServer').submit();
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location.reload();
+        }
         return false;
     });
     \$('.clrServer').click(function(){
-        if( confirm("$T('Plush-confirm')") )
+        if( confirm("$T('Plush-confirm')") ) {
             \$(this).parents('form:first').attr('action','clrServer').submit();
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location.reload();
+        }
         return false;
     });
     \$('.toggleServerCheckbox').click(function(){
@@ -306,7 +316,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-          location.reload();
+            location.reload();
         });
     });
 });
