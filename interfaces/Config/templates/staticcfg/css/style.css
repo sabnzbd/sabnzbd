@@ -1808,6 +1808,9 @@ h2.activeRSS {
 .activeRSS a:hover {
     color: #4b4742;
 }
+.activeRSS a:first-of-type {
+    text-decoration: underline!important;
+}
 .favicon {
     background-position: center center!important;
     opacity: 1;
@@ -1829,9 +1832,6 @@ h2.activeRSS {
 #subscriptions td {
     border: 0 none;
     padding-top: .4em;
-}
-#subscriptions {
-    width: 620px;
 }
 #subscriptions .chk {
     padding: 5px;
@@ -1867,13 +1867,24 @@ h2.activeRSS {
 }
 .feed-row div {
     padding-right: 10px;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-.tab-content {
-    background-color: #f8f4e7;
+.tab-content .catTable {
+    width: 100%;
+}
+.tab-content .catTable tbody {
+    border: 1px solid #ddd;
+}
+.tab-content .catTable td {
+    line-height: 2em;
+}
+.tab-content .catTable tr:hover td {
+    background-color: #F2F2F2;
 }
 span.count {
-    border-radius: 8px !important;
-    background: none repeat scroll 0 0 #aca79c;
+    background-color: #6E6E6E;
     color: #fff;
     margin: -3px 0 0 5px;
     padding: 1px 10px;
@@ -1902,25 +1913,19 @@ ul.tabs a {
     padding: 5px 30px;
     text-decoration: none;
     border: 1px solid #dfdede;
-    background-color: #f1ede0;
-    color: #777;
+    border-bottom: 0;
+    color: black;
     margin-right: 2px;
     position: relative;
     top: 1px;
     outline: 0;
-    -webkit-border-top-left-radius: 4px;
-    -webkit-border-top-right-radius: 4px;
-    -moz-border-radius-topleft: 4px;
-    -moz-border-radius-topright: 4px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
 }
 ul.tabs a:hover {
-    background-color: #fcf8eb;
+    background-color: #eee;
     color: #333;
 }
 ul.tabs a.current {
-    background-color: #f8f4e7;
+    background-color: #eee;
     border-bottom: 1px solid #f8f4e7;
     color: #000;
     cursor: default;
