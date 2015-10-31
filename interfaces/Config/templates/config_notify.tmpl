@@ -536,11 +536,13 @@
 					<input type="text" name="pushbullet_apikey" id="pushbullet_apikey" value="$pushbullet_apikey" />
 					<span class="desc">$T('explain-pushbullet_apikey')</span>
 				</div>
+				<!--#if 0#-->
 				<div class="field-pair">
 					<label class="config" for="pushbullet_device">$T('opt-pushbullet_device')</label>
 					<input type="text" name="pushbullet_device" id="pushbullet_device" value="$pushbullet_device" />
 					<span class="desc">$T('explain-pushbullet_device')</span>
 				</div>
+				<!--#end if#-->
 				<div class="field-pair alt">
 					<label class="config" for="pushbullet_prio_startup">$T($notify_texts['startup'])</label>
 					<input type="checkbox" name="pushbullet_prio_startup" id="pushbullet_prio_startup" value="1" <!--#if int($pushbullet_prio_startup) > 0 then 'checked="checked"' else ""#--> />
