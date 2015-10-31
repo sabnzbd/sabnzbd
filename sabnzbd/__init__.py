@@ -33,6 +33,7 @@ import time
 import socket
 import cherrypy
 import sys
+import re
 from threading import RLock, Lock, Condition, Thread
 try:
     import sleepless
@@ -292,6 +293,19 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     sabnzbd.EXTERNAL_IPV6 = test_ipv6()
     logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
+
+    # One time conversion "speedlimit" in schedules.
+    if not cfg.sched_converted():
+        schedules = cfg.schedules()
+        newsched = []
+        for sched in schedules:
+            if 'speedlimit' in sched:
+                newsched.append(re.sub(r'(speedlimit \d+)$', r'\1K', sched))
+            else:
+                newsched.append(sched)
+        cfg.schedules.set(newsched)
+        cfg.sched_converted.set(True)
+
 
     if check_repair_request():
         repair = 2

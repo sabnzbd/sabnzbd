@@ -158,6 +158,7 @@ rss_filenames = OptionBool('misc', 'rss_filenames', False)
 rss_odd_titles = OptionList('misc', 'rss_odd_titles', ['nzbindex.nl/', 'nzbindex.com/', 'nzbclub.com/'])
 
 schedules = OptionList('misc', 'schedlines')
+sched_converted = OptionBool('misc', 'sched_converted', False)
 
 enable_tv_sorting = OptionBool('misc', 'enable_tv_sorting', False)
 tv_sort_string = OptionStr('misc', 'tv_sort_string')
