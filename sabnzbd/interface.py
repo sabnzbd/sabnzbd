@@ -1209,6 +1209,11 @@ def orphan_delete(kwargs):
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         remove_all(path, recursive=True)
 
+def orphan_delete_all():
+    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False);
+    for path in paths:
+        kwargs = {'name': path}
+        orphan_delete(kwargs)
 
 def orphan_add(kwargs):
     path = kwargs.get('name')
@@ -2602,6 +2607,14 @@ class Status(object):
         if msg:
             return msg
         orphan_delete(kwargs)
+        raise dcRaiser(self.__root, kwargs)
+        
+    @cherrypy.expose
+    def delete_all(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            return msg
+        orphan_delete_all()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose

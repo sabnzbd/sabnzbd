@@ -740,14 +740,8 @@ $(function() {
         // Orphaned folder deletion of all
         self.removeAllOrphaned = function() {
             if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
-                // Do them all
-                ko.utils.arrayForEach(self.statusInfo.status.folders(), function(folder) {
-                    callSpecialAPI("status/delete", {
-                        name: folder.folder()
-                    })
-                });
-                // Refresh
-                self.loadStatusInfo()
+                // Delete them all
+                callSpecialAPI("status/delete_all").then(self.loadStatusInfo)
             }     
         }
 
