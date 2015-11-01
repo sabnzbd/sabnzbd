@@ -122,6 +122,8 @@ def init():
             rss_planned = True
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
+        elif action_name == 'remove_completed':
+            action = sabnzbd.api.history_remove_completed
         elif action_name == 'enable_quota':
             action = sabnzbd.bpsmeter.BPSMeter.do.set_status
             arguments = [True]

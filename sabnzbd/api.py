@@ -2077,3 +2077,11 @@ def history_remove_failed():
     history_db.remove_failed()
     history_db.close()
     del history_db
+    
+def history_remove_completed():
+    """ Remove all completed jobs from history """
+    logging.info('Scheduled removal of all completed jobs')
+    history_db = get_history_handle()
+    history_db.remove_completed()
+    history_db.close()
+    del history_db

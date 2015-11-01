@@ -63,6 +63,7 @@ SKIN_TEXT = {
     'sch-scan_folder'    : TT('Scan watched folder'), #:  #: Config->Scheduler
     'sch-rss_scan'       : TT('Read RSS feeds'), #:  #: Config->Scheduler
     'sch-remove_failed'  : TT('Remove failed jobs'), #: Config->Scheduler
+    'sch-remove_completed': TT('Remove completed jobs'), #: Config->Scheduler
     'sch-pause_all_low'  : TT('Pause low prioirty jobs'), #: Config->Scheduler
     'sch-pause_all_normal':TT('Pause normal prioirty jobs'), #: Config->Scheduler
     'sch-pause_all_high' : TT('Pause high prioirty jobs'), #: Config->Scheduler
