@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+ 0.8.0Beta2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Improvements in IPv6 handling
+- Extension of SSL protocols (where supported)
+- Many improvemnts in the Glitter skin
+- On Windows, Season Sort often failed
+- Speedlimiting can now be absolute or in percentage
+- Scheduler action to remove completed history items
+-------------------------------------------------------------------------------
  0.8.0Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555

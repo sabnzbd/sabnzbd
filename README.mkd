@@ -1,5 +1,13 @@
-Release Notes  -  SABnzbd 0.8.0Beta1
+Release Notes  -  SABnzbd 0.8.0Beta2
 ====================================
+
+## Changes in Beta2
+- Improvements in IPv6 handling
+- Extension of SSL protocols (where supported)
+- Many improvemnts in the Glitter skin
+- On Windows, Season Sort often failed
+- Speedlimiting can now be absolute or in percentage
+- Scheduler action to remove completed history items
 
 ## Changes in Beta1
 - Glitter is now the default skin
