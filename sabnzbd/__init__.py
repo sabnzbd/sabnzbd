@@ -557,8 +557,7 @@ NZB_LOCK = Lock()
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
-    return path and sabnzbd.cfg.no_dupes() and \
-           os.path.exists(os.path.join(path, filename + '.gz'))
+    return path and os.path.exists(os.path.join(path, filename + '.gz'))
 
 
 def backup_nzb(filename, data):

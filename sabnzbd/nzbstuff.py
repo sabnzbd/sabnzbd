@@ -1552,6 +1552,9 @@ class NzbObject(TryList):
         if no_dupes:
             res = history_db.have_md5sum(self.md5sum)
             logging.debug('Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s', self.filename, self.md5sum, res)
+            if not res and cfg.backup_for_duplicates():
+                res = sabnzbd.backup_exists(self.filename)
+                logging.debug('Dupe checking NZB against backup: filename=%s, result=%s', self.filename, res)
         # dupe check off nzb filename
         if not res and no_series_dupes:
             series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
