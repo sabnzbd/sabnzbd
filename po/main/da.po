@@ -207,11 +207,11 @@ msgstr "Afbrudt, uønsket extension fundet"
 
 #: sabnzbd/assembler.py:142 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "ADVARSEL: Pause job '% s' på grund af rating (%s)"
+msgstr "ADVARSEL: Pause job \"%s\" på grund af rating (%s)"
 
 #: sabnzbd/assembler.py:145 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "ADVARSEL: Afbrudt job '% s' på grund af rating (%s)"
+msgstr "ADVARSEL: Afbrudt job \"%s\" på grund af rating (%s)"
 
 #: sabnzbd/assembler.py:146
 msgid "Aborted, rating filter matched (%s)"
@@ -368,7 +368,7 @@ msgstr "Server %s vil blive ignoreret for i %s minutter"
 
 #: sabnzbd/downloader.py:426 [Error message]
 msgid "Failed to initialize %s@%s with reason: %s"
-msgstr "Det lykkedes ikke at initialisere %s@% s med begrundelse %s"
+msgstr "Det lykkedes ikke at initialisere %s@%s med begrundelse %s"
 
 #: sabnzbd/downloader.py:557 # sabnzbd/downloader.py:558 [Error message]
 msgid "Too many connections to server %s"
