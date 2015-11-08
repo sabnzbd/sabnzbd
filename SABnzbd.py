@@ -103,7 +103,7 @@ import sabnzbd.zconfig
 
 from threading import Thread
 
-LOG_FLAG = False        # Global for this module, signalling loglevel change
+LOG_FLAG = False        # Global for this module, signaling loglevel change
 
 _first_log = True
 
@@ -498,7 +498,7 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.warning(T('unrar binary... NOT found'))
+        logging.warning(T('unrar binary... NOT found!'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
@@ -525,7 +525,7 @@ def print_modules():
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
     else:
-        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
+        logging.info("pyOpenSSL... NOT found! - Try apt-get install python-pyopenssl (SSL is optional)")
 
 
 def all_localhosts():

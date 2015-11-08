@@ -107,7 +107,7 @@ def api_handler(kwargs):
 
 def _api_get_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
-    res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
+    unused, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
 
 
@@ -277,14 +277,19 @@ def _api_queue_rating(output, value, kwargs):
     """ API: accepts output, value(=nzo_id), type, setting, detail """
     vote_map = {'up': Rating.VOTE_UP, 'down': Rating.VOTE_DOWN}
     flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED, 'other': Rating.FLAG_OTHER, 'comment': Rating.FLAG_COMMENT}
-    type = kwargs.get('type')
+    content_type = kwargs.get('type')
     setting = kwargs.get('setting')
     if value:
         try:
-            video = setting if type == 'video' and setting != "-" else None
-            audio = setting if type == 'audio' and setting != "-" else None
-            vote = vote_map[setting] if type == 'vote' else None
-            flag = flag_map[setting] if type == 'flag' else None
+            video, audio, vote, flag = None
+            if content_type == 'video' and setting != "-":
+                video = setting
+            if content_type == 'audio' and setting != "-":
+                audio = setting
+            if content_type == 'vote':
+                vote = vote_map[setting]
+            if content_type == 'flag':
+                flag = flag_map[setting]
             if cfg.rating_enable():
                 Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
             return report(output)
@@ -699,7 +704,7 @@ def _api_reset_quota(name, output, kwargs):
 
 def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
-    logging.info("Sending testmail")
+    logging.info("Sending test email")
     pack = {}
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
@@ -793,7 +798,7 @@ def _api_config_get_speedlimit(output, kwargs):
 
 
 def _api_config_set_colorscheme(output, kwargs):
-    """ API: accepts output, value(=color for primary), value2(=color for secundary) """
+    """ API: accepts output, value(=color for primary), value2(=color for secondary) """
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
     if value:
@@ -828,7 +833,7 @@ def _api_config_set_nzbkey(output, kwargs):
 
 
 def _api_config_test_server(output, kwargs):
-    """ API: accepts output, server-parms """
+    """ API: accepts output, server-params """
     result, msg = test_nntp_server_dict(kwargs)
     response = {'result': result, 'message': msg}
     if output:
@@ -1004,8 +1009,8 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
 class xml_factory(object):
     """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
         Current limitations:
-            In Two tiered lists hardcoded name of "item": <cat_list><item> </item></cat_list>
-            In Three tiered lists hardcoded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
+            In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
+            In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
 
     def __init__(self):
@@ -1127,7 +1132,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
-    if cookie.has_key('queue_details'):
+    if 'queue_details' in cookie:
         info['queue_details'] = str(int_conv(cookie['queue_details'].value))
     else:
         info['queue_details'] = '0'
@@ -1358,7 +1363,7 @@ def fast_queue():
 
 
 def qstatus_data():
-    """Build up the queue status as a nested object and output as a JSON object """
+    """ Build up the queue status as a nested object and output as a JSON object """
 
     qnfo = NzbQueue.do.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
@@ -1806,7 +1811,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     else:
         details_show_all = False
     cookie = cherrypy.request.cookie
-    if cookie.has_key('history_verbosity'):
+    if 'history_verbosity' in cookie:
         k = cookie['history_verbosity'].value
         c_path = cookie['history_verbosity']['path']
         c_age = cookie['history_verbosity']['max-age']
@@ -1844,7 +1849,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
-        if not item.has_key('loaded'):
+        if 'loaded' not in item:
             item['loaded'] = False
 
         path = platform_encode(item.get('path', ''))
@@ -2077,7 +2082,8 @@ def history_remove_failed():
     history_db.remove_failed()
     history_db.close()
     del history_db
-    
+
+
 def history_remove_completed():
     """ Remove all completed jobs from history """
     logging.info('Scheduled removal of all completed jobs')
