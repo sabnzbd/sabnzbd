@@ -208,7 +208,7 @@ $(function() {
         self.hasHistory = ko.computed(function() {
             // We also 'have history' if we can't find any results of the search or there are no failed ones
             return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed())
-        });
+        }).extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 100 }});
         
         self.hasWarnings = ko.computed(function() {
             return(self.allWarnings().length > 0)
