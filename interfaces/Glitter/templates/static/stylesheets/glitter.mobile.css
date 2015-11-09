@@ -205,8 +205,8 @@ tr.queueitem>td:first-child>a {
   transform: translate(0, 0);
 }
 
-.close {
-    font-size: 30px;
+.modal-header .close {
+    font-size: 33px;
     line-height: 0.8em;
     opacity: 1 !important;
     margin-right: 4px !important;

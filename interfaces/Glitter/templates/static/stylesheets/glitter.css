@@ -57,7 +57,7 @@ h2 {
 }
 
 .navbar-collapse.in .dropdown-menu a,
- .navbar-collapse.in .dropdown-menu a:hover {
+.navbar-collapse.in .dropdown-menu a:hover {
     color: black !important;
 }
 
@@ -1131,10 +1131,14 @@ tr.queueitem>td:first-child>a {
     color: white !important;
     margin-right: 1em;
     margin-top: 4px;
-    font-size: 0.9em;
-    opacity: 0.9;
+    opacity: 1;
+    outline: 0;
 }
 
+#modal_options .modal-header a.rotate-refresh span {
+    transition: all 1s;
+    transform: rotate(360deg);
+}
 
 #modal_options .options-function-box .btn,
 #modal_options .options-function-box select {
@@ -1648,6 +1652,7 @@ a:focus {
 .nav>li>a {
     padding-left: 10px;
     padding-right: 10px;
+    outline: 0;
 }
 
 .collapsing li {
@@ -1775,9 +1780,12 @@ legend {
 
 .modal-header .close {
     margin: 0;
-    opacity: 0.5;
+    opacity: 0.7;
     background: transparent;
     color: white;
+    text-shadow: none !important;
+    font-weight: normal !important;
+    font-size: 28px;
 }
 
 .modal-header img {
