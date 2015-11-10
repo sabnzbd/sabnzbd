@@ -143,8 +143,9 @@ $(function() {
         self.speedMetric = ko.observable();
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
-        self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
+        self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
+        self.speedLimitAbs = ko.observable(0); // So we can also handle steps of smaller than 1%
         self.downloadsPaused = ko.observable(false);
         self.timeLeft = ko.observable("0:00");
         self.diskSpaceLeft1 = ko.observable();
@@ -168,21 +169,39 @@ $(function() {
         self.speedLimitText = ko.computed(function() {
             // Set?
             if(!self.bandwithLimit()) return;
-
-            // Only the number
-            bandwithLimitNumber = parseInt(self.bandwithLimit());
-            bandwithLimitNumber = (bandwithLimitNumber * (self.speedLimit() / 100)).toFixed(1);
-
+            
             // The text 
             bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
-
-            // Fix it for lower than 1MB/s
-            if(bandwithLimitText == 'M' && bandwithLimitNumber < 1.025) {
-                bandwithLimitText = 'K';
-                bandwithLimitNumber = Math.round(bandwithLimitNumber * 1024);
+            
+            // Only the number
+            bandwithLimitNumber = parseInt(self.bandwithLimit());
+            
+            // Get limit in KB/s
+            if(bandwithLimitText == 'M') bandwithLimitNumber = bandwithLimitNumber*1024*1024;
+            if(bandwithLimitText == 'G') bandwithLimitNumber = bandwithLimitNumber*1024*1024*1024;
+            
+            // If no speedlimit, set 100%
+            speedLimitAbs = parseInt(self.speedLimitAbs());
+            if(self.speedLimitAbs() == 0) speedLimitAbs = bandwithLimitNumber;
+            
+            // Convert for percentage
+            bandwithLimitPerc = speedLimitAbs/parseInt(bandwithLimitNumber)*100;
+            
+            // Format the speedlimit number
+            if(speedLimitAbs > 1024*1024) {
+                speedLimitNumber = speedLimitAbs/1024/1024;
+                speedLimitNumberText = 'M'
+            } else {
+                speedLimitNumber = speedLimitAbs/1024;
+                speedLimitNumberText = 'K'
             }
+            
+            // Trick to only get decimal-point when needed
+            bandwithLimitPerc = Math.round(bandwithLimitPerc*10)/10;
+            speedLimitNumber = Math.round(speedLimitNumber*10)/10; 
+
             // Show text
-            return bandwithLimitNumber + ' ' + (self.speedMetrics[bandwithLimitText] ? self.speedMetrics[bandwithLimitText] : "KB/s");
+            return bandwithLimitPerc + '% (' + speedLimitNumber + ' ' + self.speedMetrics[speedLimitNumberText] + ')';
         });
 
         // Dynamic speed text function
@@ -315,7 +334,9 @@ $(function() {
             ***/
             // Nothing = 100%
             response.queue.speedlimit = response.queue.speedlimit == '' ? 100 : response.queue.speedlimit;
+            response.queue.speedlimit_abs = response.queue.speedlimit_abs == '' ? 0 : response.queue.speedlimit_abs;
             self.speedLimitInt(response.queue.speedlimit)
+            self.speedLimitAbs(response.queue.speedlimit_abs)
 
             // Only update from external source when user isn't doing input
             if(!$('.speedlimit-dropdown .btn-group .btn-group').is('.open')) {
@@ -561,7 +582,14 @@ $(function() {
 
         // Clear speedlimit
         self.clearSpeedLimit = function() {
-            self.speedLimit(100);
+            // Send call to override speedlimit
+            callAPI({
+                mode: "config",
+                name: "speedlimit",
+                value: 100
+            })
+            self.speedLimitInt(100)
+            self.speedLimit(100)
         }
 
         // Shutdown options
