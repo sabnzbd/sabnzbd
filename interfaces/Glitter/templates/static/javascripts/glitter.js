@@ -1924,6 +1924,7 @@ $(function() {
         self.modalNZBId = ko.observable();
         self.modalTitle = ko.observable();
         self.modalPassword = ko.observable();
+        self.modalProgressColor = ko.observable(false);
 
         // Load the function and reset everything
         self.loadFiles = function(queue_item) {
@@ -1945,6 +1946,11 @@ $(function() {
             self.modalNZBId(self.currentItem.id)
             self.modalTitle(passwordSplit[0 + passwordSplitExtra])
             self.modalPassword(passwordSplit[1 + passwordSplitExtra])
+            
+            // Set color in case we are still checking
+            if(self.currentItem.status() == 'Checking') {
+                self.modalProgressColor(true)
+            }
 
             // Hide ok button and reset
             $('#modal_item_filelist .glyphicon-floppy-saved').hide()

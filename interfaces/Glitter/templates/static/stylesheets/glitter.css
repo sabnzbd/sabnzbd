@@ -636,6 +636,14 @@ tr.queueitem>td:first-child>a {
     background-color: #9DDB72;
 }
 
+.progress-bar-info-checking {
+    background-color: #58A9FA;
+}
+
+.progress-bar-info-checking small {
+    color: #5D5D5D !important;
+}
+
 .multioperations-selector {
     padding-left: 10px;
     border: 1px solid #F0F0F0;
@@ -1130,7 +1138,7 @@ tr.queueitem>td:first-child>a {
     float: right;
     color: white !important;
     margin-right: 1em;
-    margin-top: 4px;
+    margin-top: 2px;
     opacity: 1;
     outline: 0;
 }
@@ -1779,7 +1787,6 @@ legend {
 }
 
 .modal-header .close {
-    margin: 0;
     opacity: 0.7;
     background: transparent;
     color: white;
