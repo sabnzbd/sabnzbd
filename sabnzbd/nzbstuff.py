@@ -675,6 +675,12 @@ class NzbObject(TryList):
         wdir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         adir = os.path.join(wdir, JOB_ADMIN)
 
+        # Check against identical checksum or series/season/episode
+        if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
+            duplicate, series = self.has_duplicates()
+        else:
+            duplicate = series = 0
+
         if reuse:
             remove_all(adir, 'SABnzbd_nz?_*')
             remove_all(adir, 'SABnzbd_article_*')
@@ -726,12 +732,6 @@ class NzbObject(TryList):
 
             sabnzbd.backup_nzb(filename, nzb)
             sabnzbd.save_compressed(adir, filename, nzb)
-
-        # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
-            duplicate, series = self.has_duplicates()
-        else:
-            duplicate = series = 0
 
         if not self.files and not reuse:
             self.purge_data(keep_basic=False)
