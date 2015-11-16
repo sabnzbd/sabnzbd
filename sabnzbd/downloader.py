@@ -280,11 +280,15 @@ class Downloader(Thread):
 
     @synchronized_CV
     def limit_speed(self, value):
+        ''' Set the actual download speed in Bytes/sec
+            When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
+            When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
+        '''
         if value:
             mx = cfg.bandwidth_max.get_int()
-            if '%' in str(value) or (int_conv(value) > 0 and int_conv(value) < 101):
+            if '%' in str(value) or (from_units(value) > 0 and from_units(value) < 101):
                 limit = value.strip(' %')
-                self.bandwidth_perc = int_conv(limit)
+                self.bandwidth_perc = from_units(limit)
                 if mx:
                     self.bandwidth_limit = mx * self.bandwidth_perc / 100
                 else:
@@ -292,12 +296,12 @@ class Downloader(Thread):
             else:
                 self.bandwidth_limit = from_units(value)
                 if mx:
-                    self.bandwidth_perc = int(self.bandwidth_limit / mx * 100)
+                    self.bandwidth_perc = self.bandwidth_limit / mx * 100
                 else:
                     self.bandwidth_perc = 100
         else:
             self.speed_set()
-        logging.info("Bandwidth limit set to %s", value)
+        logging.info("Bandwidth limit set to %s%%", value)
 
     def get_limit(self):
         return self.bandwidth_perc

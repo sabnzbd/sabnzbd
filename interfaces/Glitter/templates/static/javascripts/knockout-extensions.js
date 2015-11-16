@@ -463,10 +463,12 @@ ko.bindingHandlers.slider = {
     init: function(element, valueAccessor, allBindingsAccessor) {
         var options = allBindingsAccessor().sliderOptions || {};
         $(element).slider(options);
+        /* This created many update signallings when nothing changed
         ko.utils.registerEventHandler(element, "slidechange", function(event, ui) {
             var observable = valueAccessor();
             observable(ui.value);
-        });
+            console.log('change'+ui.value)
+        });*/
         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
             $(element).slider("destroy");
         });

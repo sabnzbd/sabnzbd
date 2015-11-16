@@ -1157,7 +1157,7 @@ function loadingJSON(){
   <li><a href="http://sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
 </ul>
 <!--<input type="checkbox" name="enable_speedlimit" />-->
-<span class="small">$T('speedLimit'): </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value+'&session='+session);">
+<span class="small">$T('speedLimit'): </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value+'&session='+session);"> %
 <br /><br />
 <center>
 <img src="static/images/drive.png" title="Incomplete" /> <span class="small"><span id="ds1">${diskspace1}</span>GB</span><br />

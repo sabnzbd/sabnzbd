@@ -794,7 +794,7 @@ def _api_config_speedlimit(output, kwargs):
 
 def _api_config_get_speedlimit(output, kwargs):
     """ API: accepts output """
-    return report(output, keyword='speedlimit', data=int(Downloader.do.get_limit()))
+    return report(output, keyword='speedlimit', data=Downloader.do.get_limit())
 
 
 def _api_config_set_colorscheme(output, kwargs):
@@ -1388,6 +1388,10 @@ def qstatus_data():
         state = Status.PAUSED
     elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
         state = Status.DOWNLOADING
+    
+    speed_limit = Downloader.do.get_limit()
+    if speed_limit <= 0:
+        speed_limit = 100
 
     status = {
         "state": state,
@@ -1405,7 +1409,7 @@ def qstatus_data():
         "diskspace2": diskfree(cfg.complete_dir.get_path()),
         "timeleft": calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
         "loadavg": loadavg(),
-        "speedlimit": str(Downloader.do.get_limit() or '100'),
+        "speedlimit": "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit),
         "speedlimit_abs": str(Downloader.do.get_limit_abs() or ''),
         "jobs": jobs
     }
@@ -1644,7 +1648,7 @@ def build_header(prim, webdir='', search=None):
                'uptime': uptime, 'color_scheme': color}
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
-        speed_limit = '100'
+        speed_limit = 100
     speed_limit_abs = Downloader.do.get_limit_abs()
     if speed_limit_abs <= 0:
         speed_limit_abs = ''
@@ -1660,7 +1664,8 @@ def build_header(prim, webdir='', search=None):
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.download_dir.get_path())
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
     header['loadavg'] = loadavg()
-    header['speedlimit'] = "%s" % speed_limit
+    # Special formatting so only decimal points when needed
+    header['speedlimit'] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
     header['speedlimit_abs'] = "%s" % speed_limit_abs
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
