@@ -4,7 +4,7 @@
 
   jQuery(function($) {
     $.plush.queuenoofslots = $noofslots;
-    $.plush.SetQueueSpeedLimit('$speedlimit');
+    $.plush.SetQueueSpeedLimit('$speedlimit', '$speedlimit_abs');
     $.plush.SetQueueFinishAction('$finishaction');
     $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'").replace('\\','\\\\') #-->");
     $.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');

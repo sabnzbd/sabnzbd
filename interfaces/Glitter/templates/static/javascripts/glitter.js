@@ -178,6 +178,12 @@ $(function() {
             
             // Trick to only get decimal-point when needed
             speedLimitNumber = Math.round(speedLimitNumber*10)/10;
+            
+            // Fix it for lower than 1MB/s
+            if(bandwithLimitText == 'M' && speedLimitNumber < 1) {
+                bandwithLimitText = 'K';
+                speedLimitNumber = Math.round(speedLimitNumber * 1024);
+            }
 
             // Show text
             return self.speedLimit() + '% (' + speedLimitNumber + ' ' + self.speedMetrics[bandwithLimitText] + ')';

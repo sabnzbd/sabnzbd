@@ -82,11 +82,19 @@
         <ul>
           <li class="main_sprite_container sprite_q_menu_pausefor">
             <ul>
-              <li><span title="$T('Example'): 28%, 500K (=500KB/s), 5M (=5MB/s)">$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="4" />&nbsp;&nbsp;% ($T('or') K/M)</span></li>
-              <li><span>
-                <input type="button" value="$T('Plush-reset')" id="maxSpeed-disable" class="float-right" />
-                <input type="button" value="$T('button-save')" id="maxSpeed-enable" class="float-right" />
-              </span></li>
+              <li>
+                $T('Plush-maxSpeed'):&nbsp;&nbsp;
+                <input type="text" id="maxSpeed-option" size="4" /> 
+                <select id="maxSpeed-label">
+                    <option value="%">%</option>
+                    <option value="K">KB/s</option>
+                    <option value="M">MB/s</option>
+                </select>
+              </li>
+              <li>
+                <input type="button" value="$T('Plush-reset')" id="maxSpeed-disable" />
+                <input type="button" value="$T('button-save')" id="maxSpeed-enable" />
+              </li>
             </ul>
         </li>
         </ul>

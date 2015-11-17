@@ -33,7 +33,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-5">$T('dashboard-NameserverDNS')</div>
-                            <div class="col-sm-7" data-bind="text: statusInfo.dashboard.dnslookup, css: { 'options-bad-status' : (statusInfo.dashboard.dnslookup() != 'OK') }"></div>
+                            <div class="col-sm-7" data-bind="text: !statusInfo.dashboard.dnslookup() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.dnslookup(), css: { 'options-bad-status' : (statusInfo.dashboard.dnslookup() != 'OK') }"></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-5">$T('dashboard-downloadDirSpeed')</div>

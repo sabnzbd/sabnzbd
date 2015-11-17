@@ -301,7 +301,7 @@ class Downloader(Thread):
                     self.bandwidth_perc = 100
         else:
             self.speed_set()
-        logging.info("Bandwidth limit set to %s%%", value)
+        logging.info("Speed limit set to %s B/s", self.bandwidth_limit)
 
     def get_limit(self):
         return self.bandwidth_perc

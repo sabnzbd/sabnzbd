@@ -562,7 +562,6 @@ body {
 }
 .queue-buttons ul li {
   float: left;
-  cursor:pointer;
   display:block;
   height:21px;
   position:relative;
@@ -584,8 +583,8 @@ body {
   margin:0;
   position:absolute;
   top:21px;
-  width:220px;
   z-index:100;
+  color:#aaa;
 }
 
 /* These are to make the menu width language sensitive,
@@ -611,9 +610,21 @@ body {
   margin:0;
   text-indent:0;
   width:100%;
+  padding-left: 5px;
 }
+
 .queue-buttons ul li ul li:first-child{
   border:0;
+}
+#speed-wrapper ul li ul li {
+    padding: 5px;
+}
+#speed-wrapper ul li ul li:last-child {
+    text-align: center;
+}
+#speed-wrapper ul li ul li:first-child input {
+    text-align: center;
+    vertical-align: bottom;
 }
 .queue-buttons ul li ul li a,
 .queue-buttons ul li ul li span{
