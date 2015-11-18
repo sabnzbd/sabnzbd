@@ -281,7 +281,7 @@ def _api_queue_rating(output, value, kwargs):
     setting = kwargs.get('setting')
     if value:
         try:
-            video, audio, vote, flag = None
+            video = audio = vote = flag = None
             if content_type == 'video' and setting != "-":
                 video = setting
             if content_type == 'audio' and setting != "-":
