@@ -268,7 +268,7 @@
                             </td>
                             <td class="progress-indicator">
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentageRounded() + '; background-color: ' + progressColor() + ';' }, c">
+                                    <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentageRounded() + '; background-color: ' + progressColor() + ';' }">
                                         <strong data-bind="text: percentageRounded"></strong>
                                         <i data-bind="text: missingText"></i>
                                     </div>
@@ -330,6 +330,7 @@
                             <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
                             <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-toggle="tooltip" data-placement="top"></span>
                         </label>
+                        <span class="label label-default" data-bind="text: queue.multiEditItems().length">0</span>
                     </div>
                     <div class="add-nzb-inputbox-clear"></div>
                     <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">

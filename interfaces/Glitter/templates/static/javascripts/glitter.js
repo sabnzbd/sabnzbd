@@ -143,7 +143,7 @@ $(function() {
         self.speedMetric = ko.observable();
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
-        self.speedLimit = ko.observable().extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+        self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused = ko.observable(false);
         self.timeLeft = ko.observable("0:00");
@@ -903,7 +903,6 @@ $(function() {
         var self = this;
         self.parent = parent;
         self.dragging = false;
-        self.multiEditItems = [];
 
         // Because SABNZB returns the name
         // But when you want to set Priority you need the number.. 
@@ -931,6 +930,7 @@ $(function() {
         self.queueItems = ko.observableArray([]);
         self.totalItems = ko.observable(0);
         self.isMultiEditing = ko.observable(false);
+        self.multiEditItems = ko.observableArray([]);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
         self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
@@ -1148,12 +1148,9 @@ $(function() {
                 self.doMultiEditUpdate();
             } else {
                 // Go over them all to know which one to remove 
-                $.each(self.multiEditItems, function(index) {
-                    // Is this the one removed?
-                    if(item.id == this.id) {
-                        self.multiEditItems.splice(index, 1)
-                    }
-                });
+                self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+                // Now we definitely have not checked them all
+                $('#multiedit-checkall').prop('checked', false)
             }
 
             return true;
@@ -1162,7 +1159,8 @@ $(function() {
         // Do the actual multi-update immediatly
         self.doMultiEditUpdate = function() {
             // Anything selected?
-            if(self.multiEditItems.length < 1) return;
+            if(self.multiEditItems().length < 1) return;
+            
             // Retrieve the current settings
             newCat = $('.multioperations-selector select[name="Category"]').val()
             newScript = $('.multioperations-selector select[name="Post-processing"]').val()
@@ -1172,7 +1170,7 @@ $(function() {
 
             // List all the ID's
             strIDs = '';
-            $.each(self.multiEditItems, function(index) {
+            $.each(self.multiEditItems(), function(index) {
                 strIDs = strIDs + this.id + ',';
             })
 
@@ -1224,7 +1222,7 @@ $(function() {
             if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
                 // List all the ID's
                 strIDs = '';
-                $.each(self.multiEditItems, function(index) {
+                $.each(self.multiEditItems(), function(index) {
                     strIDs = strIDs + this.id + ',';
                 })
     
@@ -1239,6 +1237,8 @@ $(function() {
                         $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
                             self.parent.refresh();
                         })
+                        // Empty it
+                        self.multiEditItems.removeAll();
                     }
                 })
             }
@@ -1248,7 +1248,7 @@ $(function() {
         self.queueItems.subscribe(function() {
             // We need to wait until the unit is actually finished rendering
             setTimeout(function() {
-                $.each(self.multiEditItems, function(index) {
+                $.each(self.multiEditItems(), function(index) {
                     $('#multiedit_' + this.id).prop('checked', true);
                 })
                 // Now let's see if all are checked, based on compare with total
