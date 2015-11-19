@@ -685,7 +685,7 @@ class SABnzbdDelegate(NSObject):
         # logging.info("[osx] speed limit to %s" % (sender.representedObject()))
         speed = int(sender.representedObject())
         if speed != self.speed:
-            sabnzbd.downloader.Downloader.do.limit_speed(speed)
+            sabnzbd.downloader.Downloader.do.limit_speed('%s%%' % speed)
             self.speedlimitUpdate()
 
     def purgeAction_(self, sender):
