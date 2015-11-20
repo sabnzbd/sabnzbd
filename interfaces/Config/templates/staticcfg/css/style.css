@@ -1500,6 +1500,21 @@ button.ui-button::-moz-focus-inner {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    position: relative;
+}
+.col2 h3 a {
+    display: none;
+    position: absolute;
+    right: 8px;
+    bottom: 0.4em;
+    color: white;
+    font-size: 0.8em;
+}
+.section:hover .col2 h3 {
+    padding-right: 25px;
+}
+.section:hover .col2 h3 a {
+    display: inline-block;
 }
 .example {
     background-color: #fefeee;
