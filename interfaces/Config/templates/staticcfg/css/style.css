@@ -2125,6 +2125,7 @@ input[type="checkbox"] {
 .navbar-default .navbar-brand {
     padding: 0 !important;
     margin: 0 !important;
+    padding-right: 5px !important;
 }
 .navbar-default .navbar-brand-small {
     padding-right: 10px !important;
