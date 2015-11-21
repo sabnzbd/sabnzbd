@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+ 0.8.0Beta3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Speedlimit corrections
+- Fixed bug that could lead to all NZBs being reported as duplicates
+- Skin improvements
+
+-------------------------------------------------------------------------------
  0.8.0Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Improvements in IPv6 handling

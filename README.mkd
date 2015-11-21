@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.8.0Beta2
+Release Notes  -  SABnzbd 0.8.0Beta3
 ====================================
+
+## Changes in Beta3
+- Speedlimit corrections
+- Windows build now verifies https certificates
+- Windows build now supports TLS 1.2
+- Fixed bug that could lead to all NZBs being reported as duplicates
+- Skin improvements
 
 ## Changes in Beta2
 - Improvements in IPv6 handling

@@ -64,22 +64,24 @@ OSX Lion/MountainLion
     Apple Python 2.7        Included in OSX (default)
 
 Windows
-    Python-2.7.latest       http://www.activestate.com
+    Python-2.7.latest       http://www.python.com
+                            Most versions will work: 2.7.10 recommended
+    PyWin32                 use "pip install pypiwin32"
 
 Essential modules
-    cheetah-2.0.1+          http://www.cheetahtemplate.org/ (or use "pypm install cheetah")
+    cheetah-2.0.1+          use "pip install cheetah"
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
-                            http://chuchusoft.com/par2_tbb/index.html (multi-core)
+    unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
-    unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
 
 Optional modules Windows
-    pyopenssl >= 0.15       http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.13       "pip install pyopenssl"
+                            or http://www.egenix.com/products/python/pyOpenSSL/
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
