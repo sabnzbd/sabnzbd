@@ -11,7 +11,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
                     <select name="check_new_rel" id="check_new_rel">
                         <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
@@ -25,7 +25,7 @@
                     <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-auto_browser')</span>
                 </div>
-                <div class="field-pair alt <!--#if not $have_ampm then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
                     <label class="config" for="ampm">$T('opt-ampm')</label>
                     <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ampm')</span>
@@ -42,7 +42,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
                     <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                     <span class="desc">$T('explain-max_art_tries')</span>
@@ -52,7 +52,7 @@
                     <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-max_art_opt')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
                       <select name="load_balancing" id="load_balancing">
                           <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
@@ -83,7 +83,7 @@
                     <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-fail_hopeless')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="pre_check">$T('opt-pre_check')</label>
                     <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-pre_check')</span>
@@ -97,7 +97,7 @@
                     </select>
                     <span class="desc">$T('explain-no_dupes')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
                     <select name="no_series_dupes" id="no_series_dupes">
                         <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
@@ -106,7 +106,7 @@
                     </select>
                     <span class="desc">$T('explain-no_series_dupes')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="pause_on_post_processing">$T('opt-pause_on_post_processing')</label>
                     <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-pause_on_post_processing')</span>
@@ -120,7 +120,7 @@
                     </select>
                     <span class="desc">$T('explain-pause_on_pwrar')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="action_on_unwanted_extensions">$T('opt-action_on_unwanted_extensions')</label>
                     <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
                         <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
@@ -134,7 +134,7 @@
                     <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                     <span class="desc">$T('explain-unwanted_extensions')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="top_only">$T('opt-top_only')</label>
                     <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-top_only')</span>
@@ -144,7 +144,7 @@
                     <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-auto_sort')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="pre_script">$T('opt-pre_script')</label>
                     <select name="pre_script" id="pre_script">
                     <!--#for $sc in $script_list#-->
@@ -169,7 +169,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
                     <select name="ignore_samples" id="ignore_samples">
                         <option value="0" <!--#if int($ignore_samples) == 0 then 'selected="selected"' else ""#--> >$T('igsam-off')</option>
@@ -182,7 +182,7 @@
                     <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-quick_check')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
                     <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_all_par')</span>
@@ -192,7 +192,7 @@
                     <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if not $have_unrar then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_unrar')</span>
                 </div>
-                <div class="field-pair alt <!--#if not $have_unzip then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_unzip then "disabled" else "" #-->">
                     <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
                     <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if not $have_unzip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_unzip')</span>
@@ -202,7 +202,7 @@
                     <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if not $have_7zip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_7zip')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
                     <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_recursive')</span>
@@ -212,7 +212,7 @@
                     <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-flat_unpack')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
                     <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-overwrite_files')</span>
@@ -222,7 +222,7 @@
                     <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-enable_filejoin')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
                     <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-ts_join')</span>
@@ -232,7 +232,7 @@
                     <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-safe_postproc')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
                     <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-sfv_check')</span>
@@ -242,7 +242,7 @@
                     <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if int($unpack_check) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-unpack_check')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
                     <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-script_can_fail')</span>
@@ -252,7 +252,7 @@
                     <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-new_nzb_on_failure')</span>
                 </div>
-                <div class="field-pair alt <!--#if not $have_multicore then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_multicore then "disabled" else "" #-->">
                     <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
                     <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_multicore then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-par2_multicore')</span>
@@ -262,7 +262,7 @@
                     <input type="text" name="par_option" id="par_option" value="$par_option" />
                     <span class="desc">$T('explain-par_option')</span>
                 </div>
-                <div class="field-pair alt <!--#if not $have_nice then "disabled" else "" #-->">
+                <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
                     <label class="config" for="nice">$T('opt-nice')</label>
                     <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-nice')</span>
@@ -272,7 +272,7 @@
                     <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                     <span class="desc">$T('explain-ionice')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                     <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
                     <span class="desc">$T('explain-cleanup_list')</span>
@@ -299,7 +299,7 @@
                     <input type="checkbox" name="replace_spaces" id="replace_spaces" value="1" <!--#if int($replace_spaces) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-replace_spaces')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="replace_dots">$T('opt-replace_dots')</label>
                     <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-replace_dots')</span>
@@ -309,7 +309,7 @@
                     <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-replace_illegal')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
                     <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-sanitize_safe')</span>
@@ -331,7 +331,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="quota_size">$T('opt-quota_size')</label>
                     <input type="text" name="quota_size" id="quota_size" value="$quota_size" class="smaller_input" />
                     <span class="desc">$T('explain-quota_size')</span>
@@ -346,7 +346,7 @@
                     </select>
                     <span class="desc">$T('explain-quota_period')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="quota_day">$T('opt-quota_day')</label>
                     <input type="text" name="quota_day" id="quota_day" value="$quota_day" class="smaller_input" />
                     <span class="desc">$T('explain-quota_day')</span>
@@ -373,7 +373,7 @@
                     <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if int($rating_enable) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-rating_enable')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
                     <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" />
                     <span class="desc">$T('explain-rating_api_key')</span>
@@ -383,7 +383,7 @@
                     <input type="checkbox" name="rating_feedback" id="rating_feedback" value="1" <!--#if int($rating_feedback) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-rating_feedback')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="rating_filter_enable">$T('opt-rating_filter_enable')</label>
                     <input type="checkbox" name="rating_filter_enable" id="rating_filter_enable" value="1" <!--#if int($rating_filter_enable) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-rating_filter_enable')</span>
@@ -436,7 +436,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="field-pair alt" id="rating_filter_pause">
+                <div class="field-pair" id="rating_filter_pause">
                     <label class="config">$T('opt-rating_filter_pause_if')</label>
                     <div class="rating-filter">
                         <p>

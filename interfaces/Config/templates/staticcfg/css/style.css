@@ -1516,13 +1516,22 @@ button.ui-button::-moz-focus-inner {
 .section:hover .col2 h3 a {
     display: inline-block;
 }
+.main-helplink {
+    display: block;
+    position: static;
+    float: right;
+    color: black !important;
+    padding: 0px;
+    font-size: 1.2em;
+}
 .example {
     background-color: #fefeee;
 }
 .presets input {
     margin: 2px 0;
 }
-label.config {
+label.config,
+.field-pair h5 {
     overflow: auto;
     float: left;
     width: 24%;
@@ -1536,8 +1545,12 @@ label.config {
 label.narrow {
     width: 200px!important;
 }
-label.wide {
+label.wide,
+.field-pair h5 {
     width: auto!important;
+}
+.field-pair h5 {
+    margin-bottom: 5px;
 }
 .desc {
     display: block;
@@ -1549,6 +1562,9 @@ label.wide {
 .desc.narrow {
     margin: 0 0 0 200px!important;
 }
+input[type="checkbox"]+.desc {
+    padding-top: 6px;
+} 
 .desc-check {
     font-size: 12px;
     font-style: italic;
@@ -1559,13 +1575,26 @@ label.wide {
     color: #666;
     margin: 1em 0;
 }
-div.field-pair {
+.field-pair {
     padding: 6px;
     clear: both;
     float: none;
     overflow: hidden;
     min-width: 555px;
 }
+.field-pair:nth-child(odd),
+.Key tr:nth-child(odd),
+.even {
+    background-color: #F8F8F8;
+}
+.field-pair:last-child {
+    background-color: transparent;
+}
+.alt,
+.infoTableSeperator.alt {
+    background-color: #F8F8F8;
+}
+
 #content fieldset {
     border: 0;
     outline: 0;
@@ -1605,12 +1634,6 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     width: 16px;
     margin-top: 0;
 }
-.alt {
-    background-color: #F8F8F8;
-}
-.even {
-    background-color: #dfdede;
-}
 .readonly {
     background-color: #eff;
 }
@@ -1639,7 +1662,7 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     font-weight: 400;
 }
 .darkred {
-    color: #900;
+    color: red;
 }
 .scheduleEntry {
     padding: 8px 0;
@@ -1667,6 +1690,7 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .catTable th {
     text-align: center;
 }
+
 .RSS .catTable select {
     max-width: 120px;
 }
@@ -1842,7 +1866,10 @@ h2.activeRSS {
     color: #000;
 }
 .feed_disabled {
-    color: #900;
+    color: red;
+}
+#subscriptions {
+    min-width: 550px;
 }
 #subscriptions td {
     border: 0 none;
@@ -1866,6 +1893,9 @@ h2.activeRSS {
     min-width: 20em;
     overflow: hidden;
     white-space: nowrap;
+}
+.subscription-title a {
+    text-decoration: underline;
 }
 .data-row td {
     border-top: 1px solid #ddd;
@@ -1963,7 +1993,7 @@ ul.tabs a.current {
 }
 
 .checkbox-days label {
-    padding-left:  20px;
+    padding: 2px 20px;
 }
 .rating-filter  {
     float:  left;
@@ -2259,6 +2289,11 @@ input[type="checkbox"] {
     .fileBrowserField {
         width: 50% !important;
     }
+        
+    .RSS #content,
+    .Categories #content {
+        width: 100%;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -2308,9 +2343,7 @@ input[type="checkbox"] {
     .main-restarting.in small {
         font-size: 2rem !important;
     }
-}
 
-@media only screen and (max-width : 768px) {
     #content {
         margin: 0 !important;
         padding: 0 !important;
@@ -2346,7 +2379,7 @@ input[type="checkbox"] {
     .desc {
         margin: 0;
         margin-left: 3px;
-        padding: 0;
+        padding: 0 !important;
     }
     
     .col1 input[type="checkbox"] {
@@ -2356,7 +2389,7 @@ input[type="checkbox"] {
         margin-top: 0px;
     }
     
-    div.field-pair {
+    div.field-pair{
         min-width: 0;
         padding: 5px;
     }

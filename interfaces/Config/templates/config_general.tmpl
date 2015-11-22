@@ -13,7 +13,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="host">$T('opt-host')</label>
                     <input type="text" name="host" id="host" value="$host" />
                     <span class="desc">$T('explain-host')</span>
@@ -23,7 +23,7 @@
                     <input type="number" name="port" id="port" value="$port" size="8" />
                     <span class="desc">$T('explain-port')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="username">$T('opt-web_username')</label>
                     <input type="text" name="username" id="username" value="$username" />
                     <span class="desc">$T('explain-web_username')</span>
@@ -33,7 +33,7 @@
                     <input type="text" name="password" id="password" value="$password" />
                     <span class="desc">$T('explain-web_password')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="web_dir">$T('opt-web_dir')</label>
                         <select name="web_dir" id="web_dir">
                         <!--#for $webline in $web_list#-->
@@ -59,7 +59,7 @@
                     </select>
                     <span class="desc">$T('explain-web_dir2')&nbsp;&nbsp;<a href="$caller_url2">$caller_url2</a></span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="language">$T('opt-language')</label>
                         <select name="language" id="language" class="select">
                         <!--#for $webline in $lang_list#-->
@@ -77,7 +77,7 @@
                     <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" />
                     <span class="desc">$T('explain-local_ranges')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
                             <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
@@ -93,7 +93,7 @@
                     <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if int($disable_api_key) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-disableApikey')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="apikey">$T('opt-apikey')</label>
                     <input type="text" id="apikey" class="fileBrowserField" value="$session" />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$session" ><span class="glyphicon glyphicon-qrcode"></span></button>
@@ -124,7 +124,7 @@
                 <div class="field-pair">
                     <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
                 </div>
-                <div class="field-pair alt <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="enable_https">$T('opt-enable_https')</label>
                     <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
                     <span class="desc">$T('explain-enable_https')</span>
@@ -134,7 +134,7 @@
                     <input type="number" name="https_port" id="https_port" value="$https_port" size="8" />
                     <span class="desc">$T('explain-https_port')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="https_cert">$T('opt-https_cert')</label>
                     <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
                     <span class="desc">$T('explain-https_cert')</span>
@@ -144,7 +144,7 @@
                     <input type="text" name="https_key" id="https_key" value="$https_key" />
                     <span class="desc">$T('explain-https_key')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="https_chain">$T('opt-https_chain')</label>
                     <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
                     <span class="desc">$T('explain-https_chain')</span>
@@ -162,7 +162,7 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
                     <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" class="smaller_input" />
                     <span class="desc">$T('explain-bandwidth_max')<br />$T('wizard-bandwidth-explain')</span>
@@ -172,7 +172,7 @@
                     <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" step="10" min="0" max="100"/>
                     <span class="desc">$T('explain-bandwidth_perc')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
                     <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
                     <span class="desc">$T('explain-cache_limitstr')</span>

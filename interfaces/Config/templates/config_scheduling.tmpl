@@ -21,7 +21,7 @@ else:
         <input type="hidden" id="session" name="session" value="$session" />
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="hour">$T('hour').capitalize() : $T('minute').capitalize()</label>
                     <select name="hour" id="hour">
                         <!--#for $i in range(24)#-->
@@ -45,7 +45,7 @@ else:
                       <label><input type="checkbox" name="daysofweek" value="7"/> $T('sunday')</label>
                     </div>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="action">$T('sch-action')</label>
                     <select name="action" id="action">
                         <!--#for $action in $actions#-->
@@ -79,7 +79,7 @@ else:
                             <form action="delSchedule" method="post">
                                 <input type="hidden" name="session" value="$session"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
-                                <div class="field-pair infoTableSeperator<!--#if $odd then "" else " alt"#-->">
+                                <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
                                     <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
                                     <div class="scheduleEntry">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>

@@ -3,13 +3,12 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-<!--#if not $active_feed#-->
+    <!--#if not $active_feed#-->
     <div class="section">
         <div class="padTable">
-
-        <p>$T('explain-RSS')</p>
-
-                <form action="add_rss_feed" method="post" novalidate>
+            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <p>$T('explain-RSS')</p>
+            <form action="add_rss_feed" method="post" novalidate>
                 <input type="hidden" name="session" value="$session"/>
                 <table class="catTable">
                     <tr>
@@ -27,54 +26,55 @@
                         </td>
                     </tr>
                 </table>
-                </form>
-
-                <br/>
-
-                <form action="save_rss_feed" method="post" novalidate>
+            </form>
+        </div>
+    </div>
+    <!--#if $rss#-->
+    <div class="section">
+        <div class="padTable">
+            <form action="save_rss_feed" method="post" novalidate>
                 <input type="hidden" name="session" value="$session" />
                 <table id="subscriptions">
                     <tbody>
-
-            <!--#set $feeds = sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#--><!--#slurp#-->
-            <!--#set $odd = False#--><!--#slurp#-->
-            <!--#for $feed_item in $feeds#--><!--#slurp#-->
-                <!--#set $odd = not $odd#--><!--#slurp#-->
-
-                    <tr class="data-row <!--#if $odd then "alt" else ""#-->" >
-                        <td class="chk">
-                            <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$feed_item" />
-                        </td>
-                        <td class="title">
-                            <div class="subscription-title">
-                                <a href="?feed=$rss[$feed_item]['link']" class="path feed">
-                                    <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div>
-                                    <span class="<!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled"' else "feed_disabled"#-->">$feed_item</span>
-                                </a>
-                            </div>
-                            <!-- <input type="text" name="newfeed" value="$feed_item" size="25" readonly="readonly" class="readonly" /> -->
-                        </td>
-                        <td class="controls">
-                            <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
-                            <input type="hidden" name="uri" value="$rss[$feed_item]['uri']" size="75" />
-                            <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
-                            <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>                            
-                        </td>
-                    </tr>
-                    <tr class="feed-row <!--#if $odd then "alt" else ""#-->">
-                        <td></td>
-                        <td colspan="2">
-                            <div>$rss[$feed_item]['uri']</div>
-                        </td>
-                    </tr>
-
-            <!--#end for#-->
-
-                    </tbody>
-                </table>
+                        <!--#set $feeds = sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#--><!--#slurp#-->
+                        <!--#set $odd = False#--><!--#slurp#-->
+                        <!--#for $feed_item in $feeds#--><!--#slurp#-->
+                            <!--#set $odd = not $odd#--><!--#slurp#-->
+            
+                                <tr class="data-row <!--#if $odd then "alt" else ""#-->" >
+                                    <td class="chk">
+                                        <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) != 0 then 'checked="checked"' else ""#--> rel="$feed_item" />
+                                    </td>
+                                    <td class="title">
+                                        <div class="subscription-title">
+                                            <a href="?feed=$rss[$feed_item]['link']" class="path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
+                                                <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div>
+                                                $feed_item
+                                            </a>
+                                        </div>
+                                        <!-- <input type="text" name="newfeed" value="$feed_item" size="25" readonly="readonly" class="readonly" /> -->
+                                    </td>
+                                    <td class="controls">
+                                        <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
+                                        <input type="hidden" name="uri" value="$rss[$feed_item]['uri']" />
+                                        <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
+                                        <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>                            
+                                    </td>
+                                </tr>
+                                <tr class="feed-row <!--#if $odd then "alt" else ""#-->">
+                                    <td></td>
+                                    <td colspan="2">
+                                        <div>$rss[$feed_item]['uri']</div>
+                                    </td>
+                                </tr>
+            
+                        <!--#end for#-->
+    
+                        </tbody>
+                    </table>
                 </form>
 
-            <!--#if $feeds#-->
+                <!--#if $feeds#-->
                 <br/>
 
                 <form action="rss_now" method="post" novalidate>
@@ -85,6 +85,7 @@
 
         </div>
     </div>
+    <!--#end if#-->
 
     <div class="section">
         <form action="save_rss_rate" method="post">
@@ -525,10 +526,11 @@ function urlencode(str) {
         var newURI = prompt("$T('feed') URL", oldURI );
         if(newURI != "" && newURI !== null) {
             var whichFeed = \$(this).attr("rel");
+            var isEnabled = \$('.toggleFeedCheckbox[rel="'+whichFeed+'"]').attr('checked') == "checked"? 1 : 0;
             \$.ajax({
               type: "POST",
               url: "save_rss_feed",
-              data: {feed: whichFeed, uri: newURI, session: "$session" }
+              data: {feed: whichFeed, uri: newURI, enable: isEnabled, session: "$session" }
             }).done(function( msg ) {
               location.reload();
             });
