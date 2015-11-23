@@ -24,15 +24,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
     
-    <script src="${root}staticcfg/js/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $.noConflict()
-        var browseText = "$T('browse-folder')";
-    </script>
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
-    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico" />
     <link rel="apple-touch-icon" sizes="57x57" href="${root}staticcfg/ico/apple-touch-icon-57x57.png" />
     <link rel="apple-touch-icon" sizes="60x60" href="${root}staticcfg/ico/apple-touch-icon-60x60.png" />
     <link rel="apple-touch-icon" sizes="72x72" href="${root}staticcfg/ico/apple-touch-icon-72x72.png" />
@@ -42,171 +33,32 @@
     <link rel="apple-touch-icon" sizes="144x144" href="${root}staticcfg/ico/apple-touch-icon-144x144.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152.png" />
 
-    <script src="${root}staticcfg/js/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
+    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico" />
+
     <script type="text/javascript">
-        // Keeping track
+        // Keeping track of the form state
         var formHasChanged = false;
         var formWasSubmitted = false;
-
-        \$.Browser = {
-            defaults: {
-                title:             'Choose Directory',
-                url:               '${root}tapi?mode=browse&output=json&apikey=$session',
-                autocompleteURL:   '${root}tapi?mode=browse&output=json&compact=1&apikey=$session'
-            }
-        };
         
-        function config_success() {
-            \$('.saveButton').each(function () {
-                \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')');
-            });
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;
-        }
-        function config_failure() {
-            \$('.saveButton').each(function () {
-                \$(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> $T('smpl-failed')');
-            });
-            // Can't go yet..
-            formWasSubmitted = false;
-        }
-        function do_restart() {
-            // Show overlay
-            \$('.main-restarting').show()
-            
-            // What template
-            var arrPath = window.location.pathname.split('/');
-            var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
-
-            // Are we on settings page?
-            if(!\$('body').hasClass('General')) {
-                // Same as before, with fall-back in case location.origin is not supported (<IE9)
-                var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
-            } else {
-                // Protocol and port depend on http(s) setting
-                if(\$('#enable_https').is(':checked') && window.location.protocol == 'https:') {
-                    // Https on and we visited this page from HTTPS
-                    var urlProtocol = 'https:'
-                    var urlPort = \$('#https_port').val();
-                } else {
-                    // Regular
-                    var urlProtocol = 'http:';
-                    var urlPort = \$('#port').val();
-                }
-                
-                // We cannot make a good guess for the IP, so at least we assume that stays the same
-                var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
-            }
-            
-            // Show where we are going to connect
-            \$('.main-restarting .restarting-url').text(urlTotal)
-            
-            // Initiate restart
-            \$.ajax({ url: '${root}config/restart?session=$session', 
-                complete: function() {
-                    // Keep counter of failures
-                    var failureCounter = 0;
-            
-                    // Now we try untill we can connect
-                    var refreshInterval = setInterval(function() {
-                        $.ajax({ url: urlTotal, 
-                            success: function() {
-                                // Back to base
-                                location.href = urlTotal;
-                            },
-                            error: function(status, text) {
-                                failureCounter = failureCounter+1;
-                                // Too many failuers and we give up
-                                if(failureCounter >= 7) {
-                                    // If the port has changed 'Access-Control-Allow-Origin' header will not allow
-                                    // us to check if the server is back up. So after 7 failures we redirect
-                                    // anyway in the hopes it works anyway..
-                                    location.href = urlTotal;
-                                }
-                            }
-                        })
-                    }, 5000)
-                    
-                    // Exception if we go from HTTPS to HTTP 
-                    // (this is not allowed by browsers and all of the above will be ignored)
-                    if(window.location.protocol != urlProtocol) {
-                        // Saftey redirect after 40 sec
-                        setTimeout(function() {
-                            location.href = urlTotal;
-                        }, 40*1000)
-                    }
-                }
-            });
-        }
-
-        \$(document).ready(function () {
-            \$('.sabnzbd_restart').click(function () {
-                \$('.sabnzbd_restart').each(function () {
-                    \$(this).attr("disabled", "disabled");
-                });
-                var msg = "$T('explain-Restart')";
-                if (confirm(msg.replace(/\<br(\s*\/|)\>/g, '\n'))) {
-                    \$(this).attr("value", "$T('wizard-restarting')");
-                    // Let us leave!
-                    formWasSubmitted = true;
-                    do_restart();
-                }
-                \$('.sabnzbd_restart').each(function () {
-                    \$(this).removeAttr("disabled");
-                });
-                return false;
-            });
-
-            \$('.fullform').ajaxForm({
-                datatype: 'json',
-                beforeSubmit: function () {
-                    \$('.saveButton').each(function () {
-                        \$(this).attr("disabled", "disabled").attr("value", "$T('smpl-saving')");
-                        \$(this).attr("disabled", "disabled").html('<span class="glyphicon glyphicon-transfer"></span> $T('smpl-saving')');
-                    });
-                },
-                success: function (json) {
-                    if (json.error) {
-                       \$('#config_err_msg').text(json.error);
-                       setTimeout(config_failure, 1000);
-                    } else if(json.value && json.value.restart_req) {
-                        // Trigger restart question
-                        if(confirm("$T('restartRequired')\n$T('button-restart') SABnzbd?")) {
-                            // No more questions
-                            do_restart();
-                        } else {
-                            \$('#config_err_msg').text(" ");
-                            setTimeout(config_success, 1000);
-                        }
-                    } else {
-                       \$('#config_err_msg').text(" ");
-                       setTimeout(config_success, 1000);
-                    }
-                },
-                error: function () {
-                    setTimeout(config_failure, 1000);
-                },
-                timeout: 3000
-            });
-        });
-    
-        /*
-         * Takes the inputs-elements found in the current selector
-         * and extracts the values into the provided data-object.
-         */
-        \$.fn.extractFormDataTo = function(target) {
-        	var inputs = \$("input[type != 'submit'][type != 'button']", this);
-        
-        	// could use .serializeArray() but that omits unchecked items
-        	inputs.each(function (i,elem) {
-        	    target[elem.name] = elem.value;
-        	});
-        
-        	return this;
-        }
-
+        // Links andranslations used in the scripts
+        var sabSession = '$session';
+        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session'; 
+        var configTranslate = new Object();
+        configTranslate.browseText = "$T('browse-folder')";
+        configTranslate.saveChanges = "$T('button-saveChanges')";
+        configTranslate.saving = "$T('smpl-saving')";
+        configTranslate.failed = "$T('smpl-failed')";
+        configTranslate.explainRestart = "$T('explain-Restart')";
+        configTranslate.wizzardRestart = "$T('wizard-restarting')";
+        configTranslate.needRestart = "$T('restartRequired')";
+        configTranslate.buttonRestart = "$T('button-restart')";
+        configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
     </script>
+    <script type="text/javascript" src="${root}staticcfg/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="${root}staticcfg/js/script.js?p=$pid"></script>
     <!--[if lt IE 9]>
         <script src="${root}staticcfg/js/html5shiv.min.js"></script>
         <script src="${root}staticcfg/js/respond.min.js"></script>
@@ -231,7 +83,6 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <!--<li><a href="${root}config/" #if $pane == "Config" then 'class="active"' else ""#>$T('menu-config')</a></li>-->
                 <li>
                     <a href="${root}config/general/" #if $pane == "General" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-cog"></span>
@@ -245,27 +96,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/switches/" #if $pane == "Switches" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-check"></span>
-                        <strong>$T('cmenu-switches')</strong>
-                    </a>
-                </li>
-                <li>
                     <a href="${root}config/server/" #if $pane == "Servers" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-sort"></span>
                         <strong>$T('cmenu-servers')</strong>
-                    </a>
-                </li>
-                <li>
-                    <a href="${root}config/scheduling/" #if $pane == "Scheduling" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-time"></span>
-                        <strong>$T('cmenu-scheduling')</strong>
-                    </a>
-                </li>
-                <li>
-                    <a href="${root}config/notify/" #if $pane == "Email" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-comment"></span>
-                        <strong>$T('cmenu-notif')</strong>
                     </a>
                 </li>
                 <li>
@@ -275,21 +108,39 @@
                     </a>
                 </li>
                 <li>
+                    <a href="${root}config/switches/" #if $pane == "Switches" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-check"></span>
+                        <strong>$T('cmenu-switches')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/notify/" #if $pane == "Email" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-comment"></span>
+                        <strong>$T('cmenu-notif')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/scheduling/" #if $pane == "Scheduling" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-time"></span>
+                        <strong>$T('cmenu-scheduling')</strong>
+                    </a>
+                </li>
+                <li>
                     <a href="${root}config/sorting/" #if $pane == "Sorting" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-sort-by-alphabet"></span>
                         <strong>$T('cmenu-sorting')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/special/" #if $pane == "Special" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-education"></span>
-                        <strong>$T('cmenu-special')</strong>
-                    </a>
-                </li>
-                <li>
                     <a href="${root}config/rss/" #if $pane == "RSS" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-cloud-download"></span>
                         <strong>$T('cmenu-rss')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/special/" #if $pane == "Special" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-education"></span>
+                        <strong>$T('cmenu-special')</strong>
                     </a>
                 </li>
                 <li>

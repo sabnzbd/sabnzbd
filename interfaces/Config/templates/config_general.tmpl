@@ -186,7 +186,17 @@
     </form>
 </div><!-- /colmask -->
 
-<script>
+<div class="modal fade" id="modal_qr">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- For the QR code -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
 \$(document).ready(function(){
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
     \$('#generate_new_apikey').click(function () {
@@ -216,37 +226,25 @@
       }
     });
 
-    \$('.show_qrcode').each(function () {
-        var qrkey = \$(this).attr('rel'),
-        qrcode = \$('<img />', {
-            src: 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + qrkey,
+    \$('.show_qrcode').click(function (e) {
+        // Make QR code
+        var qrcode = \$('<img />', {
+            src: 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + \$(this).attr('rel'),
             alt: 'loading...',
             width: 300,
             height: 300
         });
-        \$(this).qtip( {
-            content: {
-                text: qrcode
-            },
-            position: {
-                my: 'center',
-                at: 'center',
-                target: \$(window)
-            },
-            show: {
-                event: 'click',
-                solo: true,
-                modal: true
-            },
-            hide: false,
-            style: 'ui-tooltip-light ui-tooltip-rounded ui-tooltip-shadow ui-tooltip-qrcode'
-        });
-        \$(this).click(function(e) {
-            e.preventDefault();
-        })
+        
+        // Show in modal
+        \$('#modal_qr .modal-dialog').width(330)
+        \$('#modal_qr .modal-body').html(qrcode)
+        \$('#modal_qr').modal('show');
+        
+        // No save on this button click
+        e.preventDefault();                        
     });
-
 });
 </script>
+
 
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

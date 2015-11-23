@@ -141,12 +141,8 @@
             <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
         </div><!-- /col2 -->
         <div class="col1"  style="display:none;">
+            <input type="hidden" name="enable" id="enable$cur" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> />
             <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="enable$cur">$T('srv-enable')</label>
-                    <input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('srv-enable')</span>
-                </div>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
                     <input type="text" name="host" id="host$cur" value="$server['host']" />

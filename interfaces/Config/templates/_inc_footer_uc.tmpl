@@ -1,5 +1,23 @@
-    <!-- Content end -->
-    <div class="clearfix"></div>
+        <!-- Content end -->
+        <div class="clearfix"></div>
+        
+        <!-- Filebrowser modal -->
+        <div class="modal fade" id="filebrowser_modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
+                        <button type="button" class="btn btn-default" id="filebrowser_modal_accept"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
     <div class="main-restarting modal-backdrop fade in" style="display: none;">
         <div>
@@ -7,38 +25,5 @@
             <small><span class="restarting-url"></span><span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></small>
         </div>
     </div>
-    
-    <script type="text/javascript">
-        // Fix for touch devices needing double click on the menu
-        \$('.navbar-nav li a').on('touchstart', function(e) {
-            \$(this).click()
-        })
-        
-        /*
-         * Notifies the user if he tries to leave without saving
-         * Has to be in footer, otherwise the filebrowser over-writes the change-event
-         */
-        \$(document).ready(function () {
-            \$(document).on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
-                formHasChanged = true;
-                formWasSubmitted = false;
-            });
-            window.onbeforeunload = function (e) {
-                if (formHasChanged && !formWasSubmitted) {
-                    var message = "$T('confirmWithoutSavingPrompt')", e = e || window.event;
-                    if (e) {
-                        e.returnValue = message;
-                    }
-                    return message;
-                }
-            }
-            // Form Submit
-            \$(document).on("submit", "form", function(event){
-                // Let us leave!
-                formWasSubmitted = true;
-                formHasChanged = false;
-            });
-        });
-    </script>
 </body>
 </html>

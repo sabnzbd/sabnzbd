@@ -4,7 +4,8 @@
 <div class="colmask">
     <!--#if not $active_feed#-->
     <div class="section">
-        <div class="padTable"> <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+        <div class="padTable"> 
+            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" novalidate>
                 <input type="hidden" name="session" value="$session" />
@@ -46,13 +47,14 @@
                             <!--#set $odd = not $odd#-->
                             <tr class="data-row <!--#if $odd then " alt " else " "#-->">
                                 <td class="chk">
-                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" /> </td>
+                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" /> 
+                                </td>
                                 <td class="title">
                                     <div class="subscription-title">
                                         <a href="?feed=$rss[$feed_item]['link']" class="path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                            <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div> $feed_item </a>
+                                            <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div> $feed_item 
+                                        </a>
                                     </div>
-                                    <!-- <input type="text" name="newfeed" value="$feed_item" size="25" readonly="readonly" class="readonly" /> -->
                                 </td>
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
@@ -103,10 +105,11 @@
     <!--#set $feed = $active_feed#-->
     <div class="section">
         <div class="padTable">
+            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <h2 class="nomargin activeRSS">
-            <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; 
-            <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
-          </h2>
+                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; 
+                <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
+            </h2>
             <!--#if $error#-->
             <h3 class="darkred">$error</h3>
             <!--#end if#-->
@@ -366,119 +369,105 @@
     <br/>
     <div style="padding-left: 10px; border-bottom: 1px solid #DFDEDE;">
         <ul class="tabs">
-            <li><a href="#">$T('rss-matched') <span class="count"><!--#echo len($matched)#--></span></a></li>
-            <li><a href="#">$T('rss-notMatched') <span class="count"><!--#echo len($unmatched)#--></span></a></li>
-            <li><a href="#">$T('rss-done') <span class="count"><!--#echo len($downloaded)#--></span></a></li>
+            <li class="active"><a href="#rss-tab-matched" data-toggle="tab">$T('rss-matched') <span class="count"><!--#echo len($matched)#--></span></a></li>
+            <li><a href="#rss-tab-not-matched">$T('rss-notMatched') <span class="count"><!--#echo len($unmatched)#--></span></a></li>
+            <li><a href="#rss-tab-done">$T('rss-done') <span class="count"><!--#echo len($downloaded)#--></span></a></li>
         </ul>
     </div>
-    <div class="tab-content padTable">
-        <!--#if $matched#-->
-        <table class="catTable">
-            <!--#set $odd = False#-->
-            <!--#set $cur = 0#-->
-            <!--#for $job in $matched#-->
-                <!--#set $odd = not $odd#-->
-                <!--#set $cur = $cur+1#-->
-                <!--#if $cur == 1#-->
-                <thead>
-                    <tr>
-                        <th>$T('link-download')</th>
-                        <th>$T('rss-skip')</th>
-                        <th>$T('rss-filter')</th>
-                        <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
-                    </tr>
-                </thead>
-                <!--#end if#-->
-                <tr class="infoTableSeperator <!--#if $odd then " alt " else " "#-->">
-                    <td>
-                        <form action="download" method="get">
-                            <input type="hidden" value="$feed" name="feed" />
-                            <input type="hidden" name="session" value="$session" />
-                            <input type="hidden" name="url" value="$job[0]" />
-                            <input type="hidden" name="nzbname" value="$job[4]" />
-                            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
-                        </form>
-                    </td>
-                    <td class="align-center">$job[2]</td>
-                    <td class="align-center"> <span>$job[3]</span> </td>
-                    <td>$job[5]</td>
-                    <td>$job[1]</td>
-                </tr>
-            <!--#end for#-->
-        </table>
-        <!--#else#-->$T('none')
-        <!--#end if#-->
-    </div>
-    <div class="tab-content padTable">
-        <!--#if $unmatched#-->
-        <table class="catTable">
-            <!--#set $odd = False#-->
-            <!--#set $cur = 0#-->
-            <!--#for $job in $unmatched#-->
-                <!--#set $odd = not $odd#-->
-                <!--#set $cur = $cur+1#-->
-                <!--#if $cur == 1#-->
-                <thead>
-                    <tr>
-                        <th>$T('link-download')</th>
-                        <th>$T('rss-skip')</th>
-                        <th>$T('rss-filter')</th>
-                        <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
-                    </tr>
-                </thead>
-                <!--#end if#-->
-                <tr class="infoTableSeperator <!--#if $odd then " alt " else " "#-->">
-                    <td>
-                        <form action="download" method="get">
-                            <input type="hidden" value="$feed" name="feed" />
-                            <input type="hidden" name="session" value="$session" />
-                            <input type="hidden" name="url" value="$job[0]" />
-                            <input type="hidden" name="nzbname" value="$job[4]" />
-                            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
-                        </form>
-                    </td>
-                    <td class="align-center">$job[2]</td>
-                    <td class="align-center"> <span>$job[3]</span> </td>
-                    <td>$job[5]</td>
-                    <td>$job[1]</td>
-                </tr>
-            <!--#end for#-->
-        </table>
-        <!--#else#-->
-            $T('none')
-        <!--#end if#-->
-    </div>
-    <div class="tab-content padTable">
-        <!--#if $downloaded#-->
-        <form action="clean_rss_jobs" method="post">
-            <input type="hidden" value="$feed" name="feed" />
-            <input type="hidden" name="session" value="$session" />
+    <div class="tab-content">
+        <div class="tab-pane fade in active padTable" id="rss-tab-matched">
+            <!--#if $matched#-->
             <table class="catTable">
-                <!--#set $odd = False#-->
-                <!--#set $cur = 0#-->
-                <!--#for $job in $downloaded#-->
-                    <!--#set $odd = not $odd#-->
-                    <!--#set $cur = $cur+1#-->
-                    <!--#if $cur == 1#-->
+                <thead>
+                    <tr>
+                        <th>$T('link-download')</th>
+                        <th>$T('rss-skip')</th>
+                        <th>$T('rss-filter')</th>
+                        <th>$T('size')</th>
+                        <th>$T('sort-title')</th>
+                    </tr>
+                </thead>
+                <!--#for $job in $matched#-->
+                    <tr class="infoTableSeperator">
+                        <td>
+                            <form action="download" method="get">
+                                <input type="hidden" value="$feed" name="feed" />
+                                <input type="hidden" name="session" value="$session" />
+                                <input type="hidden" name="url" value="$job[0]" />
+                                <input type="hidden" name="nzbname" value="$job[4]" />
+                                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
+                            </form>
+                        </td>
+                        <td class="align-center">$job[2]</td>
+                        <td class="align-center"> <span>$job[3]</span> </td>
+                        <td>$job[5]</td>
+                        <td>$job[1]</td>
+                    </tr>
+                <!--#end for#-->
+            </table>
+            <!--#else#-->
+            $T('none')
+            <!--#end if#-->
+        </div>
+        <div class="tab-pane padTable" id="rss-tab-not-matched">
+            <!--#if $unmatched#-->
+            <table class="catTable">
+                <thead>
+                    <tr>
+                        <th>$T('link-download')</th>
+                        <th>$T('rss-skip')</th>
+                        <th>$T('rss-filter')</th>
+                        <th>$T('size')</th>
+                        <th>$T('sort-title')</th>
+                    </tr>
+                </thead>
+                <!--#for $job in $unmatched#-->
+                    <tr class="infoTableSeperator">
+                        <td>
+                            <form action="download" method="get">
+                                <input type="hidden" value="$feed" name="feed" />
+                                <input type="hidden" name="session" value="$session" />
+                                <input type="hidden" name="url" value="$job[0]" />
+                                <input type="hidden" name="nzbname" value="$job[4]" />
+                                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
+                            </form>
+                        </td>
+                        <td class="align-center">$job[2]</td>
+                        <td class="align-center"> <span>$job[3]</span> </td>
+                        <td>$job[5]</td>
+                        <td>$job[1]</td>
+                    </tr>
+                <!--#end for#-->
+            </table>
+            <!--#else#-->
+                $T('none')
+            <!--#end if#-->
+        </div>
+        <div class="tab-pane padTable" id="rss-tab-done">
+            <!--#if $downloaded#-->
+            <form action="clean_rss_jobs" method="post">
+                <input type="hidden" value="$feed" name="feed" />
+                <input type="hidden" name="session" value="$session" />
+                <table class="catTable">
                     <thead>
                         <tr>
                             <th>$T('sort-title')</th>
                         </tr>
                     </thead>
-                    <!--#end if#-->
-                    <tr class="infoTableSeperator <!--#if $odd then " alt " else " "#-->">
-                        <td>$job</td>
-                    </tr>
-                <!--#end for#-->
-            </table>
-        </form>
-        <!--#else#-->
-            $T('none')
+                    <!--#for $job in $downloaded#-->
+                        <tr class="infoTableSeperator">
+                            <td>$job</td>
+                        </tr>
+                    <!--#end for#-->
+                </table>
+            </form>
+            <!--#else#-->
+                $T('none')
+            <!--#end if#-->
+        </div>
         <!--#end if#-->
     </div>
-    <!--#end if#-->
+    
 </div>
 <!-- /colmask -->
 
@@ -488,6 +477,11 @@ function urlencode(str) {
 }
 
 \$(document).ready(function(){
+    \$('.tabs a').click(function (e) {
+        e.preventDefault()
+        \$(this).tab('show')
+    })
+
     \$('.editFeed').click(function(){
         var oldURI = \$(this).prev().val();
         var newURI = prompt("$T('feed') URL", oldURI );
@@ -560,8 +554,6 @@ function urlencode(str) {
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();
     });
-    
-    \$("ul.tabs").tabs("div.tab-content");
 });
 </script>
 
