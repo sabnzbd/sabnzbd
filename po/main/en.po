@@ -60,3 +60,7 @@ msgstr "Disable server:"
 msgid "enable server"
 msgstr "Enable server:"
 
+#: sabnzbd/skintext.py:662
+msgid "Enable Movie Sorting"
+msgstr "Enable Generic Sorting"
+
