@@ -133,15 +133,15 @@
             <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <span class="label label-primary">$T('srv-priority'): $server['priority']</span>
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$server['host']" rel="$server['host']" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
-              <td><label for="enable_$server['host']">&nbsp;$T('enabled')</label></td>
+              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" rel="$server['name']" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+              <td><label for="enable_$cur">&nbsp;$T('enabled')</label></td>
             </tr></table>
 
             <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
             <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
         </div><!-- /col2 -->
         <div class="col1"  style="display:none;">
-            <input type="hidden" name="enable" id="enable$cur" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> />
+            <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
