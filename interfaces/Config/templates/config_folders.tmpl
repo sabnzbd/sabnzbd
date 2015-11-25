@@ -18,7 +18,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="download_dir">$T('opt-download_dir')</label>
-                    <input type="text" name="download_dir" id="download_dir" value="$download_dir" autocomplete="off" />
+                    <input type="text" name="download_dir" id="download_dir" value="$download_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-download_dir')</span>
                 </div>
                 <div class="field-pair">
@@ -28,19 +28,19 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="complete_dir">$T('opt-complete_dir')</label>
-                    <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" />
+                    <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-complete_dir')</span>
                 </div>
                 <!--#if not $nt#-->
                 <div class="field-pair">
                     <label class="config" for="permissions">$T('opt-permissions')</label>
-                    <input type="text" name="permissions" id="permissions" value="$permissions" class="smaller_input" <!--#if $nt then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <input type="text" name="permissions" id="permissions" value="$permissions" class="smaller_input" />
                     <span class="desc">$T('explain-permissions')</span>
                 </div>
                 <!--#end if#-->
                 <div class="field-pair">
                     <label class="config" for="dirscan_dir">$T('opt-dirscan_dir')</label>
-                    <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" />
+                    <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-dirscan_dir')</span>
                 </div>
                 <div class="field-pair">
@@ -50,12 +50,12 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="script_dir">$T('opt-script_dir')</label>
-                    <input type="text" name="script_dir" id="script_dir" value="$script_dir" />
+                    <input type="text" name="script_dir" id="script_dir" value="$script_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-script_dir')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="email_dir">$T('opt-email_dir')</label>
-                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" />
+                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-email_dir')</span>
                 </div>
                 <div class="field-pair">
@@ -84,18 +84,18 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="admin_dir">$T('opt-admin_dir')</label>
-                    <input type="text" name="admin_dir" id="admin_dir" value="$admin_dir" />
+                    <input type="text" name="admin_dir" id="admin_dir" value="$admin_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-admin_dir1')</span>
                     <span class="desc">$T('explain-admin_dir2')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="log_dir">$T('opt-log_dir')</label>
-                    <input type="text" name="log_dir" id="log_dir" value="$log_dir" />
+                    <input type="text" name="log_dir" id="log_dir" value="$log_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-log_dir')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="nzb_backup_dir">$T('opt-nzb_backup_dir')</label>
-                    <input type="text" name="nzb_backup_dir" id="nzb_backup_dir" value="$nzb_backup_dir" />
+                    <input type="text" name="nzb_backup_dir" id="nzb_backup_dir" value="$nzb_backup_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-nzb_backup_dir')</span>
                 </div>
                 <div class="field-pair">

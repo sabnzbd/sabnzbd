@@ -1,3 +1,8 @@
+#if $pane == "Config"#
+    #set global $root = '../'#
+#else#
+    #set global $root = '../../'#
+#end if#
 <!DOCTYPE HTML>
 <html lang="$active_lang">
 <head>
@@ -15,11 +20,7 @@
         #if $pane == "Special" then $T('cmenu-special') else ""#
         #if $pane == "RSS" then $T('cmenu-rss') else ""#
     </title>
-    #if $pane == "Config"#
-        #set global $root = '../'#
-    #else#
-        #set global $root = '../../'#
-    #end if#
+    
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
@@ -42,9 +43,12 @@
         var formHasChanged = false;
         var formWasSubmitted = false;
         
-        // Links andranslations used in the scripts
+        // Information we need
         var sabSession = '$session';
         var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session'; 
+        var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
+        
+        // Translations
         var configTranslate = new Object();
         configTranslate.browseText = "$T('browse-folder')";
         configTranslate.saveChanges = "$T('button-saveChanges')";
@@ -114,6 +118,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="${root}config/sorting/" #if $pane == "Sorting" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+                        <strong>$T('cmenu-sorting')</strong>
+                    </a>
+                </li>
+                <li>
                     <a href="${root}config/notify/" #if $pane == "Email" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-comment"></span>
                         <strong>$T('cmenu-notif')</strong>
@@ -123,12 +133,6 @@
                     <a href="${root}config/scheduling/" #if $pane == "Scheduling" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-time"></span>
                         <strong>$T('cmenu-scheduling')</strong>
-                    </a>
-                </li>
-                <li>
-                    <a href="${root}config/sorting/" #if $pane == "Sorting" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
-                        <strong>$T('cmenu-sorting')</strong>
                     </a>
                 </li>
                 <li>

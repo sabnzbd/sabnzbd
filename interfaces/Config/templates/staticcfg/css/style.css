@@ -383,7 +383,7 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     opacity: 1 !important;
 }
 .fileBrowser {
-    margin-left: 5px!important;
+    margin-left: -1px!important;
 }
 #filebrowser_modal .list-group-item {
     font-weight: bold;
@@ -392,11 +392,17 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     margin-right: 10px;
     top: 0;
 }
-/* Fix for shifting scrollbars */
-.modal-open[style="padding-right: 17px;"] .navbar-fixed-top,
-.modal-open[style="padding-right: 17px;"] .navbar-fixed-bottom {
-padding-right: 17px;
+/* Fix for shifting scrollbars when opening modals */
+.modal-open[style="padding-right: 17px;"] .navbar-fixed-top {
+    padding-right: 17px;
 }
+.modal-open[style="padding-right: 15px;"] .navbar-fixed-top {
+    padding-right: 15px;
+}
+.modal-open[style="padding-right: 13px;"] .navbar-fixed-top {
+    padding-right: 13px;
+}
+/* --  */
 h2.activeRSS {
     margin-bottom: 10px;
 }
@@ -708,6 +714,14 @@ input[type="checkbox"] {
     min-width: 20px;
 }
 
+.Categories select {
+    max-width: 150px;
+}
+
+.Categories input {
+    max-width: 150px !important;
+}
+
 .Scheduling input[type="checkbox"] {
     margin-top: 0px;
     margin-left: -20px;
@@ -946,5 +960,10 @@ input[type="checkbox"] {
     .fileBrowserField {
         max-width: 65% !important;
     } 
+    
+    ul.tabs a {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 }
 

@@ -44,31 +44,106 @@
  * Changed by Safihre - 11 Nov 2015
 */
 ;(function($) {
-    var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
-    function browse(path, endpoint) {
+    // Building object
+    function FileBrowser(element) {
+        // Initialize
+        this.element = $(element);
+        this.initialDir = null;
+        this.currentBrowserPath = null;
+        this.currentRequest = null;
+        this.fileBrowserDialog = $('#filebrowser_modal .modal-body');
+        this.fileBrowserTitle = this.element.data('title') || $('label[for="'+this.element.attr('id')+'"]').text() || '';
+        
+        // Start
+        this.init()
+    };
+    
+    // Adding button
+    FileBrowser.prototype.init = function () {
+        // Self-reference
+        var self = this;
+        
+        // Small or big button
+        buttonText = this.element.hasClass('fileBrowserSmall') ? '' : configTranslate.browseText;
+        
+        // Add button
+        this.element.addClass('fileBrowserField').after(
+            $('<button class="btn btn-default fileBrowser" type="button"><span class="glyphicon glyphicon-folder-open"></span> '+buttonText+'</button>').click(function () {
+                self.openBrowser();
+            })
+        )   
+    }
+    
+    // Open browser-window
+    FileBrowser.prototype.openBrowser = function() {
+        // Self-reference
+        var self = this;
+        
+        // set up the browser and launch the dialog
+        // textbox (not saved) path > textbox (saved) path > none
+        this.initialDir = this.element.val() || this.element.data('initialdir') ||  '';
+        
+        // If there's no seperator, it must be a relative path
+        if(this.initialDir .split(folderSeperator).length < 2 && this.element.data('initialdir')) {
+            this.initialDir  = this.element.data('initialdir') + folderSeperator + this.element.val();
+        }
+
+        // Browse
+        this.browse(this.initialDir , folderBrowseUrl);
+        
+        // Choose path and close modal
+        $('#filebrowser_modal_accept').click(function() {
+            // Is it a relative path?
+            if(self.currentBrowserPath.indexOf(self.element.data('initialdir')) === 0) {
+                // Remove start
+                self.currentBrowserPath = self.currentBrowserPath.replace(self.element.data('initialdir')+folderSeperator, '');
+            }
+            
+            // Changed?
+            if(self.element.val() != self.currentBrowserPath) {
+                self.element.val(self.currentBrowserPath);
+                formHasChanged = true;
+            }
+            
+            // Hide and stop default action
+            $('#filebrowser_modal').modal('hide');
+            return false;
+        })
+        
+        // Use custom title instead of default and open modal
+        $('#filebrowser_modal .modal-header h4').text(this.fileBrowserTitle);
+        $('#filebrowser_modal').modal('show');
+        return false;
+    }
+    
+    FileBrowser.prototype.browse = function(path, endpoint) {
+        // Self-reference
+        var self = this;
+        
         // Nothing changed
-        if (currentBrowserPath === path) return;
+        if (this.currentBrowserPath === path) return;
+        
         // Still loading
-        if (currentRequest) currentRequest.abort();
+        if (this.currentRequest) this.currentRequest.abort();
+        
         // Get current folders
-        currentBrowserPath = path;
-        fileBrowserDialog = $('#filebrowser_modal .modal-body');
-        currentRequest = $.getJSON(endpoint, { name: path }, function (data) {
+        this.currentBrowserPath = path;
+        this.currentRequest = $.getJSON(endpoint, { name: path }, function (data) {
             // Clean
-            fileBrowserDialog.empty();
+            self.fileBrowserDialog.empty();
             
             // Make list
-            var list = $('<div class="list-group">').appendTo(fileBrowserDialog);
+            var list = $('<div class="list-group">').appendTo(self.fileBrowserDialog);
             $.each(data.paths, function (i, entry) {
                 // Title for first one
                 if(i == 0) {
-                    fileBrowserDialog.prepend($('<h4>').text(entry.current_path))
+                    self.fileBrowserDialog.prepend($('<h4>').text(entry.current_path))
                     return
                 }
                 // Regular link
                 link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function () { 
-                    browse(entry.path, endpoint); }
+                    self.browse(entry.path, endpoint); }
                 ).text(entry.name);
                 // Back image
                 if(entry.name == '..') {
@@ -82,47 +157,15 @@
             
         });
     }
-
-    $.fn.nFileBrowser = function (inputItem) {
-        // set up the browser and launch the dialog
-        // textbox (not saved) path > textbox (saved) path > none
-        var initialDir = inputItem.val() ||  '';
-
-        // Browse
-        browse(initialDir, folderBrowseUrl);
-        
-        // Choose path and close modal
-        $('#filebrowser_modal_accept').click(function() {
-            // Changed?
-            if(inputItem.val() != currentBrowserPath) {
-                inputItem.val(currentBrowserPath);
-                formHasChanged = true;
-            }
-            $('#filebrowser_modal').modal('hide');
-            return false;
-        })
-        
-        // Use custom title instead of default and open modal
-        $('#filebrowser_modal .modal-header h4').text($('label[for="'+inputItem.attr('id')+'"]').text());
-        $('#filebrowser_modal').modal('show');
-
-        return false;
-    };
-
+    
+    // Make sure we have unique instances
     $.fn.fileBrowser = function () {
-        // For each submitted item
-        return this.each(function(i,curItem) {
-            curItem = $(curItem);
-            // Add button
-            curItem.addClass('fileBrowserField').after(
-                $('<button class="btn btn-default fileBrowser" type="button"><span class="glyphicon glyphicon-folder-open"></span> '+configTranslate.browseText+'</button>').click(function () {
-                    $(this).nFileBrowser(curItem);
-                })
-            )
-            return 
+        return this.each(function () {
+            if (!$.data(this, 'plugin_FileBrowser')) {
+                $.data(this, 'plugin_FileBrowser', new FileBrowser(this));
+            }
         });
-    };
-
+    }
 })(jQuery);
 
 /*!
@@ -302,12 +345,12 @@ $(document).ready(function () {
  * and extracts the values into the provided data-object.
  */
 $.fn.extractFormDataTo = function(target) {
-	var inputs = $("input[type != 'submit'][type != 'button']", this);
+    var inputs = $("input[type != 'submit'][type != 'button']", this);
 
-	// could use .serializeArray() but that omits unchecked items
-	inputs.each(function (i,elem) {
-	    target[elem.name] = elem.value;
-	});
+    // could use .serializeArray() but that omits unchecked items
+    inputs.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
 
-	return this;
+    return this;
 }
