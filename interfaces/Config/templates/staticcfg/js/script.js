@@ -85,8 +85,8 @@
         this.initialDir = this.element.val() || this.element.data('initialdir') ||  '';
         
         // If there's no seperator, it must be a relative path
-        if(this.initialDir .split(folderSeperator).length < 2 && this.element.data('initialdir')) {
-            this.initialDir  = this.element.data('initialdir') + folderSeperator + this.element.val();
+        if(this.initialDir.split(folderSeperator).length < 2 && this.element.data('initialdir')) {
+            this.initialDir = this.element.data('initialdir') + folderSeperator + this.element.val();
         }
 
         // Browse
@@ -98,6 +98,10 @@
             if(self.currentBrowserPath.indexOf(self.element.data('initialdir')) === 0) {
                 // Remove start
                 self.currentBrowserPath = self.currentBrowserPath.replace(self.element.data('initialdir')+folderSeperator, '');
+                // If it's identical to the initial dir the replacement won't work
+                if(self.currentBrowserPath == self.element.data('initialdir')) {
+                    self.currentBrowserPath = '';
+                }
             }
             
             // Changed?

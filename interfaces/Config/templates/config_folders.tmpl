@@ -110,13 +110,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         // Add autocomplete and file-browser
-        \$('#download_dir, #complete_dir, #dirscan_dir, #script_dir, #email_dir, #admin_dir, #log_dir, #nzb_backup_dir').typeahead({
-            source: function (query, process) {
-                return \$.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
-                    return process(data);
-                });
-            }
-        }).fileBrowser();
+        \$('.col1 input[name$="_dir"]').typeahead().fileBrowser();
     })
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

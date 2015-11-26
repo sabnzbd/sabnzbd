@@ -63,6 +63,30 @@
     <script type="text/javascript" src="${root}staticcfg/js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${root}staticcfg/js/script.js?p=$pid"></script>
+    <script type="text/javascript">
+        // Set default functions for the autocomplete everywhere
+        \$.extend(\$.fn.typeahead.defaults, {
+            source: function (query, process) {
+                // If there's no seperator, it must be a relative path
+                if(query.split(folderSeperator).length < 2 && this.\$element.data('initialdir')) {
+                    query  = this.\$element.data('initialdir') + folderSeperator + query;
+                }
+                // Get info from the API
+                return \$.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
+                    return process(data);
+                });
+            },
+            updater: function(item) {
+                // Is it a relative path?
+                if(item.indexOf(this.\$element.data('initialdir')) === 0) {
+                    // Remove start
+                    return item.replace(this.\$element.data('initialdir')+folderSeperator, '');
+                }
+                // Full path
+                return item
+            }
+        })
+    </script>
     <!--[if lt IE 9]>
         <script src="${root}staticcfg/js/html5shiv.min.js"></script>
         <script src="${root}staticcfg/js/respond.min.js"></script>

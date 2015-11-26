@@ -596,7 +596,12 @@
 
 <script>
 \$(document).ready(function(){
-    \$('#email_dir').fileBrowser();
+    // Autocomplete and filebrowser
+    \$('#email_dir').typeahead().fileBrowser();
+    
+    /**
+        Testing functions
+    **/
     \$('#test_email').click(function () {
         if (confirm(\$('#test_email').attr('rel'))) {
 	    var data = { mode: 'test_email', apikey: '$session', output: 'json' };

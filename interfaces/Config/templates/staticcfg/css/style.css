@@ -234,7 +234,7 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     font-weight: 400;
 }
 .darkred {
-    color: red;
+    color: #d9534f;
 }
 .scheduleEntry {
     padding: 8px 0;
