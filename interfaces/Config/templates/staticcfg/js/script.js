@@ -44,7 +44,6 @@
  * Changed by Safihre - 11 Nov 2015
 */
 ;(function($) {
-
     // Building object
     function FileBrowser(element) {
         // Initialize
@@ -342,6 +341,9 @@ $(document).ready(function () {
         $(this).click()
     })
     
+    // Add hover to checkboxes (can't do it with CSS)
+    $('input[type="checkbox"]').siblings('label').addClass('config-hover')
+    $('input[type="checkbox"]').parents('label').addClass('config-hover')
 });
 
 /*

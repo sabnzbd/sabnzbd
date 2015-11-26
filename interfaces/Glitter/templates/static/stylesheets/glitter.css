@@ -68,7 +68,6 @@ h2 {
 .navbar-timeleft {
     font-weight: bold;
     min-width: 100px;
-    background-color: #F5F5F5;
     border-left: 0;
 }
 
@@ -779,6 +778,10 @@ tr.queueitem>td:first-child>a {
 .history {
     margin-top: 2px;
     position: relative;
+}
+
+.nohistory {
+    padding-bottom: 15px;
 }
 
 .history h2 {

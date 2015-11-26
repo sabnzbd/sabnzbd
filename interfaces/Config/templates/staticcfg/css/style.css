@@ -5,7 +5,7 @@ body {
 #logo {
     display: block;
     margin: auto;
-    margin-top: 2px;
+    margin-top: 3px;
 }
 
 #content {
@@ -97,6 +97,10 @@ label.config,
     margin-right: 10px;
     margin-left: 20px;
     padding-top: 5px;
+}
+label.config-hover {
+    cursor: pointer;
+    
 }
 label.narrow {
     width: 200px!important;
@@ -271,6 +275,9 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     height: 16px;
     margin-top: 0px;
 }
+.RSS form[action="add_rss_feed"] tr:nth-child(even) {
+    border: 1px solid #E5E5E5;
+}
 .tab-pane thead tr {
     background-color: transparent !important;
 }
@@ -435,8 +442,7 @@ h2.activeRSS {
     color: red;
 }
 #subscriptions {
-    min-width: 550px;
-    border-bottom: 1px solid #E5E5E5;
+    border: 1px solid #E5E5E5;
 }
 .data-row {
     border-top: 1px solid #E5E5E5;
@@ -474,7 +480,7 @@ h2.activeRSS {
 }
 .feed-row td {
     color: #777;
-    max-width: 40em;
+    max-width: 515px;
     padding: 0 0 .5em;
 }
 .feed-row div {
@@ -655,6 +661,7 @@ select {
     max-width: 100%;  
     min-height: 34px;
     font-size: 13px;
+    background-color: white;    
 }
 
 input[type="text"]:not([size]),
@@ -683,10 +690,10 @@ input[type="text"].smaller_input {
 }
 
 select {
-    background-color: transparent;
     min-width: 200px;
 }
 
+input[disabled],
 select[disabled] {
     background-color: #eee;
 }
@@ -729,9 +736,9 @@ input[type="checkbox"] {
 
 .navbar-default {
     background-color: #FFF;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-    box-shadow: 1px 1px 1px rgba(0,0,0,.06) !important;
+    
 }
 
 .navbar-fixed-top {
@@ -745,6 +752,9 @@ input[type="checkbox"] {
 }
 .navbar-default .navbar-brand-small {
     padding-right: 10px !important;
+}
+.navbar-default .navbar-brand-mobile {
+    display: none;
 }
 .navbar-default .navbar-nav>li>a {
     color: black !important;
@@ -888,6 +898,12 @@ input[type="checkbox"] {
 }
 
 @media screen and (max-width: 768px) {
+    .navbar-default .navbar-brand-small {
+        display: none;
+    }
+    .navbar-default .navbar-brand-mobile {
+        display: block;
+    }
     .navbar-collapse.in .navbar-nav>li>a>span,
     .navbar-collapse.collapsing .navbar-nav>li>a>span {
         display: inline-block;  
