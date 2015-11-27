@@ -255,8 +255,15 @@
 
 </div><!-- /colmask -->
 
-<script>
+<script type="text/javascript">
 \$(document).ready(function(){
+    // Exception when change of priority, reload
+    \$('input[name="priority"], input[name="displayname"]').on('change', function() {
+        \$('.fullform').submit(function() {
+            // Skip the fancy stuff, just submit
+            this.submit()
+        })
+    })
     \$('.showserver').click(function () {
         \$(this).parent().next().toggle();
         \$(this).parent().next().next().toggle();
