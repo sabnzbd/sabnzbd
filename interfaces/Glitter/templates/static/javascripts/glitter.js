@@ -739,7 +739,7 @@ $(function() {
             
             // Activate
             callSpecialAPI("status/" + $(htmlElement.currentTarget).data('action'), {
-                name: folder.folder()
+                name: $("<div/>").html(folder.folder()).text()
             }).then(function() {
                 // Remove item and load status data
                 $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
