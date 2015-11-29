@@ -413,7 +413,9 @@ tbody>tr>td:last-child {
 }
 
 .info-container .info-container-box-sorting a {
-    padding-left: 12px;
+    padding: 10px 10px 10px 10px;
+    margin: -10px -10px -10px 0px;
+    display: inline-block;
 }
 
 .info-container .info-container-box-sorting .dropdown-menu {
@@ -537,7 +539,8 @@ td.delete .dropdown {
 
 td.delete .dropdown>a {
     display: inline-block;
-    padding: 0px 10px;
+    padding: 10px 10px;
+    margin: -10px 0px;
 }
 
 td.delete input[type="checkbox"],
@@ -549,8 +552,8 @@ td.delete input[type="checkbox"],
 
 td.delete label,
  .multioperations-selector .add-nzb-inputbox-small label {
-    margin: -5px;
-    padding: 5px 12px 5px 10px;
+    margin: -10px -5px;
+    padding: 10px 12px 10px 10px;
     cursor: pointer;
 }
 
@@ -1405,7 +1408,7 @@ tr.queueitem>td:first-child>a {
 }
 
 #modal_item_files .item-files-table .progress small {
-    color: #999;
+    color: #727272;
 }
 
 #modal_item_files .item-files-table td {
@@ -1506,10 +1509,6 @@ tr.queueitem>td:first-child>a {
     
     .queue-table td.name .name-options small {
         display: none;
-    }
-    
-    .history-info {
-        float: none;
     }
 }
 

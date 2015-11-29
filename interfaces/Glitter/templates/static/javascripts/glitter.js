@@ -319,6 +319,8 @@ $(function() {
             ***/
             // Nothing = 100%
             response.queue.speedlimit = (response.queue.speedlimit == '') ? 100.0 : parseFloat(response.queue.speedlimit).toFixed(1);
+            // Trick to only get decimal-point when needed
+            response.queue.speedlimit = Math.round(response.queue.speedlimit*10)/10;
             self.speedLimitInt(response.queue.speedlimit)
 
             // Only update from external source when user isn't doing input
