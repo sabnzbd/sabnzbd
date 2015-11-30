@@ -11,8 +11,6 @@ Knockout slider
 Knockout Persist
 DateJS
 MomentJS
-Respond.js
-HTML5 Shiv 3.7.2
 
 
 --------------------------------------------------------------------------------------------

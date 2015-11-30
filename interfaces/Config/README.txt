@@ -4,7 +4,6 @@ zoggy@sabnzbd.org
 
 Changed by Safihre for 0.8.x
 
-
 ========================================================
 LIBRARIES USED
 
@@ -25,10 +24,3 @@ Bootstrap v3.3.6 (http://getbootstrap.com)
     Changed by Safihre, Nov 2015
     We include the icon-file directly into the CSS,
     this way we avoid errors when HTTPS is enabled
-
-HTML5 Shiv
- * MIT/GPL2 Licensed
-
-Respond.js
- * Copyright 2013 Scott Jehl
- * Licensed under https://github.com/scottjehl/Respond/blob/master/LICENSE-MIT
