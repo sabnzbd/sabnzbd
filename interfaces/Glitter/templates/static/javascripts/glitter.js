@@ -143,6 +143,7 @@ $(function() {
         self.speedMetric = ko.observable();
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
+        self.pauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
         self.downloadsPaused = ko.observable(false);
@@ -452,49 +453,83 @@ $(function() {
                 mode: 'config',
                 name: 'set_pause',
                 value: pauseDuration
-            });
+            }).then(self.refresh);
             self.downloadsPaused(true);
         };
         
-        // Custom pause-timer
-        self.customPauseTime = function() {
+        // Open modal
+        self.openCustomPauseTime = function() {
             // Was it loaded already?
             if(!Date.i18n) {
                  jQuery.getScript('./static/javascripts/date.min.js').then(function() {
                     // After loading we start again
-                    self.customPauseTime()
+                    self.openCustomPauseTime()
                  })
                  return;
             }
+            // Show modal
+            $('#modal_custom_pause').modal('show')
             
-            // Pop the question
-            var pausePrompt = prompt(glitterTranslate.pausePrompt);
-            var pauseParsed = Date.parse(pausePrompt);
+            // Focus on the input field
+            $('#modal_custom_pause').on('shown.bs.modal', function () {
+                $('#customPauseInput').focus()
+            })
+            
+            // Reset on modal close
+            $('#modal_custom_pause').on('hide.bs.modal', function () {
+                self.pauseCustom('');
+            })
+        }
+        
+        // Update on changes
+        self.pauseCustom.subscribe(function(newValue) {
+            // At least 3 charaters
+            if(newValue.length < 3) {
+                $('#customPauseOutput').text('').data('time', 0)
+                $('#modal_custom_pause .btn-default').addClass('disabled')
+                return;
+            }
+            
+            // Parse
+            var pauseParsed = Date.parse(newValue);
             
             // Did we get it?
             if(pauseParsed) {
                 // Is it just now?
                 if(pauseParsed <= Date.parse('now')) {
                     // Try again with the '+' in front, the parser doesn't get 100min
-                    pauseParsed = Date.parse('+' + pausePrompt);
+                    pauseParsed = Date.parse('+' + newValue);
                 }
                 
-                // Calculate difference in minutes
+                // Calculate difference in minutes and save
                 var pauseDuration = Math.round((pauseParsed - Date.parse('now'))/1000/60);
-                
-                // If in the future
-                if(pauseDuration > 0) {
-                    callAPI({
-                        mode: 'config',
-                        name: 'set_pause',
-                        value: pauseDuration
-                    });
+                $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' +glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
+                $('#customPauseOutput').data('time', pauseDuration)
+                $('#modal_custom_pause .btn-default').removeClass('disabled')
+            } else if(newValue) {
+                // No..
+                $('#customPauseOutput').text(glitterTranslate.pausePromptFail)
+                $('#modal_custom_pause .btn-default').addClass('disabled')
+            }
+        })
+        
+        // Save custom pause
+        self.saveCustomPause = function() {
+            // Get duration
+            pauseDuration = $('#customPauseOutput').data('time');
+            
+            // If in the future
+            if(pauseDuration > 0) {
+                callAPI({
+                    mode: 'config',
+                    name: 'set_pause',
+                    value: pauseDuration
+                }).then(function() {
+                    // Refresh and close the modal
+                    self.refresh()
                     self.downloadsPaused(true);
-                }
-            } else if(pausePrompt) {
-                // No.. And user did not press cancel
-                alert(glitterTranslate.pausePromptFail)
-                self.customPauseTime();
+                    $('#modal_custom_pause').modal('hide')
+                });
             }
         }
 

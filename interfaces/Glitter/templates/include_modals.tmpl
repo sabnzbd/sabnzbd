@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <a href="#" data-bind="click: loadStatusInfo, css: { 'rotate-refresh': !hasStatusInfo() }" title="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-refresh"></span></a>
                 <h4 class="modal-title">$T('Glitter-statusInterfaceOptions')</h4>
             </div>
@@ -278,7 +278,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-addNZB')</h4>
             </div>
             <div class="modal-body">
@@ -346,7 +346,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title row-wrap-text" data-bind="text: filelist.modalTitle">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
@@ -411,7 +411,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-retryJob')</h4>
             </div>
             <div class="modal-body">
@@ -448,7 +448,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-scriptLog')</h4>
             </div>
             <div class="modal-body"></div>
@@ -460,7 +460,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <img src="./static/images/logo.png" width="120" height="45" alt="" />
             </div>
             <div class="modal-body">
@@ -493,13 +493,37 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-clearHistory')</h4>
             </div>
             <div class="modal-body">
                 <button type="button" class="btn btn-danger" id="history_purge_failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
                 <button type="button" class="btn btn-danger" id="history_purgeremove_failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed-Files')</button>
                 <button type="button" class="btn btn-danger" id="history_purge_completed"><span class="glyphicon glyphicon-floppy-saved"></span> $T('purgeCompl')</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_custom_pause" class="modal modal-small fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">$T('Glitter-pauseFor')</h4>
+            </div>
+            <div class="modal-body">
+                <form data-bind="submit: saveCustomPause">
+                    <div class="form-group">
+                        <label for="customPauseInput">$T('Glitter-pausePrompt')</label>
+                        <input type="text" id="customPauseInput" class="form-control" data-bind="textInput: pauseCustom" placeholder="'50min', '3 hours', '20:00' $T('or') 'tomorrow 7pm'" />
+                    </div>
+                    <div id="customPauseOutput" class="text-muted"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
+                <button type="button" class="btn btn-default disabled" data-bind="click: saveCustomPause"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
             </div>
         </div>
     </div>

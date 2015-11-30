@@ -800,8 +800,9 @@ SKIN_TEXT = {
     'Glitter-custom' : TT('Custom'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
-    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!) <br />Example: "50min", "3 hours", "20:00" or "tomorrow 7pm"'), #: Don't translate the examples! Keep the ", do not replace by ' !
-    'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. <br />Try again.'),
+    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'), 
+    'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
+    'Glitter-pauseFor' : TT('Pause for...'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
     'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),
