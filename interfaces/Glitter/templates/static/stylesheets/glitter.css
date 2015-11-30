@@ -65,6 +65,37 @@ h2 {
     color: white !important;
 }
 
+.navbar-nav>li>a {
+    color: white !important;
+    opacity: 0.7;
+}
+
+.navbar-nav>li>a:hover,
+.main-menu-link:hover a {
+    opacity: 1;
+}
+
+.main-menu-link .icon-bar {
+    display: block;
+    width: 16px;
+    height: 3px;
+    border-radius: 1px !important;
+    background-color: white;
+    margin-top: 3px;
+}
+
+.main-menu-link .icon-bar:first-child {
+    margin-top: 2px;
+}
+
+.main-menu-link .icon-bar:last-child {
+    margin-bottom: 3px;
+}
+
+.active-on-queue-finish-menu .icon-bar {
+    background-color: red;
+}
+
 .navbar-timeleft {
     font-weight: bold;
     min-width: 100px;
@@ -171,7 +202,6 @@ li.dropdown {
     left: 0;
 }
 
-.active-on-queue-finish-menu,
 .queue-error-info {
     color: red !important;
 }
@@ -781,10 +811,6 @@ tr.queueitem>td:first-child>a {
 .history {
     margin-top: 2px;
     position: relative;
-}
-
-.nohistory {
-    padding-bottom: 15px;
 }
 
 .history h2 {

@@ -117,8 +117,12 @@
                         <li data-toggle="tooltip" data-placement="bottom" title="SABnzbd $T('menu-config')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
-                        <li class="dropdown">
-                            <a href="#" data-toggle="dropdown" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}" onclick="keepOpen(this)"><span class="glyphicon glyphicon-off"></span></a>
+                        <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}">
+                            <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </a>
                             <ul class="dropdown-menu menu-options">
                                 <li><a href="#modal_help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                                 <!--#if $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
