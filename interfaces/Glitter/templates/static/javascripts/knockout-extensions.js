@@ -37,9 +37,20 @@ ko.bindingHandlers.filedrop = {
             console.log("File drop disabled because this browser is too old");
             return;
         }
+        // EDITED to prevent drag-and-drop from inside own screen
+        $(element).bind("dragstart", function(e) {        
+            $(element).data('internal-drag', true)
+            // Remove after timeout
+            setTimeout(function() {
+                $(element).data('internal-drag', false)
+            }, 2000)
+        });
         $(element).bind("dragenter", function(e) {
             e.stopPropagation();
             e.preventDefault();
+            // Was it external or internal?
+            if($(element).data('internal-drag'))
+                return;
             if(options.overlaySelector)
                 $(options.overlaySelector).show();
         });
