@@ -1327,22 +1327,35 @@ $(function() {
         self.rating_avg_video = ko.observable(false);
         self.rating_avg_audio = ko.observable(false);
 
-        // Functional vars        
+        // Functional vars   
+        self.displayName = ko.computed(function() {
+            // Is set
+            if(!self.name()) return '';
+            
+            // is there a password in there?
+            extractOutput = extractTitleAndPassword(self.name()) 
+            
+            if(extractOutput.thePassword) {
+                return extractOutput.theTitle + ' <small class="queueitem-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
+            } else {
+                return extractOutput.theTitle
+            }
+        })  
         self.downloadedMB = ko.computed(function() {
             return(self.totalMB() - self.remainingMB()).toFixed(0);
-        }, this);
+        });
 
         self.percentage = ko.computed(function() {
             return((self.downloadedMB() / self.totalMB()) * 100).toFixed(2);
-        }, this);
+        });
 
         self.percentageRounded = ko.computed(function() {
             return fixPercentages(self.percentage())
-        }, this);
+        });
 
         self.progressText = ko.computed(function() {
             return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
-        }, this);
+        });
         
         self.extraText = ko.computed(function() {
             // Picked anything?
@@ -1434,9 +1447,13 @@ $(function() {
 
         // Edit name
         self.editName = function(data, event) {
+            // is there a password in there?
+            extractOutput = extractTitleAndPassword(self.name()) 
+            
             // Change status and fill
             self.editingName(true)
-            self.nameForEdit(self.name())
+            self.nameForEdit(extractOutput.titleClean)
+            
             // Select
             $(event.target).parents('.name').find('input').select()
         }
@@ -1448,22 +1465,20 @@ $(function() {
 
         // Do on change
         self.nameForEdit.subscribe(function(newName) {
-            // Change?
-            if(newName != self.name() && newName != "") {
-                callAPI({
-                        mode: 'queue',
-                        name: "rename",
-                        value: self.id,
-                        value2: newName
-                    })
-                    .then(function(response) {
-                        // Succes?
-                        if(response.status) {
-                            self.name(newName)
-                            self.parent.parent.refresh;
-                        }
-                    })
-            }
+            // Is there a password in there?
+            extractOutput = extractTitleAndPassword(self.name()) 
+            
+            // Anything change or empty?
+            if(!newName || extractOutput.theTitle == newName) return;
+
+            // Send rename
+            callAPI({
+                    mode: 'queue',
+                    name: "rename",
+                    value: self.id,
+                    value2: newName,
+                    value3: extractOutput.thePassword
+                }).then(self.parent.parent.refresh)
         })
 
         // See items
@@ -1953,21 +1968,15 @@ $(function() {
             // Update
             self.currentItem = queue_item;
             self.fileItems.removeAll()
-            self.triggerUpdate()
+            self.triggerUpdate() 
 
             // Get pasword self.currentItem title
-            passwordSplit = self.currentItem.name().split(" / ")
-
-            // Has SAB already detected its encrypted? Then there will be 3x /
-            passwordSplitExtra = 0;
-            if(passwordSplit.length == 3 || passwordSplit[0] == 'ENCRYPTED') {
-                passwordSplitExtra = 1;
-            }
-
+            extractOutput = extractTitleAndPassword(self.currentItem.name()) 
+            
             // Set files & title
             self.modalNZBId(self.currentItem.id)
-            self.modalTitle(passwordSplit[0 + passwordSplitExtra])
-            self.modalPassword(passwordSplit[1 + passwordSplitExtra])
+            self.modalPassword(extractOutput.thePassword)
+            self.modalTitle(extractOutput.titleClean)
             
             // Set color in case we are still checking
             if(self.currentItem.status() == 'Checking') {
@@ -2097,8 +2106,11 @@ $(function() {
                 name: self.modalTitle(),
                 password: $('#nzb_password').val()
             }).then(function() {
+                // Refresh, reset and close
+                parent.refresh()
                 $('#modal_item_filelist .glyphicon-floppy-saved').show()
                 $('#modal_item_filelist .glyphicon-lock').hide()
+                $('#modal_item_files').modal('hide')
             })
             return false;
         }
@@ -2311,6 +2323,31 @@ function rewriteTime(timeString) {
 
     // Regular
     return hours + ':' + minutes + ':' + seconds;
+}
+
+// Extract title and password
+function extractTitleAndPassword(titleInput) {
+    // Split
+    titleInputSplit = titleInput.split(' / ');
+    
+    // Nothing?
+    if(titleInputSplit.length < 2) {
+        return { theTitle: titleInput, titleClean: titleInput, thePassword: ''};
+    }
+    
+    // Has SAB already detected it is encrypted? It will add the extra label
+    // Everything after the first real / is the password, so we pop the first
+    if(titleInputSplit[0] == glitterTranslate.encrypted) {
+        theOutput = {   theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
+                        thePassword: titleInputSplit.join(' / ')};
+        // We need a 'cleaned' title for the password/filelisting popup
+        theOutput.titleClean = theOutput.theTitle.replace(glitterTranslate.encrypted + ' / ', '');
+    } else {
+        theOutput = {   theTitle: titleInputSplit.shift(), 
+                        thePassword: titleInputSplit.join(' / ')};
+        theOutput.titleClean = theOutput.theTitle;         
+    }
+    return theOutput
 }
 
 // How to display the date-time?

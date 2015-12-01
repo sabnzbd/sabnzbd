@@ -490,12 +490,18 @@ td.name .row-wrap-text {
     height: 1.5em;
 }
 
-.queue-table td.name .name-options {
+.queue-table td.name .name-options,
+.queue-table td.name:hover .queueitem-password {
     display: none;
 }
 
-.queue-table td.name .name-options small {
+.queue-table td.name .name-options small,
+.queueitem-password {
     opacity: 0.5;
+}
+
+.queueitem-password {
+    margin-left: 3px;
 }
 
 .queue-table td.name:hover .row-wrap-text {

@@ -414,8 +414,8 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-retryJob')</h4>
             </div>
-            <div class="modal-body">
-                <form id="retry-job-form" data-bind="submit: history.retryJob">
+            <form id="retry-job-form" data-bind="submit: history.retryJob">
+                <div class="modal-body">
                     <input type="hidden" name="retry_job_id" />
                     <fieldset>
                         <legend>$T('opt-extra-NZB')</legend>
@@ -437,9 +437,11 @@
                             </div>
                         </div>
                     </fieldset>
+                </div>
+                <div class="modal-footer">
                     <button class="btn btn-default"><span class="glyphicon glyphicon-repeat"></span> $T('button-retry')</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

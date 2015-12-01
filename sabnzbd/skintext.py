@@ -759,6 +759,7 @@ SKIN_TEXT = {
     'Glitter-afterRestart' : TT('In case of SABnzbd restart this screen will disappear automatically!'),
     'Glitter-disabled' : TT('Disabled'),
     'Glitter-warning' : TT('WARNING:'),
+    'Glitter-encrypted' : TT('ENCRYPTED'),
     'Glitter-error' : TT('ERROR:'),
     'Glitter-interfaceOptions' : TT('Web Interface'),
     'Glitter-interfaceRefresh' : TT('Refresh rate'),

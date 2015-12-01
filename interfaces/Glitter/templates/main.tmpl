@@ -241,7 +241,7 @@
                             </td>
                             <td class="name">
                                 <div class="row-wrap-text" data-bind="visible: !editingName()">
-                                    <span data-bind="text: name, attr: { 'title': name() }"></span>
+                                    <span data-bind="html: displayName, attr: { 'title': name() }"></span>
                                     <!-- ko if: (rating_avg_video() !== false)  -->
                                     <div class="name-ratings hoverbutton">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
@@ -651,6 +651,7 @@
             glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
             glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
             glitterTranslate.grabbing = "$T('Glitter-grabbing')";
+            glitterTranslate.encrypted = "$T('Glitter-encrypted')";
             glitterTranslate.checking = "$T('post-Checking')";
             glitterTranslate.misingArt = "$T('missingArt')";
             glitterTranslate.noSelect = "$T('Glitter-noSelect')";
