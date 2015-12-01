@@ -1,4 +1,4 @@
-<div id="modal_options" class="modal fade" tabindex="-1">
+<div id="modal-options" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,15 +8,15 @@
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#options_status" data-toggle="tab">$T('menu-cons')</a></li>
+                    <li class="active"><a href="#options-status" data-toggle="tab">$T('menu-cons')</a></li>
                     <li><a href="#options_connections" data-toggle="tab">$T('connections')</a></li>
-                    <li><a href="#options_orphans" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: hasStatusInfo() && statusInfo.status.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.status.folders().length"></span><!-- /ko --></a></li>
-                    <li><a href="#options_interface" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>  
+                    <li><a href="#options-orphans" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: hasStatusInfo() && statusInfo.status.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.status.folders().length"></span><!-- /ko --></a></li>
+                    <li><a href="#options-interface" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>  
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane fade in active" id="options_status">
+                    <div class="tab-pane fade in active" id="options-status">
                         <!-- ko if: !hasStatusInfo() -->
-                        <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                        <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
                         <!-- /ko -->
                         <!-- ko if: hasStatusInfo() && statusInfo.hasOwnProperty('dashboard') -->
                         <div class="row">
@@ -72,10 +72,10 @@
                     </div>
                     <div class="tab-pane fade" id="options_connections">
                         <!-- ko if: !hasStatusInfo() -->
-                        <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                        <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
                         <!-- /ko -->
                         <!-- ko if: hasStatusInfo() -->
-                        <div class="options_switch">
+                        <div class="options-switch">
                             <label>
                                 <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> 
                                 <span>$T('Glitter-showActiveConnections')</span>
@@ -128,16 +128,16 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <div class="tab-pane fade" id="options_orphans">
+                    <div class="tab-pane fade" id="options-orphans">
                         <!-- ko if: !hasStatusInfo() -->
-                            <h4>$T('Glitter-loading')<span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></h4>
+                            <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
                         <!-- /ko -->
                         <!-- ko if: hasStatusInfo() -->
                             <!-- ko if: statusInfo.status.folders().length == 0 -->
                             <h4>$T('none')</h4>
                             <!-- /ko -->
                             <!-- ko if: statusInfo.status.folders().length > 0 -->
-                            <a href="#" class="hoverbutton remove_all_orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
+                            <a href="#" class="hover-button remove-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
                             <div class="clearfix"></div>
                             <table class="table table-hover table-striped">
                                 <thead>
@@ -152,17 +152,17 @@
                                     <tr>
                                         <td><span class="glyphicon glyphicon-folder-open"></span></td>
                                         <td class="row-wrap-text"><strong data-bind="html: folder"></strong></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hoverbutton" data-toggle="tooltip" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-toggle="tooltip" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-toggle="tooltip" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
                                     </tr>
                                 </tbody>
                             </table>
                             <!-- /ko -->
                         <!-- /ko -->
                     </div>
-                    <div class="tab-pane fade" id="options_interface">
+                    <div class="tab-pane fade" id="options-interface">
                         <form class="form-horizontal" onsubmit="return false;">
-                            <div class="options_switch">
+                            <div class="options-switch">
                                 <label>
                                     <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" /> 
                                     <span>$T('Glitter-useGlobalOptions')</span>
@@ -214,7 +214,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="options_switch"></div>
+                            <div class="options-switch"></div>
                             <div class="form-group">
                                 <label class="col-sm-5 control-label">$T('Glitter-dateFormat')</label>
                                 <div class="col-sm-4">
@@ -274,7 +274,7 @@
     </div>
 </div>
 
-<div id="modal_add_nzb" class="modal fade" tabindex="-1">
+<div id="modal-add-nzb" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -342,7 +342,7 @@
     </div>
 </div>
 
-<div id="modal_item_files" class="modal fade" tabindex="-1">
+<div id="modal-item-files" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -365,10 +365,10 @@
                         </div>
                         <div class="multioperations-selector">
                             <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" onclick="checkAllFiles(this)" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" />
-                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-removeSelected')">
+                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
-                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hoverbutton" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-toggleCompletedFiles')">
+                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hover-button" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-toggleCompletedFiles')">
                                 <span class="glyphicon glyphicon-eye-close"></span> 100%
                             </a>
                         </div>
@@ -394,7 +394,7 @@
 
                         <div class="multioperations-selector">
                             <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" data-toggle="tooltip" data-placement="top" />
-                            <a href="#" class="hoverbutton" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="top" title="$T('Glitter-removeSelected')">
+                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="top" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
                         </div>
@@ -407,7 +407,7 @@
     </div>
 </div>
 
-<div id="modal_retry_job" class="modal modal-small fade" tabindex="-1">
+<div id="modal-retry-job" class="modal modal-small fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -446,7 +446,7 @@
     </div>
 </div>
 
-<div id="history_script_log" class="modal fade" tabindex="-1">
+<div id="history-script-log" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -458,7 +458,7 @@
     </div>
 </div>
 
-<div id="modal_help" class="modal fade">
+<div id="modal-help" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -491,7 +491,7 @@
     </div>
 </div>
 
-<div id="modal_purge_history" class="modal modal-small fade" tabindex="-1">
+<div id="modal-purge-history" class="modal modal-small fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

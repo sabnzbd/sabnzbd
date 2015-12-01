@@ -105,7 +105,7 @@ h2 {
     height: 5em;
 }
 
-.queue-table .nodownloads tr td {
+.queue-table .no-downloads tr td {
     height: 2em;
 }
 
@@ -129,7 +129,7 @@ h2 {
     max-width: 70% !important;
 }
 
-tr.queueitem>td:first-child>a {
+tr.queue-item>td:first-child>a {
     margin-top: 3px;
 }
 
@@ -201,11 +201,11 @@ tr.queueitem>td:first-child>a {
     margin-top:  0px;
 }
 
-.historyitem .dropdown-menu:before {
+.history-item .dropdown-menu:before {
     right: 23px;
 }
 
-.historyitem .dropdown-menu:after {
+.history-item .dropdown-menu:after {
     right: 24px;
 }
 
@@ -224,20 +224,20 @@ tr.queueitem>td:first-child>a {
     margin-right: 4px !important;
 }
 
-#modal_options .modal-header a {
+#modal-options .modal-header a {
     opacity: 1;
     font-size: 1.3em;
     margin-top: 2px;
 }
 
-#modal_options .col-sm-5 {
+#modal-options .col-sm-5 {
     text-align: left;
 }
 
-#modal_options .form-checkbox input[type="checkbox"] {
+#modal-options .form-checkbox input[type="checkbox"] {
     margin-top: 0;
 }
 
-#modal_item_files .input-group {
+#modal-item-files .input-group {
     clear: left;
 }

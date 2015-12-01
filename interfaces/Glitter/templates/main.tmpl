@@ -83,7 +83,7 @@
                                     <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
                                     </button>
-                                    <a href="#" class="max-speed-input-clear hoverbutton" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;">
+                                    <a href="#" class="max-speed-input-clear hover-button" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;">
                                         <span class="glyphicon glyphicon-link"></span>
                                     </a>
                                     <div class="dropdown-menu max-speed-input">
@@ -101,10 +101,10 @@
                             </div>
                         </li>
                         <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-addNZB')">
-                            <a href="#modal_add_nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                            <a href="#modal-add-nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
                         </li>
                         <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
-                            <a href="#modal_options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
+                            <a href="#modal-options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
                         <li data-toggle="tooltip" data-placement="bottom" title="SABnzbd $T('menu-config')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
@@ -116,7 +116,7 @@
                                 <span class="icon-bar"></span>
                             </a>
                             <ul class="dropdown-menu menu-options">
-                                <li><a href="#modal_help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
+                                <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                                 <!--#if $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
                                 <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
                                 <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
@@ -222,10 +222,10 @@
                     </thead>
                     
                     <!-- ko if: !hasQueue() -->
-                    <tbody class="nodownloads">
+                    <tbody class="no-downloads">
                         <tr>
                             <td colspan="6">
-                                <a href="#modal_add_nzb" class="hoverbutton" data-toggle="modal">
+                                <a href="#modal-add-nzb" class="hover-button" data-toggle="modal">
                                     <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                                 </a>
                             </td>
@@ -233,17 +233,17 @@
                     </tbody>
                     <!-- /ko -->
                     <tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, containment: '.queue' } }" style="display: none;">
-                        <tr class="queueitem">
+                        <tr class="queue-item">
                             <td>
                                 <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
-                                    <span class="hoverbutton glyphicon" data-bind="css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }"></span>
+                                    <span class="hover-button glyphicon" data-bind="css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }"></span>
                                 </a>
                             </td>
                             <td class="name">
                                 <div class="row-wrap-text" data-bind="visible: !editingName()">
                                     <span data-bind="html: displayName, attr: { 'title': name() }"></span>
                                     <!-- ko if: (rating_avg_video() !== false)  -->
-                                    <div class="name-ratings hoverbutton">
+                                    <div class="name-ratings hover-button">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
                                         <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: rating_avg_audio"></span>
                                     </div>
@@ -253,8 +253,8 @@
                                     <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
                                 </form>
                                 <div class="name-options" data-bind="visible: !editingName()">
-                                    <a href="#" data-bind="click: editName" class="hoverbutton"><span class="glyphicon glyphicon-pencil"></span></a>
-                                    <a href="#" data-bind="click: showFiles" class="hoverbutton"><span class="glyphicon glyphicon-folder-open"></span></a>
+                                    <a href="#" data-bind="click: editName" class="hover-button"><span class="glyphicon glyphicon-pencil"></span></a>
+                                    <a href="#" data-bind="click: showFiles" class="hover-button"><span class="glyphicon glyphicon-folder-open"></span></a>
                                     <small data-bind="text: avg_age"></small>
                                 </div>
                             </td>
@@ -280,7 +280,7 @@
                                     <a href="#" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
                                     </a>
-                                    <ul class="dropdown-menu queueitem-settings">
+                                    <ul class="dropdown-menu queue-item-settings">
                                         <li title="$T('category')" data-toggle="tooltip" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
                                             <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
@@ -302,7 +302,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="#" class="hoverbutton" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
                         </tr>
                     </tbody>
@@ -313,7 +313,7 @@
                         <label for="multiedit-checkall">
                             <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-toggle="tooltip" data-placement="top" />
                         </label>
-                        <a href="#" class="hoverbutton" data-bind="click: queue.doMultiDelete">
+                        <a href="#" class="hover-button" data-bind="click: queue.doMultiDelete">
                             <span class="glyphicon glyphicon-trash"></span>
                         </a>
                     </div>
@@ -375,7 +375,7 @@
                             <tr>
                                 <td class="table-messages-hide"></td>
                                 <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
-                                    <a href="#" class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a>
+                                    <a href="#" class="hover-button"><span class="glyphicon glyphicon-remove"></span></a>
                                 </td>
                             </tr>
                             <!-- ko foreach: allWarnings -->
@@ -395,7 +395,7 @@
                                     <span class="queue-message-text" data-bind="html: text"></span>
                                 </td>
                                 <td class="table-messages-remove">
-                                    <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hoverbutton"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
+                                    <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hover-button"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
                                 </td>
                             </tr>
                         <!-- /ko -->
@@ -416,42 +416,42 @@
                         </tr>
                     </thead>
                     <tbody data-bind="foreach: history.historyItems">
-                        <tr class="historyitem" data-bind="css: {'history-failed-download':failed()}">
+                        <tr class="history-item" data-bind="css: {'history-failed-download':failed()}">
                             <td>
                                 <div data-bind="visible: processingWaiting()">
                                     <span class="glyphicon glyphicon-time"></span>
                                 </div>
                                 <div data-bind="visible: processingDownload()">
                                     <div class="processing-download">
-                                        <div class="rect1"></div>
-                                        <div class="rect2"></div>
-                                        <div class="rect3"></div>
-                                        <div class="rect4"></div>
+                                        <div class="loader-bar-one"></div>
+                                        <div class="loader-bar-two"></div>
+                                        <div class="loader-bar-three"></div>
+                                        <div class="loader-bar-four"></div>
                                     </div>
                                 </div>
                                 <div data-bind="visible: (!failed() && !processingDownload() && !processingWaiting())">
                                     <span class="glyphicon glyphicon-ok"></span>
                                 </div>
                                 <div data-bind="visible: failed() && canRetry()">
-                                    <a class="retrybutton" href="#" data-bind="click: retry">
+                                    <a class="retry-button" href="#" data-bind="click: retry">
                                         <span class="glyphicon glyphicon-exclamation-sign"></span>
                                     </a>
                                 </div>
                                 <div data-bind="visible: failed() && !canRetry()">
-                                    <span class="retrybutton-inactive">
+                                    <span class="retry-button-inactive">
 										<span class="glyphicon glyphicon-exclamation-sign"></span>
                                     </span>
                                 </div>
                             </td>
                             <td class="name" data-bind="css: { 'name-has-ratings' : historyStatus.has_rating }">
                                 <div class="row-wrap-text">
-                                    <a class="retrybuttontext" href="#" data-bind="visible: (failed() && canRetry()), click: retry">$T('button-retry')</a>
+                                    <a class="retry-buttontext" href="#" data-bind="visible: (failed() && canRetry()), click: retry">$T('button-retry')</a>
                                     <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
                                 </div>
 
                                 <!-- ko if: historyStatus.has_rating -->
                                 <div class="dropdown history-ratings">
-                                    <a href="#" class="name-ratings hoverbutton" data-toggle="dropdown" onclick="keepOpen(this)">
+                                    <a href="#" class="name-ratings hover-button" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: historyStatus.rating_avg_video"></span>
                                         <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: historyStatus.rating_avg_audio"></span>
                                     </a>
@@ -582,7 +582,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="hoverbutton" data-bind="click: deleteSlot"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a href="#" class="hover-button" data-bind="click: deleteSlot"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
                         </tr>
                     </tbody>
@@ -602,8 +602,8 @@
                 </ul>
                 
                 <div class="multioperations-selector" id="history-options">
-                    <a href="#" class="hoverbutton" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-                    <a href="#" class="hoverbutton" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" class="hover-button" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+                    <a href="#" class="hover-button" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
 
                 <div class="info-container history-info">

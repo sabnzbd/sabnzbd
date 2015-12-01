@@ -662,7 +662,7 @@ $(function() {
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
 
             // After that, hide and reset
-            $("#modal_add_nzb").modal("hide");
+            $("#modal-add-nzb").modal("hide");
             form.reset()
             $('#nzbname').val('')
             $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
@@ -673,14 +673,14 @@ $(function() {
                 mode: "addurl",
                 name: $(form.nzbURL).val(),
                 nzbname: $('#nzbname').val(),
-                cat: $('#modal_add_nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val(),
-                script: $('#modal_add_nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val(),
-                priority: $('#modal_add_nzb select[name="Priority"]').val() == '' ? -100 : $('#modal_add_nzb select[name="Priority"]').val(),
-                pp: $('#modal_add_nzb select[name="Processing"]').val() == '' ? -1 : $('#modal_add_nzb select[name="Processing"]').val()
+                cat: $('#modal-add-nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Category"]').val(),
+                script: $('#modal-add-nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Post-processing"]').val(),
+                priority: $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val(),
+                pp: $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()
             }).then(function(r) {
                 // Hide and reset/refresh
                 self.refresh()
-                $("#modal_add_nzb").modal("hide");
+                $("#modal-add-nzb").modal("hide");
                 form.reset()
                 $('#nzbname').val('')
             });
@@ -692,10 +692,10 @@ $(function() {
             data.append("name", file);
             data.append("mode", "addfile");
             data.append("nzbname", $('#nzbname').val());
-            data.append("cat", $('#modal_add_nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal_add_nzb select[name="Category"]').val()); // Default category
-            data.append("script", $('#modal_add_nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal_add_nzb select[name="Post-processing"]').val()); // Default script
-            data.append("priority", $('#modal_add_nzb select[name="Priority"]').val() == '' ? -100 : $('#modal_add_nzb select[name="Priority"]').val()); // Default priority
-            data.append("pp", $('#modal_add_nzb select[name="Processing"]').val() == '' ? -1 : $('#modal_add_nzb select[name="Processing"]').val()); // Default post-processing options
+            data.append("cat", $('#modal-add-nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Category"]').val()); // Default category
+            data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Post-processing"]').val()); // Default script
+            data.append("priority", $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val()); // Default priority
+            data.append("pp", $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()); // Default post-processing options
             data.append("apikey", apiKey);
             // Add 
             $.ajax({
@@ -718,7 +718,7 @@ $(function() {
             self.hasStatusInfo(false)
             
             // Full refresh? Only on click and for the status-screen
-            var statusFullRefresh = (event != undefined) && $('#options_status').hasClass('active');
+            var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
             var strStatusUrl = statusFullRefresh ? 'status/' : 'status/?skip_dashboard=1';
 
             // Load the custom status info
@@ -744,14 +744,14 @@ $(function() {
                 self.hasStatusInfo(true)
 
                 // Add tooltips again
-                if(!isMobile) $('#modal_options [data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
+                if(!isMobile) $('#modal-options [data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
             });
         }
 
         // Do a disk-speedtest
         self.testDiskSpeed = function() {
             // Hide tooltips (otherwise they stay forever..)
-            $('#options_status [data-toggle="tooltip"]').tooltip('hide')
+            $('#options-status [data-toggle="tooltip"]').tooltip('hide')
             // Hide before running the test
             self.hasStatusInfo(false)
             // Run it and then display it
@@ -765,14 +765,14 @@ $(function() {
             callSpecialAPI("status/unblock_server", {
                 server: servername
             }).then(function() {
-                $("#modal_options").modal("hide");
+                $("#modal-options").modal("hide");
             })
         }
 
         // Orphaned folder processing
         self.folderProcess = function(folder, htmlElement) {
             // Hide tooltips (otherwise they stay forever..)
-            $('#options_orphans [data-toggle="tooltip"]').tooltip('hide')
+            $('#options-orphans [data-toggle="tooltip"]').tooltip('hide')
             
             // Activate
             callSpecialAPI("status/" + $(htmlElement.currentTarget).data('action'), {
@@ -822,13 +822,13 @@ $(function() {
         self.repairQueue = function() {
             if(!confirm(glitterTranslate.repair)) return;
             callSpecialAPI("config/repair").then(function() {
-                $("#modal_options").modal("hide");
+                $("#modal-options").modal("hide");
             })
         }
         // Force disconnect
         self.forceDisconnect = function() {
             callSpecialAPI("status/disconnect").then(function() {
-                $("#modal_options").modal("hide");
+                $("#modal-options").modal("hide");
             })
         }
         
@@ -879,7 +879,7 @@ $(function() {
                     self.allMessages.push({
                         index: 'OrphanedMsg',
                         type: 'INFO',
-                        text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal_options]\').click().parent().click(); $(\'a[href=#options_orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
+                        text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal-options]\').click().parent().click(); $(\'a[href=#options-orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
                         css: 'info',
                         clear: function() { self.clearMessages('OrphanedMsg')}
                     });
@@ -1336,7 +1336,7 @@ $(function() {
             extractOutput = extractTitleAndPassword(self.name()) 
             
             if(extractOutput.thePassword) {
-                return extractOutput.theTitle + ' <small class="queueitem-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
+                return extractOutput.theTitle + ' <small class="queue-item-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
             } else {
                 return extractOutput.theTitle
             }
@@ -1634,7 +1634,7 @@ $(function() {
             // Adding a extra retry file happens through this special function
             var data = new FormData();
             data.append("nzbfile", $(form.nzbFile)[0].files[0]);
-            data.append("job", $('#modal_retry_job input[name="retry_job_id"]').val());
+            data.append("job", $('#modal-retry-job input[name="retry_job_id"]').val());
             data.append("password", $('#retry_job_password').val());
             data.append("session", apiKey);
 
@@ -1650,7 +1650,7 @@ $(function() {
                 self.parent.refresh()
             });
 
-            $("#modal_retry_job").modal("hide");
+            $("#modal-retry-job").modal("hide");
             form.reset()
         }
               
@@ -1686,10 +1686,10 @@ $(function() {
 
         // Empty history options
         self.emptyHistory = function() {
-            $("#modal_purge_history").modal('show');
+            $("#modal-purge-history").modal('show');
 
             // After click
-            $('#modal_purge_history .modal-body .btn').on('click', function(event) {
+            $('#modal-purge-history .modal-body .btn').on('click', function(event) {
                 // Only remove failed
                 if(this.id == 'history_purge_failed') {
                     del_files = 0;
@@ -1715,7 +1715,7 @@ $(function() {
                 }).then(function(response) {
                     if(response.status) {
                         self.parent.refresh();
-                        $("#modal_purge_history").modal('hide');
+                        $("#modal-purge-history").modal('hide');
                     }
                 });
             });
@@ -1798,9 +1798,9 @@ $(function() {
         // Re-try button
         self.retry = function() {
             // Set JOB-id
-            $('#modal_retry_job input[name="retry_job_id"]').val(self.nzo_id)
+            $('#modal-retry-job input[name="retry_job_id"]').val(self.nzo_id)
                 // Open modal
-            $('#modal_retry_job').modal("show")
+            $('#modal-retry-job').modal("show")
         };
 
         // Update information only on click
@@ -1814,11 +1814,11 @@ $(function() {
                 // Update it after the update of the info! Othwerwise it gets overwritten
                 $(event.currentTarget).parent().find('.history-status-modallink a').click(function() {
                     // Info in modal
-                    $('#history_script_log .modal-body').load($(event.currentTarget).parent().find('.history-status-modallink a').attr('href'), function(result) {
+                    $('#history-script-log .modal-body').load($(event.currentTarget).parent().find('.history-status-modallink a').attr('href'), function(result) {
                         // Set title and then remove it
-                        $('#history_script_log .modal-title').text($(this).find("h3").text())
+                        $('#history-script-log .modal-title').text($(this).find("h3").text())
                         $(this).find("h3, title").remove()
-                        $('#history_script_log').modal({
+                        $('#history-script-log').modal({
                             show: true
                         });
                     });
@@ -1986,13 +1986,13 @@ $(function() {
             // Hide ok button and reset
             $('#modal_item_filelist .glyphicon-floppy-saved').hide()
             $('#modal_item_filelist .glyphicon-lock').show()
-            $('#modal_item_files input[type="checkbox"]').prop('checked', false)
+            $('#modal-item-files input[type="checkbox"]').prop('checked', false)
 
             // Show
-            $('#modal_item_files').modal('show');
+            $('#modal-item-files').modal('show');
 
             // Stop updating on closing of the modal
-            $('#modal_item_files').on('hidden.bs.modal', function() {
+            $('#modal-item-files').on('hidden.bs.modal', function() {
                 self.removeUpdate();
             })
         }
@@ -2008,7 +2008,7 @@ $(function() {
                 // When there's no files left we close the modal and the update will be stopped
                 // For example when the job has finished downloading
                 if(response.files.length === 0) {
-                    $('#modal_item_files').modal('hide');
+                    $('#modal-item-files').modal('hide');
                     return;
                 }
 
@@ -2042,7 +2042,7 @@ $(function() {
                 // Check if we show/hide completed
                 if(localStorageGetItem('showCompletedFiles') == 'No') {
                     $('.item-files-table tr:not(.files-sortable)').hide();
-                    $('#filelist-showcompleted').removeClass('hoverbutton')
+                    $('#filelist-showcompleted').removeClass('hover-button')
                 }
 
                 // Refresh with same as rest
@@ -2110,7 +2110,7 @@ $(function() {
                 parent.refresh()
                 $('#modal_item_filelist .glyphicon-floppy-saved').show()
                 $('#modal_item_filelist .glyphicon-lock').hide()
-                $('#modal_item_files').modal('hide')
+                $('#modal-item-files').modal('hide')
             })
             return false;
         }
@@ -2394,7 +2394,7 @@ function checkAllFiles(objCheck) {
 
     } else {
         // (Un)check all in file-list
-        $('#modal_item_files input').filter(":checkbox:not(:disabled):visible").prop('checked', $(objCheck).prop('checked'))
+        $('#modal-item-files input').filter(":checkbox:not(:disabled):visible").prop('checked', $(objCheck).prop('checked'))
     }
 }
 
@@ -2411,16 +2411,16 @@ function checkShiftRange(strCheckboxes) {
 
 // Hide completed files in files-modal
 function hideCompletedFiles() {
-    if($('#filelist-showcompleted').hasClass('hoverbutton')) {
+    if($('#filelist-showcompleted').hasClass('hover-button')) {
         // Hide all
         $('.item-files-table tr:not(.files-sortable)').hide();
-        $('#filelist-showcompleted').removeClass('hoverbutton')
+        $('#filelist-showcompleted').removeClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'No')
     } else {
         // show all
         $('.item-files-table tr:not(.files-sortable)').show();
-        $('#filelist-showcompleted').addClass('hoverbutton')
+        $('#filelist-showcompleted').addClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'Yes')
     }

@@ -22,12 +22,12 @@ nav .btn {
 }
 
 a, a:active, a:hover, a:focus,
-.hoverbutton.glyphicon-play,
+.hover-button.glyphicon-play,
 .dropdown-menu>li>a,
 legend, 
-#modal_options legend label, 
-#modal_options legend a,
-#modal_item_files .item-files-table .progress small {
+#modal-options legend label, 
+#modal-options legend a,
+#modal-item-files .item-files-table .progress small {
     color: #EBEBEB;
 }
 
@@ -40,7 +40,7 @@ legend,
     color: white !important;
 }
 
-.hoverbutton {
+.hover-button {
     opacity: 0.7;
 }
 
@@ -127,7 +127,7 @@ tbody .caret {
 }
 
 .info-container,
-#modal_options .options-status-box small {
+#modal-options .options-status-box small {
     color: #D6D6D6;
 }
 
@@ -148,12 +148,12 @@ legend, hr {
     border-color: #969696
 }
 
-#modal_help table td,
-#modal_help table {
+#modal-help table td,
+#modal-help table {
     background-color: transparent;
 }
 
-#modal_item_files .item-files-table td {
+#modal-item-files .item-files-table td {
     border-bottom: none !important;
 }
 
