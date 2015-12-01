@@ -1433,10 +1433,12 @@ $(function() {
         };
 
         // Edit name
-        self.editName = function() {
+        self.editName = function(data, event) {
             // Change status and fill
             self.editingName(true)
             self.nameForEdit(self.name())
+            // Select
+            $(event.target).parents('.name').find('input').select()
         }
 
         // Catch the submit action
