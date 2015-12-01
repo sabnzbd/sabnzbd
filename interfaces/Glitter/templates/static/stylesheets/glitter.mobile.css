@@ -40,7 +40,7 @@ h2 {
 
 .max-speed-input {
     margin-top: 1px !important;
-    margin-left: 0 !important;
+    margin-left: -5px !important;
     width: 300px !important;
 }
 
@@ -195,6 +195,18 @@ tr.queueitem>td:first-child>a {
 
 .search-box {
     margin-bottom: 5px;
+}
+
+.info-container .info-container-box-sorting .dropdown-menu {
+    margin-top:  0px;
+}
+
+.historyitem .dropdown-menu:before {
+    right: 23px;
+}
+
+.historyitem .dropdown-menu:after {
+    right: 24px;
 }
 
 /**
