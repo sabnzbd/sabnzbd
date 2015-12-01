@@ -783,6 +783,10 @@ input[type="checkbox"] {
     line-height: 1.1em;
 }
 
+.Servers .col2 .label:nth-child(2) {
+    opacity: 0.7;
+}
+
 .Servers .col2 label {
     margin: 0;
     cursor: pointer;
@@ -790,6 +794,10 @@ input[type="checkbox"] {
 
 .Servers .col2 button:first-of-type {
     margin-bottom: 8px;
+}
+
+.server-disabled {
+    background-color: #eee;
 }
 
 .Special .glyphicon-asterisk {
