@@ -27,7 +27,10 @@ a, a:active, a:hover, a:focus,
 legend, 
 #modal-options legend label, 
 #modal-options legend a,
-#modal-item-files .item-files-table .progress small {
+#modal-item-files .item-files-table .progress small,
+#modal-options .options-switch label, 
+#modal-options #options-orphans .remove-all-orphaned,
+.text-muted {
     color: #EBEBEB;
 }
 
@@ -40,12 +43,17 @@ legend,
     color: white !important;
 }
 
+.main-restarting {
+    color: white !important;
+}
+
 .hover-button {
     opacity: 0.7;
 }
 
 .container,
-.modal-body {
+.modal-body,
+.modal-footer {
     background-color: #727272;
 }
 
@@ -62,10 +70,6 @@ legend,
 .max-speed-input-clear:hover,
 .nav-tabs>li>a:hover {
     color: black;
-}
-
-.progress {
-    background-color: #B0B0B0;
 }
 
 .processing-download > div {
@@ -127,13 +131,15 @@ tbody .caret {
 }
 
 .info-container,
-#modal-options .options-status-box small {
+#modal-options .options-status-box small,
+#modal-options #options-status small,
+#modal-options .tab-content h4 {
     color: #D6D6D6;
 }
 
 td.name .name-ratings span,
 .navbar-nav .open .dropdown-menu>li>a,
-.modal-backdrop.in,
+.dropdown-header,
 pre {
     color: #EBEBEB !important;
     opacity: 1 !important;
@@ -155,6 +161,18 @@ legend, hr {
 
 #modal-item-files .item-files-table td {
     border-bottom: none !important;
+}
+
+.queue-item .dropdown-menu:before, 
+.history-item .dropdown-menu:before, 
+.info-container-box-sorting .dropdown-menu:before {
+    
+}
+
+.queue-item .dropdown-menu:after, 
+.history-item .dropdown-menu:after, 
+.info-container-box-sorting .dropdown-menu:after {
+    border-bottom-color: #666;
 }
 
 /* Placeholders - Will not work if grouped! */

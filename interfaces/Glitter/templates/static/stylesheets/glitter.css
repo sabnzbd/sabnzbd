@@ -924,6 +924,7 @@ tr.queue-item>td:first-child>a {
 .history-ratings-menu {
     width: 300px;
     padding: 10px;
+    margin-top: 4px !important;
 }
 
 .history-ratings-menu .divider {
@@ -1056,7 +1057,7 @@ tr.queue-item>td:first-child>a {
 
 .history-options-show-failed,
 .search-box input:focus+span {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .processing-download {
@@ -1750,6 +1751,15 @@ a:focus {
     border-bottom: 5px solid #ffffff;
     border-left: 5px solid transparent;
     content: '';
+}
+
+.history-ratings-menu:after {
+    right: inherit !important;
+    left: 23px;
+}
+.history-ratings-menu:before {
+    right: inherit !important;
+    left: 22px;
 }
 
 .open > .dropdown-menu {
