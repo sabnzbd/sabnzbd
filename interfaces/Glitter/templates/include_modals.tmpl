@@ -39,7 +39,7 @@
                             <div class="col-sm-5">$T('dashboard-downloadDirSpeed')</div>
                             <div class="col-sm-7">
                                 <span data-bind="text: (statusInfo.dashboard.downloaddirspeed() > 0 ? statusInfo.dashboard.downloaddirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.downloaddirspeedbad() }"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
+                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.dashboard.downloaddir, length: 25"></span>)</small>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                             <div class="col-sm-5">$T('dashboard-completeDirSpeed')</div>
                             <div class="col-sm-7">
                                 <span data-bind="text: (statusInfo.dashboard.completedirspeed() > 0 ? statusInfo.dashboard.completedirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.completedirspeedbad() }"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-toggle="tooltip" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
+                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-refresh"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.dashboard.completedir, length: 25"></span>)</small>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                         <div class="clearfix"></div>
                         <div class="options-function-box">
                             <a href="#" data-bind="click: forceDisconnect" class="btn btn-default ">$T('link-forceDisc')</a>
-                            <a href="#" data-bind="click: repairQueue" data-toggle="tooltip" data-placement="top" title="$T('explain-Repair').replace('<br>',' ').replace('<br />',' ')" class="btn btn-default">$T('Glitter-repairQueue')</a>
+                            <a href="#" data-bind="click: repairQueue" data-tooltip="true" data-placement="top" title="$T('explain-Repair').replace('<br>',' ').replace('<br />',' ')" class="btn btn-default">$T('Glitter-repairQueue')</a>
                             <a href="status/showlog?session=$session" target="_blank" class="btn btn-default">$T('link-showLog')</a>
                             <select class="form-control" data-bind="value: statusInfo.status.loglevel">
                                 <option value="0">$T('log-errWarn')</option>
@@ -152,8 +152,8 @@
                                     <tr>
                                         <td><span class="glyphicon glyphicon-folder-open"></span></td>
                                         <td class="row-wrap-text"><strong data-bind="html: folder"></strong></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-toggle="tooltip" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-toggle="tooltip" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -286,7 +286,7 @@
                     <form data-bind="submit: addNZBFromURL" class="col-sm-6">
                         <fieldset>
                             <legend>$T('Glitter-addFromURL')</legend>
-                            <div class="input-group" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
                                 <input type="text" name="nzbURL" class="form-control" placeholder="$T('enterURL')" />
                                 <span class="input-group-btn">
                                     <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
@@ -297,7 +297,7 @@
                     <form data-bind="submit: addNZBFromFileForm" class="col-sm-6">
                         <fieldset>
                             <legend>$T('Glitter-addFromFile')</legend>
-                            <div class="input-group" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
                                 <label class="btn btn-default btn-file">
                                     <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
                                     <input type="file" name="nzbFile" class="form-control" accept=".nzb,.rar,.zip,.gz,.bz2" data-bind="event : { change: updateBrowseLabel }" />
@@ -320,19 +320,19 @@
                 </div>
                 <hr />
                 <div class="clearfix"></div>
-                <div class="add-nzb-inputbox" title="$T('category')" data-toggle="tooltip" data-placement="left">
+                <div class="add-nzb-inputbox" title="$T('category')" data-tooltip="true" data-placement="left">
                     <span class="glyphicon glyphicon-tag"></span>
                     <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText',"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('priority')" data-toggle="tooltip" data-placement="left">
+                <div class="add-nzb-inputbox" title="$T('priority')" data-tooltip="true" data-placement="left">
                     <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                     <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '$T('default')'"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('swtag-pp')" data-toggle="tooltip" data-placement="left">
+                <div class="add-nzb-inputbox" title="$T('swtag-pp')" data-tooltip="true" data-placement="left">
                     <span class="glyphicon glyphicon-check"></span>
                     <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '$T('default')'"></select>
                 </div>
-                <div class="add-nzb-inputbox" title="$T('eoq-scripts')" data-toggle="tooltip" data-placement="left">
+                <div class="add-nzb-inputbox" title="$T('eoq-scripts')" data-tooltip="true" data-placement="left">
                     <span class="glyphicon glyphicon-flash"></span>
                     <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')'"></select>
                 </div>
@@ -364,11 +364,11 @@
                             </div>
                         </div>
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" onclick="checkAllFiles(this)" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" />
-                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-removeSelected')">
+                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" onclick="checkAllFiles(this)" data-tooltip="true" data-trigger="hover" data-placement="bottom" />
+                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="bottom" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
-                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hover-button" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-toggleCompletedFiles')">
+                            <a href="#" onclick="hideCompletedFiles()" id="filelist-showcompleted" class="hover-button" data-tooltip="true" data-placement="bottom" title="$T('Glitter-toggleCompletedFiles')">
                                 <span class="glyphicon glyphicon-eye-close"></span> 100%
                             </a>
                         </div>
@@ -393,8 +393,8 @@
                         </table>
 
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" data-toggle="tooltip" data-placement="top" />
-                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-toggle="tooltip" data-placement="top" title="$T('Glitter-removeSelected')">
+                            <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="top" />
+                            <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="top" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
                         </div>
@@ -419,7 +419,7 @@
                     <input type="hidden" name="retry_job_id" />
                     <fieldset>
                         <legend>$T('opt-extra-NZB')</legend>
-                        <div class="input-group input-group-addfile" data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                        <div class="input-group input-group-addfile" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
                             <label class="btn btn-default btn-file">
                                 <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
                                 <input type="file" name="nzbFile" class="form-control" accept=".nzb,.rar,.zip,.gz,.bz2" data-bind="event : { change: updateBrowseLabel }" />
@@ -499,9 +499,11 @@
                 <h4 class="modal-title">$T('Glitter-clearHistory')</h4>
             </div>
             <div class="modal-body">
-                <button type="button" class="btn btn-danger" id="history_purge_failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
-                <button type="button" class="btn btn-danger" id="history_purgeremove_failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed-Files')</button>
-                <button type="button" class="btn btn-danger" id="history_purge_completed"><span class="glyphicon glyphicon-floppy-saved"></span> $T('purgeCompl')</button>
+                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
+                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purgeremove-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed-Files')</button><hr />
+                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-completed"><span class="glyphicon glyphicon-floppy-saved"></span> $T('purgeCompl')</button><hr />
+                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-page"><span class="glyphicon glyphicon-check"></span> $T('purgeHist') ($T('Glitter-page')) <span class="label label-default" data-bind="text: history.historyItems().length"></span></button>
+                
             </div>
         </div>
     </div>

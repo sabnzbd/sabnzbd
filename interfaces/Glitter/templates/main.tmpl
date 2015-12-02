@@ -97,13 +97,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-addNZB')">
+                        <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-addNZB')">
                             <a href="#modal-add-nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
+                        <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
                             <a href="#modal-options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
-                        <li data-toggle="tooltip" data-placement="bottom" title="SABnzbd $T('menu-config')">
+                        <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
                             <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
                         </li>
                         <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}">
@@ -190,10 +190,10 @@
                     <!-- /ko -->
                     <div class="info-container-box-sorting dropdown" data-bind="visible: hasQueue()">
                         <a href="#" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-sort-by-alphabet" data-toggle="tooltip" data-placement="left" title="$T('cmenu-sorting')"></span>
+                            <span class="glyphicon glyphicon-sort-by-alphabet" data-tooltip="true" data-placement="left" title="$T('cmenu-sorting')"></span>
                         </a>
                         <a href="#" data-bind="click: queue.showMultiEdit">
-                            <span class="glyphicon glyphicon-tasks" data-toggle="tooltip" data-placement="left" title="$T('Glitter-multiOperations')"></span>
+                            <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
@@ -223,7 +223,7 @@
                         <tr>
                             <td colspan="6">
                                 <a href="#modal-add-nzb" class="hover-button" data-toggle="modal">
-                                    <span title="$T('Glitter-dragAndDrop')" data-toggle="tooltip"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
+                                    <span title="$T('Glitter-dragAndDrop')" data-tooltip="true"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                                 </a>
                             </td>
                         </tr>
@@ -278,22 +278,22 @@
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu queue-item-settings">
-                                        <li title="$T('category')" data-toggle="tooltip" data-placement="left">
+                                        <li title="$T('category')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
                                             <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
                                         </li>
                                         <!-- ko if: (status() != 'Fetching')  -->
-                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-toggle="tooltip" data-placement="left">
+                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                             <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>
                                         </li>
                                         <!-- /ko -->
-                                        <li title="$T('swtag-pp')" data-toggle="tooltip" data-placement="left">
+                                        <li title="$T('swtag-pp')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-check"></span>
                                             <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, event: { change: changeProcessing }"></select>
                                         </li>
 
-                                        <li title="$T('eoq-scripts')" data-toggle="tooltip" data-placement="left">
+                                        <li title="$T('eoq-scripts')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-flash"></span>
                                             <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 0)"></select>
                                         </li>
@@ -308,7 +308,7 @@
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-options">
                         <label for="multiedit-checkall">
-                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-toggle="tooltip" data-placement="top" />
+                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-tooltip="true" data-placement="top" />
                         </label>
                         <a href="#" class="hover-button" data-bind="click: queue.doMultiDelete">
                             <span class="glyphicon glyphicon-trash"></span>
@@ -317,28 +317,28 @@
                     <div class="add-nzb-inputbox add-nzb-inputbox-small">
                         <label for="multiedit-play">
                             <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-play" title="$T('link-resume')" data-toggle="tooltip" data-placement="top"></span>
+                            <span class="glyphicon glyphicon-play" title="$T('link-resume')" data-tooltip="true" data-placement="top"></span>
                         </label>
                         <label for="multiedit-pause">
                             <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
-                            <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-toggle="tooltip" data-placement="top"></span>
+                            <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-tooltip="true" data-placement="top"></span>
                         </label>
                         <span class="label label-default" data-bind="text: queue.multiEditItems().length">0</span>
                     </div>
                     <div class="add-nzb-inputbox-clear"></div>
-                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('category')">
+                    <div class="add-nzb-inputbox" data-tooltip="true" data-placement="top" title="$T('category')">
                         <span class="glyphicon glyphicon-tag"></span>
                         <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('priority')">
+                    <div class="add-nzb-inputbox" data-tooltip="true" data-placement="top" title="$T('priority')">
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('swtag-pp')">
+                    <div class="add-nzb-inputbox" data-tooltip="true" data-placement="top" title="$T('swtag-pp')">
                         <span class="glyphicon glyphicon-check"></span>
                         <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
-                    <div class="add-nzb-inputbox" data-toggle="tooltip" data-placement="top" title="$T('eoq-scripts')">
+                    <div class="add-nzb-inputbox" data-tooltip="true" data-placement="top" title="$T('eoq-scripts')">
                         <span class="glyphicon glyphicon-flash"></span>
                         <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
                     </div>
@@ -599,8 +599,8 @@
                 </ul>
                 
                 <div class="multioperations-selector" id="history-options">
-                    <a href="#" class="hover-button" title="$T('showAllHis') / $T('showFailedHis')" data-toggle="tooltip" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-                    <a href="#" class="hover-button" title="$T('purgeHist')"  data-toggle="tooltip" data-placement="left" data-bind="click: history.emptyHistory"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" class="hover-button" title="$T('showAllHis') / $T('showFailedHis')" data-tooltip="true" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+                    <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-toggle="modal" data-tooltip="true" data-placement="left"><span class="glyphicon glyphicon-trash"></span></a>
                 </div>
 
                 <div class="info-container history-info">

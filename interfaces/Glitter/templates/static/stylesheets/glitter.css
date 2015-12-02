@@ -1314,6 +1314,10 @@ tr.queue-item>td:first-child>a {
     float: right;
 }
 
+#modal-purge-history hr {
+    margin: 0px 0px 10px;
+}
+
 /* ADD-NZB MODAL */
 
 #modal-add-nzb fieldset {
@@ -1557,7 +1561,7 @@ tr.queue-item>td:first-child>a {
 
 @media screen and (min-width: 768px) {
     .modal-small .modal-dialog {
-        width: 350px;
+        width: 370px;
     }
 
     .queue .multioperations-selector {

@@ -744,14 +744,14 @@ $(function() {
                 self.hasStatusInfo(true)
 
                 // Add tooltips again
-                if(!isMobile) $('#modal-options [data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
+                if(!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
             });
         }
 
         // Do a disk-speedtest
         self.testDiskSpeed = function() {
             // Hide tooltips (otherwise they stay forever..)
-            $('#options-status [data-toggle="tooltip"]').tooltip('hide')
+            $('#options-status [data-tooltip="true"]').tooltip('hide')
             // Hide before running the test
             self.hasStatusInfo(false)
             // Run it and then display it
@@ -772,7 +772,7 @@ $(function() {
         // Orphaned folder processing
         self.folderProcess = function(folder, htmlElement) {
             // Hide tooltips (otherwise they stay forever..)
-            $('#options-orphans [data-toggle="tooltip"]').tooltip('hide')
+            $('#options-orphans [data-tooltip="true"]').tooltip('hide')
             
             // Activate
             callSpecialAPI("status/" + $(htmlElement.currentTarget).data('action'), {
@@ -929,7 +929,7 @@ $(function() {
         self.refresh()
 
         // Activate tooltips
-        if(!isMobile) $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
+        if(!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
     }
 
     /**
@@ -1678,46 +1678,65 @@ $(function() {
         }
         
         // Toggle showing failed
-        self.toggleShowFailed = function() {
+        self.toggleShowFailed = function(objModel, event) {
             self.showFailed(!self.showFailed())
             // Force refresh
             self.parent.refresh()
+            // Forde hide tooltip so it doesn't linger
+            $('#history-options a').tooltip('hide')
         }
 
         // Empty history options
-        self.emptyHistory = function() {
-            $("#modal-purge-history").modal('show');
-
-            // After click
-            $('#modal-purge-history .modal-body .btn').on('click', function(event) {
-                // Only remove failed
-                if(this.id == 'history_purge_failed') {
-                    del_files = 0;
-                    value = 'failed';
-                }
-                // Also remove files
-                if(this.id == 'history_purgeremove_failed') {
-                    del_files = 1;
-                    value = 'failed';
-                }
-                // Remove completed
-                if(this.id == 'history_purge_completed') {
-                    del_files = 0;
-                    value = 'completed';
-                }
-
-                // Call API and close the window
+        self.emptyHistory = function(objModel, event) {
+            // What event?
+            var whatToRemove = $(event.target).data('action');
+            
+            // Purge failed
+            if(whatToRemove == 'history-purge-failed') {
+                del_files = 0;
+                value = 'failed';
+            }
+            // Also remove files
+            if(whatToRemove == 'history-purgeremove-failed') {
+                del_files = 1;
+                value = 'failed';
+            }
+            // Remove completed
+            if(whatToRemove == 'history-purge-completed') {
+                del_files = 0;
+                value = 'completed';
+            }
+            // Remove the ones on this page
+            if(whatToRemove == 'history-purge-page') {
+                // List all the ID's
+                strIDs = '';
+                $.each(self.historyItems(), function(index) {
+                    strIDs = strIDs + this.nzo_id + ',';
+                })
+                // Send the command
                 callAPI({
                     mode: 'history',
                     name: 'delete',
-                    value: value,
-                    del_files: del_files
-                }).then(function(response) {
-                    if(response.status) {
-                        self.parent.refresh();
-                        $("#modal-purge-history").modal('hide');
-                    }
-                });
+                    del_files: 1,
+                    value: strIDs
+                }).then(function() {
+                    // Clear search, refresh and hode
+                    self.searchTerm('');
+                    self.parent.refresh();
+                    $("#modal-purge-history").modal('hide');
+                })
+                return;
+            }
+
+            // Call API and close the window
+            callAPI({
+                mode: 'history',
+                name: 'delete',
+                value: value,
+                del_files: del_files
+            }).then(function() {
+                self.parent.refresh();
+                $("#modal-purge-history").modal('hide');
             });
         };
     }
@@ -2376,7 +2395,7 @@ function keepOpen(thisItem) {
         }
     });
     // Add possible tooltips
-    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-toggle="tooltip"]').tooltip({ trigger: 'hover', container: 'body' })
+    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
 }
 
 // Check all functionality

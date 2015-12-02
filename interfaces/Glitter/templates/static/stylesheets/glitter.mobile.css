@@ -202,11 +202,11 @@ tr.queue-item>td:first-child>a {
 }
 
 .history-item .dropdown-menu:before {
-    right: 23px;
+    right: 27px;
 }
 
 .history-item .dropdown-menu:after {
-    right: 24px;
+    right: 28px;
 }
 
 /**
