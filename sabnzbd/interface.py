@@ -1654,7 +1654,7 @@ class ConfigServer(object):
 
         new = []
         servers = config.get_servers()
-        server_names = sorted(servers.keys(), key=lambda svr: '%02d%s' % (servers[svr].priority(), servers[svr].displayname().lower()))
+        server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
             t, m, w, d = BPSMeter.do.amounts(svr)
