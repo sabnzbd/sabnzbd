@@ -111,7 +111,10 @@
                 <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
             </h2>
             <!--#if $error#-->
-            <h3 class="darkred">$error</h3>
+            <div class="alert alert-danger">
+                <span class="glyphicon glyphicon-exclamation-sign"></span>
+                $error
+            </div>
             <!--#end if#-->
             <form action="upd_rss_feed" method="post">
                 <input type="hidden" name="session" value="$session" />
