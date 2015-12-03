@@ -21,8 +21,11 @@ sabnzbd.panic - Send panic message to the browser
 
 import os
 import logging
-import webbrowser
 import tempfile
+try:
+    import webbrowser
+except ImportError:
+    webbrowser = None
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -266,7 +269,10 @@ def launch_a_browser(url, force=False):
     try:
         if url and not url.startswith('http'):
             url = 'file:///%s' % url
-        webbrowser.open(url, 2, 1)
+        if webbrowser:
+            webbrowser.open(url, 2, 1)
+        else:
+            logging.info('Not showing panic message in webbrowser, no support found')
     except:
         logging.warning(T('Cannot launch the browser, probably not found'))
         logging.info("Traceback: ", exc_info=True)
