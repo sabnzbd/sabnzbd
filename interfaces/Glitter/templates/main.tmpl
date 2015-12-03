@@ -537,8 +537,8 @@
                                 </div>
                                 <!-- /ko -->
                             </td>
-                            <td class="status row-wrap-text" data-bind="text: statusText()"></td>
-                            <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }"></td>
+                            <td class="status row-wrap-text" data-bind="text: statusText()" onclick="showDetails(this)"></td>
+                            <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                             <td class="delete">
                                 <div class="dropdown">
                                     <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">

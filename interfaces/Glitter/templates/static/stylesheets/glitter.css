@@ -863,6 +863,7 @@ tr.queue-item>td:first-child>a {
     font-size: 12px;
     padding-right: 0 !important;
     vertical-align: middle !important;
+    cursor: pointer;
 }
 
 .history-table .status-header {
@@ -1058,6 +1059,10 @@ tr.queue-item>td:first-child>a {
 .history-options-show-failed,
 .search-box input:focus+span {
     opacity: 1 !important;
+}
+
+.history-options-show-failed {
+    color:  red !important;
 }
 
 .processing-download {

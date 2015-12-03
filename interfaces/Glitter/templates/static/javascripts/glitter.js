@@ -2398,6 +2398,16 @@ function keepOpen(thisItem) {
     if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
 }
 
+// Show history details
+function showDetails(thisItem) {
+    // Open the details of this
+    // Needs timeout, otherwise it thinks its the 'close' click
+    setTimeout(function() {
+        $(thisItem).parent().find('.delete>.dropdown>a').click()
+    },1)
+    
+}
+
 // Check all functionality
 function checkAllFiles(objCheck) {
     // Check for main-page or file-list modal?
