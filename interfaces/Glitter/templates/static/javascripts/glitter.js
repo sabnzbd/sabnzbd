@@ -388,24 +388,24 @@ $(function() {
             // Only update the title when page not visible
             if(!pageIsVisible) {
                 // Request new title 
-                callSpecialAPI('queue/', {}).then(function(data) {
-                        // Split title & speed
-                        dataSplit = data.split('|||');
+                callSpecialAPI('queue/', {}).done(function(data) {
+                    // Split title & speed
+                    dataSplit = data.split('|||');
 
-                        // Set title
-                        self.title(dataSplit[0]);
+                    // Set title
+                    self.title(dataSplit[0]);
 
-                        // Update sparkline data
-                        if(self.speedHistory.length >= 50) {
-                            // Remove first one
-                            self.speedHistory.shift();
-                        }
-                        // Add
-                        self.speedHistory.push(dataSplit[1]);
+                    // Update sparkline data
+                    if(self.speedHistory.length >= 50) {
+                        // Remove first one
+                        self.speedHistory.shift();
+                    }
+                    // Add
+                    self.speedHistory.push(dataSplit[1]);
 
-                        // Does it contain 'Paused'? Update icon!
-                        self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
-                    })
+                    // Does it contain 'Paused'? Update icon!
+                    self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
+                })
                 // Do not continue!
                 return;
             }
@@ -420,19 +420,26 @@ $(function() {
                 search: self.queue.searchTerm(),
                 start: self.queue.pagination.currentStart(),
                 limit: parseInt(self.queue.paginationLimit())
-            }).then(
-                self.updateQueue,
-                function() {
-                    self.isRestarting(1)
+            })
+            .done(self.updateQueue)
+            .fail(function(response) {
+                // Catch the failure of authorization error
+                if(response.status == 401) {
+                    // Stop refresh and reload
+                    clearInterval(self.interval)
+                    location.reload();
                 }
-            );
+                // Show screen
+                self.isRestarting(1)
+            });
+            // History
             callAPI({
                 mode: "history",
                 search: self.history.searchTerm(),
                 failed_only: self.history.showFailed()*1,
                 start: self.history.pagination.currentStart(),
                 limit: parseInt(self.history.paginationLimit())
-            }).then(self.updateHistory);
+            }).done(self.updateHistory);
 
             // Return for .then() functionality
             return queueApi;

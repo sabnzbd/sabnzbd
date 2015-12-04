@@ -1134,6 +1134,11 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 1em;
 }
 
+#modal-options .nav-tabs .label {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 #modal-options .options-switch {
     text-align: center;
     border-bottom: 1px solid #F0F0F0;
