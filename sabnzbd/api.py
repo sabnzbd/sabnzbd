@@ -974,7 +974,6 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         if FAST_JSON:
             # First try the faster standard json encoder
             try:
-                '\xF6'.decode('utf8')
                 response = json.dumps(info)
             except UnicodeDecodeError:
                 FAST_JSON = False
