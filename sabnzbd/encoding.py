@@ -22,7 +22,6 @@ sabnzbd.encoding - Unicoded filename support
 import locale
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
-#import unicodedata
 
 import sabnzbd
 
@@ -66,7 +65,7 @@ def platform_encode(p):
         try:
             return p.decode('utf-8')
         except:
-            return p.decode('cp1252')
+            return p.decode(codepage)
     else:
         return p
 
@@ -79,7 +78,7 @@ def name_fixer(p):
         try:
             return p.decode('utf-8')
         except:
-            return p.decode('cp1252')
+            return p.decode(codepage)
     else:
         return p
 
@@ -112,7 +111,7 @@ def special_fixer(p):
         return p.decode('utf-8')
     except:
         # Now assume it's 8bit ASCII
-        return p.decode('cp1252')
+        return p.decode(codepage)
 
 
 def unicoder(p):
@@ -124,8 +123,8 @@ def unicoder(p):
             try:
                 return p.decode('utf-8')
             except:
-                return p.decode('cp1252', 'replace')
-        return p.decode('cp1252', 'replace')
+                return p.decode(codepage, 'replace')
+        return p.decode(codepage, 'replace')
     else:
         return unicode(str(p))
 
@@ -268,6 +267,7 @@ def fixup_ff4(p):
         where a filename contains &#xx; encodings
     """
     name = []
+    num = 0
     start = amp = False
     for ch in p:
         if start:
@@ -319,17 +319,17 @@ def deunicode(p):
         if gUTF:
             return p.encode('utf-8')
         else:
-            return p.encode('cp1252', 'replace')
+            return p.encode(codepage, 'replace')
     elif isinstance(p, basestring):
         if gUTF:
             try:
                 p.decode('utf-8')
                 return p
             except:
-                return p.decode('cp1252').encode('utf-8')
+                return p.decode(codepage).encode('utf-8')
         else:
             try:
-                return p.decode('utf-8').encode('cp1252', 'replace')
+                return p.decode('utf-8').encode(codepage, 'replace')
             except:
                 return p
     else:
