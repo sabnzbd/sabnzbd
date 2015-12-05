@@ -760,6 +760,8 @@ def evaluate_inipath(path):
         but not a leading dot.
         foldername is enough, the standard name will be appended.
     """
+    if sabnzbd.WIN32:
+        path = unicoder(path)
     path = os.path.normpath(os.path.abspath(path))
     inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
@@ -1283,7 +1285,7 @@ def main():
         cpumodel = getcpu()  # Linux only
         if cpumodel:
             logging.debug('CPU model name is %s', cpumodel)
-            
+
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
         logging.info('[osx] IO priority setting')
