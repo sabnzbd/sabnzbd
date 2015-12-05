@@ -768,8 +768,21 @@ input[type="checkbox"] {
     background-color: #ECECEC !important;
 }
 
-.navbar-default .navbar-nav>li>a>span {
+.navbar-default .navbar-nav>li>a>span,
+.navbar-default .navbar-nav>li>a>svg {
     display: none;
+}
+
+.rss-icon-svg {
+    display: inline-block;
+    margin-top: 1px;
+    margin-bottom: -1px;
+    width: 1em;
+    height: 1em;
+}
+.rss-symbol { 
+    stroke: none; 
+    fill: white;
 }
 
 .col2 table {
@@ -868,6 +881,10 @@ input[type="checkbox"] {
     .navbar-default .navbar-nav>li>a:hover>strong,
     .navbar-default .navbar-nav>li>a.active>strong {
         display: inline;   
+    }
+    
+    .navbar-default .navbar-nav>li>a>svg {
+        display: inline-block;
     }
     
     .navbar-default .navbar-nav>li>a>strong,

@@ -155,7 +155,12 @@
                 </li>
                 <li>
                     <a href="${root}config/rss/" #if $pane == "RSS" then 'class="active"' else ""#>
-                        <span class="glyphicon glyphicon-cloud-download"></span>
+                        <svg class="rss-icon-svg" viewBox="0 0 8 8">
+                            <rect class="rss-button" width="8" height="8" />
+                            <circle class="rss-symbol" cx="2" cy="6" r="1" />
+                            <path class="rss-symbol" d="m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z" />
+                            <path class="rss-symbol" d="m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z" />
+                        </svg>
                         <strong>$T('cmenu-rss')</strong>
                     </a>
                 </li>
