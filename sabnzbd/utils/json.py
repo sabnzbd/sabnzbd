@@ -75,7 +75,7 @@ class JsonWriter(object):
                 except:
                     obj = obj.decode('latin-1').encode('utf-8', 'replace')
                     if LATIN_COUNTER:
-                        logging.debug('JSON encoder sees Latin-1: %s', obj)
+                        logging.info('JSON encoder sees Latin-1: %s', obj)
                         LATIN_COUNTER -= 1
             obj = obj.replace('\\', r'\\')
             if self._escaped_forward_slash:

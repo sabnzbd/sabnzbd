@@ -977,7 +977,7 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
                 response = json.dumps(info)
             except UnicodeDecodeError:
                 FAST_JSON = False
-                logging.debug('Switching to slow and safe JSON encoder')
+                logging.info('Switching to slow and safe JSON encoder')
         if not FAST_JSON:
             # Use the slower, but safer encoder
             response = JsonWriter().write(info)
