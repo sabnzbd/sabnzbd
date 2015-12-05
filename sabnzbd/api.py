@@ -48,6 +48,7 @@ from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repa
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
+from sabnzbd.utils.json import JsonWriter
 
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
@@ -87,6 +88,8 @@ if os.name == 'nt':
 else:
     PATHEXT = []
 
+# Flag for using the fast json encoder, unless it fails
+FAST_JSON = True
 
 def api_handler(kwargs):
     """ API Dispatcher """
@@ -956,6 +959,7 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         Else, a data report is made (optional 'keyword' for outer XML section).
         'compat' is a special case for compatibility for ascii ouput
     """
+    global FAST_JSON
     if output == 'json':
         content = "application/json;charset=UTF-8"
         if error:
@@ -967,7 +971,17 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
                 info = data
             else:
                 info = {keyword: data}
-        response = json.dumps(info)
+        if FAST_JSON:
+            # First try the faster standard json encoder
+            try:
+                '\xF6'.decode('utf8')
+                response = json.dumps(info)
+            except UnicodeDecodeError:
+                FAST_JSON = False
+                logging.debug('Switching to slow and safe JSON encoder')
+        if not FAST_JSON:
+            # Use the slower, but safer encoder
+            response = JsonWriter().write(info)
         if callback:
             response = '%s(%s)' % (callback, response)
 
@@ -1388,7 +1402,7 @@ def qstatus_data():
         state = Status.PAUSED
     elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
         state = Status.DOWNLOADING
-    
+
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
         speed_limit = 100
