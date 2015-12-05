@@ -225,6 +225,23 @@ li.dropdown {
     top: 2px;
 }
 
+.rss-icon-svg {
+    display: inline-block;
+    margin-top: 1px;
+    margin-bottom: -1px;
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.rss-button {
+    fill: transparent;
+}
+
+.rss-symbol { 
+    stroke: none; 
+    fill: white;
+}
+
 /***
     Main content
 ***/
@@ -1545,6 +1562,11 @@ tr.queue-item>td:first-child>a {
     
     td.name .row-wrap-text {
         margin-right: 4px;
+    }
+    
+    /* Need to reduce sparkline width when RSS button is added */
+    .navbar-have-rss .sparkline-container svg {
+        width: 220px !important;
     }
 }
 

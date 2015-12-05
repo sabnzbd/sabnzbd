@@ -734,6 +734,10 @@ input[type="checkbox"] {
     margin-left: -20px;
 }
 
+.navbar .container {
+    padding-right: 0;
+}
+
 .navbar-default {
     background-color: #FFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -926,6 +930,9 @@ input[type="checkbox"] {
     .navbar-default .navbar-brand-small {
         display: none;
     }
+    .navbar .container {
+        padding-right: 15px;
+    }
     .navbar-default .navbar-brand-mobile {
         display: block;
     }
@@ -933,6 +940,12 @@ input[type="checkbox"] {
     .navbar-collapse.collapsing .navbar-nav>li>a>span {
         display: inline-block;  
         width: 1.5em; 
+    }
+    
+    .navbar-collapse.in .navbar-nav>li>a>svg,
+    .navbar-collapse.collapsing .navbar-nav>li>a>svg {
+        display: inline-block;
+        margin-right: 0.5em;
     }
     
     .main-restarting.in strong {
