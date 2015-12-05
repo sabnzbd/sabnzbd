@@ -1393,15 +1393,7 @@ $(function() {
             self.id = data.nzo_id;
             self.name($.trim(data.filename));
             self.index(data.index);
-
-            // General status
-            if(data.status == 'Grabbing') {
-                self.isGrabbing(true)
-                return; // Important! Otherwise cat/script/priority get magically changed!
-            } else if(self.isGrabbing()) {
-                // Reset after the grabbing is done!
-                self.isGrabbing(false)
-            }
+            self.isGrabbing(data.status == 'Grabbing')
 
             // Set stats
             self.progressColor(''); // Reset

@@ -282,9 +282,10 @@
                             </td>
                             <td class="timeleft row-wrap-text" data-bind="text: timeLeft"></td>
                             <td class="delete">
-                                <label data-bind="visible: !isGrabbing() && parent.isMultiEditing()">
+                                <label data-bind="visible: parent.isMultiEditing()">
                                     <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
                                 </label>
+                                <!-- ko if: !isGrabbing()  -->
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
                                     <a href="#" data-toggle="dropdown" onclick="keepOpen(this)">
                                         <span class="caret"></span>
@@ -295,7 +296,7 @@
                                             <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
                                         </li>
                                         <!-- ko if: (status() != 'Fetching')  -->
-                                        <li title="$T('priority')" data-bind="visible: (status() != 'Fetching')" data-tooltip="true" data-placement="left">
+                                        <li title="$T('priority')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                             <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>
                                         </li>
@@ -311,6 +312,7 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <!-- /ko -->
                                 <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
                         </tr>
