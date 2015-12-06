@@ -241,7 +241,7 @@
                         </tr>
                     </tbody>
                     <!-- /ko -->
-                    <tbody id="lol" data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, axis: 'y', containment: '.queue' } }" style="display: none;">
+                    <tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, axis: 'y', containment: '.queue' } }" style="display: none;">
                         <tr class="queue-item">
                             <td>
                                 <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
@@ -664,6 +664,10 @@
             glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
             glitterTranslate.grabbing = "$T('Glitter-grabbing')";
             glitterTranslate.encrypted = "$T('Glitter-encrypted')";
+            glitterTranslate.duplicate = "$T('Glitter-duplicate')";
+            glitterTranslate.tooLarge = "$T('Glitter-tooLarge')";
+            glitterTranslate.filtered = "$T('Glitter-filtered')";
+            glitterTranslate.waitSec = "$T('Glitter-waitSec')";
             glitterTranslate.checking = "$T('post-Checking')";
             glitterTranslate.misingArt = "$T('missingArt')";
             glitterTranslate.noSelect = "$T('Glitter-noSelect')";
