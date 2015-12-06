@@ -51,6 +51,10 @@ legend,
     opacity: 0.7;
 }
 
+.progress {
+    background-color: #DADADA;
+}
+
 .container,
 .modal-body,
 .modal-footer {
@@ -98,7 +102,8 @@ input.form-control,
 .input-group-addon,
 select.form-control,
 .main-content .btn-default,
-.modal-body .btn-default {
+.modal-body .btn-default,
+.modal-footer .btn-default {
     background-color: #555555;
     color: #EBEBEB;
 }
@@ -118,7 +123,8 @@ input.form-control,
 .input-group-addon,
 select.form-control,
 .main-content .btn-default,
-.modal-body .btn-default {
+.modal-body .btn-default,
+.modal-footer .btn-default {
     border-color: #252525 !important;
 }
 

@@ -55,7 +55,7 @@ $(function() {
         data.output = "json";
         data.apikey = apiKey;
         var ajaxQuery = $.ajax({
-            url: "tapi",
+            url: "./tapi",
             type: "GET",
             cache: false,
             data: data,
@@ -395,7 +395,7 @@ $(function() {
             // Only update the title when page not visible
             if(!pageIsVisible) {
                 // Request new title 
-                callSpecialAPI('queue/', {}).done(function(data) {
+                callSpecialAPI('./queue/', {}).done(function(data) {
                     // Split title & speed
                     dataSplit = data.split('|||');
 
@@ -588,7 +588,7 @@ $(function() {
         self.clearWarnings = function() {
             if(!self.confirmDeleteQueue() || confirm(glitterTranslate.clearWarn))
                 // Activate
-                callSpecialAPI("status/clearwarnings")
+                callSpecialAPI("./status/clearwarnings")
         }
         
         // Clear messages
@@ -712,7 +712,7 @@ $(function() {
             data.append("apikey", apiKey);
             // Add 
             $.ajax({
-                url: "tapi",
+                url: "./tapi",
                 type: "POST",
                 cache: false,
                 processData: false,
@@ -732,7 +732,7 @@ $(function() {
             
             // Full refresh? Only on click and for the status-screen
             var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
-            var strStatusUrl = statusFullRefresh ? 'status/' : 'status/?skip_dashboard=1';
+            var strStatusUrl = statusFullRefresh ? './status/' : './status/?skip_dashboard=1';
 
             // Load the custom status info
             callSpecialAPI(strStatusUrl).then(function(data) {
@@ -748,7 +748,7 @@ $(function() {
                 // Only now we can subscribe to the log-level-changes!
                 self.statusInfo.status.loglevel.subscribe(function(newValue) {
                     // Update log-level
-                    callSpecialAPI('status/change_loglevel', {
+                    callSpecialAPI('./status/change_loglevel', {
                         loglevel: newValue
                     });
                 })
@@ -768,14 +768,14 @@ $(function() {
             // Hide before running the test
             self.hasStatusInfo(false)
             // Run it and then display it
-            callSpecialAPI('status/dashrefresh').then(function() {
+            callSpecialAPI('./status/dashrefresh').then(function() {
                 self.loadStatusInfo(true, true)
             })
         }
 
         // Unblock server
         self.unblockServer = function(servername) {
-            callSpecialAPI("status/unblock_server", {
+            callSpecialAPI("./status/unblock_server", {
                 server: servername
             }).then(function() {
                 $("#modal-options").modal("hide");
@@ -788,7 +788,7 @@ $(function() {
             $('#options-orphans [data-tooltip="true"]').tooltip('hide')
             
             // Activate
-            callSpecialAPI("status/" + $(htmlElement.currentTarget).data('action'), {
+            callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
                 name: $("<div/>").html(folder.folder()).text()
             }).then(function() {
                 // Remove item and load status data
@@ -802,7 +802,7 @@ $(function() {
         self.removeAllOrphaned = function() {
             if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
                 // Delete them all
-                callSpecialAPI("status/delete_all").then(self.loadStatusInfo)
+                callSpecialAPI("./status/delete_all").then(self.loadStatusInfo)
             }     
         }
 
@@ -817,7 +817,7 @@ $(function() {
         self.restartSAB = function() {
             if(!confirm(glitterTranslate.restart)) return;
             // Call restart function
-            callSpecialAPI("config/restart")
+            callSpecialAPI("./config/restart")
 
             // Set counter, we need at least 15 seconds
             self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
@@ -834,13 +834,13 @@ $(function() {
         // Repair queue
         self.repairQueue = function() {
             if(!confirm(glitterTranslate.repair)) return;
-            callSpecialAPI("config/repair").then(function() {
+            callSpecialAPI("./config/repair").then(function() {
                 $("#modal-options").modal("hide");
             })
         }
         // Force disconnect
         self.forceDisconnect = function() {
-            callSpecialAPI("status/disconnect").then(function() {
+            callSpecialAPI("./status/disconnect").then(function() {
                 $("#modal-options").modal("hide");
             })
         }
@@ -1079,7 +1079,7 @@ $(function() {
         };
 
         // Save pagination state
-        self.paginationLimit.subscribe(function(newValue) {          
+        self.paginationLimit.subscribe(function(newValue) {   
             // Save in config if global 
             if(self.parent.useGlobalOptions()) {
                 callAPI({
@@ -1089,8 +1089,6 @@ $(function() {
                     value: newValue
                 })
             }
-            
-            self.parent.refresh();
         });
         
         // Do we show search box. So it doesn't dissapear when nothing is found
@@ -1673,7 +1671,6 @@ $(function() {
                     value: newValue
                 })
             }
-            self.parent.refresh();
         });
 
         // Retry a job
@@ -1687,7 +1684,7 @@ $(function() {
 
             // Add 
             $.ajax({
-                url: "history/retry_pp",
+                url: "./retry_pp",
                 type: "POST",
                 cache: false,
                 processData: false,
@@ -1698,6 +1695,7 @@ $(function() {
             });
 
             $("#modal-retry-job").modal("hide");
+            $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             form.reset()
         }
               
@@ -2147,7 +2145,7 @@ $(function() {
             dataToSend['action_size'] = Math.abs(nrMoves);
 
             // Activate with this weird URL "API"
-            callSpecialAPI("nzb/" + self.currentItem.id + "/bulk_operation", dataToSend)
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation", dataToSend)
         };
 
         // Remove selected files
@@ -2164,7 +2162,7 @@ $(function() {
             })
 
             // Activate with this weird URL "API"
-            callSpecialAPI("nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
                 $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration)
             })
 
@@ -2173,7 +2171,7 @@ $(function() {
         // For changing the passwords
         self.setNzbPassword = function() {
             // Activate with this weird URL "API"
-            callSpecialAPI("nzb/" + self.currentItem.id + "/save", {
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/save", {
                 name: self.modalTitle(),
                 password: $('#nzb_password').val()
             }).then(function() {

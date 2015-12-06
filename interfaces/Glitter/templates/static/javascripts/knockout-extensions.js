@@ -478,7 +478,6 @@ ko.bindingHandlers.slider = {
         ko.utils.registerEventHandler(element, "slidechange", function(event, ui) {
             var observable = valueAccessor();
             observable(ui.value);
-            console.log('change'+ui.value)
         });*/
         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
             $(element).slider("destroy");

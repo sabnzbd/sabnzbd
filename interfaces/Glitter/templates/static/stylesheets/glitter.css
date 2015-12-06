@@ -1164,6 +1164,11 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 13px;
 }
 
+#modal-options .options-function-box {
+    border-top: 1px solid #F0F0F0;
+    margin-top: 6px
+}
+
 #modal-options .form-group+.options-switch {
     margin-bottom: 13px;
     margin-top: 8px;
@@ -1477,7 +1482,7 @@ tr.queue-item>td:first-child>a {
 }
 
 #modal-item-files .item-files-table .progress small {
-    color: #727272;
+    color: #727272 !important;
 }
 
 #modal-item-files .item-files-table td {
@@ -1886,10 +1891,6 @@ legend {
     opacity: 0.8;
 }
 
-.modal-dialog {
-    padding: 3px;
-}
-
 .modal-header {
     background-color: #3C3C3C;
     color: white;
@@ -1923,6 +1924,7 @@ legend {
 }
 
 .modal-dialog {
+    padding: 3px;
     transform: scale(0.7) !important;
     -webkit-transform: scale(0.7) !important;
     opacity: 0 !important;
