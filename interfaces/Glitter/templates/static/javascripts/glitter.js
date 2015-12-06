@@ -59,7 +59,7 @@ $(function() {
             type: "GET",
             cache: false,
             data: data,
-            timeout: 6000 // Wait a little longer on mobile connections
+            timeout: 10000 // Wait a little longer on mobile connections
         });
 
         return $.when(ajaxQuery);
@@ -128,8 +128,7 @@ $(function() {
         self.history = new HistoryListModel(this);
         self.filelist = new Fileslisting(this);
 
-        // Set information varibales
-        self.title = ko.observable()
+        // Set status varibales
         self.isRestarting = ko.observable(false);
         self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
         self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
@@ -139,9 +138,12 @@ $(function() {
         self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
         self.hasStatusInfo = ko.observable(false); // True when we load it
         self.showActiveConnections = ko.observable(false);
+        self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
+        
+        // Set information varibales
+        self.title = ko.observable()
         self.speed = ko.observable(0);
         self.speedMetric = ko.observable();
-        self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         self.bandwithLimit = ko.observable(false);
         self.pauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
@@ -161,12 +163,13 @@ $(function() {
         self.speedHistory = [];
         self.statusInfo = {};
         
+        
         /***
             Dynamic functions
         ***/
 
         // Make the speedlimit tekst
-        self.speedLimitText = ko.computed(function() {
+        self.speedLimitText = ko.pureComputed(function() {
             // Set?
             if(!self.bandwithLimit()) return;
             
@@ -191,12 +194,12 @@ $(function() {
         });
 
         // Dynamic speed text function
-        self.speedText = ko.computed(function() {
+        self.speedText = ko.pureComputed(function() {
             return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "KB/s");
         });
 
         // Dynamic icon
-        self.SABIcon = ko.computed(function() {
+        self.SABIcon = ko.pureComputed(function() {
             if(self.downloadsPaused()) {
                 return './staticcfg/ico/faviconpaused.ico';
             } else {
@@ -205,22 +208,22 @@ $(function() {
         })
 
         // Dynamic queue length check
-        self.hasQueue = ko.computed(function() {
+        self.hasQueue = ko.pureComputed(function() {
             return(self.queue.queueItems().length > 0 || self.queue.searchTerm())
         })
 
         // Dynamic history length check
-        self.hasHistory = ko.computed(function() {
+        self.hasHistory = ko.pureComputed(function() {
             // We also 'have history' if we can't find any results of the search or there are no failed ones
             return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed())
         }).extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 100 }});
         
-        self.hasWarnings = ko.computed(function() {
+        self.hasWarnings = ko.pureComputed(function() {
             return(self.allWarnings().length > 0)
         })
         
         // Check for any warnings/messages
-        self.hasMessages = ko.computed(function() {
+        self.hasMessages = ko.pureComputed(function() {
             return self.nrWarnings() > 0 || self.allMessages().length > 0;
         })
 
@@ -382,6 +385,10 @@ $(function() {
 
         // Refresh function
         self.refresh = function() {
+            // Clear previous timeout and set a new one to prevent double-calls
+            clearTimeout(self.interval);
+            self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
+            
             /**
                 Limited refresh
             **/
@@ -637,9 +644,8 @@ $(function() {
 
         // Update refreshrate
         self.refreshRate.subscribe(function(newValue) {
-            // Set in javascript
-            clearInterval(self.interval)
-            self.interval = setInterval(self.refresh, parseInt(newValue) * 1000);
+            // Refresh now
+            self.refresh();
             
             // Save in config if global-settings
             if(self.useGlobalOptions()) {
@@ -929,8 +935,8 @@ $(function() {
         /***
             End of main functions, start of the fun!
         ***/
-        // Set interval for refreshing queue
-        self.interval = setInterval(self.refresh, parseInt(self.refreshRate()) * 1000);
+        // Trigger first refresh
+        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
         
         // And refresh now!
         self.refresh()
@@ -1010,6 +1016,9 @@ $(function() {
             // Set categories and scripts and limit
             self.scriptsList(data.scripts)
             self.totalItems(data.noofslots);
+            
+            // Container for new models
+            var newItems = [];
 
             // Go over all items
             $.each(data.slots, function() {
@@ -1023,13 +1032,19 @@ $(function() {
                     itemIds.splice(itemIds.indexOf(item.nzo_id), 1);
                 } else {
                     // Add new item
-                    self.queueItems.push(new QueueModel(self, item));
-
-                    // Only now sort
-                    self.queueItems.sort(function(a, b) {
-                        return a.index() < b.index() ? -1 : 1;
-                    });
+                    newItems.push(new QueueModel(self, item))
                 }
+            });
+            
+            // New items, then add!
+            if(newItems.length > 0) {
+                ko.utils.arrayPushAll(self.queueItems, newItems);
+                self.queueItems.valueHasMutated();
+            }
+            
+            // Sort every time
+            self.queueItems.sort(function(a, b) {
+                return a.index() < b.index() ? -1 : 1;
             });
 
             // Remove items that don't exist anymore
@@ -1079,7 +1094,7 @@ $(function() {
         });
         
         // Do we show search box. So it doesn't dissapear when nothing is found
-        self.hasQueueSearch = ko.computed(function() {
+        self.hasQueueSearch = ko.pureComputed(function() {
             return (self.pagination.hasPagination() || self.searchTerm())
         })
         
@@ -1165,8 +1180,10 @@ $(function() {
             // Form
             $form = $('form.multioperations-selector')
             
-            // Reset form
+            // Reset form and remove all checked ones
             $form[0].reset();
+            self.multiEditItems.removeAll();
+            $('.delete input[name="multiedit"]').attr('checked', false)
             
             // Is the multi-edit in view?
             if(($form.offset().top + $form.outerHeight(true)) > ($(window).scrollTop()+$(window).height())) {
@@ -1322,10 +1339,11 @@ $(function() {
         self.index = ko.observable();
         self.name = ko.observable();
         self.status = ko.observable();
-        self.isGrabbing = ko.observable(false);
-        self.totalMB = ko.observable(0);
-        self.remainingMB = ko.observable(0);
-        self.avg_age = ko.observable(0);
+        self.isGrabbing = ko.observable();
+        self.hasDropdown = ko.observable(false);
+        self.totalMB = ko.observable();
+        self.remainingMB = ko.observable();
+        self.avg_age = ko.observable();
         self.timeLeft = ko.observable();
         self.progressColor = ko.observable();
         self.missingText = ko.observable();
@@ -1340,7 +1358,7 @@ $(function() {
         self.rating_avg_audio = ko.observable(false);
 
         // Functional vars   
-        self.displayName = ko.computed(function() {
+        self.displayName = ko.pureComputed(function() {
             // Is set
             if(!self.name()) return '';
             
@@ -1352,24 +1370,25 @@ $(function() {
             } else {
                 return extractOutput.theTitle
             }
-        })  
+        })
+        
         self.downloadedMB = ko.computed(function() {
             return(self.totalMB() - self.remainingMB()).toFixed(0);
         });
 
-        self.percentage = ko.computed(function() {
+        self.percentage = ko.pureComputed(function() {
             return((self.downloadedMB() / self.totalMB()) * 100).toFixed(2);
-        });
+        })
 
-        self.percentageRounded = ko.computed(function() {
+        self.percentageRounded = ko.pureComputed(function() {
             return fixPercentages(self.percentage())
-        });
+        })
 
-        self.progressText = ko.computed(function() {
+        self.progressText = ko.pureComputed(function() {
             return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
-        });
+        })
         
-        self.extraText = ko.computed(function() {
+        self.extraText = ko.pureComputed(function() {
             // Picked anything?
             switch(self.parent.parent.extraColumn()) {
                 case 'category':
@@ -1409,7 +1428,6 @@ $(function() {
             self.category(data.cat);
             self.priority(parent.priorityName[data.priority]);
             self.script(data.script);
-
             self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
             self.pausedStatus(data.status == 'Paused');
 
@@ -1490,14 +1508,26 @@ $(function() {
             // Trigger update
             parent.parent.filelist.loadFiles(self)
         }
+        
+        // Toggle calculation of dropdown
+        // Turns out that the <select> in the dropdown are a hugggeeee slowdown on initial load!
+        // Only loading on click cuts half the speed (especially on large queues)
+        self.toggleDropdown = function(itemObj, event) {
+            self.hasDropdown(true)
+            // Keep it open!
+            keepOpen(event.target)
+        }
 
         // Change of settings
-        self.changeCat = function(itemObj) {
+        self.changeCat = function(itemObj, event) {
             callAPI({
                 mode: 'change_cat',
                 value: itemObj.id,
                 value2: itemObj.category()
-            })
+            }).then(self.parent.parent.refresh)
+
+            // Remove tooltip in case of change
+            $(event.target).parent().tooltip('hide')
         }
         self.changeScript = function(itemObj) {
             // Not on empty handlers
@@ -1515,7 +1545,7 @@ $(function() {
                 value2: itemObj.unpackopts()
             })
         }
-        self.changePriority = function(itemObj) {
+        self.changePriority = function(itemObj, event) {
             // Not if we are fetching extra blocks for repair!
             if(itemObj.status() == 'Fetching') return
             callAPI({
@@ -1523,7 +1553,10 @@ $(function() {
                 name: 'priority',
                 value: itemObj.id,
                 value2: itemObj.priority()
-            })
+            }).then(self.parent.parent.refresh)
+            
+            // Remove tooltip in case of change
+            $(event.target).parent().tooltip('hide')
         }
 
         // Remove 1 download from queue
@@ -1580,6 +1613,9 @@ $(function() {
             var itemIds = $.map(self.historyItems(), function(i) {
                 return i.historyStatus.nzo_id();
             });
+            
+            // For new items
+            var newItems = [];                                    
 
             $.each(data.slots, function(index, slot) {
                 var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
@@ -1591,15 +1627,22 @@ $(function() {
                     itemIds.splice(itemIds.indexOf(slot.nzo_id), 1);
                 } else {
                     // Add history item
-                    self.historyItems.push(new HistoryModel(self, slot));
-
-                    // Only now sort so newest on top. completed is updated every time while download is waiting
-                    // so doing the sorting every time would cause it to bounce around
-                    self.historyItems.sort(function(a, b) {
-                        return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1;
-                    });
+                    newItems.push(new HistoryModel(self, slot));
                 }
             });
+            
+            // Add new ones
+            if(newItems.length > 0) {
+                ko.utils.arrayPushAll(self.historyItems, newItems);
+                self.historyItems.valueHasMutated();
+                
+                // Only now sort so newest on top. completed is updated every time while download is waiting
+                // so doing the sorting every time would cause it to bounce around
+                self.historyItems.sort(function(a, b) {
+                    return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1;
+                });                                
+                            
+            }                                    
 
             // Remove the un-used ones
             $.each(itemIds, function() {
@@ -1789,23 +1832,23 @@ $(function() {
         };
 
         // True/false if failed or not
-        self.failed = ko.computed(function() {
+        self.failed = ko.pureComputed(function() {
             return self.status() === 'Failed';
         });
 
         // Waiting?
-        self.processingWaiting = ko.computed(function() {
+        self.processingWaiting = ko.pureComputed(function() {
             return(self.status() == 'Queued')
         })
 
         // Processing or done?
-        self.processingDownload = ko.computed(function() {
+        self.processingDownload = ko.pureComputed(function() {
             var status = self.status();
             return(status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing')
         })
 
         // Format status text
-        self.statusText = ko.computed(function() {
+        self.statusText = ko.pureComputed(function() {
             if(self.action_line() !== '')
                 return self.action_line();
             if(self.status() === 'Failed') // Failed
@@ -1819,7 +1862,7 @@ $(function() {
         });
 
         // Format completion time
-        self.completedOn = ko.computed(function() {
+        self.completedOn = ko.pureComputed(function() {
             return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
         });
 
@@ -2063,7 +2106,7 @@ $(function() {
 
                 // Add new ones in 1 time instead of every single push
                 if(newItems.length > 0) {
-                    ko.utils.arrayPushAll(self.fileItems(), newItems);
+                    ko.utils.arrayPushAll(self.fileItems, newItems);
                     self.fileItems.valueHasMutated();
                 }
 
@@ -2153,7 +2196,7 @@ $(function() {
         self.file_age = ko.observable();
         self.mb = ko.observable();
         self.percentage = ko.observable();
-        self.canChange = ko.computed(function() {
+        self.canChange = ko.pureComputed(function() {
             return self.nzf_id() != undefined;
         })
 
@@ -2191,7 +2234,7 @@ $(function() {
         });
 
         // Has pagination
-        self.hasPagination = ko.computed(function() {
+        self.hasPagination = ko.pureComputed(function() {
             return self.nrPages() > 1;
         })
 

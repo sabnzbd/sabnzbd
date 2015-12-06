@@ -241,7 +241,7 @@
                         </tr>
                     </tbody>
                     <!-- /ko -->
-                    <tbody data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, axis: 'y', containment: '.queue' } }" style="display: none;">
+                    <tbody id="lol" data-bind="visible: hasQueue(), sortable: { data: queue.queueItems, afterMove: queue.move, options: { start: queue.dragStart, stop: queue.dragStop, axis: 'y', containment: '.queue' } }" style="display: none;">
                         <tr class="queue-item">
                             <td>
                                 <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
@@ -287,9 +287,10 @@
                                 </label>
                                 <!-- ko if: !isGrabbing()  -->
                                 <div class="dropdown" data-bind="visible: !isGrabbing() && !parent.isMultiEditing()">
-                                    <a href="#" data-toggle="dropdown" onclick="keepOpen(this)">
+                                    <a href="#" data-toggle="dropdown" data-bind="click: toggleDropdown">
                                         <span class="caret"></span>
                                     </a>
+                                    <!-- ko if: hasDropdown()  -->
                                     <ul class="dropdown-menu queue-item-settings">
                                         <li title="$T('category')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-tag"></span>
@@ -305,12 +306,12 @@
                                             <span class="glyphicon glyphicon-check"></span>
                                             <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, event: { change: changeProcessing }"></select>
                                         </li>
-
                                         <li title="$T('eoq-scripts')" data-tooltip="true" data-placement="left">
                                             <span class="glyphicon glyphicon-flash"></span>
                                             <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 0)"></select>
                                         </li>
                                     </ul>
+                                    <!-- /ko -->
                                 </div>
                                 <!-- /ko -->
                                 <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>

@@ -430,7 +430,7 @@ tbody>tr>td:last-child {
 .hover-button {
     opacity: 0.3;
     text-decoration: none;
-    outline: 0 !important;
+    outline: none !important;
 }
 
 .hover-button:hover {
@@ -1216,7 +1216,7 @@ tr.queue-item>td:first-child>a {
     margin-right: 1em;
     margin-top: 2px;
     opacity: 1;
-    outline: 0;
+    outline: none;
 }
 
 #modal-options .modal-header a.rotate-refresh span {
@@ -1741,7 +1741,7 @@ a:focus {
 .nav>li>a {
     padding-left: 10px;
     padding-right: 10px;
-    outline: 0;
+    outline: none;
 }
 
 .collapsing li {
