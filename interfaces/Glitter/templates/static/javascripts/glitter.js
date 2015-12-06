@@ -2406,9 +2406,15 @@ function extractTitleAndPassword(titleInput) {
         return { theTitle: titleInput, titleClean: titleInput, thePassword: ''};
     }
     
-    // Has SAB already detected it is encrypted? It will add the extra label
+    // Has SAB already detected it is encrypted or some other error? It will add the extra label
+    // Special for the 'WAIT'-text
     // Everything after the first real / is the password, so we pop the first
-    if(titleInputSplit[0] == glitterTranslate.encrypted) {
+    if(titleInputSplit[0] == glitterTranslate.encrypted ||
+       titleInputSplit[0] == glitterTranslate.duplicate ||
+       titleInputSplit[0] == glitterTranslate.tooLarge ||
+       titleInputSplit[0] == glitterTranslate.filtered ||
+       titleInputSplit[0].slice(0,4) == glitterTranslate.waitSec.slice(0,4)) {
+        // The first 2 we need to keep!
         theOutput = {   theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
                         thePassword: titleInputSplit.join(' / ')};
         // We need a 'cleaned' title for the password/filelisting popup
