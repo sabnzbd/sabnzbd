@@ -1102,6 +1102,11 @@ $(function() {
                 self.searchTerm('');
                 self.parent.refresh();
             }
+            // Was it click and the field is empty? Then we focus on the field
+            if(event.type == 'mousedown' && self.searchTerm() == '') {
+                $(event.target).parents('.search-box').find('input[type="text"]').focus()
+                return;
+            }
             // Need to return true to allow typing
             return true;
         }
@@ -1671,6 +1676,11 @@ $(function() {
             if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
                 self.searchTerm('');
                 self.parent.refresh();
+            }
+            // Was it click and the field is empty? Then we focus on the field
+            if(event.type == 'mousedown' && self.searchTerm() == '') {
+                $(event.target).parents('.search-box').find('input[type="text"]').focus()
+                return;
             }
             // Need to return true to allow typing
             return true;

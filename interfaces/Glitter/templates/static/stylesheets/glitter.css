@@ -430,6 +430,7 @@ tbody>tr>td:last-child {
 .hover-button {
     opacity: 0.3;
     text-decoration: none;
+    outline: 0 !important;
 }
 
 .hover-button:hover {

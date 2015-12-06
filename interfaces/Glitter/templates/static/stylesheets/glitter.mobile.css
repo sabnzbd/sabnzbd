@@ -29,6 +29,10 @@
     display: inline-block;
 }
 
+.main-menu-link .icon-bar:first-child {
+    margin-top: 1px;
+}
+
 .navbar-inverse .navbar-nav .open .dropdown-menu .divider {
     background-color: #e5e5e5;
 }
@@ -159,6 +163,11 @@ tr.queue-item>td:first-child>a {
 
 .multioperations-selector .add-nzb-inputbox-clear {
     clear: both;
+}
+
+.multioperations-selector .add-nzb-inputbox-options {
+    width: 55px;
+    margin-right: -3px;
 }
 
 .table-messages strong {
