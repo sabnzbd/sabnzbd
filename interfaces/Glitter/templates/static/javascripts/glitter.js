@@ -153,7 +153,8 @@ $(function() {
         self.diskSpaceLeft1 = ko.observable();
         self.diskSpaceLeft2 = ko.observable();
         self.queueDataLeft = ko.observable();
-        self.queueDataLeftMB = ko.observable(); // To check if we have enough diskspace left
+        self.diskSpaceExceeded1 = ko.observable(false);
+        self.diskSpaceExceeded2 = ko.observable(false);
         self.quotaLimit = ko.observable();
         self.quotaLimitLeft = ko.observable();
         self.nrWarnings = ko.observable(0);
@@ -245,7 +246,6 @@ $(function() {
             ***/
             // Queue left
             self.queueDataLeft(response.queue.mbleft > 0 ? response.queue.sizeleft : '')
-            self.queueDataLeftMB(response.queue.mbleft > 0 ? response.queue.mbleft : 0)
 
             // Paused?
             self.downloadsPaused(response.queue.paused);
@@ -254,12 +254,16 @@ $(function() {
             self.onQueueFinish(response.queue.finishaction ? response.queue.finishaction : '');
 
             // Disk sizes
-            self.diskSpaceLeft1(parseFloat(response.queue.diskspace1).toFixed(1))
+            self.diskSpaceLeft1(response.queue.diskspace1_norm)
 
             // Same sizes? Then it's all 1 disk!
             if(response.queue.diskspace1 != response.queue.diskspace2) {
-                self.diskSpaceLeft2(parseFloat(response.queue.diskspace2).toFixed(1))
+                self.diskSpaceLeft2(response.queue.diskspace2_norm)
             }
+            
+            // Did we exceed the space?
+            self.diskSpaceExceeded1(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace1))
+            self.diskSpaceExceeded2(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace2))
 
             // Quota
             self.quotaLimit(response.queue.quota)
