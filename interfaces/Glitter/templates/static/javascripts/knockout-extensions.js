@@ -401,7 +401,6 @@ $(document).bind('dragover', function(e) {
         allowDrop: true,
         afterMove: null,
         beforeMove: null,
-        delay: 700,
         options: {
             helper: function(e, tr) {
                 var $originals = tr.children();

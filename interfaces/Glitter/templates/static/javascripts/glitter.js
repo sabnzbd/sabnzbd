@@ -995,8 +995,11 @@ $(function() {
             self.dragging = true;
         }
         self.dragStop = function(e) {
-            self.dragging = false;
             $(e.target).parent().removeClass('table-active-sorting')
+            // Wait a little before refreshing again (prevents jumping)
+            setTimeout(function() {
+                self.dragging = false;
+            }, 500)
         }
 
         // Update slots from API data
@@ -1277,8 +1280,10 @@ $(function() {
             }
 
             // Wat a little and do the refresh
-            setTimeout(parent.refresh, 100)
-
+            // Only if anything changed!
+            if(newStatus || newProc != '' || newPrior != '' || newScript != '' || newCat != '') {
+                setTimeout(parent.refresh, 100)
+            }
         }
 
         // Selete all selected
