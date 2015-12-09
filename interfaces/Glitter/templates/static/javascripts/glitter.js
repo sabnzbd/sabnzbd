@@ -875,6 +875,27 @@ $(function() {
             
             // Save servers (for reporting functionality of OZnzb)
             self.servers = response.config.servers;
+            
+            // Update message
+            if(newRelease) {
+                self.allMessages.push({
+                    index: 'UpdateMsg',
+                    type: 'INFO',
+                    text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
+                    css: 'info'
+                });
+            }
+        
+            // Message about cache - Not for 5 days if user ignored it
+            if(!response.config.misc.cache_limit && localStorageGetItem('CacheMsg')*1+(1000*3600*24*5) < Date.now()) {
+                self.allMessages.push({
+                    index: 'CacheMsg',
+                    type: 'INFO',
+                    text: ('<a href="./config/general/#cache_limit">'+glitterTranslate.useCache.replace(/<br \/>/g, " ")+' <span class="glyphicon glyphicon-cog"></span></a>'),
+                    css: 'info',
+                    clear: function() { self.clearMessages('CacheMsg')}
+                });
+            }
         })
         
         // Orphaned folder check - Not for 5 days if user ignored it
@@ -908,16 +929,6 @@ $(function() {
                 })
             }
         })
-        
-        // Update message
-        if(newRelease) {
-            self.allMessages.push({
-                index: 'UpdateMsg',
-                type: 'INFO',
-                text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
-                css: 'info'
-            });
-        }
         
         /***
             Date-stuff
