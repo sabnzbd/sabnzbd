@@ -922,21 +922,12 @@ SKIN_TEXT = {
     'wizard-version' :  TT('SABnzbd Version'),
     'wizard-previous' :  TT('Previous'), #: Button to go to previous Wizard page
     'wizard-next' :  TT('Next'), #: Button to go to next Wizard page
-    'wizard-access' :  TT('Access'), #: Wizard step in which the web server is set
-    'wizard-access-anypc' :  TT('I want SABnzbd to be viewable by any pc on my network.'),
-    'wizard-access-mypc' :  TT('I want SABnzbd to be viewable from my pc only.'),
-    'wizard-access-pass' :  TT('Password protect access to SABnzbd (recommended)'),
-    'wizard-access-https' :  TT('Enable HTTPS access to SABnzbd.'),
-    'wizard-misc' :  TT('Misc'), #: Wizard step
-    'wizard-misc-browser' :  TT('Launch my internet browser with the SABnzbd page when the program starts.'),
     'wizard-server' :  TT('Server Details'),
     'wizard-explain-server' :  TT('Please enter in the details of your primary usenet provider.'),
     'wizard-server-con-explain' :  TT('The number of connections allowed by your provider'),
     'wizard-server-con-eg' : TT('E.g. 8 or 20'), #: Wizard: examples of amount of connections
     'wizard-server-ssl-explain' :  TT('Select only if your provider allows SSL connections.'),
     'wizard-server-text' :  TT('Click to test the entered details.'),
-    'wizard-server-required' :  TT('This field is required.'),
-    'wizard-server-number' :  TT('Please enter a whole number.'),
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
     'wizard-restarting' :  TT('Restarting SABnzbd...'), #: Wizard step
@@ -947,11 +938,9 @@ SKIN_TEXT = {
     'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'), #: Wizard tip
     'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
-    'wizard-port-eg' : TT('E.g. 119 or 563 for SSL'), #: Wizard port number examples
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
     'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
-    'wizard-bandwidth-error' : TT('Enter a speed (e.g. 5M)'), #: Wizard tell user to enter a max bandwidth
 
 #Special
     'yourRights' : TT('''
