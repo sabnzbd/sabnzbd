@@ -718,7 +718,7 @@ input[type="checkbox"] {
 .Scheduling select,
 .Categories select,
 .RSS select {
-    min-width: 20px;
+    min-width: 120px;
 }
 
 .Categories select {
@@ -878,6 +878,12 @@ input[type="checkbox"] {
     0% { opacity: 0; }
     50% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+@media screen and (min-width: 1200px) { 
+    .Categories input[name="dir"] {
+        max-width: 240px !important;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1200px) { 
