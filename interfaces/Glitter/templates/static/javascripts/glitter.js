@@ -1076,24 +1076,18 @@ $(function() {
 
         // Move in sortable
         self.move = function(e) {
-            var itemMoved = e.item;
-            var itemReplaced = ko.utils.arrayFirst(self.queueItems(), function(i) {
-                return i.index() == e.targetIndex;
-            });
-
-            itemMoved.index(e.targetIndex);
-            itemReplaced.index(e.sourceIndex);
+            var itemMoved = e.item;  
+            // Up or down?
+            var corTerm = e.targetIndex > e.sourceIndex ? -1 : 1;         
+            // See what the actual index is of the queue-object
+            // This way we can see how we move up and down independent of pagination
+            var itemReplaced = self.queueItems()[e.targetIndex+corTerm];
 
             callAPI({
                 mode: "switch",
                 value: itemMoved.id,
-                value2: e.targetIndex
-            }).then(function(r) {
-                if(r.position != e.targetIndex) {
-                    itemMoved.index(e.sourceIndex);
-                    itemReplaced.index(e.targetIndex);
-                }
-            });
+                value2: itemReplaced.index()
+            }).then(self.parent.refresh);
         };
 
         // Save pagination state
