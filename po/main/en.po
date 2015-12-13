@@ -64,3 +64,47 @@ msgstr "Enable server:"
 msgid "Generic Sorting"
 msgstr "Movie Sorting"
 
+#: sabnzbd/emailer.py:117
+msgid "The server didn't reply properly to the helo greeting"
+msgstr "The server didn't reply properly to the hello greeting"
+
+#: sabnzbd/interface.py:226
+msgid "API Key missing, please enter the api key from Config->General into your 3rd party program:"
+msgstr "API key missing, please enter the API key from Config->General into your 3rd party program:"
+
+#: sabnzbd/interface.py:233
+msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
+msgstr "API key incorrect, Use the API key from Config->General in your 3rd party program:"
+
+#: sabnzbd/skintext.py:330
+msgid "HTTPS Chain Certifcates"
+msgstr "HTTPS Chain Certificates"
+
+#: sabnzbd/skintext.py:336
+msgid "Highest possible linespeed in Bytes/second, e.g. 2M."
+msgstr "Highest possible line speed in Bytes/second, e.g. 2M."
+
+#: sabnzbd/skintext.py:338
+msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
+msgstr "Which percentage of the line speed should SABnzbd use, e.g. 50"
+
+#: sabnzbd/skintext.py:465
+msgid "Replace Spaces in Foldername"
+msgstr "Replace spaces in folder name"
+
+#: sabnzbd/skintext.py:467
+msgid "Replace dots in Foldername"
+msgstr "Replace dots in folder name"
+
+#: sabnzbd/skintext.py:693
+msgid "Original Foldername"
+msgstr "Original folder name"
+
+#: sabnzbd/skintext.py:808
+msgid "How long or untill when do you want to pause? (in English!)"
+msgstr "How long or until when do you want to pause? (in English!)"
+
+#: sabnzbd/skintext.py:917
+msgid "Timeleft"
+msgstr "Time left"
+
