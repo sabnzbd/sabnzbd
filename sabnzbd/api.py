@@ -719,6 +719,11 @@ def _api_test_email(name, output, kwargs):
         res = None
     return report(output, error=res)
 
+def _api_test_windows(name, output, kwargs):
+    """ API: send a test to Windows, return result """
+    logging.info("Sending test notification")
+    res = sabnzbd.growler.send_windows('SABnzbd', T('Test Notification'), 'other')
+    return report(output, error=res)
 
 def _api_test_notif(name, output, kwargs):
     """ API: send a test to Notification Center, return result """
@@ -908,6 +913,7 @@ _api_table = {
     'retry_all': (_api_retry_all, 2),
     'reset_quota': (_api_reset_quota, 2),
     'test_email': (_api_test_email, 2),
+    'test_windows': (_api_test_windows, 2),
     'test_notif': (_api_test_notif, 2),
     'test_growl': (_api_test_growl, 2),
     'test_osd': (_api_test_osd, 2),

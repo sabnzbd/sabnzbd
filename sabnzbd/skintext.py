@@ -620,8 +620,10 @@ SKIN_TEXT = {
     'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
     'opt-ncenter_enable' : TT('Notification Center'),
     'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
+    'opt-acenter_enable' : TT('Enable Windows Notifications'),
     'testNotify' : TT('Test Notification'),
     'section-NC' : TT('Notification Center'), #: Header for OSX Notfication Center section
+    'section-AC' : TT('Windows Notifications'),
     'section-OSD' : TT('NotifyOSD'), #: Header for Ubuntu's NotifyOSD notifications section
     'section-Prowl' : TT('Prowl'), #: Header for Prowl notification section
     'opt-prowl_enable' : TT('Enable Prowl notifications'), #: Prowl settings

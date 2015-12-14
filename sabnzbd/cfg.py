@@ -272,6 +272,19 @@ ncenter_prio_error = OptionBool('ncenter', 'ncenter_prio_error', False)
 ncenter_prio_queue_done = OptionBool('ncenter', 'ncenter_prio_queue_done', True)
 ncenter_prio_other = OptionBool('ncenter', 'ncenter_prio_other', False)
 
+# [acenter]
+acenter_enable = OptionBool('acenter', 'acenter_enable', sabnzbd.WIN32)
+acenter_prio_startup = OptionBool('acenter', 'acenter_prio_startup', True)
+acenter_prio_download = OptionBool('acenter', 'acenter_prio_download', False)
+acenter_prio_pp = OptionBool('acenter', 'acenter_prio_pp', False)
+acenter_prio_complete = OptionBool('acenter', 'acenter_prio_complete', True)
+acenter_prio_failed = OptionBool('acenter', 'acenter_prio_failed', True)
+acenter_prio_disk_full = OptionBool('acenter', 'acenter_prio_disk_full', True)
+acenter_prio_warning = OptionBool('acenter', 'acenter_prio_warning', False)
+acenter_prio_error = OptionBool('acenter', 'acenter_prio_error', False)
+acenter_prio_queue_done = OptionBool('acenter', 'acenter_prio_queue_done', True)
+acenter_prio_other = OptionBool('acenter', 'acenter_prio_other', False)
+
 # [ntfosd]
 ntfosd_enable = OptionBool('ntfosd', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
 ntfosd_prio_startup = OptionBool('ntfosd', 'ntfosd_prio_startup', True)

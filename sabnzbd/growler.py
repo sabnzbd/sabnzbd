@@ -123,6 +123,11 @@ def send_notification(title, msg, gtype):
     if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
+            
+    # Windows
+    if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
+        if check_classes(gtype, 'acenter'):
+            send_windows(title, msg, gtype)
 
     # Growl
     if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl'):
@@ -153,7 +158,6 @@ def send_notification(title, msg, gtype):
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
-
 
 def reset_growl():
     """ Reset Growl (after changing language) """
@@ -534,3 +538,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
             logging.info('Traceback: ', exc_info=True)
             return T('Failed to send pushbullet message')
     return ''
+
+def send_windows(title, msg, gtype):
+    sabnzbd.WINTRAY.sendnotification(title, msg)
+    return None

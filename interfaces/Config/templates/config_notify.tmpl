@@ -69,7 +69,189 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="section" id="growl">
+    <!--#if $have_ncenter#-->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('section-NC')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_enable">$T('opt-ncenter_enable')</label>
+                    <input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if int($ncenter_enable) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-ncenter_enable')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_startup">$T($notify_texts['startup'])</label>
+                    <input type="checkbox" name="ncenter_prio_startup" id="ncenter_prio_startup" value="1" <!--#if int($ncenter_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_download">$T($notify_texts['download'])</label>
+                    <input type="checkbox" name="ncenter_prio_download" id="ncenter_prio_download" value="1" <!--#if int($ncenter_prio_download) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_pp">$T($notify_texts['pp'])</label>
+                    <input type="checkbox" name="ncenter_prio_pp" id="ncenter_prio_pp" value="1" <!--#if int($ncenter_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_complete">$T($notify_texts['complete'])</label>
+                    <input type="checkbox" name="ncenter_prio_complete" id="ncenter_prio_complete" value="1" <!--#if int($ncenter_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_failed">$T($notify_texts['failed'])</label>
+                    <input type="checkbox" name="ncenter_prio_failed" id="ncenter_prio_failed" value="1" <!--#if int($ncenter_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_queue_done">$T($notify_texts['queue_done'])</label>
+                    <input type="checkbox" name="ncenter_prio_queue_done" id="ncenter_prio_queue_done" value="1" <!--#if int($ncenter_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_disk_full">$T($notify_texts['disk_full'])</label>
+                    <input type="checkbox" name="ncenter_prio_disk_full" id="ncenter_prio_disk_full" value="1" <!--#if int($ncenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_warning">$T($notify_texts['warning'])</label>
+                    <input type="checkbox" name="ncenter_prio_warning" id="ncenter_prio_warning" value="1" <!--#if int($ncenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_error">$T($notify_texts['error'])</label>
+                    <input type="checkbox" name="ncenter_prio_error" id="ncenter_prio_error" value="1" <!--#if int($ncenter_prio_error) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ncenter_prio_other">$T($notify_texts['other'])</label>
+                    <input type="checkbox" name="ncenter_prio_other" id="ncenter_prio_other" value="1" <!--#if int($ncenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                   <button class="btn btn-default" type="button" id="test_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+               </div>
+           </fieldset>
+       </div><!-- /col1 -->
+    </div><!-- /section -->
+    <!--#end if#-->
+    <!--#if $nt#-->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('section-AC')</h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="acenter_enable">$T('opt-acenter_enable')</label>
+                    <input type="checkbox" name="acenter_enable" id="acenter_enable" value="1" <!--#if int($acenter_enable) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_startup">$T($notify_texts['startup'])</label>
+                    <input type="checkbox" name="acenter_prio_startup" id="acenter_prio_startup" value="1" <!--#if int($acenter_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_download">$T($notify_texts['download'])</label>
+                    <input type="checkbox" name="acenter_prio_download" id="acenter_prio_download" value="1" <!--#if int($acenter_prio_download) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_pp">$T($notify_texts['pp'])</label>
+                    <input type="checkbox" name="acenter_prio_pp" id="acenter_prio_pp" value="1" <!--#if int($acenter_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_complete">$T($notify_texts['complete'])</label>
+                    <input type="checkbox" name="acenter_prio_complete" id="acenter_prio_complete" value="1" <!--#if int($acenter_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_failed">$T($notify_texts['failed'])</label>
+                    <input type="checkbox" name="acenter_prio_failed" id="acenter_prio_failed" value="1" <!--#if int($acenter_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_queue_done">$T($notify_texts['queue_done'])</label>
+                    <input type="checkbox" name="acenter_prio_queue_done" id="acenter_prio_queue_done" value="1" <!--#if int($acenter_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_disk_full">$T($notify_texts['disk_full'])</label>
+                    <input type="checkbox" name="acenter_prio_disk_full" id="acenter_prio_disk_full" value="1" <!--#if int($acenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_warning">$T($notify_texts['warning'])</label>
+                    <input type="checkbox" name="acenter_prio_warning" id="acenter_prio_warning" value="1" <!--#if int($acenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_error">$T($notify_texts['error'])</label>
+                    <input type="checkbox" name="acenter_prio_error" id="acenter_prio_error" value="1" <!--#if int($acenter_prio_error) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="acenter_prio_other">$T($notify_texts['other'])</label>
+                    <input type="checkbox" name="acenter_prio_other" id="acenter_prio_other" value="1" <!--#if int($acenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                   <button class="btn btn-default" type="button" id="test_windows_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+               </div>
+           </fieldset>
+       </div><!-- /col1 -->
+    </div><!-- /section -->
+    <!--#end if#-->
+    <!--#if $have_ntfosd#-->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('section-OSD') <a href="$helpuri$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_enable">$T('opt-ntfosd_enable')</label>
+                    <input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if int($ntfosd_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ntfosd then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <span class="desc">$T('explain-ntfosd_enable')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_startup">$T($notify_texts['startup'])</label>
+                    <input type="checkbox" name="ntfosd_prio_startup" id="ntfosd_prio_startup" value="1" <!--#if int($ntfosd_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_download">$T($notify_texts['download'])</label>
+                    <input type="checkbox" name="ntfosd_prio_download" id="ntfosd_prio_download" value="1" <!--#if int($ntfosd_prio_download) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_pp">$T($notify_texts['pp'])</label>
+                    <input type="checkbox" name="ntfosd_prio_pp" id="ntfosd_prio_pp" value="1" <!--#if int($ntfosd_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_complete">$T($notify_texts['complete'])</label>
+                    <input type="checkbox" name="ntfosd_prio_complete" id="ntfosd_prio_complete" value="1" <!--#if int($ntfosd_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_failed">$T($notify_texts['failed'])</label>
+                    <input type="checkbox" name="ntfosd_prio_failed" id="ntfosd_prio_failed" value="1" <!--#if int($ntfosd_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_queue_done">$T($notify_texts['queue_done'])</label>
+                    <input type="checkbox" name="ntfosd_prio_queue_done" id="ntfosd_prio_queue_done" value="1" <!--#if int($ntfosd_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_disk_full">$T($notify_texts['disk_full'])</label>
+                    <input type="checkbox" name="ntfosd_prio_disk_full" id="ntfosd_prio_disk_full" value="1" <!--#if int($ntfosd_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_warning">$T($notify_texts['warning'])</label>
+                    <input type="checkbox" name="ntfosd_prio_warning" id="ntfosd_prio_warning" value="1" <!--#if int($ntfosd_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_error">$T($notify_texts['error'])</label>
+                    <input type="checkbox" name="ntfosd_prio_error" id="ntfosd_prio_error" value="1" <!--#if int($ntfosd_prio_error) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="ntfosd_prio_other">$T($notify_texts['other'])</label>
+                    <input type="checkbox" name="ntfosd_prio_other" id="ntfosd_prio_other" value="1" <!--#if int($ntfosd_prio_other) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                   <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                   <span id="testosd-result" class="icon path darkred">&nbsp;</span>
+               </div>
+           </fieldset>
+       </div><!-- /col1 -->
+    </div><!-- /section -->
+    <!--#end if#-->
+        <div class="section" id="growl">
         <div class="col2">
             <h3>$T('growlSettings') <a href="$helpuri$help_uri#toc3" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
@@ -138,128 +320,6 @@
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
-    <!--#if $have_ncenter#-->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('section-NC')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_enable">$T('opt-ncenter_enable')</label>
-                    <input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if int($ncenter_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ncenter then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-ncenter_enable')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_startup">$T($notify_texts['startup'])</label>
-                    <input type="checkbox" name="ncenter_prio_startup" id="ncenter_prio_startup" value="1" <!--#if int($ncenter_prio_startup) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_download">$T($notify_texts['download'])</label>
-                    <input type="checkbox" name="ncenter_prio_download" id="ncenter_prio_download" value="1" <!--#if int($ncenter_prio_download) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_pp">$T($notify_texts['pp'])</label>
-                    <input type="checkbox" name="ncenter_prio_pp" id="ncenter_prio_pp" value="1" <!--#if int($ncenter_prio_pp) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_complete">$T($notify_texts['complete'])</label>
-                    <input type="checkbox" name="ncenter_prio_complete" id="ncenter_prio_complete" value="1" <!--#if int($ncenter_prio_complete) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_failed">$T($notify_texts['failed'])</label>
-                    <input type="checkbox" name="ncenter_prio_failed" id="ncenter_prio_failed" value="1" <!--#if int($ncenter_prio_failed) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_queue_done">$T($notify_texts['queue_done'])</label>
-                    <input type="checkbox" name="ncenter_prio_queue_done" id="ncenter_prio_queue_done" value="1" <!--#if int($ncenter_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_disk_full">$T($notify_texts['disk_full'])</label>
-                    <input type="checkbox" name="ncenter_prio_disk_full" id="ncenter_prio_disk_full" value="1" <!--#if int($ncenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_warning">$T($notify_texts['warning'])</label>
-                    <input type="checkbox" name="ncenter_prio_warning" id="ncenter_prio_warning" value="1" <!--#if int($ncenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_error">$T($notify_texts['error'])</label>
-                    <input type="checkbox" name="ncenter_prio_error" id="ncenter_prio_error" value="1" <!--#if int($ncenter_prio_error) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ncenter_prio_other">$T($notify_texts['other'])</label>
-                    <input type="checkbox" name="ncenter_prio_other" id="ncenter_prio_other" value="1" <!--#if int($ncenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
-               </div>
-           </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
-    <!--#end if#-->
-    <!--#if $have_ntfosd#-->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('section-OSD') <a href="$helpuri$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_enable">$T('opt-ntfosd_enable')</label>
-                    <input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if int($ntfosd_enable) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ntfosd then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-ntfosd_enable')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_startup">$T($notify_texts['startup'])</label>
-                    <input type="checkbox" name="ntfosd_prio_startup" id="ntfosd_prio_startup" value="1" <!--#if int($ntfosd_prio_startup) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_download">$T($notify_texts['download'])</label>
-                    <input type="checkbox" name="ntfosd_prio_download" id="ntfosd_prio_download" value="1" <!--#if int($ntfosd_prio_download) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_pp">$T($notify_texts['pp'])</label>
-                    <input type="checkbox" name="ntfosd_prio_pp" id="ntfosd_prio_pp" value="1" <!--#if int($ntfosd_prio_pp) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_complete">$T($notify_texts['complete'])</label>
-                    <input type="checkbox" name="ntfosd_prio_complete" id="ntfosd_prio_complete" value="1" <!--#if int($ntfosd_prio_complete) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_failed">$T($notify_texts['failed'])</label>
-                    <input type="checkbox" name="ntfosd_prio_failed" id="ntfosd_prio_failed" value="1" <!--#if int($ntfosd_prio_failed) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_queue_done">$T($notify_texts['queue_done'])</label>
-                    <input type="checkbox" name="ntfosd_prio_queue_done" id="ntfosd_prio_queue_done" value="1" <!--#if int($ntfosd_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_disk_full">$T($notify_texts['disk_full'])</label>
-                    <input type="checkbox" name="ntfosd_prio_disk_full" id="ntfosd_prio_disk_full" value="1" <!--#if int($ntfosd_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_warning">$T($notify_texts['warning'])</label>
-                    <input type="checkbox" name="ntfosd_prio_warning" id="ntfosd_prio_warning" value="1" <!--#if int($ntfosd_prio_warning) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_error">$T($notify_texts['error'])</label>
-                    <input type="checkbox" name="ntfosd_prio_error" id="ntfosd_prio_error" value="1" <!--#if int($ntfosd_prio_error) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ntfosd_prio_other">$T($notify_texts['other'])</label>
-                    <input type="checkbox" name="ntfosd_prio_other" id="ntfosd_prio_other" value="1" <!--#if int($ntfosd_prio_other) > 0 then 'checked="checked"' else ""#--> />
-                </div>
-                <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testosd-result" class="icon path darkred">&nbsp;</span>
-               </div>
-           </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
-    <!--#end if#-->
     <div class="section" id="prowl">
         <div class="col2">
             <h3>$T('section-Prowl')</h3>
@@ -636,6 +696,29 @@
             beforeSend: function () {
                 \$('#test_notification').attr("disabled", "disabled");
                 \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+            },
+            complete: function () {
+                \$('#test_notification').removeAttr("disabled");
+                \$('#testnotice-result').removeClass("loading");
+            },
+            success: function (data) {
+                if (data.status == true) {
+                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
+                } else {
+                  \$('#testnotice-result').addClass("failure").html(data.error);
+                }
+            }
+        });
+    });
+    \$('#test_windows_notification').click(function () {
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: {mode: 'test_windows', apikey: '$session', output: 'json' },
+            beforeSend: function () {
+                \$('#test_notification').attr("disabled", "disabled");
+                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
+                console.log('asdas')
             },
             complete: function () {
                 \$('#test_notification').removeAttr("disabled");

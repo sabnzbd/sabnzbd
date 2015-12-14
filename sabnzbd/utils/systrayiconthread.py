@@ -94,6 +94,20 @@ class SysTrayIconThread(Thread):
     # override this
     def doUpdates(self):
         pass
+        
+    # Notification
+    def sendnotification(self, title, msg):
+        hicon = self.get_icon(self.icon)
+        win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY,
+                                  (self.hwnd, 
+                                   0, 
+                                   win32gui.NIF_INFO,
+                                   win32con.WM_USER+20, 
+                                   hicon,
+                                   "Balloon tooltip", 
+                                   msg, 
+                                   200, 
+                                   title))
 
     def _add_ids_to_menu_options(self, menu_options):
         result = []

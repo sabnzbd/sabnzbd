@@ -155,7 +155,9 @@ input[type="checkbox"]+.desc {
 .infoTableSeperator.alt {
     background-color: #F8F8F8;
 }
-
+.success {
+    color: #5cb85c !important;
+}
 .typeahead.dropdown-menu {
     padding: 0;
     min-width: 300px;

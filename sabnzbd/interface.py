@@ -2743,6 +2743,10 @@ LIST_NCENTER = ('ncenter_enable',
                 'ncenter_prio_startup', 'ncenter_prio_download', 'ncenter_prio_pp', 'ncenter_prio_complete', 'ncenter_prio_failed',
                 'ncenter_prio_disk_full', 'ncenter_prio_warning', 'ncenter_prio_error', 'ncenter_prio_queue_done', 'ncenter_prio_other'
                 )
+LIST_ACENTER = ('acenter_enable',
+                'acenter_prio_startup', 'acenter_prio_download', 'acenter_prio_pp', 'acenter_prio_complete', 'acenter_prio_failed',
+                'acenter_prio_disk_full', 'acenter_prio_warning', 'acenter_prio_error', 'acenter_prio_queue_done', 'acenter_prio_other'
+                )
 LIST_NTFOSD = ('ntfosd_enable',
                'ntfosd_prio_startup', 'ntfosd_prio_download', 'ntfosd_prio_pp', 'ntfosd_prio_complete', 'ntfosd_prio_failed',
                'ntfosd_prio_disk_full', 'ntfosd_prio_warning', 'ntfosd_prio_error', 'ntfosd_prio_queue_done', 'ntfosd_prio_other'
@@ -2797,6 +2801,8 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('pushbullet', kw)()
         for kw in LIST_NCENTER:
             conf[kw] = config.get_config('ncenter', kw)()
+        for kw in LIST_ACENTER:
+            conf[kw] = config.get_config('acenter', kw)()
         for kw in LIST_NTFOSD:
             conf[kw] = config.get_config('ntfosd', kw)()
         conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
@@ -2822,6 +2828,10 @@ class ConfigNotify(object):
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_NCENTER:
             msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_ACENTER:
+            msg = config.get_config('acenter', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_NTFOSD:
