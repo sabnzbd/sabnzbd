@@ -269,6 +269,10 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     text-align: center;
 }
 
+.RSS input[type="text"] {
+    max-width: 180px;
+}
+
 .RSS .catTable select {
     max-width: 120px;
 }
