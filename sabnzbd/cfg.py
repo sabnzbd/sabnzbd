@@ -274,7 +274,7 @@ ncenter_prio_other = OptionBool('ncenter', 'ncenter_prio_other', False)
 
 # [acenter]
 acenter_enable = OptionBool('acenter', 'acenter_enable', sabnzbd.WIN32)
-acenter_prio_startup = OptionBool('acenter', 'acenter_prio_startup', True)
+acenter_prio_startup = OptionBool('acenter', 'acenter_prio_startup', False)
 acenter_prio_download = OptionBool('acenter', 'acenter_prio_download', False)
 acenter_prio_pp = OptionBool('acenter', 'acenter_prio_pp', False)
 acenter_prio_complete = OptionBool('acenter', 'acenter_prio_complete', True)
