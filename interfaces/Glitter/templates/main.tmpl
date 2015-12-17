@@ -594,7 +594,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="hover-button" data-bind="click: deleteSlot"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a href="#" class="hover-button" data-bind="click: deleteSlot, css: { disabled : processingDownload() || processingWaiting() }"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
                         </tr>
                     </tbody>

@@ -1915,6 +1915,10 @@ $(function() {
 
         // Delete button
         self.deleteSlot = function(item, event) {
+            // Are we not still processing?
+            if(item.processingDownload() || item.processingWaiting()) return false;
+            
+            // Confirm?
             if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDow1)) {
                 callAPI({
                     mode: 'history',
