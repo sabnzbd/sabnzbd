@@ -443,6 +443,12 @@ tbody>tr>td:last-child {
     color: #474747;
 }
 
+.hover-button.disabled,
+.hover-button.disabled:hover {
+    cursor: not-allowed !important;
+    opacity: 0.1 !important;
+}
+
 .info-container {
     float: right;
     color: #888;
