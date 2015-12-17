@@ -101,6 +101,9 @@ def special_fixer(p):
         Also takes care of the situation where a non-Windows/UTF-8 system
         receives a latin-1 encoded name.
     """
+    if p:
+        # Remove \" constructions from incoming headers
+        p = p.replace(r'\"', r'"')
     if not p or isinstance(p, unicode):
         return p
     try:
