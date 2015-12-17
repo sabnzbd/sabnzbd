@@ -2461,6 +2461,13 @@ function displayDateTime(inDate, outFormat, inFormat) {
 
 // Keep dropdowns open
 function keepOpen(thisItem) {
+    // Make sure we clicked the a and not the glyphicon/caret!
+    if(!$(thisItem).is('a') && !$(thisItem).is('button')) {
+        // Do it again on the parent
+        keepOpen(thisItem.parentElement)
+        return;
+    }
+
     // Onlick so it works for the dynamic items!
     $(thisItem).siblings('.dropdown-menu').children().click(function(e) {
         // Not for links
