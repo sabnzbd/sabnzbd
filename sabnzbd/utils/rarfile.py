@@ -108,7 +108,11 @@ def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
     try:
         buf = open(fn, "rb").read(50)
-        return buf.startswith(RAR_ID) or buf.startswith(RAR5_ID)
+        if(buf.startswith(RAR5_ID)):
+            return "rar5 signature"
+        if(buf.startswith(RAR_ID)):
+            return "rar4 (or lower) signature"
+        return None
     except:
         return False
 

@@ -146,10 +146,9 @@ def find_programs(curdir):
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
         sabnzbd.newsunpack.RAR_VERSION = version
-        logging.info('UNRAR version %s', version)
+        logging.info('UNRAR binary version %.2f', (float(version) / 100))
         if sabnzbd.newsunpack.RAR_PROBLEM:
             logging.info('Problematic UNRAR')
-
 
 def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
     """ Run a user postproc script, return console output and exit value """
@@ -597,6 +596,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
 
     stup, need_shell, command, creationflags = build_command(command)
 
+    logging.debug("Analyzing rar file ... %s found", is_rarfile(rarfile))
     logging.debug("Running unrar %s", command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
