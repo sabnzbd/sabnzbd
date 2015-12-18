@@ -540,5 +540,6 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     return ''
 
 def send_windows(title, msg, gtype):
-    sabnzbd.WINTRAY.sendnotification(title, msg)
+    if sabnzbd.WINTRAY:
+        sabnzbd.WINTRAY.sendnotification(title, msg)
     return None
