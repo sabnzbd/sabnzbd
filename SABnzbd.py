@@ -496,7 +496,8 @@ def print_modules():
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
 
     if sabnzbd.newsunpack.RAR_COMMAND:
-        logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
+        logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
+
     else:
         logging.warning(T('unrar binary... NOT found'))
 
@@ -1097,9 +1098,6 @@ def main():
         except:
             Bail_Out(browserhost, cherryport, '49')
 
-    # Find external programs
-    sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
-
     # Windows instance is reachable through registry
     url = None
     if sabnzbd.WIN32 and not new_instance:
@@ -1353,6 +1351,9 @@ def main():
                 sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
             except:
                 logging.info("pygtk2 not found. No SysTray.")
+
+    # Find external programs
+    sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
 
     print_modules()
 
