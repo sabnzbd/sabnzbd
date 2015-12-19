@@ -353,7 +353,6 @@
             </div>
             <div class="modal-body">
                 <div id="modal_item_filelist">
-
                     <form data-bind="submit: filelist.setNzbPassword" class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
@@ -377,11 +376,11 @@
 
                         <table class="table item-files-table">
                             <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
-                                <tr data-bind="css: { 'files-sortable' : canChange() }">
+                                <tr data-bind="css: { 'files-sortable' : canselect(), 'files-done' : !isdone(), }">
                                     <td class="row-wrap-text">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" data-bind="css: { 'progress-bar-info-checking': \$parent.filelist.modalProgressColor() }, attr: { 'style': 'width: '+percentage() }">
-                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canChange()  }, click : checkSelectRange" title="$T('Glitter-multiSelect')" />
+                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canselect()  }, click : checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
                                                 <span>
                                                     <span data-bind="truncatedTextCenter: filename"></span>

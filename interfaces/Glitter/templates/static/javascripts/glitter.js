@@ -2128,7 +2128,7 @@ $(function() {
 
                 // Check if we show/hide completed
                 if(localStorageGetItem('showCompletedFiles') == 'No') {
-                    $('.item-files-table tr:not(.files-sortable)').hide();
+                    $('.item-files-table tr:not(.files-done)').hide();
                     $('#filelist-showcompleted').removeClass('hover-button')
                 }
 
@@ -2212,10 +2212,9 @@ $(function() {
         self.file_age = ko.observable();
         self.mb = ko.observable();
         self.percentage = ko.observable();
-        self.canChange = ko.pureComputed(function() {
-            return self.nzf_id() != undefined;
-        })
-
+        self.canselect = ko.observable(true);
+        self.isdone =  ko.observable(false);
+        
         // For selecting range
         self.checkSelectRange = function(data, event) {
             if(event.shiftKey) {
@@ -2231,6 +2230,8 @@ $(function() {
             self.file_age(data.age)
             self.mb(data.mb)
             self.percentage(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
+            self.canselect(data.nzf_id != undefined)
+            self.isdone(data.mbleft == 0)
         }
 
         // Update now
@@ -2523,13 +2524,13 @@ function checkShiftRange(strCheckboxes) {
 function hideCompletedFiles() {
     if($('#filelist-showcompleted').hasClass('hover-button')) {
         // Hide all
-        $('.item-files-table tr:not(.files-sortable)').hide();
+        $('.item-files-table tr:not(.files-done)').hide();
         $('#filelist-showcompleted').removeClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'No')
     } else {
         // show all
-        $('.item-files-table tr:not(.files-sortable)').show();
+        $('.item-files-table tr:not(.files-done)').show();
         $('#filelist-showcompleted').addClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'Yes')
