@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--#set $active_lang=$active_lang.replace('_', '-').lower()#-->
 <html lang="$active_lang" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
     <head>
         <!--
@@ -738,7 +739,8 @@
     		</div>
     	</div>
         
-        <!-- Inclusion is faster than external scripts, SABNZB doesn't do caching! -->
+        <!-- Inclusion is faster than external scripts. We load momentJS locale seperatly so failure won't break anything -->
+        
         <script type="text/javascript">
             <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
@@ -749,5 +751,8 @@
             <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
         </script>
+        <!--#if active_lang != 'en'#-->
+        <script type="text/javascript" src="./static/javascripts/momentjs_locale/${active_lang}.js"></script>
+        <!--#end if#-->
     </body>
 </html>
