@@ -392,7 +392,7 @@ tr td {
     padding-bottom: 6px;
 }
 
-.table-active-sorting {
+.queue .table-active-sorting {
     border-collapse: separate;
     border-bottom: 1px solid #F0F0F0 !important;
 }
@@ -1468,8 +1468,8 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 5px;
 }
 
-#modal-item-files .item-files-table.table-active-sorting {
-    border-collapse: collapse !important;
+#modal-item-files .item-files-table .sortable-placeholder td {
+    padding: 2px 0px !important;
 }
 
 #modal-item-files .item-files-table .progress {
@@ -1610,6 +1610,11 @@ tr.queue-item>td:first-child>a {
 
     .queue .multioperations-selector {
         min-width: 715px;
+    }
+    
+    
+    .queue .sortable-placeholder td {
+        padding: 9px 0px 8px !important;
     }
 }
 
