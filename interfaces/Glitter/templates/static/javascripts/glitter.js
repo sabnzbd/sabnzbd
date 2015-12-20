@@ -1336,6 +1336,10 @@ $(function() {
 
         // Selete all selected
         self.doMultiDelete = function() {
+            // Anything selected?
+            if(self.multiEditItems().length < 1) return;
+            
+            // Need confirm
             if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
                 // List all the ID's
                 strIDs = '';
@@ -1621,6 +1625,7 @@ $(function() {
                         // Fade and remove
                         $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
                             parent.queueItems.remove(itemToDelete);
+                            parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
                             self.parent.parent.refresh();
                         })
                     }
