@@ -352,7 +352,7 @@
                 <h4 class="modal-title row-wrap-text" data-bind="text: filelist.modalTitle">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
-                <div id="modal_item_filelist">
+                <div id="modal-item-filelist">
                     <form data-bind="submit: filelist.setNzbPassword" class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
@@ -365,7 +365,7 @@
                             </div>
                         </div>
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" onclick="checkAllFiles(this)" data-tooltip="true" data-trigger="hover" data-placement="bottom" />
+                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" id="multieditfiles-checkall-top" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="bottom" data-checkrange="#modal-item-files .files-sortable input" />
                             <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="bottom" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
@@ -375,12 +375,12 @@
                         </div>
 
                         <table class="table item-files-table">
-                            <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal_item_filelist', items: '.files-sortable' } }">
+                            <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal-item-filelist', items: '.files-sortable' } }">
                                 <tr data-bind="css: { 'files-sortable' : canselect(), 'files-done' : !isdone(), }">
                                     <td class="row-wrap-text">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" data-bind="css: { 'progress-bar-info-checking': \$parent.filelist.modalProgressColor() }, attr: { 'style': 'width: '+percentage() }">
-                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canselect()  }, click : checkSelectRange" title="$T('Glitter-multiSelect')" />
+                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canselect()  }, click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
                                                 <span>
                                                     <span data-bind="truncatedTextCenter: filename"></span>
@@ -394,7 +394,7 @@
                         </table>
 
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="Check all" name="checkAll" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="top" />
+                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" id="multieditfiles-checkall-bottom" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="top" data-checkrange="#modal-item-files .files-sortable input" />
                             <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="top" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
