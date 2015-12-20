@@ -1210,6 +1210,7 @@ $(function() {
             }
         }
 
+        // Add to the list
         self.addMultiEdit = function(item, event) {
             // Is it a shift-click?
             if(event.shiftKey) {
@@ -1225,10 +1226,10 @@ $(function() {
             } else {
                 // Go over them all to know which one to remove 
                 self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
-                // Now we definitely have not checked them all
-                $('#multiedit-checkall').prop('checked', false)
             }
-
+            
+            // Update check-all buton state
+            setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
             return true;
         }
 
@@ -1329,12 +1330,9 @@ $(function() {
                 $.each(self.multiEditItems(), function(index) {
                     $('#multiedit_' + this.id).prop('checked', true);
                 })
-                // Now let's see if all are checked, based on compare with total
-                if($('.queue input[name="multiedit"]:checked').length == $('.queue input[name="multiedit"]').length) {
-                    $('#multiedit-checkall').prop('checked', true)
-                } else {
-                    $('#multiedit-checkall').prop('checked', false)
-                }
+                
+                // Update check-all buton state
+                setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
             }, 100)
         }, null, "arrayChange")
     }
@@ -2071,9 +2069,11 @@ $(function() {
             }
 
             // Hide ok button and reset
-            $('#modal_item_filelist .glyphicon-floppy-saved').hide()
-            $('#modal_item_filelist .glyphicon-lock').show()
-            $('#modal-item-files input[type="checkbox"]').prop('checked', false)
+            $('#modal-item-filelist .glyphicon-floppy-saved').hide()
+            $('#modal-item-filelist .glyphicon-lock').show()
+            
+            // Set state of the check-all
+            setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
 
             // Show
             $('#modal-item-files').modal('show');
@@ -2181,9 +2181,12 @@ $(function() {
 
             // Activate with this weird URL "API"
             callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
-                $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration)
+                // Fade it out
+                $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
+                    // Set state of the check-all
+                    setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
+                })
             })
-
         }
 
         // For changing the passwords
@@ -2195,11 +2198,21 @@ $(function() {
             }).then(function() {
                 // Refresh, reset and close
                 parent.refresh()
-                $('#modal_item_filelist .glyphicon-floppy-saved').show()
-                $('#modal_item_filelist .glyphicon-lock').hide()
+                $('#modal-item-filelist .glyphicon-floppy-saved').show()
+                $('#modal-item-filelist .glyphicon-lock').hide()
                 $('#modal-item-files').modal('hide')
             })
             return false;
+        }
+        
+        // For selecting range and the check-all button
+        self.checkSelectRange = function(data, event) {
+            if(event.shiftKey) {
+                checkShiftRange('#modal-item-files .files-sortable input:not(:disabled)')
+            }
+            // Set state of the check-all
+            setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
+            return true;
         }
     }
 
@@ -2214,14 +2227,6 @@ $(function() {
         self.percentage = ko.observable();
         self.canselect = ko.observable(true);
         self.isdone =  ko.observable(false);
-        
-        // For selecting range
-        self.checkSelectRange = function(data, event) {
-            if(event.shiftKey) {
-                checkShiftRange('.item-files-table input:not(:disabled)')
-            }
-            return true;
-        }
 
         // Update internally
         self.updateFromData = function(data) {
@@ -2492,20 +2497,34 @@ function showDetails(thisItem) {
 
 // Check all functionality
 function checkAllFiles(objCheck) {
-    // Check for main-page or file-list modal?
-    if($(objCheck).prop('name') == 'multieditCheckAll') {
-        // Is checked himself?
-        if($(objCheck).prop('checked')) {
-            // (Un)check all in Queue by simulating click, this also fires the knockout-trigger!
-            $('.queue-table input[name="multiedit"]').filter(":not(:checked):visible").trigger("click")
-        } else {
-            // Uncheck all checked ones and fires event
-            $('.queue-table input[name="multiedit"]').filter(":checked:visible").trigger("click")
-        }
-
+    // Get which ones we care about
+    var allChecks = $($(objCheck).data('checkrange')).filter(':not(:disabled):visible');
+    
+    // We need to re-evaltuate the state of this check-all
+    // Otherwise the 'inderterminate' will be overwritten by the click event!
+    setCheckAllState('#'+objCheck.id, $(objCheck).data('checkrange'))
+    
+    // Now we can check what happend    
+    if(objCheck.indeterminate) {
+        // Uncheck the already checked ones
+        allChecks.filter(":checked").trigger("click")
     } else {
-        // (Un)check all in file-list
-        $('#modal-item-files input').filter(":checkbox:not(:disabled):visible").prop('checked', $(objCheck).prop('checked'))
+        // Toggle their state by a click
+        allChecks.trigger("click")
+    }
+}
+
+// To update the check-all button nicely
+function setCheckAllState(checkSelector, rangeSelector) {  
+    // See how many are checked
+    var allChecks = $(rangeSelector).filter(':not(:disabled):visible')
+    var nrChecks = allChecks.filter(":checked");
+    if(nrChecks.length === 0) {
+        $(checkSelector).prop({'checked': false, 'indeterminate': false})
+    } else if(nrChecks.length == allChecks.length) {
+        $(checkSelector).prop({'checked': true, 'indeterminate': false})
+    } else {
+        $(checkSelector).prop({'checked': false, 'indeterminate': true})
     }
 }
 
