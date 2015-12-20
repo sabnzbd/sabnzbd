@@ -365,7 +365,7 @@
                             </div>
                         </div>
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" id="multieditfiles-checkall-top" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="bottom" data-checkrange="#modal-item-files .files-sortable input" />
+                            <input type="checkbox" title="$T('Glitter-checkAll')" data-tooltip="true" data-placement="bottom" data-bind="click: filelist.checkAllFiles" />
                             <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="bottom" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
@@ -394,7 +394,7 @@
                         </table>
 
                         <div class="multioperations-selector">
-                            <input type="checkbox" title="$T('Glitter-checkAll')" name="checkAll" id="multieditfiles-checkall-bottom" onclick="checkAllFiles(this)" data-tooltip="true" data-placement="top" data-checkrange="#modal-item-files .files-sortable input" />
+                            <input type="checkbox" title="$T('Glitter-checkAll')" data-tooltip="true" data-placement="top" data-bind="click: filelist.checkAllFiles" />
                             <a href="#" class="hover-button" data-bind="click: filelist.removeSelectedFiles" data-tooltip="true" data-placement="top" title="$T('Glitter-removeSelected')">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>

@@ -1184,6 +1184,7 @@ $(function() {
             })
         }
 
+        // Show the input box
         self.showMultiEdit = function() {
             // Update value
             self.isMultiEditing(!self.isMultiEditing())
@@ -1193,7 +1194,7 @@ $(function() {
             // Reset form and remove all checked ones
             $form[0].reset();
             self.multiEditItems.removeAll();
-            $('.delete input[name="multiedit"]').attr('checked', false)
+            $('.delete input[name="multiedit"], #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
             
             // Is the multi-edit in view?
             if(($form.offset().top + $form.outerHeight(true)) > ($(window).scrollTop()+$(window).height())) {
@@ -1201,12 +1202,6 @@ $(function() {
                 $('html, body').animate({
                     scrollTop: $form.offset().top + $form.outerHeight(true) - $(window).height() + 'px'
                 }, 'fast')
-            }
-            
-
-            // Do update on close, to make sure it's all updated
-            if(!self.isMultiEditing()) {
-                self.parent.refresh();
             }
         }
 
@@ -1229,6 +1224,49 @@ $(function() {
             }
             
             // Update check-all buton state
+            setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+            return true;
+        }
+        
+        // Check all
+        self.checkAllJobs = function(item, event) {
+            // Get which ones we care about
+            var allChecks = $('.queue-table input[name="multiedit"]').filter(':not(:disabled):visible');
+            
+            // We need to re-evaltuate the state of this check-all
+            // Otherwise the 'inderterminate' will be overwritten by the click event!
+            setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+            
+            // Now we can check what happend
+            // For when some are checked, or all are checked (but not partly)
+            if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+                var allActive = allChecks.filter(":checked")
+                // First remove the from the list
+                if(allActive.length == self.multiEditItems().length) {
+                    // Just remove all
+                    self.multiEditItems.removeAll();
+                    // Remove the check
+                    allActive.prop('checked', false)
+                } else {
+                    // Remove them seperate
+                    allActive.each(function() {
+                        // Go over them all to know which one to remove 
+                        var item = ko.dataFor(this)
+                        self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+                        // Remove the check of this one
+                        this.checked = false;
+                    })
+                }
+            } else {
+                // None are checked, so check and add them all
+                allChecks.prop('checked', true)
+                allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
+                event.target.checked = true
+                
+                // Now we fire the update
+                self.doMultiEditUpdate()
+            }
+            // Set state of all the check-all's
             setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
             return true;
         }
@@ -2073,7 +2111,7 @@ $(function() {
             $('#modal-item-filelist .glyphicon-lock').show()
             
             // Set state of the check-all
-            setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
+            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
 
             // Show
             $('#modal-item-files').modal('show');
@@ -2205,13 +2243,36 @@ $(function() {
             return false;
         }
         
+        // Check all
+        self.checkAllFiles = function(item, event) {
+            // Get which ones we care about
+            var allChecks = $('#modal-item-files .files-sortable input').filter(':not(:disabled):visible');
+            
+            // We need to re-evaltuate the state of this check-all
+            // Otherwise the 'inderterminate' will be overwritten by the click event!
+            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
+            
+            // Now we can check what happend    
+            if(event.target.indeterminate) {
+                allChecks.filter(":checked").prop('checked', false)
+            } else {
+                // Toggle their state by a click
+                allChecks.prop('checked', !event.target.checked)
+                event.target.checked = !event.target.checked;
+                event.target.indeterminate = false;
+            }
+            // Set state of all the check-all's
+            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
+            return true;
+        }
+        
         // For selecting range and the check-all button
         self.checkSelectRange = function(data, event) {
             if(event.shiftKey) {
                 checkShiftRange('#modal-item-files .files-sortable input:not(:disabled)')
             }
             // Set state of the check-all
-            setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
+            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
             return true;
         }
     }
@@ -2496,7 +2557,7 @@ function showDetails(thisItem) {
 }
 
 // Check all functionality
-function checkAllFiles(objCheck) {
+function checkAllFiles(objCheck, onlyCheck) {
     // Get which ones we care about
     var allChecks = $($(objCheck).data('checkrange')).filter(':not(:disabled):visible');
     
@@ -2506,8 +2567,12 @@ function checkAllFiles(objCheck) {
     
     // Now we can check what happend    
     if(objCheck.indeterminate) {
-        // Uncheck the already checked ones
-        allChecks.filter(":checked").trigger("click")
+        // Uncheck if we don't need trigger
+        if(onlyCheck) {
+            allChecks.filter(":checked").prop('checked', false)
+        } else  {
+            allChecks.filter(":checked").trigger("click")
+        }
     } else {
         // Toggle their state by a click
         allChecks.trigger("click")

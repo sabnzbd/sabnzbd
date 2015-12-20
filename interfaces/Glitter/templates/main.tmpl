@@ -324,7 +324,7 @@
                 <form class="multioperations-selector" data-bind="visible: (hasQueue() && queue.isMultiEditing())" style="display: none;">
                     <div class="add-nzb-inputbox add-nzb-inputbox-small add-nzb-inputbox-options">
                         <label for="multiedit-checkall">
-                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" onclick="checkAllFiles(this)" title="$T('Glitter-checkAll')" data-tooltip="true" data-placement="top" data-checkrange=".queue-table input[name='multiedit']" />
+                            <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" title="$T('Glitter-checkAll')" data-bind="click: queue.checkAllJobs" data-tooltip="true" data-placement="top" />
                         </label>
                         <a href="#" class="hover-button" data-bind="click: queue.doMultiDelete">
                             <span class="glyphicon glyphicon-trash"></span>
