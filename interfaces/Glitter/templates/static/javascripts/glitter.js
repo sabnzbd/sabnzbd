@@ -592,7 +592,7 @@ $(function() {
         self.clearWarnings = function() {
             if(!self.confirmDeleteQueue() || confirm(glitterTranslate.clearWarn))
                 // Activate
-                callSpecialAPI("./status/clearwarnings")
+                callSpecialAPI("./status/clearwarnings").done(self.refresh)
         }
         
         // Clear messages
