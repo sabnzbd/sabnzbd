@@ -50,11 +50,9 @@
                                     <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" /> 
                                 </td>
                                 <td class="title">
-                                    <div class="subscription-title">
-                                        <a href="?feed=$rss[$feed_item]['link']" class="path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                            <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div> $feed_item 
-                                        </a>
-                                    </div>
+                                    <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
+                                        <div class="favicon" style="background-image: url(http://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div> $feed_item 
+                                    </a>
                                 </td>
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>

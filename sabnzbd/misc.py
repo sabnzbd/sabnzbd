@@ -1288,10 +1288,13 @@ def format_source_url(url):
 
 
 def get_base_url(url):
-    RE_URL = re.compile(r'://([^/]+)/')
-    m = RE_URL.search(url)
-    if m:
-        return m.group(1)
+    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com 
+        But also api.althub.co.za -> althub.co.za
+    """
+    url_host = urlparse(url).hostname
+    if url_host:
+        url_split = url_host.split(".")
+        return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
     else:
         return ''
 
