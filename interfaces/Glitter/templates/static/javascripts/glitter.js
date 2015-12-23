@@ -210,14 +210,14 @@ $(function() {
 
         // Dynamic queue length check
         self.hasQueue = ko.pureComputed(function() {
-            return(self.queue.queueItems().length > 0 || self.queue.searchTerm())
+            return(self.queue.queueItems().length > 0 || self.queue.searchTerm() || self.queue.isLoading())
         })
 
         // Dynamic history length check
         self.hasHistory = ko.pureComputed(function() {
             // We also 'have history' if we can't find any results of the search or there are no failed ones
-            return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed())
-        }).extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 100 }});
+            return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed() || self.history.isLoading())
+        })
         
         self.hasWarnings = ko.pureComputed(function() {
             return(self.allWarnings().length > 0)
@@ -451,6 +451,13 @@ $(function() {
                 start: self.history.pagination.currentStart(),
                 limit: parseInt(self.history.paginationLimit())
             }).done(self.updateHistory);
+            
+            // We are now done with any loading
+            // But we wait a few ms so Knockout has time to update
+            setTimeout(function() {
+                self.queue.isLoading(false);
+                self.history.isLoading(false);
+            }, 100)
 
             // Return for .then() functionality
             return queueApi;
@@ -995,6 +1002,7 @@ $(function() {
         self.queueItems = ko.observableArray([]);
         self.totalItems = ko.observable(0);
         self.isMultiEditing = ko.observable(false);
+        self.isLoading = ko.observable(false).extend({ rateLimit: 100 });;
         self.multiEditItems = ko.observableArray([]);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
@@ -1111,7 +1119,7 @@ $(function() {
         // Searching in queue (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
             // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) >2 ) {
+            if(parseInt(self.parent.refreshRate()) > 2 ) {
                 self.parent.refresh();
             }
             // Go back to page 1
@@ -1124,8 +1132,9 @@ $(function() {
         self.clearSearchTerm = function(objModel, event) {
             // Was it escape key or click?
             if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+                self.isLoading(true)
                 self.searchTerm('');
-                self.parent.refresh();
+                self.parent.refresh()
             }
             // Was it click and the field is empty? Then we focus on the field
             if(event.type == 'mousedown' && self.searchTerm() == '') {
@@ -1174,14 +1183,7 @@ $(function() {
                 name: 'sort',
                 sort: sort,
                 dir: dir
-            }).then(function() {
-                // Force a refresh and then re-sort
-                parent.refresh().then(function() {
-                    self.queueItems.sort(function(a, b) {
-                        return a.index() < b.index() ? -1 : 1;
-                    });
-                })
-            })
+            }).then(parent.refresh)
         }
 
         // Show the input box
@@ -1355,6 +1357,8 @@ $(function() {
                     value: strIDs
                 }).then(function(response) {
                     if(response.status) {
+                        // Make sure the queue doesnt flicker and then fade-out
+                        self.isLoading(true)
                         $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
                             self.parent.refresh();
                         })
@@ -1613,8 +1617,10 @@ $(function() {
 
         // Remove 1 download from queue
         self.removeDownload = function(data, event) {
+            // Confirm and remove
             if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDow1)) {
                 var itemToDelete = this;
+                
                 callAPI({
                     mode: 'queue',
                     name: 'delete',
@@ -1624,6 +1630,8 @@ $(function() {
                     if(response.status) {
                         // Fade and remove
                         $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            // Make sure no flickering (if there are more items left) and then remove
+                            self.parent.isLoading(self.parent.totalItems() > 1)
                             parent.queueItems.remove(itemToDelete);
                             parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
                             self.parent.parent.refresh();
@@ -1647,6 +1655,7 @@ $(function() {
         // Variables
         self.historyItems = ko.observableArray([]);
         self.showFailed = ko.observable(false);
+        self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
         self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
         self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
         self.totalItems = ko.observable(0);
@@ -1745,9 +1754,7 @@ $(function() {
                 processData: false,
                 contentType: false,
                 data: data
-            }).then(function(r) {
-                self.parent.refresh()
-            });
+            }).then(self.parent.refresh);
 
             $("#modal-retry-job").modal("hide");
             $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
@@ -1757,7 +1764,7 @@ $(function() {
         // Searching in history (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
             // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) >2 ) {
+            if(parseInt(self.parent.refreshRate()) > 2 ) {
                 self.parent.refresh();
             }
             // Go back to page 1
@@ -1770,8 +1777,10 @@ $(function() {
         self.clearSearchTerm = function(objModel, event) {
             // Was it escape key or click?
             if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+                // Set the loader so it doesn't flicker and then switch
+                self.isLoading(true)
                 self.searchTerm('');
-                self.parent.refresh();
+                self.parent.refresh()
             }
             // Was it click and the field is empty? Then we focus on the field
             if(event.type == 'mousedown' && self.searchTerm() == '') {
@@ -1784,15 +1793,20 @@ $(function() {
         
         // Toggle showing failed
         self.toggleShowFailed = function(objModel, event) {
+            // Set the loader so it doesn't flicker and then switch
+            self.isLoading(true)
             self.showFailed(!self.showFailed())
-            // Force refresh
-            self.parent.refresh()
             // Forde hide tooltip so it doesn't linger
             $('#history-options a').tooltip('hide')
+            // Force refresh
+            self.parent.refresh()
         }
 
         // Empty history options
         self.emptyHistory = function(objModel, event) {
+            // Make sure no flickering
+            self.isLoading(true)
+            
             // What event?
             var whatToRemove = $(event.target).data('action');
             
@@ -1825,7 +1839,7 @@ $(function() {
                     del_files: 1,
                     value: strIDs
                 }).then(function() {
-                    // Clear search, refresh and hode
+                    // Clear search, refresh and hide
                     self.searchTerm('');
                     self.parent.refresh();
                     $("#modal-purge-history").modal('hide');
@@ -1970,6 +1984,8 @@ $(function() {
                     if(response.status) {
                         // Fade and remove
                         $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            // Make sure no flickering (if there are more items left) and then remove
+                            self.parent.isLoading(self.parent.totalItems() > 1)
                             self.parent.historyItems.remove(self);
                             self.parent.parent.refresh();
                         })
