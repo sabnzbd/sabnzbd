@@ -1390,37 +1390,34 @@ $(function() {
         var self = this;
         self.parent = parent;
 
-        // Define all knockout variables
-        self.id;
-        self.index = ko.observable();
-        self.name = ko.observable();
-        self.status = ko.observable();
-        self.isGrabbing = ko.observable();
-        self.hasDropdown = ko.observable(false);
-        self.totalMB = ko.observable();
-        self.remainingMB = ko.observable();
-        self.avg_age = ko.observable();
-        self.timeLeft = ko.observable();
-        self.progressColor = ko.observable();
-        self.missingText = ko.observable();
-        self.category = ko.observable();
-        self.script = ko.observable();
-        self.priority = ko.observable();
-        self.unpackopts = ko.observable();
-        self.editingName = ko.observable(false);
+        // Job info
+        self.id = data.nzo_id;
+        self.name = ko.observable($.trim(data.filename));
+        self.index = ko.observable(data.index);
+        self.status = ko.observable(data.status);
+        self.isGrabbing = ko.observable(data.status == 'Grabbing')
+        self.totalMB = ko.observable(parseFloat(data.mb));
+        self.remainingMB = ko.observable(parseFloat(data.mbleft));
+        self.avg_age = ko.observable(data.avg_age)
+        self.missing = ko.observable(data.missing)
+        self.category = ko.observable(data.cat);
+        self.priority = ko.observable(parent.priorityName[data.priority]);
+        self.script = ko.observable(data.script);
+        self.unpackopts = ko.observable(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
+        self.pausedStatus = ko.observable(data.status == 'Paused');
+        self.timeLeft = ko.observable(data.timeleft);
+        
+        // Initially empty
         self.nameForEdit = ko.observable();
-        self.pausedStatus = ko.observable();
-        self.rating_avg_video = ko.observable(false);
-        self.rating_avg_audio = ko.observable(false);
+        self.editingName = ko.observable(false);
+        self.hasDropdown = ko.observable(false);
+        self.rating_avg_video = ko.observable(false)
+        self.rating_avg_audio = ko.observable(false)
 
         // Functional vars   
         self.displayName = ko.pureComputed(function() {
-            // Is set
-            if(!self.name()) return '';
-            
             // is there a password in there?
             extractOutput = extractTitleAndPassword(self.name()) 
-            
             if(extractOutput.thePassword) {
                 return extractOutput.theTitle + ' <small class="queue-item-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
             } else {
@@ -1428,22 +1425,57 @@ $(function() {
             }
         })
         
+        // Color of the progress bar
+        self.progressColor = ko.computed(function() {
+            // Checking
+            if(self.status() == 'Checking') {
+                return '#58A9FA'
+            }
+            // Check for missing data, the value is arbitrary!
+            if(self.missing() > 50) {
+                return '#F8A34E'
+            }
+            // Set to grey, only when not Force download
+            if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
+                return '#B7B7B7'
+            }
+            // Nothing
+            return;
+        });
+        
+        // MB's and percentages
         self.downloadedMB = ko.computed(function() {
             return(self.totalMB() - self.remainingMB()).toFixed(0);
         });
-
-        self.percentage = ko.pureComputed(function() {
-            return((self.downloadedMB() / self.totalMB()) * 100).toFixed(2);
-        })
-
         self.percentageRounded = ko.pureComputed(function() {
-            return fixPercentages(self.percentage())
+            return fixPercentages(((self.downloadedMB() / self.totalMB()) * 100).toFixed(2))
         })
-
         self.progressText = ko.pureComputed(function() {
             return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
         })
         
+        // Texts
+        self.missingText= ko.pureComputed(function() {
+            // Check for missing data, the value is arbitrary!
+            if(self.missing() > 50) {
+                return self.missing() + ' ' + glitterTranslate.misingArt
+            }
+            return;
+        })
+        self.statusText = ko.computed(function() {
+            // Checking
+            if(self.status() == 'Checking') {
+                return glitterTranslate.checking
+            }
+            // Pausing status
+            if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
+                return glitterTranslate.paused;
+            }
+            // Just the time
+            return rewriteTime(self.timeLeft());
+        });
+        
+        // Extra queue column
         self.extraText = ko.pureComputed(function() {
             // Picked anything?
             switch(self.parent.parent.extraColumn()) {
@@ -1469,48 +1501,26 @@ $(function() {
 
         // Every update
         self.updateFromData = function(data) {
-            // Things that need to be set
-            self.id = data.nzo_id;
+            // Update job info
             self.name($.trim(data.filename));
             self.index(data.index);
-            self.isGrabbing(data.status == 'Grabbing')
-
-            // Set stats
-            self.progressColor(''); // Reset
             self.status(data.status)
+            self.isGrabbing(data.status == 'Grabbing')
             self.totalMB(parseFloat(data.mb));
             self.remainingMB(parseFloat(data.mbleft));
             self.avg_age(data.avg_age)
+            self.missing(data.missing)
             self.category(data.cat);
             self.priority(parent.priorityName[data.priority]);
             self.script(data.script);
             self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
             self.pausedStatus(data.status == 'Paused');
+            self.timeLeft(data.timeleft);
 
             // If exists, otherwise false
             if(data.rating_avg_video !== undefined) {
                 self.rating_avg_video(data.rating_avg_video === 0 ? '-' : data.rating_avg_video);
                 self.rating_avg_audio(data.rating_avg_audio === 0 ? '-' : data.rating_avg_audio);
-            }
-
-            // Checking
-            if(data.status == 'Checking') {
-                self.progressColor('#58A9FA')
-                self.timeLeft(glitterTranslate.checking);
-            }
-
-            // Check for missing data, the value is arbitrary!
-            if(data.missing > 50) {
-                self.progressColor('#F8A34E');
-                self.missingText(data.missing + ' ' + glitterTranslate.misingArt)
-            }
-
-            // Set color   
-            if((self.parent.parent.downloadsPaused() && data.priority != 'Force') || self.pausedStatus()) {
-                self.timeLeft(glitterTranslate.paused);
-                self.progressColor('#B7B7B7');
-            } else if(data.status != 'Checking') {
-                self.timeLeft(rewriteTime(data.timeleft));
             }
         };
 
@@ -1640,9 +1650,6 @@ $(function() {
                 });
             }
         };
-
-        // Update
-        self.updateFromData(data);
     }
 
     /**
