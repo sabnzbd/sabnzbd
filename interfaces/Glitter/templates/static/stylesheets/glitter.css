@@ -534,7 +534,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: 80%;
+    max-width: calc(100% - 85px);
  /* Change for each size! */
 }
 
@@ -870,6 +870,10 @@ tr.queue-item>td:first-child>a {
     font-weight: bold;
 }
 
+.history-table td.name.name-has-ratings .row-wrap-text {
+    max-width: calc(100% - 80px) ;
+}
+
 .history-failed-download:hover .retry-button .glyphicon:before,
 .retry-button:hover .glyphicon:before {
     content: " \e030 ";
@@ -928,10 +932,6 @@ tr.queue-item>td:first-child>a {
 
 .history-table td.name .row-wrap-text {
     max-width: 97%;
-}
-
-.name-has-ratings .row-wrap-text {
-    max-width: 70% !important;
 }
 
 .history-ratings {
@@ -1562,10 +1562,6 @@ tr.queue-item>td:first-child>a {
 }
 
 @media screen and (max-width: 1200px) {
-    .queue-table td.name:hover .row-wrap-text {
-        max-width: 77%;
-    }
-    
     td.name .name-ratings {
         margin-left: 0px;
         margin-right: -5px;
@@ -1586,20 +1582,6 @@ tr.queue-item>td:first-child>a {
     .sparkline,
     .sparkline-container {
         display: none !important;
-    }
-
-    .queue-table td.name:hover .row-wrap-text {
-        max-width: 80%;
-    }
-    
-    .queue-table td.name .name-options small {
-        display: none;
-    }
-}
-
-@media screen and (min-width: 1000px) {
-    .name-has-ratings .row-wrap-text {
-        max-width: 80% !important;
     }
 }
 

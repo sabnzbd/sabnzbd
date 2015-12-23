@@ -130,22 +130,19 @@ h2 {
 }
 
 .queue-table td.name .row-wrap-text {
-    max-width: 70% !important;
+    max-width: calc(100% - 45px);
 }
 
 tr.queue-item>td:first-child>a {
     margin-top: 3px;
 }
 
-/* For Iphone 4/5 */
-@media only screen and (max-width : 320px) {
-    .queue-table td.name .row-wrap-text {
-        max-width: 60% !important;
-    }
-}
-
 .queue-table td.name .name-options {
     display: block;
+}
+
+.queue-table td.name .name-options small {
+    display: none;
 }
 
 .queue-table td.name .glyphicon-folder-open {

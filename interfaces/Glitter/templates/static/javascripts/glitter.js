@@ -1871,16 +1871,17 @@ $(function() {
         // If we update the full set every time it uses lot of CPU
         // The Status/Actionline/scriptline/completed we do update every time
         // When clicked on the more-info button we load the rest again
-        self.nzo_id = '';
+        self.nzo_id = data.nzo_id;
         self.updateAllHistory = false;
         self.historyStatus = ko.mapping.fromJS(data);
-        self.status = ko.observable();
-        self.action_line = ko.observable();
-        self.script_line = ko.observable();
-        self.fail_message = ko.observable();
-        self.completed = ko.observable();
-        self.canRetry = ko.observable();
+        self.status = ko.observable(data.status);
+        self.action_line = ko.observable(data.action_line);
+        self.script_line = ko.observable(data.script_line);
+        self.fail_message = ko.observable(data.fail_message);
+        self.completed = ko.observable(data.completed);
+        self.canRetry = ko.observable(data.retry);
 
+        // Update function
         self.updateFromData = function(data) {
             // Fill all the basic info
             self.nzo_id = data.nzo_id;
@@ -2092,9 +2093,6 @@ $(function() {
 
             return false
         }
-
-        // Update now
-        self.updateFromData(data);
     }
 
     // For the file-list
