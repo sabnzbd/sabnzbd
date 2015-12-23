@@ -445,7 +445,7 @@ h2.activeRSS {
     color: #000;
 }
 .feed_disabled {
-    color: red;
+    color: red !important;
 }
 #subscriptions {
     border: 1px solid #E5E5E5;
@@ -470,14 +470,14 @@ h2.activeRSS {
 .ie6 .subscription-title {
     width: 20em;
 }
-.subscription-title {
-    max-width: 35em;
-    min-width: 20em;
+.subscription-title,
+.subscription-title:hover {
+    width: 20em;
     overflow: hidden;
     white-space: nowrap;
-}
-.subscription-title a {
+    display: block;
     text-decoration: underline;
+    color: black;
 }
 .controls {
     text-align: right;
