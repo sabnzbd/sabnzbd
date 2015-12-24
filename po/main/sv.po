@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-12-10 15:12+0000\n"
-"PO-Revision-Date: 2015-12-10 14:39+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
+"PO-Revision-Date: 2015-12-12 12:05+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-12-11 05:57+0000\n"
+"X-Launchpad-Export-Date: 2015-12-13 05:32+0000\n"
 "X-Generator: Launchpad (build 17865)\n"
 
 #: SABnzbd.py:326 [Error message]
@@ -531,7 +531,7 @@ msgstr "Misslyckades att skicka pushovermeddelande"
 
 #: sabnzbd/growler.py:528 [Error message]
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Dålig respons från Pushbullet (%s): /s"
+msgstr "Dålig respons från Pushbullet (%s): %s"
 
 #: sabnzbd/growler.py:533 [Warning message] # sabnzbd/growler.py:535
 msgid "Failed to send pushbullet message"

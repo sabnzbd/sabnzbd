@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-12-10 15:12+0000\n"
-"PO-Revision-Date: 2015-12-12 22:31+0000\n"
-"Last-Translator: TomP <Unknown>\n"
+"PO-Revision-Date: 2015-12-13 19:48+0000\n"
+"Last-Translator: mjelva <Unknown>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-12-13 17:28+0000\n"
+"X-Launchpad-Export-Date: 2015-12-14 05:32+0000\n"
 "X-Generator: Launchpad (build 17865)\n"
 
 #: SABnzbd.py:326 [Error message]
@@ -4240,7 +4240,7 @@ msgstr "Bekreft Sletting av Historie"
 
 #: sabnzbd/skintext.py:808
 msgid "How long or untill when do you want to pause? (in English!)"
-msgstr "Hvor lenge ønsker du å pause?"
+msgstr "Hvor lenge ønsker du å pause? (skriv på engelsk!)"
 
 #: sabnzbd/skintext.py:809
 msgid "Sorry, we could not interpret that. Try again."
