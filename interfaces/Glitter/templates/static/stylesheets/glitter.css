@@ -923,7 +923,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .history-status-table .col-sm-10 {
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .history-status-table a {
