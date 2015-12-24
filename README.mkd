@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.8.0Beta3
+Release Notes  -  SABnzbd 0.8.0Beta4
 ====================================
+
+## Changes in Beta4
+- Unicode crashes in user interface fixed
+- Glitter skin improved
+- Resume can now give notification
+- In Config->Server, show active servers before inactive ones
+- Update unrar to 5.30
 
 ## Changes in Beta3
 - Speedlimit corrections
