@@ -1592,10 +1592,11 @@ $(function() {
                 mode: 'change_cat',
                 value: itemObj.id,
                 value2: itemObj.category()
-            }).then(self.parent.parent.refresh)
-
-            // Remove tooltip in case of change
-            $(event.target).parent().tooltip('hide')
+            }).then(function() {
+                // Hide all tooltips before we refresh
+                $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')
+                self.parent.parent.refresh()
+            })
         }
         self.changeScript = function(itemObj) {
             // Not on empty handlers
@@ -1621,10 +1622,11 @@ $(function() {
                 name: 'priority',
                 value: itemObj.id,
                 value2: itemObj.priority()
-            }).then(self.parent.parent.refresh)
-            
-            // Remove tooltip in case of change
-            $(event.target).parent().tooltip('hide')
+            }).then(function() {
+                // Hide all tooltips before we refresh
+                $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')
+                self.parent.parent.refresh()
+            })
         }
 
         // Remove 1 download from queue
