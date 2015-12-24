@@ -129,7 +129,8 @@ h2 {
     margin: 0px 8px;
 }
 
-.queue-table td.name .row-wrap-text {
+.queue-table td.name .row-wrap-text,
+.queue-table td.name:hover .row-wrap-text {
     max-width: calc(100% - 45px);
 }
 
@@ -177,7 +178,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .name-has-ratings .row-wrap-text {
-    max-width: 97% !important;
+    max-width: calc(100% - 1px) !important;
 }
 
 .history-table .delete .dropdown-menu {
@@ -224,15 +225,12 @@ tr.queue-item>td:first-child>a {
 }
 
 .modal-header .close {
-    font-size: 33px;
-    line-height: 0.8em;
     opacity: 1 !important;
-    margin-right: 4px !important;
 }
 
 #modal-options .modal-header a {
     opacity: 1;
-    font-size: 1.3em;
+    font-size: 1.2em;
     margin-top: 2px;
 }
 
@@ -244,6 +242,7 @@ tr.queue-item>td:first-child>a {
     margin-top: 0;
 }
 
-#modal-item-files .input-group {
+#modal-item-files .form-group {
     clear: left;
+    margin-bottom: 5px;
 }

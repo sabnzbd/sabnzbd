@@ -963,6 +963,14 @@ input[type="checkbox"] {
         margin-right: 0.5em;
     }
     
+    .section .col2 h3 {
+        padding-right: 25px;
+    }
+    
+    .section .col2 h3 a {
+        display: inline-block;
+    }
+    
     .main-restarting.in strong {
         font-size: 2em;
         font-weight: bold;
