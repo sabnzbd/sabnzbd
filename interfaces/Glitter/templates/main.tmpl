@@ -589,7 +589,7 @@
                                             <!-- ko foreach: historyStatus.stage_log -->
                                             <div class="row">
                                                 <div class="col-sm-2" data-bind="text: glitterTranslate.status[name()]"></div>
-                                                <div class="col-sm-10 history-status-modallink" data-bind="html: actions"></div>
+                                                <div class="col-sm-10 history-status-modallink" data-bind="html: actions().join('<br/>')"></div>
                                             </div>
                                             <!-- /ko -->
                                         </div>
@@ -678,6 +678,7 @@
             glitterTranslate.useCache = "$T('explain-cache_limitstr')";
             glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
             glitterTranslate.defaultText = "$T('default')";
+            glitterTranslate.noneText = "$T('None')";
             
             glitterTranslate.status = [];
             glitterTranslate.status['Completed'] = "$T('post-Completed')";

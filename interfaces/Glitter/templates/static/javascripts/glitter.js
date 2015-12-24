@@ -9,22 +9,6 @@
 ********/
 
 /**
-    FIX for IE8 and below not having IndexOf for array's
-**/
-if(!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(elt /*, from*/ ) {
-        var len = this.length >>> 0;
-        var from = Number(arguments[1]) || 0;
-        from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-        if(from < 0) from += len;
-        for(; from < len; from++) {
-            if(from in this && this[from] === elt) return from;
-        }
-        return -1;
-    };
-}
-
-/**
     Base variables and functions
 **/
 var fadeOnDeleteDuration = 400; // ms after deleting a row
@@ -48,7 +32,6 @@ if(isMobile) {
     GLITTER CODE
 **/
 $(function() {
-
     // Basic API-call
     function callAPI(data) {
         // Fill basis var's
@@ -975,6 +958,8 @@ $(function() {
         var self = this;
         self.parent = parent;
         self.dragging = false;
+        self.rawCatList = [];
+        self.rawScriptList = [];
 
         // Because SABNZB returns the name
         // But when you want to set Priority you need the number.. 
@@ -1024,23 +1009,40 @@ $(function() {
                 self.dragging = false;
             }, 500)
         }
-
+        
         // Update slots from API data
         self.updateFromData = function(data) {
-            // Get all ID's'
+            // Get all ID's
             var itemIds = $.map(self.queueItems(), function(i) {
                 return i.id;
             });
             
-            // Reformat categories
-            self.categoriesList($.map(data.categories, function(cat) {
-                // Default?
-                if(cat == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
-                return { catValue: cat, catText: cat };
-            }))
+            // Did the category-list change? 
+            // Otherwise KO will send updates to all <select> for every refresh()
+            if(self.rawCatList != data.categories.toString()) {
+                // Reformat categories
+                self.categoriesList($.map(data.categories, function(cat) {
+                    // Default?
+                    if(cat == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+                    return { catValue: cat, catText: cat };
+                }))
+                // Update
+                self.rawCatList = data.categories.toString();
+            }
+            
+            // Did the script-list change? 
+            if(self.rawScriptList != data.scripts.toString()) {
+                // Reformat script-list
+                self.scriptsList($.map(data.scripts, function(script) {
+                    // Default?
+                    if(script == 'None') return glitterTranslate.noneText;
+                    return script;
+                }))
+                // Update
+                self.rawScriptList = data.scripts.toString();
+            }
 
-            // Set categories and scripts and limit
-            self.scriptsList(data.scripts)
+            // Set limit
             self.totalItems(data.noofslots);
             
             // Container for new models
@@ -1068,17 +1070,17 @@ $(function() {
                 self.queueItems.valueHasMutated();
             }
             
-            // Sort every time
-            self.queueItems.sort(function(a, b) {
-                return a.index() < b.index() ? -1 : 1;
-            });
-
             // Remove items that don't exist anymore
             $.each(itemIds, function() {
                 var id = this.toString();
                 self.queueItems.remove(ko.utils.arrayFirst(self.queueItems(), function(i) {
                     return i.id == id;
                 }));
+            });
+            
+            // Sort every time
+            self.queueItems.sort(function(a, b) {
+                return a.index() < b.index() ? -1 : 1;
             });
         };
 
@@ -1964,9 +1966,7 @@ $(function() {
                         // Set title and then remove it
                         $('#history-script-log .modal-title').text($(this).find("h3").text())
                         $(this).find("h3, title").remove()
-                        $('#history-script-log').modal({
-                            show: true
-                        });
+                        $('#history-script-log').modal('show');
                     });
                     return false;
                 })
