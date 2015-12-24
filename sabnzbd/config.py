@@ -836,6 +836,7 @@ def save_config(force=False):
     # copy current file to backup
     try:
         shutil.copyfile(filename, bakname)
+        shutil.copymode(filename, bakname)
     except:
         # Something wrong with the backup,
         logging.error(T('Cannot create backup file for %s'), bakname)
@@ -845,6 +846,7 @@ def save_config(force=False):
     # Write new config file
     try:
         CFG.write()
+        shutil.copymode(bakname, filename)
         modified = False
         res = True
     except:
