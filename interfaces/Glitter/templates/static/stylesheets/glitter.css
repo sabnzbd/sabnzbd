@@ -512,7 +512,7 @@ tbody>tr>td:last-child {
 }
 
 td.name .row-wrap-text {
-    max-width: 98%;
+    max-width: calc(100% - 1px);
     display: block;
     float: left;
     margin-right: 6px;
@@ -928,10 +928,6 @@ tr.queue-item>td:first-child>a {
 
 .history-status-table a {
     font-weight: bold;
-}
-
-.history-table td.name .row-wrap-text {
-    max-width: 97%;
 }
 
 .history-ratings {
@@ -1363,6 +1359,10 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 5px;
 }
 
+#modal-add-nzb .add-nzb-inputbox:nth-child(even) select {
+    width: 100%;
+}
+
 .add-nzb-inputbox {
     float: left;
     width: 50%;
@@ -1372,7 +1372,7 @@ tr.queue-item>td:first-child>a {
 
 .add-nzb-inputbox select {
     display: inline-block;
-    width: 95%;
+    width: calc(100% - 10px);
 }
 
 .add-nzb-inputbox span {
@@ -1439,7 +1439,7 @@ tr.queue-item>td:first-child>a {
 
 #modal-item-files h4,
 #history-script-log h4 {
-    width: 90%;
+    width: calc(100% - 30px);
     overflow: hidden;
     height: 1.3em;
     white-space: nowrap;
@@ -1477,6 +1477,11 @@ tr.queue-item>td:first-child>a {
     box-shadow: none;
 }
 
+#modal-item-files .item-files-table .progress strong {
+    vertical-align: top;
+    line-height: 25px;
+}
+
 #modal-item-files .item-files-table .progress-bar {
     transition: none;
 }
@@ -1484,7 +1489,7 @@ tr.queue-item>td:first-child>a {
 #modal-item-files .item-files-table .progress-bar>span {
     text-align: left;
     margin-left: 80px;
-    margin-top: 2px;
+    line-height: 25px;
 }
 
 #modal-item-files .item-files-table .progress small {
@@ -1502,6 +1507,7 @@ tr.queue-item>td:first-child>a {
 
 #modal-item-files .item-files-table input[type="checkbox"] {
     margin-left: 8px;
+    margin-top: 5px;
 }
 
 /* RETRY JOB MODAL */
@@ -1892,12 +1898,15 @@ legend {
 }
 
 .modal-header .close {
-    opacity: 0.7;
+    opacity: 0.5;
     background: transparent;
     color: white;
     text-shadow: none !important;
     font-weight: normal !important;
-    font-size: 28px;
+    font-size: 32px;
+    vertical-align: middle;
+    margin-top: -5px;
+    font-family: arial, sans-serif !important;
 }
 
 .modal-header img {
