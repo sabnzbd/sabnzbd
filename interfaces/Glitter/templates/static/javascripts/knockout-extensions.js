@@ -260,7 +260,6 @@ $(document).bind('dragover', function(e) {
 
             //keep a reference to start/update functions that might have been passed in
             startActual = sortable.options.start;
-            stopActual = sortable.options.stop;
             updateActual = sortable.options.update;
 
             //initialize sortable binding after template binding has rendered in update function
