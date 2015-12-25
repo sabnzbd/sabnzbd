@@ -2523,8 +2523,14 @@ function extractTitleAndPassword(titleInput) {
         // The first 2 we need to keep!
         theOutput = {   theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
                         thePassword: titleInputSplit.join(' / ')};
+        
         // We need a 'cleaned' title for the password/filelisting popup
+        // No cleaning of the 'WAIT'-text, too complicated and exotic case
         theOutput.titleClean = theOutput.theTitle.replace(glitterTranslate.encrypted + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.duplicate + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.tooLarge + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.filtered + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.encrypted + ' / ', '');
     } else {
         theOutput = {   theTitle: titleInputSplit.shift(), 
                         thePassword: titleInputSplit.join(' / ')};
