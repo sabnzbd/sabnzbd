@@ -26,6 +26,28 @@ ko.bindingHandlers.truncatedTextCenter = {
         });
     }
 };
+ko.bindingHandlers.longText = {
+    update: function(element, valueAccessor, allBindingsAccessor) {
+        // Input is an array
+        var value = ko.utils.unwrapObservable(valueAccessor())
+        var outputText = '';
+        // Any <br>'s?
+        if(value.length > 4) {
+            // Inital 3, then the button, then the closing
+            outputText += value.pop() + '<br />' + value.pop() + '<br />' + value.pop() + ' ';
+            outputText += '<a href="#" class="history-status-more">(' + glitterTranslate.moreText + ')</a><br />';
+            outputText += '<span class="history-status-hidden">';
+            outputText += value.join('<br />');
+            outputText += '</span>';
+        } else {
+            // Nothing special
+            outputText += value.join('<br />');
+        }
+        ko.bindingHandlers.html.update(element, function() {
+            return outputText;
+        });
+    }
+};
 ko.bindingHandlers.filedrop = {
     init: function(element, valueAccessor) {
         var options = $.extend({}, {

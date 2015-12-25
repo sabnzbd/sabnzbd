@@ -930,6 +930,10 @@ tr.queue-item>td:first-child>a {
     font-weight: bold;
 }
 
+.history-status-hidden {
+    display: none;
+}
+
 .history-ratings {
     display: inline-block;
 }

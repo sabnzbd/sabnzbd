@@ -797,6 +797,7 @@ SKIN_TEXT = {
     'Glitter-removeSelected' : TT('Remove all selected files'),
     'Glitter-toggleCompletedFiles' : TT('Hide/show completed files'),
     'Glitter-retryJob' : TT('Retry'),
+    'Glitter-more' : TT('More'),
     'Glitter-scriptLog' : TT('View Script Log'),
     'Glitter-clearHistory' : TT('Purge History'),
     'Glitter-confirmClearWarnings' : TT('Are you sure?'),
