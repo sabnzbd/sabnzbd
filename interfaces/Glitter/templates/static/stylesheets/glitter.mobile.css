@@ -219,6 +219,19 @@ tr.queue-item>td:first-child>a {
 /**
     MODALS
 **/
+/* Only remove on mobiles, not on iPad */
+@media only screen and (max-device-width:760px)  {
+    .modal-dialog {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .modal-dialog .modal-content {
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+    }
+}
 
 .modal.fade .modal-dialog, .modal.in .modal-dialog {
   transform: translate(0, 0);
