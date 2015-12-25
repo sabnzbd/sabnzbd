@@ -720,7 +720,7 @@ $(function() {
         }
 
         // Load status info
-        self.loadStatusInfo = function(b, event) {
+        self.loadStatusInfo = function(item, event) {
             // Reset
             self.hasStatusInfo(false)
             
@@ -999,11 +999,12 @@ $(function() {
         self.shouldUpdate = function() {
             return !self.dragging;
         }
-        self.dragStart = function(e) {
+        self.dragStart = function() {
             self.dragging = true;
         }
-        self.dragStop = function(e) {
-            $(e.target).parent().removeClass('table-active-sorting')
+        self.dragStop = function(event) {
+            // Remove that extra label
+            $(event.target).parent().removeClass('table-active-sorting')
             // Wait a little before refreshing again (prevents jumping)
             setTimeout(function() {
                 self.dragging = false;
@@ -1078,20 +1079,20 @@ $(function() {
                 }));
             });
             
-            // Sort every time
+            // Sort every time (takes just few msec)
             self.queueItems.sort(function(a, b) {
                 return a.index() < b.index() ? -1 : 1;
             });
         };
 
         // Move in sortable
-        self.move = function(e) {
-            var itemMoved = e.item;  
+        self.move = function(event) {
+            var itemMoved = event.item;  
             // Up or down?
-            var corTerm = e.targetIndex > e.sourceIndex ? -1 : 1;         
+            var corTerm = event.targetIndex > event.sourceIndex ? -1 : 1;         
             // See what the actual index is of the queue-object
             // This way we can see how we move up and down independent of pagination
-            var itemReplaced = self.queueItems()[e.targetIndex+corTerm];
+            var itemReplaced = self.queueItems()[event.targetIndex+corTerm];
 
             callAPI({
                 mode: "switch",
@@ -1131,7 +1132,7 @@ $(function() {
         })
         
         // Clear searchterm
-        self.clearSearchTerm = function(objModel, event) {
+        self.clearSearchTerm = function(data, event) {
             // Was it escape key or click?
             if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
                 self.isLoading(true)
@@ -1580,48 +1581,48 @@ $(function() {
         // Toggle calculation of dropdown
         // Turns out that the <select> in the dropdown are a hugggeeee slowdown on initial load!
         // Only loading on click cuts half the speed (especially on large queues)
-        self.toggleDropdown = function(itemObj, event) {
+        self.toggleDropdown = function(item, event) {
             self.hasDropdown(true)
             // Keep it open!
             keepOpen(event.target)
         }
 
         // Change of settings
-        self.changeCat = function(itemObj, event) {
+        self.changeCat = function(item, event) {
             callAPI({
                 mode: 'change_cat',
-                value: itemObj.id,
-                value2: itemObj.category()
+                value: item.id,
+                value2: item.category()
             }).then(function() {
                 // Hide all tooltips before we refresh
                 $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')
                 self.parent.parent.refresh()
             })
         }
-        self.changeScript = function(itemObj) {
+        self.changeScript = function(item) {
             // Not on empty handlers
-            if(!itemObj.script()) return;
+            if(!item.script()) return;
             callAPI({
                 mode: 'change_script',
-                value: itemObj.id,
-                value2: itemObj.script()
+                value: item.id,
+                value2: item.script()
             })
         }
-        self.changeProcessing = function(itemObj) {
+        self.changeProcessing = function(item) {
             callAPI({
                 mode: 'change_opts',
-                value: itemObj.id,
-                value2: itemObj.unpackopts()
+                value: item.id,
+                value2: item.unpackopts()
             })
         }
-        self.changePriority = function(itemObj, event) {
+        self.changePriority = function(item, event) {
             // Not if we are fetching extra blocks for repair!
-            if(itemObj.status() == 'Fetching') return
+            if(item.status() == 'Fetching') return
             callAPI({
                 mode: 'queue',
                 name: 'priority',
-                value: itemObj.id,
-                value2: itemObj.priority()
+                value: item.id,
+                value2: item.priority()
             }).then(function() {
                 // Hide all tooltips before we refresh
                 $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')
@@ -1630,7 +1631,7 @@ $(function() {
         }
 
         // Remove 1 download from queue
-        self.removeDownload = function(data, event) {
+        self.removeDownload = function(item, event) {
             // Confirm and remove
             if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDow1)) {
                 var itemToDelete = this;
@@ -1639,7 +1640,7 @@ $(function() {
                     mode: 'queue',
                     name: 'delete',
                     del_files: 1,
-                    value: this.id
+                    value: item.id
                 }).then(function(response) {
                     if(response.status) {
                         // Fade and remove
@@ -1657,14 +1658,14 @@ $(function() {
     }
 
     /**
-        Model for the whole History with all it's items
+        Model for the whole History with all its items
     **/
     function HistoryListModel(parent) {
         var self = this;
         self.parent = parent;
 
         // Variables
-        self.historyItems = ko.observableArray([]);
+        self.historyItems = ko.observableArray([])
         self.showFailed = ko.observable(false);
         self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
         self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
@@ -1689,7 +1690,6 @@ $(function() {
             
             // For new items
             var newItems = [];                                    
-
             $.each(data.slots, function(index, slot) {
                 var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
                     return i.historyStatus.nzo_id() == slot.nzo_id;
@@ -1785,7 +1785,7 @@ $(function() {
         })
         
         // Clear searchterm
-        self.clearSearchTerm = function(objModel, event) {
+        self.clearSearchTerm = function(data, event) {
             // Was it escape key or click?
             if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
                 // Set the loader so it doesn't flicker and then switch
@@ -1803,7 +1803,7 @@ $(function() {
         }
         
         // Toggle showing failed
-        self.toggleShowFailed = function(objModel, event) {
+        self.toggleShowFailed = function(data, event) {
             // Set the loader so it doesn't flicker and then switch
             self.isLoading(true)
             self.showFailed(!self.showFailed())
@@ -1814,7 +1814,7 @@ $(function() {
         }
 
         // Empty history options
-        self.emptyHistory = function(objModel, event) {
+        self.emptyHistory = function(data, event) {
             // Make sure no flickering
             self.isLoading(true)
             
@@ -1895,7 +1895,6 @@ $(function() {
         // Update function
         self.updateFromData = function(data) {
             // Fill all the basic info
-            self.nzo_id = data.nzo_id;
             self.status(data.status)
             self.action_line(data.action_line)
             self.script_line(data.script_line)
@@ -2109,7 +2108,6 @@ $(function() {
         var self = this;
         self.parent = parent;
         self.fileItems = ko.observableArray([]);
-        self.modalNZBId = ko.observable();
         self.modalTitle = ko.observable();
         self.modalPassword = ko.observable();
         self.modalProgressColor = ko.observable(false);
@@ -2125,7 +2123,6 @@ $(function() {
             extractOutput = extractTitleAndPassword(self.currentItem.name()) 
             
             // Set files & title
-            self.modalNZBId(self.currentItem.id)
             self.modalPassword(extractOutput.thePassword)
             self.modalTitle(extractOutput.titleClean)
             
@@ -2216,14 +2213,14 @@ $(function() {
         }
 
         // Move in sortable
-        self.move = function(e) {
+        self.move = function(event) {
             // How much did we move?
-            var nrMoves = e.sourceIndex - e.targetIndex;
+            var nrMoves = event.sourceIndex - event.targetIndex;
             var direction = (nrMoves > 0 ? 'Up' : 'Down')
 
             // We have to create the data-structure before, to be able to use the name as a key
             var dataToSend = {};
-            dataToSend[e.item.nzf_id()] = 'on';
+            dataToSend[event.item.nzf_id()] = 'on';
             dataToSend['session'] = apiKey;
             dataToSend['action_key'] = direction;
             dataToSend['action_size'] = Math.abs(nrMoves);
@@ -2340,9 +2337,7 @@ $(function() {
         self.nrPages = ko.observable(0);
         self.currentPage = ko.observable(1);
         self.currentStart = ko.observable(0);
-        self.allpages = ko.observableArray([]).extend({
-            rateLimit: 50
-        });
+        self.allpages = ko.observableArray([]).extend({ rateLimit: 50 });
 
         // Has pagination
         self.hasPagination = ko.pureComputed(function() {

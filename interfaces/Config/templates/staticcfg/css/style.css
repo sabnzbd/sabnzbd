@@ -366,6 +366,9 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .modal-dialog {
     padding: 3px;
 }
+.modal-body h4 {
+    word-break: break-all;
+}
 .modal-header {
     background-color: #3C3C3C;
     color: white;
@@ -992,6 +995,11 @@ input[type="checkbox"] {
     
     #content fieldset {
         min-width: 0;
+        padding: 0 !important;
+    }
+    
+    .colmask {
+        border: none !important;
     }
     
     .col2 {
@@ -999,11 +1007,13 @@ input[type="checkbox"] {
     }
     
     .col2 h3 {
-        margin: -10px -10px 0;
+        margin: -10px -10px 0px;
+        padding-left: 10px;
     }
     
     .col2 p {
         margin-left:  0px;
+        margin-bottom: 0;
     }
     
     .col1 h5 {
@@ -1012,6 +1022,7 @@ input[type="checkbox"] {
     
     label.config {
         margin-left: 0px;
+        margin-bottom: 2px;
         width: 100%;
         float: none;
     }
@@ -1019,6 +1030,7 @@ input[type="checkbox"] {
     .desc {
         margin: 0;
         margin-left: 3px;
+        margin-top: 2px;
         padding: 0 !important;
     }
     
@@ -1031,7 +1043,7 @@ input[type="checkbox"] {
     
     div.field-pair{
         min-width: 0;
-        padding: 5px;
+        padding: 5px 10px;
     }
 
     .fileBrowserField {
