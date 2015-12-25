@@ -8,30 +8,33 @@
 
 ********/
 
-/**
-    Base variables and functions
-**/
 var fadeOnDeleteDuration = 400; // ms after deleting a row
 var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
-
-// For mobile we disable zoom while a modal is being opened 
-// so it will not zoom unnecessarily on the modal
-if(isMobile) {
-    $('.modal').on('show.bs.modal', function (e) {
-        $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-    })
-    // Restore on modal-close. Need timeout, otherwise it doesn't work
-    $('.modal').on('hidden.bs.modal', function (e) {
-        setTimeout(function() {
-            $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1');
-        },500)
-    })
-}
 
 /**
     GLITTER CODE
 **/
 $(function() {
+    'use strict';
+    /**
+        Base variables and functions
+    **/
+
+    // For mobile we disable zoom while a modal is being opened 
+    // so it will not zoom unnecessarily on the modal
+    if(isMobile) {
+        $('.modal').on('show.bs.modal', function() {
+            $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+        });
+        
+        // Restore on modal-close. Need timeout, otherwise it doesn't work
+        $('.modal').on('hidden.bs.modal', function() {
+            setTimeout(function() {
+                $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1');
+            },500);
+        });
+    }
+    
     // Basic API-call
     function callAPI(data) {
         // Fill basis var's
@@ -124,7 +127,7 @@ $(function() {
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         
         // Set information varibales
-        self.title = ko.observable()
+        self.title = ko.observable();
         self.speed = ko.observable(0);
         self.speedMetric = ko.observable();
         self.bandwithLimit = ko.observable(false);
@@ -147,7 +150,6 @@ $(function() {
         self.speedHistory = [];
         self.statusInfo = {};
         
-        
         /***
             Dynamic functions
         ***/
@@ -158,11 +160,10 @@ $(function() {
             if(!self.bandwithLimit()) return;
             
             // The text 
-            bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
+            var bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
             
             // Only the number
-            bandwithLimitNumber = parseInt(self.bandwithLimit());
-            speedLimitNumber = (bandwithLimitNumber * (self.speedLimit() / 100));
+            var speedLimitNumber = (parseInt(self.bandwithLimit()) * (self.speedLimit() / 100));
             
             // Trick to only get decimal-point when needed
             speedLimitNumber = Math.round(speedLimitNumber*10)/10;
@@ -265,7 +266,7 @@ $(function() {
             }
 
             // Re-format the speed
-            speedSplit = response.queue.speed.split(/\s/);
+            var speedSplit = response.queue.speed.split(/\s/);
             self.speed(parseFloat(speedSplit[0]));
             self.speedMetric(speedSplit[1]);
 
@@ -322,7 +323,7 @@ $(function() {
             /***
                 Download timing and pausing
             ***/
-            timeString = response.queue.timeleft;
+            var timeString = response.queue.timeleft;
             if(timeString === '') {
                 timeString = '0:00';
             } else {
@@ -334,10 +335,10 @@ $(function() {
                 if(response.queue.pause_int == '0') {
                     timeString = glitterTranslate.paused;
                 } else {
-                    pauseSplit = response.queue.pause_int.split(/:/);
-                    seconds = parseInt(pauseSplit[0]) * 60 + parseInt(pauseSplit[1]);
-                    hours = Math.floor(seconds / 3600);
-                    minutes = Math.floor((seconds -= hours * 3600) / 60);
+                    var pauseSplit = response.queue.pause_int.split(/:/);
+                    var seconds = parseInt(pauseSplit[0]) * 60 + parseInt(pauseSplit[1]);
+                    var hours = Math.floor(seconds / 3600);
+                    var minutes = Math.floor((seconds -= hours * 3600) / 60);
                     seconds -= minutes * 60;
                     timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
                 }
@@ -384,7 +385,7 @@ $(function() {
                 // Request new title 
                 callSpecialAPI('./queue/', {}).done(function(data) {
                     // Split title & speed
-                    dataSplit = data.split('|||');
+                    var dataSplit = data.split('|||');
 
                     // Set title
                     self.title(dataSplit[0]);
@@ -409,7 +410,7 @@ $(function() {
             **/
             // Do requests for full information
             // Catch the fail to display message
-            queueApi = callAPI({
+            var queueApi = callAPI({
                 mode: "queue",
                 search: self.queue.searchTerm(),
                 start: self.queue.pagination.currentStart(),
@@ -455,12 +456,11 @@ $(function() {
         }
 
         // Set pause timer
-        self.pauseTime = function(e, b) {
-            pauseDuration = $(b.currentTarget).data('time');
+        self.pauseTime = function(item, event) {
             callAPI({
                 mode: 'config',
                 name: 'set_pause',
-                value: pauseDuration
+                value: $(event.currentTarget).data('time')
             }).then(self.refresh);
             self.downloadsPaused(true);
         };
@@ -524,7 +524,7 @@ $(function() {
         // Save custom pause
         self.saveCustomPause = function() {
             // Get duration
-            pauseDuration = $('#customPauseOutput').data('time');
+            var pauseDuration = $('#customPauseOutput').data('time');
             
             // If in the future
             if(pauseDuration > 0) {
@@ -650,7 +650,6 @@ $(function() {
                     value: newValue
                 })
             }
-            
         })
         
         /***
@@ -664,7 +663,7 @@ $(function() {
             if(fileName) $('.btn-file em').text(fileName)
         }
 
-        // NOTE: Adjusted from Knockstrap template
+        // From the upload
         self.addNZBFromFileForm = function(form) {
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
 
@@ -674,6 +673,7 @@ $(function() {
             $('#nzbname').val('')
             $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
         }
+        // From URL
         self.addNZBFromURL = function(form) {
             // Add 
             callAPI({
@@ -693,6 +693,7 @@ $(function() {
             });
 
         }
+        // From the upload or filedrop
         self.addNZBFromFile = function(file) {
             // Adding a file happens through this special function
             var data = new FormData();
@@ -731,7 +732,7 @@ $(function() {
             // Load the custom status info
             callSpecialAPI(strStatusUrl).then(function(data) {
                 // Parse JSON
-                parsedJSON = ko.utils.parseJson(data);
+                var parsedJSON = ko.utils.parseJson(data);
                 
                 // Making the new objects
                 self.statusInfo.status = ko.mapping.fromJS(parsedJSON.status);
@@ -987,7 +988,7 @@ $(function() {
         self.queueItems = ko.observableArray([]);
         self.totalItems = ko.observable(0);
         self.isMultiEditing = ko.observable(false);
-        self.isLoading = ko.observable(false).extend({ rateLimit: 100 });;
+        self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
         self.multiEditItems = ko.observableArray([]);
         self.categoriesList = ko.observableArray([]);
         self.scriptsList = ko.observableArray([]);
@@ -1194,7 +1195,7 @@ $(function() {
             // Update value
             self.isMultiEditing(!self.isMultiEditing())
             // Form
-            $form = $('form.multioperations-selector')
+            var $form = $('form.multioperations-selector')
             
             // Reset form and remove all checked ones
             $form[0].reset();
@@ -1282,14 +1283,14 @@ $(function() {
             if(self.multiEditItems().length < 1) return;
             
             // Retrieve the current settings
-            newCat = $('.multioperations-selector select[name="Category"]').val()
-            newScript = $('.multioperations-selector select[name="Post-processing"]').val()
-            newPrior = $('.multioperations-selector select[name="Priority"]').val()
-            newProc = $('.multioperations-selector select[name="Processing"]').val()
-            newStatus = $('.multioperations-selector input[name="multiedit-status"]:checked').val()
+            var newCat = $('.multioperations-selector select[name="Category"]').val()
+            var newScript = $('.multioperations-selector select[name="Post-processing"]').val()
+            var newPrior = $('.multioperations-selector select[name="Priority"]').val()
+            var newProc = $('.multioperations-selector select[name="Processing"]').val()
+            var newStatus = $('.multioperations-selector input[name="multiedit-status"]:checked').val()
 
             // List all the ID's
-            strIDs = '';
+            var  strIDs = '';
             $.each(self.multiEditItems(), function(index) {
                 strIDs = strIDs + this.id + ',';
             })
@@ -1347,7 +1348,7 @@ $(function() {
             // Need confirm
             if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
                 // List all the ID's
-                strIDs = '';
+                var strIDs = '';
                 $.each(self.multiEditItems(), function(index) {
                     strIDs = strIDs + this.id + ',';
                 })
@@ -1420,7 +1421,7 @@ $(function() {
         // Functional vars   
         self.displayName = ko.pureComputed(function() {
             // is there a password in there?
-            extractOutput = extractTitleAndPassword(self.name()) 
+            var extractOutput = extractTitleAndPassword(self.name()) 
             if(extractOutput.thePassword) {
                 return extractOutput.theTitle + ' <small class="queue-item-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
             } else {
@@ -1500,6 +1501,7 @@ $(function() {
                 case 'age':
                     return self.avg_age();
             }
+            return;
         })
 
         // Every update
@@ -1539,7 +1541,7 @@ $(function() {
         // Edit name
         self.editName = function(data, event) {
             // is there a password in there?
-            extractOutput = extractTitleAndPassword(self.name()) 
+            var extractOutput = extractTitleAndPassword(self.name()) 
             
             // Change status and fill
             self.editingName(true)
@@ -1557,7 +1559,7 @@ $(function() {
         // Do on change
         self.nameForEdit.subscribe(function(newName) {
             // Is there a password in there?
-            extractOutput = extractTitleAndPassword(self.name()) 
+            var extractOutput = extractTitleAndPassword(self.name()) 
             
             // Anything change or empty?
             if(!newName || extractOutput.theTitle == newName) return;
@@ -1820,6 +1822,7 @@ $(function() {
             
             // What event?
             var whatToRemove = $(event.target).data('action');
+            var del_files, value;
             
             // Purge failed
             if(whatToRemove == 'history-purge-failed') {
@@ -1839,7 +1842,7 @@ $(function() {
             // Remove the ones on this page
             if(whatToRemove == 'history-purge-page') {
                 // List all the ID's
-                strIDs = '';
+                var strIDs = '';
                 $.each(self.historyItems(), function(index) {
                     strIDs = strIDs + this.nzo_id + ',';
                 })
@@ -1948,7 +1951,7 @@ $(function() {
         self.retry = function() {
             // Set JOB-id
             $('#modal-retry-job input[name="retry_job_id"]').val(self.nzo_id)
-                // Open modal
+            // Open modal
             $('#modal-retry-job').modal("show")
         };
 
@@ -1980,7 +1983,6 @@ $(function() {
 
             // Try to keep open
             keepOpen(event.target)
-            
         }
 
         // Delete button
@@ -2087,15 +2089,15 @@ $(function() {
             } else {
                 submitUserReport(userDetail)
             }
-
+            
             // After all, close it
             form.reset();
             $(form).parent().parent().dropdown('toggle');
             alert(glitterTranslate.sendThanks)
-
+            
             function submitUserReport(theDetail) {
                 // Send note
-                return callAPI({
+                callAPI({
                     mode: 'queue',
                     name: 'rating',
                     type: 'flag',
@@ -2104,7 +2106,6 @@ $(function() {
                     value: self.nzo_id
                 })
             }
-
             return false
         }
     }
@@ -2126,7 +2127,7 @@ $(function() {
             self.triggerUpdate() 
 
             // Get pasword self.currentItem title
-            extractOutput = extractTitleAndPassword(self.currentItem.name()) 
+            var extractOutput = extractTitleAndPassword(self.currentItem.name()) 
             
             // Set files & title
             self.modalPassword(extractOutput.thePassword)
@@ -2253,7 +2254,7 @@ $(function() {
                 // Fade it out
                 $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
                     // Set state of the check-all
-                    setCheckAllState('#modal-item-files input[name="checkAll"]', '#modal-item-files .files-sortable input')
+                    setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
                 })
             })
         }
@@ -2399,7 +2400,7 @@ $(function() {
                 self.currentStart(0);
             } else {
                 // Calculate number of pages needed
-                newNrPages = Math.ceil(parent.totalItems() / parent.paginationLimit())
+                var newNrPages = Math.ceil(parent.totalItems() / parent.paginationLimit())
                 
                 // Make sure the current page still exists
                 if(self.currentPage() > newNrPages) {
@@ -2511,7 +2512,7 @@ function rewriteTime(timeString) {
 // Extract title and password
 function extractTitleAndPassword(titleInput) {
     // Split
-    titleInputSplit = titleInput.split(' / ');
+    var titleInputSplit = titleInput.split(' / ');
     
     // Nothing?
     if(titleInputSplit.length < 2) {
@@ -2527,8 +2528,8 @@ function extractTitleAndPassword(titleInput) {
        titleInputSplit[0] == glitterTranslate.filtered ||
        titleInputSplit[0].slice(0,4) == glitterTranslate.waitSec.slice(0,4)) {
         // The first 2 we need to keep!
-        theOutput = {   theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
-                        thePassword: titleInputSplit.join(' / ')};
+        var theOutput = { theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
+                          thePassword: titleInputSplit.join(' / ')};
         
         // We need a 'cleaned' title for the password/filelisting popup
         // No cleaning of the 'WAIT'-text, too complicated and exotic case
@@ -2538,8 +2539,8 @@ function extractTitleAndPassword(titleInput) {
         theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.filtered + ' / ', '');
         theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.encrypted + ' / ', '');
     } else {
-        theOutput = {   theTitle: titleInputSplit.shift(), 
-                        thePassword: titleInputSplit.join(' / ')};
+        var theOutput = { theTitle: titleInputSplit.shift(), 
+                          thePassword: titleInputSplit.join(' / ')};
         theOutput.titleClean = theOutput.theTitle;         
     }
     return theOutput
