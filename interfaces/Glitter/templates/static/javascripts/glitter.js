@@ -1887,6 +1887,7 @@ $(function() {
         // When clicked on the more-info button we load the rest again
         self.nzo_id = data.nzo_id;
         self.updateAllHistory = false;
+        self.hasDropdown = ko.observable(false);
         self.historyStatus = ko.mapping.fromJS(data);
         self.status = ko.observable(data.status);
         self.action_line = ko.observable(data.action_line);
@@ -1957,6 +1958,9 @@ $(function() {
 
         // Update information only on click
         self.updateAllHistoryInfo = function(data, event) {
+            // Show
+            self.hasDropdown(true);
+            
             // Update all info
             self.updateAllHistory = true;
             parent.parent.refresh().then(function() {
