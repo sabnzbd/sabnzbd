@@ -1963,30 +1963,31 @@ $(function() {
             
             // Update all info
             self.updateAllHistory = true;
-            parent.parent.refresh().then(function() {
-                // Update the links after the update of the info! Othwerwise it gets overwritten
-                $(event.currentTarget).parent().find('.history-status-modallink a').click(function() {
-                    // Modal or 'More' click?
-                    if($(this).is('.history-status-more')) {
-                        // Expand the rest of the text and hide the button
-                        $(this).siblings('.history-status-hidden').slideDown()
-                        $(this).hide()
-                    } else {
-                       // Info in modal
-                        $('#history-script-log .modal-body').load($(this).attr('href'), function(result) {
-                            // Set title and then remove it
-                            $('#history-script-log .modal-title').text($(this).find("h3").text())
-                            $(this).find("h3, title").remove()
-                            $('#history-script-log').modal('show');
-                        }); 
-                    }
-                    
-                    return false;
-                })
-            })
+            parent.parent.refresh();
 
             // Try to keep open
             keepOpen(event.target)
+        }
+        
+        // Use KO-afterRender to add the click-functionality always
+        self.addHistoryStatusStuff = function(item) {
+            $(item).find('.history-status-modallink a').click(function(e) {
+                // Modal or 'More' click?
+                if($(this).is('.history-status-more')) {
+                    // Expand the rest of the text and hide the button
+                    $(this).siblings('.history-status-hidden').slideDown()
+                    $(this).hide()
+                } else {
+                   // Info in modal
+                    $('#history-script-log .modal-body').load($(this).attr('href'), function(result) {
+                        // Set title and then remove it
+                        $('#history-script-log .modal-title').text($(this).find("h3").text())
+                        $(this).find("h3, title").remove()
+                        $('#history-script-log').modal('show');
+                    }); 
+                }
+                return false;
+            })
         }
 
         // Delete button

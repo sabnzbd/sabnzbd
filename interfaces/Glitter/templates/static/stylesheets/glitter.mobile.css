@@ -182,8 +182,8 @@ tr.queue-item>td:first-child>a {
 }
 
 .history-table .delete .dropdown-menu {
-    width: 96%;
-    left: 2%;
+    width: 100%;
+    left: 0;
     right: inherit;
     margin-bottom: 10px;
 }
@@ -209,11 +209,11 @@ tr.queue-item>td:first-child>a {
 }
 
 .history-item .dropdown-menu:before {
-    right: 27px;
+    right: 37px;
 }
 
 .history-item .dropdown-menu:after {
-    right: 28px;
+    right: 38px;
 }
 
 /**
