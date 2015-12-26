@@ -376,11 +376,11 @@
 
                         <table class="table item-files-table">
                             <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal-item-filelist', items: '.files-sortable', distance: 10 } }">
-                                <tr data-bind="css: { 'files-sortable' : canselect(), 'files-done' : !isdone(), }">
+                                <tr data-bind="css: { 'files-sortable' : canselect(), 'files-done' : isdone() }">
                                     <td class="row-wrap-text">
                                         <div class="progress">
-                                            <div class="progress-bar progress-bar-info" data-bind="css: { 'progress-bar-info-checking': \$parent.filelist.modalProgressColor() }, attr: { 'style': 'width: '+percentage() }">
-                                                <input type="checkbox" data-bind="attr : { 'name' : nzf_id, disabled: !canselect()  }, click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
+                                            <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: '+percentage()+'; background-color: ' + \$parent.filelist.currentItem.progressColor() + ';' }">
+                                                <input type="checkbox" data-bind="attr: { 'name' : nzf_id,  }, disable: !canselect(), click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
                                                 <span>
                                                     <span data-bind="truncatedTextCenter: filename"></span>
