@@ -1444,7 +1444,7 @@ $(function() {
                 return '#B7B7B7'
             }
             // Nothing
-            return;
+            return '';
         });
         
         // MB's and percentages
@@ -2122,7 +2122,6 @@ $(function() {
         self.fileItems = ko.observableArray([]);
         self.modalTitle = ko.observable();
         self.modalPassword = ko.observable();
-        self.modalProgressColor = ko.observable(false);
 
         // Load the function and reset everything
         self.loadFiles = function(queue_item) {
@@ -2137,11 +2136,6 @@ $(function() {
             // Set files & title
             self.modalPassword(extractOutput.thePassword)
             self.modalTitle(extractOutput.titleClean)
-            
-            // Set color in case we are still checking
-            if(self.currentItem.status() == 'Checking') {
-                self.modalProgressColor(true)
-            }
 
             // Hide ok button and reset
             $('#modal-item-filelist .glyphicon-floppy-saved').hide()
@@ -2174,21 +2168,22 @@ $(function() {
                     return;
                 }
 
-                // ID's
-                var itemIds = $.map(self.fileItems(), function(i) {
-                    return i.filename();
-                });
-                var newItems = [];
-
                 // Go over them all
+                var newItems = [];
                 $.each(response.files, function(index, slot) {
+                    // Existing or updating?
                     var existingItem = ko.utils.arrayFirst(self.fileItems(), function(i) {
                         return i.filename() == slot.filename;
                     });
 
                     if(existingItem) {
+                        // We skip queued files!
+                        // They cause problems because they can have the same filename
+                        // as files that we do want to be updated.. The slot.id is not unique!
+                        if(slot.status == "queued") return false;
+                        
+                        // Update the rest
                         existingItem.updateFromData(slot);
-                        itemIds.splice(itemIds.indexOf(slot.filename), 1);
                     } else {
                         // Add files item
                         newItems.push(new FileslistingModel(self, slot));
@@ -2203,7 +2198,7 @@ $(function() {
 
                 // Check if we show/hide completed
                 if(localStorageGetItem('showCompletedFiles') == 'No') {
-                    $('.item-files-table tr:not(.files-done)').hide();
+                    $('.item-files-table tr.files-done').hide();
                     $('#filelist-showcompleted').removeClass('hover-button')
                 }
 
@@ -2318,27 +2313,25 @@ $(function() {
     function FileslistingModel(parent, data) {
         var self = this;
         // Define veriables
-        self.filename = ko.observable();
-        self.nzf_id = ko.observable();
-        self.file_age = ko.observable();
-        self.mb = ko.observable();
-        self.percentage = ko.observable();
-        self.canselect = ko.observable(true);
-        self.isdone =  ko.observable(false);
+        self.filename = ko.observable(data.filename);
+        self.nzf_id = ko.observable(data.nzf_id);
+        self.file_age = ko.observable(data.age);
+        self.mb = ko.observable(data.mb);
+        self.percentage = ko.observable(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
+        self.canselect = ko.observable(data.nzf_id !== undefined);
+        self.isdone =  ko.observable(data.status == "finished");
 
         // Update internally
         self.updateFromData = function(data) {
+
             self.filename(data.filename)
             self.nzf_id(data.nzf_id)
             self.file_age(data.age)
             self.mb(data.mb)
             self.percentage(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
-            self.canselect(data.nzf_id != undefined)
-            self.isdone(data.mbleft == 0)
+            self.canselect(data.nzf_id !== undefined)
+            self.isdone(data.status == "finished")
         }
-
-        // Update now
-        self.updateFromData(data);
     }
 
     // Model for pagination, since we use it multiple times
@@ -2649,13 +2642,13 @@ function checkShiftRange(strCheckboxes) {
 function hideCompletedFiles() {
     if($('#filelist-showcompleted').hasClass('hover-button')) {
         // Hide all
-        $('.item-files-table tr:not(.files-done)').hide();
+        $('.item-files-table tr.files-done').hide();
         $('#filelist-showcompleted').removeClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'No')
     } else {
         // show all
-        $('.item-files-table tr:not(.files-done)').show();
+        $('.item-files-table tr.files-done').show();
         $('#filelist-showcompleted').addClass('hover-button')
         // Set storage
         localStorageSetItem('showCompletedFiles', 'Yes')
