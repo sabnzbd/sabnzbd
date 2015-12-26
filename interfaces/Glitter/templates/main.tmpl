@@ -560,6 +560,7 @@
                                     <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
                                         <span class="caret"></span>
                                     </a>
+                                    <!-- ko if: hasDropdown() -->
                                     <div class="dropdown-menu">
                                         <div class="history-status-table">
                                             <div class="row">
@@ -594,6 +595,7 @@
                                             <!-- /ko -->
                                         </div>
                                     </div>
+                                    <!-- /ko -->
                                 </div>
                                 <a href="#" class="hover-button" data-bind="click: deleteSlot, css: { disabled : processingDownload() || processingWaiting() }"><span class="glyphicon glyphicon-trash"></span></a>
                             </td>
