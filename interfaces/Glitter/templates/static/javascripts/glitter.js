@@ -1562,16 +1562,24 @@ $(function() {
             var extractOutput = extractTitleAndPassword(self.name()) 
             
             // Anything change or empty?
-            if(!newName || extractOutput.theTitle == newName) return;
-
-            // Send rename
-            callAPI({
+            if(!newName || extractOutput.titleClean == newName) return;
+            
+            // The command to send
+            var theRename = {
                     mode: 'queue',
-                    name: "rename",
+                    name: 'rename',
                     value: self.id,
                     value2: newName,
-                    value3: extractOutput.thePassword
-                }).then(self.parent.parent.refresh)
+                    value3: extractOutput.thePassword };
+            
+            // Exception for when people manually set password by name{{password}} or name/password
+            if(newName.split('/').length > 1 || (newName.indexOf('{{') !== -1 && newName.indexOf('}}') !== -1)) {
+                // Emptying the variable will cause SAB to interpret the title and do it's magic
+                delete theRename.value3;
+            }
+
+            // Send rename
+            callAPI(theRename).then(self.parent.parent.refresh)
         })
 
         // See items

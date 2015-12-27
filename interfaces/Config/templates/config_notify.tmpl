@@ -744,7 +744,6 @@
             beforeSend: function () {
                 \$('#test_notification').attr("disabled", "disabled");
                 \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-                console.log('asdas')
             },
             complete: function () {
                 \$('#test_notification').removeAttr("disabled");
