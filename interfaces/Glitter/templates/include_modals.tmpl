@@ -380,7 +380,7 @@
                                     <td class="row-wrap-text">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: '+percentage()+'; background-color: ' + \$parent.filelist.currentItem.progressColor() + ';' }">
-                                                <input type="checkbox" data-bind="attr: { 'name' : nzf_id,  }, disable: !canselect(), click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
+                                                <input type="checkbox" data-bind="attr: { 'name' : nzf_id }, disable: !canselect(), click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
                                                 <span>
                                                     <span data-bind="truncatedTextCenter: filename"></span>
