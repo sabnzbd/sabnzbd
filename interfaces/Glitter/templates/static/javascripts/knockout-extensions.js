@@ -100,10 +100,36 @@ $(document).bind('dragover', function(e) {
     e.preventDefault();
 });
 
-/*! Knockout Persist - v0.1.0 - 2013-06-05
+/*! Knockout Persist - v0.1.0 - 2015-12-28
 * https://github.com/spoike/knockout.persist
-* Copyright (c) 2013 Mikael Brassman; Licensed MIT */
-(function(e){"undefined"!=typeof localStorage&&(e.extenders.persist=function(t,o){var r=t();if(o&&null!==localStorageGetItem(o))try{r=JSON.parse(localStorageGetItem(o))}catch(a){}return t(r),t.subscribe(function(t){localStorageSetItem(o,e.toJSON(t))}),t})})(ko);
+* Copyright (c) 2013 Mikael Brassman; Licensed MIT 
+* Safihre edited to better detect if localStorage is possible */
+(function(ko) {
+    // Don't crash on browsers that are missing localStorage
+    try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+    } catch(e) {
+        return false;
+    }
+
+    ko.extenders.persist = function(target, key) {
+        var initialValue = target();
+        // Load existing value from localStorage if set
+        if (key && localStorage.getItem(key) !== null) {
+            try {
+                initialValue = JSON.parse(localStorage.getItem(key));
+            } catch (e) {
+            }
+        }
+        target(initialValue);
+        // Subscribe to new values and add them to localStorage
+        target.subscribe(function (newValue) {
+            localStorage.setItem(key, ko.toJSON(newValue));
+        });
+        return target;
+    };
+})(ko);
 
 // knockout-sortable 0.11.0 | (c) 2015 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
