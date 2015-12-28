@@ -103,7 +103,8 @@ input.form-control,
 select.form-control,
 .main-content .btn-default,
 .modal-body .btn-default,
-.modal-footer .btn-default {
+.modal-footer .btn-default,
+#modal-options .options-function-box .input-group-addon {
     background-color: #555555;
     color: #EBEBEB;
 }

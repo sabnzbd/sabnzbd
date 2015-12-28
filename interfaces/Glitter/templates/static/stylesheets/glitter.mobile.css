@@ -247,8 +247,17 @@ tr.queue-item>td:first-child>a {
     margin-top: 2px;
 }
 
-#modal-options .col-sm-5 {
+#modal-options .col-sm-6:first-of-type {
     text-align: left;
+}
+
+#modal-options .options-function-box {
+    margin-top: 0;
+}
+
+#modal-options .options-function-box .col-sm-6 {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
 }
 
 #modal-options .form-checkbox input[type="checkbox"] {

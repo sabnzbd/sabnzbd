@@ -1162,11 +1162,6 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 13px;
 }
 
-#modal-options .options-function-box {
-    border-top: 1px solid #F0F0F0;
-    margin-top: 6px
-}
-
 #modal-options .form-group+.options-switch {
     margin-bottom: 13px;
     margin-top: 8px;
@@ -1227,14 +1222,10 @@ tr.queue-item>td:first-child>a {
     transform: rotate(360deg);
 }
 
-#modal-options .options-function-box .btn,
-#modal-options .options-function-box select {
-    width: auto;
-    display: inline-block;
-    margin-top: 10px;
+#modal-options #options-status .glyphicon:not(.glyphicon-comment) {
     margin-right: 5px;
-    float: left;
-    text-transform: capitalize;
+    margin-left: 3px;
+    top: 2px;
 }
 
 #modal-options .options-server-box {
@@ -1255,18 +1246,21 @@ tr.queue-item>td:first-child>a {
     padding-bottom: 0;
 }
 
-#modal-options .col-sm-7,
-#modal-options .col-sm-5 {
+#modal-options .col-sm-6 {
     padding-bottom: 3px;
 }
 
-#modal-options .col-sm-5 {
-    text-align: right;
-    font-weight: bold;
+#modal-options .options-function-box .col-sm-6:nth-child(even) {
+    padding-left: 5px;
 }
 
-#modal-options .col-sm-7 {
-    word-break: break-all;
+#modal-options .options-function-box .col-sm-6:nth-child(odd) {
+    padding-right: 5px;
+}
+
+#modal-options .col-sm-6:first-of-type {
+    text-align: right;
+    font-weight: bold;
 }
 
 #modal-options .options-bad-status {
@@ -1274,14 +1268,29 @@ tr.queue-item>td:first-child>a {
     font-weight: bold;
 }
 
-#modal-options #options-status .glyphicon {
-    top: 2px;
-    margin-left: 3px;
-}
-
 #modal-options #options-status small {
     color: #9E9E9E;
-    margin-left: 5px;
+}
+
+#modal-options #options-status hr {
+    border-top: 1px solid #F0F0F0;
+    margin: 5px 0px 10px;
+}
+
+#modal-options .options-function-box {
+    margin-top: 5px;
+}
+
+#modal-options .options-function-box .btn {
+    width: 100%;
+}
+
+#modal-options .options-function-box .glyphicon {
+    float: left;
+}
+
+#modal-options .options-function-box .input-group-addon {
+    background-color: whitesmoke;
 }
 
 #modal-options .table-server-connections {
