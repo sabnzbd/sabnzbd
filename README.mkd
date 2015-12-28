@@ -7,6 +7,8 @@ Release Notes  -  SABnzbd 0.8.0Beta4
 - Resume can now give notification
 - In Config->Server, show active servers before inactive ones
 - Update unrar to 5.30
+- Added Windows Notifications (local)
+- Updated many localizations
 
 ## Changes in Beta3
 - Speedlimit corrections
