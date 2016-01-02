@@ -1066,19 +1066,32 @@ $(function() {
                 }
             });
             
+            // Remove all items if there's any
+            if((self.queueItems().length > 0) && (itemIds.length == self.queueItems().length)) {
+                // Are we adding (new page) or really removing all
+                if(newItems.length > 0) {
+                    // Replace it, so only 1 Knockout DOM-update!
+                    self.queueItems(newItems);
+                    newItems = [];
+                } else {
+                    // Just empty them, pagination will do the rest
+                    self.queueItems([]);
+                }
+            } else {
+                // Remove items that don't exist anymore
+                $.each(itemIds, function() {
+                    var id = this.toString();
+                    self.queueItems.remove(ko.utils.arrayFirst(self.queueItems(), function(i) {
+                        return i.id == id;
+                    }));
+                });
+            }
+            
             // New items, then add!
             if(newItems.length > 0) {
                 ko.utils.arrayPushAll(self.queueItems, newItems);
                 self.queueItems.valueHasMutated();
             }
-            
-            // Remove items that don't exist anymore
-            $.each(itemIds, function() {
-                var id = this.toString();
-                self.queueItems.remove(ko.utils.arrayFirst(self.queueItems(), function(i) {
-                    return i.id == id;
-                }));
-            });
             
             // Sort every time (takes just few msec)
             self.queueItems.sort(function(a, b) {
@@ -1714,6 +1727,27 @@ $(function() {
                 }
             });
             
+            // Remove all items
+            if((self.historyItems().length > 0) && (itemIds.length == self.historyItems().length)) {
+                // Are we adding (new page) or really removing all
+                if(newItems.length > 0) {
+                    // Replace it, so only 1 Knockout DOM-update!
+                    self.historyItems(newItems);
+                    newItems = [];
+                } else {
+                    // Just empty them, pagination will do the rest
+                    self.historyItems([]);
+                }
+            } else {
+                // Remove the un-used ones
+                $.each(itemIds, function() {
+                    var id = this.toString();
+                    self.historyItems.remove(ko.utils.arrayFirst(self.historyItems(), function(i) {
+                        return i.historyStatus.nzo_id() == id;
+                    }));
+                });
+            }
+            
             // Add new ones
             if(newItems.length > 0) {
                 ko.utils.arrayPushAll(self.historyItems, newItems);
@@ -1723,17 +1757,8 @@ $(function() {
                 // so doing the sorting every time would cause it to bounce around
                 self.historyItems.sort(function(a, b) {
                     return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1;
-                });                                
-                            
-            }                                    
-
-            // Remove the un-used ones
-            $.each(itemIds, function() {
-                var id = this.toString();
-                self.historyItems.remove(ko.utils.arrayFirst(self.historyItems(), function(i) {
-                    return i.historyStatus.nzo_id() == id;
-                }));
-            });
+                });
+            }
 
             /***
                 History information
