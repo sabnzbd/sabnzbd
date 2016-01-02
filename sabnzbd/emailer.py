@@ -242,7 +242,7 @@ def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_
     parm['script_ret'] = script_ret
     parm['cat'] = cat
     parm['size'] = "%sB" % to_units(bytes)
-    parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time()))
+    parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time())).decode(codepage)
 
     return send_with_template('email', parm, test)
 

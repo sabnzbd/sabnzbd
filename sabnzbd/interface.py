@@ -1848,7 +1848,7 @@ class ConfigRss(object):
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed
         conf['rss'] = rss
-        conf['rss_next'] = time.strftime(time_format('%H:%M'), time.localtime(sabnzbd.rss.next_run()))
+        conf['rss_next'] = time.strftime(time_format('%H:%M'), time.localtime(sabnzbd.rss.next_run())).decode(codepage)
 
         if active_feed:
             readout = bool(self.__refresh_readout)
