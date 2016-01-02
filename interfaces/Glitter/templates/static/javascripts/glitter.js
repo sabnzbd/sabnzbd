@@ -1067,16 +1067,10 @@ $(function() {
             });
             
             // Remove all items if there's any
-            if((self.queueItems().length > 0) && (itemIds.length == self.queueItems().length)) {
-                // Are we adding (new page) or really removing all
-                if(newItems.length > 0) {
-                    // Replace it, so only 1 Knockout DOM-update!
-                    self.queueItems(newItems);
-                    newItems = [];
-                } else {
-                    // Just empty them, pagination will do the rest
-                    self.queueItems([]);
-                }
+            if(itemIds.length == self.paginationLimit()) {
+                // Replace it, so only 1 Knockout DOM-update!
+                self.queueItems(newItems);
+                newItems = [];
             } else {
                 // Remove items that don't exist anymore
                 $.each(itemIds, function() {
@@ -1728,16 +1722,10 @@ $(function() {
             });
             
             // Remove all items
-            if((self.historyItems().length > 0) && (itemIds.length == self.historyItems().length)) {
-                // Are we adding (new page) or really removing all
-                if(newItems.length > 0) {
-                    // Replace it, so only 1 Knockout DOM-update!
-                    self.historyItems(newItems);
-                    newItems = [];
-                } else {
-                    // Just empty them, pagination will do the rest
-                    self.historyItems([]);
-                }
+            if(itemIds.length == self.paginationLimit()) {
+                // Replace it, so only 1 Knockout DOM-update!
+                self.historyItems(newItems);
+                newItems = [];
             } else {
                 // Remove the un-used ones
                 $.each(itemIds, function() {
