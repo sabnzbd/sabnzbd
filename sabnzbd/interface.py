@@ -24,6 +24,7 @@ import time
 import cherrypy
 import logging
 import urllib
+import json
 from xml.sax.saxutils import escape
 
 from sabnzbd.utils.rsslib import RSS, Item
@@ -60,7 +61,7 @@ from sabnzbd.constants import \
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, rss_qstatus, \
+    api_handler, build_queue, remove_callable, rss_qstatus, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
     _api_test_email, _api_test_notif
@@ -316,6 +317,28 @@ class MainPage(object):
                     info['warning'] = T('No UNRAR program found, unpacking RAR files is not possible<br />')
             if not sabnzbd.newsunpack.PAR2_COMMAND:
                 info['warning'] = T('No PAR2 program found, repairs not possible<br />')
+
+            # For Glitter we pre-load the JSON output
+            if 'Glitter' in self.__web_dir:
+                # Queue
+                queue = build_queue(limit=cfg.queue_limit())[0]
+                queue['categories'] = info.pop('cat_list')
+                queue['scripts'] = info.pop('script_list')
+                
+                # History
+                history = {};
+                grand, month, week, day = BPSMeter.do.get_sums()
+                history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
+                       to_units(grand), to_units(month), to_units(week), to_units(day)
+                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit())
+
+                # Make sure the JSON works, otherwise leave empty
+                try:
+                    info['preload_queue'] = json.dumps({'queue': remove_callable(queue)});
+                    info['preload_history'] = json.dumps({'history': history});
+                except:
+                    info['preload_queue'] = ''
+                    info['preload_history'] = ''
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)

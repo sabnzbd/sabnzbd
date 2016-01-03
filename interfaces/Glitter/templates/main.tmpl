@@ -719,10 +719,10 @@
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
             
             glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
+
             
-            // To avoid problems when localStorage is disabled
-            function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) { \$('#localstorage-error span').text('Cannot store settings locally'); return false; } }
-            function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  \$('#localstorage-error span').text('Cannot store settings locally'); return false; } }
+            var glitterPreLoadQueue = $preload_queue;
+            var glitterPreLoadHistory = $preload_history;
         </script>
   
         <!-- Feedback -->
@@ -755,6 +755,7 @@
             <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
         </script>
+
         <!--#if active_lang != 'en'#-->
         <script type="text/javascript" src="./static/javascripts/momentjs_locale/${active_lang}.js"></script>
         <!--#end if#-->

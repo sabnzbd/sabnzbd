@@ -7,9 +7,12 @@
         Code examples used from Knockstrap-template
 
 ********/
-
 var fadeOnDeleteDuration = 400; // ms after deleting a row
 var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+
+// To avoid problems when localStorage is disabled
+function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) {  $('#localstorage-error span').text('Cannot store settings locally'); } }
+function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  $('#localstorage-error span').text('Cannot store settings locally'); } }
 
 /**
     GLITTER CODE
@@ -402,6 +405,18 @@ $(function() {
                     self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
                 })
                 // Do not continue!
+                return;
+            }
+
+            /**
+                Do first load with start-data
+                Only works when the server knows the settings!
+            **/
+            if(glitterPreLoadHistory && self.useGlobalOptions()) {
+                self.updateQueue(glitterPreLoadQueue);
+                self.updateHistory(glitterPreLoadHistory);
+                glitterPreLoadQueue = undefined;
+                glitterPreLoadHistory = undefined;
                 return;
             }
 
