@@ -25,6 +25,7 @@ import cherrypy
 import logging
 import urllib
 import json
+import re
 from xml.sax.saxutils import escape
 
 from sabnzbd.utils.rsslib import RSS, Item
@@ -2358,7 +2359,7 @@ class ConfigCats(object):
         if name == '*':
             newname = name
         else:
-            newname = kwargs.get('newname', '').strip(' []')
+            newname = re.sub('[<>""\[\]]', '', kwargs.get('newname', ''))
         if newname:
             if name:
                 config.delete('categories', name)
