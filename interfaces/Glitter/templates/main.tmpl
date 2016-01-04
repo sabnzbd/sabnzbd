@@ -31,6 +31,98 @@
         <!--#if $color_scheme not in ('Default', '') #-->
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
         <!--#end if#-->
+
+        <!-- Make translations available in scripts -->
+        <script type="text/javascript">
+            var apiKey = "$session";
+            var displayLang = "$active_lang";
+            var sabSpeedHistory = [$bytespersec_list];
+            var newRelease = "$new_release";
+            var newReleaseUrl = "$new_rel_url";
+            var glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
+            var glitterPreLoadQueue = $preload_queue;
+            var glitterPreLoadHistory = $preload_history;
+        
+            var glitterTranslate = new Object();
+            glitterTranslate.paused = "$T('post-Paused')";
+            glitterTranslate.left = "$T('Glitter-left')";
+            glitterTranslate.clearWarn = "$T('Glitter-confirmClearWarnings')";
+            glitterTranslate.pausePromptFail = "$T('Glitter-pausePromptFail')"
+            glitterTranslate.pauseFor = "$T('pauseFor')"
+            glitterTranslate.minutes = "$T('mins')"
+            glitterTranslate.shutdown = "$T('shutdownOK?')";
+            glitterTranslate.restart = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
+            glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n");
+            glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
+            glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
+            glitterTranslate.grabbing = "$T('Glitter-grabbing')";
+            glitterTranslate.encrypted = "$T('Glitter-encrypted')";
+            glitterTranslate.duplicate = "$T('Glitter-duplicate')";
+            glitterTranslate.tooLarge = "$T('Glitter-tooLarge')";
+            glitterTranslate.filtered = "$T('Glitter-filtered')";
+            glitterTranslate.waitSec = "$T('Glitter-waitSec')";
+            glitterTranslate.checking = "$T('post-Checking')";
+            glitterTranslate.misingArt = "$T('missingArt')";
+            glitterTranslate.noSelect = "$T('Glitter-noSelect')";
+            glitterTranslate.sendThanks = "$T('Glitter-sendThanks')";
+            glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
+            glitterTranslate.orphanedJobsMsg = "$T('explain-orphans')";
+            glitterTranslate.useCache = "$T('explain-cache_limitstr')";
+            glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
+            glitterTranslate.defaultText = "$T('default')";
+            glitterTranslate.noneText = "$T('None')";
+            glitterTranslate.moreText = "$T('Glitter-more')";
+            
+            glitterTranslate.status = [];
+            glitterTranslate.status['Completed'] = "$T('post-Completed')";
+            glitterTranslate.status['Failed'] = "$T('post-Failed')";
+            glitterTranslate.status['Queued'] = "$T('post-Queued')";
+            glitterTranslate.status['Repairing...'] = "$T('post-Repairing')";
+            glitterTranslate.status['Extracting...'] = "$T('post-Extracting')";
+            glitterTranslate.status['Moving...'] = "$T('post-Moving')";
+            glitterTranslate.status['Running script...'] = "$T('post-Running')";
+            glitterTranslate.status['Fetching extra blocks...'] = "$T('post-Fetching')";
+            glitterTranslate.status['Quick Check...'] = "$T('post-QuickCheck')";
+            glitterTranslate.status['Verifying...'] = "$T('post-Verifying')";
+            glitterTranslate.status['Checking'] = "$T('post-Checking')";
+            glitterTranslate.status['Download'] = "$T('stage-download')";
+            glitterTranslate.status['Repair'] = "$T('stage-repair')";
+            glitterTranslate.status['Join files'] = "$T('stage-filejoin')";
+            glitterTranslate.status['Unpack'] = "$T('stage-unpack')";
+            glitterTranslate.status['Script'] = "$T('stage-script')";
+            glitterTranslate.status['Source'] = "$T('stage-source')";
+            glitterTranslate.status['Servers'] = "$T('stage-servers')";
+            glitterTranslate.status['WARNING'] = "$T('Glitter-warning')";
+            glitterTranslate.status['ERROR'] = "$T('Glitter-error')";
+
+            glitterTranslate.pp = [];
+            glitterTranslate.pp['Download'] = "$T('pp-none')";
+            glitterTranslate.pp['+Repair'] = "$T('pp-repair')";
+            glitterTranslate.pp['+Unpack'] = "$T('pp-unpack')";
+            glitterTranslate.pp['+Delete'] = "$T('pp-delete')";
+
+            glitterTranslate.priority = [];
+            glitterTranslate.priority['Force'] = "$T('pr-force')";
+            glitterTranslate.priority['High'] = "$T('pr-high')";
+            glitterTranslate.priority['Normal'] = "$T('pr-normal')";
+            glitterTranslate.priority['Low'] = "$T('pr-low')";
+            glitterTranslate.priority['Stop'] = "$T('pr-stop')";
+        </script>
+
+        <!-- Inclusion is faster than external scripts. We load momentJS locale seperatly so failure won't break anything -->
+        <script type="text/javascript">
+            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/moment.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
+            <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
+        </script>
+        <!--#if active_lang != 'en'#-->
+        <script type="text/javascript" src="./static/javascripts/momentjs_locale/${active_lang}.js"></script>
+        <!--#end if#-->
     </head>
     <body>
         <div class="container main-navbar">
@@ -384,7 +476,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- ko if: hasWarnings()-->
+                        <!-- ko if: hasWarnings() -->
                             <tr>
                                 <td class="table-messages-hide"></td>
                                 <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
@@ -624,8 +716,6 @@
                 <div class="info-container history-info">
                     <span class="glyphicon glyphicon-save"></span>
                     <span data-bind="text: history.downloadedToday"></span>B $T('Glitter-today')
-
-                    <!-- <span data-bind="text: history.downloadedWeek"></span>B this week  -->
                     <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')
                     <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')
                 </div>
@@ -643,88 +733,6 @@
             </div>
         </div>
 
-        <!--#include $webdir + "/include_modals.tmpl"#-->
-
-        <!-- Make translations available in scripts -->
-        <script type="text/javascript">
-            var apiKey = "$session";
-            var displayLang = "$active_lang";
-            var sabSpeedHistory = [$bytespersec_list];
-            var newRelease = "$new_release";
-            var newReleaseUrl = "$new_rel_url";
-        
-            var glitterTranslate = new Object();
-            glitterTranslate.paused = "$T('post-Paused')";
-            glitterTranslate.left = "$T('Glitter-left')";
-            glitterTranslate.clearWarn = "$T('Glitter-confirmClearWarnings')";
-            glitterTranslate.pausePromptFail = "$T('Glitter-pausePromptFail')"
-            glitterTranslate.pauseFor = "$T('pauseFor')"
-            glitterTranslate.minutes = "$T('mins')"
-            glitterTranslate.shutdown = "$T('shutdownOK?')";
-            glitterTranslate.restart = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
-            glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n");
-            glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
-            glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
-            glitterTranslate.grabbing = "$T('Glitter-grabbing')";
-            glitterTranslate.encrypted = "$T('Glitter-encrypted')";
-            glitterTranslate.duplicate = "$T('Glitter-duplicate')";
-            glitterTranslate.tooLarge = "$T('Glitter-tooLarge')";
-            glitterTranslate.filtered = "$T('Glitter-filtered')";
-            glitterTranslate.waitSec = "$T('Glitter-waitSec')";
-            glitterTranslate.checking = "$T('post-Checking')";
-            glitterTranslate.misingArt = "$T('missingArt')";
-            glitterTranslate.noSelect = "$T('Glitter-noSelect')";
-            glitterTranslate.sendThanks = "$T('Glitter-sendThanks')";
-            glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
-            glitterTranslate.orphanedJobsMsg = "$T('explain-orphans')";
-            glitterTranslate.useCache = "$T('explain-cache_limitstr')";
-            glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
-            glitterTranslate.defaultText = "$T('default')";
-            glitterTranslate.noneText = "$T('None')";
-            glitterTranslate.moreText = "$T('Glitter-more')";
-            
-            glitterTranslate.status = [];
-            glitterTranslate.status['Completed'] = "$T('post-Completed')";
-            glitterTranslate.status['Failed'] = "$T('post-Failed')";
-            glitterTranslate.status['Queued'] = "$T('post-Queued')";
-            glitterTranslate.status['Repairing...'] = "$T('post-Repairing')";
-            glitterTranslate.status['Extracting...'] = "$T('post-Extracting')";
-            glitterTranslate.status['Moving...'] = "$T('post-Moving')";
-            glitterTranslate.status['Running script...'] = "$T('post-Running')";
-            glitterTranslate.status['Fetching extra blocks...'] = "$T('post-Fetching')";
-            glitterTranslate.status['Quick Check...'] = "$T('post-QuickCheck')";
-            glitterTranslate.status['Verifying...'] = "$T('post-Verifying')";
-            glitterTranslate.status['Checking'] = "$T('post-Checking')";
-            glitterTranslate.status['Download'] = "$T('stage-download')";
-            glitterTranslate.status['Repair'] = "$T('stage-repair')";
-            glitterTranslate.status['Join files'] = "$T('stage-filejoin')";
-            glitterTranslate.status['Unpack'] = "$T('stage-unpack')";
-            glitterTranslate.status['Script'] = "$T('stage-script')";
-            glitterTranslate.status['Source'] = "$T('stage-source')";
-            glitterTranslate.status['Servers'] = "$T('stage-servers')";
-            glitterTranslate.status['WARNING'] = "$T('Glitter-warning')";
-            glitterTranslate.status['ERROR'] = "$T('Glitter-error')";
-
-            glitterTranslate.pp = [];
-            glitterTranslate.pp['Download'] = "$T('pp-none')";
-            glitterTranslate.pp['+Repair'] = "$T('pp-repair')";
-            glitterTranslate.pp['+Unpack'] = "$T('pp-unpack')";
-            glitterTranslate.pp['+Delete'] = "$T('pp-delete')";
-
-            glitterTranslate.priority = [];
-            glitterTranslate.priority['Force'] = "$T('pr-force')";
-            glitterTranslate.priority['High'] = "$T('pr-high')";
-            glitterTranslate.priority['Normal'] = "$T('pr-normal')";
-            glitterTranslate.priority['Low'] = "$T('pr-low')";
-            glitterTranslate.priority['Stop'] = "$T('pr-stop')";
-            
-            glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
-
-            
-            var glitterPreLoadQueue = $preload_queue;
-            var glitterPreLoadHistory = $preload_history;
-        </script>
-  
         <!-- Feedback -->
         <div id="feedback-slider" data-bind="visible: glitterIsBeta && !localStorageGetItem('showFeedback')" style="display: none;">
     		<h4>Feedback <a href="#" onclick="localStorageSetItem('showFeedback', 'No'); \$(this).parent().parent().hide()">&times;</a></h4>
@@ -743,21 +751,6 @@
     		</div>
     	</div>
         
-        <!-- Inclusion is faster than external scripts. We load momentJS locale seperatly so failure won't break anything -->
-        
-        <script type="text/javascript">
-            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/moment.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
-            <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
-        </script>
-
-        <!--#if active_lang != 'en'#-->
-        <script type="text/javascript" src="./static/javascripts/momentjs_locale/${active_lang}.js"></script>
-        <!--#end if#-->
+        <!--#include $webdir + "/include_modals.tmpl"#-->
     </body>
 </html>
