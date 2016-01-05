@@ -36,7 +36,7 @@ import sys
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.misc import format_source_url
@@ -454,19 +454,21 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
             fail_message, url_info, bytes, series, nzo.md5sum)
 
 
+
 def unpack_history_info(item):
     """ Expands the single line stage_log from the DB
         into a python dictionary for use in the history display
     """
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
-    if item['stage_log']:
+    lst = item['stage_log']
+    if lst:
         try:
-            lines = item['stage_log'].split('\r\n')
+            lines = lst.split('\r\n')
         except:
             logging.error(T('Invalid stage logging in history for %s') + ' (\\r\\n)', unicoder(item['name']))
-            logging.debug('Lines: %s', item['stage_log'])
+            logging.debug('Lines: %s', lst)
             lines = []
-        item['stage_log'] = []
+        lst = [None for x in STAGES]
         for line in lines:
             stage = {}
             try:
@@ -485,7 +487,13 @@ def unpack_history_info(item):
                 logs = []
             for log in logs:
                 stage['actions'].append(log)
-            item['stage_log'].append(stage)
+            try:
+                lst[STAGES[key]] = stage
+            except KeyError:
+                lst.append(stage)
+        # Remove unused stages
+        item['stage_log'] = [x for x in lst if x is not None]
+
     if item['script_log']:
         item['script_log'] = zlib.decompress(item['script_log'][:])
     # The action line is only available for items in the postproc queue
