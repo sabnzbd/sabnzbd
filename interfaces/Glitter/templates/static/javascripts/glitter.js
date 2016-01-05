@@ -1761,6 +1761,14 @@ $(function() {
                 self.historyItems.sort(function(a, b) {
                     return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1;
                 });
+
+                // We also check if it might be in the Multi-edit
+                if(self.parent.queue.multiEditItems().length > 0) {
+                    $.each(newItems, function() {
+                        var currentItem = this;
+                        self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.nzo_id; })
+                    })
+                }
             }
 
             /***
