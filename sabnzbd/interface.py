@@ -336,7 +336,7 @@ class MainPage(object):
                 try:
                     info['preload_queue'] = json.dumps({'queue': remove_callable(queue)});
                     info['preload_history'] = json.dumps({'history': history});
-                except:
+                except UnicodeDecodeError:
                     info['preload_queue'] = ''
                     info['preload_history'] = ''
 
