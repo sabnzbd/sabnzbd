@@ -694,20 +694,21 @@ class HTTPRequest(object):
         if path and QUESTION_MARK in path:
             path, qs = path.split(QUESTION_MARK, 1)
 
-        # Unquote the path+params (e.g. "/this%20path" -> "/this path").
-        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
-        #
-        # But note that "...a URI must be separated into its components
-        # before the escaped characters within those components can be
-        # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
-        # Therefore, "/this%2Fpath" becomes "/this%2Fpath", not "/this/path".
-        try:
-            atoms = [unquote(x) for x in quoted_slash.split(path)]
-        except ValueError:
-            ex = sys.exc_info()[1]
-            self.simple_response("400 Bad Request", ex.args[0])
-            return False
-        path = "%2F".join(atoms)
+        if path is not None:
+            # Unquote the path+params (e.g. "/this%20path" -> "/this path").
+            # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
+            #
+            # But note that "...a URI must be separated into its components
+            # before the escaped characters within those components can be
+            # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
+            # Therefore, "/this%2Fpath" becomes "/this%2Fpath", not "/this/path".
+            try:
+                atoms = [unquote(x) for x in quoted_slash.split(path)]
+            except ValueError:
+                ex = sys.exc_info()[1]
+                self.simple_response("400 Bad Request", ex.args[0])
+                return False
+            path = "%2F".join(atoms)
         self.path = path
 
         # Note that, like wsgiref and most other HTTP servers,
