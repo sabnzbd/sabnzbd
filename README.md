@@ -24,13 +24,11 @@ SABnzbd has a good deal of dependencies you'll need before you can get running. 
 
 - `python` (We support Python 2.6 and 2.7)
 - `python-cheetah`
-- `python-configobj`
-- `python-feedparser`
 - `python-dbus`
 - `python-openssl`
 - `python-support`
 - `python-yenc`
-- `par2` (Multi-threaded par2 can be downloaded from [ChuChuSoft](http://chuchusoft.com/par2_tbb/download.html) )
+- `par2` (Multi-threaded par2 installation guide can be found [here](https://forums.sabnzbd.org/viewtopic.php?f=16&t=18793#p99702) )
 - `unrar` (Make sure you get the "official" non-free version of unrar)
 - `unzip`
 - `7zip`
