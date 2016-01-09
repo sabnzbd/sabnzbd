@@ -1159,6 +1159,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time()
+    options = cfg.par_option().strip()
 
     classic = classic or not cfg.par2_multicore()
     if sabnzbd.WIN32:
@@ -1166,13 +1167,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND
     else:
         tbb = False
-    if tbb and cfg.par_option():
-        command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
+    if tbb and options:
+        command = [str(PAR2_COMMAND), cmd, options, parfile]
     else:
         if classic:
             command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
+        # Allow options if not classic or when classic and non-classic are the same
+        if options and (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
+            command.insert(2, options)
     logging.debug('Par2-classic = %s', classic)
 
     # Append the wildcard for this set
