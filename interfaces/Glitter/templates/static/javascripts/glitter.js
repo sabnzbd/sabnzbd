@@ -2568,6 +2568,8 @@ function extractTitleAndPassword(titleInput) {
        titleInputSplit[0] == glitterTranslate.duplicate ||
        titleInputSplit[0] == glitterTranslate.tooLarge ||
        titleInputSplit[0] == glitterTranslate.filtered ||
+       titleInputSplit[0] == glitterTranslate.unwanted ||
+       titleInputSplit[0] == glitterTranslate.incomplete ||
        titleInputSplit[0].slice(0,4) == glitterTranslate.waitSec.slice(0,4)) {
         // The first 2 we need to keep!
         var theOutput = { theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
@@ -2579,7 +2581,8 @@ function extractTitleAndPassword(titleInput) {
         theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.duplicate + ' / ', '');
         theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.tooLarge + ' / ', '');
         theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.filtered + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.encrypted + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.unwanted + ' / ', '');
+        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.incomplete + ' / ', '');
     } else {
         var theOutput = { theTitle: titleInputSplit.shift(), 
                           thePassword: titleInputSplit.join(' / ')};
