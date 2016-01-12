@@ -775,6 +775,7 @@ def _api_undefined(name, output, kwargs):
 def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
+    
     if compact and compact == '1':
         paths = []
         name = platform_encode(kwargs.get('term', ''))
@@ -782,7 +783,8 @@ def _api_browse(name, output, kwargs):
         return report(output, keyword='', data=paths)
     else:
         name = platform_encode(name)
-        paths = folders_at_path(name, True)
+        show_hidden = kwargs.get('show_hidden_folders')
+        paths = folders_at_path(name, True, show_hidden)
         return report(output, keyword='paths', data=paths)
 
 

@@ -408,6 +408,21 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     margin-right: 10px;
     top: 0;
 }
+#filebrowser_modal .checkbox {
+    float: left;
+    margin:  8px 5px 0x;
+}
+#filebrowser_modal .checkbox input {
+    margin-top: 1px;
+}
+#filebrowser_modal .checkbox input+span {
+    opacity: 0.6;
+    font-weight: bold;
+}
+#filebrowser_modal .checkbox input:checked+span,
+#filebrowser_modal .checkbox span:hover {
+    opacity: 1;
+}
 /* Fix for shifting scrollbars when opening modals */
 .modal-open[style="padding-right: 17px;"] .navbar-fixed-top {
     padding-right: 17px;
