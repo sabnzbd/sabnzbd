@@ -113,6 +113,12 @@
             $('#filebrowser_modal').modal('hide');
             return false;
         })
+
+        // Show hidden folders
+        $('#show_hidden_folders').off('change')
+        $('#show_hidden_folders').on('change', function() {
+        	self.browse(self.currentBrowserPath , folderBrowseUrl);
+        })
         
         // Use custom title instead of default and open modal
         $('#filebrowser_modal .modal-header h4').text(this.fileBrowserTitle);
@@ -124,15 +130,15 @@
         // Self-reference
         var self = this;
         
-        // Nothing changed
-        if (this.currentBrowserPath === path) return;
-        
         // Still loading
         if (this.currentRequest) this.currentRequest.abort();
+
+        // Show hidden folders on Linux?
+        var extraHidden = $('#show_hidden_folders').is(':checked') ? '&show_hidden_folders=1' : '';
         
         // Get current folders
         this.currentBrowserPath = path;
-        this.currentRequest = $.getJSON(endpoint, { name: path }, function (data) {
+        this.currentRequest = $.getJSON(endpoint + extraHidden, { name: path }, function (data) {
             // Clean
             self.fileBrowserDialog.empty();
             
