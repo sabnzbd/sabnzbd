@@ -182,6 +182,9 @@ class URLGrabber(Thread):
 
                 if not filename:
                     filename = os.path.basename(url) + '.nzb'
+                elif '&nzbname=' in filename:
+                    # Sometimes the filename contains the full URL, duh!
+                    filename = filename[filename.find('&nzbname=') + 9:]
 
                 pp = future_nzo.pp
                 script = future_nzo.script
