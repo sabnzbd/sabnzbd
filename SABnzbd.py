@@ -526,7 +526,7 @@ def print_modules():
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
     else:
-        logging.info("pyOpenSSL... NOT found! - Try apt-get install python-pyopenssl (SSL is optional)")
+        logging.info("pyOpenSSL... NOT found! - Try apt-get install python-openssl (SSL is optional)")
 
 
 def all_localhosts():
