@@ -299,7 +299,7 @@ ntfosd_prio_queue_done = OptionBool('ntfosd', 'ntfosd_prio_queue_done', True)
 ntfosd_prio_other = OptionBool('ntfosd', 'ntfosd_prio_other', False)
 
 # [growl]
-growl_enable = OptionBool('growl', 'growl_enable', sabnzbd.DARWIN_VERSION < 8)
+growl_enable = OptionBool('growl', 'growl_enable', sabnzbd.DARWIN and sabnzbd.DARWIN_VERSION < 8)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
 growl_prio_startup = OptionBool('growl', 'growl_prio_startup', True)
