@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 0.8.0Beta4
+Release Notes  -  SABnzbd 0.8.0Beta5
 ====================================
+
+## Changes in Beta5
+- Glitter improvements
+- Faster initial loading of Glitter on Firefox and Chrome
+- Support extra parameters for par2 on other platforms than Windows
+- Proper sorting of download report
+- Several fixes for rare problems
 
 ## Changes in Beta4
 - Unicode crashes in user interface fixed
