@@ -89,7 +89,7 @@ class Wizard(object):
         sabnzbd.api.clear_trans_cache()
 
         # Always setup Glitter
-        sabnzbd.interface.change_web_dir('Glitter')
+        sabnzbd.interface.change_web_dir('Glitter - Default')
 
         info = self.info.copy()
         info['session'] = cfg.api_key()
