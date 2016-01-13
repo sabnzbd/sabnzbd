@@ -74,7 +74,7 @@ Release Notes  -  SABnzbd 0.8.0Beta4
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2015 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2016 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
 ### IMPORTANT INFORMATION about release 0.8.0

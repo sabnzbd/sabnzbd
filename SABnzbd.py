@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2016 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -285,7 +285,7 @@ def print_version():
     print """
 %s-%s
 
-Copyright (C) 2008-2015, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2008-2016, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the

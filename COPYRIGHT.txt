@@ -1,5 +1,5 @@
 
-(c) Copyright 2007-2015 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2016 by "The SABnzbd-team" <team@sabnzbd.org>
 
 The SABnzbd-team is:
 
