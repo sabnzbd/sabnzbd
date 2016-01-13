@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/env python -OO
 # Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
