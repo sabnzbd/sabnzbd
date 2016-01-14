@@ -1564,6 +1564,7 @@ def options_list(output):
         'yenc': sabnzbd.decoder.HAVE_YENC,
         'par2': sabnzbd.newsunpack.PAR2_COMMAND,
         'par2c': sabnzbd.newsunpack.PAR2C_COMMAND,
+        'multipar': sabnzbd.newsunpack.MULTIPAR_COMMAND,
         'rar': sabnzbd.newsunpack.RAR_COMMAND,
         'zip': sabnzbd.newsunpack.ZIP_COMMAND,
         '7zip': sabnzbd.newsunpack.SEVEN_COMMAND,

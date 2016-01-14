@@ -73,6 +73,7 @@ TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
 PAR2C_COMMAND = None
+MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
@@ -116,12 +117,16 @@ def find_programs(curdir):
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
+            # 64 bit versions
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/x64/par2.exe')
+            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/multipar/par2j64.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/x64/UnRAR.exe')
-        if not sabnzbd.newsunpack.PAR2_COMMAND:
+        else:
+            # 32 bit versions
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
-        if not sabnzbd.newsunpack.RAR_COMMAND:
+            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/multipar/par2j.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
+            
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
         sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
