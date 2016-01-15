@@ -1061,7 +1061,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             joinables, zips, rars, sevens, ts = build_filelists(workdir, None, check_rar=False)
 
             # Multipar or not?
-            if sabnzbd.WIN32 and True:
+            if sabnzbd.WIN32 and cfg.multipar():
                 finished, readd, pars, datafiles, used_joinables, used_par2 = MultiPar_Verify(parfile, parfile_nzf, nzo,
                                                                                      setname, joinables, single=single)
             else:

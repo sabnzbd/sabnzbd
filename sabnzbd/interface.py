@@ -1411,7 +1411,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
+    ('par2_multicore', 'multipar', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
              'enable_tsjoin', 'overwrite_files', 'top_only',
              'auto_sort', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
