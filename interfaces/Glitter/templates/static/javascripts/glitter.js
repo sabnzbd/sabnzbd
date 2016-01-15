@@ -637,6 +637,9 @@ $(function() {
 
         // Shutdown options
         self.onQueueFinish.subscribe(function(newValue) {
+            // Ignore updates before the page is done
+            if(!self.hasStatusInfo()) return;
+            
             // Something changes
             callAPI({
                 mode: 'queue',
