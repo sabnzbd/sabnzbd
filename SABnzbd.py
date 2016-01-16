@@ -1120,14 +1120,15 @@ def main():
             else:
                 if not url:
                     url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    newport = find_free_port(browserhost, port)
-                    if newport > 0:
-                        sabnzbd.cfg.https_port.set(newport)
-                        if https_port:
-                            https_port = newport
-                        else:
-                            http_port = newport
+                if not sabnzbd.cfg.fixed_ports():
+                    if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                        newport = find_free_port(browserhost, port)
+                        if newport > 0:
+                            sabnzbd.cfg.https_port.set(newport)
+                            if https_port:
+                                https_port = newport
+                            else:
+                                http_port = newport
         except:
             Bail_Out(browserhost, cherryport, '49')
 
@@ -1140,11 +1141,12 @@ def main():
         else:
             if not url:
                 url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
-            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                port = find_free_port(browserhost, cherryport)
-                if port > 0:
-                    sabnzbd.cfg.cherryport.set(port)
-                    cherryport = port
+            if not sabnzbd.cfg.fixed_ports():
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    port = find_free_port(browserhost, cherryport)
+                    if port > 0:
+                        sabnzbd.cfg.cherryport.set(port)
+                        cherryport = port
     except:
         Bail_Out(browserhost, cherryport, '49')
 
