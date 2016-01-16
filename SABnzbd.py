@@ -1237,6 +1237,7 @@ def main():
 
     logging.info('--------------------------------')
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
+    logging.info('Full executable path = %s', sabnzbd.MY_FULLNAME)
     if sabnzbd.WIN32:
         suffix = ''
         if vista_plus:
@@ -1671,16 +1672,20 @@ def main():
             sys.argv = re_argv
             os.chdir(org_dir)
             if sabnzbd.DARWIN:
-                args = sys.argv[:]
-                args.insert(0, sys.executable)
                 # TODO: when executing from sources on osx, after a restart, process is detached from console
                 # If OSX frozen restart of app instead of embedded python
                 if getattr(sys, 'frozen', None) == 'macosx_app':
                     # [[NSProcessInfo processInfo] processIdentifier]]
                     # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
-                    logging.info(os.getpid())
-                    os.system('kill -9 %s && open "%s"' % (os.getpid(), sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")))
+                    my_pid = os.getpid()
+                    my_name = sabnzbd.MY_FULLNAME.replace('/Contents/MacOS/SABnzbd', '')
+                    my_args = ' '.join(sys.argv[1:])
+                    cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
+                    logging.info('Launching: ', cmd)
+                    os.system(cmd)
                 else:
+                    args = sys.argv[:]
+                    args.insert(0, sys.executable)
                     pid = os.fork()
                     if pid == 0:
                         os.execv(sys.executable, args)
