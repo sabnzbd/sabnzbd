@@ -601,11 +601,13 @@ def check_latest_version():
     latest = convert_version(latest_label)[0]
     latest_test = convert_version(latest_testlabel)[0]
 
-    logging.debug('Checked for a new release, cur= %s, latest= %s (on %s)', current, latest, url)
+    logging.debug('Checked for a new release, cur= %s, latest= %s (on %s), latest_test= %s (on %s)',
+                  current, latest, url, latest_test, url_beta)
 
     if latest_test and cfg.version_check() > 1:
         # User always wants to see the latest test release
         latest = latest_test
+        latest_label = latest_testlabel
         url = url_beta
 
     if testver and current < latest:
@@ -1288,7 +1290,7 @@ def format_source_url(url):
 
 
 def get_base_url(url):
-    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com 
+    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
         But also api.althub.co.za -> althub.co.za
     """
     url_host = urlparse(url).hostname
