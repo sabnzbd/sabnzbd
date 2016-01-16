@@ -545,7 +545,7 @@ class SABnzbdDelegate(NSObject):
         try:
             if sabnzbd.NEW_VERSION and self.version_notify:
                 # logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
-                new_release, _new_rel_url = sabnzbd.NEW_VERSION.split(';')
+                new_release, _new_rel_url = sabnzbd.NEW_VERSION
                 growler.send_notification("SABnzbd", "%s : %s" % (T('New release available'), new_release), 'other')
                 self.version_notify = 0
         except:

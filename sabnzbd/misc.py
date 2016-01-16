@@ -613,13 +613,13 @@ def check_latest_version():
     if testver and current < latest:
         # This is a test version, but user has't seen the
         # "Final" of this one yet, so show the Final
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
+        sabnzbd.NEW_VERSION = (latest_label, url)
     elif current < latest:
         # This one is behind, show latest final
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
+        sabnzbd.NEW_VERSION = (latest_label, url)
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_testlabel, url_beta)
+        sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
 
 
 def from_units(val):

@@ -1742,7 +1742,7 @@ def build_header(prim, webdir='', search=None):
     header['nzb_quota'] = ''
 
     if sabnzbd.NEW_VERSION:
-        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION.split(';')
+        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
     else:
         header['new_release'] = ''
         header['new_rel_url'] = ''
