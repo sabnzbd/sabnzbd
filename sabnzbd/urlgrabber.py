@@ -99,7 +99,7 @@ class URLGrabber(Thread):
                 logging.info('Grabbing URL %s', url)
                 req = urllib2.Request(url)
                 req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                if not [True for item in _BAD_GZ_HOSTS if item in url]:
+                if not any(item in url for item in _BAD_GZ_HOSTS):
                     req.add_header('Accept-encoding', 'gzip')
                 filename = None
                 category = None

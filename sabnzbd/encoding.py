@@ -308,7 +308,7 @@ _HTML_TABLE = {
 def html_escape(txt):
     """ Replace HTML metacharacters with &-constructs """
     # Replacement for inefficient xml.sax.saxutils.escape function
-    if [True for ch in _HTML_TABLE if ch in txt]:
+    if any(ch in txt for ch in _HTML_TABLE):
         return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
     else:
         return txt

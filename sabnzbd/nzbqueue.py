@@ -183,7 +183,7 @@ class NzbQueue(TryList):
         def all_verified(path):
             """ Return True when all sets have been successfully verified """
             verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x': False}
-            return not bool([True for x in verified if not verified[x]])
+            return all(verified[x] for x in verified)
 
         nzo_id = None
         name = os.path.basename(folder)
