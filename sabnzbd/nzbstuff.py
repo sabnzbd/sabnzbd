@@ -44,7 +44,7 @@ import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
     HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
-    RENAMES_FILE, Status
+    RENAMES_FILE, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, format_source_url, \
     sanitize_filename, globber_full, sanitize_foldername, int_conv, \
@@ -1461,7 +1461,7 @@ class NzbObject(TryList):
         if for_cli:
             avg_date = time.mktime(avg_date.timetuple())
 
-        return (self.repair, self.unpack, self.delete, self.script,
+        return PNFO(self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name_pw, {},
                 '', self.cat, self.url,
                 bytes_left_all, self.bytes, avg_date,

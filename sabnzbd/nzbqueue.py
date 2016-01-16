@@ -35,8 +35,9 @@ from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
     LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-    PNFO_BYTES_FIELD, PNFO_BYTES_LEFT_FIELD, Status, QUEUE_FILE_TMPL, \
-    IGNORED_FOLDERS
+    Status, QUEUE_FILE_TMPL, \
+    IGNORED_FOLDERS, QNFO
+
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
@@ -889,7 +890,7 @@ class NzbQueue(TryList):
                     pnfo_list.append(pnfo)
                 n += 1
 
-        return (bytes_total, bytes_left, pnfo_list, q_size, len(self.__nzo_list))
+        return QNFO(bytes_total, bytes_left, pnfo_list, q_size, len(self.__nzo_list))
 
     @synchronized(NZBQUEUE_LOCK)
     def remaining(self):

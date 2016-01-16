@@ -1197,27 +1197,27 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         info['finish'] = info['noofslots']
 
     for pnfo in pnfo_list:
-        repair = pnfo[PNFO_REPAIR_FIELD]
-        unpack = pnfo[PNFO_UNPACK_FIELD]
-        delete = pnfo[PNFO_DELETE_FIELD]
-        script = pnfo[PNFO_SCRIPT_FIELD]
-        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        cat = pnfo[PNFO_EXTRA_FIELD1]
+        repair = pnfo.repair
+        unpack = pnfo.unpack
+        delete = pnfo.delete
+        script = pnfo.script
+        nzo_id = pnfo.nzo_id
+        cat = pnfo.category
         if not cat:
             cat = 'None'
-        filename = pnfo[PNFO_FILENAME_FIELD]
-        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
-        bytes = pnfo[PNFO_BYTES_FIELD]
-        average_date = pnfo[PNFO_AVG_DATE_FIELD]
-        status = pnfo[PNFO_STATUS_FIELD]
-        priority = pnfo[PNFO_PRIORITY_FIELD]
+        filename = pnfo.filename
+        bytesleft = pnfo.bytes_left
+        bytes = pnfo.bytes
+        average_date = pnfo.avg_date
+        status = pnfo.status
+        priority = pnfo.priority
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
-        missing = pnfo[PNFO_MISSING_FIELD]
+        missing = pnfo.missing
         if verbose or verbose_list:
-            finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
-            active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
-            queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
+            finished_files = pnfo.finished_files
+            active_files = pnfo.active_files
+            queued_files = pnfo.queued_files
 
         nzo_ids.append(nzo_id)
 
@@ -1387,17 +1387,17 @@ def qstatus_data():
     """ Build up the queue status as a nested object and output as a JSON object """
 
     qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+    pnfo_list = qnfo.list
 
     jobs = []
     bytesleftprogess = 0
     bpsnow = BPSMeter.do.get_bps()
     for pnfo in pnfo_list:
-        filename = pnfo[PNFO_FILENAME_FIELD]
-        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
-        bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
-        bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        filename = pnfo.filename
+        bytesleft = pnfo.bytes_left / MEBI
+        bytesleftprogess += pnfo.bytes_left
+        bytes = pnfo.bytes / MEBI
+        nzo_id = pnfo.nzo_id
         jobs.append({"id": nzo_id,
                         "mb": bytes,
                         "mbleft": bytesleft,
@@ -1407,7 +1407,7 @@ def qstatus_data():
     state = "IDLE"
     if Downloader.do.paused:
         state = Status.PAUSED
-    elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
+    elif qnfo.bytes_left / MEBI > 0:
         state = Status.DOWNLOADING
 
     speed_limit = Downloader.do.get_limit()
@@ -1421,14 +1421,14 @@ def qstatus_data():
         "pause_int": scheduler.pause_int(),
         "kbpersec": bpsnow / KIBI,
         "speed": to_units(bpsnow, dec_limit=1),
-        "mbleft": qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
-        "mb": qnfo[QNFO_BYTES_FIELD] / MEBI,
+        "mbleft": qnfo.bytes_left / MEBI,
+        "mb": qnfo.bytes / MEBI,
         "noofslots": len(pnfo_list),
-        "noofslots_total": qnfo[QNFO_Q_FULLSIZE_FIELD],
+        "noofslots_total": qnfo.q_fullsize,
         "have_warnings": str(sabnzbd.GUIHANDLER.count()),
         "diskspace1": diskfree(cfg.download_dir.get_path()),
         "diskspace2": diskfree(cfg.complete_dir.get_path()),
-        "timeleft": calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
+        "timeleft": calc_timeleft(qnfo.bytes_left, bpsnow),
         "loadavg": loadavg(),
         "speedlimit": "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit),
         "speedlimit_abs": str(Downloader.do.get_limit_abs() or ''),
@@ -1439,15 +1439,15 @@ def qstatus_data():
 
 def build_file_list(id):
     qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+    pnfo_list = qnfo.list
 
     jobs = []
     for pnfo in pnfo_list:
-        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        nzo_id = pnfo.nzo_id
         if nzo_id == id:
-            finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
-            active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
-            queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
+            finished_files = pnfo.finished_files
+            active_files = pnfo.active_files
+            queued_files = pnfo.queued_files
 
             n = 0
             for tup in finished_files:
@@ -1500,7 +1500,7 @@ def build_file_list(id):
 def rss_qstatus():
     """ Return a RSS feed with the queue status """
     qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+    pnfo_list = qnfo.list
 
     rss = RSS()
     rss.channel.title = "SABnzbd Queue"
@@ -1512,20 +1512,20 @@ def rss_qstatus():
     item = Item()
     item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
                  (
-                     calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], BPSMeter.do.get_bps()),
-                     qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
+                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.get_bps()),
+                     qnfo.bytes_left / MEBI,
                      BPSMeter.do.get_bps() / KIBI
                  )
     rss.addItem(item)
 
     sum_bytesleft = 0
     for pnfo in pnfo_list:
-        filename = pnfo[PNFO_FILENAME_FIELD]
-        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
-        bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
+        filename = pnfo.filename
+        bytesleft = pnfo.bytes_left / MEBI
+        bytes = pnfo.bytes / MEBI
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
-        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        nzo_id = pnfo.nzo_id
 
         if mb == mbleft:
             percentage = "0%"
@@ -1544,9 +1544,9 @@ def rss_qstatus():
         # Total MB/MB left
         status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
         # ETA
-        sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
+        sum_bytesleft += pnfo.bytes_left
         status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
-        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
+        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo.avg_date))
         status_line.append("</tr>")
         item.description = ''.join(status_line)
         rss.addItem(item)
@@ -1708,8 +1708,8 @@ def build_header(prim, webdir='', search=None):
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search)
 
-    bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
-    bytes = qnfo[QNFO_BYTES_FIELD]
+    bytesleft = qnfo.bytes_left
+    bytes = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
     header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
@@ -1717,7 +1717,7 @@ def build_header(prim, webdir='', search=None):
     header['mb'] = "%.2f" % (bytes / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)
     header['size'] = format_bytes(bytes)
-    header['noofslots_total'] = qnfo[QNFO_Q_FULLSIZE_FIELD]
+    header['noofslots_total'] = qnfo.q_fullsize
 
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
@@ -1735,9 +1735,9 @@ def build_header(prim, webdir='', search=None):
 
     anfo = ArticleCache.do.cache_info()
 
-    header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
-    header['cache_size'] = format_bytes(anfo[ANFO_CACHE_SIZE_FIELD])
-    header['cache_max'] = str(anfo[ANFO_CACHE_LIMIT_FIELD])
+    header['cache_art'] = str(anfo.article_sum)
+    header['cache_size'] = format_bytes(anfo.cache_size)
+    header['cache_max'] = str(anfo.cache_limit)
 
     header['nzb_quota'] = ''
 
@@ -1757,7 +1757,7 @@ def build_header(prim, webdir='', search=None):
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
-    return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
+    return (header, qnfo.list, bytespersec)
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,

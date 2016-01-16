@@ -15,41 +15,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from collections import namedtuple
+
 CONFIG_VERSION = 19
 
 QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 500
-PNFO_REPAIR_FIELD = 0
-PNFO_UNPACK_FIELD = 1
-PNFO_DELETE_FIELD = 2
-PNFO_SCRIPT_FIELD = 3
-PNFO_NZO_ID_FIELD = 4
-PNFO_FILENAME_FIELD = 5
-PNFO_UNPACKSTRHT_FIELD = 6
-PNFO_MSGID_FIELD = 7
-PNFO_EXTRA_FIELD1 = 8
-PNFO_EXTRA_FIELD2 = 9
-PNFO_BYTES_LEFT_FIELD = 10
-PNFO_BYTES_FIELD = 11
-PNFO_AVG_DATE_FIELD = 12
-PNFO_FINISHED_FILES_FIELD = 13
-PNFO_ACTIVE_FILES_FIELD = 14
-PNFO_QUEUED_FILES_FIELD = 15
-PNFO_STATUS_FIELD = 16
-PNFO_PRIORITY_FIELD = 17
-PNFO_MISSING_FIELD = 18
 
-QNFO_BYTES_FIELD = 0
-QNFO_BYTES_LEFT_FIELD = 1
-QNFO_PNFO_LIST_FIELD = 2
-QNFO_Q_SIZE_LIST_FIELD = 3
-QNFO_Q_FULLSIZE_FIELD = 4
+PNFO = namedtuple('PNFO', 'repair unpack delete script nzo_id filename '
+                          'unpackstrht msgid category url bytes_left bytes '
+                          'avg_date finished_files active_files queued_files status priority missing')
 
-ANFO_ARTICLE_SUM_FIELD = 0
-ANFO_CACHE_SIZE_FIELD = 1
-ANFO_CACHE_LIMIT_FIELD = 2
+QNFO = namedtuple('QNFO', 'bytes bytes_left list q_size_list q_fullsize')
+
+ANFO = namedtuple('ANFO', 'article_sum cache_size cache_limit')
 
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)

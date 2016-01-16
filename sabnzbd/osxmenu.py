@@ -354,7 +354,7 @@ class SABnzbdDelegate(NSObject):
     def queueUpdate(self):
         try:
             qnfo = NzbQueue.do.queue_info(max_jobs=10)
-            pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+            pnfo_list = qnfo.list
 
             bytesleftprogess = 0
             bpsnow = BPSMeter.do.get_bps()
@@ -369,18 +369,18 @@ class SABnzbdDelegate(NSObject):
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
                 for pnfo in pnfo_list:
-                    filename = unicoder(pnfo[PNFO_FILENAME_FIELD])
-                    bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
-                    bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
-                    bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-                    nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+                    filename = unicoder(pnfo.filename)
+                    bytesleft = pnfo.bytes_left / MEBI
+                    bytesleftprogess += pnfo.bytes_left
+                    bytes = pnfo.bytes / MEBI
+                    nzo_id = pnfo.nzo_id
                     timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
 
                     job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 
-                self.info = "%d nzb(s)\t( %d / %d MB )" % (qnfo[QNFO_Q_SIZE_LIST_FIELD], (qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
+                self.info = "%d nzb(s)\t( %d / %d MB )" % (qnfo.q_size_list, (qnfo.bytes_left / MEBI), (qnfo.bytes / MEBI))
 
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Empty'), '', '')

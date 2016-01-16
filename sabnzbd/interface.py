@@ -53,9 +53,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.sslinfo import ssl_protocols
 
 from sabnzbd.constants import \
-    REC_RAR_VERSION, NORMAL_PRIORITY, PNFO_NZO_ID_FIELD, PNFO_REPAIR_FIELD, \
-    PNFO_UNPACK_FIELD, PNFO_DELETE_FIELD, PNFO_SCRIPT_FIELD, PNFO_EXTRA_FIELD1, \
-    PNFO_PRIORITY_FIELD, PNFO_FILENAME_FIELD, PNFO_ACTIVE_FILES_FIELD, \
+    REC_RAR_VERSION, NORMAL_PRIORITY, PNFO, \
     MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
     DEFAULT_PRIORITY
 
@@ -567,16 +565,16 @@ class NzoPage(object):
         slot = {}
         n = 0
         for pnfo in pnfo_list:
-            if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
+            if pnfo.nzo_id == nzo_id:
                 nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
-                repair = pnfo[PNFO_REPAIR_FIELD]
-                unpack = pnfo[PNFO_UNPACK_FIELD]
-                delete = pnfo[PNFO_DELETE_FIELD]
+                repair = pnfo.repair
+                unpack = pnfo.unpack
+                delete = pnfo.delete
                 unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
-                script = pnfo[PNFO_SCRIPT_FIELD]
+                script = pnfo.script
                 if script is None:
                     script = 'None'
-                cat = pnfo[PNFO_EXTRA_FIELD1]
+                cat = pnfo.category
                 if not cat:
                     cat = 'None'
                 filename_pw = xml_name(nzo.final_name_pw_clean)
@@ -585,7 +583,7 @@ class NzoPage(object):
                     password = xml_name(nzo.password).replace('"', '&quot;')
                 else:
                     password = ''
-                priority = pnfo[PNFO_PRIORITY_FIELD]
+                priority = pnfo.priority
 
                 slot['nzo_id'] = str(nzo_id)
                 slot['cat'] = cat
@@ -610,11 +608,11 @@ class NzoPage(object):
 
         active = []
         for pnfo in pnfo_list:
-            if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
+            if pnfo.nzo_id == nzo_id:
                 info['nzo_id'] = nzo_id
-                info['filename'] = xml_name(pnfo[PNFO_FILENAME_FIELD])
+                info['filename'] = xml_name(pnfo.filename)
 
-                for tup in pnfo[PNFO_ACTIVE_FILES_FIELD]:
+                for tup in pnfo.active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
                     checked = False
                     if nzf_id in self.__cached_selection and \

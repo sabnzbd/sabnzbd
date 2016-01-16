@@ -24,7 +24,7 @@ import threading
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI
+from sabnzbd.constants import GIGI, ANFO
 
 
 ARTICLE_LOCK = threading.Lock()
@@ -44,7 +44,7 @@ class ArticleCache(object):
 
     @synchronized(ARTICLE_LOCK)
     def cache_info(self):
-        return (len(self.__article_list), self.__cache_size, self.__cache_limit_org)
+        return ANFO(len(self.__article_list), self.__cache_size, self.__cache_limit_org)
 
     @synchronized(ARTICLE_LOCK)
     def new_limit(self, limit):
