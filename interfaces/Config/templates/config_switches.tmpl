@@ -262,6 +262,7 @@
                         <input type="text" name="par_option" id="par_option" value="$par_option" />
                         <span class="desc">$T('explain-par_option')</span>
                     </div>
+                    <!--#if not $nt#-->
                     <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
                         <label class="config" for="nice">$T('opt-nice')</label>
                         <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
@@ -272,6 +273,7 @@
                         <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                         <span class="desc">$T('explain-ionice')</span>
                     </div>
+                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>

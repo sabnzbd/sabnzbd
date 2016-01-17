@@ -828,6 +828,10 @@ input[type="checkbox"] {
     line-height: 1.1em;
 }
 
+.Servers .col2.server-disabled .label {
+    color: ##777 !important;
+}
+
 .Servers .col2 .label:nth-child(2) {
     opacity: 0.7;
 }

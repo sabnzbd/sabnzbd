@@ -129,11 +129,12 @@
     <input type="hidden" name="server" value="$server['name']" />
 
     <div class="section">
-        <div class="col2">
+        <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
             <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <span class="label label-primary" data-priority="$server['priority']">$server['priority']</span>
-            <span class="label label-primary" data-priority="$server['priority']">$T('srv-priority'):</span>
-            
+            <!--#if int($server['enable']) != 0#-->
+            <span class="label label-primary" data-priority="$server['priority']#-->">$server['priority']</span>
+            <span class="label label-primary" data-priority="$server['priority']#-->">$T('srv-priority'):</span>
+            <!--#end if#-->
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" rel="$server['name']" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
               <td><label for="enable_$cur">$T('enabled')</label></td>
@@ -284,11 +285,6 @@
         }
         \$(this).css('background-color', theColor)
     })
-    
-    /** 
-        High-light disabled servers
-    **/
-    \$('.toggleServerCheckbox:not(:checked)').parents('.col2').addClass('server-disabled').find('.label').css('background-color', '#777')
     
     /**
         Click events
