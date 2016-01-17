@@ -108,3 +108,6 @@ msgstr "How long or until when do you want to pause? (in English!)"
 msgid "Timeleft"
 msgstr "Time left"
 
+#: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
+msgid "Optionally specify a filename"
+msgstr "Optionally specify a name"
