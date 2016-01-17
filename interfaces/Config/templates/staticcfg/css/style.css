@@ -801,6 +801,10 @@ input[type="checkbox"] {
     display: none;
 }
 
+#navbar .glyphicon-folder-open {
+    margin-right: 2px;
+}
+
 .rss-icon-svg {
     display: inline-block;
     margin-top: 1px;
