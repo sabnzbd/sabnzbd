@@ -2632,12 +2632,18 @@ function keepOpen(thisItem) {
 
 // Show history details
 function showDetails(thisItem) {
-    // Open the details of this
-    // Needs timeout, otherwise it thinks its the 'close' click
-    setTimeout(function() {
+    // Unfortunatly the .dropdown('toggle') doesn't work in this setup, so work-a-round
+
+    // Open the details of this, or close it?
+    if($(thisItem).parent().find('.delete>.dropdown').hasClass('open')) {
+        // One click = close
         $(thisItem).parent().find('.delete>.dropdown>a').click()
-    },1)
-    
+    } else {
+        // Needs timeout, otherwise it thinks its the 'close' click for some reason
+        setTimeout(function() {
+            $(thisItem).parent().find('.delete>.dropdown>a').click()
+        },1)
+    }
 }
 
 // Check all functionality
