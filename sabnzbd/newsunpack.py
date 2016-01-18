@@ -1539,7 +1539,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
     used_joinables = []
     used_par2 = []
-    extra_par2_name = None
+
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time()
@@ -1582,13 +1582,14 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         finished = 0
         readd = False
 
-        verifynum = 1
+        verifynum = 0
         verifytotal = 0
         verified = 0
 
+        in_parlist = False
         in_repair = False
-        misnamed_files = False
         in_verify = False
+        misnamed_files = False
 
         # Loop over the output, whee
         while 1:
@@ -1607,7 +1608,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             # Skip empty lines
             if line == '':
                 # Empty lines also end every section
-                extra_par2_name = False
                 in_repair = False
                 misnamed_files = False
                 continue
@@ -1656,11 +1656,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
             # ----------------- Verify stage
             elif not verified:
-                # Remember the PAR files it finds
+                # List of Par2 files we will use today
                 if line.startswith('PAR File list'):
-                    extra_par2_name = True
-                    continue
-                elif extra_par2_name:
+                    in_parlist = True
+                if line.startswith('PAR File total size'):
+                    # Ende of the Par2 listing
+                    in_parlist = False
+                elif in_parlist:
                     m = _RE_FILENAME.search(line)
                     if m:
                         used_par2.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
@@ -1685,7 +1687,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 
                 # Actual verification
                 elif line.startswith('Input File total count'):
-                    # How many files will it scan?
+                    # How many files will it try to find?
                     verifytotal = int(line.split()[-1])
                 elif line.startswith('Input File Slice found'):
                     # End of verification (not on a newline!)
@@ -1699,28 +1701,49 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                     m = _RE_FILENAME.search(line)
                     if m:
                         # It prints the filename couple of times, so we save it to check
-                        if m.group(1) not in datafiles and (verifytotal == 0 or verifynum < verifytotal):
+                        # 'datafiles' will not contain all data-files in par-set, only the 
+                        # ones that got scanned, but it's ouput is never used!
+                        if line.split()[1] in ('Damaged', 'Found'):
                             verifynum += 1
-                            nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
                             nzo.status = Status.VERIFYING
-                        datafiles.append(TRANS(m.group(1)))
+                            datafiles.append(TRANS(m.group(1)))
+
+                            # Sometimes we don't know the total (filejoin)
+                            if verifytotal <= 1:
+                                nzo.set_action_line(T('Verifying'), '%02d' % verifynum)
+                            else:
+                                nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
+                        if len(joinables) > 0:
+                            # Find out if a joinable file has been used for joining
+                            uline = unicoder(line)
+                            for jn in joinables:
+                                if uline.find(os.path.split(jn)[1]) > 0:
+                                    used_joinables.append(jn)
+                                    datafiles.append(TRANS(m.group(1)))
+                                    break
 
                 # Result of verification
                 elif line.startswith('All Files Complete'):
-                    # Completed without damage!
+                    # Completed without damage! 
                     msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
                     nzo.set_unpack_info('Repair', msg, set=setname)
                     logging.info('Verified in %s, all files correct',
                                 format_time_string(time() - start))
                     finished = 1
-                elif line.startswith('Ready to repair'):
+                elif line.startswith('Ready to repair') or line.startswith('Ready to rejoin'):
                     # Ready to repair!
+                    # Or we are re-joining a split file when there's no damage but takes time
                     msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
                     nzo.set_unpack_info('Repair', msg, set=setname)
                     logging.info('Verified in %s, repair is required',
                                   format_time_string(time() - start))
                     start = time()
                     verified = 1
+
+                    # Set message for user in case of joining
+                    if line.startswith('Ready to rejoin'):   
+                        nzo.set_action_line(T('Joining'), '%2d' % len(used_joinables))
+
                 elif line.startswith('Need'):
                     # We need more blocks, but are they there?
                     chunks = line.split()
@@ -1802,22 +1825,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 logging.info('Repaired in %s', format_time_string(time() - start))
                 finished = 1
 
-            elif line.startswith('Ready to rejoin'):
-                # Find out if a joinable file has been used for joining
-                for jn in joinables:
-                    if jn in datafiles:
-                        used_joinables.append(jn)
-                        break
-
             # I have no clue what this does...
-
-            # elif line.startswith('File:') and line.find('data blocks from') > 0:
-            #     # Find out if a joinable file has been used for joining
-            #     uline = unicoder(line)
-            #     for jn in joinables:
-            #         if uline.find(os.path.split(jn)[1]) > 0:
-            #             used_joinables.append(jn)
-            #             break
             #     # Special case of joined RAR files, the "of" and "from" must both be RAR files
             #     # This prevents the joined rars files from being seen as an extra rar-set
             #     m = _RE_BLOCK_FOUND.search(line)
