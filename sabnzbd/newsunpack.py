@@ -1654,6 +1654,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                     nzo.set_unpack_info('Repair', msg, set=setname)
                     nzo.status = Status.FAILED
 
+            elif line.startswith('There is not enough space on the disk'):
+                msg = T('Repairing failed, %s') % T('Disk full')
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+
             # ----------------- Verify stage
             elif not verified:
                 # List of Par2 files we will use today
