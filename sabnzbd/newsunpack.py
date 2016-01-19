@@ -1680,10 +1680,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 elif line.startswith('Searching misnamed file'):
                     # We are in the misnamed files block
                     misnamed_files = True
+                    verifynum = 0
                 elif misnamed_files and 'Found' in line:
                     # First it reports the current filename
                     m = _RE_FILENAME.search(line)
                     if m:
+                        verifynum += 1
+                        nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
                         old_name = TRANS(m.group(1))
                 elif misnamed_files and 'Misnamed' in line:
                     # Then it finds the actual
