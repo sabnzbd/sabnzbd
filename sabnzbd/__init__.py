@@ -486,18 +486,24 @@ def guard_fsys_type():
     """ Callback for change of file system naming type """
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
-
-def guard_https_ver():
-    """ Callback for change of https verification """
+def set_https_verification(value):
+    prev = False
     try:
         import ssl
         if hasattr(ssl, '_create_default_https_context'):
-            if cfg.enable_https_verification():
+            prev = ssl._create_default_https_context == ssl.create_default_context
+            if value:
                 ssl._create_default_https_context = ssl.create_default_context
             else:
                 ssl._create_default_https_context = ssl._create_unverified_context
     except ImportError:
         pass
+    return prev
+
+
+def guard_https_ver():
+    """ Callback for change of https verification """
+    set_https_verification(cfg.enable_https_verification())
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
