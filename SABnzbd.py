@@ -714,7 +714,10 @@ def is_sabnzbd_running(url, timeout=None):
     """ Return True when there's already a SABnzbd instance running. """
     try:
         url = '%s&mode=version' % (url)
+        # Do this without certificate verification, few installations will have that
+        prev = sabnzbd.set_https_verification(False)
         ver = sabnzbd.newsunpack.get_from_url(url, timeout=timeout)
+        sabnzbd.set_https_verification(prev)        
         return bool(ver and re.search(r'\d+\.\d+\.', ver))
     except:
         return False
