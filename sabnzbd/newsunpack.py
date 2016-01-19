@@ -1587,8 +1587,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         verified = 0
 
         in_parlist = False
-        in_repair = False
+        in_check = False
         in_verify = False
+        in_repair = False
         misnamed_files = False
 
         # Loop over the output, whee
@@ -1691,18 +1692,30 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                         new_name = TRANS(m.group(1))
                         logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                         renames[new_name] = old_name
-                
-                # Actual verification
+
+                # How many files will it try to find?
                 elif line.startswith('Input File total count'):
-                    # How many files will it try to find?
                     verifytotal = int(line.split()[-1])
+
+                # Checking input files
+                elif line.startswith('Complete file count'):
+                    in_check = False
+                    verifynum = 0
+                elif line.startswith('Verifying Input File'):
+                    in_check = True
+                    nzo.status = Status.VERIFYING
+                elif in_check:
+                    m = _RE_FILENAME.search(line)
+                    if m:
+                        verifynum += 1
+                        nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+
+                # Actual verification
                 elif line.startswith('Input File Slice found'):
                     # End of verification (not on a newline!)
                     in_verify = False
                 elif line.startswith('Finding available slice'):
                     # The actual scanning of the files
-                    nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
-                    nzo.status = Status.VERIFYING
                     in_verify = True
                 elif in_verify:
                     m = _RE_FILENAME.search(line)
