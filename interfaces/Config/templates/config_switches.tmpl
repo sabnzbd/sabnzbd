@@ -12,6 +12,11 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
+                        <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
+                        <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-auto_browser')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
                         <select name="check_new_rel" id="check_new_rel">
                             <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
@@ -19,11 +24,6 @@
                             <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
                         </select>
                         <span class="desc">$T('explain-check_new_rel')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
-                        <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-auto_browser')</span>
                     </div>
                     <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
                         <label class="config" for="ampm">$T('opt-ampm')</label>
@@ -79,14 +79,32 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
-                        <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-fail_hopeless')</span>
+                        <label class="config" for="pre_script">$T('opt-pre_script')</label>
+                        <select name="pre_script" id="pre_script">
+                        <!--#for $sc in $script_list#-->
+                            <!--#if $sc.lower() == $pre_script.lower()#-->
+                                <option value="$sc" selected="selected">$Tspec($sc)</option>
+                            <!--#else#-->
+                                <option value="$sc">$Tspec($sc)</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                        <span class="desc">$T('explain-pre_script')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="top_only">$T('opt-top_only')</label>
+                        <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-top_only')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="pre_check">$T('opt-pre_check')</label>
                         <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-pre_check')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
+                        <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-fail_hopeless')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
@@ -105,11 +123,6 @@
                             <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                         </select>
                         <span class="desc">$T('explain-no_series_dupes')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="pause_on_post_processing">$T('opt-pause_on_post_processing')</label>
-                        <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-pause_on_post_processing')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
@@ -134,28 +147,11 @@
                         <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                         <span class="desc">$T('explain-unwanted_extensions')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="top_only">$T('opt-top_only')</label>
-                        <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-top_only')</span>
-                    </div>
+                    
                     <div class="field-pair">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-auto_sort')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="pre_script">$T('opt-pre_script')</label>
-                        <select name="pre_script" id="pre_script">
-                        <!--#for $sc in $script_list#-->
-                            <!--#if $sc.lower() == $pre_script.lower()#-->
-                                <option value="$sc" selected="selected">$Tspec($sc)</option>
-                            <!--#else#-->
-                                <option value="$sc">$Tspec($sc)</option>
-                            <!--#end if#-->
-                        <!--#end for#-->
-                        </select>
-                        <span class="desc">$T('explain-pre_script')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
@@ -170,22 +166,39 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
-                        <select name="ignore_samples" id="ignore_samples">
-                            <option value="0" <!--#if int($ignore_samples) == 0 then 'selected="selected"' else ""#--> >$T('igsam-off')</option>
-                            <option value="1" <!--#if int($ignore_samples) == 1 then 'selected="selected"' else ""#--> >$T('igsam-del')</option>
-                        </select>
-                        <span class="desc">$T('explain-ignore_samples')</span>
+                        <label class="config" for="pause_on_post_processing">$T('opt-pause_on_post_processing')</label>
+                        <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-pause_on_post_processing')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
+                        <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_all_par')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="quick_check">$T('opt-quick_check')</label>
                         <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-quick_check')</span>
                     </div>
+                    <div class="field-pair <!--#if not $have_multicore then "disabled" else "" #-->">
+                        <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
+                        <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_multicore then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-par2_multicore')</span>
+                    </div>
                     <div class="field-pair">
-                        <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
-                        <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_all_par')</span>
+                        <label class="config" for="par_option">$T('opt-par_option')</label>
+                        <input type="text" name="par_option" id="par_option" value="$par_option" />
+                        <span class="desc">$T('explain-par_option')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
+                        <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-sfv_check')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
+                        <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-safe_postproc')</span>
                     </div>
                     <div class="field-pair <!--#if not $have_unrar then "disabled" else "" #-->">
                         <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
@@ -228,20 +241,11 @@
                         <span class="desc">$T('explain-ts_join')</span>
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
-                        <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-safe_postproc')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
-                        <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-sfv_check')</span>
-                    </div>
-                    <div class="field-pair">
                         <label class="config" for="unpack_check">$T('opt-unpack_check')</label>
                         <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if int($unpack_check) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-unpack_check')</span>
                     </div>
+                    
                     <div class="field-pair">
                         <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
                         <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
@@ -251,16 +255,6 @@
                         <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
                         <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-new_nzb_on_failure')</span>
-                    </div>
-                    <div class="field-pair <!--#if not $have_multicore then "disabled" else "" #-->">
-                        <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
-                        <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_multicore then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-par2_multicore')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="par_option">$T('opt-par_option')</label>
-                        <input type="text" name="par_option" id="par_option" value="$par_option" />
-                        <span class="desc">$T('explain-par_option')</span>
                     </div>
                     <!--#if not $nt#-->
                     <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
@@ -274,6 +268,11 @@
                         <span class="desc">$T('explain-ionice')</span>
                     </div>
                     <!--#end if#-->
+                    <div class="field-pair">
+                        <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
+                        <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
+                    </div>
                     <div class="field-pair">
                         <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
