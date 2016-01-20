@@ -52,7 +52,11 @@ def ssl_method(method):
     if method in _SSL_PROTOCOLS:
         return _SSL_PROTOCOLS[method]
     else:
-        return _SSL_PROTOCOLS[0]
+        # The default is "negotiate a protocol"
+        try:
+            return SSL.SSLv23_METHOD
+        except AttributeError:
+            return _SSL_PROTOCOLS[0] 
 
 def ssl_protocols():
     ''' Return acronyms for SSL protocols, highest quality first '''

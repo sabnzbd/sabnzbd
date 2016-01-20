@@ -1802,9 +1802,6 @@ def handle_server(kwargs, root=None, new_svr=False):
     for kw in ('ssl', 'send_group', 'enable', 'optional'):
         if kw not in kwargs.keys():
             kwargs[kw] = None
-    if 'ssl_type' in kwargs and kwargs['ssl_type'] == ssl_protocols()[0]:
-        # When user selects highest protocol, make empty (default)
-        kwargs['ssl_type'] = ''
     if svr and not new_svr:
         svr.set_dict(kwargs)
     else:

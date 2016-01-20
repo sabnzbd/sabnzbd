@@ -62,6 +62,7 @@
                     <label class="config" for="ssl_type">$T('srv-ssl_type')</label>
                     <!--#if int($have_ssl) == 1#-->
                         <select name="ssl_type" id="ssl_type">
+                                <option value="">$T('Default')</option>
                             <!--#if 't12' in $ssl_protocols#-->
                                 <option value="t12">TLS v1.2</option>
                             <!--#end if#-->
@@ -70,9 +71,6 @@
                             <!--#end if#-->
                             <!--#if 't1' in $ssl_protocols#-->
                                 <option value="t1">TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v23' in $ssl_protocols#-->
-                                <option value="v23">SSL v23</option>
                             <!--#end if#-->
                             <!--#if 'v3' in $ssl_protocols#-->
                                 <option value="v3">SSL v3</option>
@@ -187,6 +185,7 @@
                     <label class="config" for="ssl_type$cur">$T('srv-ssl_type')</label>
                     <!--#if int($have_ssl) == 1#-->
                         <select name="ssl_type" id="ssl_type$cur">
+                                <option value=""  <!--#if $server['ssl_type'] == ""  then 'selected="selected"' else ""#--> >$T('Default')</option>
                             <!--#if 't12' in $ssl_protocols#-->
                                 <option value="t12"  <!--#if $server['ssl_type'] == "t12"  then 'selected="selected"' else ""#--> >TLS v1.2</option>
                             <!--#end if#-->
@@ -195,9 +194,6 @@
                             <!--#end if#-->
                             <!--#if 't1' in $ssl_protocols#-->
                                 <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected"' else ""#--> >TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v23' in $ssl_protocols#-->
-                                <option value="v23" <!--#if $server['ssl_type'] == "v23" then 'selected="selected"' else ""#--> >SSL v23</option>
                             <!--#end if#-->
                             <!--#if 'v3' in $ssl_protocols#-->
                                 <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected"' else ""#--> >SSL v3</option>
