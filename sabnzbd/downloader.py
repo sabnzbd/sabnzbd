@@ -62,11 +62,6 @@ class Server(object):
     def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
 
-        # If no ssl is protocol set, used highest available one
-        protocols = ssl_protocols()
-        if ssl and protocols and ssl_type not in protocols:
-            ssl_type = protocols[0]
-
         self.id = id
         self.newid = None
         self.restart = False
@@ -77,7 +72,7 @@ class Server(object):
         self.threads = threads
         self.priority = priority
         self.ssl = ssl
-        self.ssl_type = ssl_type
+        self.ssl_type = None
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -97,6 +92,11 @@ class Server(object):
         self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True  # Assume server has "STAT", until proven otherwise
+
+        if ssl:
+            # When the user has set a supported protocol, use it
+            if ssl_type and ssl_type in ssl_protocols():
+                self.ssl_type = ssl_type
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
