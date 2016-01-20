@@ -1012,7 +1012,8 @@ class NzbObject(TryList):
         if renames:
             for name in renames:
                 if name in files or renames[name] in files:
-                    files.remove(name)
+                    if name in files:
+                        files.remove(name)
                     files.append(renames[name])
 
         # Looking for the longest name first, minimizes the chance on a mismatch
