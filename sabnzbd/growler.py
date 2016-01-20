@@ -123,7 +123,7 @@ def send_notification(title, msg, gtype):
     if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
-            
+
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
         if check_classes(gtype, 'acenter'):
@@ -153,6 +153,12 @@ def send_notification(title, msg, gtype):
     if sabnzbd.cfg.pushbullet_enable():
         if sabnzbd.cfg.pushbullet_apikey():
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
+    # Notification script.
+    if sabnzbd.cfg.nscript_enable():
+        if sabnzbd.cfg.nscript_script():
+            Thread(target=send_nscript, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # NTFOSD
@@ -539,7 +545,32 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
             return T('Failed to send pushbullet message')
     return ''
 
+def send_nscript(title, msg, gtype, force=False, test=None):
+    if test:
+        script = test.get('nscript_script')
+    else:
+        script = sabnzbd.cfg.nscript_script()
+    if not script:
+        return T('Cannot send, missing required data')
+    title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+
+    if force or check_classes(gtype, 'nscript'):
+        try:
+            script_path = os.path.join(sabnzbd.cfg.script_dir(), script)
+            command = [script_path, title, msg]
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+            output = proc.stdout.read()
+            proc.wait()
+            logging.info('Successfully executed notification script ' + script)
+        except:
+            logging.warning('Failed to execute notification script ' + script)
+            logging.debug("Traceback: ", exc_info=True)
+            return 'Failed to execute notification script ' + script
+
+    return ''
+
 def send_windows(title, msg, gtype):
     if sabnzbd.WINTRAY:
         sabnzbd.WINTRAY.sendnotification(title, msg)
     return None
+
