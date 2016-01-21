@@ -1213,6 +1213,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         pars = []
         datafiles = []
         renames = {}
+        reconstructed = []
 
         linebuf = ''
         finished = 0
@@ -1405,18 +1406,25 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 finished = 1
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
-                # Find out if a joinable file has been used for joining
-                uline = unicoder(line)
-                for jn in joinables:
-                    if uline.find(os.path.split(jn)[1]) > 0:
-                        used_joinables.append(jn)
-                        break
-                # Special case of joined RAR files, the "of" and "from" must both be RAR files
-                # This prevents the joined rars files from being seen as an extra rar-set
                 m = _RE_BLOCK_FOUND.search(line)
-                if m and '.rar' in m.group(1).lower() and '.rar' in m.group(2).lower():
+                if m:
                     workdir = os.path.split(parfile)[0]
-                    used_joinables.append(os.path.join(workdir, TRANS(m.group(1))))
+                    old_name = TRANS(m.group(1))
+                    new_name = TRANS(m.group(2))
+                    if joinables:
+                        # Find out if a joinable file has been used for joining
+                        uline = unicoder(line)
+                        for jn in joinables:
+                            if uline.find(os.path.split(jn)[1]) > 0:
+                                used_joinables.append(jn)
+                                break
+                        # Special case of joined RAR files, the "of" and "from" must both be RAR files
+                        # This prevents the joined rars files from being seen as an extra rar-set
+                        if '.rar' in old_name.lower() and '.rar' in new_name.lower():
+                            used_joinables.append(os.path.join(workdir, old_name))
+                    else:
+                        logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
+                        reconstructed.append(os.path.join(workdir, old_name))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
@@ -1495,6 +1503,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         for name in previous or {}:
             renames[name] = previous[name]
         save_data(renames, RENAMES_FILE, nzo.workpath)
+
+    # If successful and files were reconstructed, remove incomplete original files
+    if finished and reconstructed:
+        # Use 'used_joinables' as a vehicle to get rid of the files
+        used_joinables.extend(reconstructed)
 
     if retry_classic:
         logging.debug('Retry PAR2-joining with par2-classic')
