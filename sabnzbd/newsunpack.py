@@ -1255,6 +1255,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             # Skip empty lines
             if line == '':
                 continue
+            print line
 
             if 'Repairing:' not in line:
                 lines.append(line)
@@ -1577,6 +1578,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         pars = []
         datafiles = []
         renames = {}
+        reconstructed = []
 
         linebuf = ''
         finished = 0
@@ -1584,13 +1586,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
         verifynum = 0
         verifytotal = 0
-        verified = 0
 
         in_parlist = False
         in_check = False
         in_verify = False
         in_repair = False
         misnamed_files = False
+        old_name = None
 
         # Loop over the output, whee
         while 1:
@@ -1610,11 +1612,11 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             if line == '':
                 # Empty lines also end every section
                 in_repair = False
-                misnamed_files = False
                 continue
 
             # Save it all
             lines.append(line)
+            print line
 
             # ----------------- Startup
             if line.startswith('invalid option'):
@@ -1663,172 +1665,191 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 nzo.status = Status.FAILED
 
             # ----------------- Verify stage
-            elif not verified:
-                # List of Par2 files we will use today
-                if line.startswith('PAR File list'):
-                    in_parlist = True
-                if line.startswith('PAR File total size'):
-                    # Ende of the Par2 listing
-                    in_parlist = False
-                elif in_parlist:
-                    m = _RE_FILENAME.search(line)
-                    if m:
-                        used_par2.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
-                        pars.append(TRANS(m.group(1)))
+            # List of Par2 files we will use today
+            if line.startswith('PAR File list'):
+                in_parlist = True
+            if line.startswith('PAR File total size'):
+                # Ende of the Par2 listing
+                in_parlist = False
+            elif in_parlist:
+                m = _RE_FILENAME.search(line)
+                if m:
+                    used_par2.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
+                    pars.append(TRANS(m.group(1)))
 
-                # Misnamed files
-                elif line.startswith('Searching misnamed file'):
-                    # We are in the misnamed files block
-                    misnamed_files = True
-                    verifynum = 0
-                elif misnamed_files and 'Found' in line:
-                    # First it reports the current filename
-                    m = _RE_FILENAME.search(line)
-                    if m:
+            # Misnamed files
+            elif line.startswith('Searching misnamed file'):
+                # We are in the misnamed files block
+                misnamed_files = True
+                verifynum = 0
+            elif misnamed_files and 'Found' in line:
+                # First it reports the current filename
+                m = _RE_FILENAME.search(line)
+                if m:
+                    verifynum += 1
+                    nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+                    old_name = TRANS(m.group(1))
+            elif misnamed_files and 'Misnamed' in line:
+                # Then it finds the actual
+                m = _RE_FILENAME.search(line)
+                if m and old_name:
+                    new_name = TRANS(m.group(1))
+                    logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
+                    renames[new_name] = old_name
+                    # New name is also part of data!
+                    datafiles.append(new_name)
+                    reconstructed.append(old_name)
+
+            # How many files will it try to find?
+            elif line.startswith('Input File total count'):
+                verifytotal = int(line.split()[-1])
+
+            # Checking input files
+            elif line.startswith('Complete file count'):
+                in_check = False
+                verifynum = 0
+            elif line.startswith('Verifying Input File'):
+                in_check = True
+                nzo.status = Status.VERIFYING
+            elif in_check:
+                m = _RE_FILENAME.search(line)
+                if m:
+                    verifynum += 1
+                    nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+
+            # Actual verification
+            elif line.startswith('Input File Slice found'):
+                # End of verification AND end of misnamed file search
+                in_verify = False
+                misnamed_files = False
+                old_name = None
+            elif line.startswith('Finding available slice'):
+                # The actual scanning of the files
+                in_verify = True
+            elif in_verify:
+                m = _RE_FILENAME.search(line)
+                if m:
+                    # It prints the filename couple of times, so we save it to check
+                    # 'datafiles' will not contain all data-files in par-set, only the 
+                    # ones that got scanned, but it's ouput is never used!
+                    if line.split()[1] in ('Damaged', 'Found'):
                         verifynum += 1
-                        nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
-                        old_name = TRANS(m.group(1))
-                elif misnamed_files and 'Misnamed' in line:
-                    # Then it finds the actual
-                    m = _RE_FILENAME.search(line)
-                    if m and old_name:
+                        nzo.status = Status.VERIFYING
+                        datafiles.append(TRANS(m.group(1)))
+
+                        # Set old_name in case it was misnamed (not when we are joining)
+                        if not joinables:
+                            old_name = TRANS(m.group(1))
+
+                        # Sometimes we don't know the total (filejoin)
+                        if verifytotal <= 1:
+                            nzo.set_action_line(T('Verifying'), '%02d' % verifynum)
+                        else:
+                            nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
+                    
+                    elif old_name and old_name != TRANS(m.group(1)):
+                        # Hey we found another misnamed one! 
                         new_name = TRANS(m.group(1))
                         logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                         renames[new_name] = old_name
+                        # Put it back with it's new name!
+                        datafiles.pop()
+                        datafiles.append(new_name)
+                        # Need to reset it to avoid collision
+                        old_name = None
 
-                # How many files will it try to find?
-                elif line.startswith('Input File total count'):
-                    verifytotal = int(line.split()[-1])
+                    if joinables:
+                        # Find out if a joinable file has been used for joining
+                        uline = unicoder(line)
+                        for jn in joinables:
+                            if uline.find(os.path.split(jn)[1]) > 0:
+                                used_joinables.append(jn)
+                                datafiles.append(TRANS(m.group(1)))
+                                break
 
-                # Checking input files
-                elif line.startswith('Complete file count'):
-                    in_check = False
-                    verifynum = 0
-                elif line.startswith('Verifying Input File'):
-                    in_check = True
-                    nzo.status = Status.VERIFYING
-                elif in_check:
-                    m = _RE_FILENAME.search(line)
-                    if m:
-                        verifynum += 1
-                        nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+            elif line.startswith('Need'):
+                # We need more blocks, but are they there?
+                chunks = line.split()
+                needed_blocks = int(chunks[1])
+                avail_blocks = 0
+                extrapars = parfile_nzf.extrapars
+                block_table = {}
+                logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                # Actual verification
-                elif line.startswith('Input File Slice found'):
-                    # End of verification (not on a newline!)
-                    in_verify = False
-                elif line.startswith('Finding available slice'):
-                    # The actual scanning of the files
-                    in_verify = True
-                elif in_verify:
-                    m = _RE_FILENAME.search(line)
-                    if m:
-                        # It prints the filename couple of times, so we save it to check
-                        # 'datafiles' will not contain all data-files in par-set, only the 
-                        # ones that got scanned, but it's ouput is never used!
-                        if line.split()[1] in ('Damaged', 'Found'):
-                            verifynum += 1
-                            nzo.status = Status.VERIFYING
-                            datafiles.append(TRANS(m.group(1)))
+                for nzf in extrapars:
+                    # Don't count extrapars that are completed already
+                    if nzf.completed:
+                        continue
+                    blocks = int_conv(nzf.blocks)
+                    avail_blocks += blocks
+                    if blocks not in block_table:
+                        block_table[blocks] = []
+                    block_table[blocks].append(nzf)
+                logging.info('%s blocks available', avail_blocks)
 
-                            # Sometimes we don't know the total (filejoin)
-                            if verifytotal <= 1:
-                                nzo.set_action_line(T('Verifying'), '%02d' % verifynum)
-                            else:
-                                nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                        if len(joinables) > 0:
-                            # Find out if a joinable file has been used for joining
-                            uline = unicoder(line)
-                            for jn in joinables:
-                                if uline.find(os.path.split(jn)[1]) > 0:
-                                    used_joinables.append(jn)
-                                    datafiles.append(TRANS(m.group(1)))
-                                    break
-
-                # Result of verification
-                elif line.startswith('All Files Complete'):
-                    # Completed without damage! 
-                    msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+                force = False
+                if (avail_blocks < needed_blocks) and (avail_blocks > 0):
+                    # Tell SAB that we always have enough blocks, so that
+                    # it will try to load all pars anyway
+                    msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    logging.info('Verified in %s, all files correct',
-                                format_time_string(time() - start))
-                    finished = 1
-                elif line.startswith('Ready to repair') or line.startswith('Ready to rejoin'):
-                    # Ready to repair!
-                    # Or we are re-joining a split file when there's no damage but takes time
-                    msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
-                    nzo.set_unpack_info('Repair', msg, set=setname)
-                    logging.info('Verified in %s, repair is required',
-                                  format_time_string(time() - start))
-                    start = time()
-                    verified = 1
+                    nzo.status = Status.FETCHING
+                    needed_blocks = avail_blocks
+                    force = True
 
-                    # Set message for user in case of joining
-                    if line.startswith('Ready to rejoin'):   
-                        nzo.set_action_line(T('Joining'), '%2d' % len(used_joinables))
+                if avail_blocks >= needed_blocks:
+                    added_blocks = 0
+                    readd = True
 
-                elif line.startswith('Need'):
-                    # We need more blocks, but are they there?
-                    chunks = line.split()
-                    needed_blocks = int(chunks[1])
-                    avail_blocks = 0
-                    extrapars = parfile_nzf.extrapars
-                    block_table = {}
-                    logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
+                    while added_blocks < needed_blocks:
+                        block_size = min(block_table.keys())
+                        extrapar_list = block_table[block_size]
+                        if extrapar_list:
+                            new_nzf = extrapar_list.pop()
+                            nzo.add_parfile(new_nzf)
+                            if new_nzf in extrapars:
+                                extrapars.remove(new_nzf)
+                            added_blocks += block_size
+                        else:
+                            block_table.pop(block_size)
 
-                    for nzf in extrapars:
-                        # Don't count extrapars that are completed already
-                        if nzf.completed:
-                            continue
-                        blocks = int_conv(nzf.blocks)
-                        avail_blocks += blocks
-                        if blocks not in block_table:
-                            block_table[blocks] = []
-                        block_table[blocks].append(nzf)
-                    logging.info('%s blocks available', avail_blocks)
+                    logging.info('Added %s blocks to %s',
+                                 added_blocks, nzo.final_name)
 
-                    force = False
-                    if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                        # Tell SAB that we always have enough blocks, so that
-                        # it will try to load all pars anyway
-                        msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
-                        nzo.fail_msg = msg
-                        msg = u'[%s] %s' % (unicoder(setname), msg)
-                        nzo.set_unpack_info('Repair', msg, set=setname)
+                    if not force:
+                        msg = T('Fetching %s blocks...') % str(added_blocks)
                         nzo.status = Status.FETCHING
-                        needed_blocks = avail_blocks
-                        force = True
+                        nzo.set_action_line(T('Fetching'), msg)
 
-                    if avail_blocks >= needed_blocks:
-                        added_blocks = 0
-                        readd = True
+                else:
+                    msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg, set=setname)
+                    nzo.status = Status.FAILED
 
-                        while added_blocks < needed_blocks:
-                            block_size = min(block_table.keys())
-                            extrapar_list = block_table[block_size]
-                            if extrapar_list:
-                                new_nzf = extrapar_list.pop()
-                                nzo.add_parfile(new_nzf)
-                                if new_nzf in extrapars:
-                                    extrapars.remove(new_nzf)
-                                added_blocks += block_size
-                            else:
-                                block_table.pop(block_size)
+            # Result of verification
+            elif line.startswith('All Files Complete'):
+                # Completed without damage! 
+                msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                logging.info('Verified in %s, all files correct',
+                            format_time_string(time() - start))
+                finished = 1
+            elif line.startswith('Ready to repair') or line.startswith('Ready to rejoin'):
+                # Ready to repair!
+                # Or we are re-joining a split file when there's no damage but takes time
+                msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                logging.info('Verified in %s, repair is required',
+                              format_time_string(time() - start))
+                start = time()
 
-                        logging.info('Added %s blocks to %s',
-                                     added_blocks, nzo.final_name)
-
-                        if not force:
-                            msg = T('Fetching %s blocks...') % str(added_blocks)
-                            nzo.status = Status.FETCHING
-                            nzo.set_action_line(T('Fetching'), msg)
-
-                    else:
-                        msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
-                        nzo.fail_msg = msg
-                        msg = u'[%s] %s' % (unicoder(setname), msg)
-                        nzo.set_unpack_info('Repair', msg, set=setname)
-                        nzo.status = Status.FAILED
+                # Set message for user in case of joining
+                if line.startswith('Ready to rejoin'):   
+                    nzo.set_action_line(T('Joining'), '%2d' % len(used_joinables))
 
             # ----------------- Repair stage
             elif 'Recovering slice' in line:
@@ -1862,12 +1883,30 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
-    # If successful, add renamed files to the collection
-    if finished and renames:
+    # Add renamed files to the collection
+    # MultiPar always(!!) renames automatically whatever it can in the 'Searching misnamed file:'-section
+    # Even if the repair did not complete fully it will rename those!
+    # But the ones in 'Finding available slices'-section will only be renamed after succesfull repair
+    if renames:
+        # Adding to the collection
         previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
         for name in previous or {}:
             renames[name] = previous[name]
         save_data(renames, RENAMES_FILE, nzo.workpath)
+
+        # If succes, we also remove the possibly previously renamed ones
+        if finished and previous:
+            reconstructed.extend(previous.values())
+
+        # Remove renamed original files
+        workdir = os.path.split(parfile)[0]
+        used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
+
+    import pprint
+    pp = pprint.PrettyPrinter(4);
+    pp.pprint(renames)
+    pp.pprint(datafiles)
+    pp.pprint(used_joinables)
 
     return finished, readd, pars, datafiles, used_joinables, used_par2
 
