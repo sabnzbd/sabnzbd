@@ -1003,6 +1003,17 @@ $(function() {
                     clear: function() { self.clearMessages('CacheMsg')}
                 });
             }
+            
+            // Message about MultiPar
+            if(response.config.misc.multipar && !localStorageGetItem('MultiParMsg')) {
+                self.allMessages.push({
+                    index: 'MultiParMsg',
+                    type: 'INFO',
+                    text: '<strong>We have enabled MultiPar for verification and repair.</strong> MultiPar offers highly (2x) increased repair speed but is currently still experimental. <br/>If you experience any bugs in Verify/Repair due to MultiPar, we hope you let us know so we can fix it!<br/>You can disable MultiPar in Config -> Switches. ',
+                    css: 'info',
+                    clear: function() { self.clearMessages('MultiParMsg')}
+                });
+            }
         })
         
         // Orphaned folder check - Not for 5 days if user ignored it

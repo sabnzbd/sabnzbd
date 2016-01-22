@@ -1255,7 +1255,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             # Skip empty lines
             if line == '':
                 continue
-            print line
 
             if 'Repairing:' not in line:
                 lines.append(line)
@@ -1616,7 +1615,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
             # Save it all
             lines.append(line)
-            print line
 
             # ----------------- Startup
             if line.startswith('invalid option'):
@@ -1901,12 +1899,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         # Remove renamed original files
         workdir = os.path.split(parfile)[0]
         used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
-
-    import pprint
-    pp = pprint.PrettyPrinter(4);
-    pp.pprint(renames)
-    pp.pprint(datafiles)
-    pp.pprint(used_joinables)
 
     return finished, readd, pars, datafiles, used_joinables, used_par2
 
