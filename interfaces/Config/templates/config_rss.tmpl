@@ -7,7 +7,7 @@
         <div class="padTable"> 
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
-            <form action="add_rss_feed" method="post" novalidate>
+            <form action="add_rss_feed" method="post" autocomplete="off" novalidate>
                 <input type="hidden" name="session" value="$session" />
                 <table class="catTable">
                     <tr>
@@ -37,7 +37,7 @@
     <!--#if $rss#-->
     <div class="section">
         <div class="padTable">
-            <form action="save_rss_feed" method="post" novalidate>
+            <form action="save_rss_feed" method="post" autocomplete="off" novalidate>
                 <input type="hidden" name="session" value="$session" />
                 <table id="subscriptions">
                     <tbody>
@@ -73,7 +73,7 @@
             </form>
             <!--#if $feeds#-->
             <br/>
-            <form action="rss_now" method="post" novalidate>
+            <form action="rss_now" method="post" autocomplete="off" novalidate>
                 <input type="hidden" name="session" value="$session" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
@@ -82,7 +82,7 @@
     </div>
     <!--#end if#-->
     <div class="section">
-        <form action="save_rss_rate" method="post">
+        <form action="save_rss_rate" method="post" autocomplete="off">
             <input type="hidden" name="session" value="$session" />
             <div class="col1">
                 <fieldset>
@@ -279,7 +279,7 @@
             <!--#set $fnum = 0#-->
             <!--#for $filter in $rss[$feed].filters#-->
                 <!--#set $odd = not $odd#-->
-                <form action="upd_rss_filter" method="post">
+                <form action="upd_rss_filter" method="post" autocomplete="off">
                     <input type="hidden" name="session" value="$session" />
                     <input type="hidden" name="index" value="$fnum" />
                     <input type="hidden" name="feed" value="$feed" />
