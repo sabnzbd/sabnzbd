@@ -285,9 +285,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 
-    # Check for old queue (when a new queue is not present)
-    if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
-        OLD_QUEUE = bool(misc.globber(cfg.admin_dir.get_path(), QUEUE_FILE_TMPL % '?'))
+    OLD_QUEUE = check_old_queue()
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
@@ -1126,6 +1124,24 @@ def wait_for_download_folder():
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
+
+def check_old_queue():
+    """ Check for old queue (when a new queue is not present) """
+    old = False
+    if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
+        for ver in (QUEUE_VERSION -1 , QUEUE_VERSION - 2, QUEUE_VERSION - 3):
+            data = load_admin(QUEUE_FILE_TMPL % str(ver))
+            if data:
+                break
+        try:
+            old = bool(data and isinstance(data, tuple) and len(data[1]))
+        except (TypeError, IndexError):
+            pass
+        if old and sabnzbd.WIN32 and ver < 10 and sabnzbd.DIR_LCLDATA != sabnzbd.DIR_HOME \
+            and misc.is_relative_path(cfg.download_dir()):
+            # For Windows and when version < 10: adjust old default location
+            cfg.download_dir.set('Documents/' + cfg.download_dir())
+    return old
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
