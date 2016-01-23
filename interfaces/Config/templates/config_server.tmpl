@@ -116,13 +116,13 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    </form>
+</form>
 
 <!--#set $cur = 0#-->
 <!--#for $server in $servers#-->
     <!--#set $cur = $cur + 1#-->
 
-    <form action="saveServer" method="post" class="fullform" novalidate>
+    <form action="saveServer" method="post" class="fullform" autocomplete="off" novalidate>
     <input type="hidden" name="session" value="$session" />
     <input type="hidden" name="server" value="$server['name']" />
 
@@ -134,7 +134,7 @@
             <span class="label label-primary" data-priority="$server['priority']#-->">$T('srv-priority'):</span>
             <!--#end if#-->
             <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" rel="$server['name']" name="q_enable" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" name="$server['name']" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
               <td><label for="enable_$cur">$T('enabled')</label></td>
             </tr></table>
 
@@ -316,7 +316,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            location.reload();
+            setTimeout(function() { location.reload(); }, 100)
         }
         return false;
     });
@@ -326,12 +326,12 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            location.reload();
+            setTimeout(function() { location.reload(); }, 100)
         }
         return false;
     });
     \$('.toggleServerCheckbox').click(function(){
-        var whichServer = \$(this).attr("rel");
+        var whichServer = \$(this).attr("name");
         \$.ajax({
             type: "POST",
             url: "toggleServer",
@@ -340,7 +340,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            location.reload();
+            setTimeout(function() { location.reload(); }, 100)
         });
     });
 });
