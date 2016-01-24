@@ -92,7 +92,7 @@ def check_server(host, port, ajax):
 
 def check_access(access_type=4):
     """ Check if external address is allowed given `access_type`
-        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
+        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
     range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if referrer.startswith(r)])
@@ -188,8 +188,12 @@ def check_login_cookie():
     return cherrypy.request.cookie['login_cookie'].value == base64.urlsafe_b64encode(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
 
 def check_login():
-    # Not when basic-auth is one
+    # Not when no authentication required or basic-auth is on
     if not cfg.html_login() or not cfg.username() or not cfg.password():
+        return True
+
+    # If we show login for external IP, by using access_type=6 we can check if IP match
+    if cfg.inet_exposure() == 5 and check_access(access_type=6):
         return True
 
     # Check the cookie
@@ -603,6 +607,9 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/save
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
+
         nzo_id = None
         for a in args:
             if a.startswith('SABnzbd_nzo'):
