@@ -1,0 +1,37 @@
+<html lang="$active_lang">
+<head>
+    <title>SABnzbd</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+    
+    <link rel="apple-touch-icon" sizes="76x76" href="../staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="../staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="../staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />  
+    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico" />      
+
+    <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="../staticcfg/css/style.css?p=$pid" />
+    <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?p=$pid" />
+</head>
+<html>
+	<body>
+        <div class="account-wall">
+            <div class="text-center logo-header">
+                <img src="../staticcfg/images/logo.png" alt="SABnzbd">
+            </div>
+            <form class="form-signin" action="./" method="post">
+                <!--#if $error#-->
+                <div class="alert alert-danger" role="alert">$error</div>
+                <!--#end if#-->
+                
+                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" required autofocus>
+                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" required>
+                
+                <button class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('send') </button>
+            </form>
+        </div>
+    </body>
+ </html>

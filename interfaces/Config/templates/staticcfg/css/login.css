@@ -1,0 +1,27 @@
+.logo-header {
+	padding-bottom: 10px;
+}
+.account-wall {
+	max-width: 300px;
+	position: absolute;
+	top: 30%;
+	left: 50%;
+  	transform: translate(-50%, -30%);
+ }
+
+.form-signin input {
+	margin-top: 5px
+}
+
+.form-signin .btn {
+	width: 100%;
+	margin-top: 10px
+}
+
+.form-signin .alert {
+	margin: 5px 0px;
+}
+
+.btn:hover {
+	background-color: white;
+}

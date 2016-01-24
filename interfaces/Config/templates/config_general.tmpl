@@ -34,6 +34,11 @@
                     <span class="desc">$T('explain-web_password')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="html_login">$T('opt-html_login')</label>
+                    <input type="checkbox" name="html_login" id="html_login" value="1" <!--#if int($html_login) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-html_login')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config" for="web_dir">$T('opt-web_dir')</label>
                         <select name="web_dir" id="web_dir">
                         <!--#for $webline in $web_list#-->

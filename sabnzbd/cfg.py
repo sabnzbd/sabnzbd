@@ -210,6 +210,7 @@ else:
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
+html_login = OptionBool('misc', 'html_login', True)
 login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
 bandwidth_perc = OptionNumber('misc', 'bandwidth_perc', 0, 0, 100)
 bandwidth_max = OptionStr('misc', 'bandwidth_max')

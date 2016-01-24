@@ -131,6 +131,7 @@ SKIN_TEXT = {
     'audio' : TT('Audio'),
     'notUsed' : TT('Not used'),
     'orLess' : TT('or less'),
+    'logout' : TT('Log out'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -316,6 +317,8 @@ SKIN_TEXT = {
     'opt-web_username' : TT('SABnzbd Username'),
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
+    'explain-html_login' : TT('Use HTML login page instead of basic authentication.'),
+    'opt-html_login' : TT('Login page'),
     'explain-web_password' : TT('Optional authentication password.'),
     'httpsSupport' : TT('HTTPS Support'),
     'opt-enable_https' : TT('Enable HTTPS'),
