@@ -1,5 +1,13 @@
-Release Notes  -  SABnzbd 0.8.0Beta5
+Release Notes  -  SABnzbd 0.8.0Beta6
 ====================================
+
+## Changes in Beta6
+- Fixed issues in Config->Server (Firefox)
+- Fixed queue upgrade warning for Windows
+- SSL protocol by default auto-negotiated with server
+- Fixed problem of multiple instances of SABnzbd when starting it with an NZB
+- Fix problem of stray RAR files after unpack, which would fail the job
+- Lots of Glitter tweaks and fixes
 
 ## Changes in Beta5
 - Glitter improvements
