@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-12-24 10:42+0000\n"
-"PO-Revision-Date: 2016-01-11 14:47+0000\n"
-"Last-Translator: jcfp <Unknown>\n"
+"PO-Revision-Date: 2016-01-18 07:41+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-12 05:38+0000\n"
-"X-Generator: Launchpad (build 17881)\n"
+"X-Launchpad-Export-Date: 2016-01-19 05:46+0000\n"
+"X-Generator: Launchpad (build 17886)\n"
 
 #: SABnzbd.py:326 [Error message]
 msgid "Failed to start web-interface"
@@ -4218,7 +4218,7 @@ msgstr "NZB ophalen"
 
 #: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
 msgid "Optionally specify a filename"
-msgstr "Geef eventueel een bestandsnaam op"
+msgstr "Geef eventueel een andere naam"
 
 #: sabnzbd/skintext.py:792
 msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
