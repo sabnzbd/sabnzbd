@@ -2219,11 +2219,13 @@ class ConfigScheduling(object):
         actions_lng = {}
         for action in actions:
             actions_lng[action] = Ttemplate("sch-" + action)
+        
+        actions_servers = {}
         servers = config.get_servers()
         for srv in servers:
-            name = servers[srv].displayname()
-            actions.append(name)
-            actions_lng[name] = name
+            actions_servers[srv] = servers[srv].displayname()
+
+        conf['actions_servers'] = actions_servers
         conf['actions'] = actions
         conf['actions_lng'] = actions_lng
 
@@ -2237,13 +2239,7 @@ class ConfigScheduling(object):
         if msg:
             return msg
 
-        # Create server dictionary based on displayname
-        server_names = {}
         servers = config.get_servers()
-        for srv in servers:
-            srv = servers[srv]
-            server_names[srv.displayname()] = srv.ident()[1]
-
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
@@ -2264,8 +2260,7 @@ class ConfigScheduling(object):
                     arguments = 0
             elif action in _SCHED_ACTIONS:
                 arguments = ''
-            elif action in server_names:
-                action = server_names[action]
+            elif action in servers:
                 if arguments == '1':
                     arguments = action
                     action = 'enable_server'
