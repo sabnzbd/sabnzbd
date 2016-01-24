@@ -911,7 +911,7 @@ $(function() {
         var orphanMsg = localStorageGetItem('OrphanedMsg')*1+(1000*3600*24*5) < Date.now();
         // Delay the check
         if(orphanMsg) {
-            setTimeout(self.loadStatusInfo, 2000);
+            setTimeout(self.loadStatusInfo, 200);
         }
         
         // On any status load we check Orphaned folders 
