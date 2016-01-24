@@ -239,8 +239,9 @@ class Downloader(Thread):
     @synchronized_CV
     def resume(self):
         logging.info("Resuming")
+        if self.paused:
+            growler.send_notification("SABnzbd", T('Resuming'), 'download')
         self.paused = False
-        growler.send_notification("SABnzbd", T('Resuming'), 'download')
 
     @synchronized_CV
     def pause(self, save=True):
