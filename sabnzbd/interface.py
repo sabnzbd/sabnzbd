@@ -157,9 +157,11 @@ def get_users():
     users[cfg.username()] = cfg.password()
     return users
 
-
 def encrypt_pwd(pwd):
     return pwd
+
+# Create a more unique ID for each instance
+COOKIE_SECRET = str(randint(1000,100000)*os.getpid())
 
 def set_login_cookie(remove=False):
     """ We try to set a cookie as unique as possible
@@ -168,7 +170,7 @@ def set_login_cookie(remove=False):
         number, so cookies cannot be re-used 
     """
     salt = randint(1,1000)
-    cherrypy.response.cookie['login_cookie'] = base64.urlsafe_b64encode(str(salt) + cherrypy.request.remote.ip + str(os.getpid()))
+    cherrypy.response.cookie['login_cookie'] = base64.urlsafe_b64encode(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
     cherrypy.response.cookie['login_cookie']['path'] = '/'
     cherrypy.response.cookie['login_salt'] = salt
     cherrypy.response.cookie['login_salt']['path'] = '/'
@@ -183,7 +185,7 @@ def check_login_cookie():
     if 'login_cookie' not in cherrypy.request.cookie or 'login_salt' not in cherrypy.request.cookie:
         return False
 
-    return cherrypy.request.cookie['login_cookie'].value == base64.urlsafe_b64encode(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + str(os.getpid()))
+    return cherrypy.request.cookie['login_cookie'].value == base64.urlsafe_b64encode(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
 
 def check_login():
     # Not when basic-auth is one
