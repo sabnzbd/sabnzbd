@@ -1,13 +1,33 @@
+body {
+    overflow-y: scroll;
+    background-color: #E4E4E4;
+}
+
+* {
+    border-radius: 0 !important;
+}
+
+.btn, .btn:hover, .btn:active, .btn:focus {
+    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
+    background-color: white !important;
+}
+
 .logo-header {
 	padding-bottom: 10px;
 }
+
 .account-wall {
-	max-width: 300px;
+	width: 300px;
 	position: absolute;
 	top: 30%;
 	left: 50%;
   	transform: translate(-50%, -30%);
  }
+
+.form-signin .alert {
+	margin: 5px 0px;
+}
+
 
 .form-signin input {
 	margin-top: 5px
@@ -15,13 +35,22 @@
 
 .form-signin .btn {
 	width: 100%;
-	margin-top: 10px
+	margin-top: 10px;
+	font-weight: bold;
 }
 
-.form-signin .alert {
-	margin: 5px 0px;
+.btn .glyphicon {
+	margin-left: 3px;	
+	float: right;
+	font-size: 1.1em;
 }
 
-.btn:hover {
-	background-color: white;
+input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	margin-top: 2px;
+}
+
+label {
+	color: #545454;
 }

@@ -13,7 +13,6 @@
     <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico" />      
 
     <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" /> 
-    <link rel="stylesheet" type="text/css" href="../staticcfg/css/style.css?p=$pid" />
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?p=$pid" />
 </head>
 <html>
@@ -30,7 +29,13 @@
                 <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" required autofocus>
                 <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" required>
                 
-                <button class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('send') </button>
+                <button class="btn btn-default"> $T('login') <span class="glyphicon glyphicon-circle-arrow-right"></span></button>
+
+                <div class="checkbox text-center">
+                    <label>
+                        <input type="checkbox" name="remember_me" value="1"> $T('rememberme')
+                    </label>
+                  </div>
             </form>
         </div>
     </body>

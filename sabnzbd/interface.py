@@ -163,7 +163,7 @@ def encrypt_pwd(pwd):
 # Create a more unique ID for each instance
 COOKIE_SECRET = str(randint(1000,100000)*os.getpid())
 
-def set_login_cookie(remove=False):
+def set_login_cookie(remove=False, remember_me=False):
     """ We try to set a cookie as unique as possible
         to the current user. Based on it's IP and the 
         current process ID of the SAB instance and a random
@@ -174,6 +174,11 @@ def set_login_cookie(remove=False):
     cherrypy.response.cookie['login_cookie']['path'] = '/'
     cherrypy.response.cookie['login_salt'] = salt
     cherrypy.response.cookie['login_salt']['path'] = '/'
+
+    # If we want to be remembered
+    if remember_me:
+        cherrypy.response.cookie['login_cookie']['max-age'] = 3600*24*14
+        cherrypy.response.cookie['login_salt']['max-age'] = 3600*24*14
 
     # To remove
     if remove:
@@ -575,7 +580,7 @@ class LoginPage(object):
         # Check login info
         if kwargs.get('username') == cfg.username() and kwargs.get('password') == cfg.password():
             # Save login cookie
-            set_login_cookie()
+            set_login_cookie(remember_me=kwargs.get('remember_me', False))
             # Redirect
             raise dcRaiser('../', kwargs)
         elif kwargs.get('username') or kwargs.get('password'):
