@@ -83,11 +83,6 @@
         <div class="col1" <!--#if int($ncenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
-                    <label class="config wide" for="ncenter_enable">$T('opt-ncenter_enable')</label>
-                    <input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if int($ncenter_enable) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-ncenter_enable')</span>
-                </div>
-                <div class="field-pair">
                     <label class="config wide" for="ncenter_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
                     <input type="checkbox" name="ncenter_prio_startup" id="ncenter_prio_startup" value="1" <!--#if int($ncenter_prio_startup) > 0 then 'checked="checked"' else ""#--> />
                 </div>
