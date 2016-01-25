@@ -50,18 +50,18 @@ else:
                     <select name="action" id="action">
                         <optgroup label="$T('sch-action')">
                             <!--#for $action in $actions#-->
-                                <option value="$action" data-action="">$actions_lng[$action]</option>
+                                <option value="$action" data-action="" data-noarg="<!--#if $action is 'speedlimit' then 0 else 1#-->">$actions_lng[$action]</option>
                             <!--#end for#-->
                         </optgroup>
                         <optgroup label="$T('cmenu-servers')">
                             <!--#for $server in $actions_servers.keys()#-->
-                                <option value="$server" data-action="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
-                                <option value="$server" data-action="0">$T('sch-disable_server') "$actions_servers[$server]"</option>
+                                <option value="$server" data-action="1"data-noarg="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
+                                <option value="$server" data-action="0"data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
                             <!--#end for#-->
                         </optgroup>
                     </select>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair" id="hidden_arguments" style="display: none">
                     <label class="config" for="arguments">$T('sch-arguments')</label>
                     <input type="text" name="arguments" id="arguments" class="select_width" />
                 </div>
@@ -109,6 +109,12 @@ else:
     \$('#action').on('change', function() {
         // Set the action
         \$('#arguments').val((\$(this).find('option:selected').data('action')))
+        // Arguments
+        if(\$(this).find('option:selected').data('noarg')) {
+            \$('#hidden_arguments').hide()
+        } else {
+            \$('#hidden_arguments').show()
+        }
     })
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
