@@ -1493,7 +1493,7 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
-              'no_ipv6', 'keep_awake', 'empty_postproc',
+              'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
               'enable_https_verification', 'api_logging', 'fixed_ports'
@@ -1553,7 +1553,7 @@ class ConfigSpecial(object):
 
 ##############################################################################
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password', 'html_login', 'disable_api_key',
+    'host', 'port', 'username', 'password', 'disable_api_key',
     'refresh_rate', 'cache_limit', 'local_ranges', 'inet_exposure',
     'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
 )
