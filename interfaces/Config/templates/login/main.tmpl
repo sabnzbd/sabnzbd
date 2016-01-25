@@ -23,6 +23,9 @@
         <div class="account-wall">
             <div class="text-center logo-header">
                 <img src="../staticcfg/images/logo.png" alt="SABnzbd">
+                <a href="http://wiki.sabnzbd.org/faq#why-login" target="_blank">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
             </div>
             <form class="form-signin" action="./" method="post">
                 <!--#if $error#-->
@@ -32,7 +35,7 @@
                 <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" required autofocus>
                 <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" required>
                 
-                <button class="btn btn-default"> $T('login') <span class="glyphicon glyphicon-circle-arrow-right"></span></button>
+                <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
                 <div class="checkbox text-center">
                     <label>

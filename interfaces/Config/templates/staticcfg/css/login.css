@@ -22,7 +22,19 @@ body {
 	top: 30%;
 	left: 50%;
   	transform: translate(-50%, -30%);
- }
+}
+
+.text-center a {
+	position: absolute; 
+	right: 13px; 
+	top: 12px; 
+	color: #636363; 
+	font-size: 1.2em
+}
+
+.text-center a:hover {
+	color: black !important;
+}
 
 .form-signin .alert {
 	margin: 5px 0px;
@@ -42,7 +54,8 @@ body {
 .btn .glyphicon {
 	margin-left: 3px;	
 	float: right;
-	font-size: 1.1em;
+	top: 1px;
+	font-size: 1.2em;
 }
 
 input[type="checkbox"] {
@@ -52,5 +65,5 @@ input[type="checkbox"] {
 }
 
 label {
-	color: #545454;
+	color: #636363;
 }
