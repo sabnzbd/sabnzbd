@@ -14,6 +14,9 @@
 
     <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" /> 
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?p=$pid" />
+
+    <script type="text/javascript" src="../staticcfg/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../staticcfg/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <html>
 	<body>
@@ -38,5 +41,16 @@
                   </div>
             </form>
         </div>
+        <script type="text/javascript">
+            // Try-catch in case somebody disabled localstorage
+            try {
+                // Set what was done previously
+                \$('input[type="checkbox"]').prop('checked', localStorage.getItem("remember_me") === 'true')
+                // Store if we change something
+                \$('input[type="checkbox"]').on('change', function() {
+                    localStorage.setItem("remember_me", \$(this).is(':checked'));
+                })
+            } catch(err) { }
+        </script>
     </body>
  </html>
