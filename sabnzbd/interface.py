@@ -350,7 +350,9 @@ class MainPage(object):
             info['cat_list'] = list_cats(True)
             info['have_rss_defined'] = bool(config.get_rss())
             info['have_watched_dir'] = bool(cfg.dirscan_dir())
-            info['have_logout'] = cfg.html_login() and cfg.username() and cfg.password()
+            
+            # Have logout only with HTML and if inet=5, only when we are external
+            info['have_logout'] = cfg.username() and cfg.password() and (cfg.html_login() and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6))))
 
             bytespersec_list = BPSMeter.do.get_bps_list()
             info['bytespersec_list'] = ','.join(bytespersec_list)
