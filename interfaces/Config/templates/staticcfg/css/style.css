@@ -222,8 +222,12 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .padding {
     padding: 6px;
 }
-.disabled {
-    color: #aaa;
+.disabled,
+.disabled input,
+.disabled .clearBtn,
+.disabled .show_qrcode,
+.disabled .generate_key {
+    color: #aaa !important;
 }
 .padTable p {
     margin-top: 0;
