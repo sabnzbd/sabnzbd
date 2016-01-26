@@ -26,7 +26,7 @@ import logging
 import urllib
 import json
 import re
-import base64
+import hashlib
 from random import randint
 from xml.sax.saxutils import escape
 
@@ -170,7 +170,7 @@ def set_login_cookie(remove=False, remember_me=False):
         number, so cookies cannot be re-used 
     """
     salt = randint(1,1000)
-    cherrypy.response.cookie['login_cookie'] = base64.urlsafe_b64encode(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
     cherrypy.response.cookie['login_cookie']['path'] = '/'
     cherrypy.response.cookie['login_salt'] = salt
     cherrypy.response.cookie['login_salt']['path'] = '/'
@@ -190,7 +190,7 @@ def check_login_cookie():
     if 'login_cookie' not in cherrypy.request.cookie or 'login_salt' not in cherrypy.request.cookie:
         return False
 
-    return cherrypy.request.cookie['login_cookie'].value == base64.urlsafe_b64encode(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
 
 def check_login():
     # Not when no authentication required or basic-auth is on
