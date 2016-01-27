@@ -335,20 +335,6 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .Key tr {
     border-bottom: 1px solid #ccc;
 }
-#infoTable {
-    font-size: 12px;
-    width: 100%}
-#infoTable tr {
-    line-height: 17px;
-}
-.infoTableHeader, .infoTableCell {
-    padding: 6px;
-    word-break: break-all;
-}
-.infoTableHeader {
-    font-weight: 700;
-    width: 160px;
-}
 .infoTableSeperator {
     border-top: 1px solid #ddd;
 }
@@ -1083,4 +1069,150 @@ input[type="checkbox"] {
         padding-right: 5px;
     }
 }
-
+/* config - default page */
+table.no-padding {
+  margin-bottom: 0;
+}
+/* Panels */
+.hpanel > .panel-heading {
+  color: inherit;
+  font-weight: 600;
+  padding: 10px 4px;
+  transition: all .3s;
+  border: 1px solid transparent;
+}
+.hpanel .hbuilt.panel-heading {
+  border-bottom: none;
+}
+.hpanel > .panel-footer,
+.hpanel > .panel-section {
+  color: inherit;
+  border: 1px solid #e4e5e7;
+  border-top: none;
+  font-size: 90%;
+  background: #f7f9fa;
+  padding: 10px 15px;
+}
+.hpanel.panel-collapse > .panel-heading,
+.hpanel .hbuilt {
+  background: #fff;
+  border-color: #e4e5e7;
+  border: 1px solid #e4e5e7;
+  padding: 10px 10px;
+  border-radius: 2px;
+}
+.hpanel .panel-body {
+  background: #fff;
+  border: 1px solid #e4e5e7;
+  border-radius: 2px;
+  padding: 20px;
+  position: relative;
+}
+.hpanel.panel-group .panel-body:first-child {
+  border-top: 1px solid #e4e5e7;
+}
+.hpanel.panel-group .panel-body {
+  border-top: none;
+}
+.panel-collapse .panel-body {
+  border: none;
+}
+.hpanel {
+  background-color: none;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 25px;
+}
+.panel-tools {
+  display: inline-block;
+  float: right;
+  margin-top: 0;
+  padding: 0;
+  position: relative;
+}
+.hpanel .alert {
+  margin-bottom: 0;
+  border-radius: 0;
+  border: 1px solid #e4e5e7;
+  border-bottom: none;
+}
+.panel-tools a {
+  margin-left: 5px;
+  color: #9d9fa2;
+  cursor: pointer;
+}
+.hpanel.hgreen .panel-body {
+  border-top: 2px solid #62cb31;
+}
+.hpanel.hblue .panel-body {
+  border-top: 2px solid #3498db;
+}
+.hpanel.hyellow .panel-body {
+  border-top: 2px solid #ffb606;
+}
+.hpanel.hviolet .panel-body {
+  border-top: 2px solid #9b59b6;
+}
+.hpanel.horange .panel-body {
+  border-top: 2px solid #e67e22;
+}
+.hpanel.hred .panel-body {
+  border-top: 2px solid #e74c3c;
+}
+.hpanel.hreddeep .panel-body {
+  border-top: 2px solid #c0392b;
+}
+.hpanel.hnavyblue .panel-body {
+  border-top: 2px solid #34495e;
+}
+.panel-group .panel-heading {
+  background-color: #f7f9fa;
+}
+.panel-body h5,
+.panel-body h4 {
+  font-weight: 600;
+}
+/* panel collapsed */
+.hpanel.collapsed .panel-body,
+.hpanel.collapsed .panel-footer {
+  display: none;
+}
+.hpanel.collapsed .fa.fa-chevron-up:before {
+  content: "\f078";
+}
+.hpanel.collapsed .fa.fa-chevron-down:before {
+  content: "\f077";
+}
+.hpanel.collapsed.panel-collapse .panel-body {
+  border-width: 0 1px 1px 1px;
+  border-color: #e4e5e7;
+  border-style: solid;
+}
+.hpanel.collapsed .hbuilt.panel-heading {
+  border-bottom: 1px solid #e4e5e7;
+}
+/* panel fullscreen */
+body.fullscreen-panel-mode {
+    overflow-y: hidden;
+}
+.hpanel.fullscreen {
+    z-index: 2030;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    margin-bottom: 0;
+}
+.hpanel.fullscreen .showhide {
+    display: none;
+}
+.hpanel.fullscreen .panel-body {
+    min-height: calc(100% - 77px);
+}
+/* panel fixes */
+.panel-tools a:hover, .panel-tools a:focus {
+    color: #34495e;
+    text-decoration: none;
+}

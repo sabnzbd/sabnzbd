@@ -341,12 +341,12 @@ $(document).ready(function () {
             return message;
         }
     }
-    
+
     // Fix for touch devices needing double click on the menu
     $('.navbar-nav li a').on('touchstart', function(e) {
         $(this).click()
     })
-    
+
     // Add hover to checkboxes (can't do it with CSS)
     $('input[type="checkbox"]').siblings('label').addClass('config-hover')
     $('input[type="checkbox"]').parents('label').addClass('config-hover')
@@ -364,6 +364,47 @@ $(document).ready(function () {
     if($(checkEnabled).is(':checked')) {
         $(checkEnabled).parent().nextAll().addClass('disabled')
     }
+
+    // Function for collapse hpanel
+    $('.showhide').click(function (event) {
+        event.preventDefault();
+        var hpanel = $(this).closest('div.hpanel');
+        var icon = $(this).find('i:first');
+        var body = hpanel.find('div.panel-body');
+        var footer = hpanel.find('div.panel-footer');
+        body.slideToggle(300);
+        footer.slideToggle(200);
+
+        // toggle icon from up to down
+        icon.toggleClass('glyphicon-chevron-up').toggleClass('glyphicon-chevron-down');
+        hpanel.toggleClass('').toggleClass('panel-collapse');
+        setTimeout(function () {
+            hpanel.resize();
+        }, 50);
+    });
+
+    // Function for close hpanel
+    $('.closebox').click(function (event) {
+        event.preventDefault();
+        var hpanel = $(this).closest('div.hpanel');
+        hpanel.remove();
+    });
+
+    // Function for fullscreen hpanel
+    $('.fullscreen').click(function() {
+        var hpanel = $(this).closest('div.hpanel');
+        var icon = $(this).find('i:first');
+        if( hpanel.hasClass('panel-collapse') ) {
+            return;
+        }
+        $('body').toggleClass('fullscreen-panel-mode');
+        icon.toggleClass('glyphicon-resize-full').toggleClass('glyphicon-resize-small');
+        hpanel.toggleClass('fullscreen');
+        setTimeout(function() {
+            $(window).trigger('resize');
+        }, 100);
+    });
+
 });
 
 /*
