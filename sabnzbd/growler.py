@@ -390,7 +390,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
         prio = sabnzbd.cfg.prowl_prio_complete()
     if gtype == 'failed':
         prio = sabnzbd.cfg.prowl_prio_failed()
-    if gtype == 'disk-full':
+    if gtype == 'disk_full':
         prio = sabnzbd.cfg.prowl_prio_disk_full()
     if gtype == 'warning':
         prio = sabnzbd.cfg.prowl_prio_warning()
@@ -443,7 +443,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         prio = sabnzbd.cfg.pushover_prio_complete()
     if gtype == 'failed':
         prio = sabnzbd.cfg.pushover_prio_failed()
-    if gtype == 'disk-full':
+    if gtype == 'disk_full':
         prio = sabnzbd.cfg.pushover_prio_disk_full()
     if gtype == 'warning':
         prio = sabnzbd.cfg.pushover_prio_warning()
