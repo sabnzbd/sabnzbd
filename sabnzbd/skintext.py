@@ -152,6 +152,7 @@ SKIN_TEXT = {
     'menu-wiki' : TT('Wiki'), #: Main menu item
     'menu-forums' : TT('Forum'), #: Main menu item
     'menu-irc' : TT('IRC'), #: Main menu item
+    'menu-issues' : TT('Issues'), #: Main menu item
     'cmenu-general' : TT('General'), #: Main menu item
     'cmenu-folders' : TT('Folders'), #: Main menu item
     'cmenu-switches' : TT('Switches'), #: Main menu item
@@ -274,7 +275,7 @@ SKIN_TEXT = {
     'warning' : TT('Warning'), #: Status page, table column header, actual message
     'warnings' : TT('Warnings'), #: Footer: indicator of warnings
     'enabled' : TT('Enabled'), #: Status page, indicator that server is enabled
-    
+
 # Dashboard
     'dashboard-title' : TT('Dashboard'),
     'dashboard-connectionError' : TT('Connection failed!'),
@@ -814,7 +815,7 @@ SKIN_TEXT = {
     'Glitter-custom' : TT('Custom'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
-    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'), 
+    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
