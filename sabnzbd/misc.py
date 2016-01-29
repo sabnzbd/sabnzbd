@@ -1307,6 +1307,9 @@ def get_base_url(url):
     url_host = urlparse(url).hostname
     if url_host:
         url_split = url_host.split(".")
+        # Exception for localhost and IPv6 addresses
+        if len(url_split) < 3:
+            return url_host
         return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
     else:
         return ''
