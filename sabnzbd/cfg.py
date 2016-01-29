@@ -210,6 +210,7 @@ else:
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
+html_login = OptionBool('misc', 'html_login', True)
 login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
 bandwidth_perc = OptionNumber('misc', 'bandwidth_perc', 0, 0, 100)
 bandwidth_max = OptionStr('misc', 'bandwidth_max')
@@ -253,7 +254,7 @@ nzb_key = OptionStr('misc', 'nzb_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False, protect=True)
 api_warnings = OptionBool('misc', 'api_warnings', True, protect=True)
 local_ranges = OptionList('misc', 'local_ranges', protect=True)
-inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True)  # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui
+inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True)  # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)

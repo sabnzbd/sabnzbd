@@ -26,6 +26,7 @@
           <li class="main_sprite_container sprite_q_queue">
             <a class="sf-with-ul">$T('menu-queue')</a>
             <ul>
+              <!--#if $have_logout#--><li><a href="login?logout=1">$T('logout')</a></li><!--#end if#-->
               <!--#if $have_quota#--><li><a id="reset_quota_now" class="pointer">$T('link-resetQuota')</a></li><!--#end if#-->
               <!--#if $have_rss_defined#--><li><a id="get_rss_now" class="pointer">$T('button-rssNow')</a></li><!--#end if#-->
               <!--#if $have_watched_dir#--><li><a id="get_watched_now" class="pointer">$T('sch-scan_folder')</a></li><!--#end if#-->

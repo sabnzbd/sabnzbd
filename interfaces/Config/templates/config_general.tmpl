@@ -24,16 +24,6 @@
                     <span class="desc">$T('explain-port')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="username">$T('opt-web_username')</label>
-                    <input type="text" name="username" id="username" value="$username" />
-                    <span class="desc">$T('explain-web_username')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="password">$T('opt-web_password')</label>
-                    <input type="text" name="password" id="password" value="$password" />
-                    <span class="desc">$T('explain-web_password')</span>
-                </div>
-                <div class="field-pair">
                     <label class="config" for="web_dir">$T('opt-web_dir')</label>
                         <select name="web_dir" id="web_dir">
                         <!--#for $webline in $web_list#-->
@@ -74,10 +64,15 @@
                     <span class="desc">$T('explain-language')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
-                    <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" />
-                    <span class="desc">$T('explain-local_ranges')</span>
+                    <label class="config" for="username">$T('opt-web_username')</label>
+                    <input type="text" name="username" id="username" value="$username" />
+                    <span class="desc">$T('explain-web_username')</span>
                 </div>
+                <div class="field-pair">
+                    <label class="config" for="password">$T('opt-web_password')</label>
+                    <input type="text" name="password" id="password" value="$password" />
+                    <span class="desc">$T('explain-web_password')</span>
+                </div>  
                 <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
@@ -86,8 +81,14 @@
                             <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
                             <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
                             <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
+                            <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
                         </select>
                     <span class="desc">$T('explain-inet_exposure')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
+                    <input type="text" name="local_ranges" id="local_ranges" value="$local_ranges" />
+                    <span class="desc">$T('explain-local_ranges')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>

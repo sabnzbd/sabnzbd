@@ -26,6 +26,8 @@ import logging
 import urllib
 import json
 import re
+import hashlib
+from random import randint
 from xml.sax.saxutils import escape
 
 from sabnzbd.utils.rsslib import RSS, Item
@@ -90,7 +92,7 @@ def check_server(host, port, ajax):
 
 def check_access(access_type=4):
     """ Check if external address is allowed given `access_type`
-        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui
+        `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
     range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if referrer.startswith(r)])
@@ -155,14 +157,56 @@ def get_users():
     users[cfg.username()] = cfg.password()
     return users
 
-
 def encrypt_pwd(pwd):
     return pwd
 
+# Create a more unique ID for each instance
+COOKIE_SECRET = str(randint(1000,100000)*os.getpid())
+
+def set_login_cookie(remove=False, remember_me=False):
+    """ We try to set a cookie as unique as possible
+        to the current user. Based on it's IP and the 
+        current process ID of the SAB instance and a random
+        number, so cookies cannot be re-used 
+    """
+    salt = randint(1,1000)
+    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+    cherrypy.response.cookie['login_cookie']['path'] = '/'
+    cherrypy.response.cookie['login_salt'] = salt
+    cherrypy.response.cookie['login_salt']['path'] = '/'
+
+    # If we want to be remembered
+    if remember_me:
+        cherrypy.response.cookie['login_cookie']['max-age'] = 3600*24*14
+        cherrypy.response.cookie['login_salt']['max-age'] = 3600*24*14
+
+    # To remove
+    if remove:
+        cherrypy.response.cookie['login_cookie']['expires'] = 0
+        cherrypy.response.cookie['login_salt']['expires'] = 0
+
+def check_login_cookie():
+    # Do we have everything?
+    if 'login_cookie' not in cherrypy.request.cookie or 'login_salt' not in cherrypy.request.cookie:
+        return False
+
+    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+
+def check_login():
+    # Not when no authentication required or basic-auth is on
+    if not cfg.html_login() or not cfg.username() or not cfg.password():
+        return True
+
+    # If we show login for external IP, by using access_type=6 we can check if IP match
+    if cfg.inet_exposure() == 5 and check_access(access_type=6):
+        return True
+
+    # Check the cookie
+    return check_login_cookie()
 
 def set_auth(conf):
     """ Set the authentication for CherryPy """
-    if cfg.username() and cfg.password():
+    if cfg.username() and cfg.password() and not cfg.html_login():
         conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': cfg.login_realm(),
                      'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
         conf.update({'/api': {'tools.basic_auth.on': False},
@@ -261,12 +305,15 @@ class MainPage(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
+
         if first >= 1 and web_dir2:
             # Setup addresses for secondary skin
             self.m = MainPage(web_dir2, root2, web_dirc=web_dirc, prim=False)
         if first == 2:
             # Setup addresses with /sabnzbd prefix for primary and secondary skin
             self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', web_dirc=web_dirc, prim=True, first=1)
+        
+        self.login = LoginPage(web_dirc, root + 'login/', prim)
         self.queue = QueuePage(web_dir, root + 'queue/', prim)
         self.history = HistoryPage(web_dir, root + 'history/', prim)
         self.status = Status(web_dir, root + 'status/', prim)
@@ -278,6 +325,9 @@ class MainPage(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
+
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         if sabnzbd.OLD_QUEUE and not cfg.warned_old_queue():
             cfg.warned_old_queue.set(True)
@@ -300,6 +350,9 @@ class MainPage(object):
             info['cat_list'] = list_cats(True)
             info['have_rss_defined'] = bool(config.get_rss())
             info['have_watched_dir'] = bool(cfg.dirscan_dir())
+            
+            # Have logout only with HTML and if inet=5, only when we are external
+            info['have_logout'] = cfg.username() and cfg.password() and (cfg.html_login() and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6))))
 
             bytespersec_list = BPSMeter.do.get_bps_list()
             info['bytespersec_list'] = ','.join(bytespersec_list)
@@ -323,7 +376,7 @@ class MainPage(object):
                 queue = build_queue(limit=cfg.queue_limit())[0]
                 queue['categories'] = info.pop('cat_list')
                 queue['scripts'] = info.pop('script_list')
-                
+
                 # History
                 history = {};
                 grand, month, week, day = BPSMeter.do.get_sums()
@@ -502,6 +555,44 @@ class MainPage(object):
         cherrypy.response.headers['Content-Type'] = 'text/plain'
         return 'User-agent: *\nDisallow: /\n'
 
+##############################################################################
+class LoginPage(object):
+
+    def __init__(self, web_dir, root, prim):
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__verbose = False
+        self.__prim = prim
+
+    @cherrypy.expose
+    def index(self, **kwargs):
+        # Base output var
+        info, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        info['error'] = ''
+
+        # Logout?
+        if kwargs.get('logout'):
+            set_login_cookie(remove=True)
+            raise dcRaiser('.', kwargs)
+
+        # Check if there's even a username/password set
+        if check_login():
+            raise dcRaiser('../', kwargs)
+
+        # Check login info
+        if kwargs.get('username') == cfg.username() and kwargs.get('password') == cfg.password():
+            # Save login cookie
+            set_login_cookie(remember_me=kwargs.get('remember_me', False))
+            # Redirect
+            raise dcRaiser('../', kwargs)
+        elif kwargs.get('username') or kwargs.get('password'):
+            info['error'] = T('Authentication failed, check username/password.')
+        
+        # Show login
+        template = Template(file=os.path.join(self.__web_dir, 'login', 'main.tmpl'),
+                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+
 
 ##############################################################################
 class NzoPage(object):
@@ -523,6 +614,9 @@ class NzoPage(object):
         # /nzb/SABnzbd_nzo_xxxxx/save
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
+
         nzo_id = None
         for a in args:
             if a.startswith('SABnzbd_nzo'):
@@ -714,6 +808,9 @@ class QueuePage(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
+
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
@@ -956,6 +1053,9 @@ class HistoryPage(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
+
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         search = kwargs.get('search')
@@ -1167,6 +1267,8 @@ class ConfigPage(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
@@ -1264,6 +1366,8 @@ class ConfigFolders(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -1337,6 +1441,8 @@ class ConfigSwitches(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -1389,7 +1495,7 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
-              'no_ipv6', 'keep_awake', 'empty_postproc',
+              'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
               'enable_https_verification', 'api_logging', 'fixed_ports'
@@ -1415,6 +1521,8 @@ class ConfigSpecial(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -1486,6 +1594,8 @@ class ConfigGeneral(object):
 
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -1539,6 +1649,7 @@ class ConfigGeneral(object):
         conf['enable_https'] = cfg.enable_https()
         conf['username'] = cfg.username()
         conf['password'] = cfg.password.get_stars()
+        conf['html_login'] = cfg.html_login()
         conf['bandwidth_max'] = cfg.bandwidth_max()
         conf['bandwidth_perc'] = cfg.bandwidth_perc()
         conf['refresh_rate'] = cfg.refresh_rate()
@@ -1671,6 +1782,8 @@ class ConfigServer(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -1839,6 +1952,8 @@ class ConfigRss(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -2162,6 +2277,8 @@ class ConfigScheduling(object):
 
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -2311,6 +2428,8 @@ class ConfigCats(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
@@ -2386,6 +2505,8 @@ class ConfigSorting(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
@@ -2440,6 +2561,9 @@ class Status(object):
     def index(self, **kwargs):
         if not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
+
         header, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 
         # anything in header[] will be known to the python templates
@@ -2671,6 +2795,8 @@ class Status(object):
 def Protected():
     return badParameterResponse("Configuration is locked")
 
+def NeedLogin(url, kwargs):
+    raise dcRaiser(url + 'login/', kwargs)
 
 def badParameterResponse(msg, ajax=None):
     """ Return a html page with error message and a 'back' button """
@@ -2799,6 +2925,8 @@ class ConfigNotify(object):
     def index(self, **kwargs):
         if cfg.configlock() or not check_access():
             return Protected()
+        if not check_login():
+            raise NeedLogin(self.__root, kwargs)
 
         conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
 

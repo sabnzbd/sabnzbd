@@ -131,6 +131,9 @@ SKIN_TEXT = {
     'audio' : TT('Audio'),
     'notUsed' : TT('Not used'),
     'orLess' : TT('or less'),
+    'login' : TT('Log in'),
+    'logout' : TT('Log out'),
+    'rememberme' : TT('Remember me'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -360,6 +363,7 @@ SKIN_TEXT = {
     'inet-api' : TT('API (no Config)'), # Selection value for external access
     'inet-fullapi' : TT('Full API'), # Selection value for external access
     'inet-ui' : TT('Full Web interface'), # Selection value for external access
+    'inet-external_login' : TT('Only external access requires login'), # Selection value for external access
 
 # Config->Folders
     'explain-folderConfig' : TT('<em>NOTE:</em> Folders will be created automatically when Saving. You may use absolute paths to save outside of the default folders.'),
