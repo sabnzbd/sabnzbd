@@ -3,21 +3,37 @@
 import time
 import os
 import sys
+import logging
 
 
 def writetofile(filename, mysizeMB):
     # writes string to specified file repeat delay, until mysizeMB is reached. Then deletes file
     mystring = "The quick brown fox jumps over the lazy dog"
     writeloops = int(1000000 * mysizeMB / len(mystring))
+    if os.name == 'nt':
+        # On Windows, this crazy action is needed to
+        # avoid a "permission denied" error
+        try:
+            os.system('echo Hi >%s' % filename)
+        except:
+            pass
     try:
-        f = open(filename, 'w')
+        f = open(filename, 'wb')
     except:
-        # no better idea than:
-        raise
+        logging.debug('Cannot create file %s', filename)
+        logging.debug("Traceback: ", exc_info=True)
+        return False
+
     for x in range(0, writeloops):
-        f.write(mystring)
+        try:
+            f.write(mystring)
+        except:
+            logging.debug('Cannot write to file %s', filename)
+            logging.debug("Traceback: ", exc_info=True)
+            return False
     f.close()
     os.remove(filename)
+    return True
 
 
 def diskspeedmeasure(dirname):
@@ -29,10 +45,8 @@ def diskspeedmeasure(dirname):
     start = time.time()
     loopcounter = 0
     while True:
-        try:
-            writetofile(filename, filesize)
-        except:
-            return None
+        if not writetofile(filename, filesize):
+            return 0
         loopcounter += 1
         diff = time.time() - start
         if diff > maxtime:
