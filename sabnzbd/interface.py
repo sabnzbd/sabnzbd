@@ -2773,17 +2773,11 @@ class Status(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        try:
-            logging.debug('Dashboard: Refresh button pressed')
 
-            from sabnzbd.utils.diskspeed import diskspeedmeasure
-            sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
-            sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        from sabnzbd.utils.diskspeed import diskspeedmeasure
+        sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
-            logging.debug('Dashboard: Refresh finished succesfully')
-
-        except:
-            logging.debug('Dashboard: Refresh had a problem')
         raise dcRaiser(self.__root, kwargs)  # Refresh screen
 
 
