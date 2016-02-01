@@ -13,7 +13,7 @@ There is an extensive Wiki on the use of SABnzbd.
 http://wiki.sabnzbd.org/
 
 IMPORTANT INFORMATION about release 0.8.0:
-http://wiki.sabnzbd.org/introducing-0-8-0
+http://wiki.sabnzbd.org/introducing-1-0-0
 
 
 Please also read the file "ISSUES.txt"
