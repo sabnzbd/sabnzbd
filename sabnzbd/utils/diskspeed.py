@@ -5,25 +5,25 @@ import os
 import sys
 import logging
 
+_DUMP_DATA = '*' * 10000
 
 def writetofile(filename, mysizeMB):
-    # writes string to specified file repeat delay, until mysizeMB is reached. Then deletes file
-    mystring = "The quick brown fox jumps over the lazy dog"
-    writeloops = int(1000000 * mysizeMB / len(mystring))
+    # writes string to specified file repeat delay, until mysizeMB is reached.
+    writeloops = int(1024 * 1024 * mysizeMB / len(_DUMP_DATA))
     try:
-        f = open(filename, 'wb')
+        f = open(filename, 'w')
     except:
         logging.debug('Cannot create file %s', filename)
         logging.debug("Traceback: ", exc_info=True)
         return False
 
-    for x in range(0, writeloops):
-        try:
-            f.write(mystring)
-        except:
-            logging.debug('Cannot write to file %s', filename)
-            logging.debug("Traceback: ", exc_info=True)
-            return False
+    try:
+        for x in xrange(writeloops):
+            f.write(_DUMP_DATA)
+    except:
+        logging.debug('Cannot write to file %s', filename)
+        logging.debug("Traceback: ", exc_info=True)
+        return False
     f.close()
     return True
 
@@ -31,7 +31,7 @@ def writetofile(filename, mysizeMB):
 def diskspeedmeasure(dirname):
     # returns writing speed to dirname in MB/s
     # method: keep writing a file, until 0.5 seconds is passed. Then divide bytes written by time passed
-    filesize = 1  # MB
+    filesize = 10  # MB
     maxtime = 0.5  # sec
     filename = os.path.join(dirname, 'outputTESTING.txt')
 

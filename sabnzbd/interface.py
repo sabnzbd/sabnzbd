@@ -2776,6 +2776,7 @@ class Status(object):
 
         from sabnzbd.utils.diskspeed import diskspeedmeasure
         sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        time.sleep(1.0)
         sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         raise dcRaiser(self.__root, kwargs)  # Refresh screen
