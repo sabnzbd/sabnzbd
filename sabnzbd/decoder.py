@@ -37,7 +37,7 @@ from sabnzbd.constants import MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import name_fixer
+from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
 
@@ -245,7 +245,7 @@ def decode(article, data):
             try:
                 for i in xrange(min(40, len(data))):
                     if data[i].startswith('begin '):
-                        nzf.filename = name_fixer(data[i].split(None, 2)[2])
+                        nzf.filename = yenc_name_fixer(data[i].split(None, 2)[2])
                         nzf.type = 'uu'
                         found = True
                         break
@@ -267,7 +267,7 @@ def decode(article, data):
         # Deal with yenc encoded posts
         elif (ybegin and yend):
             if 'name' in ybegin:
-                nzf.filename = name_fixer(ybegin['name'])
+                nzf.filename = yenc_name_fixer(ybegin['name'])
             else:
                 logging.debug("Possible corrupt header detected => ybegin: %s", ybegin)
             nzf.type = 'yenc'
