@@ -78,7 +78,7 @@ Release Notes  -  SABnzbd 0.8.0Beta4
 
 
 ### IMPORTANT INFORMATION about release 0.8.0
-<http://wiki.sabnzbd.org/introducing-0-8-0>
+<http://wiki.sabnzbd.org/introducing-1-0-0>
 
 ### Known problems and solutions
 - Read the file "ISSUES.txt"
