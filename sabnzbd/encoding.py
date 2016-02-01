@@ -71,17 +71,27 @@ def platform_encode(p):
 
 
 def name_fixer(p):
-    """ Return Unicode name of 8bit ASCII string, first try UTF-8, then cp1252 """
+    """ Return Unicode name of 8bit ASCII string, first try UTF-8, then codepage, then cp1252 """
     if isinstance(p, unicode):
         return p
     elif isinstance(p, str):
         try:
             return p.decode('utf-8')
         except:
-            return p.decode(codepage)
+            try:
+                return p.decode(codepage)
+            except:
+                return p.decode('cp1252', 'ignore')
     else:
         return p
 
+def yenc_name_fixer(p):
+    """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
+    try:
+        return p.decode('utf-8')
+    except:
+        return p.decode('cp1252')
+    
 
 def is_utf8(p):
     """ Return True when p is UTF-8 or plain ASCII """
@@ -251,7 +261,7 @@ def TRANS(p):
     if sabnzbd.WIN32:
         return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
     else:
-        return p
+        return unicoder(p)
 
 
 def UNTRANS(p):

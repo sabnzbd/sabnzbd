@@ -476,7 +476,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 try:
                     os.remove(rar)
                 except OSError:
-                    logging.warning(T('Deleting %s failed!'), rar)
+                    if os.path.exists(rar):
+                        logging.warning(T('Deleting %s failed!'), rar)
 
                 brokenrar = '%s.1' % rar
 
@@ -485,7 +486,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                     try:
                         os.remove(brokenrar)
                     except OSError:
-                        logging.warning(T('Deleting %s failed!'), brokenrar)
+                        if os.path.exists(brokenrar):
+                            logging.warning(T('Deleting %s failed!'), brokenrar)
 
     return fail, extracted_files
 
@@ -614,6 +616,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     rarfiles = []
     fail = 0
     inrecovery = False
+    lines = []
 
     while 1:
         line = proc.readline()
@@ -621,6 +624,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             break
 
         line = line.strip()
+        lines.append(line)
 
         if line.startswith('Extracting from'):
             filename = TRANS((re.search(EXTRACTFROM_RE, line).group(1)))
@@ -757,6 +761,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         else:
             logging.info('Skipping unrar file check due to unreliable file names or old unrar')
 
+    logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
     msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
