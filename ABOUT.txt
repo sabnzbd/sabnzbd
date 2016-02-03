@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 0.8.0               ***
+*** This is SABnzbd 1.0.0               ***
 *******************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -12,7 +12,7 @@ and offers a complete API for third-party applications to hook into.
 There is an extensive Wiki on the use of SABnzbd.
 http://wiki.sabnzbd.org/
 
-IMPORTANT INFORMATION about release 0.8.0:
+IMPORTANT INFORMATION about release 1.0.0:
 http://wiki.sabnzbd.org/introducing-1-0-0
 
 
@@ -37,6 +37,6 @@ Install new version
 Start SABnzbd.
 
 The organization of the download queue is different from 0.7.x (and older).
-0.8.0 will not finish downloading an existing queue.
+1.0.0 will not finish downloading an existing queue.
 Also, your sabnzbd.ini file will be upgraded, making it
 incompatible with older releases.
