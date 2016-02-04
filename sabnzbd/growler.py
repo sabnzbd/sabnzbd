@@ -123,7 +123,7 @@ def send_notification(title, msg, gtype):
     if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
-            
+
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
         if check_classes(gtype, 'acenter'):
@@ -491,32 +491,8 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = 0
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.pushbullet_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.pushbullet_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.pushbullet_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.pushbullet_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.pushbullet_prio_failed()
-    if gtype == 'disk-full':
-        prio = sabnzbd.cfg.pushbullet_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.pushbullet_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.pushbullet_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.pushbullet_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.pushbullet_prio_other()
-    if force:
-        prio = 1
-
-    if prio > 0:
+    if force or check_classes(gtype, 'nscript'):
         try:
             conn = httplib.HTTPSConnection('api.pushbullet.com:443')
             conn.request('POST', '/v2/pushes',
