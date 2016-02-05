@@ -812,6 +812,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-grabbing' : TT('Grabbing NZB...'),
     'Glitter-updateAvailable' : TT('Update Available!'),
+    'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
     'Glitter-custom' : TT('Custom'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),

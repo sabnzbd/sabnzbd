@@ -2,9 +2,6 @@
     <h2>$T('menu-queue')</h2>
 
     <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
-        <div class="info-container-box" id="localstorage-error">
-            <span class="queue-error-info"></span>
-        </div>
         <!-- ko if: hasWarnings()  -->
         <div class="info-container-box">
             <a href="#queue-messages" class="queue-error-info">
