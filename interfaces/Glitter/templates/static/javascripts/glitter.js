@@ -11,8 +11,9 @@ var fadeOnDeleteDuration = 400; // ms after deleting a row
 var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 
 // To avoid problems when localStorage is disabled
-function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) {  $('#localstorage-error span').text('Cannot store settings locally'); } }
-function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  $('#localstorage-error span').text('Cannot store settings locally'); } }
+var hasLocalStorage = true;
+function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) { hasLocalStorage = false; } }
+function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  hasLocalStorage = false; } }
 
 /**
     GLITTER CODE
@@ -938,6 +939,17 @@ $(function() {
                 })
             }
         })
+        
+        // Message about localStorage not being enabled every 20 days
+        if(hasLocalStorage && localStorageGetItem('LocalStorageMsg')*1+(1000*3600*24*20) < Date.now()) {
+            self.allMessages.push({
+                index: 'LocalStorageMsg',
+                type: 'WARNING',
+                text: glitterTranslate.noLocalStorage,
+                css: 'warning',
+                clear: function() { self.clearMessages('LocalStorageMsg')}
+            });
+        }
         
         /***
             Date-stuff
