@@ -927,7 +927,7 @@ $(function() {
                     self.allMessages.push({
                         index: 'OrphanedMsg',
                         type: glitterTranslate.status['INFO'],
-                        text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal-options]\').click().parent().click(); $(\'a[href=#options-orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
+                        text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="showOrphans()"><span class="glyphicon glyphicon-wrench"></span></a>',
                         css: 'info',
                         clear: function() { self.clearMessages('OrphanedMsg')}
                     });
@@ -941,7 +941,7 @@ $(function() {
         })
         
         // Message about localStorage not being enabled every 20 days
-        if(hasLocalStorage && localStorageGetItem('LocalStorageMsg')*1+(1000*3600*24*20) < Date.now()) {
+        if(!hasLocalStorage && localStorageGetItem('LocalStorageMsg')*1+(1000*3600*24*20) < Date.now()) {
             self.allMessages.push({
                 index: 'LocalStorageMsg',
                 type: glitterTranslate.status['WARNING'].replace(':', ''),
@@ -2721,4 +2721,10 @@ function hideCompletedFiles() {
         // Set storage
         localStorageSetItem('showCompletedFiles', 'Yes')
     }
+}
+
+// Show status modal and switch to orphaned jobs tab
+function showOrphans() {
+    $('a[href="#modal-options"]').click().parent().click(); 
+    $('a[href="#options-orphans"]').click()
 }

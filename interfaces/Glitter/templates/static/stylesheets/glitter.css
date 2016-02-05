@@ -810,7 +810,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .table-messages .queue-message-text {
-    word-break: break-all;
+    word-wrap: break-word;
 }
 
 .table-messages .queue-update-sab {
