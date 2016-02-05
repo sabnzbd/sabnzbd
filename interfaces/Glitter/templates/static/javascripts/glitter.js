@@ -594,11 +594,10 @@ $(function() {
             });
         })
 
-        // Clear warnings through this weird URL..
+        // Clear warnings through this special URL..
         self.clearWarnings = function() {
-            if(!self.confirmDeleteQueue() || confirm(glitterTranslate.clearWarn))
-                // Activate
-                callSpecialAPI("./status/clearwarnings").done(self.refresh)
+            // Activate
+            callSpecialAPI("./status/clearwarnings").done(self.refresh)
         }
         
         // Clear messages
