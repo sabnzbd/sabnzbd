@@ -890,7 +890,7 @@ $(function() {
             if(newRelease) {
                 self.allMessages.push({
                     index: 'UpdateMsg',
-                    type: 'INFO',
+                    type: glitterTranslate.status['INFO'],
                     text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
                     css: 'info'
                 });
@@ -900,7 +900,7 @@ $(function() {
             if(!response.config.misc.cache_limit && localStorageGetItem('CacheMsg')*1+(1000*3600*24*5) < Date.now()) {
                 self.allMessages.push({
                     index: 'CacheMsg',
-                    type: 'INFO',
+                    type: glitterTranslate.status['INFO'],
                     text: ('<a href="./config/general/#cache_limit">'+glitterTranslate.useCache.replace(/<br \/>/g, " ")+' <span class="glyphicon glyphicon-cog"></span></a>'),
                     css: 'info',
                     clear: function() { self.clearMessages('CacheMsg')}
@@ -926,7 +926,7 @@ $(function() {
                 if(!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
                     self.allMessages.push({
                         index: 'OrphanedMsg',
-                        type: 'INFO',
+                        type: glitterTranslate.status['INFO'],
                         text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="$(\'a[href=#modal-options]\').click().parent().click(); $(\'a[href=#options-orphans]\').click()"><span class="glyphicon glyphicon-wrench"></span></a>',
                         css: 'info',
                         clear: function() { self.clearMessages('OrphanedMsg')}
@@ -944,7 +944,7 @@ $(function() {
         if(hasLocalStorage && localStorageGetItem('LocalStorageMsg')*1+(1000*3600*24*20) < Date.now()) {
             self.allMessages.push({
                 index: 'LocalStorageMsg',
-                type: 'WARNING',
+                type: glitterTranslate.status['WARNING'].replace(':', ''),
                 text: glitterTranslate.noLocalStorage,
                 css: 'warning',
                 clear: function() { self.clearMessages('LocalStorageMsg')}
