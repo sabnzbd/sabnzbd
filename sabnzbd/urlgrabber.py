@@ -36,7 +36,7 @@ import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
@@ -311,7 +311,7 @@ def bad_fetch(nzo, url, msg='', content=False):
 
     nzo.fail_msg = msg
 
-    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
         emailer.badfetch_mail(msg, url)
 

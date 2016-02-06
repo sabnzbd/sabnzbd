@@ -17,7 +17,7 @@
 #
 
 """
-sabnzbd.growler - Send notifications to Growl
+sabnzbd.notifier - Send notifications to any notification services
 """
 
 from __future__ import with_statement

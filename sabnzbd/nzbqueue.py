@@ -42,7 +42,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
@@ -426,7 +426,7 @@ class NzbQueue(TryList):
                 self.save(nzo)
 
             if not (quiet or nzo.status in ('Fetching',)):
-                growler.send_notification(T('NZB added to queue'), nzo.filename, 'download')
+                notifier.send_notification(T('NZB added to queue'), nzo.filename, 'download')
 
         if cfg.auto_sort():
             self.sort_by_avg_age()

@@ -2820,8 +2820,8 @@ class ConfigNotify(object):
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
-        conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
-        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.growler.ncenter_path())
+        conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()
+        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.notifier.ncenter_path())
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
@@ -2842,7 +2842,7 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('acenter', kw)()
         for kw in LIST_NTFOSD:
             conf[kw] = config.get_config('ntfosd', kw)()
-        conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
+        conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)

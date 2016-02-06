@@ -33,7 +33,7 @@ from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.utils.sslinfo import ssl_protocols
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -240,7 +240,7 @@ class Downloader(Thread):
     def resume(self):
         logging.info("Resuming")
         if self.paused:
-            growler.send_notification("SABnzbd", T('Resuming'), 'download')
+            notifier.send_notification("SABnzbd", T('Resuming'), 'download')
         self.paused = False
 
     @synchronized_CV
@@ -249,7 +249,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            growler.send_notification("SABnzbd", T('Paused'), 'download')
+            notifier.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
@@ -852,7 +852,7 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        growler.send_notification("SABnzbd", T('Shutting down'), 'startup')
+        notifier.send_notification("SABnzbd", T('Shutting down'), 'startup')
 
 
 def stop():
