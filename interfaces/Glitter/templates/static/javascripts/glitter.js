@@ -683,6 +683,14 @@ $(function() {
 
         // From the upload
         self.addNZBFromFileForm = function(form) {
+            // Anything?
+            if(!$(form.nzbFile)[0].files[0]) {
+                $('.btn-file').css('border-color', 'red')
+                setTimeout(function() { $('.btn-file').css('border-color', '') }, 2000)
+                return false;
+            }
+
+            // Upload
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
 
             // After that, hide and reset
@@ -693,6 +701,13 @@ $(function() {
         }
         // From URL
         self.addNZBFromURL = function(form) {
+            // Anything?
+            if(!$(form.nzbURL).val()) {
+                $(form.nzbURL).css('border-color', 'red')
+                setTimeout(function() { $(form.nzbURL).css('border-color', '') }, 2000)
+                return false;
+            }
+
             // Add 
             callAPI({
                 mode: "addurl",
