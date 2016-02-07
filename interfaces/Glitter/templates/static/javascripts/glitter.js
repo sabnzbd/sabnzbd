@@ -1591,6 +1591,9 @@ $(function() {
 
         // Edit name
         self.editName = function(data, event) {
+            // Not when still grabbing
+            if(self.isGrabbing()) return false;
+
             // is there a password in there?
             var extractOutput = extractTitleAndPassword(self.name()) 
             
@@ -1635,6 +1638,8 @@ $(function() {
 
         // See items
         self.showFiles = function() {
+            // Not when still grabbing
+            if(self.isGrabbing()) return false;
             // Trigger update
             parent.parent.filelist.loadFiles(self)
         }
