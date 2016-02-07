@@ -1403,6 +1403,11 @@ tr.queue-item>td:first-child>a {
     max-width: 100px;
 }
 
+.btn-file, 
+input[name="nzbURL"] {
+    transition : border 500ms ease-out;
+}
+
 /* HELP MODAL */
 
 #modal-help {
