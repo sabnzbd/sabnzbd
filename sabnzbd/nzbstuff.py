@@ -758,6 +758,10 @@ class NzbObject(TryList):
                 if cat:
                     break
 
+        if password is None:
+            if self.meta.get('password', ()):
+                self.password = self.meta.get('password', ())[0]
+
         if cfg.create_group_folders():
             self.dirprefix.append(self.group)
 
