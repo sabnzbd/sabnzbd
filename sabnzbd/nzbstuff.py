@@ -867,6 +867,10 @@ class NzbObject(TryList):
             if not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
 
+        # Show first meta-password (if any), when there's no explicit password
+        if not self.password and self.meta.get('password'):
+            self.password = self.meta.get('password', [None])[0]
+
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
 
