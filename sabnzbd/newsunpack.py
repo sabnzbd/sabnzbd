@@ -502,27 +502,32 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     new_files = None
     rars = []
     if nzo.password:
-        logging.info('Got a password set by user: %s', nzo.password)
+        logging.info('Found a password that was set by the user: %s', nzo.password)
         passwords = [nzo.password.strip()]
     else:
         passwords = []
-        # Append meta passwords, to prevent changing the original list
-        passwords.extend(nzo.meta.get('password', []))
-        if passwords:
-            logging.info('Read %s passwords from meta data in NZB', len(passwords))
-        pw_file = cfg.password_file.get_path()
-        if pw_file:
-            try:
-                pwf = open(pw_file, 'r')
-                lines = pwf.read().split('\n')
-                # Remove empty lines and space-only passwords and remove surrounding spaces
-                pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-                logging.debug('Read these passwords from file: %s', pws)
-                passwords.extend(pws)
-                pwf.close()
-                logging.info('Read %s passwords from file %s', len(pws), pw_file)
-            except IOError:
-                logging.info('Failed to read the passwords file %s', pw_file)
+
+    meta_passwords = nzo.meta.get('password', [])
+    if meta_passwords:
+        if nzo.password == meta_passwords[0]:
+            # this nzo.password came from meta, so don't use it twice
+            passwords.extend(meta_passwords[1:])
+        else:
+            passwords.extend(meta_passwords)
+        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+    pw_file = cfg.password_file.get_path()
+    if pw_file:
+        try:
+            pwf = open(pw_file, 'r')
+            lines = pwf.read().split('\n')
+            # Remove empty lines and space-only passwords and remove surrounding spaces
+            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+            logging.debug('Read these passwords from file: %s', pws)
+            passwords.extend(pws)
+            pwf.close()
+            logging.info('Read %s passwords from file %s', len(pws), pw_file)
+        except IOError:
+            logging.info('Failed to read the passwords file %s', pw_file)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
