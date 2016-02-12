@@ -254,6 +254,29 @@ li.dropdown {
     margin-bottom: 30px;
 }
 
+.main-notification-box {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.2);
+    padding: 10px 25px;
+    z-index: 2005;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    margin-left: -125px;
+}
+
+.main-notification-box>div {
+    display: inline;
+    margin-right: -3px;
+}
+
+.main-notification-box .glyphicon {
+    margin-right: 10px;
+}
+
 .main-filedrop {
     display: none;
 }

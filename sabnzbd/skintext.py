@@ -824,7 +824,12 @@ SKIN_TEXT = {
     'Glitter-sortNameDesc' : TT('Sort by Name <small>Z&rarr;A</small>'),
     'Glitter-sortSizeAsc' : TT('Sort by Size <small>Smallest&rarr;Largest</small>'),
     'Glitter-sortSizeDesc' : TT('Sort by Size <small>Largest&rarr;Smallest</small>'),
-
+    'Glitter-notification-uploading' : TT('Uploading'), # Notification window
+    'Glitter-notification-disconnect' : TT('Forcing disconnect'), # Notification window
+    'Glitter-notification-removing1' : TT('Removing job'), # Notification window
+    'Glitter-notification-removing' : TT('Removing jobs'), # Notification window
+    'Glitter-notification-shutdown' : TT('Shutting down'), # Notification window
+    
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
     'Plush-confirm' : TT('Are you sure?'),

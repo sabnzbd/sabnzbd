@@ -691,6 +691,7 @@ $(function() {
             }
 
             // Upload
+            showNotification('.main-notification-box-uploading', 0, 1)
             self.addNZBFromFile($(form.nzbFile)[0].files[0]);
 
             // After that, hide and reset
@@ -747,6 +748,8 @@ $(function() {
                 contentType: false,
                 data: data
             }).then(function(r) {
+                // Hide notification
+                hideNotification('.main-notification-box-uploading')
                 // Refresh
                 self.refresh();
             });
@@ -814,6 +817,9 @@ $(function() {
         self.folderProcess = function(folder, htmlElement) {
             // Hide tooltips (otherwise they stay forever..)
             $('#options-orphans [data-tooltip="true"]').tooltip('hide')
+
+            // Show notification
+            showNotification('.main-notification-box-removing', 1000)
             
             // Activate
             callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
@@ -823,14 +829,22 @@ $(function() {
                 $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
                 // Refresh
                 self.loadStatusInfo()
+                // Hide notification
+                hideNotification(true)
             })
         }
 
         // Orphaned folder deletion of all
         self.removeAllOrphaned = function() {
             if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+                 // Show notification
+                showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.status.folders().length)
                 // Delete them all
-                callSpecialAPI("./status/delete_all").then(self.loadStatusInfo)
+                callSpecialAPI("./status/delete_all").then(function() {
+                    // Remove notifcation and update screen
+                    hideNotification(true)
+                    self.loadStatusInfo()
+                })
             }     
         }
 
@@ -839,7 +853,11 @@ $(function() {
         **/
         // Shutdown
         self.shutdownSAB = function() {
-            return confirm(glitterTranslate.shutdown);
+            if(confirm(glitterTranslate.shutdown)) {
+                // Show notification and return true to follow the URL
+                showNotification('.main-notification-box-shutdown')
+                return true
+            }
         }
         // Restart
         self.restartSAB = function() {
@@ -856,18 +874,31 @@ $(function() {
         }
         // Queue actions
         self.doQueueAction = function(data, event) {
+            // Event
+            var theAction = $(event.target).data('mode');
+            // Show notification if available
+            if(['rss_now', 'watched_now'].indexOf(theAction) > -1) {
+                showNotification('.main-notification-box-' + theAction, 2000)
+            }
             // Send to the API
-            callAPI({ mode: $(event.target).data('mode') })
+            callAPI({ mode: theAction })
         }
         // Repair queue
         self.repairQueue = function() {
             if(!confirm(glitterTranslate.repair)) return;
+            // Hide the modal and show the notifucation
+            $("#modal-options").modal("hide");
+            showNotification('.main-notification-box-queue-repair')
+            // Call the API
             callSpecialAPI("./config/repair").then(function() {
-                $("#modal-options").modal("hide");
+                hideNotification(true)
             })
         }
         // Force disconnect
         self.forceDisconnect = function() {
+            // Show notification
+            showNotification('.main-notification-box-disconnect', 3000)
+            // Call API
             callSpecialAPI("./status/disconnect").then(function() {
                 $("#modal-options").modal("hide");
             })
@@ -1232,6 +1263,10 @@ $(function() {
                     dir = 'desc';
                     break;
             }
+            
+            // Show notification
+            showNotification('.main-notification-box-sorting', 2000)
+
             // Send call
             callAPI({
                 mode: 'queue',
@@ -1403,6 +1438,9 @@ $(function() {
                 $.each(self.multiEditItems(), function(index) {
                     strIDs = strIDs + this.id + ',';
                 })
+
+                // Show notification
+                showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
     
                 // Remove
                 callAPI({
@@ -1419,6 +1457,8 @@ $(function() {
                         })
                         // Empty it
                         self.multiEditItems.removeAll();
+                        // Hide notification
+                        hideNotification(true)
                     }
                 })
             }
@@ -1701,6 +1741,9 @@ $(function() {
             // Confirm and remove
             if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDow1)) {
                 var itemToDelete = this;
+
+                // Show notification
+                showNotification('.main-notification-box-removing')
                 
                 callAPI({
                     mode: 'queue',
@@ -1708,16 +1751,16 @@ $(function() {
                     del_files: 1,
                     value: item.id
                 }).then(function(response) {
-                    if(response.status) {
-                        // Fade and remove
-                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                            // Make sure no flickering (if there are more items left) and then remove
-                            self.parent.isLoading(self.parent.totalItems() > 1)
-                            parent.queueItems.remove(itemToDelete);
-                            parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
-                            self.parent.parent.refresh();
-                        })
-                    }
+                    // Fade and remove
+                    $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                        // Make sure no flickering (if there are more items left) and then remove
+                        self.parent.isLoading(self.parent.totalItems() > 1)
+                        parent.queueItems.remove(itemToDelete);
+                        parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
+                        self.parent.parent.refresh();
+                        // Hide notifcation
+                        hideNotification(true)
+                    })
                 });
             }
         };
@@ -2746,4 +2789,34 @@ function hideCompletedFiles() {
 function showOrphans() {
     $('a[href="#modal-options"]').click().parent().click(); 
     $('a[href="#options-orphans"]').click()
+}
+
+// Show notification
+function showNotification(notiName, notiTimeout, fileCounter) {
+    // Set uploadcounter if there is one
+    $('.main-notification-box .main-notification-box-file-count').text(fileCounter)
+
+    // Hide others, show the new one
+    $('.main-notification-box>div').hide()
+    $(notiName).css('display', 'inline')
+    // Only fade in when hidden
+    $('.main-notification-box:hidden').fadeIn()
+
+    // Remove after timeout
+    if(notiTimeout) {
+        setTimeout(function() { 
+            hideNotification(true); 
+        }, notiTimeout)
+    }
+}
+
+// Hide notification
+function hideNotification(fadeItOut) {
+    // Hide the box with or without effect
+    if(fadeItOut) {
+        $('.main-notification-box').fadeOut()
+    } else {
+        $('.main-notification-box').hide()
+    }
+    
 }
