@@ -90,7 +90,9 @@ ko.bindingHandlers.filedrop = {
             if(options.overlaySelector)
                 $(options.overlaySelector).hide();
             if(typeof options.onFileDrop === "function")
-                $.each(e.originalEvent.dataTransfer.files, function() {
+                $.each(e.originalEvent.dataTransfer.files, function(index) {
+                    // Add notification
+                    showNotification('.main-notification-box-uploading', 0, index+1)
                     options.onFileDrop(this);
                 });
         });
