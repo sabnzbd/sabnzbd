@@ -746,8 +746,10 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
             from sabnzbd.utils.upload import upload_file
+            prev = sabnzbd.set_https_verification(0)
             for f in upload_nzbs:
                 upload_file(url, f)
+            sabnzbd.set_https_verification(prev)
         else:
             # Launch the web browser and quit since sabnzbd is already running
             # Trim away everything after the final slash in the URL
