@@ -1367,6 +1367,7 @@ def main():
 
     import sabnzbd.utils.sslinfo
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
+    logging.info("pyOpenSSL version %s", sabnzbd.utils.sslinfo.pyopenssl_version())
     logging.info("SSL potentially supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_potential()))
     logging.info("SSL actually supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols()))
 

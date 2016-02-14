@@ -1,64 +1,111 @@
 <!--#set global $pane="Config"#-->
 <!--#set global $help_uri="configure-1-0"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
-<div class="colmask">
-    <div class="section padTable">
-        <table id="infoTable">
-            <tbody>
-                <tr class="alt">
-                    <td class="infoTableHeader">$T('version'): </td>
-                    <td class="infoTableCell">$version [$build]</td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('uptime'): </td>
-                    <td class="infoTableCell">$uptime</td>
-                </tr>
-                <tr class="alt">
-                    <td class="infoTableHeader">$T('confgFile'): </td>
-                    <td class="infoTableCell">$configfn</td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('cache').capitalize(): </td>
-                    <td class="infoTableCell"><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</td>
-                </tr>
-                <tr class="alt">
-                    <td class="infoTableHeader">$T('parameters'): </td>
-                    <td class="infoTableCell">$cmdline</td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('pythonVersion'): </td>
-                    <td class="infoTableCell">$sys.version[:120]</td>
-                </tr>
-                <tr class="infoTableSeperator alt">
-                    <td class="infoTableHeader">$T('homePage') </td>
-                    <td class="infoTableCell"><a href="http://sabnzbd.org/" target="_blank">http://sabnzbd.org/</a></td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('menu-wiki') </td>
-                    <td class="infoTableCell"><a href="http://wiki.sabnzbd.org/faq" target="_blank">http://wiki.sabnzbd.org/faq</a></td>
-                </tr>
-                <tr class="alt">
-                    <td class="infoTableHeader">$T('menu-forums') </td>
-                    <td class="infoTableCell"><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('source') </td>
-                    <td class="infoTableCell"><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd</a></td>
-                </tr>
-                <tr class="alt">
-                    <td class="infoTableHeader">$T('menu-irc') </td>
-                    <td class="infoTableCell"><a href="irc://irc.synirc.net/#sabnzbd"><i>#sabnzbd</i> on <i>irc.synirc.net</i></a> $T('or') (<a href="http://sabnzbd.org/live-chat/" target="_blank">webchat</a>)</td>
-                </tr>
-                <tr>
-                    <td class="infoTableHeader">$T('menu-issues') </td>
-                    <td class="infoTableCell"><a href="http://wiki.sabnzbd.org/issues-1-0-0" target="_blank">http://wiki.sabnzbd.org/issues-1-0-0</a></td>
-                </tr>
-            </tbody>
-        </table>
+
+<!--#from sabnzbd.newswrapper import HAVE_SSL#-->
+<!--#import sabnzbd.utils.sslinfo#-->
+<!--#from sabnzbd.decoder import HAVE_YENC#-->
+<!--#from sabnzbd.newsunpack import PAR2_COMMAND, PAR2C_COMMAND, RAR_COMMAND, ZIP_COMMAND, SEVEN_COMMAND, NICE_COMMAND, IONICE_COMMAND#-->
+
+    <div class="hpanel hyellow">
+        <div class="panel-heading hbuilt">
+            <div class="panel-tools">
+                <a class="showhide"><i class="glyphicon glyphicon-chevron-up"></i></a>&nbsp;
+                <a class="fullscreen"><i class="glyphicon glyphicon-resize-full"></i></a>
+            </div>
+            $T('menu-help') $T('+ Info')
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+            <table cellspacing="1" cellpadding="1" class="table table-striped no-padding">
+                <tbody>
+                    <tr>
+                        <th scope="row">$T('version'): </th>
+                        <td>$version [$build]</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('uptime'): </th>
+                        <td>$uptime</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('confgFile'): </th>
+                        <td>$configfn</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('cache').capitalize(): </th>
+                        <td><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('parameters'): </th>
+                        <td>$cmdline</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('pythonVersion'): </th>
+                        <td>$sys.version[:120]</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">OpenSSL:</th>
+                        <td><!--#if HAVE_SSL then sabnzbd.utils.sslinfo.ssl_version() + ' [' + ', '.join(sabnzbd.utils.sslinfo.ssl_protocols()) + ']' else "NOT found"#--></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">pyOpenSSL:</th>
+                        <td><!--#if HAVE_SSL then sabnzbd.utils.sslinfo.pyopenssl_version() else "NOT found"#--></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">YENC:</th>
+                        <td><!--#if HAVE_YENC then "found" else "NOT found"#--></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+
+        </div>
     </div>
-    <div class="padding alt">
-        <h5 class="copyright">Copyright &copy; 2008-2016 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
-        <p class="copyright"><small>$T('yourRights')</small></p>
+
+    <div class="hpanel hgreen">
+        <div class="panel-heading hbuilt">
+            <div class="panel-tools">
+                <a class="showhide"><i class="glyphicon glyphicon-chevron-up"></i></a>&nbsp;
+                <a class="fullscreen"><i class="glyphicon glyphicon-resize-full"></i></a>
+            </div>
+            $T('Resources')
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+            <table cellspacing="1" cellpadding="1" class="table table-striped no-padding">
+                <tbody>
+                    <tr>
+                        <th scope="row">$T('homePage') </th>
+                        <td><a href="http://sabnzbd.org/" target="_blank">http://sabnzbd.org/</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-wiki') </th>
+                        <td><a href="http://wiki.sabnzbd.org/faq" target="_blank">http://wiki.sabnzbd.org/faq</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-forums') </th>
+                        <td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('source') </th>
+                        <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-irc') </th>
+                        <td><a href="irc://irc.synirc.net/#sabnzbd"><i>#sabnzbd</i> on <i>irc.synirc.net</i></a> $T('or') (<a href="http://sabnzbd.org/live-chat/" target="_blank">webchat</a>)</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+
+        </div>
     </div>
-</div>
+
+    <div class="hpanel">
+        <div class="panel-footer">
+            <h5 class="copyright">Copyright &copy; 2008-2016 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
+            <p class="copyright"><small>$T('yourRights')</small></p>
+        </div>
+    </div>
+
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
