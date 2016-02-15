@@ -65,12 +65,21 @@
                             <div class="col-sm-6">$T('dashboard-NameserverDNS')</div>
                             <div class="col-sm-6" data-bind="text: !statusInfo.dashboard.dnslookup() ? '$T('dashboard-connectionError')' : statusInfo.dashboard.dnslookup(), css: { 'options-bad-status' : (statusInfo.dashboard.dnslookup() != 'OK') }"></div>
                         </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-sm-6">$T('dashboard-systemPerformance')</div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: statusInfo.dashboard.pystone"></span>
+                                <a href="#" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <small data-bind="truncatedText: statusInfo.dashboard.cpumodel, length: 25"></small>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed')</div>
                             <div class="col-sm-6">
                                 <span data-bind="text: (statusInfo.dashboard.downloaddirspeed() > 0 ? statusInfo.dashboard.downloaddirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.downloaddirspeedbad() }"></span> MB/s
                                 <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
-                                <small>(<span data-bind="truncatedText: statusInfo.dashboard.downloaddir, length: 25"></span>)</small>
+                                <small>(<span data-bind="truncatedText: statusInfo.dashboard.downloaddir, length: 24"></span>)</small>
                             </div>
                         </div>
                         <div class="row">
@@ -78,7 +87,7 @@
                             <div class="col-sm-6">
                                 <span data-bind="text: (statusInfo.dashboard.completedirspeed() > 0 ? statusInfo.dashboard.completedirspeed() : '0'), css: { 'options-bad-status' : statusInfo.dashboard.completedirspeedbad() }"></span> MB/s
                                 <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
-                                <small>(<span data-bind="truncatedText: statusInfo.dashboard.completedir, length: 25"></span>)</small>
+                                <small>(<span data-bind="truncatedText: statusInfo.dashboard.completedir, length: 24"></span>)</small>
                             </div>
                         </div>
                         <div class="row">

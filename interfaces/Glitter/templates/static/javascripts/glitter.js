@@ -755,6 +755,9 @@ $(function() {
 
         // Load status info
         self.loadStatusInfo = function(item, event) {
+            // Hide tooltips (otherwise they stay forever..)
+            $('#options-status [data-tooltip="true"]').tooltip('hide')
+
             // Reset
             self.hasStatusInfo(false)
             
