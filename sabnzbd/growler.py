@@ -541,5 +541,10 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
 
 def send_windows(title, msg, gtype):
     if sabnzbd.WINTRAY:
-        sabnzbd.WINTRAY.sendnotification(title, msg)
+        try:
+            sabnzbd.WINTRAY.sendnotification(title, msg)
+        except:
+            logging.info(T('Failed to send Windows notification'))
+            logging.debug("Traceback: ", exc_info=True)
+            return T('Failed to send Windows notification')
     return None
