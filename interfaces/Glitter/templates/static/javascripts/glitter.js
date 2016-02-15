@@ -147,6 +147,7 @@ $(function() {
         self.diskSpaceExceeded2 = ko.observable(false);
         self.quotaLimit = ko.observable();
         self.quotaLimitLeft = ko.observable();
+        self.systemLoad = ko.observable();
         self.nrWarnings = ko.observable(0);
         self.allWarnings = ko.observableArray([]);
         self.allMessages = ko.observableArray([]);
@@ -256,6 +257,9 @@ $(function() {
             // Quota
             self.quotaLimit(response.queue.quota)
             self.quotaLimitLeft(response.queue.left_quota)
+
+            // System load
+            self.systemLoad(response.queue.loadavg)
 
             // Warnings (new warnings will trigger an update of allMessages)
             self.nrWarnings(response.queue.have_warnings)
