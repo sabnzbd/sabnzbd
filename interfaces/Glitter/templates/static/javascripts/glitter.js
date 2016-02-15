@@ -127,7 +127,7 @@ $(function() {
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
         self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
         self.hasStatusInfo = ko.observable(false); // True when we load it
-        self.showActiveConnections = ko.observable(false);
+        self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         
         // Set information varibales
