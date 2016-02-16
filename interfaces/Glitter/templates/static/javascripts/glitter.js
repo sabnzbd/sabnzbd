@@ -689,7 +689,7 @@ $(function() {
         self.addNZBFromFileForm = function(form) {
             // Anything?
             if(!$(form.nzbFile)[0].files[0]) {
-                $('.btn-file').css('border-color', 'red')
+                $('.btn-file').attr('style', 'border-color: red !important')
                 setTimeout(function() { $('.btn-file').css('border-color', '') }, 2000)
                 return false;
             }
@@ -708,7 +708,7 @@ $(function() {
         self.addNZBFromURL = function(form) {
             // Anything?
             if(!$(form.nzbURL).val()) {
-                $(form.nzbURL).css('border-color', 'red')
+                $(form.nzbURL).attr('style', 'border-color: red !important')
                 setTimeout(function() { $(form.nzbURL).css('border-color', '') }, 2000)
                 return false;
             }

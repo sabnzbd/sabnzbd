@@ -1163,7 +1163,7 @@ tr.queue-item>td:first-child>a {
 
 #modal-options .tab-content {
     transition: all 0.3s !important;
-    min-height: 200px;
+    min-height: 270px;
 }
 
 #modal-options .form-group {
