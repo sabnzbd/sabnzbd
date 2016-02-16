@@ -825,8 +825,13 @@ $(function() {
             // Hide tooltips (otherwise they stay forever..)
             $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
-            // Show notification
-            showNotification('.main-notification-box-removing', 1000)
+            // Show notification on delete
+            if($(htmlElement.currentTarget).data('action') == 'delete') {
+                showNotification('.main-notification-box-removing', 1000)
+            } else {
+                // Adding back to queue
+                showNotification('.main-notification-box-sendback', 2000)
+            }
             
             // Activate
             callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
