@@ -38,6 +38,12 @@ $(function() {
             },500);
         });
     }
+
+    // Force compact mode as fast as possible
+    if(localStorageGetItem('displayCompact') === 'true') {
+        // Add extra class
+        $('body').addClass('container-compact')
+    }
     
     // Basic API-call
     function callAPI(data) {
@@ -123,6 +129,7 @@ $(function() {
         self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
         self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
         self.dateFormat = ko.observable('DD/MM/YYYY HH:mm').extend({ persist: 'pageDateFormat' });
+        self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
         self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
@@ -859,6 +866,10 @@ $(function() {
                 })
             }     
         }
+
+        self.displayCompact.subscribe(function() {
+            $('body').toggleClass('container-compact')
+        })
 
         /**
              SABnzb options
