@@ -1585,6 +1585,65 @@ input[name="nzbURL"] {
 }
 
 /***
+    Compact layout
+***/
+.container-compact .search-box .form-control {
+    height: 28px;
+}
+
+.container-compact,
+.container-compact .dropdown-menu {
+    font-size: 13px;
+    line-height: 1.52857143;
+}
+.container-compact h2 {
+    font-size: 2em;
+    margin-bottom: 8px;
+}
+.container-compact tr.queue-item>td:first-child>a {
+    padding: 0 0 0 3px;
+}
+.container-compact .table>tbody>tr>td {
+    padding: 3px 4px 1px;
+}
+.container-compact .progress {
+    box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.2);
+    margin-top: -1px;
+    margin-bottom: -1px;
+    height: 26px;
+}
+
+.container-compact .td.delete .dropdown>a {
+    margin-top: -14px;
+}
+
+.container-compact .info-container {
+    margin-top: 0.5em;
+}
+
+.container-compact .pagination>li>a, 
+.container-compact .pagination>li>span,
+.container-compact #history-options .hover-button {
+    padding: 4px 10px;
+}
+
+.container-compact .info-container,
+.container-compact .progress>span, 
+.container-compact .progress-bar>span,
+.container-compact .progress strong, 
+.container-compact .progress i {
+    font-size: 12px;
+}
+
+.container-compact .progress-indicator {
+    padding: 0 !important;
+}
+
+.container-compact .search-box a {
+    padding-top: 5px;
+}
+
+/***
     Dynamic sizing
 ***/
 @media screen and (min-width: 1200px) {
