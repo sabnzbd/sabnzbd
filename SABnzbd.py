@@ -717,7 +717,7 @@ def is_sabnzbd_running(url, timeout=None):
         # Do this without certificate verification, few installations will have that
         prev = sabnzbd.set_https_verification(False)
         ver = sabnzbd.newsunpack.get_from_url(url, timeout=timeout)
-        sabnzbd.set_https_verification(prev)        
+        sabnzbd.set_https_verification(prev)
         return bool(ver and re.search(r'\d+\.\d+\.', ver))
     except:
         return False
@@ -1365,6 +1365,7 @@ def main():
 
     import sabnzbd.utils.sslinfo
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
+    logging.info("pyOpenSSL version %s", sabnzbd.utils.sslinfo.pyopenssl_version())
     logging.info("SSL potentially supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_potential()))
     logging.info("SSL actually supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols()))
 

@@ -1,7 +1,5 @@
-
 _ALL_PROTOCOLS = ('t12', 't11', 't1', 'v23', 'v3', 'v2')
 _SSL_PROTOCOLS = {}
-
 def ssl_potential():
     ''' Return a list of potentially supported SSL protocols'''
     try:
@@ -47,6 +45,7 @@ try:
 except ImportError:
     SSL = None
 
+
 def ssl_method(method):
     ''' Translate SSL acronym to a method value '''
     if method in _SSL_PROTOCOLS:
@@ -56,11 +55,13 @@ def ssl_method(method):
         try:
             return SSL.SSLv23_METHOD
         except AttributeError:
-            return _SSL_PROTOCOLS[0] 
+            return _SSL_PROTOCOLS[0]
+
 
 def ssl_protocols():
     ''' Return acronyms for SSL protocols, highest quality first '''
     return [p for p in _ALL_PROTOCOLS if p in _SSL_PROTOCOLS]
+
 
 def ssl_version():
     if SSL:
@@ -76,8 +77,19 @@ def ssl_version():
         return None
 
 
+def pyopenssl_version():
+    if SSL:
+        try:
+            import OpenSSL
+            return OpenSSL.__version__
+        except ImportError:
+            return 'No pyOpenSSL installed'
+    else:
+        return None
+
 if __name__ == '__main__':
 
     print 'SSL version: %s' % ssl_version()
+    print 'pyOpenSSL version: %s' % pyopenssl_version()
     print 'Potentials: %s' % ssl_potential()
     print 'Actuals: %s' % ssl_protocols()
