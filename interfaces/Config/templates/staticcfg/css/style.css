@@ -266,6 +266,9 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .padTable h3 {
     margin-top: 0;
 }
+tr.separator {
+    height: 30px;
+}
 .catTable th, .catTable td {
     padding: 5px;
 }
