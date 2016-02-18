@@ -201,6 +201,9 @@ class URLGrabber(Thread):
                     data = fn.read()
                 fn.close()
 
+                # Sanatize filename first
+                filename = misc.sanitize_filename(filename)
+
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
                 path = os.path.join(path, filename)
