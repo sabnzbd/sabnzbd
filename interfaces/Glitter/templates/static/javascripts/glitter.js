@@ -772,8 +772,10 @@ $(function() {
             // Hide tooltips (otherwise they stay forever..)
             $('#options-status [data-tooltip="true"]').tooltip('hide')
 
-            // Reset
-            self.hasStatusInfo(false)
+            // Reset if not called from a function
+            if(item) {
+                self.hasStatusInfo(false)
+            }
             
             // Full refresh? Only on click and for the status-screen
             var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
@@ -827,6 +829,26 @@ $(function() {
             })
         }
 
+        // Refresh connections page
+        var connectionRefresh
+        $('.nav-tabs a[href="#options_connections"]').click(function() {
+            connectionRefresh = setInterval(function() {
+                // Check if still visible
+                if(!$('#options_connections').is(':visible') && connectionRefresh) {
+                    // Stop refreshing
+                    clearInterval(connectionRefresh)
+                    return
+                }
+                // Only when we show them
+                if(self.showActiveConnections()) {
+                    self.loadStatusInfo()
+                    // Trick to force the interface to refresh
+                    self.hasStatusInfo(false)
+                    self.hasStatusInfo(true)
+                }
+            }, self.refreshRate() * 1000)
+        })
+
         // Orphaned folder processing
         self.folderProcess = function(folder, htmlElement) {
             // Hide tooltips (otherwise they stay forever..)
@@ -847,7 +869,7 @@ $(function() {
                 // Remove item and load status data
                 $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
                 // Refresh
-                self.loadStatusInfo()
+                self.loadStatusInfo(true, true)
                 // Hide notification
                 hideNotification(true)
             })
@@ -862,7 +884,7 @@ $(function() {
                 callSpecialAPI("./status/delete_all").then(function() {
                     // Remove notifcation and update screen
                     hideNotification(true)
-                    self.loadStatusInfo()
+                    self.loadStatusInfo(true, true)
                 })
             }     
         }
