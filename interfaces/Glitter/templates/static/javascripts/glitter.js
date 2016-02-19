@@ -1533,6 +1533,7 @@ $(function() {
         // Job info
         self.id = data.nzo_id;
         self.name = ko.observable($.trim(data.filename));
+        self.password = ko.observable(data.password);
         self.index = ko.observable(data.index);
         self.status = ko.observable(data.status);
         self.isGrabbing = ko.observable(data.status == 'Grabbing')
@@ -1553,17 +1554,6 @@ $(function() {
         self.hasDropdown = ko.observable(false);
         self.rating_avg_video = ko.observable(false)
         self.rating_avg_audio = ko.observable(false)
-
-        // Functional vars   
-        self.displayName = ko.pureComputed(function() {
-            // is there a password in there?
-            var extractOutput = extractTitleAndPassword(self.name()) 
-            if(extractOutput.thePassword) {
-                return extractOutput.theTitle + ' <small class="queue-item-password"><span class="glyphicon glyphicon-lock"></span> ' + extractOutput.thePassword.replace(/ /g, '\u00A0') + '</small>';
-            } else {
-                return extractOutput.theTitle
-            }
-        })
         
         // Color of the progress bar
         self.progressColor = ko.computed(function() {
@@ -1644,6 +1634,7 @@ $(function() {
         self.updateFromData = function(data) {
             // Update job info
             self.name($.trim(data.filename));
+            self.password(data.password);
             self.index(data.index);
             self.status(data.status)
             self.isGrabbing(data.status == 'Grabbing')
@@ -1678,13 +1669,10 @@ $(function() {
         self.editName = function(data, event) {
             // Not when still grabbing
             if(self.isGrabbing()) return false;
-
-            // is there a password in there?
-            var extractOutput = extractTitleAndPassword(self.name()) 
             
             // Change status and fill
             self.editingName(true)
-            self.nameForEdit(extractOutput.titleClean)
+            self.nameForEdit(self.name())
             
             // Select
             $(event.target).parents('.name').find('input').select()
@@ -1697,28 +1685,16 @@ $(function() {
 
         // Do on change
         self.nameForEdit.subscribe(function(newName) {
-            // Is there a password in there?
-            var extractOutput = extractTitleAndPassword(self.name()) 
-            
             // Anything change or empty?
-            if(!newName || extractOutput.titleClean == newName) return;
-            
-            // The command to send
-            var theRename = {
+            if(!newName || self.name() == newName) return;
+
+            // Send rename
+            callAPI({
                     mode: 'queue',
                     name: 'rename',
                     value: self.id,
-                    value2: newName,
-                    value3: extractOutput.thePassword };
-            
-            // Exception for when people manually set password by name{{password}} or name/password
-            if(newName.split('/').length > 1 || (newName.indexOf('{{') !== -1 && newName.indexOf('}}') !== -1)) {
-                // Emptying the variable will cause SAB to interpret the title and do it's magic
-                delete theRename.value3;
-            }
-
-            // Send rename
-            callAPI(theRename).then(self.parent.parent.refresh)
+                    value2: newName 
+                }).then(self.parent.parent.refresh)
         })
 
         // See items
@@ -2286,8 +2262,10 @@ $(function() {
         var self = this;
         self.parent = parent;
         self.fileItems = ko.observableArray([]);
-        self.modalTitle = ko.observable();
-        self.modalPassword = ko.observable();
+
+        // Need to reserve these names to be overwritten
+        self.filelist_name = ko.observable();
+        self.filelist_password = ko.observable();
 
         // Load the function and reset everything
         self.loadFiles = function(queue_item) {
@@ -2296,12 +2274,9 @@ $(function() {
             self.fileItems.removeAll()
             self.triggerUpdate() 
 
-            // Get pasword self.currentItem title
-            var extractOutput = extractTitleAndPassword(self.currentItem.name()) 
-            
-            // Set files & title
-            self.modalPassword(extractOutput.thePassword)
-            self.modalTitle(extractOutput.titleClean)
+            // Update name/password
+            self.filelist_name(self.currentItem.name())
+            self.filelist_password(self.currentItem.password())
 
             // Hide ok button and reset
             $('#modal-item-filelist .glyphicon-floppy-saved').hide()
@@ -2429,7 +2404,7 @@ $(function() {
         self.setNzbPassword = function() {
             // Activate with this weird URL "API"
             callSpecialAPI("./nzb/" + self.currentItem.id + "/save", {
-                name: self.modalTitle(),
+                name: self.currentItem.name(),
                 password: $('#nzb_password').val()
             }).then(function() {
                 // Refresh, reset and close
@@ -2489,7 +2464,6 @@ $(function() {
 
         // Update internally
         self.updateFromData = function(data) {
-
             self.filename(data.filename)
             self.nzf_id(data.nzf_id)
             self.file_age(data.age)
@@ -2671,46 +2645,6 @@ function rewriteTime(timeString) {
 
     // Regular
     return hours + ':' + minutes + ':' + seconds;
-}
-
-// Extract title and password
-function extractTitleAndPassword(titleInput) {
-    // Split
-    var titleInputSplit = titleInput.split(' / ');
-    
-    // Nothing?
-    if(titleInputSplit.length < 2) {
-        return { theTitle: titleInput, titleClean: titleInput, thePassword: ''};
-    }
-    
-    // Has SAB already detected it is encrypted or some other error? It will add the extra label
-    // Special for the 'WAIT'-text
-    // Everything after the first real / is the password, so we pop the first
-    if(titleInputSplit[0] == glitterTranslate.encrypted ||
-       titleInputSplit[0] == glitterTranslate.duplicate ||
-       titleInputSplit[0] == glitterTranslate.tooLarge ||
-       titleInputSplit[0] == glitterTranslate.filtered ||
-       titleInputSplit[0] == glitterTranslate.unwanted ||
-       titleInputSplit[0] == glitterTranslate.incomplete ||
-       titleInputSplit[0].slice(0,4) == glitterTranslate.waitSec.slice(0,4)) {
-        // The first 2 we need to keep!
-        var theOutput = { theTitle: titleInputSplit.shift() + ' / ' + titleInputSplit.shift(), 
-                          thePassword: titleInputSplit.join(' / ')};
-        
-        // We need a 'cleaned' title for the password/filelisting popup
-        // No cleaning of the 'WAIT'-text, too complicated and exotic case
-        theOutput.titleClean = theOutput.theTitle.replace(glitterTranslate.encrypted + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.duplicate + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.tooLarge + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.filtered + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.unwanted + ' / ', '');
-        theOutput.titleClean = theOutput.titleClean.replace(glitterTranslate.incomplete + ' / ', '');
-    } else {
-        var theOutput = { theTitle: titleInputSplit.shift(), 
-                          thePassword: titleInputSplit.join(' / ')};
-        theOutput.titleClean = theOutput.theTitle;         
-    }
-    return theOutput
 }
 
 // How to display the date-time?

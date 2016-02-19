@@ -88,7 +88,13 @@
                 </td>
                 <td class="name">
                     <div class="row-wrap-text" data-bind="visible: !editingName()">
-                        <span data-bind="html: displayName, attr: { 'title': name() }"></span>
+                        <span data-bind="text: name, attr: { 'title': name() }"></span>
+                        <!-- ko if: password()  -->
+                        <small class="queue-item-password">
+                            <span class="glyphicon glyphicon-lock"></span>
+                            <span data-bind="text: password"></span>
+                        </small>
+                        <!-- /ko -->
                         <!-- ko if: (rating_avg_video() !== false)  -->
                         <div class="name-ratings hover-button">
                             <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>

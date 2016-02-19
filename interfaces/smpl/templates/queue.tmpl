@@ -70,7 +70,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
             </select>
           </td>
           <td>
-            <span class="filename"><a href="#/nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename</a></span>
+            <span class="filename"><a href="#/nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename<!--#if $slot.password#--> /  $slot.password<!--#end if#--></a></span>
           </td>
           <!--#if $queue_details == '1'#-->
           <td>
