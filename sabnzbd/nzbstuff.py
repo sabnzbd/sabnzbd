@@ -763,11 +763,13 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name, self.url = get_attrib_file(self.workpath, 6)
+            cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
             cat = unicoder(cat)
             script = unicoder(script)
             if name:
-                self.set_final_name_pw(unicoder(name))
+                self.final_name = unicoder(name)
+            if password:
+                self.password = unicoder(password)
 
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
@@ -1086,10 +1088,7 @@ class NzbObject(TryList):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
-        if self.password:
-            return '%s%s / %s' % (prefix, self.final_name, self.password)
-        else:
-            return '%s%s' % (prefix, self.final_name)
+        return '%s%s' % (prefix, self.final_name)
 
     @property
     def final_name_pw_clean(self):
@@ -1463,7 +1462,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
-                self.nzo_id, self.final_name_pw, {},
+                self.nzo_id, self.final_name, self.password, {},
                 '', self.cat, self.url,
                 bytes_left_all, self.bytes, avg_date,
                 finished_files, active_files, queued_files, self.status, self.priority,
@@ -1513,7 +1512,7 @@ class NzbObject(TryList):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name_pw_clean, self.url))
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name, self.password, self.url))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}

@@ -1206,6 +1206,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         if not cat:
             cat = 'None'
         filename = pnfo.filename
+        password = pnfo.password
         bytesleft = pnfo.bytes_left
         bytes = pnfo.bytes
         average_date = pnfo.avg_date
@@ -1230,6 +1231,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         else:
             slot['script'] = 'None'
         slot['filename'] = converter(filename)
+        slot['password'] = converter(password) if password else ""
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
