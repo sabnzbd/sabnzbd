@@ -197,9 +197,12 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
-def connect_db(thread_index):
+def connect_db(thread_index=0):
     # Create a connection and store it in the current thread
-    cherrypy.thread_data.history_db = sabnzbd.database.get_history_handle()
+    if not (hasattr(cherrypy.thread_data, 'history_db') and cherrypy.thread_data.history_db):
+        cherrypy.thread_data.history_db = sabnzbd.database.get_history_handle()
+    return cherrypy.thread_data.history_db
+
 
 
 @synchronized(INIT_LOCK)

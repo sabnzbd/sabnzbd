@@ -469,7 +469,7 @@ class MainPage(object):
 
         name = kwargs.get('name')
         if name:
-            history_db = cherrypy.thread_data.history_db
+            history_db = sabnzbd.connect_db()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise dcRaiser(self.__root, kwargs)
@@ -1010,7 +1010,7 @@ class HistoryPage(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        history_db = cherrypy.thread_data.history_db
+        history_db = sabnzbd.connect_db()
         history_db.remove_history()
         raise queueRaiser(self.__root, kwargs)
 
@@ -1049,7 +1049,7 @@ class HistoryPage(object):
         if msg:
             return msg
         del_files = bool(int_conv(kwargs.get('del_files')))
-        history_db = cherrypy.thread_data.history_db
+        history_db = sabnzbd.connect_db()
         if del_files:
             del_job_files(history_db.get_failed_paths())
         history_db.remove_failed()
@@ -1100,7 +1100,7 @@ class HistoryPage(object):
             return Protected()
         name = kwargs.get('name')
         if name:
-            history_db = cherrypy.thread_data.history_db
+            history_db = sabnzbd.connect_db()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise dcRaiser(self.__root, kwargs)
