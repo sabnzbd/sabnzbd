@@ -52,7 +52,21 @@ class URLGrabber(Thread):
             url, nzo = tup
             self.queue.put((url, nzo))
         self.shutdown = False
+        self.https_ok = True
         URLGrabber.do = self
+        prev = sabnzbd.set_https_verification(1)
+        try:
+            # If Python verifies certificates, check whether it does its job well.
+            # Also successful if it doesn't do any verification
+            urllib2.urlopen('https://' + cfg.https_test_host(), timeout=5)
+        except:
+            error0 = str(sys.exc_info()[0]).lower()
+            error1 = str(sys.exc_info()[1]).lower()
+            if 'certificate_verify_failed' in error1 or 'certificateerror' in error0:
+                logging.info('Certificate verification is not reliable on your system, so disabling it')
+                self.https_ok = False
+        sabnzbd.set_https_verification(prev)
+
 
     def add(self, url, future_nzo, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
@@ -95,6 +109,9 @@ class URLGrabber(Thread):
                     if deleted:
                         logging.debug('Dropping URL %s, job entry missing', url)
                         continue
+
+                if not self.https_ok:
+                    sabnzbd.set_https_verification(0)
 
                 logging.info('Grabbing URL %s', url)
                 req = urllib2.Request(url)
