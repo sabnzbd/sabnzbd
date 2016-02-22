@@ -8,74 +8,102 @@
 <!--#from sabnzbd.newsunpack import PAR2_COMMAND, PAR2C_COMMAND, RAR_COMMAND, ZIP_COMMAND, SEVEN_COMMAND, NICE_COMMAND, IONICE_COMMAND#-->
 
     <div class="colmask">
-        <div class="table-responsive section padTable" style="padding-bottom: 0;">
-        <table cellspacing="1" cellpadding="1" class="table table-striped">
-            <tbody>
-                <tr>
-                    <th scope="row">$T('version'): </th>
-                    <td>$version [$build]</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('uptime'): </th>
-                    <td>$uptime</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('confgFile'): </th>
-                    <td>$configfn</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('cache').capitalize(): </th>
-                    <td><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('parameters'): </th>
-                    <td>$cmdline</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('pythonVersion'): </th>
-                    <td>$sys.version[:120]</td>
-                </tr>
-                <tr>
-                    <th scope="row">OpenSSL:</th>
-                    <td><!--#if HAVE_SSL then sabnzbd.utils.sslinfo.ssl_version() + ' [' + ', '.join(sabnzbd.utils.sslinfo.ssl_protocols()) + ']' else "NOT found"#--></td>
-                </tr>
-                <tr>
-                    <th scope="row">pyOpenSSL:</th>
-                    <td><!--#if HAVE_SSL then sabnzbd.utils.sslinfo.pyopenssl_version() else "NOT found"#--></td>
-                </tr>
-                <tr>
-                    <th scope="row">yEnc:</th>
-                    <td><!--#if HAVE_YENC then "Found" else "NOT found"#--></td>
-                </tr>
-                <tr class="separator" colspan="2"><th></th><td></td></tr>
-                <tr>
-                    <th scope="row">$T('homePage') </th>
-                    <td><a href="http://sabnzbd.org/" target="_blank">http://sabnzbd.org/</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('menu-wiki') </th>
-                    <td><a href="http://wiki.sabnzbd.org/faq" target="_blank">http://wiki.sabnzbd.org/faq</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('menu-forums') </th>
-                    <td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('source') </th>
-                    <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('menu-irc') </th>
-                    <td><a href="irc://irc.synirc.net/#sabnzbd"><i>#sabnzbd</i> on <i>irc.synirc.net</i></a> $T('or') (<a href="http://sabnzbd.org/live-chat/" target="_blank">webchat</a>)</td>
-                </tr>
-                <tr>
-                    <th scope="row">$T('menu-issues') </th>
-                    <td><a href="http://wiki.sabnzbd.org/issues-1-0-0" target="_blank">http://wiki.sabnzbd.org/issues-1-0-0</a></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive section padTable">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">$T('version'): </th>
+                        <td>$version [$build]</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('uptime'): </th>
+                        <td>$uptime</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('confgFile'): </th>
+                        <td>$configfn</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('cache').capitalize(): </th>
+                        <td><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('parameters'): </th>
+                        <td>$cmdline</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('pythonVersion'): </th>
+                        <td>$sys.version[:120]</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">OpenSSL:</th>
+                        <td>
+                            <!--#if HAVE_SSL#--> 
+                                <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo.ssl_protocols())#-->
+                                $sabnzbd.utils.sslinfo.ssl_version() <em>[$sslversions]</em>
+                            <!--#else#-->
+                                <span class="label label-warning">$T('notAvailable')</span>
+                            <!--#end if#-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">pyOpenSSL:</th>
+                        <td>
+                            <!--#if HAVE_SSL#--> 
+                                $sabnzbd.utils.sslinfo.pyopenssl_version()
+                            <!--#else#-->
+                                <span class="label label-warning">$T('notAvailable')</span>
+                            <!--#end if#-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">yEnc:</th>
+                        <td>
+                            <!--#if HAVE_YENC#--> 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            <!--#else#-->
+                                <span class="label label-warning">$T('notAvailable')</span>
+                            <!--#end if#-->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+    </div>
+    <div class="colmask">
+        <div class="table-responsive section padTable">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">$T('homePage') </th>
+                        <td><a href="http://sabnzbd.org/" target="_blank">http://sabnzbd.org/</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-wiki') </th>
+                        <td><a href="http://wiki.sabnzbd.org/faq" target="_blank">http://wiki.sabnzbd.org/faq</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-forums') </th>
+                        <td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('source') </th>
+                        <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-irc') </th>
+                        <td><a href="irc://irc.synirc.net/#sabnzbd"><i>#sabnzbd</i> on <i>irc.synirc.net</i></a> $T('or') (<a href="http://sabnzbd.org/live-chat/" target="_blank">webchat</a>)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">$T('menu-issues') </th>
+                        <td><a href="http://wiki.sabnzbd.org/issues-1-0-0" target="_blank">http://wiki.sabnzbd.org/issues-1-0-0</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+    <div class="colmask">
         <div class="padding alt">
             <h5 class="copyright">Copyright &copy; 2008-2016 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
             <p class="copyright"><small>$T('yourRights')</small></p>
