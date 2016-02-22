@@ -137,12 +137,20 @@
                         </div>
                         <div data-bind="foreach: statusInfo.status.servers">
                             <div class="options-server-box">
-                                <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">$T('Glitter-unblockServer')</a>
+                                
                                 <div class="row">
                                     <div class="col-sm-6">$T('swtag-server')</div>
                                     <div class="col-sm-6">
-                                        <span data-bind="text: servername"></span><br />
-                                        <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
+                                        <span data-bind="text: servername"></span>
+                                    </div>
+                                </div>
+                                <div class="row" data-bind="visible: serverblocked()">
+                                    <div class="col-sm-12">
+
+                                        <div class="alert alert-danger">
+                                        <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
+                                        <span data-bind="text: serverblocked()"></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
