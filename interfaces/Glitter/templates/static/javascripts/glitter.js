@@ -831,7 +831,7 @@ $(function() {
 
         // Refresh connections page
         var connectionRefresh
-        $('.nav-tabs a[href="#options_connections"]').click(function() {
+        $('.nav-tabs a[href="#options_connections"]').on('shown.bs.tab', function() {
             connectionRefresh = setInterval(function() {
                 // Check if still visible
                 if(!$('#options_connections').is(':visible') && connectionRefresh) {
@@ -841,12 +841,19 @@ $(function() {
                 }
                 // Only when we show them
                 if(self.showActiveConnections()) {
+                    console.log(Date.now())
                     self.loadStatusInfo()
                     // Trick to force the interface to refresh
                     self.hasStatusInfo(false)
                     self.hasStatusInfo(true)
                 }
             }, self.refreshRate() * 1000)
+        })
+
+        // Make sure Connections get refreshed also after open->close->open
+        $('#modal-options').on('show.bs.modal', function () {
+            // Trigger
+            $('.nav-tabs a[href="#options_connections"]').trigger('shown.bs.tab')
         })
 
         // Orphaned folder processing
