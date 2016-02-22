@@ -87,6 +87,53 @@ def globber_full(path, pattern=u'*'):
         return []
 
 
+def get_files_by_file_size(path, reverse=False):
+    """ Return list of file paths in directory sorted by file size """
+
+    # Get list of files
+    filepaths = []
+    if os.path.exists(path):
+        try:
+            filepaths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        except UnicodeDecodeError:
+            # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
+            path = path.encode('utf-8')
+            filepaths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+
+    # Re-populate list with filename, size tuples
+    for i in xrange(len(filepaths)):
+        filepaths[i] = (filepaths[i], os.path.getsize(filepaths[i]))
+
+    # Sort list by file size (reverse=False results in smallest to largest)
+    filepaths.sort(key=lambda filename: filename[1], reverse=reverse)
+
+    # Re-populate list with just filenames
+    for i in xrange(len(filepaths)):
+        filepaths[i] = filepaths[i][0]
+
+    return filepaths
+
+
+def replace_extension(filename, newExt):
+    """ Replace the extension with desired extension when applicable
+        >>> replace_extension('foo.avi', 'mkv')
+        'foo.mkv'
+        >>> replace_extension('.vimrc', 'arglebargle')
+        '.vimrc'
+        >>> replace_extension('a.b.c', 'd')
+        'a.b.d'
+        >>> replace_extension('', 'a')
+        ''
+        >>> replace_extension('foo.bar', '')
+        'foo.'
+    """
+    sepFile = filename.rpartition(".")
+    if sepFile[0] == "":
+        return filename
+    else:
+        return sepFile[0] + "." + newExt
+
+
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """ Derive options from category, if options not already defined.
         Specified options have priority over category-options.
