@@ -50,7 +50,7 @@
                         </a>
                         <div class="dropdown-menu max-speed-input">
                             <div data-bind="visible: !bandwithLimit()">
-                                <a href="config/general/#bandwidth_max">
+                                <a href="./config/general/#bandwidth_max">
                                     <span class="glyphicon glyphicon-cog"></span> $T('Glitter-setMaxLinespeed')
                                 </a>
                             </div>
@@ -70,7 +70,7 @@
             </li>
             <!--#if $have_rss_defined#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('cmenu-rss')">
-                <a href="config/rss">
+                <a href="./config/rss/">
                     <svg class="rss-icon-svg" viewBox="0 0 8 8">
                         <rect class="rss-button" width="8" height="8" />
                         <circle class="rss-symbol" cx="2" cy="6" r="1" />
@@ -81,7 +81,7 @@
             </li>
             <!--#end if#-->
             <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
-                <a href="config"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="./config/"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}">
                 <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)">
@@ -97,7 +97,7 @@
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="shutdown?session=$session" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                    <li><a href="./shutdown/?session=$session" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                     <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>
