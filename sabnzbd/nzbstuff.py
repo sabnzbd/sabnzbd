@@ -619,7 +619,7 @@ class NzbObject(TryList):
         self.files = []             # List of all NZFs
         self.files_table = {}       # Dictionary of NZFs indexed using NZF_ID
 
-        self.finished_files = []    # List of al finished NZFs
+        self.finished_files = []    # List of all finished NZFs
 
         # the current status of the nzo eg:
         # Queued, Downloading, Repairing, Unpacking, Failed, Complete
@@ -1746,7 +1746,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     if is_par2 and not is_par1:
         return -1
 
-    # Anything with a priority extention goes first
+    # Anything with a priority extension goes first
     ext_list = get_ext_list()
     if ext_list:
         onlist1 = ext_on_list(name1, ext_list)
@@ -1757,7 +1757,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
             return 1
 
     if name:
-        # Prioritise .rar files above any other type of file (other than vol-par)
+        # Prioritize .rar files above any other type of file (other than vol-par)
         # Useful for nzb streaming
         RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
         m1 = RE_RAR.search(name1)
@@ -1773,7 +1773,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
             name2 = name2.replace('.rar', '.r//')
         return cmp(name1, name2)
     else:
-        # Do date comparision
+        # Do date comparison
         return cmp(nzf1.date, nzf2.date)
 
 
