@@ -1259,9 +1259,11 @@ tr.queue-item>td:first-child>a {
 }
 
 #modal-options .options-server-box .btn {
-    position: absolute;
-    right: 10px;
-    z-index:2000;
+    float: right;
+}
+
+#modal-options .options-server-box .alert {
+    margin-bottom: 5px;
 }
 
 #modal-options .options-server-box:last-child {
