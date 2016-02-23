@@ -167,7 +167,7 @@ $(function() {
             var bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
             
             // Only the number
-            var speedLimitNumber = (parseInt(self.bandwithLimit()) * (self.speedLimit() / 100));
+            var speedLimitNumber = (parseFloat(self.bandwithLimit()) * (self.speedLimit() / 100));
             
             // Trick to only get decimal-point when needed
             speedLimitNumber = Math.round(speedLimitNumber*10)/10;
