@@ -1594,12 +1594,51 @@ input[name="nzbURL"] {
 }
 
 .container-compact,
-.container-compact .dropdown-menu {
+.container-compact .dropdown-menu,
+.container-compact .btn,
+.container-compact select {
     font-size: 13px;
-    line-height: 1.52857143;
+    line-height: 1.35;
+}
+.container-compact .nav>li>a {
+    padding-top: 15px;
+    padding-bottom: 12px;
+}
+.container-compact nav .dropdown-menu {
+    margin-top: 1px;
+}
+.container-compact .main-content .btn,
+.container-compact .modal-dialog .btn {
+    padding: 5px 6px;
+}
+.container-compact .sparkline-container svg {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+.container-compact .form-control {
+    height: 29px;
+}
+.container-compact .modal-header {
+    padding: 5px 12px;
+}
+.container-compact hr {
+    margin: 13px 0px;
+}
+.container-compact .nav-tabs>li>a {
+    padding: 8px 12px;
+    font-size: 1em;
+}
+.container-compact #modal-options .options-switch label {
+    font-size: 1em;
+}
+.container-compact #modal-options .options-switch input {
+    margin-top: 1px;
+}
+.container-compact #modal-options .tab-content {
+    min-height: 190px;
 }
 .container-compact h2 {
-    font-size: 2em;
+    font-size: 1.8em;
     margin-bottom: 8px;
 }
 .container-compact tr.queue-item>td:first-child>a {
