@@ -40,6 +40,7 @@ class TryList:
 
     def __init__(self):
         self.__try_list = []
+        self.fetcher_priority = 0
 
     @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
@@ -67,3 +68,4 @@ class TryList:
         """ Clean the list """
         if self.__try_list:
             self.__try_list = []
+        self.fetcher_priority = 0
