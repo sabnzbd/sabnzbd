@@ -134,7 +134,7 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-localIP4')</td>
             <td>  
-                <!--#if $publicipv4#-->
+                <!--#if $localipv4#-->
                     $localipv4
                 <!--#else#-->
                     <strong style="color: red;">$T('dashboard-connectionError')</strong>
