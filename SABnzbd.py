@@ -1259,7 +1259,7 @@ def main():
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
     if sabnzbd.cfg.log_level() > 1:
-        from sabnzbd.utils.getipaddress import localipv4, publicipv4, ipv6
+        from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
         mylocalipv4 = localipv4()
         if mylocalipv4:
