@@ -82,7 +82,6 @@ class Article(TryList):
         TryList.__init__(self)
 
         self.fetcher = None
-        self.fetcher_priority = 0
         self.allow_fill_server = False
 
         self.article = article
