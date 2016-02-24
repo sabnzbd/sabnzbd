@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 1.0.0RC1
-====================================
+Release Notes  -  SABnzbd 1.0.0RC2
+==================================
+
+## Changes in RC2
+- Changing server priorities during a download could lead to unexpected results and lockups
+- Made Glitter friendly for reverse proxies
+- Config->General shows more diagnostic info
+- Default host to test IPv6 is now self-test.sabnzbd.org
 
 ## Changes in RC1
 - Bump version from 0.8.0RC1 to 1.0.0RC1
