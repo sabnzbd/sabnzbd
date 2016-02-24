@@ -293,6 +293,28 @@ tr.separator {
 .RSS form[action="add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #E5E5E5;
 }
+.Config .table {
+    margin: 0;
+    border: 1px solid #ddd
+}
+.Config .colmask {
+    margin-bottom: 12px;
+}
+.Config .padding {
+    padding: 13px;
+}
+.Config th {
+    width: 20%;
+    min-width: 150px;
+    padding-left: 15px !important;
+}
+.Config .label {
+    font-size: 90%;
+}
+.Config td .glyphicon-question-sign  {
+    color: black !important;
+    top: 3px;
+}
 .tab-pane thead tr {
     background-color: transparent !important;
 }

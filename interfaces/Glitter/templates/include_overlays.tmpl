@@ -153,7 +153,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6"> 
-                                <a href="status/showlog?session=$session" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> $T('link-showLog')</a>
+                                <a href="./status/showlog?session=$session" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> $T('link-showLog')</a>
                             </div>
                             <div class="col-sm-6">
                                 <div class="input-group" data-tooltip="true" data-placement="top" title="$T('logging')">
@@ -181,12 +181,20 @@
                         </div>
                         <div data-bind="foreach: statusInfo.status.servers">
                             <div class="options-server-box">
-                                <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default">$T('Glitter-unblockServer')</a>
+                                
                                 <div class="row">
                                     <div class="col-sm-6">$T('swtag-server')</div>
                                     <div class="col-sm-6">
-                                        <span data-bind="text: servername"></span><br />
-                                        <span data-bind="visible: serverblocked(), text: serverblocked" class="label label-danger"></span>
+                                        <span data-bind="text: servername"></span>
+                                    </div>
+                                </div>
+                                <div class="row" data-bind="visible: serverblocked()">
+                                    <div class="col-sm-12">
+
+                                        <div class="alert alert-danger">
+                                        <a href="#" data-bind="visible: serverblocked(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
+                                        <span data-bind="text: serverblocked()"></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">

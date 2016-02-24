@@ -118,6 +118,7 @@ SKIN_TEXT = {
     'off' : TT('off'),
     'parameters' : TT('Parameters'), #: Config: startup parameters of SABnzbd
     'pythonVersion' : TT('Python Version'),
+    'notAvailable' : TT('Not available'),
     'homePage' : TT('Home page'), #: Home page of the SABnzbd project
     'source' : TT('Source'), #: Where to find the SABnzbd sourcecode
     'or' : TT('or'), #: Used in "IRC or IRC-Webaccess"

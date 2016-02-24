@@ -608,7 +608,7 @@ $(function() {
         // Clear warnings through this special URL..
         self.clearWarnings = function() {
             // Activate
-            callSpecialAPI("./status/clearwarnings").done(self.refresh)
+            callSpecialAPI("./status/clearwarnings/").done(self.refresh)
         }
         
         // Clear messages
@@ -795,7 +795,7 @@ $(function() {
                 // Only now we can subscribe to the log-level-changes!
                 self.statusInfo.status.loglevel.subscribe(function(newValue) {
                     // Update log-level
-                    callSpecialAPI('./status/change_loglevel', {
+                    callSpecialAPI('./status/change_loglevel/', {
                         loglevel: newValue
                     });
                 })
@@ -815,14 +815,14 @@ $(function() {
             // Hide before running the test
             self.hasStatusInfo(false)
             // Run it and then display it
-            callSpecialAPI('./status/dashrefresh').then(function() {
+            callSpecialAPI('./status/dashrefresh/').then(function() {
                 self.loadStatusInfo(true, true)
             })
         }
 
         // Unblock server
         self.unblockServer = function(servername) {
-            callSpecialAPI("./status/unblock_server", {
+            callSpecialAPI("./status/unblock_server/", {
                 server: servername
             }).then(function() {
                 $("#modal-options").modal("hide");
@@ -831,7 +831,7 @@ $(function() {
 
         // Refresh connections page
         var connectionRefresh
-        $('.nav-tabs a[href="#options_connections"]').click(function() {
+        $('.nav-tabs a[href="#options_connections"]').on('shown.bs.tab', function() {
             connectionRefresh = setInterval(function() {
                 // Check if still visible
                 if(!$('#options_connections').is(':visible') && connectionRefresh) {
@@ -841,12 +841,19 @@ $(function() {
                 }
                 // Only when we show them
                 if(self.showActiveConnections()) {
+                    console.log(Date.now())
                     self.loadStatusInfo()
                     // Trick to force the interface to refresh
                     self.hasStatusInfo(false)
                     self.hasStatusInfo(true)
                 }
             }, self.refreshRate() * 1000)
+        })
+
+        // Make sure Connections get refreshed also after open->close->open
+        $('#modal-options').on('show.bs.modal', function () {
+            // Trigger
+            $('.nav-tabs a[href="#options_connections"]').trigger('shown.bs.tab')
         })
 
         // Orphaned folder processing
@@ -881,7 +888,7 @@ $(function() {
                  // Show notification
                 showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.status.folders().length)
                 // Delete them all
-                callSpecialAPI("./status/delete_all").then(function() {
+                callSpecialAPI("./status/delete_all/").then(function() {
                     // Remove notifcation and update screen
                     hideNotification(true)
                     self.loadStatusInfo(true, true)
@@ -908,7 +915,7 @@ $(function() {
         self.restartSAB = function() {
             if(!confirm(glitterTranslate.restart)) return;
             // Call restart function
-            callSpecialAPI("./config/restart")
+            callSpecialAPI("./config/restart/")
 
             // Set counter, we need at least 15 seconds
             self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
@@ -935,7 +942,7 @@ $(function() {
             $("#modal-options").modal("hide");
             showNotification('.main-notification-box-queue-repair')
             // Call the API
-            callSpecialAPI("./config/repair").then(function() {
+            callSpecialAPI("./config/repair/").then(function() {
                 hideNotification(true)
             })
         }
@@ -944,7 +951,7 @@ $(function() {
             // Show notification
             showNotification('.main-notification-box-disconnect', 3000)
             // Call API
-            callSpecialAPI("./status/disconnect").then(function() {
+            callSpecialAPI("./status/disconnect/").then(function() {
                 $("#modal-options").modal("hide");
             })
         }
@@ -2374,7 +2381,7 @@ $(function() {
             dataToSend['action_size'] = Math.abs(nrMoves);
 
             // Activate with this weird URL "API"
-            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation", dataToSend)
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation/", dataToSend)
         };
 
         // Remove selected files
@@ -2391,7 +2398,7 @@ $(function() {
             })
 
             // Activate with this weird URL "API"
-            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation", dataToSend).then(function() {
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation/", dataToSend).then(function() {
                 // Fade it out
                 $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
                     // Set state of the check-all
@@ -2403,7 +2410,7 @@ $(function() {
         // For changing the passwords
         self.setNzbPassword = function() {
             // Activate with this weird URL "API"
-            callSpecialAPI("./nzb/" + self.currentItem.id + "/save", {
+            callSpecialAPI("./nzb/" + self.currentItem.id + "/save/", {
                 name: self.currentItem.name(),
                 password: $('#nzb_password').val()
             }).then(function() {

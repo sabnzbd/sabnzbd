@@ -1158,11 +1158,11 @@ def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
 
 def test_ipv6():
     """ Check if external IPv6 addresses are reachable """
-    if not cfg.ipv6_test_host():
+    if not cfg.selftest_host():
         # User disabled the test, assume active IPv6
         return True
     try:
-        info = socket.getaddrinfo(cfg.ipv6_test_host(), 443, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+        info = socket.getaddrinfo(cfg.selftest_host(), 443, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
     except:
         logging.debug("Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0] )
         return False
