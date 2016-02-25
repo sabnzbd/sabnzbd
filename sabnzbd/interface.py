@@ -2750,7 +2750,7 @@ class Status(object):
             return msg
         orphan_delete(kwargs)
         raise dcRaiser(self.__root, kwargs)
-        
+
     @cherrypy.expose
     def delete_all(self, **kwargs):
         msg = check_session(kwargs)
@@ -2902,6 +2902,10 @@ LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_apikey', 'pushbullet_device'
                  'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
                  'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other'
                    )
+LIST_NSCRIPT = ('nscript_enable', 'nscript_script',
+                 'nscript_prio_startup', 'nscript_prio_download', 'nscript_prio_pp', 'nscript_prio_complete', 'nscript_prio_failed',
+                 'nscript_prio_disk_full', 'nscript_prio_warning', 'nscript_prio_error', 'nscript_prio_queue_done', 'nscript_prio_other'
+                )
 
 
 class ConfigNotify(object):
@@ -2926,6 +2930,7 @@ class ConfigNotify(object):
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.growler.have_ntfosd()
         conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.growler.ncenter_path())
+        conf['script_list'] = list_scripts(default=False, none=False)
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
@@ -2946,6 +2951,8 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('acenter', kw)()
         for kw in LIST_NTFOSD:
             conf[kw] = config.get_config('ntfosd', kw)()
+        for kw in LIST_NSCRIPT:
+            conf[kw] = config.get_config('nscript', kw)()
         conf['notify_texts'] = sabnzbd.growler.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
@@ -2989,6 +2996,10 @@ class ConfigNotify(object):
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
         for kw in LIST_PUSHBULLET:
             msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw, 0)))
+            if msg:
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+        for kw in LIST_NSCRIPT:
+            msg = config.get_config('nscript', kw).set(platform_encode(kwargs.get(kw, 0)))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
 

@@ -766,6 +766,11 @@ def _api_test_pushbullet(name, output, kwargs):
     res = sabnzbd.growler.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+def _api_test_nscript(name, output, kwargs):
+    """ API: execute a test notification script, return result """
+    logging.info("Executing notification script")
+    res = sabnzbd.growler.send_nscript('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    return report(output, error=res)
 
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
@@ -775,7 +780,7 @@ def _api_undefined(name, output, kwargs):
 def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
-    
+
     if compact and compact == '1':
         paths = []
         name = platform_encode(kwargs.get('term', ''))
@@ -921,7 +926,8 @@ _api_table = {
     'test_osd': (_api_test_osd, 2),
     'test_pushover': (_api_test_pushover, 2),
     'test_pushbullet': (_api_test_pushbullet, 2),
-    'test_prowl': (_api_test_prowl, 2)
+    'test_prowl': (_api_test_prowl, 2),
+    'test_nscript': (_api_test_nscript, 2),
 }
 
 _api_queue_table = {
@@ -2031,7 +2037,7 @@ def std_time(when):
     return item
 
 
-def list_scripts(default=False):
+def list_scripts(default=False, none=True):
     """ Return a list of script names, optionally with 'Default' added """
     lst = []
     path = cfg.script_dir.get_path()
@@ -2043,7 +2049,8 @@ def list_scripts(default=False):
                    script.endswith('.py') or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))
-        lst.insert(0, 'None')
+        if none:
+            lst.insert(0, 'None')
         if default:
             lst.insert(0, 'Default')
     return lst
