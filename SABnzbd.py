@@ -495,6 +495,9 @@ def print_modules():
     if sabnzbd.newsunpack.PAR2C_COMMAND:
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
 
+    if sabnzbd.newsunpack.MULTIPAR_COMMAND:
+        logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
+
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
 
