@@ -841,7 +841,6 @@ $(function() {
                 }
                 // Only when we show them
                 if(self.showActiveConnections()) {
-                    console.log(Date.now())
                     self.loadStatusInfo()
                     // Trick to force the interface to refresh
                     self.hasStatusInfo(false)

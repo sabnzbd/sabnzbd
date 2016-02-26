@@ -12,7 +12,7 @@
                 <!--#if $count != 0#-->,<!--#end if#-->
                 {
                 "servername": "$server[0]",
-                "serverstatus": "<!--#if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#-->",
+                "serverstatus": "<!--#if int($server[8]) != 0#-->$T('optional').capitalize()<!--#end if#-->",
                 "serverpriority": "$server[7]",
                 "serveractiveconn": "$server[2]",
                 "serverblocked": <!--#if not $server[5]#-->"$server[6]"<!--#else#-->false<!--#end if#-->,
