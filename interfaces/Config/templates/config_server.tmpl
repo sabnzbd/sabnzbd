@@ -113,6 +113,9 @@
                     <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                 </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
@@ -237,6 +240,9 @@
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
                 </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
             </fieldset>
         </div><!-- /col1 -->
         <div class="col2"  style="display:block;">
@@ -302,14 +308,25 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
+        var resultBox = \$(this).parents('.col1').find('.result-box .alert');
         \$(this).attr("disabled", "disabled")
         \$.ajax({
             type: "POST",
             url: "../../tapi",
-            data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
-            success: function(msg){
-                alert(msg);
-                \$(event.target).removeAttr("disabled")
+            data: "mode=config&amp;output=json&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize()
+        }).then(function(data) {
+            // Fill the box and enable the button
+            resultBox.removeClass('alert-success alert-danger').show()
+            resultBox.text(data.value.message)
+            \$(event.target).removeAttr("disabled")
+
+            // Succes or not?
+            if(data.value.result) {
+                resultBox.addClass('alert-success')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
             }
         });
     });

@@ -888,6 +888,11 @@ input[type="checkbox"] {
     margin-bottom: 8px;
 }
 
+.result-box .alert {
+    margin-bottom: 0px;
+    display: none;
+}
+
 .server-disabled {
     background-color: #eee;
 }

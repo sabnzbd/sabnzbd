@@ -63,8 +63,9 @@
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_email" rel="$T('askTestEmail')"><span class="glyphicon glyphicon-envelope"></span> $T('link-testEmail')</button>
-                    <span id="testmail-result" class="icon path darkred">&nbsp;</span>
-                    <span id="config_err_msg" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -123,10 +124,12 @@
                     <input type="checkbox" name="ncenter_prio_other" id="ncenter_prio_other" value="1" <!--#if int($ncenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_notif"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -185,10 +188,12 @@
                     <input type="checkbox" name="acenter_prio_other" id="acenter_prio_other" value="1" <!--#if int($acenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_windows_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_windows"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -247,10 +252,12 @@
                     <input type="checkbox" name="ntfosd_prio_other" id="ntfosd_prio_other" value="1" <!--#if int($ntfosd_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testosd-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -318,10 +325,12 @@
                     <input type="checkbox" name="growl_prio_other" id="growl_prio_other" value="1" <!--#if int($growl_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testgrowl-result" class="icon path darkred">&nbsp;</span>
-               </div>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -452,11 +461,13 @@
                         <option value="1"  <!--#if $prowl_prio_other == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
                         <option value="2"  <!--#if $prowl_prio_other == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                     </select>
-               </div>
-                 <div class="field-pair">
+                </div>
+                <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_prowl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                    <span id="testprowl-result" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -579,12 +590,14 @@
 						<option value="1"  <!--#if $pushover_prio_other == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
 						<option value="2"  <!--#if $pushover_prio_other == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
 					</select>
-			   </div>
+                </div>
 
-                 <div class="field-pair">
+                <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_pushover"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                    <span id="testpushover-result" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -657,8 +670,10 @@
 				<div class="field-pair">
 				   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-				   <span id="testpushbullet-result" class="icon path darkred">&nbsp;</span>
-			   </div>
+			    </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
 		   </fieldset>
 	   </div><!-- /col1 -->
 	</div><!-- /section -->
@@ -683,194 +698,42 @@
     /**
         Testing functions
     **/
-    \$('#test_email').click(function () {
-        if (confirm(\$('#test_email').attr('rel'))) {
-	    var data = { mode: 'test_email', apikey: '$session', output: 'json' };
-	    \$("#email").extractFormDataTo(data);
-            \$.ajax({
-                type: "GET",
-                url: "../../tapi",
-                data: data,
-                beforeSend: function () {
-                    \$('#test_email').attr("disabled", "disabled");
-                    \$('#testmail-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-                },
-                complete: function () {
-                    \$('#test_email').removeAttr("disabled");
-                    \$('#testmail-result').removeClass("loading");
-                },
-                success: function (data) {
-                    if (data.status == true) {
-                      \$('#testmail-result').addClass("success").html('$T('smpl-emailsent')');
-                    } else {
-                      \$('#testmail-result').addClass("failure").html(data.error);
-                    }
-                }
-            });
+    function testNotification(buttonObj) {
+        // Confirm?
+        if(\$(buttonObj).attr('rel')) {
+            if(!confirm(\$(buttonObj).attr('rel'))) return false;
         }
-    });
-    \$('#test_notification').click(function () {
+        // Disable button and get the data
+        \$(buttonObj).attr("disabled", "disabled")
+        var data = { mode: buttonObj.id, apikey: '$session', output: 'json' };
+        \$(buttonObj).parents('.section').extractFormDataTo(data);
+
+        // Clear up the box
+        resultBox = \$(buttonObj).parents('.section').find('.result-box .alert');
+
+        // Get the request
         \$.ajax({
             type: "GET",
             url: "../../tapi",
-            data: {mode: 'test_notif', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_notification').attr("disabled", "disabled");
-                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_notification').removeAttr("disabled");
-                \$('#testnotice-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testnotice-result').addClass("failure").html(data.error);
-                }
+            data: data
+        }).then(function(data) {
+            // Remove disabled and make the box
+            \$(buttonObj).removeAttr("disabled")
+            resultBox.removeClass('alert-success alert-danger').show()
+            if(data.status) {
+                resultBox.addClass('alert-success')
+                resultBox.text('$T('smpl-notesent')')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.text(data.error)
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
             }
-        });
-    });
-    \$('#test_windows_notification').click(function () {
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: {mode: 'test_windows', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_notification').attr("disabled", "disabled");
-                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_notification').removeAttr("disabled");
-                \$('#testnotice-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testnotice-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_pushbullet').click(function () {
-        var data = { mode: 'test_pushbullet', apikey: '$session', output: 'json' };
-	    \$("#pushbullet").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_pushbullet').attr("disabled", "disabled");
-                \$('#testpushbullet-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_pushbullet').removeAttr("disabled");
-                \$('#testpushbullet-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testpushbullet-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testpushbullet-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_pushover').click(function () {
-        var data = { mode: 'test_pushover', apikey: '$session', output: 'json' };
-	    \$("#pushover").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_pushover').attr("disabled", "disabled");
-                \$('#testpushover-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_pushover').removeAttr("disabled");
-                \$('#testpushover-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testpushover-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testpushover-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_prowl').click(function () {
-        var data = { mode: 'test_prowl', apikey: '$session', output: 'json' };
-	    \$("#prowl").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_prowl').attr("disabled", "disabled");
-                \$('#testprowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_prowl').removeAttr("disabled");
-                \$('#testprowl-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testprowl-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testprowl-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_growl').click(function () {
-        var data = { mode: 'test_growl', apikey: '$session', output: 'json' };
-	    \$("#growl").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_growl').attr("disabled", "disabled");
-                \$('#testgrowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_growl').removeAttr("disabled");
-                \$('#testgrowl-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testgrowl-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testgrowl-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_osd').click(function () {
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: {mode: 'test_osd', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_osd').attr("disabled", "disabled");
-                \$('#testosd-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_osdl').removeAttr("disabled");
-                \$('#testosd-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testosd-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testosd-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
+        })
+    }
+    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_growl, #test_osd').click(function () {
+        testNotification(this)
+    })
 });
 </script>
 
