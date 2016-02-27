@@ -96,7 +96,9 @@
                     <label class="config" for="categories">$T('srv-categories')</label>
                     <select name="categories" id="categories" multiple>
                     <!--#for $cat in $cats#-->
-                      <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>$cat</option>
+                        <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>
+                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
+                        </option>
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
@@ -219,7 +221,9 @@
                     <label class="config" for="categories$cur">$T('srv-categories')</label>
                     <select name="categories" id="categories$cur" multiple>
                     <!--#for $cat in $cats#-->
-                      <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>$cat</option>
+                        <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>
+                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
+                        </option>
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
