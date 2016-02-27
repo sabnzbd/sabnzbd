@@ -893,6 +893,11 @@ input[type="checkbox"] {
     display: none;
 }
 
+.alert-no-category {
+    display: none;
+    margin: 5px 0px 0px;
+}
+
 .server-disabled {
     background-color: #eee;
 }
