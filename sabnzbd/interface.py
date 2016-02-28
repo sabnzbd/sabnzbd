@@ -324,7 +324,7 @@ class MainPage(object):
             # For Glitter we pre-load the JSON output
             if 'Glitter' in self.__web_dir:
                 # Queue
-                queue = build_queue(limit=cfg.queue_limit())[0]
+                queue = build_queue(limit=cfg.queue_limit(), output='json')[0]
                 queue['categories'] = info.pop('cat_list')
                 queue['scripts'] = info.pop('script_list')
                 
@@ -333,7 +333,7 @@ class MainPage(object):
                 grand, month, week, day = BPSMeter.do.get_sums()
                 history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                        to_units(grand), to_units(month), to_units(week), to_units(day)
-                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit())
+                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit(), output='json')
 
                 # Make sure the JSON works, otherwise leave empty
                 try:
