@@ -27,6 +27,7 @@ import time
 import json
 import cherrypy
 import locale
+import socket
 try:
     locale.setlocale(locale.LC_ALL, "")
 except:
@@ -61,6 +62,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
 import sabnzbd.growler
 import sabnzbd.rss
@@ -460,8 +462,9 @@ def _api_change_opts(name, output, kwargs):
 
 
 def _api_fullstatus(name, output, kwargs):
-    """ API: not implemented """
-    return report(output, _MSG_NOT_IMPLEMENTED + ' YET')  # xml_full()
+    """ API: full history status"""
+    status = build_status(skip_dashboard=kwargs.get('skip_dashboard'), output=output)
+    return report(output, keyword='status', data=remove_callable(status))
 
 
 def _api_history(name, output, kwargs):
@@ -1135,6 +1138,126 @@ def handle_cat_api(output, kwargs):
     return name
 
 
+def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, output=None):
+    # build up header full of basic information
+    info, _pnfo_list, _bytespersec = build_header(prim, web_dir)
+
+    info['logfile'] = sabnzbd.LOGFILE
+    info['weblogfile'] = sabnzbd.WEBLOGFILE
+    info['loglevel'] = str(cfg.log_level())
+    info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
+    info['configfn'] = xml_name(config.get_filename())
+
+    # Dashboard: Begin
+    if not int_conv(skip_dashboard):
+        info['localipv4'] = localipv4()
+        info['publicipv4'] = publicipv4()
+        info['ipv6'] = ipv6()
+        # Dashboard: DNS-check
+        try:
+            socket.gethostbyname(cfg.selftest_host())
+            info['dnslookup'] = "OK"
+        except:
+            info['dnslookup'] = None
+
+        # Dashboard: Speed of System
+        from sabnzbd.utils.getperformance import getpystone, getcpu
+        info['pystone'] = getpystone()
+        info['cpumodel'] = getcpu()
+        # Dashboard: Speed of Download directory:
+        info['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+        try:
+            sabnzbd.downloaddirspeed  # The persistent var
+        except:
+            # does not yet exist, so create it:
+            sabnzbd.downloaddirspeed = 0  # 0 means ... not yet determined
+        info['downloaddirspeed'] = sabnzbd.downloaddirspeed
+        # Dashboard: Speed of Complete directory:
+        info['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+        try:
+            sabnzbd.completedirspeed  # The persistent var
+        except:
+            # does not yet exist, so create it:
+            sabnzbd.completedirspeed = 0  # 0 means ... not yet determined
+        info['completedirspeed'] = sabnzbd.completedirspeed
+
+        try:
+            sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
+        except:
+            sabnzbd.dashrefreshcounter = 0
+        info['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
+
+    info['servers'] = []
+    servers = sorted(Downloader.do.servers[:], key=lambda svr: '%02d%s' % (svr.priority, svr.displayname.lower()))
+    for server in servers:
+        serverconnections = []
+        connected = 0
+
+        for nw in server.idle_threads[:]:
+            if nw.connected:
+                connected += 1
+
+        for nw in server.busy_threads[:]:
+            article = nw.article
+            art_name = ""
+            nzf_name = ""
+            nzo_name = ""
+
+            if article:
+                nzf = article.nzf
+                nzo = nzf.nzo
+
+                art_name = xml_name(article.article)
+                # filename field is not always present
+                try:
+                    nzf_name = xml_name(nzf.filename)
+                except:  # attribute error
+                    nzf_name = xml_name(nzf.subject)
+                nzo_name = xml_name(nzo.final_name)
+
+            # For the templates or for JSON
+            if output:
+                thread_info = { 'thrdnum': nw.thrdnum,
+                                'art_name': art_name,
+                                'nzf_name': nzf_name,
+                                'nzo_name': nzo_name }
+                serverconnections.append(thread_info)
+            else:
+                serverconnections.append((nw.thrdnum, art_name, nzf_name, nzo_name))
+
+            if nw.connected:
+                connected += 1
+
+        if server.warning and not (connected or server.errormsg):
+            connected = unicoder(server.warning)
+
+        if server.request and not server.info:
+            connected = T('&nbsp;Resolving address')
+        serverconnections.sort()
+
+        # For the templates or for JSON
+        if output:
+            server_info = { 'servername': server.displayname, 
+                            'serveractiveconn': connected, 
+                            'serverconnections': serverconnections, 
+                            'serverssl': server.ssl,
+                            'serveractive': server.active, 
+                            'servererror': server.errormsg, 
+                            'serverpriority': server.priority, 
+                            'serveroptional': server.optional }
+            info['servers'].append(server_info)
+        else:
+            info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
+                                      server.active, server.errormsg, server.priority, server.optional))
+
+    wlist = []
+    for w in sabnzbd.GUIHANDLER.content():
+        w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
+        wlist.insert(0, unicoder(w))
+    info['warnings'] = wlist
+
+    return info
+
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None,
                 search=None):
@@ -1497,7 +1620,6 @@ def build_file_list(id):
                 n += 1
 
     return jobs
-
 
 def rss_qstatus():
     """ Return a RSS feed with the queue status """
