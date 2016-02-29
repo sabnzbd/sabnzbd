@@ -779,21 +779,14 @@ $(function() {
             
             // Full refresh? Only on click and for the status-screen
             var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
-            var strStatusUrl = statusFullRefresh ? './status/' : './status/?skip_dashboard=1';
 
             // Load the custom status info
-            callSpecialAPI(strStatusUrl).then(function(data) {
-                // Parse JSON
-                var parsedJSON = ko.utils.parseJson(data);
-                
+            callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {                
                 // Making the new objects
-                self.statusInfo.status = ko.mapping.fromJS(parsedJSON.status);
+                self.statusInfo = ko.mapping.fromJS(data.status);
                 
-                // Only when we do full refresh we have dashboard-info
-                if(statusFullRefresh) self.statusInfo.dashboard = ko.mapping.fromJS(parsedJSON.dashboard);
-
                 // Only now we can subscribe to the log-level-changes!
-                self.statusInfo.status.loglevel.subscribe(function(newValue) {
+                self.statusInfo.loglevel.subscribe(function(newValue) {
                     // Update log-level
                     callSpecialAPI('./status/change_loglevel/', {
                         loglevel: newValue
@@ -867,10 +860,10 @@ $(function() {
                 // Adding back to queue
                 showNotification('.main-notification-box-sendback', 2000)
             }
-            
+
             // Activate
             callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
-                name: $("<div/>").html(folder.folder()).text()
+                name: $("<div/>").html(folder).text()
             }).then(function() {
                 // Remove item and load status data
                 $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
@@ -885,7 +878,7 @@ $(function() {
         self.removeAllOrphaned = function() {
             if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
                  // Show notification
-                showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.status.folders().length)
+                showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.folders().length)
                 // Delete them all
                 callSpecialAPI("./status/delete_all/").then(function() {
                     // Remove notifcation and update screen
@@ -1017,7 +1010,7 @@ $(function() {
             if(!finishedLoading) return;
             
             // Orphaned folders? If user clicked away we check again in 5 days
-            if(self.statusInfo.status.folders().length >= 3 && orphanMsg) {
+            if(self.statusInfo.folders().length >= 3 && orphanMsg) {
                 // Check if not already there
                 if(!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
                     self.allMessages.push({
