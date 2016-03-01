@@ -96,7 +96,9 @@
                     <label class="config" for="categories">$T('srv-categories')</label>
                     <select name="categories" id="categories" multiple>
                     <!--#for $cat in $cats#-->
-                      <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>$cat</option>
+                        <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>
+                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
+                        </option>
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
@@ -112,6 +114,9 @@
                 <div class="field-pair">
                     <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -219,10 +224,16 @@
                     <label class="config" for="categories$cur">$T('srv-categories')</label>
                     <select name="categories" id="categories$cur" multiple>
                     <!--#for $cat in $cats#-->
-                      <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>$cat</option>
+                        <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>
+                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
+                        </option>
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
+                    <div class="alert alert-info alert-no-category">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        $T('srv-explain-no-categories')
+                    </div>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
@@ -236,6 +247,9 @@
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -281,6 +295,33 @@
         }
         \$(this).css('background-color', theColor)
     })
+
+    /** 
+        Message on no Default category selected
+    **/
+    function checkServerCats() {
+        // Now we check all of them
+        var hasDefault = false;
+        // Only check the active servers, not the add-server one
+        \$('.section:not(#addServerContent) select[name="categories"]').each(function() {
+            // See if this server is enabled
+            if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
+                // Is there Default?
+                if(\$(this).val().indexOf('Default') > -1) {
+                    // Hide
+                    \$('.alert-no-category').hide()
+                    hasDefault = true 
+                    // All good!
+                    return true
+                }
+            }
+        })
+        // We found nothing.. Let's show a warning
+        if(!hasDefault) \$('.alert-no-category').show()
+    }
+
+    \$('select[name="categories"]').on('change', checkServerCats)
+    checkServerCats()    
     
     /**
         Click events
@@ -302,14 +343,28 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
-        \$(this).attr("disabled", "disabled")
+        var theButton = \$(this)
+        var resultBox = theButton.parents('.col1').find('.result-box .alert');
+        theButton.attr("disabled", "disabled")
+        theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
         \$.ajax({
             type: "POST",
             url: "../../tapi",
-            data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
-            success: function(msg){
-                alert(msg);
-                \$(event.target).removeAttr("disabled")
+            data: "mode=config&amp;output=json&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize()
+        }).then(function(data) {
+            // Fill the box and enable the button
+            resultBox.removeClass('alert-success alert-danger').show()
+            resultBox.text(data.value.message)
+            theButton.removeAttr("disabled")
+            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+
+            // Succes or not?
+            if(data.value.result) {
+                resultBox.addClass('alert-success')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
             }
         });
     });

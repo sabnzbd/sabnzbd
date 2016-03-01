@@ -27,7 +27,6 @@ import urllib
 import json
 import re
 import hashlib
-import socket
 from random import randint
 from xml.sax.saxutils import escape
 
@@ -54,7 +53,6 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.sslinfo import ssl_protocols
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, PNFO, \
@@ -64,7 +62,7 @@ from sabnzbd.constants import \
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, remove_callable, rss_qstatus, \
+    api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
     _api_test_email, _api_test_notif
@@ -375,7 +373,7 @@ class MainPage(object):
             # For Glitter we pre-load the JSON output
             if 'Glitter' in self.__web_dir:
                 # Queue
-                queue = build_queue(limit=cfg.queue_limit())[0]
+                queue = build_queue(limit=cfg.queue_limit(), output='json')[0]
                 queue['categories'] = info.pop('cat_list')
                 queue['scripts'] = info.pop('script_list')
 
@@ -384,7 +382,7 @@ class MainPage(object):
                 grand, month, week, day = BPSMeter.do.get_sums()
                 history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                        to_units(grand), to_units(month), to_units(week), to_units(day)
-                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit())
+                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit(), output='json')
 
                 # Make sure the JSON works, otherwise leave empty
                 try:
@@ -2562,109 +2560,7 @@ class Status(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        header, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
-
-        # anything in header[] will be known to the python templates
-        # header['blabla'] will be known as $blabla
-        # this function is called on each refresh of the template
-
-        header['logfile'] = sabnzbd.LOGFILE
-        header['weblogfile'] = sabnzbd.WEBLOGFILE
-        header['loglevel'] = str(cfg.log_level())
-
-        header['lastmail'] = None  # Obsolete, keep for compatibility
-
-        header['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
-        header['configfn'] = xml_name(config.get_filename())
-
-        # Dashboard: Begin
-        if not kwargs.get('skip_dashboard'):
-            header['localipv4'] = localipv4()
-            header['publicipv4'] = publicipv4()
-            header['ipv6'] = ipv6()
-            # Dashboard: DNS-check
-            try:
-                socket.gethostbyname(cfg.selftest_host())
-                header['dnslookup'] = "OK"
-            except:
-                header['dnslookup'] = None
-
-            # Dashboard: Speed of System
-            from sabnzbd.utils.getperformance import getpystone, getcpu
-            header['pystone'] = getpystone()
-            header['cpumodel'] = getcpu()
-            # Dashboard: Speed of Download directory:
-            header['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
-            try:
-                sabnzbd.downloaddirspeed  # The persistent var @UndefinedVariable
-            except:
-                # does not yet exist, so create it:
-                sabnzbd.downloaddirspeed = -1  # -1 means ... not yet determined
-            header['downloaddirspeed'] = sabnzbd.downloaddirspeed
-            # Dashboard: Speed of Complete directory:
-            header['completedir'] = sabnzbd.cfg.complete_dir.get_path()
-            try:
-                sabnzbd.completedirspeed  # The persistent var @UndefinedVariable
-            except:
-                # does not yet exist, so create it:
-                sabnzbd.completedirspeed = -1  # -1 means ... not yet determined
-            header['completedirspeed'] = sabnzbd.completedirspeed
-
-            try:
-                sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
-            except:
-                sabnzbd.dashrefreshcounter = 0
-            header['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
-
-        header['servers'] = []
-        servers = sorted(Downloader.do.servers[:], key=lambda svr: '%02d%s' % (svr.priority, svr.displayname.lower()))
-        for server in servers:
-            busy = []
-            connected = 0
-
-            for nw in server.idle_threads[:]:
-                if nw.connected:
-                    connected += 1
-
-            for nw in server.busy_threads[:]:
-                article = nw.article
-                art_name = ""
-                nzf_name = ""
-                nzo_name = ""
-
-                if article:
-                    nzf = article.nzf
-                    nzo = nzf.nzo
-
-                    art_name = xml_name(article.article)
-                    # filename field is not always present
-                    try:
-                        nzf_name = xml_name(nzf.filename)
-                    except:  # attribute error
-                        nzf_name = xml_name(nzf.subject)
-                    nzo_name = xml_name(nzo.final_name)
-
-                busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
-
-                if nw.connected:
-                    connected += 1
-
-            if server.warning and not (connected or server.errormsg):
-                connected = unicoder(server.warning)
-
-            if server.request and not server.info:
-                connected = T('&nbsp;Resolving address')
-            busy.sort()
-
-            header['servers'].append((server.displayname, '', connected, busy, server.ssl,
-                                      server.active, server.errormsg, server.priority, server.optional))
-            #     5            6                   7               8
-
-        wlist = []
-        for w in sabnzbd.GUIHANDLER.content():
-            w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
-            wlist.insert(0, unicoder(w))
-        header['warnings'] = wlist
+        header = build_status(web_dir=self.__web_dir, prim=self.__prim, skip_dashboard=kwargs.get('skip_dashboard'))
 
         template = Template(file=os.path.join(self.__web_dir, 'status.tmpl'),
                             filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)

@@ -83,8 +83,14 @@ body {
 .example {
     background-color: #fefeee;
 }
+.presets {
+    margin-bottom: -6px;
+}
 .presets input {
     margin: 2px 0;
+}
+.presets input[type="button"] {
+    margin: 0px 2px 6px 0px;
 }
 label.config,
 .field-pair h5 {
@@ -429,7 +435,8 @@ tr.separator {
     -webkit-transform: scale(1) !important;
     opacity: 1 !important;
 }
-.btn-default.fileBrowser {
+.btn-default.fileBrowser,
+.btn-default.clearBtn {
     margin-left: -1px !important;
     box-shadow: 1px 0px 1px rgba(0,0,0,.1) !important;
 }
@@ -881,6 +888,16 @@ input[type="checkbox"] {
     margin-bottom: 8px;
 }
 
+.result-box .alert {
+    margin-bottom: 0px;
+    display: none;
+}
+
+.alert-no-category {
+    display: none;
+    margin: 5px 0px 0px;
+}
+
 .server-disabled {
     background-color: #eee;
 }
@@ -946,6 +963,15 @@ input[type="checkbox"] {
     0% { opacity: 0; }
     50% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+.spin-glyphicon {
+    animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
 }
 
 @media screen and (min-width: 1200px) { 

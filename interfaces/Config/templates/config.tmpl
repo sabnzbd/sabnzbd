@@ -40,7 +40,7 @@
                         <td>
                             <!--#if HAVE_SSL#--> 
                                 <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo.ssl_protocols())#-->
-                                $sabnzbd.utils.sslinfo.ssl_version() <em>[$sslversions]</em>
+                                $sabnzbd.utils.sslinfo.ssl_version() &nbsp; [$sslversions]
                             <!--#else#-->
                                 <span class="label label-warning">$T('notAvailable')</span>
                                 <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>

@@ -30,24 +30,22 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="tvfoldername">$T('sortString')</label>
-                        <input type="text" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" />
-                        <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                        <input type="text" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                     </div>
                     <div class="field-pair">
                         <label class="config">$T('presetSort')</label>
                         <div class="presets float-left">
-                            <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="$T('button-Season1x05')" />
-                            <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="$T('button-SeasonS01E05')" />
+                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="$T('button-Season1x05')" />
+                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="$T('button-SeasonS01E05')" />
                             <br/>
-                            <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')" />
-                            <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" /> 
+                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')" />
+                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" /> 
                         </div>
                     </div>
                     <div id="previewtv" class="example">
                         <div class="field-pair">
                             <label class="config" for="tvsamplename">Test Data</label>
-                            <input type="text" id="tvsamplename" name="tvsamplename" placeholder="$T('show-name') S01E05 - $T('ep-name') [DTS]" />
-                            <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                            <input type="text" id="tvsamplename" name="tvsamplename" placeholder="$T('show-name') S01E05 - $T('ep-name') [DTS]" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="field-pair">
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewtv-result">&nbsp;</span> 
@@ -189,27 +187,24 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="moviefoldername">$T('sortString')</label>
-                        <input type="text" name="movie_sort_string" id="moviefoldername" value="$movie_sort_string" />
-                        <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                        <input type="text" name="movie_sort_string" id="moviefoldername" value="$movie_sort_string" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="movieextra">$T('multiPartLabel')</label>
-                        <input type="text" name="movie_sort_extra" id="movieextra" value="$movie_sort_extra" />
-                        <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                        <input type="text" name="movie_sort_extra" id="movieextra" value="$movie_sort_extra" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                     </div>
                     <div class="field-pair">
                         <label class="config">$T('presetSort')</label>
                         <div class="presets float-left">
-                            <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
-                            <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
-                            <input type="button" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="Decades 1" /> 
+                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="Decades 1" /> 
                         </div>
                     </div>
                     <div id="previewmovie" class="example">
                         <div class="field-pair">
                             <label class="config" for="moviesamplename">Test Data</label>
-                            <input type="text" id="moviesamplename" name="moviesamplename" placeholder="$T('movie-sp-name') (2009)" />
-                            <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                            <input type="text" id="moviesamplename" name="moviesamplename" placeholder="$T('movie-sp-name') (2009)" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="field-pair">
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewmovie-result">&nbsp;</span>
@@ -326,22 +321,20 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="datefoldername">$T('sortString')</label>
-                        <input type="text" name="date_sort_string" id="datefoldername" value="$date_sort_string" />
-                        <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                        <input type="text" name="date_sort_string" id="datefoldername" value="$date_sort_string" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                     </div>
                     <div class="field-pair">
                         <label class="config">$T('presetSort')</label>
                         <div class="presets float-left">
-                            <input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')" />
-                            <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')" />
-                            <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" /> 
+                            <input type="button" class="btn btn-default" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')" />
+                            <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')" />
+                            <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" /> 
                         </div>
                     </div>
                     <div id="previewdate" class="example">
                         <div class="field-pair">
                             <label class="config" for="datesamplename">Test Data</label>
-                            <input type="text" id="datesamplename" name="datesamplename" placeholder="$T('show-name') 2009-01-02" />
-                            <button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                            <input type="text" id="datesamplename" name="datesamplename" placeholder="$T('show-name') 2009-01-02" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="field-pair">
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewdate-result">&nbsp;</span> 

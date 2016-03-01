@@ -1,7 +1,8 @@
 ko.bindingHandlers.truncatedText = {
     update: function(element, valueAccessor, allBindingsAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor()),
-            length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        if (!value) return
+        var length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
             truncatedValue = value.length > length ? value.substring(0, Math.min(value.length, length)) + "&hellip;" : value;
         ko.bindingHandlers.html.update(element, function() {
             return truncatedValue;
@@ -12,6 +13,7 @@ ko.bindingHandlers.truncatedText = {
 ko.bindingHandlers.truncatedTextCenter = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor())
+        if (!value) return
         var maxLength = 60;
         if(value.length > maxLength) {
             var charsToShow = maxLength - 3,
