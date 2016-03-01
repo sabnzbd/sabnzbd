@@ -965,6 +965,15 @@ input[type="checkbox"] {
     100% { opacity: 1; }
 }
 
+.spin-glyphicon {
+    animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+
 @media screen and (min-width: 1200px) { 
     .Categories input[name="dir"] {
         max-width: 240px !important;

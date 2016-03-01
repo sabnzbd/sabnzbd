@@ -343,8 +343,10 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
-        var resultBox = \$(this).parents('.col1').find('.result-box .alert');
-        \$(this).attr("disabled", "disabled")
+        var theButton = \$(this)
+        var resultBox = theButton.parents('.col1').find('.result-box .alert');
+        theButton.attr("disabled", "disabled")
+        theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
         \$.ajax({
             type: "POST",
             url: "../../tapi",
@@ -353,7 +355,8 @@
             // Fill the box and enable the button
             resultBox.removeClass('alert-success alert-danger').show()
             resultBox.text(data.value.message)
-            \$(event.target).removeAttr("disabled")
+            theButton.removeAttr("disabled")
+            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
 
             // Succes or not?
             if(data.value.result) {

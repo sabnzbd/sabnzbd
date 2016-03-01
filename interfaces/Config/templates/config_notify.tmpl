@@ -705,6 +705,7 @@
         }
         // Disable button and get the data
         \$(buttonObj).attr("disabled", "disabled")
+        \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
         var data = { mode: buttonObj.id, apikey: '$session', output: 'json' };
         \$(buttonObj).parents('.section').extractFormDataTo(data);
 
@@ -719,6 +720,7 @@
         }).then(function(data) {
             // Remove disabled and make the box
             \$(buttonObj).removeAttr("disabled")
+            \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
             resultBox.removeClass('alert-success alert-danger').show()
             if(data.status) {
                 resultBox.addClass('alert-success')
