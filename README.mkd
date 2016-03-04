@@ -1,5 +1,10 @@
-Release Notes  -  SABnzbd 1.0.0RC2
+Release Notes  -  SABnzbd 1.0.0RC3
 ==================================
+
+## Changes in RC3
+- SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled.
+- The Windows installer failed to detect an already running version.
+- Glitter: cosmetic fixes.
 
 ## Changes in RC2
 - Changing server priorities during a download could lead to unexpected results and lockups
