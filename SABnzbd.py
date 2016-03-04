@@ -278,7 +278,7 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
-    print "      --no_ipv6            Do not listen on IPv6 address [::1]"
+    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1]"
 
 
 def print_version():
@@ -699,7 +699,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
 def attach_server(host, port, cert=None, key=None, chain=None):
     """ Define and attach server, optionally HTTPS """
-    if not (sabnzbd.cfg.no_ipv6() and '::1' in host):
+    if sabnzbd.cfg.ipv6_hosting() or '::1' in host:
         http_server = _cpwsgi_server.CPWSGIServer()
         http_server.bind_addr = (host, port)
         if cert and key:
@@ -832,7 +832,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates', 'no_ipv6',
+                                    'weblogging=', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console', 'pidfile=',
@@ -910,7 +910,7 @@ def main():
     new_instance = False
     force_sessions = False
     osx_console = False
-    no_ipv6 = False
+    ipv6_hosting = None
 
     _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
 
@@ -1001,9 +1001,9 @@ def main():
         elif opt in ('--console',):
             re_argv.append(opt)
             osx_console = True
-        elif opt in ('--no_ipv6',):
-            no_ipv6 = True
-
+        elif opt in ('--ipv6_hosting',):
+            ipv6_hosting = arg
+            
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
@@ -1080,8 +1080,8 @@ def main():
     # Set root folders for HTTPS server file paths
     sabnzbd.cfg.set_root_folders2()
 
-    if no_ipv6:
-        sabnzbd.cfg.no_ipv6.set(True)
+    if ipv6_hosting is not None:
+        sabnzbd.cfg.ipv6_hosting.set(ipv6_hosting)
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)

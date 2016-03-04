@@ -1489,7 +1489,7 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
-              'rss_filenames', 'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
+              'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
               'enable_https_verification', 'api_logging', 'fixed_ports'

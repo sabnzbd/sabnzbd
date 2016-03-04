@@ -265,6 +265,8 @@ def launch_a_browser(url, force=False):
         # Must use https, because http is not available
         url = url.replace('http:', 'https:')
 
+    if 'localhost' in url and not cfg.ipv6_hosting():
+        url = url.replace('localhost', '127.0.0.1')
     logging.info("Launching browser with %s", url)
     try:
         if url and not url.startswith('http'):

@@ -259,7 +259,7 @@ inet_exposure = OptionNumber('misc', 'inet_exposure', 0, protect=True)  # 0=loca
 max_art_tries = OptionNumber('misc', 'max_art_tries', 3, 2)
 max_art_opt = OptionBool('misc', 'max_art_opt', False)
 use_pickle = OptionBool('misc', 'use_pickle', False)
-no_ipv6 = OptionBool('misc', 'no_ipv6', False)
+ipv6_hosting = OptionBool('misc', 'ipv6_hosting', False)
 fixed_ports = OptionBool('misc', 'fixed_ports', False)
 
 # [ncenter]
