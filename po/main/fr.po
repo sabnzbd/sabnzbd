@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-02-19 21:51+0000\n"
-"PO-Revision-Date: 2016-02-20 11:37+0000\n"
+"POT-Creation-Date: 2016-03-01 21:12+0000\n"
+"PO-Revision-Date: 2016-03-02 17:44+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-02-21 05:35+0000\n"
+"X-Launchpad-Export-Date: 2016-03-03 06:10+0000\n"
 "X-Generator: Launchpad (build 17925)\n"
 
 #: SABnzbd.py:326 [Error message]
@@ -79,7 +79,7 @@ msgstr "SABnzbd %s démarré"
 msgid "Cannot reach the SABHelper service"
 msgstr "Impossible d'accéder au service SABHelper"
 
-#: SABnzbd.py:1609 # sabnzbd/growler.py:69 [Message class for Growl server] # sabnzbd/skintext.py:275 [Status page, table column header, actual message]
+#: SABnzbd.py:1609 # sabnzbd/growler.py:69 [Message class for Growl server] # sabnzbd/skintext.py:276 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Avertissement"
 
@@ -131,42 +131,50 @@ msgstr "Echec du chargement de %s"
 msgid "Loading %s failed with error %s"
 msgstr "Le chargement de %s a échoué avec l'erreur %s"
 
-#: sabnzbd/api.py:725 # sabnzbd/api.py:731 # sabnzbd/api.py:738 # sabnzbd/api.py:745
-#: sabnzbd/api.py:752 # sabnzbd/api.py:759 # sabnzbd/api.py:766
-#: sabnzbd/skintext.py:629
+#: sabnzbd/api.py:728 # sabnzbd/api.py:734 # sabnzbd/api.py:741 # sabnzbd/api.py:748
+#: sabnzbd/api.py:755 # sabnzbd/api.py:762 # sabnzbd/api.py:769
+#: sabnzbd/skintext.py:631
 msgid "Test Notification"
 msgstr "Test de Notification"
 
-#: sabnzbd/api.py:1626 # sabnzbd/skintext.py:90 [No value, used in dropdown menus] # sabnzbd/skintext.py:734 [Job details page, select no files]
-msgid "None"
-msgstr "Aucun"
+#: sabnzbd/api.py:1235
+msgid "&nbsp;Resolving address"
+msgstr "&nbsp;Résolution de l'adresse"
 
-#: sabnzbd/api.py:1628 # sabnzbd/interface.py:109 # sabnzbd/skintext.py:89 [Default value, used in dropdown menus]
-msgid "Default"
-msgstr "Par défaut"
-
-#: sabnzbd/api.py:1695 # sabnzbd/interface.py:2665 # sabnzbd/interface.py:2810
-#: sabnzbd/skintext.py:776
+#: sabnzbd/api.py:1255 # sabnzbd/api.py:1817 # sabnzbd/interface.py:2706
+#: sabnzbd/skintext.py:778
 msgid "ERROR:"
 msgstr "ERREUR:"
 
-#: sabnzbd/api.py:1760
+#: sabnzbd/api.py:1255 # sabnzbd/skintext.py:770
+msgid "WARNING:"
+msgstr "AVERTISSEMENT :"
+
+#: sabnzbd/api.py:1748 # sabnzbd/skintext.py:90 [No value, used in dropdown menus] # sabnzbd/skintext.py:736 [Job details page, select no files]
+msgid "None"
+msgstr "Aucun"
+
+#: sabnzbd/api.py:1750 # sabnzbd/interface.py:109 # sabnzbd/skintext.py:89 [Default value, used in dropdown menus]
+msgid "Default"
+msgstr "Par défaut"
+
+#: sabnzbd/api.py:1882
 msgid "unknown"
 msgstr "inconnu"
 
-#: sabnzbd/api.py:1788 [Error message]
+#: sabnzbd/api.py:1910 [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Echec de la compilation de regex pour la recherche du terme : %s"
 
-#: sabnzbd/api.py:1999
+#: sabnzbd/api.py:2121
 msgid "d"
 msgstr "j"
 
-#: sabnzbd/api.py:2000
+#: sabnzbd/api.py:2122
 msgid "h"
 msgstr "h"
 
-#: sabnzbd/api.py:2001
+#: sabnzbd/api.py:2123
 msgid "m"
 msgstr "m"
 
@@ -365,12 +373,12 @@ msgid "Resuming"
 msgstr "Reprise en cours"
 
 #: sabnzbd/downloader.py:252 # sabnzbd/osxmenu.py:465 # sabnzbd/sabtray.py:88
-#: sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:199 [Priority pick list]
-#: sabnzbd/skintext.py:912
+#: sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:200 [Priority pick list]
+#: sabnzbd/skintext.py:914
 msgid "Paused"
 msgstr "En pause"
 
-#: sabnzbd/downloader.py:297 [Warning message] # sabnzbd/interface.py:1722 [Warning message] # sabnzbd/skintext.py:750
+#: sabnzbd/downloader.py:297 [Warning message] # sabnzbd/interface.py:1722 [Warning message] # sabnzbd/skintext.py:752
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Vous devez définir une bande passante maximale avant de pouvoir définir une "
@@ -413,7 +421,7 @@ msgstr "Le serveur %s requiert un identifiant/mot de passe"
 msgid "Suspect error in downloader"
 msgstr "Erreur suspecte dans le téléchargeur"
 
-#: sabnzbd/downloader.py:855 # sabnzbd/skintext.py:832
+#: sabnzbd/downloader.py:855 # sabnzbd/skintext.py:834
 msgid "Shutting down"
 msgstr "Arrêt en cours..."
 
@@ -528,7 +536,7 @@ msgstr "File d'attente terminée"
 msgid "Other Messages"
 msgstr "Autres messages"
 
-#: sabnzbd/growler.py:302 # sabnzbd/growler.py:333
+#: sabnzbd/growler.py:302 # sabnzbd/growler.py:333 # sabnzbd/skintext.py:121
 msgid "Not available"
 msgstr "Non disponible"
 
@@ -658,7 +666,7 @@ msgstr ""
 "secondes avant de cliquer sur le bouton ci-dessous.<br /><br /><strong><a "
 "href=\"..\">Rafraîchir</a></strong><br />"
 
-#: sabnzbd/interface.py:2011 # sabnzbd/skintext.py:578 [Config->RSS, tab header]
+#: sabnzbd/interface.py:2011 # sabnzbd/skintext.py:580 [Config->RSS, tab header]
 msgid "Feed"
 msgstr "Flux RSS"
 
@@ -702,26 +710,18 @@ msgstr "non"
 msgid "Undefined server!"
 msgstr "Serveur non défini !"
 
-#: sabnzbd/interface.py:2656
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Résolution de l'adresse"
-
-#: sabnzbd/interface.py:2665 # sabnzbd/skintext.py:768
-msgid "WARNING:"
-msgstr "AVERTISSEMENT :"
-
-#: sabnzbd/interface.py:2810
+#: sabnzbd/interface.py:2706
 msgid "Incorrect parameter"
 msgstr "Paramètre incorrect"
 
-#: sabnzbd/interface.py:2810 # sabnzbd/interface.py:2832
+#: sabnzbd/interface.py:2706 # sabnzbd/interface.py:2728
 msgid "Back"
 msgstr "Retour"
 
-#: sabnzbd/interface.py:2965 # sabnzbd/interface.py:2969
-#: sabnzbd/interface.py:2973 # sabnzbd/interface.py:2977
-#: sabnzbd/interface.py:2981 # sabnzbd/interface.py:2985
-#: sabnzbd/interface.py:2989 # sabnzbd/interface.py:2993
+#: sabnzbd/interface.py:2861 # sabnzbd/interface.py:2865
+#: sabnzbd/interface.py:2869 # sabnzbd/interface.py:2873
+#: sabnzbd/interface.py:2877 # sabnzbd/interface.py:2881
+#: sabnzbd/interface.py:2885 # sabnzbd/interface.py:2889
 msgid "Incorrect value for %s: %s"
 msgstr "Valeur incorrecte pour %s: %s"
 
@@ -904,7 +904,7 @@ msgid "Quick Checking"
 msgstr "Contrôle rapide"
 
 #: sabnzbd/newsunpack.py:1028 # sabnzbd/newsunpack.py:1053
-#: sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:301
+#: sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:302
 msgid "Repair"
 msgstr "Réparation"
 
@@ -1020,101 +1020,101 @@ msgstr "NZB ajouté à la file d'attente"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Encodage inconnu"
 
-#: sabnzbd/nzbstuff.py:471 [Warning message]
+#: sabnzbd/nzbstuff.py:470 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Fichier %s vide, ignoré"
 
-#: sabnzbd/nzbstuff.py:516 [Warning message]
+#: sabnzbd/nzbstuff.py:515 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Echec de l'importation des fichiers %s depuis %s"
 
-#: sabnzbd/nzbstuff.py:718 [Warning message]
+#: sabnzbd/nzbstuff.py:717 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "Fichier NZB %s incomplet"
 
-#: sabnzbd/nzbstuff.py:720 [Warning message] # sabnzbd/nzbstuff.py:724 [Warning message]
+#: sabnzbd/nzbstuff.py:719 [Warning message] # sabnzbd/nzbstuff.py:723 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Fichier NZB invalide %s, ignoré (raison=%s, ligne=%s)"
 
-#: sabnzbd/nzbstuff.py:743 # sabnzbd/nzbstuff.py:745
+#: sabnzbd/nzbstuff.py:742 # sabnzbd/nzbstuff.py:744
 msgid "Empty NZB file %s"
 msgstr "Fichier NZB %s vide"
 
-#: sabnzbd/nzbstuff.py:816 [Warning message]
+#: sabnzbd/nzbstuff.py:815 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Doublon NZB ignoré \"%s\""
 
-#: sabnzbd/nzbstuff.py:822 [Warning message]
+#: sabnzbd/nzbstuff.py:821 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause du doublon NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:985
+#: sabnzbd/nzbstuff.py:984
 msgid "Aborted, cannot be completed"
 msgstr "Interrompu, ne peut être achevé"
 
-#: sabnzbd/nzbstuff.py:1076 # sabnzbd/skintext.py:771
+#: sabnzbd/nzbstuff.py:1075 # sabnzbd/skintext.py:773
 msgid "DUPLICATE"
 msgstr "DOUBLON"
 
-#: sabnzbd/nzbstuff.py:1078 [Queue indicator for encrypted job] # sabnzbd/skintext.py:769
+#: sabnzbd/nzbstuff.py:1077 [Queue indicator for encrypted job] # sabnzbd/skintext.py:771
 msgid "ENCRYPTED"
-msgstr "CRYPTÉ"
+msgstr "CHIFFRÉ"
 
-#: sabnzbd/nzbstuff.py:1080 # sabnzbd/skintext.py:773
+#: sabnzbd/nzbstuff.py:1079 # sabnzbd/skintext.py:775
 msgid "TOO LARGE"
 msgstr "TROP VOLUMINEUX"
 
-#: sabnzbd/nzbstuff.py:1082 # sabnzbd/skintext.py:770
+#: sabnzbd/nzbstuff.py:1081 # sabnzbd/skintext.py:772
 msgid "INCOMPLETE"
 msgstr "INCOMPLET"
 
-#: sabnzbd/nzbstuff.py:1084 # sabnzbd/skintext.py:772
+#: sabnzbd/nzbstuff.py:1083 # sabnzbd/skintext.py:774
 msgid "UNWANTED"
 msgstr "INDÉSIRABLE"
 
-#: sabnzbd/nzbstuff.py:1086 # sabnzbd/skintext.py:774
+#: sabnzbd/nzbstuff.py:1085 # sabnzbd/skintext.py:776
 msgid "FILTERED"
 msgstr "FILTRÉ"
 
-#: sabnzbd/nzbstuff.py:1090 # sabnzbd/skintext.py:775
+#: sabnzbd/nzbstuff.py:1089 # sabnzbd/skintext.py:777
 msgid "WAIT %s sec"
 msgstr "PATIENTER %s sec"
 
-#: sabnzbd/nzbstuff.py:1185
+#: sabnzbd/nzbstuff.py:1184
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Téléchargé dans %s à %sB/s de moyenne"
 
-#: sabnzbd/nzbstuff.py:1186 # sabnzbd/skintext.py:738 [Job details page, file age column header] # sabnzbd/skintext.py:934
+#: sabnzbd/nzbstuff.py:1185 # sabnzbd/skintext.py:740 [Job details page, file age column header] # sabnzbd/skintext.py:936
 msgid "Age"
 msgstr "Âge"
 
-#: sabnzbd/nzbstuff.py:1194
+#: sabnzbd/nzbstuff.py:1193
 msgid "%s articles were malformed"
 msgstr "%s articles malformés"
 
-#: sabnzbd/nzbstuff.py:1196
+#: sabnzbd/nzbstuff.py:1195
 msgid "%s articles were missing"
 msgstr "%s articles manquants"
 
-#: sabnzbd/nzbstuff.py:1198
+#: sabnzbd/nzbstuff.py:1197
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
 
-#: sabnzbd/nzbstuff.py:1200
+#: sabnzbd/nzbstuff.py:1199
 msgid "%s articles were removed"
 msgstr "%s articles ont été retirés"
 
-#: sabnzbd/nzbstuff.py:1245 [Error message]
+#: sabnzbd/nzbstuff.py:1244 [Error message]
 msgid "Error importing %s"
 msgstr "Erreur lors de l'importation de %s"
 
 #: sabnzbd/osxmenu.py:136 # sabnzbd/osxmenu.py:444 # sabnzbd/osxmenu.py:452
-#: sabnzbd/skintext.py:276 [Footer: indicator of warnings] # sabnzbd/skintext.py:924
+#: sabnzbd/skintext.py:277 [Footer: indicator of warnings] # sabnzbd/skintext.py:926
 msgid "Warnings"
 msgstr "Avertissements"
 
 #: sabnzbd/osxmenu.py:148 # sabnzbd/osxmenu.py:488 # sabnzbd/sabtray.py:87
-#: sabnzbd/sabtraylinux.py:94 # sabnzbd/skintext.py:914
+#: sabnzbd/sabtraylinux.py:94 # sabnzbd/skintext.py:916
 msgid "Idle"
 msgstr "A l'arrêt"
 
@@ -1122,19 +1122,19 @@ msgstr "A l'arrêt"
 msgid "Configuration"
 msgstr "Configuration"
 
-#: sabnzbd/osxmenu.py:166 # sabnzbd/skintext.py:147 [Main menu item] # sabnzbd/skintext.py:490
+#: sabnzbd/osxmenu.py:166 # sabnzbd/skintext.py:148 [Main menu item] # sabnzbd/skintext.py:491
 msgid "Queue"
 msgstr "File d'attente"
 
-#: sabnzbd/osxmenu.py:174 # sabnzbd/skintext.py:222 [Queue page button]
+#: sabnzbd/osxmenu.py:174 # sabnzbd/skintext.py:223 [Queue page button]
 msgid "Purge Queue"
 msgstr "Vider la file d'attente"
 
-#: sabnzbd/osxmenu.py:184 # sabnzbd/skintext.py:148 [Main menu item]
+#: sabnzbd/osxmenu.py:184 # sabnzbd/skintext.py:149 [Main menu item]
 msgid "History"
 msgstr "Historique"
 
-#: sabnzbd/osxmenu.py:192 # sabnzbd/skintext.py:236 [History page button] # sabnzbd/skintext.py:809
+#: sabnzbd/osxmenu.py:192 # sabnzbd/skintext.py:237 [History page button] # sabnzbd/skintext.py:811
 msgid "Purge History"
 msgstr "Vider l'historique"
 
@@ -1143,8 +1143,8 @@ msgid "Limit Speed"
 msgstr "Limiter la vitesse"
 
 #: sabnzbd/osxmenu.py:225 # sabnzbd/sabtray.py:82 # sabnzbd/sabtraylinux.py:113
-#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:179 [Pause downloading] # sabnzbd/skintext.py:435 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:572 [Config->Scheduling]
+#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:180 [Pause downloading] # sabnzbd/skintext.py:436 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:574 [Config->Scheduling]
 msgid "Pause"
 msgstr "Mettre en pause"
 
@@ -1153,7 +1153,7 @@ msgid "min."
 msgstr "min."
 
 #: sabnzbd/osxmenu.py:242 # sabnzbd/sabtray.py:84 # sabnzbd/sabtraylinux.py:111
-#: sabnzbd/skintext.py:55 [#: Config->Scheduler] # sabnzbd/skintext.py:180 [Resume downloading] # sabnzbd/skintext.py:571 [Config->Scheduling]
+#: sabnzbd/skintext.py:55 [#: Config->Scheduler] # sabnzbd/skintext.py:181 [Resume downloading] # sabnzbd/skintext.py:573 [Config->Scheduling]
 msgid "Resume"
 msgstr "Reprendre"
 
@@ -1179,7 +1179,7 @@ msgstr "Résoudre les problèmes"
 
 #: sabnzbd/osxmenu.py:296 # sabnzbd/osxmenu.py:297 # sabnzbd/sabtray.py:85
 #: sabnzbd/sabtraylinux.py:114 # sabnzbd/sabtraylinux.py:170
-#: sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:299 # sabnzbd/skintext.py:574 [Config->Scheduling]
+#: sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:300 # sabnzbd/skintext.py:576 [Config->Scheduling]
 msgid "Restart"
 msgstr "Redémarrer"
 
@@ -1474,7 +1474,7 @@ msgstr "%s exécuté"
 msgid "Script exit code is %s"
 msgstr "Le code script de sortie est %s"
 
-#: sabnzbd/postproc.py:485 # sabnzbd/skintext.py:807
+#: sabnzbd/postproc.py:485 # sabnzbd/skintext.py:809
 msgid "More"
 msgstr "Plus"
 
@@ -1597,16 +1597,16 @@ msgid "Open complete folder"
 msgstr "Ouvrir le dossier des complets"
 
 #: sabnzbd/sabtray.py:83 # sabnzbd/sabtraylinux.py:115
-#: sabnzbd/sabtraylinux.py:175 # sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:178 [Shutdown SABnzbd]
-#: sabnzbd/skintext.py:573 [Config->Scheduling]
+#: sabnzbd/sabtraylinux.py:175 # sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:179 [Shutdown SABnzbd]
+#: sabnzbd/skintext.py:575 [Config->Scheduling]
 msgid "Shutdown"
 msgstr "Arrêter"
 
-#: sabnzbd/sabtray.py:89 # sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:887
+#: sabnzbd/sabtray.py:89 # sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:889
 msgid "Remaining"
 msgstr "Restant"
 
-#: sabnzbd/sabtraylinux.py:105 # sabnzbd/skintext.py:743 # sabnzbd/skintext.py:843
+#: sabnzbd/sabtraylinux.py:105 # sabnzbd/skintext.py:745 # sabnzbd/skintext.py:845
 msgid "Add NZB"
 msgstr "Ajouter NZB"
 
@@ -1622,7 +1622,7 @@ msgstr "Action inconnue : %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Planification pour un serveur non existant %s"
 
-#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:188 [Post processing pick list] # sabnzbd/skintext.py:595 [Config->RSS button "download item"]
+#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:189 [Post processing pick list] # sabnzbd/skintext.py:597 [Config->RSS button "download item"]
 msgid "Download"
 msgstr "Télécharger"
 
@@ -1634,15 +1634,15 @@ msgstr "Concaténer"
 msgid "Unpack"
 msgstr "Décompresser"
 
-#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:186
+#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:187
 msgid "Script"
 msgstr "Script"
 
-#: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:122 [Where to find the SABnzbd sourcecode]
+#: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:123 [Where to find the SABnzbd sourcecode]
 msgid "Source"
 msgstr "Source"
 
-#: sabnzbd/skintext.py:32 [PP Distribution over servers] # sabnzbd/skintext.py:159 [Main menu item]
+#: sabnzbd/skintext.py:32 [PP Distribution over servers] # sabnzbd/skintext.py:160 [Main menu item]
 msgid "Servers"
 msgstr "Serveurs"
 
@@ -1650,11 +1650,11 @@ msgstr "Serveurs"
 msgid "Failure"
 msgstr "Échec"
 
-#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:242 [History: job status]
+#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:243 [History: job status]
 msgid "Completed"
 msgstr "Terminé"
 
-#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:919
+#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:921
 msgid "Failed"
 msgstr "Échoué"
 
@@ -1690,7 +1690,7 @@ msgstr "Vérification rapide..."
 msgid "Verifying..."
 msgstr "Vérification..."
 
-#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:913
+#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:915
 msgid "Downloading"
 msgstr "Téléchargement"
 
@@ -1698,15 +1698,15 @@ msgstr "Téléchargement"
 msgid "Checking"
 msgstr "Vérification"
 
-#: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:566 [Config->Scheduling]
+#: sabnzbd/skintext.py:49 [#: Config->Scheduler] # sabnzbd/skintext.py:568 [Config->Scheduling]
 msgid "Frequency"
 msgstr "Fréquence"
 
-#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:567 [Config->Scheduling] # sabnzbd/skintext.py:740 [Job details page, section header]
+#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:569 [Config->Scheduling] # sabnzbd/skintext.py:742 [Job details page, section header]
 msgid "Action"
 msgstr "Action"
 
-#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:568 [Config->Scheduling]
+#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:570 [Config->Scheduling]
 msgid "Arguments"
 msgstr "Arguments"
 
@@ -1782,8 +1782,8 @@ msgstr "Activer la gestion de quota"
 msgid "Disable quota management"
 msgstr "Désactiver la gestion de quota"
 
-#: sabnzbd/skintext.py:76 [Prowl priority] # sabnzbd/skintext.py:83 [Prowl priority] # sabnzbd/skintext.py:433 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:484
+#: sabnzbd/skintext.py:76 [Prowl priority] # sabnzbd/skintext.py:83 [Prowl priority] # sabnzbd/skintext.py:434 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:485
 msgid "Off"
 msgstr "Désactivé"
 
@@ -1795,11 +1795,11 @@ msgstr "Très basse"
 msgid "Moderate"
 msgstr "Modéré"
 
-#: sabnzbd/skintext.py:79 [Prowl priority] # sabnzbd/skintext.py:196 [Priority pick list]
+#: sabnzbd/skintext.py:79 [Prowl priority] # sabnzbd/skintext.py:197 [Priority pick list]
 msgid "Normal"
 msgstr "Normale"
 
-#: sabnzbd/skintext.py:80 [Prowl priority] # sabnzbd/skintext.py:85 [Prowl priority] # sabnzbd/skintext.py:197 [Priority pick list]
+#: sabnzbd/skintext.py:80 [Prowl priority] # sabnzbd/skintext.py:85 [Prowl priority] # sabnzbd/skintext.py:198 [Priority pick list]
 msgid "High"
 msgstr "Haute"
 
@@ -1807,7 +1807,7 @@ msgstr "Haute"
 msgid "Emergency"
 msgstr "Urgence"
 
-#: sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:198 [Priority pick list]
+#: sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:199 [Priority pick list]
 msgid "Low"
 msgstr "Basse"
 
@@ -1875,15 +1875,15 @@ msgstr "Jour du mois"
 msgid "This week"
 msgstr "Cette semaine"
 
-#: sabnzbd/skintext.py:114 # sabnzbd/skintext.py:763
+#: sabnzbd/skintext.py:114 # sabnzbd/skintext.py:765
 msgid "This month"
 msgstr "Ce mois"
 
-#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:762
+#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:764
 msgid "Today"
 msgstr "Aujourd'hui"
 
-#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:764
+#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:766
 msgid "Total"
 msgstr "Total"
 
@@ -1899,561 +1899,561 @@ msgstr "Paramètres"
 msgid "Python Version"
 msgstr "Version de Python"
 
-#: sabnzbd/skintext.py:121 [Home page of the SABnzbd project]
+#: sabnzbd/skintext.py:122 [Home page of the SABnzbd project]
 msgid "Home page"
 msgstr "Page d'accueil"
 
-#: sabnzbd/skintext.py:123 [Used in "IRC or IRC-Webaccess"]
+#: sabnzbd/skintext.py:124 [Used in "IRC or IRC-Webaccess"]
 msgid "or"
 msgstr "ou"
 
-#: sabnzbd/skintext.py:124 # sabnzbd/skintext.py:538 [Server hostname or IP]
+#: sabnzbd/skintext.py:125 # sabnzbd/skintext.py:539 [Server hostname or IP]
 msgid "Host"
 msgstr "Hôte"
 
-#: sabnzbd/skintext.py:125
+#: sabnzbd/skintext.py:126
 msgid "Comment"
 msgstr "Commentaire"
 
-#: sabnzbd/skintext.py:126
+#: sabnzbd/skintext.py:127
 msgid "Send"
 msgstr "Envoyer"
 
-#: sabnzbd/skintext.py:127
+#: sabnzbd/skintext.py:128
 msgid "Cancel"
 msgstr "Annuler"
 
-#: sabnzbd/skintext.py:128
+#: sabnzbd/skintext.py:129
 msgid "Other"
 msgstr "Autre"
 
-#: sabnzbd/skintext.py:129
+#: sabnzbd/skintext.py:130
 msgid "Report"
 msgstr "Signaler"
 
-#: sabnzbd/skintext.py:130
+#: sabnzbd/skintext.py:131
 msgid "Video"
 msgstr "Vidéo"
 
-#: sabnzbd/skintext.py:131
+#: sabnzbd/skintext.py:132
 msgid "Audio"
 msgstr "Audio"
 
-#: sabnzbd/skintext.py:132
+#: sabnzbd/skintext.py:133
 msgid "Not used"
 msgstr "Non utilisé"
 
-#: sabnzbd/skintext.py:133
+#: sabnzbd/skintext.py:134
 msgid "or less"
 msgstr "ou moins"
 
-#: sabnzbd/skintext.py:134
+#: sabnzbd/skintext.py:135
 msgid "Log in"
 msgstr "Se connecter"
 
-#: sabnzbd/skintext.py:135
+#: sabnzbd/skintext.py:136
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: sabnzbd/skintext.py:136
+#: sabnzbd/skintext.py:137
 msgid "Remember me"
 msgstr "Se souvenir de moi"
 
-#: sabnzbd/skintext.py:139 [SABnzbd's theme line]
+#: sabnzbd/skintext.py:140 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
 msgstr "L'outil de téléchargement usenet automatique"
 
-#: sabnzbd/skintext.py:140 ["Save" button]
+#: sabnzbd/skintext.py:141 ["Save" button]
 msgid "Save"
 msgstr "Enregistrer"
 
-#: sabnzbd/skintext.py:141 ["Queued" used to show amount of jobs]
+#: sabnzbd/skintext.py:142 ["Queued" used to show amount of jobs]
 msgid "Queued"
 msgstr "Mis en file d'attente"
 
-#: sabnzbd/skintext.py:142 [Used in confirmation popups] # sabnzbd/skintext.py:810 # sabnzbd/skintext.py:811
-#: sabnzbd/skintext.py:812 # sabnzbd/skintext.py:836
+#: sabnzbd/skintext.py:143 [Used in confirmation popups] # sabnzbd/skintext.py:812 # sabnzbd/skintext.py:813
+#: sabnzbd/skintext.py:814 # sabnzbd/skintext.py:838
 msgid "Are you sure?"
 msgstr "Êtes-vous sûr ?"
 
-#: sabnzbd/skintext.py:143 [Used in confirmation popups]
+#: sabnzbd/skintext.py:144 [Used in confirmation popups]
 msgid "Delete all downloaded files?"
 msgstr "Supprimer tous les fichiers téléchargés ?"
 
-#: sabnzbd/skintext.py:146 [Main menu item]
+#: sabnzbd/skintext.py:147 [Main menu item]
 msgid "Home"
 msgstr "Accueil"
 
-#: sabnzbd/skintext.py:149 [Main menu item]
+#: sabnzbd/skintext.py:150 [Main menu item]
 msgid "Config"
 msgstr "Configuration"
 
-#: sabnzbd/skintext.py:150 [Main menu item] # sabnzbd/skintext.py:244 [History table header]
+#: sabnzbd/skintext.py:151 [Main menu item] # sabnzbd/skintext.py:245 [History table header]
 msgid "Status"
 msgstr "Statut"
 
-#: sabnzbd/skintext.py:151 [Main menu item]
+#: sabnzbd/skintext.py:152 [Main menu item]
 msgid "Help"
 msgstr "Aide"
 
-#: sabnzbd/skintext.py:152 [Main menu item]
+#: sabnzbd/skintext.py:153 [Main menu item]
 msgid "Wiki"
 msgstr "Wiki"
 
-#: sabnzbd/skintext.py:153 [Main menu item]
+#: sabnzbd/skintext.py:154 [Main menu item]
 msgid "Forum"
 msgstr "Forum"
 
-#: sabnzbd/skintext.py:154 [Main menu item]
+#: sabnzbd/skintext.py:155 [Main menu item]
 msgid "IRC"
 msgstr "IRC"
 
-#: sabnzbd/skintext.py:155 [Main menu item]
+#: sabnzbd/skintext.py:156 [Main menu item]
 msgid "Issues"
 msgstr "Incidents"
 
-#: sabnzbd/skintext.py:156 [Main menu item] # sabnzbd/skintext.py:488
+#: sabnzbd/skintext.py:157 [Main menu item] # sabnzbd/skintext.py:489
 msgid "General"
 msgstr "Général"
 
-#: sabnzbd/skintext.py:157 [Main menu item]
+#: sabnzbd/skintext.py:158 [Main menu item]
 msgid "Folders"
 msgstr "Répertoires"
 
-#: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:722
+#: sabnzbd/skintext.py:159 [Main menu item] # sabnzbd/skintext.py:724
 msgid "Switches"
 msgstr "Switches"
 
-#: sabnzbd/skintext.py:160 [Main menu item]
+#: sabnzbd/skintext.py:161 [Main menu item]
 msgid "Scheduling"
 msgstr "Planification"
 
-#: sabnzbd/skintext.py:161 [Main menu item]
+#: sabnzbd/skintext.py:162 [Main menu item]
 msgid "RSS"
 msgstr "RSS"
 
-#: sabnzbd/skintext.py:162 [Main menu item]
+#: sabnzbd/skintext.py:163 [Main menu item]
 msgid "Notifications"
 msgstr "Notifications"
 
-#: sabnzbd/skintext.py:163 [Main menu item]
+#: sabnzbd/skintext.py:164 [Main menu item]
 msgid "Email"
 msgstr "Email"
 
-#: sabnzbd/skintext.py:164 [Main menu item] # sabnzbd/skintext.py:560
+#: sabnzbd/skintext.py:165 [Main menu item] # sabnzbd/skintext.py:561
 msgid "Categories"
 msgstr "Catégories"
 
-#: sabnzbd/skintext.py:165 [Main menu item]
+#: sabnzbd/skintext.py:166 [Main menu item]
 msgid "Sorting"
 msgstr "Triage"
 
-#: sabnzbd/skintext.py:166 [Main menu item]
+#: sabnzbd/skintext.py:167 [Main menu item]
 msgid "Special"
 msgstr "Spécial"
 
-#: sabnzbd/skintext.py:169
+#: sabnzbd/skintext.py:170
 msgid "Download Dir"
 msgstr "Dossier de téléchargement"
 
-#: sabnzbd/skintext.py:170
+#: sabnzbd/skintext.py:171
 msgid "PAUSED"
 msgstr "EN PAUSE"
 
-#: sabnzbd/skintext.py:171
+#: sabnzbd/skintext.py:172
 msgid "Cached %s articles (%s)"
 msgstr "%s articles mis en cache (%s)"
 
-#: sabnzbd/skintext.py:172
+#: sabnzbd/skintext.py:173
 msgid "Sysload"
 msgstr "Sysload"
 
-#: sabnzbd/skintext.py:173
+#: sabnzbd/skintext.py:174
 msgid "WARNINGS"
 msgstr "AVERTISSEMENTS"
 
-#: sabnzbd/skintext.py:174
+#: sabnzbd/skintext.py:175
 msgid "New release %s available at"
 msgstr "Une nouvelle version %s est disponible"
 
-#: sabnzbd/skintext.py:177
+#: sabnzbd/skintext.py:178
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Etes-vous sûr de vouloir arrêter SABnzbd ?"
 
-#: sabnzbd/skintext.py:181 [Add NZB to queue (button)] # sabnzbd/skintext.py:182 [Add NZB to queue (header)]
+#: sabnzbd/skintext.py:182 [Add NZB to queue (button)] # sabnzbd/skintext.py:183 [Add NZB to queue (header)]
 msgid "Add"
 msgstr "Ajouter"
 
-#: sabnzbd/skintext.py:183 [Add NZB file to queue (header]
+#: sabnzbd/skintext.py:184 [Add NZB file to queue (header]
 msgid "Add File"
 msgstr "Ajouter un fichier"
 
-#: sabnzbd/skintext.py:184 [Job category]
+#: sabnzbd/skintext.py:185 [Job category]
 msgid "Category"
 msgstr "Catégorie"
 
-#: sabnzbd/skintext.py:185 # sabnzbd/skintext.py:213 [Queue page table column header]
+#: sabnzbd/skintext.py:186 # sabnzbd/skintext.py:214 [Queue page table column header]
 msgid "Processing"
 msgstr "Traitement en cours"
 
-#: sabnzbd/skintext.py:187 # sabnzbd/skintext.py:546 [Server priority]
+#: sabnzbd/skintext.py:188 # sabnzbd/skintext.py:547 [Server priority]
 msgid "Priority"
 msgstr "Priorité"
 
-#: sabnzbd/skintext.py:189 [Post processing pick list]
+#: sabnzbd/skintext.py:190 [Post processing pick list]
 msgid "+Repair"
 msgstr "+Réparer"
 
-#: sabnzbd/skintext.py:190 [Post processing pick list]
+#: sabnzbd/skintext.py:191 [Post processing pick list]
 msgid "+Unpack"
 msgstr "+Décompresser"
 
-#: sabnzbd/skintext.py:191 [Post processing pick list]
+#: sabnzbd/skintext.py:192 [Post processing pick list]
 msgid "+Delete"
 msgstr "+Supprimer"
 
-#: sabnzbd/skintext.py:192 [Post processing pick list: abbreviation for "+Repair"]
+#: sabnzbd/skintext.py:193 [Post processing pick list: abbreviation for "+Repair"]
 msgid "R"
 msgstr "R"
 
-#: sabnzbd/skintext.py:193 [Post processing pick list: abbreviation for "+Unpack"]
+#: sabnzbd/skintext.py:194 [Post processing pick list: abbreviation for "+Unpack"]
 msgid "U"
 msgstr "D"
 
-#: sabnzbd/skintext.py:194 [Post processing pick list: abbreviation for "+Delete"]
+#: sabnzbd/skintext.py:195 [Post processing pick list: abbreviation for "+Delete"]
 msgid "D"
 msgstr "S"
 
-#: sabnzbd/skintext.py:195 [Priority pick list]
+#: sabnzbd/skintext.py:196 [Priority pick list]
 msgid "Force"
 msgstr "Forcer"
 
-#: sabnzbd/skintext.py:200 [Priority pick list]
+#: sabnzbd/skintext.py:201 [Priority pick list]
 msgid "Stop"
 msgstr "Arrêter"
 
-#: sabnzbd/skintext.py:201 [Add NZB Dialog]
+#: sabnzbd/skintext.py:202 [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "Saisir une URL"
 
-#: sabnzbd/skintext.py:204 [Queue page button]
+#: sabnzbd/skintext.py:205 [Queue page button]
 msgid "Hide files"
 msgstr "Masquer les fichiers"
 
-#: sabnzbd/skintext.py:205 [Queue page button]
+#: sabnzbd/skintext.py:206 [Queue page button]
 msgid "Show files"
 msgstr "Afficher les fichiers"
 
-#: sabnzbd/skintext.py:206 [Queue page selection menu] # sabnzbd/skintext.py:759
+#: sabnzbd/skintext.py:207 [Queue page selection menu] # sabnzbd/skintext.py:761
 msgid "On queue finish"
 msgstr "En fin de file d'attente"
 
-#: sabnzbd/skintext.py:207 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:208 [Queue page end-of-queue action]
 msgid "Shutdown PC"
 msgstr "Éteindre le PC"
 
-#: sabnzbd/skintext.py:208 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:209 [Queue page end-of-queue action]
 msgid "Standby PC"
 msgstr "Mettre le PC en veille"
 
-#: sabnzbd/skintext.py:209 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:210 [Queue page end-of-queue action]
 msgid "Hibernate PC"
 msgstr "Mettre le PC en hibernation"
 
-#: sabnzbd/skintext.py:210 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:211 [Queue page end-of-queue action]
 msgid "Shutdown SABnzbd"
 msgstr "Arrêter SABnzbd"
 
-#: sabnzbd/skintext.py:211 [Queue page selection menu or entry box]
+#: sabnzbd/skintext.py:212 [Queue page selection menu or entry box]
 msgid "Speed Limit"
 msgstr "Vitesse limite"
 
-#: sabnzbd/skintext.py:212 [Queue page button or entry box]
+#: sabnzbd/skintext.py:213 [Queue page button or entry box]
 msgid "Pause for"
 msgstr "Pause de"
 
-#: sabnzbd/skintext.py:214 [Queue page table column header] # sabnzbd/skintext.py:581 [Config->RSS table column header]
+#: sabnzbd/skintext.py:215 [Queue page table column header] # sabnzbd/skintext.py:583 [Config->RSS table column header]
 msgid "Order"
 msgstr "Ordre"
 
-#: sabnzbd/skintext.py:215 [Queue page table column header] # sabnzbd/skintext.py:727 [Job details page]
+#: sabnzbd/skintext.py:216 [Queue page table column header] # sabnzbd/skintext.py:729 [Job details page]
 msgid "Name"
 msgstr "Nom"
 
-#: sabnzbd/skintext.py:216 [Queue page table column header, "estimated time of arrival"]
+#: sabnzbd/skintext.py:217 [Queue page table column header, "estimated time of arrival"]
 msgid "ETA"
 msgstr "TRE"
 
-#: sabnzbd/skintext.py:217 [Queue page table column header, "age of the NZB"]
+#: sabnzbd/skintext.py:218 [Queue page table column header, "age of the NZB"]
 msgid "AGE"
 msgstr "ÂGE"
 
-#: sabnzbd/skintext.py:218 [Queue page table, "Delete" button]
+#: sabnzbd/skintext.py:219 [Queue page table, "Delete" button]
 msgid "Del"
 msgstr "Suppr."
 
-#: sabnzbd/skintext.py:219 [Queue page button] # sabnzbd/skintext.py:806
+#: sabnzbd/skintext.py:220 [Queue page button] # sabnzbd/skintext.py:808
 msgid "Retry"
 msgstr "Réessayer"
 
-#: sabnzbd/skintext.py:220 [Queue end-of-queue selection box]
+#: sabnzbd/skintext.py:221 [Queue end-of-queue selection box]
 msgid "Actions"
 msgstr "Actions"
 
-#: sabnzbd/skintext.py:221 [Queue page table, script selection menu]
+#: sabnzbd/skintext.py:222 [Queue page table, script selection menu]
 msgid "Scripts"
 msgstr "Scripts"
 
-#: sabnzbd/skintext.py:223 [Confirmation popup]
+#: sabnzbd/skintext.py:224 [Confirmation popup]
 msgid "Delete all items from the queue?"
 msgstr "Supprimer tous les éléments de la file d'attente ?"
 
-#: sabnzbd/skintext.py:224 [Queue page button]
+#: sabnzbd/skintext.py:225 [Queue page button]
 msgid "Purge NZBs"
 msgstr "Vider les NZB"
 
-#: sabnzbd/skintext.py:225 [Queue page button]
+#: sabnzbd/skintext.py:226 [Queue page button]
 msgid "Purge NZBs & Delete Files"
 msgstr "Purger les NZB & supprimer les fichiers"
 
-#: sabnzbd/skintext.py:226 [Retry all failed jobs dialog box]
+#: sabnzbd/skintext.py:227 [Retry all failed jobs dialog box]
 msgid "Retry all failed jobs"
 msgstr "Réessayez toutes les tâches échouées"
 
-#: sabnzbd/skintext.py:227 [Queue page button]
+#: sabnzbd/skintext.py:228 [Queue page button]
 msgid "Remove NZB"
 msgstr "Supprimer NZB"
 
-#: sabnzbd/skintext.py:228 [Queue page button] # sabnzbd/skintext.py:794
+#: sabnzbd/skintext.py:229 [Queue page button] # sabnzbd/skintext.py:796
 msgid "Remove NZB & Delete Files"
 msgstr "Supprimer le NZB & supprimer les fichiers"
 
-#: sabnzbd/skintext.py:229 [Queue page, as in "4G *of* 10G"]
+#: sabnzbd/skintext.py:230 [Queue page, as in "4G *of* 10G"]
 msgid "of"
 msgstr "de"
 
-#: sabnzbd/skintext.py:230 [Caption for missing articles in Queue]
+#: sabnzbd/skintext.py:231 [Caption for missing articles in Queue]
 msgid "Missing articles"
 msgstr "Articles manquants"
 
-#: sabnzbd/skintext.py:231 [Remaining quota (displayed in Queue)]
+#: sabnzbd/skintext.py:232 [Remaining quota (displayed in Queue)]
 msgid "Quota left"
 msgstr "Quota restant"
 
-#: sabnzbd/skintext.py:232 [Manual reset of quota]
+#: sabnzbd/skintext.py:233 [Manual reset of quota]
 msgid "manual"
 msgstr "manuel"
 
-#: sabnzbd/skintext.py:233
+#: sabnzbd/skintext.py:234
 msgid "Reset Quota now"
 msgstr "Réinitialiser le quota maintenant"
 
-#: sabnzbd/skintext.py:237 [Confirmation popup]
+#: sabnzbd/skintext.py:238 [Confirmation popup]
 msgid "Delete all completed items from History?"
 msgstr "Supprimer tous les éléments terminés de l'historique ?"
 
-#: sabnzbd/skintext.py:238 [Button/link hiding History job details]
+#: sabnzbd/skintext.py:239 [Button/link hiding History job details]
 msgid "Hide details"
 msgstr "Masquer les détails"
 
-#: sabnzbd/skintext.py:239 [Button/link showing History job details]
+#: sabnzbd/skintext.py:240 [Button/link showing History job details]
 msgid "Show details"
 msgstr "Afficher les détails"
 
-#: sabnzbd/skintext.py:240 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
+#: sabnzbd/skintext.py:241 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
 msgid "Show Failed"
 msgstr "Afficher les échoués"
 
-#: sabnzbd/skintext.py:241 [Button or link showing all History jobs]
+#: sabnzbd/skintext.py:242 [Button or link showing all History jobs]
 msgid "Show All"
 msgstr "Afficher Tout"
 
-#: sabnzbd/skintext.py:243 [History table header] # sabnzbd/skintext.py:495 [Size of the download quota] # sabnzbd/skintext.py:902
+#: sabnzbd/skintext.py:244 [History table header] # sabnzbd/skintext.py:496 [Size of the download quota] # sabnzbd/skintext.py:904
 msgid "Size"
 msgstr "Taille"
 
-#: sabnzbd/skintext.py:245 [Button to delete all failed jobs in History]
+#: sabnzbd/skintext.py:246 [Button to delete all failed jobs in History]
 msgid "Purge Failed NZBs"
 msgstr "Purger les NZB échoués"
 
-#: sabnzbd/skintext.py:246 [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py:247 [Button to delete all failed jobs in History, including files]
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "Purger les NZBs échoués & supprimer les fichiers"
 
-#: sabnzbd/skintext.py:247 [Button to delete all completed jobs in History]
+#: sabnzbd/skintext.py:248 [Button to delete all completed jobs in History]
 msgid "Purge Completed NZBs"
 msgstr "Vider les NZB terminés"
 
-#: sabnzbd/skintext.py:248 [Button to add NZB to failed job in History]
+#: sabnzbd/skintext.py:249 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
 msgstr "NZB supplémentaire optionnel"
 
-#: sabnzbd/skintext.py:249 [Path as displayed in History details] # sabnzbd/skintext.py:903
+#: sabnzbd/skintext.py:250 [Path as displayed in History details] # sabnzbd/skintext.py:905
 msgid "Path"
 msgstr "Chemin d'accès"
 
-#: sabnzbd/skintext.py:250 [Retry all failed jobs in History]
+#: sabnzbd/skintext.py:251 [Retry all failed jobs in History]
 msgid "Retry all failed"
 msgstr "Relancer toutes les tâches échouéés"
 
-#: sabnzbd/skintext.py:251 [Retry all button for Retry All Failed Jobs]
+#: sabnzbd/skintext.py:252 [Retry all button for Retry All Failed Jobs]
 msgid "Retry All"
 msgstr "Réessayer tous"
 
-#: sabnzbd/skintext.py:252
+#: sabnzbd/skintext.py:253
 msgid "Virus/spam"
 msgstr "Virus/spam"
 
-#: sabnzbd/skintext.py:253 # sabnzbd/skintext.py:523
+#: sabnzbd/skintext.py:254 # sabnzbd/skintext.py:524
 msgid "Passworded"
 msgstr "Protégé par un mot de passe"
 
-#: sabnzbd/skintext.py:254
+#: sabnzbd/skintext.py:255
 msgid "Out of retention"
 msgstr "En dehors du délai de rétention"
 
-#: sabnzbd/skintext.py:255
+#: sabnzbd/skintext.py:256
 msgid "Other problem"
 msgstr "Autre problème"
 
-#: sabnzbd/skintext.py:258 [Status page button]
+#: sabnzbd/skintext.py:259 [Status page button]
 msgid "Force Disconnect"
 msgstr "Forcer la déconnexion"
 
-#: sabnzbd/skintext.py:259
+#: sabnzbd/skintext.py:260
 msgid "This will send a test email to your account."
 msgstr "Ceci enverra un email de test sur votre compte."
 
-#: sabnzbd/skintext.py:260 [Status page button]
+#: sabnzbd/skintext.py:261 [Status page button]
 msgid "Show Logging"
 msgstr "Afficher le journal"
 
-#: sabnzbd/skintext.py:261 [Status page button]
+#: sabnzbd/skintext.py:262 [Status page button]
 msgid "Test Email"
 msgstr "Email de test"
 
-#: sabnzbd/skintext.py:262 [Status page selection menu]
+#: sabnzbd/skintext.py:263 [Status page selection menu]
 msgid "Logging"
 msgstr "Journalisation"
 
-#: sabnzbd/skintext.py:263 [Status page table header]
+#: sabnzbd/skintext.py:264 [Status page table header]
 msgid "Errors/Warning"
 msgstr "Erreurs/Avertissements"
 
-#: sabnzbd/skintext.py:264 [Status page logging selection value]
+#: sabnzbd/skintext.py:265 [Status page logging selection value]
 msgid "+ Info"
 msgstr "+ Info"
 
-#: sabnzbd/skintext.py:265 [Status page logging selection value]
+#: sabnzbd/skintext.py:266 [Status page logging selection value]
 msgid "+ Debug"
 msgstr "+ Debug"
 
-#: sabnzbd/skintext.py:266 [Status page tab header] # sabnzbd/skintext.py:543 [Server: amount of connections]
+#: sabnzbd/skintext.py:267 [Status page tab header] # sabnzbd/skintext.py:544 [Server: amount of connections]
 msgid "Connections"
 msgstr "Connections"
 
-#: sabnzbd/skintext.py:267 [Status page, title for email test result]
+#: sabnzbd/skintext.py:268 [Status page, title for email test result]
 msgid "Email Test Result"
 msgstr "Résultat du test e-mail"
 
-#: sabnzbd/skintext.py:268 [Status page, table header]
+#: sabnzbd/skintext.py:269 [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Avertissements récents"
 
-#: sabnzbd/skintext.py:269 [Status page button]
+#: sabnzbd/skintext.py:270 [Status page button]
 msgid "clear"
 msgstr "éffacer"
 
-#: sabnzbd/skintext.py:270 [Status page button] # sabnzbd/skintext.py:790
+#: sabnzbd/skintext.py:271 [Status page button] # sabnzbd/skintext.py:792
 msgid "Unblock"
 msgstr "Débloquer"
 
-#: sabnzbd/skintext.py:271 [Status page, article identifier]
+#: sabnzbd/skintext.py:272 [Status page, article identifier]
 msgid "Article identifier"
 msgstr "Identifiant de l'article"
 
-#: sabnzbd/skintext.py:272 [Status page, par-set that article belongs to]
+#: sabnzbd/skintext.py:273 [Status page, par-set that article belongs to]
 msgid "File set"
 msgstr "Collection de fichiers"
 
-#: sabnzbd/skintext.py:273 [Status page, table column header, when error occured]
+#: sabnzbd/skintext.py:274 [Status page, table column header, when error occured]
 msgid "When"
 msgstr "Quand"
 
-#: sabnzbd/skintext.py:274 [Status page, table column header, type of message] # sabnzbd/skintext.py:582 [Config->RSS table column header]
+#: sabnzbd/skintext.py:275 [Status page, table column header, type of message] # sabnzbd/skintext.py:584 [Config->RSS table column header]
 msgid "Type"
 msgstr "Type"
 
-#: sabnzbd/skintext.py:277 [Status page, indicator that server is enabled]
+#: sabnzbd/skintext.py:278 [Status page, indicator that server is enabled]
 msgid "Enabled"
 msgstr "Activé"
 
-#: sabnzbd/skintext.py:280
+#: sabnzbd/skintext.py:281
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: sabnzbd/skintext.py:281
+#: sabnzbd/skintext.py:282
 msgid "Connection failed!"
 msgstr "Echec de connexion !"
 
-#: sabnzbd/skintext.py:282
+#: sabnzbd/skintext.py:283
 msgid "Local IPv4 address"
 msgstr "Adresse IPv4 locale"
 
-#: sabnzbd/skintext.py:283
+#: sabnzbd/skintext.py:284
 msgid "Public IPv4 address"
 msgstr "Adresse IPv4 publique"
 
-#: sabnzbd/skintext.py:284
+#: sabnzbd/skintext.py:285
 msgid "IPv6 address"
 msgstr "Adresse IPv6"
 
-#: sabnzbd/skintext.py:285
+#: sabnzbd/skintext.py:286
 msgid "Nameserver / DNS Lookup"
 msgstr "Nameserver / DNS Lookup"
 
-#: sabnzbd/skintext.py:286
+#: sabnzbd/skintext.py:287
 msgid "CPU Model"
 msgstr "Modèle de CPU"
 
-#: sabnzbd/skintext.py:287 [Do not translate Pystone]
+#: sabnzbd/skintext.py:288 [Do not translate Pystone]
 msgid "System Performance (Pystone)"
 msgstr "Performance du système ( Pystone )"
 
-#: sabnzbd/skintext.py:288
+#: sabnzbd/skintext.py:289
 msgid "Download folder speed"
 msgstr "Vitesse du dossier \"Download\""
 
-#: sabnzbd/skintext.py:289
+#: sabnzbd/skintext.py:290
 msgid "Complete folder speed"
 msgstr "Vitesse du dossier \"Complete\""
 
-#: sabnzbd/skintext.py:290
+#: sabnzbd/skintext.py:291
 msgid "Writing speed"
 msgstr "Vitesse d'écriture"
 
-#: sabnzbd/skintext.py:291
+#: sabnzbd/skintext.py:292
 msgid "Could not write. Check that the directory is writable."
 msgstr ""
 "Impossible d'écrire. Vérifiez que le répertoire est accessible en écriture."
 
-#: sabnzbd/skintext.py:292
+#: sabnzbd/skintext.py:293
 msgid "Click on Repeat test button below to determine"
 msgstr "Cliquez sur le bouton de test \"Répéter\" ci-dessous pour déterminer"
 
-#: sabnzbd/skintext.py:293
+#: sabnzbd/skintext.py:294
 msgid "Repeat test"
 msgstr "Refaire le test"
 
-#: sabnzbd/skintext.py:296
+#: sabnzbd/skintext.py:297
 msgid "Config File"
 msgstr "Fichier de configuration"
 
-#: sabnzbd/skintext.py:297 [Main config page, how much cache is in use]
+#: sabnzbd/skintext.py:298 [Main config page, how much cache is in use]
 msgid "Used cache"
 msgstr "Cache utilisé"
 
-#: sabnzbd/skintext.py:298
+#: sabnzbd/skintext.py:299
 msgid ""
 "This will restart SABnzbd.<br />Use it when you think the program has a "
 "stability problem.<br />Downloading will be paused before the restart and "
@@ -2464,7 +2464,7 @@ msgstr ""
 "/>\r\n"
 "Les téléchargements en cours seront mis en pause puis repris."
 
-#: sabnzbd/skintext.py:300
+#: sabnzbd/skintext.py:301
 msgid ""
 "There are orphaned jobs in the download folder.<br />You can choose to "
 "delete them (including files) or send them back to the queue."
@@ -2473,7 +2473,7 @@ msgstr ""
 "/>Vous pouvez choisir de les supprimer (y compris les fichiers) ou de les "
 "renvoyer dans la file d'attente."
 
-#: sabnzbd/skintext.py:302
+#: sabnzbd/skintext.py:303
 msgid ""
 "The \"Repair\" button will restart SABnzbd and do a complete<br "
 "/>reconstruction of the queue content, preserving already downloaded "
@@ -2483,135 +2483,135 @@ msgstr ""
 "d'attente, tout en conservant les fichiers déjà téléchargés.<br />Ceci "
 "modifiera l'ordre de la file d'attente."
 
-#: sabnzbd/skintext.py:303 # sabnzbd/skintext.py:835
+#: sabnzbd/skintext.py:304 # sabnzbd/skintext.py:837
 msgid "Changes have not been saved, and will be lost."
 msgstr "Les modifications n'ont pas été enregistrées et seront perdues."
 
-#: sabnzbd/skintext.py:305
+#: sabnzbd/skintext.py:306
 msgid "Version"
 msgstr "Version"
 
-#: sabnzbd/skintext.py:306
+#: sabnzbd/skintext.py:307
 msgid "Uptime"
 msgstr "Temps de fonctionnement"
 
-#: sabnzbd/skintext.py:307 [Indicates that server is Backup server in Status page]
+#: sabnzbd/skintext.py:308 [Indicates that server is Backup server in Status page]
 msgid "Backup"
 msgstr "Secours"
 
-#: sabnzbd/skintext.py:310
+#: sabnzbd/skintext.py:311
 msgid "Changes will require a SABnzbd restart!"
 msgstr "Les modifications nécessiteront un redémarrage de SABnzbd!"
 
-#: sabnzbd/skintext.py:311
+#: sabnzbd/skintext.py:312
 msgid "SABnzbd Web Server"
 msgstr "Serveur web SABnzbd"
 
-#: sabnzbd/skintext.py:312
+#: sabnzbd/skintext.py:313
 msgid "SABnzbd Host"
 msgstr "Hôte SABnzbd"
 
-#: sabnzbd/skintext.py:313
+#: sabnzbd/skintext.py:314
 msgid "Host SABnzbd should listen on."
 msgstr "Hôte sur lequel SABnzbd doit attendre les connexions."
 
-#: sabnzbd/skintext.py:314
+#: sabnzbd/skintext.py:315
 msgid "SABnzbd Port"
 msgstr "Port SABnzbd"
 
-#: sabnzbd/skintext.py:315
+#: sabnzbd/skintext.py:316
 msgid "Port SABnzbd should listen on."
 msgstr "Port que SABnzbd doit surveiller."
 
-#: sabnzbd/skintext.py:316 # sabnzbd/skintext.py:777
+#: sabnzbd/skintext.py:317 # sabnzbd/skintext.py:779
 msgid "Web Interface"
 msgstr "Interface Web"
 
-#: sabnzbd/skintext.py:317
+#: sabnzbd/skintext.py:318
 msgid "Choose a skin."
 msgstr "Choisissez un thème."
 
-#: sabnzbd/skintext.py:318
+#: sabnzbd/skintext.py:319
 msgid "Secondary Web Interface"
 msgstr "Interface Web secondaire"
 
-#: sabnzbd/skintext.py:319
+#: sabnzbd/skintext.py:320
 msgid "Activate an alternative skin."
 msgstr "Choisissez un thème pour la 2nde interface web."
 
-#: sabnzbd/skintext.py:320
+#: sabnzbd/skintext.py:321
 msgid "SABnzbd Username"
 msgstr "Identifiant SABnzbd"
 
-#: sabnzbd/skintext.py:321
+#: sabnzbd/skintext.py:322
 msgid "Optional authentication username."
 msgstr "Nom d'utilisateur pour l'authentification (facultatif)."
 
-#: sabnzbd/skintext.py:322
+#: sabnzbd/skintext.py:323
 msgid "SABnzbd Password"
 msgstr "Mot de passe SABnzbd"
 
-#: sabnzbd/skintext.py:323
+#: sabnzbd/skintext.py:324
 msgid "Optional authentication password."
 msgstr "Mot de passe pour l'authentification (facultatif)."
 
-#: sabnzbd/skintext.py:324
+#: sabnzbd/skintext.py:325
 msgid "HTTPS Support"
 msgstr "Support HTTPS"
 
-#: sabnzbd/skintext.py:325
+#: sabnzbd/skintext.py:326
 msgid "Enable HTTPS"
 msgstr "Activer HTTPS"
 
-#: sabnzbd/skintext.py:326
+#: sabnzbd/skintext.py:327
 msgid "not installed"
 msgstr "non installé"
 
-#: sabnzbd/skintext.py:327
+#: sabnzbd/skintext.py:328
 msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Active l'accès à l'interface via une adresse HTTPS."
 
-#: sabnzbd/skintext.py:328
+#: sabnzbd/skintext.py:329
 msgid "HTTPS Port"
 msgstr "Port HTTPS"
 
-#: sabnzbd/skintext.py:329
+#: sabnzbd/skintext.py:330
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "Si vide, le port standard écoutera seulement le HTTPS."
 
-#: sabnzbd/skintext.py:330
+#: sabnzbd/skintext.py:331
 msgid "HTTPS Certificate"
 msgstr "Certificat HTTPS"
 
-#: sabnzbd/skintext.py:331
+#: sabnzbd/skintext.py:332
 msgid "File name or path to HTTPS Certificate."
 msgstr "Nom du fichier ou chemin du certificat HTTPS."
 
-#: sabnzbd/skintext.py:332
+#: sabnzbd/skintext.py:333
 msgid "HTTPS Key"
 msgstr "Clé HTTPS"
 
-#: sabnzbd/skintext.py:333
+#: sabnzbd/skintext.py:334
 msgid "File name or path to HTTPS Key."
 msgstr "Nom du fichier ou chemin de la clé HTTPS."
 
-#: sabnzbd/skintext.py:334
+#: sabnzbd/skintext.py:335
 msgid "HTTPS Chain Certifcates"
 msgstr "Certificats de chaîne HTTPS"
 
-#: sabnzbd/skintext.py:335
+#: sabnzbd/skintext.py:336
 msgid "File name or path to HTTPS Chain."
 msgstr "Nom du fichier ou chemin d'accès de la chaîne HTTPS."
 
-#: sabnzbd/skintext.py:336
+#: sabnzbd/skintext.py:337
 msgid "Tuning"
 msgstr "Réglages"
 
-#: sabnzbd/skintext.py:337
+#: sabnzbd/skintext.py:338
 msgid "RSS Checking Interval"
 msgstr "Invervalle de vérification RSS"
 
-#: sabnzbd/skintext.py:338
+#: sabnzbd/skintext.py:339
 msgid ""
 "Checking interval (in minutes, at least 15). Not active when you use the "
 "Scheduler!"
@@ -2619,31 +2619,31 @@ msgstr ""
 "Intervalle de vérification (en minutes, au moins 15). Inactif quand vous "
 "utilisez le Planificateur !"
 
-#: sabnzbd/skintext.py:339
+#: sabnzbd/skintext.py:340
 msgid "Maximum line speed"
 msgstr "Vitesse maximale de la ligne"
 
-#: sabnzbd/skintext.py:340
+#: sabnzbd/skintext.py:341
 msgid "Highest possible linespeed in Bytes/second, e.g. 2M."
 msgstr ""
 "Vitesse la plus élevée possible de la ligne en octets/seconde, par exemple "
 "2M."
 
-#: sabnzbd/skintext.py:341
+#: sabnzbd/skintext.py:342
 msgid "Percentage of line speed"
 msgstr "Pourcentage de la vitesse de la ligne"
 
-#: sabnzbd/skintext.py:342
+#: sabnzbd/skintext.py:343
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
 msgstr ""
 "Quel est le pourcentage de la vitesse de la ligne que SABnzbd doive "
 "utiliser, par exemple 50"
 
-#: sabnzbd/skintext.py:343
+#: sabnzbd/skintext.py:344
 msgid "Article Cache Limit"
 msgstr "Limite du cache d'articles"
 
-#: sabnzbd/skintext.py:344
+#: sabnzbd/skintext.py:345
 msgid ""
 "Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally "
 "follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
@@ -2651,11 +2651,11 @@ msgstr ""
 "Mettre les articles en cache pour réduire les accès disque.<br /><i>En "
 "Octets, peut être suivi de K,M,G. Par exemple : \"64M\" ou \"128M\"</i>"
 
-#: sabnzbd/skintext.py:345
+#: sabnzbd/skintext.py:346
 msgid "Cleanup List"
 msgstr "Nettoyer la liste"
 
-#: sabnzbd/skintext.py:346
+#: sabnzbd/skintext.py:347
 msgid ""
 "List of file extensions that should be deleted after download.<br />For "
 "example: <b>nfo</b> or <b>nfo, sfv</b>"
@@ -2663,99 +2663,99 @@ msgstr ""
 "Liste des extensions de fichiers qui doivent être supprimés après le "
 "téléchargement.<br /><Par exemple: <b>nfo</b> ou <b>nfo, sfv</b>"
 
-#: sabnzbd/skintext.py:347
+#: sabnzbd/skintext.py:348
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
-#: sabnzbd/skintext.py:348
+#: sabnzbd/skintext.py:349
 msgid "Language"
 msgstr "Langue"
 
-#: sabnzbd/skintext.py:349
+#: sabnzbd/skintext.py:350
 msgid "Select a web interface language."
 msgstr "Choisir la langue de l'interface web."
 
-#: sabnzbd/skintext.py:350
+#: sabnzbd/skintext.py:351
 msgid "API Key"
 msgstr "Clé API"
 
-#: sabnzbd/skintext.py:351
+#: sabnzbd/skintext.py:352
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Cette clé permettra aux programmes tiers d'avoir un accès complet à SABnzbd."
 
-#: sabnzbd/skintext.py:352
+#: sabnzbd/skintext.py:353
 msgid "NZB Key"
 msgstr "Clé NZB"
 
-#: sabnzbd/skintext.py:353
+#: sabnzbd/skintext.py:354
 msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
 msgstr ""
 "Cette clé permettra aux programmes tiers de pouvoir ajouter des NZB à "
 "SABnzbd."
 
-#: sabnzbd/skintext.py:354
+#: sabnzbd/skintext.py:355
 msgid "Generate New Key"
 msgstr "Générer une nouvelle clé"
 
-#: sabnzbd/skintext.py:355
+#: sabnzbd/skintext.py:356
 msgid "Disable API-key"
 msgstr "Désactiver la clé API"
 
-#: sabnzbd/skintext.py:356
+#: sabnzbd/skintext.py:357
 msgid "Do not require the API key."
 msgstr "Ne pas exiger la clé API (pour l'interaction avec SABnzbd)."
 
-#: sabnzbd/skintext.py:357 [Explanation for QR code of APIKEY]
+#: sabnzbd/skintext.py:358 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
 msgstr "Clé API code QR"
 
-#: sabnzbd/skintext.py:358
+#: sabnzbd/skintext.py:359
 msgid "List of local network ranges"
 msgstr "Liste des plages de réseau local"
 
-#: sabnzbd/skintext.py:359
+#: sabnzbd/skintext.py:360
 msgid ""
 "All local network addresses start with these prefixes (often \"192.168.1.\")"
 msgstr ""
 "Toutes les adresses de réseau local commencent par ces préfixes (souvent "
 "\"192.168.1.\" )"
 
-#: sabnzbd/skintext.py:360
+#: sabnzbd/skintext.py:361
 msgid "External internet access"
 msgstr "Accès Internet externe"
 
-#: sabnzbd/skintext.py:361
+#: sabnzbd/skintext.py:362
 msgid "You can set access rights for systems outside your local network"
 msgstr ""
 "Vous pouvez définir des droits d'accès pour les systèmes en dehors de votre "
 "réseau local"
 
-#: sabnzbd/skintext.py:362
+#: sabnzbd/skintext.py:363
 msgid "No access"
 msgstr "Aucun accès"
 
-#: sabnzbd/skintext.py:363
+#: sabnzbd/skintext.py:364
 msgid "Add NZB files "
 msgstr "Ajouter des fichiers NZB "
 
-#: sabnzbd/skintext.py:364
+#: sabnzbd/skintext.py:365
 msgid "API (no Config)"
 msgstr "API (aucune configuration)"
 
-#: sabnzbd/skintext.py:365
+#: sabnzbd/skintext.py:366
 msgid "Full API"
 msgstr "API complète"
 
-#: sabnzbd/skintext.py:366
+#: sabnzbd/skintext.py:367
 msgid "Full Web interface"
 msgstr "Interface Web complète"
 
-#: sabnzbd/skintext.py:367
+#: sabnzbd/skintext.py:368
 msgid "Only external access requires login"
 msgstr "Seul l'accès extérieur nécessite un identifiant"
 
-#: sabnzbd/skintext.py:370
+#: sabnzbd/skintext.py:371
 msgid ""
 "<em>NOTE:</em> Folders will be created automatically when Saving. You may "
 "use absolute paths to save outside of the default folders."
@@ -2764,23 +2764,23 @@ msgstr ""
 "l'enregistrement. Il est possible d'utiliser des chemins absolus pour "
 "sauvegarder en dehors du répertoire par défaut."
 
-#: sabnzbd/skintext.py:371
+#: sabnzbd/skintext.py:372
 msgid "User Folders"
 msgstr "Dossiers utilisateur"
 
-#: sabnzbd/skintext.py:372 # sabnzbd/skintext.py:797
+#: sabnzbd/skintext.py:373 # sabnzbd/skintext.py:799
 msgid "Browse"
 msgstr "Parcourir"
 
-#: sabnzbd/skintext.py:373
+#: sabnzbd/skintext.py:374
 msgid "In"
 msgstr "Dans"
 
-#: sabnzbd/skintext.py:374
+#: sabnzbd/skintext.py:375
 msgid "Temporary Download Folder"
 msgstr "Dossier temporaire de téléchargement"
 
-#: sabnzbd/skintext.py:375
+#: sabnzbd/skintext.py:376
 msgid ""
 "Location to store unprocessed downloads.<br /><i>Can only be changed when "
 "queue is empty.</i>"
@@ -2788,11 +2788,11 @@ msgstr ""
 "Emplacement de stockage des téléchargements non-traités.<br /><i>Modifiable "
 "uniquement si la file d'attente est vide.</i>"
 
-#: sabnzbd/skintext.py:376
+#: sabnzbd/skintext.py:377
 msgid "Minimum Free Space for Temporary Download Folder"
 msgstr "Espace disque minimum pour le dossier de téléchargement temporaire"
 
-#: sabnzbd/skintext.py:377
+#: sabnzbd/skintext.py:378
 msgid ""
 "Auto-pause when free space is beneath this value.<br /><i>In bytes, "
 "optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
@@ -2801,11 +2801,11 @@ msgstr ""
 "/><i>En octets, peut être suivi de O,M,G,T. Par exemple : \"800M\" ou "
 "\"8G\"</i>"
 
-#: sabnzbd/skintext.py:378
+#: sabnzbd/skintext.py:379
 msgid "Completed Download Folder"
 msgstr "Dossier de téléchargement terminé"
 
-#: sabnzbd/skintext.py:379
+#: sabnzbd/skintext.py:380
 msgid ""
 "Location to store finished, fully processed downloads.<br /><i>Can be "
 "overruled by user-defined categories.</i>"
@@ -2813,11 +2813,11 @@ msgstr ""
 "Emplacement des téléchargements terminés et post-traités.<br /><i>Peut être "
 "outrepassé par les catégories définies par l'utilisateur.</i>"
 
-#: sabnzbd/skintext.py:380
+#: sabnzbd/skintext.py:381
 msgid "Permissions for completed downloads"
 msgstr "Permissions pour le dossier de téléchargements terminés"
 
-#: sabnzbd/skintext.py:381
+#: sabnzbd/skintext.py:382
 msgid ""
 "Set permissions pattern for completed files/folders.<br /><i>In octal "
 "notation. For example: \"755\" or \"777\"</i>"
@@ -2825,11 +2825,11 @@ msgstr ""
 "Appliquer ce modèle de permissions aux fichiers/dossiers téléchargés.<br "
 "/><i>En notation octale. Par exemple : \"755\" ou \"777\"</i>"
 
-#: sabnzbd/skintext.py:382
+#: sabnzbd/skintext.py:383
 msgid "Watched Folder"
 msgstr "Dossier à surveiller"
 
-#: sabnzbd/skintext.py:383
+#: sabnzbd/skintext.py:384
 msgid ""
 "Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
 "archives for .nzb files.</i>"
@@ -2837,49 +2837,49 @@ msgstr ""
 "Dossier d'import automatique des fichiers .nzb.<br /><i>Prends en compte "
 "également les nzb contenus dans les fichiers .zip, .rar et .tar.gz.</i>"
 
-#: sabnzbd/skintext.py:384
+#: sabnzbd/skintext.py:385
 msgid "Watched Folder Scan Speed"
 msgstr "Intervalle de scan"
 
-#: sabnzbd/skintext.py:385
+#: sabnzbd/skintext.py:386
 msgid "Number of seconds between scans for .nzb files."
 msgstr ""
 "Nombre de secondes entre chaque scan du dossier pour vérifier la présence de "
 "fichiers .nzb."
 
-#: sabnzbd/skintext.py:386
+#: sabnzbd/skintext.py:387
 msgid "Post-Processing Scripts Folder"
 msgstr "Dossier des scripts de post-traitement"
 
-#: sabnzbd/skintext.py:387
+#: sabnzbd/skintext.py:388
 msgid "Folder containing user scripts for post-processing."
 msgstr "Dossier contenant les scripts utilisés lors du post-traitement."
 
-#: sabnzbd/skintext.py:388
+#: sabnzbd/skintext.py:389
 msgid "Email Templates Folder"
 msgstr "Dossier des modèles d'email"
 
-#: sabnzbd/skintext.py:389
+#: sabnzbd/skintext.py:390
 msgid "Folder containing user-defined email templates."
 msgstr "Dossier contenant les modèles d'email définis par l'utilisateur."
 
-#: sabnzbd/skintext.py:390
+#: sabnzbd/skintext.py:391
 msgid "Password file"
 msgstr "Fichier de mot de passe"
 
-#: sabnzbd/skintext.py:391
+#: sabnzbd/skintext.py:392
 msgid "File containing all passwords to be tried on encrypted RAR files."
 msgstr "Fichiers contenant tous les mots de passe des fichiers RAR cryptés."
 
-#: sabnzbd/skintext.py:392
+#: sabnzbd/skintext.py:393
 msgid "System Folders"
 msgstr "Dossiers système"
 
-#: sabnzbd/skintext.py:393
+#: sabnzbd/skintext.py:394
 msgid "Administrative Folder"
 msgstr "Dossier administrateur"
 
-#: sabnzbd/skintext.py:394
+#: sabnzbd/skintext.py:395
 msgid ""
 "Location for queue admin and history database.<br /><i>Can only be changed "
 "when queue is empty.</i>"
@@ -2887,48 +2887,48 @@ msgstr ""
 "Emplacement de la file d'attente et de la base de données d'historique.<br "
 "/><i>Ne peut être changé que lorsque la file d'attente est vide.</i>"
 
-#: sabnzbd/skintext.py:395
+#: sabnzbd/skintext.py:396
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>Les données <b>ne seront pas</b> déplacées. Requiert un redémarrage de "
 "SABnzbd !</i>"
 
-#: sabnzbd/skintext.py:396
+#: sabnzbd/skintext.py:397
 msgid "Log Folder"
 msgstr "Dossier du fichier journal"
 
-#: sabnzbd/skintext.py:397
+#: sabnzbd/skintext.py:398
 msgid ""
 "Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"
 msgstr ""
 "Emplacement des fichiers journaux de SABnzbd.<br /><i>Redémarrage requis "
 "!</i>"
 
-#: sabnzbd/skintext.py:398
+#: sabnzbd/skintext.py:399
 msgid ".nzb Backup Folder"
 msgstr "Dossier de sauvegarde des fichiers .nzb"
 
-#: sabnzbd/skintext.py:399
+#: sabnzbd/skintext.py:400
 msgid "Location where .nzb files will be stored."
 msgstr "Emplacement où les fichier .nzb seront archivés."
 
-#: sabnzbd/skintext.py:400
+#: sabnzbd/skintext.py:401
 msgid "Default Base Folder"
 msgstr "Dossier racine par défaut"
 
-#: sabnzbd/skintext.py:403
+#: sabnzbd/skintext.py:404
 msgid "Enable Quick Check"
 msgstr "Activer le contrôle rapide"
 
-#: sabnzbd/skintext.py:404
+#: sabnzbd/skintext.py:405
 msgid "Skip par2 checking when files are 100% valid."
 msgstr "Ignorer la vérification par2 quand les fichiers sont valides à 100%."
 
-#: sabnzbd/skintext.py:405
+#: sabnzbd/skintext.py:406
 msgid "Download all par2 files"
 msgstr "Télécharger tous les fichiers par2"
 
-#: sabnzbd/skintext.py:406
+#: sabnzbd/skintext.py:407
 msgid ""
 "This prevents multiple repair runs. QuickCheck on: download all par2 files "
 "when needed. QuickCheck off: always download all par2 files."
@@ -2937,77 +2937,77 @@ msgstr ""
 "télécharge tous les par2 si nécessaires. Contrôle rapide non : télécharge "
 "toujours tous les fichiers par2."
 
-#: sabnzbd/skintext.py:407
+#: sabnzbd/skintext.py:408
 msgid "Enable Unrar"
 msgstr "Activer Unrar"
 
-#: sabnzbd/skintext.py:408
+#: sabnzbd/skintext.py:409
 msgid "Enable built-in unrar functionality."
 msgstr "Activer la fonctionnalité unrar intégrée."
 
-#: sabnzbd/skintext.py:409
+#: sabnzbd/skintext.py:410
 msgid "Enable Unzip"
 msgstr "Activer Unzip"
 
-#: sabnzbd/skintext.py:410
+#: sabnzbd/skintext.py:411
 msgid "Enable built-in unzip functionality."
 msgstr "Activer la fonctionnalité unzip intégrée."
 
-#: sabnzbd/skintext.py:411
+#: sabnzbd/skintext.py:412
 msgid "Enable 7zip"
 msgstr "Activer 7zip"
 
-#: sabnzbd/skintext.py:412
+#: sabnzbd/skintext.py:413
 msgid "Enable built-in 7zip functionality."
 msgstr "Activer la fonctionnalité intégrée 7zip."
 
-#: sabnzbd/skintext.py:413
+#: sabnzbd/skintext.py:414
 msgid "Enable recursive unpacking"
 msgstr "Activer l'extraction récursive"
 
-#: sabnzbd/skintext.py:414
+#: sabnzbd/skintext.py:415
 msgid "Unpack archives (rar, zip, 7z) within archives."
 msgstr "Décompresser les archives (rar, zip, 7z) à l'intérieur des archives."
 
-#: sabnzbd/skintext.py:415
+#: sabnzbd/skintext.py:416
 msgid "Ignore any folders inside archives"
 msgstr "Ignorer tous les dossiers à l'intérieur des archives"
 
-#: sabnzbd/skintext.py:416
+#: sabnzbd/skintext.py:417
 msgid "All files will go into a single folder."
 msgstr "Tous les fichiers iront dans un seul dossier."
 
-#: sabnzbd/skintext.py:417
+#: sabnzbd/skintext.py:418
 msgid "Enable Filejoin"
 msgstr "Activer la fusion des fichiers"
 
-#: sabnzbd/skintext.py:418
+#: sabnzbd/skintext.py:419
 msgid "Join files ending in .001, .002 etc. into one file."
 msgstr "Fusionner les fichiers  .001, .002, etc. en un seul fichier."
 
-#: sabnzbd/skintext.py:419
+#: sabnzbd/skintext.py:420
 msgid "Enable TS Joining"
 msgstr "Activer la fusion TS"
 
-#: sabnzbd/skintext.py:420
+#: sabnzbd/skintext.py:421
 msgid "Join files ending in .001.ts, .002.ts etc. into one file."
 msgstr "Fusionne les fichiers .001.ts, .002.ts, etc. en un seul fichier."
 
-#: sabnzbd/skintext.py:421
+#: sabnzbd/skintext.py:422
 msgid "When unpacking, overwrite existing files"
 msgstr "Lors de l'extraction, écraser les fichiers existants"
 
-#: sabnzbd/skintext.py:422
+#: sabnzbd/skintext.py:423
 msgid ""
 "This will overwrite existing files instead of creating an alternative name."
 msgstr ""
 "Cela va écraser les fichiers existants plutôt que de créer un autre nom."
 
-#: sabnzbd/skintext.py:423
+#: sabnzbd/skintext.py:424
 msgid "Only Get Articles for Top of Queue"
 msgstr "Télécharger uniquement les articles en tête de file d'attente"
 
-#: sabnzbd/skintext.py:424
+#: sabnzbd/skintext.py:425
 msgid ""
 "Enable for less memory usage. Disable to prevent slow jobs from blocking the "
 "queue."
@@ -3015,97 +3015,97 @@ msgstr ""
 "Activer pour moins d'utilisation de la RAM. Désactiver pour éviter que les "
 "téléchargements lents bloquent la file d'attente."
 
-#: sabnzbd/skintext.py:425
+#: sabnzbd/skintext.py:426
 msgid "Post-Process Only Verified Jobs"
 msgstr "Ne post-traiter que les tâches vérifiées"
 
-#: sabnzbd/skintext.py:426
+#: sabnzbd/skintext.py:427
 msgid "Only perform post-processing on jobs that passed all PAR2 checks."
 msgstr ""
 "Limite le post-traitement aux tâches qui ont passé avec succès toutes les "
 "vérifications PAR2."
 
-#: sabnzbd/skintext.py:427
+#: sabnzbd/skintext.py:428
 msgid "Action when encrypted RAR is downloaded"
 msgstr "Action quand un RAR crypté est téléchargé"
 
-#: sabnzbd/skintext.py:428
+#: sabnzbd/skintext.py:429
 msgid ""
 "In case of \"Pause\", you'll need to set a password and resume the job."
 msgstr ""
 "En cas de \"Pause\", vous devrez mettre un mot de passe pour reprendre la "
 "tâche."
 
-#: sabnzbd/skintext.py:429
+#: sabnzbd/skintext.py:430
 msgid "Detect Duplicate Downloads"
 msgstr "Détecter les doublons de téléchargement"
 
-#: sabnzbd/skintext.py:430
+#: sabnzbd/skintext.py:431
 msgid "Detect identical NZB files (based on NZB content)"
 msgstr "Détecter les fichiers NZB identiques (en fonction du contenu NZB)"
 
-#: sabnzbd/skintext.py:431
+#: sabnzbd/skintext.py:432
 msgid "Detect duplicate episodes in series"
 msgstr "Détecter les doublons d'épisodes de séries"
 
-#: sabnzbd/skintext.py:432
+#: sabnzbd/skintext.py:433
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\")"
 msgstr ""
 "Détecter les épisodes de séries identiques (basé sur \"nom / saison / "
 "épisode\")"
 
-#: sabnzbd/skintext.py:434 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:435 [Three way switch for duplicates]
 msgid "Discard"
 msgstr "Rejeter"
 
-#: sabnzbd/skintext.py:436 [Three way switch for encrypted posts]
+#: sabnzbd/skintext.py:437 [Three way switch for encrypted posts]
 msgid "Abort"
 msgstr "Annuler"
 
-#: sabnzbd/skintext.py:437
+#: sabnzbd/skintext.py:438
 msgid "Action when unwanted extension detected"
 msgstr "Action si une extension indésirable est détecté"
 
-#: sabnzbd/skintext.py:438
+#: sabnzbd/skintext.py:439
 msgid "Action when an unwanted extension is detected in RAR files"
 msgstr ""
 "Action si une extension indésirable est détecté dans les fichiers RAR"
 
-#: sabnzbd/skintext.py:439
+#: sabnzbd/skintext.py:440
 msgid "Unwanted extensions"
 msgstr "Extensions indésirables"
 
-#: sabnzbd/skintext.py:440
+#: sabnzbd/skintext.py:441
 msgid ""
 "List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
 msgstr ""
 "Afficher toutes les extensions indésirables. Par exemple :  <b>exe</b> or "
 "<b>exe, com</b>"
 
-#: sabnzbd/skintext.py:441
+#: sabnzbd/skintext.py:442
 msgid "Enable SFV-based checks"
 msgstr "Activer les contrôles SFV"
 
-#: sabnzbd/skintext.py:442
+#: sabnzbd/skintext.py:443
 msgid "Do an extra verification based on SFV files."
 msgstr "Fait une vérification supplémentaire basée sur les fichiers SFV."
 
-#: sabnzbd/skintext.py:443
+#: sabnzbd/skintext.py:444
 msgid "Check result of unpacking"
 msgstr "Vérifier le résultat de l'extraction"
 
-#: sabnzbd/skintext.py:444
+#: sabnzbd/skintext.py:445
 msgid "Check result of unpacking (needs to be off for some file systems)."
 msgstr ""
 "Vérifie le résultat de l'extraction (doit être désactivée pour certains "
 "systèmes de fichiers)."
 
-#: sabnzbd/skintext.py:445
+#: sabnzbd/skintext.py:446
 msgid "User script can flag job as failed"
 msgstr "Le script utilisateur peut signaler la tâche comme échouée"
 
-#: sabnzbd/skintext.py:446
+#: sabnzbd/skintext.py:447
 msgid ""
 "When the user script returns a non-zero exit code, the job will be flagged "
 "as failed."
@@ -3113,21 +3113,21 @@ msgstr ""
 "Lorsque le script de l'utilisateur renvoie un  code de sortie \"non-zéro\", "
 "la tâche sera signalée comme échouée."
 
-#: sabnzbd/skintext.py:447
+#: sabnzbd/skintext.py:448
 msgid "On failure, try alternative NZB"
 msgstr "En cas d'échec, essayer avec un NZB alternatif"
 
-#: sabnzbd/skintext.py:448
+#: sabnzbd/skintext.py:449
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Certains serveurs proposent un NZB alternatif lorsqu'un téléchargement "
 "échoue."
 
-#: sabnzbd/skintext.py:449
+#: sabnzbd/skintext.py:450
 msgid "Use tags from indexer"
 msgstr "Utilisez les balises de l'indexeur"
 
-#: sabnzbd/skintext.py:450
+#: sabnzbd/skintext.py:451
 msgid ""
 "Use tags from indexer for title, season, episode, etc. Otherwise all naming "
 "is derived from the NZB name."
@@ -3135,11 +3135,11 @@ msgstr ""
 "Utilisez les balises d'indexer pour le titre, la saison, l'épisode, etc. "
 "Autrement, toute nomination est dérivée du nom NZB ."
 
-#: sabnzbd/skintext.py:451
+#: sabnzbd/skintext.py:452
 msgid "Enable folder rename"
 msgstr "Activer le renommage du dossier"
 
-#: sabnzbd/skintext.py:452
+#: sabnzbd/skintext.py:453
 msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
@@ -3147,171 +3147,171 @@ msgstr ""
 "Utiliser des noms temporaires pendant le post-traitement. Désactiver lorsque "
 "votre système ne le gère pas correctement."
 
-#: sabnzbd/skintext.py:453
+#: sabnzbd/skintext.py:454
 msgid "Pre-queue user script"
 msgstr "Script utilisateur de pré-file d'attente"
 
-#: sabnzbd/skintext.py:454
+#: sabnzbd/skintext.py:455
 msgid "Used before an NZB enters the queue."
 msgstr "Utilisé avant qu'un NZB n'entre dans la file d'attente."
 
-#: sabnzbd/skintext.py:455
+#: sabnzbd/skintext.py:456
 msgid "Enable MultiCore Par2"
 msgstr "Activer le 'Par2 Multi-processeur'"
 
-#: sabnzbd/skintext.py:456 # sabnzbd/skintext.py:458 # sabnzbd/skintext.py:460
-#: sabnzbd/skintext.py:462
+#: sabnzbd/skintext.py:457 # sabnzbd/skintext.py:459 # sabnzbd/skintext.py:461
+#: sabnzbd/skintext.py:463
 msgid "Read the Wiki Help on this!"
 msgstr "Consultez le Wiki pour plus d'info à ce sujet (en anglais) !"
 
-#: sabnzbd/skintext.py:457
+#: sabnzbd/skintext.py:458
 msgid "Extra PAR2 Parameters"
 msgstr "Paramètres PAR2 supplémentaires"
 
-#: sabnzbd/skintext.py:459
+#: sabnzbd/skintext.py:460
 msgid "Nice Parameters"
 msgstr "Paramètres 'Nice'"
 
-#: sabnzbd/skintext.py:461
+#: sabnzbd/skintext.py:462
 msgid "IONice Parameters"
 msgstr "Paramètres 'IONice'"
 
-#: sabnzbd/skintext.py:463
+#: sabnzbd/skintext.py:464
 msgid "Disconnect on Empty Queue"
 msgstr "Se déconnecter lorsque la file d'attente est vide"
 
-#: sabnzbd/skintext.py:464
+#: sabnzbd/skintext.py:465
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr ""
 "Se déconnecter du serveur(s) Usenet lorsque la file d'attente est vide ou en "
 "pause"
 
-#: sabnzbd/skintext.py:465
+#: sabnzbd/skintext.py:466
 msgid "Sort by Age"
 msgstr "Trier par âge"
 
-#: sabnzbd/skintext.py:466
+#: sabnzbd/skintext.py:467
 msgid "Automatically sort items by (average) age."
 msgstr "Trier automatiquement les fichiers par âge (moyen)."
 
-#: sabnzbd/skintext.py:467
+#: sabnzbd/skintext.py:468
 msgid "Check for New Release"
 msgstr "Vérifier les mises à jour"
 
-#: sabnzbd/skintext.py:468
+#: sabnzbd/skintext.py:469
 msgid "Weekly check for new SABnzbd release."
 msgstr "Vérifier chaque semaine les mises à jour de SABnzbd."
 
-#: sabnzbd/skintext.py:469 [Pick list for weekly test for new releases]
+#: sabnzbd/skintext.py:470 [Pick list for weekly test for new releases]
 msgid "Also test releases"
 msgstr "Versions de test également"
 
-#: sabnzbd/skintext.py:470
+#: sabnzbd/skintext.py:471
 msgid "Replace Spaces in Foldername"
 msgstr "Remplacer les espaces dans les noms de dossier"
 
-#: sabnzbd/skintext.py:471
+#: sabnzbd/skintext.py:472
 msgid "Replace spaces with underscores in folder names."
 msgstr ""
 "Remplace les espaces par des underscores ( _ ) dans les noms de dossiers."
 
-#: sabnzbd/skintext.py:472
+#: sabnzbd/skintext.py:473
 msgid "Replace dots in Foldername"
 msgstr "Remplacer les points dans les noms de dossier"
 
-#: sabnzbd/skintext.py:473
+#: sabnzbd/skintext.py:474
 msgid "Replace dots with spaces in folder names."
 msgstr "Remplace les points par des espaces dans les noms de dossier"
 
-#: sabnzbd/skintext.py:474
+#: sabnzbd/skintext.py:475
 msgid "Replace Illegal Characters in Folder Names"
 msgstr "Remplacer les caractères illégaux dans les noms de dossier"
 
-#: sabnzbd/skintext.py:475
+#: sabnzbd/skintext.py:476
 msgid ""
 "Replace illegal characters in folder names by equivalents (otherwise remove)."
 msgstr ""
 "Remplace les caractères illégaux dans les noms de dossier par des "
 "équivalents (sinon les supprime)."
 
-#: sabnzbd/skintext.py:476
+#: sabnzbd/skintext.py:477
 msgid "Make Windows compatible"
 msgstr "Rendre Windows compatible"
 
-#: sabnzbd/skintext.py:477
+#: sabnzbd/skintext.py:478
 msgid "For servers: make sure names are compatible with Windows."
 msgstr ""
 "Pour les serveurs : assurez-vous que les noms soient compatibles avec "
 "Windows."
 
-#: sabnzbd/skintext.py:478
+#: sabnzbd/skintext.py:479
 msgid "Launch Browser on Startup"
 msgstr "Lancer le navigateur web au démarrage"
 
-#: sabnzbd/skintext.py:479
+#: sabnzbd/skintext.py:480
 msgid "Launch the default web browser when starting SABnzbd."
 msgstr "Lance le navigateur web par défaut au démarrage de SABnzbd."
 
-#: sabnzbd/skintext.py:480
+#: sabnzbd/skintext.py:481
 msgid "Pause Downloading During Post-Processing"
 msgstr "Mettre en pause les téléchargements lors du post-traitement"
 
-#: sabnzbd/skintext.py:481
+#: sabnzbd/skintext.py:482
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
 msgstr ""
 "Met en pause les téléchargements au début du post-traitement et les reprend "
 "à la fin."
 
-#: sabnzbd/skintext.py:482
+#: sabnzbd/skintext.py:483
 msgid "Ignore Samples"
 msgstr "Ignorer les échantillons (Samples)"
 
-#: sabnzbd/skintext.py:483
+#: sabnzbd/skintext.py:484
 msgid "Filter out sample files (e.g. video samples)."
 msgstr "Exclure les fichiers échantillons (par ex. les samples vidéo)."
 
-#: sabnzbd/skintext.py:485
+#: sabnzbd/skintext.py:486
 msgid "Delete after download"
 msgstr "Supprimer après téléchargement"
 
-#: sabnzbd/skintext.py:486
+#: sabnzbd/skintext.py:487
 msgid "Use 12 hour clock (AM/PM)"
 msgstr "Utiliser l'horloge 12 heures (AM/PM)"
 
-#: sabnzbd/skintext.py:487
+#: sabnzbd/skintext.py:488
 msgid "Show times in AM/PM notation (does not affect scheduler)."
 msgstr "Affiche l'heure au format AM/PM (n'affecte pas la planification)."
 
-#: sabnzbd/skintext.py:489
+#: sabnzbd/skintext.py:490
 msgid "Server"
 msgstr "Serveur"
 
-#: sabnzbd/skintext.py:491
+#: sabnzbd/skintext.py:492
 msgid "Post processing"
 msgstr "Post-traitement"
 
-#: sabnzbd/skintext.py:492
+#: sabnzbd/skintext.py:493
 msgid "Naming"
 msgstr "Appellation"
 
-#: sabnzbd/skintext.py:493
+#: sabnzbd/skintext.py:494
 msgid "Quota"
 msgstr "Quota"
 
-#: sabnzbd/skintext.py:494
+#: sabnzbd/skintext.py:495
 msgid "Indexing"
 msgstr "Indexation"
 
-#: sabnzbd/skintext.py:496
+#: sabnzbd/skintext.py:497
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Combien peut-être télécharger ce mois (K/M/G)"
 
-#: sabnzbd/skintext.py:497 [Reset day of the download quota]
+#: sabnzbd/skintext.py:498 [Reset day of the download quota]
 msgid "Reset day"
 msgstr "Jour de RAZ"
 
-#: sabnzbd/skintext.py:498
+#: sabnzbd/skintext.py:499
 msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
@@ -3319,54 +3319,54 @@ msgstr ""
 "A quel jour du mois ou de la semaine (1=lundi) votre fournisseur "
 "réinitialise le quota ? (Optionnel avec hh:mm)"
 
-#: sabnzbd/skintext.py:499 [Auto-resume download on the reset day]
+#: sabnzbd/skintext.py:500 [Auto-resume download on the reset day]
 msgid "Auto resume"
 msgstr "Reprise auto"
 
-#: sabnzbd/skintext.py:500
+#: sabnzbd/skintext.py:501
 msgid "Should downloading resume after the quota is reset?"
 msgstr ""
 "Le téléchargement devrait-il reprendre après que le quota soit réinitialisé ?"
 
-#: sabnzbd/skintext.py:501 [Does the quota get reset every day, week or month?]
+#: sabnzbd/skintext.py:502 [Does the quota get reset every day, week or month?]
 msgid "Quota period"
 msgstr "Période du quota"
 
-#: sabnzbd/skintext.py:502
+#: sabnzbd/skintext.py:503
 msgid "Does the quota get reset each day, week or month?"
 msgstr "Est-ce que le quota se réinitialise chaque jour, semaine ou mois ?"
 
-#: sabnzbd/skintext.py:503
+#: sabnzbd/skintext.py:504
 msgid "Check before download"
 msgstr "Vérifiez avant de télécharger"
 
-#: sabnzbd/skintext.py:504
+#: sabnzbd/skintext.py:505
 msgid "Try to predict successful completion before actual download (slower!)"
 msgstr ""
 "Tente de prédire la réussite de la tâche avant le téléchargement complet  "
 "(plus lent !)"
 
-#: sabnzbd/skintext.py:505
+#: sabnzbd/skintext.py:506
 msgid "Maximum retries"
 msgstr "Nombre de tentatives maximum"
 
-#: sabnzbd/skintext.py:506
+#: sabnzbd/skintext.py:507
 msgid "Maximum number of retries per server"
 msgstr "Nombre maximal de tentatives par serveur"
 
-#: sabnzbd/skintext.py:507
+#: sabnzbd/skintext.py:508
 msgid "Only for optional servers"
 msgstr "Uniquement pour les serveurs optionnels"
 
-#: sabnzbd/skintext.py:508
+#: sabnzbd/skintext.py:509
 msgid "Apply maximum retries only to optional servers"
 msgstr "Applique les tentatives maximums uniquement aux serveurs optionnels"
 
-#: sabnzbd/skintext.py:509
+#: sabnzbd/skintext.py:510
 msgid "Abort jobs that cannot be completed"
 msgstr "Interrompre les tâches qui ne peuvent être terminées"
 
-#: sabnzbd/skintext.py:510
+#: sabnzbd/skintext.py:511
 msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
@@ -3374,11 +3374,11 @@ msgstr ""
 "S'il apparait clairement pendant le téléchargement qu'il manque trop de "
 "données, annuler la tâche"
 
-#: sabnzbd/skintext.py:511
+#: sabnzbd/skintext.py:512
 msgid "Enable OZnzb Integration"
 msgstr "Activer l'intégration de OZnzb"
 
-#: sabnzbd/skintext.py:512
+#: sabnzbd/skintext.py:513
 msgid ""
 "Enhanced functionality including ratings and extra status information is "
 "available when connected to OZnzb indexer."
@@ -3386,11 +3386,11 @@ msgstr ""
 "Activer les fonctionnalités avancées comme les classements et les "
 "informations d'état supplémentaires quand connecté à l'indexer OZnzb."
 
-#: sabnzbd/skintext.py:513
+#: sabnzbd/skintext.py:514
 msgid "Site API Key"
 msgstr "Clé API du site"
 
-#: sabnzbd/skintext.py:514
+#: sabnzbd/skintext.py:515
 msgid ""
 "This key provides identity to indexer. Refer to "
 "https://www.oznzb.com/profile."
@@ -3398,180 +3398,190 @@ msgstr ""
 "Cette clé fournit l'identité à l'indexeur. Reportez-vous à "
 "https://www.oznzb.com/profile."
 
-#: sabnzbd/skintext.py:515
+#: sabnzbd/skintext.py:516
 msgid "Automatic Feedback"
 msgstr "Commentaires automatique"
 
-#: sabnzbd/skintext.py:516
+#: sabnzbd/skintext.py:517
 msgid ""
 "Send automatically calculated validation results for downloads to indexer."
 msgstr ""
 "Envoyer les résultats de la validation calculées automatiquement pour les "
 "téléchargements à l'indexeur."
 
-#: sabnzbd/skintext.py:517
+#: sabnzbd/skintext.py:518
 msgid "Enable Filtering"
 msgstr "Activer le filtrage"
 
-#: sabnzbd/skintext.py:518
+#: sabnzbd/skintext.py:519
 msgid "Action downloads according to filtering rules."
 msgstr "Activer les téléchargements selon les règles de filtrage."
 
-#: sabnzbd/skintext.py:519
+#: sabnzbd/skintext.py:520
 msgid "Abort If"
 msgstr "Abandonner si"
 
-#: sabnzbd/skintext.py:520
+#: sabnzbd/skintext.py:521
 msgid "Else Pause If"
 msgstr "Sinon, mettre en pause si"
 
-#: sabnzbd/skintext.py:521
+#: sabnzbd/skintext.py:522
 msgid "Video rating"
 msgstr "Classement vidéo"
 
-#: sabnzbd/skintext.py:522
+#: sabnzbd/skintext.py:523
 msgid "Audio rating"
 msgstr "Classement audio"
 
-#: sabnzbd/skintext.py:524
+#: sabnzbd/skintext.py:525
 msgid "Spam"
 msgstr "Spam"
 
-#: sabnzbd/skintext.py:525
+#: sabnzbd/skintext.py:526
 msgid "Confirmed"
 msgstr "Confirmé"
 
-#: sabnzbd/skintext.py:526
+#: sabnzbd/skintext.py:527
 msgid "More thumbs down than up"
 msgstr "Plus de mauvais votes que de bons"
 
-#: sabnzbd/skintext.py:527
+#: sabnzbd/skintext.py:528
 msgid "Title keywords"
 msgstr "Mots-clés titre"
 
-#: sabnzbd/skintext.py:528
+#: sabnzbd/skintext.py:529
 msgid "Comma separated list"
 msgstr "Liste séparée par des virgules"
 
-#: sabnzbd/skintext.py:529
+#: sabnzbd/skintext.py:530
 msgid "Server load-balancing"
 msgstr "Equilibrage de charge du serveur"
 
-#: sabnzbd/skintext.py:530
+#: sabnzbd/skintext.py:531
 msgid "Prevent load-balancing"
 msgstr "Empêcher l'équilibrage de charge"
 
-#: sabnzbd/skintext.py:531
+#: sabnzbd/skintext.py:532
 msgid "Allow load-balancing"
 msgstr "Autoriser l'équilibrage de charge"
 
-#: sabnzbd/skintext.py:532
+#: sabnzbd/skintext.py:533
 msgid "Allow load-balancing with optimization for IPv6"
 msgstr "Autoriser l'équilibrage de charge avec l'optimisation pour IPv6"
 
-#: sabnzbd/skintext.py:533
+#: sabnzbd/skintext.py:534
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr "Utile si un serveur de news a plus d'une adresse IPv4/IPv6"
 
-#: sabnzbd/skintext.py:536 [Caption] # sabnzbd/skintext.py:552 [Button: Add server]
+#: sabnzbd/skintext.py:537 [Caption] # sabnzbd/skintext.py:553 [Button: Add server]
 msgid "Add Server"
 msgstr "Ajouter un serveur"
 
-#: sabnzbd/skintext.py:537 [User defined name for server]
+#: sabnzbd/skintext.py:538 [User defined name for server]
 msgid "Server description"
 msgstr "Description du serveur"
 
-#: sabnzbd/skintext.py:539 [Server port]
+#: sabnzbd/skintext.py:540 [Server port]
 msgid "Port"
 msgstr "Port"
 
-#: sabnzbd/skintext.py:540 [Server username]
+#: sabnzbd/skintext.py:541 [Server username]
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: sabnzbd/skintext.py:541 [Server password]
+#: sabnzbd/skintext.py:542 [Server password]
 msgid "Password"
 msgstr "Mot de passe"
 
-#: sabnzbd/skintext.py:542 [Server timeout]
+#: sabnzbd/skintext.py:543 [Server timeout]
 msgid "Timeout"
 msgstr "Délai d'expiration"
 
-#: sabnzbd/skintext.py:544 [Server's retention time in days]
+#: sabnzbd/skintext.py:545 [Server's retention time in days]
 msgid "Retention time"
 msgstr "Délai de rétention"
 
-#: sabnzbd/skintext.py:545 [Server SSL tickbox]
+#: sabnzbd/skintext.py:546 [Server SSL tickbox]
 msgid "SSL"
 msgstr "SSL"
 
-#: sabnzbd/skintext.py:547 [Explain server priority]
+#: sabnzbd/skintext.py:548 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 est la priorité la plus élevée, 100 est la priorité la plus faible"
 
-#: sabnzbd/skintext.py:548 [Server optional tickbox]
+#: sabnzbd/skintext.py:549 [Server optional tickbox]
 msgid "Optional"
 msgstr "Optionnel"
 
-#: sabnzbd/skintext.py:549 [Enable server tickbox]
+#: sabnzbd/skintext.py:550 [Enable server tickbox]
 msgid "Enable"
 msgstr "Activer"
 
-#: sabnzbd/skintext.py:550
+#: sabnzbd/skintext.py:551
 msgid "SSL type"
 msgstr "Type SSL"
 
-#: sabnzbd/skintext.py:551
+#: sabnzbd/skintext.py:552
 msgid "Use the top value, unless your Usenet provider requires otherwise!"
 msgstr ""
 "Utilisez la valeur maximale, sauf si votre fournisseur Usenet spécifie "
 "autrement !"
 
-#: sabnzbd/skintext.py:553 [Button: Remove server]
+#: sabnzbd/skintext.py:554 [Button: Remove server]
 msgid "Remove Server"
 msgstr "Supprimer le serveur"
 
-#: sabnzbd/skintext.py:554 [Button: Test server] # sabnzbd/skintext.py:948 [Wizard step]
+#: sabnzbd/skintext.py:555 [Button: Test server] # sabnzbd/skintext.py:950 [Wizard step]
 msgid "Test Server"
 msgstr "Tester le serveur"
 
-#: sabnzbd/skintext.py:555 [Button: Clear server's byte counters]
+#: sabnzbd/skintext.py:556 [Button: Clear server's byte counters]
 msgid "Clear Counters"
 msgstr "RAZ des compteurs"
 
-#: sabnzbd/skintext.py:556
+#: sabnzbd/skintext.py:557
 msgid "Testing server details..."
 msgstr "Test des détails du serveur en cours..."
 
-#: sabnzbd/skintext.py:557
+#: sabnzbd/skintext.py:558
 msgid "Bandwidth"
 msgstr "Bande passante"
 
-#: sabnzbd/skintext.py:558
+#: sabnzbd/skintext.py:559
 msgid "Send Group"
 msgstr "Envoyer 'Group'"
 
-#: sabnzbd/skintext.py:559
+#: sabnzbd/skintext.py:560
 msgid "Send group command before requesting articles."
 msgstr "Envoyer la commande 'group' avant la demande des articles."
 
-#: sabnzbd/skintext.py:561
+#: sabnzbd/skintext.py:562
 msgid "Only use this server for these categories."
 msgstr "Utilisez uniquement ce serveur pour ces catégories."
 
-#: sabnzbd/skintext.py:562
+#: sabnzbd/skintext.py:563
+msgid ""
+"None of the enabled servers have the 'Default' category selected. Jobs in "
+"the queue that are not assigned to one of the server's categories will not "
+"be downloaded."
+msgstr ""
+"Aucun des serveurs activés n'a la catégorie \"Par défaut\" sélectionnée. Les "
+"tâches de la file d'attente qui ne sont pas affectées à une des catégories "
+"de serveur ne seront pas téléchargées."
+
+#: sabnzbd/skintext.py:564
 msgid "Personal notes"
 msgstr "Notes personnelles"
 
-#: sabnzbd/skintext.py:565 [Config->Scheduling] # sabnzbd/skintext.py:569 [Config->Scheduling]
+#: sabnzbd/skintext.py:567 [Config->Scheduling] # sabnzbd/skintext.py:571 [Config->Scheduling]
 msgid "Add Schedule"
 msgstr "Ajouter une planification"
 
-#: sabnzbd/skintext.py:570 [Config->Scheduling]
+#: sabnzbd/skintext.py:572 [Config->Scheduling]
 msgid "Current Schedules"
 msgstr "Planifications actuelles"
 
-#: sabnzbd/skintext.py:577
+#: sabnzbd/skintext.py:579
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
 "enabled and be automatically checked for new items.<br />When a feed is "
@@ -3584,282 +3594,282 @@ msgstr ""
 "téléchargements seront pris en compte à moins de cliquer sur \"Forcer "
 "téléchargements\"."
 
-#: sabnzbd/skintext.py:579 [Config->RSS button]
+#: sabnzbd/skintext.py:581 [Config->RSS button]
 msgid "Read Feed"
 msgstr "Lire le flux RSS"
 
-#: sabnzbd/skintext.py:580 [Config->RSS button]
+#: sabnzbd/skintext.py:582 [Config->RSS button]
 msgid "Force Download"
 msgstr "Forcer le téléchargement"
 
-#: sabnzbd/skintext.py:583 [Config->RSS table column header]
+#: sabnzbd/skintext.py:585 [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filtre"
 
-#: sabnzbd/skintext.py:584 [Config->RSS table column header]
+#: sabnzbd/skintext.py:586 [Config->RSS table column header]
 msgid "Skip"
 msgstr "Ignorer"
 
-#: sabnzbd/skintext.py:585 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:587 [Config->RSS filter-type selection menu]
 msgid "Accept"
 msgstr "Accepter"
 
-#: sabnzbd/skintext.py:586 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:588 [Config->RSS filter-type selection menu]
 msgid "Reject"
 msgstr "Rejeter"
 
-#: sabnzbd/skintext.py:587 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:589 [Config->RSS filter-type selection menu]
 msgid "Requires"
 msgstr "Obligatoire"
 
-#: sabnzbd/skintext.py:588 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:590 [Config->RSS filter-type selection menu]
 msgid "RequiresCat"
 msgstr "CatObligatoire"
 
-#: sabnzbd/skintext.py:589 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:591 [Config->RSS filter-type selection menu]
 msgid "At least"
 msgstr "Au moins"
 
-#: sabnzbd/skintext.py:590 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:592 [Config->RSS filter-type selection menu]
 msgid "At most"
 msgstr "Au plus"
 
-#: sabnzbd/skintext.py:591 [Config->RSS filter-type selection menu "From Season/Episode"]
+#: sabnzbd/skintext.py:593 [Config->RSS filter-type selection menu "From Season/Episode"]
 msgid "From SxxEyy"
 msgstr "Depuis SxxEyy"
 
-#: sabnzbd/skintext.py:592 [Config->RSS section header]
+#: sabnzbd/skintext.py:594 [Config->RSS section header]
 msgid "Matched"
 msgstr "Correspond"
 
-#: sabnzbd/skintext.py:593 [Config->RSS section header]
+#: sabnzbd/skintext.py:595 [Config->RSS section header]
 msgid "Not Matched"
 msgstr "Ne correspond pas"
 
-#: sabnzbd/skintext.py:594 [Config->RSS section header]
+#: sabnzbd/skintext.py:596 [Config->RSS section header]
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: sabnzbd/skintext.py:596 [Config->RSS button]
+#: sabnzbd/skintext.py:598 [Config->RSS button]
 msgid "Read All Feeds Now"
 msgstr "Lire tous les flux maintenant"
 
-#: sabnzbd/skintext.py:599
+#: sabnzbd/skintext.py:601
 msgid "Email Notification On Job Completion"
 msgstr "Notification par email lorsque des téléchargements sont terminés"
 
-#: sabnzbd/skintext.py:600 [When to send email]
+#: sabnzbd/skintext.py:602 [When to send email]
 msgid "Never"
 msgstr "Jamais"
 
-#: sabnzbd/skintext.py:601 [When to send email]
+#: sabnzbd/skintext.py:603 [When to send email]
 msgid "Always"
 msgstr "Toujours"
 
-#: sabnzbd/skintext.py:602 [When to send email]
+#: sabnzbd/skintext.py:604 [When to send email]
 msgid "Error-only"
 msgstr "Erreurs uniquement"
 
-#: sabnzbd/skintext.py:603
+#: sabnzbd/skintext.py:605
 msgid "Disk Full Notifications"
 msgstr "Notifications de disque dur plein"
 
-#: sabnzbd/skintext.py:604
+#: sabnzbd/skintext.py:606
 msgid "Send email when disk is full and SABnzbd is paused."
 msgstr ""
 "Envoie un email lorsque le disque dur est plein et que SABnzbd a été mis en "
 "pause."
 
-#: sabnzbd/skintext.py:605
+#: sabnzbd/skintext.py:607
 msgid "Send RSS notifications"
 msgstr "Envoyer les notifications RSS"
 
-#: sabnzbd/skintext.py:606
+#: sabnzbd/skintext.py:608
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr ""
 "Envoie un email quand un flux RSS ajoute un fichier dans la file d'attente."
 
-#: sabnzbd/skintext.py:607
+#: sabnzbd/skintext.py:609
 msgid "SMTP Server"
 msgstr "Serveur SMTP"
 
-#: sabnzbd/skintext.py:608
+#: sabnzbd/skintext.py:610
 msgid "Set your ISP's server for outgoing email."
 msgstr "Entrez le serveur de courrier sortant de votre FAI."
 
-#: sabnzbd/skintext.py:609
+#: sabnzbd/skintext.py:611
 msgid "Email Recipient"
 msgstr "Email du destinataire"
 
-#: sabnzbd/skintext.py:610
+#: sabnzbd/skintext.py:612
 msgid "Email address to send the email to."
 msgstr "Adresse email à laquelle seront envoyées les notifications."
 
-#: sabnzbd/skintext.py:611
+#: sabnzbd/skintext.py:613
 msgid "Email Sender"
 msgstr "Email de l'expéditeur"
 
-#: sabnzbd/skintext.py:612
+#: sabnzbd/skintext.py:614
 msgid "Who should we say sent the email?"
 msgstr "Qui doit-on indiquer comme expéditeur de l'email ?"
 
-#: sabnzbd/skintext.py:613
+#: sabnzbd/skintext.py:615
 msgid "OPTIONAL Account Username"
 msgstr "Identifiant (facultatif)"
 
-#: sabnzbd/skintext.py:614
+#: sabnzbd/skintext.py:616
 msgid "For authenticated email, account name."
 msgstr "Identifiant du compte pour les envois authentifiés."
 
-#: sabnzbd/skintext.py:615
+#: sabnzbd/skintext.py:617
 msgid "OPTIONAL Account Password"
 msgstr "Mot de passe du compte (facultatif)"
 
-#: sabnzbd/skintext.py:616
+#: sabnzbd/skintext.py:618
 msgid "For authenticated email, password."
 msgstr "Mot de passe du compte pour les envois authentifiés."
 
-#: sabnzbd/skintext.py:617 [Header Growl section]
+#: sabnzbd/skintext.py:619 [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
 
-#: sabnzbd/skintext.py:618 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:620 [Don't translate "Growl"]
 msgid "Enable Growl"
 msgstr "Activer Growl"
 
-#: sabnzbd/skintext.py:619 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:621 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Envoie les notifications à Growl"
 
-#: sabnzbd/skintext.py:620 [Address of Growl server]
+#: sabnzbd/skintext.py:622 [Address of Growl server]
 msgid "Server address"
 msgstr "Adresse du serveur"
 
-#: sabnzbd/skintext.py:621 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:623 [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Utiliser seulement pour le serveur Growl à distance (hôte:port)"
 
-#: sabnzbd/skintext.py:622 [Growl server password]
+#: sabnzbd/skintext.py:624 [Growl server password]
 msgid "Server password"
 msgstr "Mot de passe du serveur"
 
-#: sabnzbd/skintext.py:623 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:625 [Don't translate "Growl"]
 msgid "Optional password for Growl server"
 msgstr "Mot de passe optionnel pour le serveur Growl"
 
-#: sabnzbd/skintext.py:624 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:626 [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Activer NotifyOSD"
 
-#: sabnzbd/skintext.py:625 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:627 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
 msgstr "Envoie les notifications à NotifyOSD"
 
-#: sabnzbd/skintext.py:626 # sabnzbd/skintext.py:630 [Header for OSX Notfication Center section]
+#: sabnzbd/skintext.py:628 # sabnzbd/skintext.py:632 [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Centre de notification"
 
-#: sabnzbd/skintext.py:627
+#: sabnzbd/skintext.py:629
 msgid "Send notifications to Notification Center"
 msgstr "Envoyer des notifications au centre de notification"
 
-#: sabnzbd/skintext.py:628
+#: sabnzbd/skintext.py:630
 msgid "Enable Windows Notifications"
 msgstr "Activer les notifications Windows"
 
-#: sabnzbd/skintext.py:631
+#: sabnzbd/skintext.py:633
 msgid "Windows Notifications"
 msgstr "Notifications Windows"
 
-#: sabnzbd/skintext.py:632 [Header for Ubuntu's NotifyOSD notifications section]
+#: sabnzbd/skintext.py:634 [Header for Ubuntu's NotifyOSD notifications section]
 msgid "NotifyOSD"
 msgstr "NotifyOSD"
 
-#: sabnzbd/skintext.py:633 [Header for Prowl notification section]
+#: sabnzbd/skintext.py:635 [Header for Prowl notification section]
 msgid "Prowl"
 msgstr "Prowl"
 
-#: sabnzbd/skintext.py:634 [Prowl settings]
+#: sabnzbd/skintext.py:636 [Prowl settings]
 msgid "Enable Prowl notifications"
 msgstr "Activer les notifications Prowl"
 
-#: sabnzbd/skintext.py:635 [Prowl settings]
+#: sabnzbd/skintext.py:637 [Prowl settings]
 msgid "Requires a Prowl account"
 msgstr "Nécessite un compte Prowl"
 
-#: sabnzbd/skintext.py:636 [Prowl settings]
+#: sabnzbd/skintext.py:638 [Prowl settings]
 msgid "API key for Prowl"
 msgstr "Clé API pour Prowl"
 
-#: sabnzbd/skintext.py:637 [Prowl settings]
+#: sabnzbd/skintext.py:639 [Prowl settings]
 msgid "Personal API key for Prowl (required)"
 msgstr "Clé API personnelle pour Prowl (obligatoire)"
 
-#: sabnzbd/skintext.py:638 [Header for Pushover notification section]
+#: sabnzbd/skintext.py:640 [Header for Pushover notification section]
 msgid "Pushover"
 msgstr "Pushover"
 
-#: sabnzbd/skintext.py:639 [Pushover settings]
+#: sabnzbd/skintext.py:641 [Pushover settings]
 msgid "Enable Pushover notifications"
 msgstr "Activer les notifications Pushover"
 
-#: sabnzbd/skintext.py:640 [Pushoversettings]
+#: sabnzbd/skintext.py:642 [Pushoversettings]
 msgid "Requires a Pushover account"
 msgstr "Nécessite un compte Pushover"
 
-#: sabnzbd/skintext.py:641 [Pushover settings]
+#: sabnzbd/skintext.py:643 [Pushover settings]
 msgid "Application Token"
 msgstr "Jeton (token) d'application"
 
-#: sabnzbd/skintext.py:642 [Pushover settings]
+#: sabnzbd/skintext.py:644 [Pushover settings]
 msgid "Application token (required)"
 msgstr "Jeton (token) d'application (obligatoire)"
 
-#: sabnzbd/skintext.py:643 [Pushover settings]
+#: sabnzbd/skintext.py:645 [Pushover settings]
 msgid "User Key"
 msgstr "Clé de l'utilisateur"
 
-#: sabnzbd/skintext.py:644 [Pushover settings]
+#: sabnzbd/skintext.py:646 [Pushover settings]
 msgid "User Key (required)"
 msgstr "Clé de l'utilisateur (obligatoire)"
 
-#: sabnzbd/skintext.py:645 [Pushover settings]
+#: sabnzbd/skintext.py:647 [Pushover settings]
 msgid "Device(s)"
 msgstr "Appareil(s)"
 
-#: sabnzbd/skintext.py:646 [Pushover settings]
+#: sabnzbd/skintext.py:648 [Pushover settings]
 msgid "Device(s) to which message should be sent"
 msgstr "Appareil(s) auxquels doivent être envoyés les messages"
 
-#: sabnzbd/skintext.py:647 [Header for Pushbullet notification section]
+#: sabnzbd/skintext.py:649 [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
 
-#: sabnzbd/skintext.py:648 [Pushbullet settings]
+#: sabnzbd/skintext.py:650 [Pushbullet settings]
 msgid "Enable Pushbullet notifications"
 msgstr "Activer les notifications Pushbullet"
 
-#: sabnzbd/skintext.py:649 [Pushbulletsettings]
+#: sabnzbd/skintext.py:651 [Pushbulletsettings]
 msgid "Requires a Pushbullet account"
 msgstr "Nécessite un compte Pushbullet"
 
-#: sabnzbd/skintext.py:650 [Pushbullet settings]
+#: sabnzbd/skintext.py:652 [Pushbullet settings]
 msgid "Personal API key"
 msgstr "Clé API personnelle"
 
-#: sabnzbd/skintext.py:651 [Pushbullet settings]
+#: sabnzbd/skintext.py:653 [Pushbullet settings]
 msgid "Your personal Pushbullet API key (required)"
 msgstr "Votre clé API Pushbullet personnelle (obligatoire )"
 
-#: sabnzbd/skintext.py:652 [Pushbullet settings]
+#: sabnzbd/skintext.py:654 [Pushbullet settings]
 msgid "Device"
 msgstr "Appareil"
 
-#: sabnzbd/skintext.py:653 [Pushbullet settings]
+#: sabnzbd/skintext.py:655 [Pushbullet settings]
 msgid "Device to which message should be sent"
 msgstr "Appareil sur lequel le message doit être envoyé"
 
-#: sabnzbd/skintext.py:656
+#: sabnzbd/skintext.py:658
 msgid ""
 "Use the \"Groups / Indexer tags\" column to map groups and tags to your "
 "categories.<br/>Wildcards are supported. Use commas to separate terms."
@@ -3868,235 +3878,235 @@ msgstr ""
 "groupes et balises à vos catégories.<br/>Les caractères génériques sont pris "
 "en charge. Utilisez des virgules pour séparer les termes."
 
-#: sabnzbd/skintext.py:657
+#: sabnzbd/skintext.py:659
 msgid ""
 "Ending the path with an asterisk * will prevent creation of job folders."
 msgstr ""
 "Terminer le chemin avec une étoile * empêche la création des dossiers de la "
 "tâche."
 
-#: sabnzbd/skintext.py:658
+#: sabnzbd/skintext.py:660
 msgid "Relative folders are based on"
 msgstr "Les chemins relatifs des dossiers sont basés sur"
 
-#: sabnzbd/skintext.py:659
+#: sabnzbd/skintext.py:661
 msgid "Folder/Path"
 msgstr "Dossier/Chemin"
 
-#: sabnzbd/skintext.py:660
+#: sabnzbd/skintext.py:662
 msgid "Groups / Indexer tags"
 msgstr "balises Groupes / Indexeur"
 
-#: sabnzbd/skintext.py:661 [Small delete button]
+#: sabnzbd/skintext.py:663 [Small delete button]
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py:664
+#: sabnzbd/skintext.py:666
 msgid "Series Sorting"
 msgstr "Tri des séries"
 
-#: sabnzbd/skintext.py:665
+#: sabnzbd/skintext.py:667
 msgid "Enable TV Sorting"
 msgstr "Activer le tri TV"
 
-#: sabnzbd/skintext.py:666
+#: sabnzbd/skintext.py:668
 msgid "Pattern Key"
 msgstr "Modèle de clé"
 
-#: sabnzbd/skintext.py:667
+#: sabnzbd/skintext.py:669
 msgid "Clear"
 msgstr "Effacer"
 
-#: sabnzbd/skintext.py:668
+#: sabnzbd/skintext.py:670
 msgid "Presets"
 msgstr "Modèles prédéfinis"
 
-#: sabnzbd/skintext.py:669
+#: sabnzbd/skintext.py:671
 msgid "Example"
 msgstr "Exemple"
 
-#: sabnzbd/skintext.py:670
+#: sabnzbd/skintext.py:672
 msgid "Generic Sorting"
 msgstr "Tri générique"
 
-#: sabnzbd/skintext.py:671
+#: sabnzbd/skintext.py:673
 msgid "Enable Movie Sorting"
 msgstr "Activer le tri des films"
 
-#: sabnzbd/skintext.py:672
+#: sabnzbd/skintext.py:674
 msgid "Keep loose downloads in extra folders"
 msgstr ""
 "Conserver les téléchargements disséminés dans des dossiers supplémentaires"
 
-#: sabnzbd/skintext.py:673
+#: sabnzbd/skintext.py:675
 msgid "Affected Categories"
 msgstr "Catégories affectées"
 
-#: sabnzbd/skintext.py:674
+#: sabnzbd/skintext.py:676
 msgid "Meaning"
 msgstr "Signification"
 
-#: sabnzbd/skintext.py:675
+#: sabnzbd/skintext.py:677
 msgid "Pattern"
 msgstr "Modèle"
 
-#: sabnzbd/skintext.py:676
+#: sabnzbd/skintext.py:678
 msgid "Result"
 msgstr "Résultat"
 
-#: sabnzbd/skintext.py:677
+#: sabnzbd/skintext.py:679
 msgid "1x05 Season Folder"
 msgstr "1x05 Dossier Saison"
 
-#: sabnzbd/skintext.py:678
+#: sabnzbd/skintext.py:680
 msgid "S01E05 Season Folder"
 msgstr "S01E05 Dossier Saison"
 
-#: sabnzbd/skintext.py:679
+#: sabnzbd/skintext.py:681
 msgid "1x05 Episode Folder"
 msgstr "1x05 Dossier Épisode"
 
-#: sabnzbd/skintext.py:680
+#: sabnzbd/skintext.py:682
 msgid "S01E05 Episode Folder"
 msgstr "S01E05 Dossier Épisode"
 
-#: sabnzbd/skintext.py:681
+#: sabnzbd/skintext.py:683
 msgid "Title"
 msgstr "Titre"
 
-#: sabnzbd/skintext.py:682
+#: sabnzbd/skintext.py:684
 msgid "Movie Name"
 msgstr "Nom du film"
 
-#: sabnzbd/skintext.py:683
+#: sabnzbd/skintext.py:685
 msgid "Movie.Name"
 msgstr "Nom.Film"
 
-#: sabnzbd/skintext.py:684
+#: sabnzbd/skintext.py:686
 msgid "Movie_Name"
 msgstr "Nom_Film"
 
-#: sabnzbd/skintext.py:685 # sabnzbd/skintext.py:686
+#: sabnzbd/skintext.py:687 # sabnzbd/skintext.py:688
 msgid "Show Name"
 msgstr "Nom de la série"
 
-#: sabnzbd/skintext.py:687
+#: sabnzbd/skintext.py:689
 msgid "Show.Name"
 msgstr "Nom.Série"
 
-#: sabnzbd/skintext.py:688
+#: sabnzbd/skintext.py:690
 msgid "Show_Name"
 msgstr "Nom_Série"
 
-#: sabnzbd/skintext.py:689
+#: sabnzbd/skintext.py:691
 msgid "Season Number"
 msgstr "Numéro de la saison"
 
-#: sabnzbd/skintext.py:690
+#: sabnzbd/skintext.py:692
 msgid "Episode Number"
 msgstr "Numéro de l'épisode"
 
-#: sabnzbd/skintext.py:691 # sabnzbd/skintext.py:692
+#: sabnzbd/skintext.py:693 # sabnzbd/skintext.py:694
 msgid "Episode Name"
 msgstr "Nom de l'épisode"
 
-#: sabnzbd/skintext.py:693
+#: sabnzbd/skintext.py:695
 msgid "Episode.Name"
 msgstr "Nom.Épisode"
 
-#: sabnzbd/skintext.py:694
+#: sabnzbd/skintext.py:696
 msgid "Episode_Name"
 msgstr "Nom_Épisode"
 
-#: sabnzbd/skintext.py:695
+#: sabnzbd/skintext.py:697
 msgid "File Extension"
 msgstr "Extension du fichier"
 
-#: sabnzbd/skintext.py:696
+#: sabnzbd/skintext.py:698
 msgid "Extension"
 msgstr "Extension"
 
-#: sabnzbd/skintext.py:697
+#: sabnzbd/skintext.py:699
 msgid "Part Number"
 msgstr "Numéro de bloc"
 
-#: sabnzbd/skintext.py:698
+#: sabnzbd/skintext.py:700
 msgid "Decade"
 msgstr "Décennie"
 
-#: sabnzbd/skintext.py:699
+#: sabnzbd/skintext.py:701
 msgid "Original Filename"
 msgstr "Nom de fichier originel"
 
-#: sabnzbd/skintext.py:700
+#: sabnzbd/skintext.py:702
 msgid "Original Foldername"
 msgstr "Nom du dossier originel"
 
-#: sabnzbd/skintext.py:701
+#: sabnzbd/skintext.py:703
 msgid "Lower Case"
 msgstr "Minuscule"
 
-#: sabnzbd/skintext.py:702
+#: sabnzbd/skintext.py:704
 msgid "TEXT"
 msgstr "TEXTE"
 
-#: sabnzbd/skintext.py:703
+#: sabnzbd/skintext.py:705
 msgid "text"
 msgstr "texte"
 
-#: sabnzbd/skintext.py:704
+#: sabnzbd/skintext.py:706
 msgid "file"
 msgstr "fichier"
 
-#: sabnzbd/skintext.py:705
+#: sabnzbd/skintext.py:707
 msgid "folder"
 msgstr "dossier"
 
-#: sabnzbd/skintext.py:706
+#: sabnzbd/skintext.py:708
 msgid "Sort String"
 msgstr "Chaîne de caractères de tri"
 
-#: sabnzbd/skintext.py:707
+#: sabnzbd/skintext.py:709
 msgid "Multi-part label"
 msgstr "Étiquette multi-bloc"
 
-#: sabnzbd/skintext.py:708
+#: sabnzbd/skintext.py:710
 msgid "In folders"
 msgstr "Dans les dossiers"
 
-#: sabnzbd/skintext.py:709
+#: sabnzbd/skintext.py:711
 msgid "No folders"
 msgstr "Pas de dossiers"
 
-#: sabnzbd/skintext.py:710
+#: sabnzbd/skintext.py:712
 msgid "Date Sorting"
 msgstr "Tri par date"
 
-#: sabnzbd/skintext.py:711
+#: sabnzbd/skintext.py:713
 msgid "Enable Date Sorting"
 msgstr "Activer le tri par date"
 
-#: sabnzbd/skintext.py:712
+#: sabnzbd/skintext.py:714
 msgid "Show Name folder"
 msgstr "Dossier du nom de série"
 
-#: sabnzbd/skintext.py:713
+#: sabnzbd/skintext.py:715
 msgid "Year-Month Folders"
 msgstr "Dossiers Année-Mois"
 
-#: sabnzbd/skintext.py:714
+#: sabnzbd/skintext.py:716
 msgid "Daily Folders"
 msgstr "Dossiers Quotidiens"
 
-#: sabnzbd/skintext.py:715 [Note for title expression in Sorting that does case adjustment]
+#: sabnzbd/skintext.py:717 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
 msgstr "Lettre Capitale"
 
-#: sabnzbd/skintext.py:716
+#: sabnzbd/skintext.py:718
 msgid "Processed Result"
 msgstr "Résultat traité"
 
-#: sabnzbd/skintext.py:719
+#: sabnzbd/skintext.py:721
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -4108,240 +4118,240 @@ msgstr ""
 "consulter le wiki en premier, car certaines ont de graves effets "
 "secondaires. <br> Les valeurs par défaut sont indiquées entre parenthèses."
 
-#: sabnzbd/skintext.py:723
+#: sabnzbd/skintext.py:725
 msgid "Values"
 msgstr "Valeurs"
 
-#: sabnzbd/skintext.py:726 [Job details page]
+#: sabnzbd/skintext.py:728 [Job details page]
 msgid "Edit NZB Details"
 msgstr "Éditer les détails du NZB"
 
-#: sabnzbd/skintext.py:728 [Job details page, delete button]
+#: sabnzbd/skintext.py:730 [Job details page, delete button]
 msgid "Delete"
 msgstr "Supprimer"
 
-#: sabnzbd/skintext.py:729 [Job details page, move file to top]
+#: sabnzbd/skintext.py:731 [Job details page, move file to top]
 msgid "Top"
 msgstr "Tout en haut"
 
-#: sabnzbd/skintext.py:730 [Job details page, move file one place up]
+#: sabnzbd/skintext.py:732 [Job details page, move file one place up]
 msgid "Up"
 msgstr "Monter"
 
-#: sabnzbd/skintext.py:731 [Job details page, move file one place down]
+#: sabnzbd/skintext.py:733 [Job details page, move file one place down]
 msgid "Down"
 msgstr "Descendre"
 
-#: sabnzbd/skintext.py:732 [Job details page, move file to bottom]
+#: sabnzbd/skintext.py:734 [Job details page, move file to bottom]
 msgid "Bottom"
 msgstr "Tout en bas"
 
-#: sabnzbd/skintext.py:733 [Job details page, select all files]
+#: sabnzbd/skintext.py:735 [Job details page, select all files]
 msgid "All"
 msgstr "Tous"
 
-#: sabnzbd/skintext.py:735 [Job details page, invert file selection]
+#: sabnzbd/skintext.py:737 [Job details page, invert file selection]
 msgid "Invert"
 msgstr "Inverser"
 
-#: sabnzbd/skintext.py:736 [Job details page, filename column header]
+#: sabnzbd/skintext.py:738 [Job details page, filename column header]
 msgid "Filename"
 msgstr "Nom de fichier"
 
-#: sabnzbd/skintext.py:737 [Job details page, subject column header]
+#: sabnzbd/skintext.py:739 [Job details page, subject column header]
 msgid "Subject"
 msgstr "Sujet"
 
-#: sabnzbd/skintext.py:739 [Job details page, section header]
+#: sabnzbd/skintext.py:741 [Job details page, section header]
 msgid "Selection"
 msgstr "Sélection"
 
-#: sabnzbd/skintext.py:744 # sabnzbd/skintext.py:847
+#: sabnzbd/skintext.py:746 # sabnzbd/skintext.py:849
 msgid "Pause for 5 minutes"
 msgstr "Mettre en pause pendant 5 minutes"
 
-#: sabnzbd/skintext.py:745 # sabnzbd/skintext.py:848
+#: sabnzbd/skintext.py:747 # sabnzbd/skintext.py:850
 msgid "Pause for 15 minutes"
 msgstr "Mettre en pause pendant 15 minutes"
 
-#: sabnzbd/skintext.py:746 # sabnzbd/skintext.py:849
+#: sabnzbd/skintext.py:748 # sabnzbd/skintext.py:851
 msgid "Pause for 30 minutes"
 msgstr "Mettre en pause pendant 30 minutes"
 
-#: sabnzbd/skintext.py:747 # sabnzbd/skintext.py:850
+#: sabnzbd/skintext.py:749 # sabnzbd/skintext.py:852
 msgid "Pause for 1 hour"
 msgstr "Mettre en pause pendant 1 heure"
 
-#: sabnzbd/skintext.py:748 # sabnzbd/skintext.py:851
+#: sabnzbd/skintext.py:750 # sabnzbd/skintext.py:853
 msgid "Pause for 3 hours"
 msgstr "Mettre en pause pendant 3 heures"
 
-#: sabnzbd/skintext.py:749 # sabnzbd/skintext.py:852
+#: sabnzbd/skintext.py:751 # sabnzbd/skintext.py:854
 msgid "Pause for 6 hours"
 msgstr "Mettre en pause pendant 6 heures"
 
-#: sabnzbd/skintext.py:751 # sabnzbd/skintext.py:868
+#: sabnzbd/skintext.py:753 # sabnzbd/skintext.py:870
 msgid "left"
 msgstr "restant"
 
-#: sabnzbd/skintext.py:752 # sabnzbd/skintext.py:889
+#: sabnzbd/skintext.py:754 # sabnzbd/skintext.py:891
 msgid "Free Space"
 msgstr "Espace libre"
 
-#: sabnzbd/skintext.py:753
+#: sabnzbd/skintext.py:755
 msgid "Temp Folder"
 msgstr "Dossier temporaire"
 
-#: sabnzbd/skintext.py:754
+#: sabnzbd/skintext.py:756
 msgid "Search"
 msgstr "Rechercher"
 
-#: sabnzbd/skintext.py:755 # sabnzbd/skintext.py:855
+#: sabnzbd/skintext.py:757 # sabnzbd/skintext.py:857
 msgid "Multi-Operations"
 msgstr "Multi-Operations"
 
-#: sabnzbd/skintext.py:756
+#: sabnzbd/skintext.py:758
 msgid "Hold shift key to select a range"
 msgstr "Maintenez la touche Maj pour sélectionner une plage"
 
-#: sabnzbd/skintext.py:757
+#: sabnzbd/skintext.py:759
 msgid "Check all"
 msgstr "Tout sélectionner"
 
-#: sabnzbd/skintext.py:758
+#: sabnzbd/skintext.py:760
 msgid "Restart SABnzbd"
 msgstr "Redémarrer SABnzbd"
 
-#: sabnzbd/skintext.py:760
+#: sabnzbd/skintext.py:762
 msgid "Status and interface options"
 msgstr "Options de statut et d'interface"
 
-#: sabnzbd/skintext.py:761
+#: sabnzbd/skintext.py:763
 msgid "Or drag and drop files in the window!"
 msgstr "Ou glissez-déposez des fichiers sur la fenêtre!"
 
-#: sabnzbd/skintext.py:765
+#: sabnzbd/skintext.py:767
 msgid "Lost connection to SABnzbd.."
 msgstr "Connexion à SABnzbd perdue..."
 
-#: sabnzbd/skintext.py:766
+#: sabnzbd/skintext.py:768
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr ""
 "En cas de redémarrage de SABnzbd cet écran disparaîtra automatiquement!"
 
-#: sabnzbd/skintext.py:767 # sabnzbd/skintext.py:875
+#: sabnzbd/skintext.py:769 # sabnzbd/skintext.py:877
 msgid "Disabled"
 msgstr "Désactivé"
 
-#: sabnzbd/skintext.py:778 # sabnzbd/skintext.py:927
+#: sabnzbd/skintext.py:780 # sabnzbd/skintext.py:929
 msgid "Refresh rate"
 msgstr "Taux de rafraîchissement"
 
-#: sabnzbd/skintext.py:779
+#: sabnzbd/skintext.py:781
 msgid "Use global interface settings"
 msgstr "Utiliser les paramètres globaux de l'interface"
 
-#: sabnzbd/skintext.py:780
+#: sabnzbd/skintext.py:782
 msgid "Queue item limit"
 msgstr "Limite des éléments de la file d'attente"
 
-#: sabnzbd/skintext.py:781
+#: sabnzbd/skintext.py:783
 msgid "History item limit"
 msgstr "Limite des éléments historisés"
 
-#: sabnzbd/skintext.py:782
+#: sabnzbd/skintext.py:784
 msgid "Date format"
 msgstr "Format de la date"
 
-#: sabnzbd/skintext.py:783
+#: sabnzbd/skintext.py:785
 msgid "Extra queue column"
 msgstr "Colonne de file d'attente supplémentaire"
 
-#: sabnzbd/skintext.py:784 # sabnzbd/skintext.py:873
+#: sabnzbd/skintext.py:786 # sabnzbd/skintext.py:875
 msgid "page"
 msgstr "page"
 
-#: sabnzbd/skintext.py:785 # sabnzbd/skintext.py:874
+#: sabnzbd/skintext.py:787 # sabnzbd/skintext.py:876
 msgid "Everything"
 msgstr "Tout"
 
-#: sabnzbd/skintext.py:786
+#: sabnzbd/skintext.py:788
 msgid "Loading"
 msgstr "Chargement"
 
-#: sabnzbd/skintext.py:787
+#: sabnzbd/skintext.py:789
 msgid "articles"
 msgstr "articles"
 
-#: sabnzbd/skintext.py:788 # sabnzbd/skintext.py:893
+#: sabnzbd/skintext.py:790 # sabnzbd/skintext.py:895
 msgid "Queue repair"
 msgstr "Réparer la file d'attente"
 
-#: sabnzbd/skintext.py:789
+#: sabnzbd/skintext.py:791
 msgid "Show active connections"
 msgstr "Afficher les connexions actives"
 
-#: sabnzbd/skintext.py:791
+#: sabnzbd/skintext.py:793
 msgid "Orphaned jobs"
 msgstr "Tâches orphelines"
 
-#: sabnzbd/skintext.py:792
+#: sabnzbd/skintext.py:794
 msgid "Send back to queue"
 msgstr "Renvoyer dans la file d'attente"
 
-#: sabnzbd/skintext.py:793 # sabnzbd/skintext.py:928
+#: sabnzbd/skintext.py:795 # sabnzbd/skintext.py:930
 msgid "Delete All"
 msgstr "Tout supprimer"
 
-#: sabnzbd/skintext.py:795
+#: sabnzbd/skintext.py:797
 msgid "Fetch NZB from URL"
 msgstr "Importer le NZB depuis l'URL"
 
-#: sabnzbd/skintext.py:796
+#: sabnzbd/skintext.py:798
 msgid "Upload NZB"
 msgstr "Uploader le NZB"
 
-#: sabnzbd/skintext.py:798 # sabnzbd/skintext.py:885
+#: sabnzbd/skintext.py:800 # sabnzbd/skintext.py:887
 msgid "Optionally specify a filename"
 msgstr "Vous pouvez également indiquer un nom de fichier"
 
-#: sabnzbd/skintext.py:799
+#: sabnzbd/skintext.py:801
 msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
 msgstr "Formats : .nzb, .rar, .zip, .gz, .bz2"
 
-#: sabnzbd/skintext.py:800
+#: sabnzbd/skintext.py:802
 msgid "Submit"
 msgstr "Soumettre"
 
-#: sabnzbd/skintext.py:801 # sabnzbd/skintext.py:837
+#: sabnzbd/skintext.py:803 # sabnzbd/skintext.py:839
 msgid "Open Informational URL"
 msgstr "Ouvrir URL Info."
 
-#: sabnzbd/skintext.py:802
+#: sabnzbd/skintext.py:804
 msgid "Submitted. Thank you!"
 msgstr "Soumis. Merci !"
 
-#: sabnzbd/skintext.py:803
+#: sabnzbd/skintext.py:805
 msgid "Nothing selected!"
 msgstr "Pas de sélection!"
 
-#: sabnzbd/skintext.py:804
+#: sabnzbd/skintext.py:806
 msgid "Remove all selected files"
 msgstr "Supprimer tous les fichiers sélectionnés"
 
-#: sabnzbd/skintext.py:805
+#: sabnzbd/skintext.py:807
 msgid "Hide/show completed files"
 msgstr "Afficher/masquer les fichiers terminés"
 
-#: sabnzbd/skintext.py:808 # sabnzbd/skintext.py:838
+#: sabnzbd/skintext.py:810 # sabnzbd/skintext.py:840
 msgid "View Script Log"
 msgstr "Afficher le journal des scripts"
 
-#: sabnzbd/skintext.py:813 # sabnzbd/skintext.py:846
+#: sabnzbd/skintext.py:815 # sabnzbd/skintext.py:848
 msgid "Update Available!"
 msgstr "Mise à Jour disponible!"
 
-#: sabnzbd/skintext.py:814 [Don't translate LocalStorage]
+#: sabnzbd/skintext.py:816 [Don't translate LocalStorage]
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4350,175 +4360,175 @@ msgstr ""
 "navigateur, les réglages de l'interface seront perdus lorsque vous fermerez "
 "votre navigateur !"
 
-#: sabnzbd/skintext.py:815 # sabnzbd/skintext.py:925
+#: sabnzbd/skintext.py:817 # sabnzbd/skintext.py:927
 msgid "Custom"
 msgstr "Personnalisé"
 
-#: sabnzbd/skintext.py:816
+#: sabnzbd/skintext.py:818
 msgid "Compact layout"
 msgstr "Affichage compact"
 
-#: sabnzbd/skintext.py:817 # sabnzbd/skintext.py:878
+#: sabnzbd/skintext.py:819 # sabnzbd/skintext.py:880
 msgid "Confirm Queue Deletions"
 msgstr "Confirmer les suppressions de la file d'attente"
 
-#: sabnzbd/skintext.py:818 # sabnzbd/skintext.py:879
+#: sabnzbd/skintext.py:820 # sabnzbd/skintext.py:881
 msgid "Confirm History Deletions"
 msgstr "Confirmer les suppressions de l'historique"
 
-#: sabnzbd/skintext.py:819
+#: sabnzbd/skintext.py:821
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Combien de temps ou jusqu'à quand souhaitez-vous mettre en pause ?"
 
-#: sabnzbd/skintext.py:820
+#: sabnzbd/skintext.py:822
 msgid "Sorry, we could not interpret that. Try again."
 msgstr "Désolé, nous n'avons pas pu interpréter ça. Essayez encore."
 
-#: sabnzbd/skintext.py:821 # sabnzbd/skintext.py:854
+#: sabnzbd/skintext.py:823 # sabnzbd/skintext.py:856
 msgid "Pause for..."
 msgstr "Mettre en pause pour…"
 
-#: sabnzbd/skintext.py:822
+#: sabnzbd/skintext.py:824
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Trier par Age <small>Moins récent&rarr;Plus récent</small>"
 
-#: sabnzbd/skintext.py:823
+#: sabnzbd/skintext.py:825
 msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
 msgstr "Trier par âge <small>Plus récent&rarr;Moins récent</small>"
 
-#: sabnzbd/skintext.py:824
+#: sabnzbd/skintext.py:826
 msgid "Sort by Name <small>A&rarr;Z</small>"
 msgstr "Trier par nom <small>A&rarr;Z</small>"
 
-#: sabnzbd/skintext.py:825
+#: sabnzbd/skintext.py:827
 msgid "Sort by Name <small>Z&rarr;A</small>"
 msgstr "Trier par nom <small>Z&rarr;A</small>"
 
-#: sabnzbd/skintext.py:826
+#: sabnzbd/skintext.py:828
 msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
 msgstr "Trier par taille <small>Plus petit&rarr;Plus grand</small>"
 
-#: sabnzbd/skintext.py:827
+#: sabnzbd/skintext.py:829
 msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
 msgstr "Trier par taille <small>Plus grand&rarr;Plus petit</small>"
 
-#: sabnzbd/skintext.py:828
+#: sabnzbd/skintext.py:830
 msgid "Uploading"
 msgstr "Upload en cours"
 
-#: sabnzbd/skintext.py:829
+#: sabnzbd/skintext.py:831
 msgid "Forcing disconnect"
 msgstr "Déconnexion forcée en cours"
 
-#: sabnzbd/skintext.py:830
+#: sabnzbd/skintext.py:832
 msgid "Removing job"
 msgstr "Suppression de la tâche"
 
-#: sabnzbd/skintext.py:831
+#: sabnzbd/skintext.py:833
 msgid "Removing jobs"
 msgstr "Suppression des tâches"
 
-#: sabnzbd/skintext.py:839 # sabnzbd/skintext.py:908
+#: sabnzbd/skintext.py:841 # sabnzbd/skintext.py:910
 msgid "Prev"
 msgstr "Préc."
 
-#: sabnzbd/skintext.py:840 # sabnzbd/skintext.py:909 # sabnzbd/skintext.py:940 [Button to go to next Wizard page]
+#: sabnzbd/skintext.py:842 # sabnzbd/skintext.py:911 # sabnzbd/skintext.py:942 [Button to go to next Wizard page]
 msgid "Next"
 msgstr "Suiv."
 
-#: sabnzbd/skintext.py:841
+#: sabnzbd/skintext.py:843
 msgid "Purge the History?"
 msgstr "Vider l'historique ?"
 
-#: sabnzbd/skintext.py:842
+#: sabnzbd/skintext.py:844
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Vous devez activer JavaScript pour que Plush puisse fonctionner !"
 
-#: sabnzbd/skintext.py:844
+#: sabnzbd/skintext.py:846
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: sabnzbd/skintext.py:845
+#: sabnzbd/skintext.py:847
 msgid "Options"
 msgstr "Options"
 
-#: sabnzbd/skintext.py:853 # sabnzbd/skintext.py:911
+#: sabnzbd/skintext.py:855 # sabnzbd/skintext.py:913
 msgid "Pause for how many minutes?"
 msgstr "Mettre en pause pour combien de minutes ?"
 
-#: sabnzbd/skintext.py:856
+#: sabnzbd/skintext.py:858
 msgid "Top Menu"
 msgstr "Afficher/Masquer menu"
 
-#: sabnzbd/skintext.py:857
+#: sabnzbd/skintext.py:859
 msgid "On Finish"
 msgstr "Une fois terminé"
 
-#: sabnzbd/skintext.py:858
+#: sabnzbd/skintext.py:860
 msgid "Sort"
 msgstr "Trier"
 
-#: sabnzbd/skintext.py:859
+#: sabnzbd/skintext.py:861
 msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
 msgstr "Trier par âge <small>(Moins récent&rarr;Plus récent)</small>"
 
-#: sabnzbd/skintext.py:860
+#: sabnzbd/skintext.py:862
 msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
 msgstr "Trier par âge <small>(Plus récent&rarr;Moins récent)</small>"
 
-#: sabnzbd/skintext.py:861
+#: sabnzbd/skintext.py:863
 msgid "Sort by Name <small>(A&rarr;Z)</small>"
 msgstr "Trier par nom <small>(A&rarr;Z)</small>"
 
-#: sabnzbd/skintext.py:862
+#: sabnzbd/skintext.py:864
 msgid "Sort by Name <small>(Z&rarr;A)</small>"
 msgstr "Trier par nom <small>(Z&rarr;A)</small>"
 
-#: sabnzbd/skintext.py:863
+#: sabnzbd/skintext.py:865
 msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
 msgstr "Trier par taille <small>(Plus petit&rarr;Plus grand)</small>"
 
-#: sabnzbd/skintext.py:864
+#: sabnzbd/skintext.py:866
 msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
 msgstr "Trier par taille <small>(Plus grand&rarr;Plus petit)</small>"
 
-#: sabnzbd/skintext.py:865
+#: sabnzbd/skintext.py:867
 msgid "Purge the Queue?"
 msgstr "Vider la file d'attente ?"
 
-#: sabnzbd/skintext.py:866
+#: sabnzbd/skintext.py:868
 msgid "Retry all failed jobs in History?"
 msgstr "Réessayez toutes les tâches échouées de l'historique ?"
 
-#: sabnzbd/skintext.py:867
+#: sabnzbd/skintext.py:869
 msgid "Purge"
 msgstr "Vider"
 
-#: sabnzbd/skintext.py:869 [Used in speed menu. Split in two lines if too long.]
+#: sabnzbd/skintext.py:871 [Used in speed menu. Split in two lines if too long.]
 msgid "Max Speed"
 msgstr "Vitesse max."
 
-#: sabnzbd/skintext.py:870
+#: sabnzbd/skintext.py:872
 msgid "Range"
 msgstr "Plage"
 
-#: sabnzbd/skintext.py:871
+#: sabnzbd/skintext.py:873
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: sabnzbd/skintext.py:872
+#: sabnzbd/skintext.py:874
 msgid "Apply to Selected"
 msgstr "Appliquer à la sélection"
 
-#: sabnzbd/skintext.py:876
+#: sabnzbd/skintext.py:878
 msgid "Refresh Rate"
 msgstr "Fréquence de rafraîchissement"
 
-#: sabnzbd/skintext.py:877
+#: sabnzbd/skintext.py:879
 msgid "Container Width"
 msgstr "Largeur de l'affichage"
 
-#: sabnzbd/skintext.py:880
+#: sabnzbd/skintext.py:882
 msgid ""
 "This will prevent refreshing content when your mouse cursor is hovering over "
 "the queue."
@@ -4526,197 +4536,197 @@ msgstr ""
 "Permet d'éviter le rafraîchisssment du contenu quand la souris survole la "
 "file d'attente."
 
-#: sabnzbd/skintext.py:881
+#: sabnzbd/skintext.py:883
 msgid "Block Refreshes on Hover"
 msgstr "Bloquer rafraîchissements au survol"
 
-#: sabnzbd/skintext.py:882 [Fetch from URL button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:884 [Fetch from URL button in "Add NZB" dialog box]
 msgid "Fetch"
 msgstr "Charger"
 
-#: sabnzbd/skintext.py:883 [Upload button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:885 [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Envoyer"
 
-#: sabnzbd/skintext.py:884
+#: sabnzbd/skintext.py:886
 msgid "Upload: .nzb .rar .zip .gz, .bz2"
 msgstr "Uploader : .nzb, .rar, .zip, .gz, .bz2"
 
-#: sabnzbd/skintext.py:886 # sabnzbd/skintext.py:932
+#: sabnzbd/skintext.py:888 # sabnzbd/skintext.py:934
 msgid "Progress"
 msgstr "Avancement"
 
-#: sabnzbd/skintext.py:888
+#: sabnzbd/skintext.py:890
 msgid "Not enough disk space to complete downloads!"
 msgstr "Espace disque insuffisant pour terminer les téléchargements!"
 
-#: sabnzbd/skintext.py:890
+#: sabnzbd/skintext.py:892
 msgid "Free (Temp)"
 msgstr "Libre (Temp)"
 
-#: sabnzbd/skintext.py:891
+#: sabnzbd/skintext.py:893
 msgid "IDLE"
 msgstr "A L'ARRET"
 
-#: sabnzbd/skintext.py:892
+#: sabnzbd/skintext.py:894
 msgid "Downloads"
 msgstr "Téléchargements"
 
-#: sabnzbd/skintext.py:896
+#: sabnzbd/skintext.py:898
 msgid "Delete Completed"
 msgstr "Supprimer les terminés"
 
-#: sabnzbd/skintext.py:897
+#: sabnzbd/skintext.py:899
 msgid "Delete the all failed items from the history?"
 msgstr "Supprimer tous les éléments échoués de l'historique ?"
 
-#: sabnzbd/skintext.py:898
+#: sabnzbd/skintext.py:900
 msgid "Delete Failed"
 msgstr "Supprimer les échoués"
 
-#: sabnzbd/skintext.py:899
+#: sabnzbd/skintext.py:901
 msgid "Retry all failed jobs?"
 msgstr "Réessayez toutes les tâches qui ont échoué ?"
 
-#: sabnzbd/skintext.py:900 [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py:902 [Link in SMPL for "Retry all failed jobs"]
 msgid "Retry all"
 msgstr "Réessayer tous"
 
-#: sabnzbd/skintext.py:901
+#: sabnzbd/skintext.py:903
 msgid "Links"
 msgstr "Liens"
 
-#: sabnzbd/skintext.py:904
+#: sabnzbd/skintext.py:906
 msgid "Showing %s to %s out of %s results"
 msgstr "Affiche %s de %s sur %s résultats"
 
-#: sabnzbd/skintext.py:905
+#: sabnzbd/skintext.py:907
 msgid "No results"
 msgstr "Aucun résultat(s)"
 
-#: sabnzbd/skintext.py:906
+#: sabnzbd/skintext.py:908
 msgid "Showing one result"
 msgstr "Affichage d'un seul résultat"
 
-#: sabnzbd/skintext.py:907
+#: sabnzbd/skintext.py:909
 msgid "First"
 msgstr "Premier"
 
-#: sabnzbd/skintext.py:910
+#: sabnzbd/skintext.py:912
 msgid "Last"
 msgstr "Dernier"
 
-#: sabnzbd/skintext.py:915
+#: sabnzbd/skintext.py:917
 msgid "Email Sent!"
 msgstr "Email envoyé !"
 
-#: sabnzbd/skintext.py:916
+#: sabnzbd/skintext.py:918
 msgid "Notification Sent!"
 msgstr "Notification envoyée !"
 
-#: sabnzbd/skintext.py:917
+#: sabnzbd/skintext.py:919
 msgid "Saving.."
 msgstr "Enregistrement.."
 
-#: sabnzbd/skintext.py:918
+#: sabnzbd/skintext.py:920
 msgid "Saved"
 msgstr "Enregistré"
 
-#: sabnzbd/skintext.py:920
+#: sabnzbd/skintext.py:922
 msgid "Speed"
 msgstr "Vitesse"
 
-#: sabnzbd/skintext.py:921
+#: sabnzbd/skintext.py:923
 msgid "Toggle Add NZB"
 msgstr "Afficher / Masquer Ajout NZB"
 
-#: sabnzbd/skintext.py:922
+#: sabnzbd/skintext.py:924
 msgid "DualView1"
 msgstr "VueDuoV"
 
-#: sabnzbd/skintext.py:923
+#: sabnzbd/skintext.py:925
 msgid "DualView2"
 msgstr "VueDuoH"
 
-#: sabnzbd/skintext.py:926
+#: sabnzbd/skintext.py:928
 msgid "Are you sure you want to restart SABnzbd?"
 msgstr "Êtes-vous sûr de vouloir redémarrer SABnzbd ?"
 
-#: sabnzbd/skintext.py:929
+#: sabnzbd/skintext.py:931
 msgid "Hide Edit Options"
 msgstr "Cacher les options d'édition"
 
-#: sabnzbd/skintext.py:930
+#: sabnzbd/skintext.py:932
 msgid "Show Edit Options"
 msgstr "Afficher les options d'édition"
 
-#: sabnzbd/skintext.py:931
+#: sabnzbd/skintext.py:933
 msgid "Edit"
 msgstr "Éditer"
 
-#: sabnzbd/skintext.py:933
+#: sabnzbd/skintext.py:935
 msgid "Timeleft"
 msgstr "Temps restant"
 
-#: sabnzbd/skintext.py:937
+#: sabnzbd/skintext.py:939
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Assistant de configuration SABnzbd"
 
-#: sabnzbd/skintext.py:938
+#: sabnzbd/skintext.py:940
 msgid "SABnzbd Version"
 msgstr "Version de SABnzbd"
 
-#: sabnzbd/skintext.py:939 [Button to go to previous Wizard page]
+#: sabnzbd/skintext.py:941 [Button to go to previous Wizard page]
 msgid "Previous"
 msgstr "Précédent"
 
-#: sabnzbd/skintext.py:941
+#: sabnzbd/skintext.py:943
 msgid "Server Details"
 msgstr "Détails du serveur"
 
-#: sabnzbd/skintext.py:942
+#: sabnzbd/skintext.py:944
 msgid "Please enter in the details of your primary usenet provider."
 msgstr "Entrez les informations de votre principal fournisseur usenet."
 
-#: sabnzbd/skintext.py:943
+#: sabnzbd/skintext.py:945
 msgid "The number of connections allowed by your provider"
 msgstr "Le nombre de connexions autorisées par votre fournisseur usenet"
 
-#: sabnzbd/skintext.py:944 [Wizard: examples of amount of connections]
+#: sabnzbd/skintext.py:946 [Wizard: examples of amount of connections]
 msgid "E.g. 8 or 20"
 msgstr "Ex. : 8 ou 20"
 
-#: sabnzbd/skintext.py:945
+#: sabnzbd/skintext.py:947
 msgid "Select only if your provider allows SSL connections."
 msgstr ""
 "Cochez uniquement si votre fournisseur usenet permet les connexions SSL."
 
-#: sabnzbd/skintext.py:946
+#: sabnzbd/skintext.py:948
 msgid "Click to test the entered details."
 msgstr "Cliquez pour tester les informations entrées."
 
-#: sabnzbd/skintext.py:947 [Abbreviation for "for example"]
+#: sabnzbd/skintext.py:949 [Abbreviation for "for example"]
 msgid "E.g."
 msgstr "Par ex. :"
 
-#: sabnzbd/skintext.py:949 [Wizard step]
+#: sabnzbd/skintext.py:951 [Wizard step]
 msgid "Restarting SABnzbd..."
 msgstr "Redémarrage de SABnzbd en cours..."
 
-#: sabnzbd/skintext.py:950 [Wizard step]
+#: sabnzbd/skintext.py:952 [Wizard step]
 msgid "Setup is now complete!"
 msgstr "La configuration est terminée!"
 
-#: sabnzbd/skintext.py:951 [Wizard tip]
+#: sabnzbd/skintext.py:953 [Wizard tip]
 msgid "SABnzbd will now be running in the background."
 msgstr "SABnzbd fonctionnera dorénavant en arrière plan."
 
-#: sabnzbd/skintext.py:952 [Wizard tip]
+#: sabnzbd/skintext.py:954 [Wizard tip]
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr ""
 "Fermer la fenêtre/onglet de votre navigateur NE QUITTERA PAS SABnzbd."
 
-#: sabnzbd/skintext.py:953 [Wizard tip]
+#: sabnzbd/skintext.py:955 [Wizard tip]
 msgid ""
 "After SABnzbd has finished restarting you will be able to access it at the "
 "following location: %s"
@@ -4724,7 +4734,7 @@ msgstr ""
 "Après que SABnzbd a fini de redémarrer, vous serez en mesure d'y accéder à "
 "l'adresse suivante : %s"
 
-#: sabnzbd/skintext.py:954 [Wizard tip]
+#: sabnzbd/skintext.py:956 [Wizard tip]
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4732,27 +4742,27 @@ msgstr ""
 "Il est recommandé de faire un clic-droit et d'ajouter cette page à vos "
 "favoris pour accéder à SABnzbd quand il tourne en arrière plan."
 
-#: sabnzbd/skintext.py:955 [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py:957 [Will be appended with a wiki-link, adjust word order accordingly]
 msgid "Further help can be found on our"
 msgstr "Une aide supplémentaire peut être trouvée sur notre"
 
-#: sabnzbd/skintext.py:956 [Wizard step]
+#: sabnzbd/skintext.py:958 [Wizard step]
 msgid "Go to SABnzbd"
 msgstr "Aller à SABnzbd"
 
-#: sabnzbd/skintext.py:957 [Wizard EXIT button on first page]
+#: sabnzbd/skintext.py:959 [Wizard EXIT button on first page]
 msgid "Exit SABnzbd"
 msgstr "Quitter SABnzbd"
 
-#: sabnzbd/skintext.py:958 [Wizard START button on first page]
+#: sabnzbd/skintext.py:960 [Wizard START button on first page]
 msgid "Start Wizard"
 msgstr "Lancer l'assistant"
 
-#: sabnzbd/skintext.py:959 [Wizard explain relation bits/sec bytes/sec]
+#: sabnzbd/skintext.py:961 [Wizard explain relation bits/sec bytes/sec]
 msgid "When your ISP speed is 10 Mbits/sec, enter here 1M"
 msgstr "Lorsque votre vitesse FAI est de 10 Mbits/s, entrer ici 1M"
 
-#: sabnzbd/skintext.py:962
+#: sabnzbd/skintext.py:964
 msgid ""
 "\n"
 "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
