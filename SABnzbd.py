@@ -699,7 +699,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
 def attach_server(host, port, cert=None, key=None, chain=None):
     """ Define and attach server, optionally HTTPS """
-    if sabnzbd.cfg.ipv6_hosting() or '::1' in host:
+    if sabnzbd.cfg.ipv6_hosting() or '::1' not in host:
         http_server = _cpwsgi_server.CPWSGIServer()
         http_server.bind_addr = (host, port)
         if cert and key:
