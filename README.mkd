@@ -1,5 +1,8 @@
-Release Notes  -  SABnzbd 1.0.0RC3
+Release Notes  -  SABnzbd 1.0.0RC4
 ==================================
+
+## Changes in RC4
+- Fix "SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled."
 
 ## Changes in RC3
 - SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled.
