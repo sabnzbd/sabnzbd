@@ -175,15 +175,15 @@ $(function() {
             var bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
             
             // Only the number
-            var speedLimitNumber = (parseFloat(self.bandwithLimit()) * (self.speedLimit() / 100));
-            
+            var speedLimitNumberFull = (parseFloat(self.bandwithLimit()) * (self.speedLimit() / 100));
+
             // Trick to only get decimal-point when needed
-            speedLimitNumber = Math.round(speedLimitNumber*10)/10;
+            var speedLimitNumber = Math.round(speedLimitNumberFull*10)/10;
             
             // Fix it for lower than 1MB/s
             if(bandwithLimitText == 'M' && speedLimitNumber < 1) {
                 bandwithLimitText = 'K';
-                speedLimitNumber = Math.round(speedLimitNumber * 1024);
+                speedLimitNumber = Math.round(speedLimitNumberFull * 1024);
             }
 
             // Show text
