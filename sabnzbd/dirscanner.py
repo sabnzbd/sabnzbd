@@ -62,6 +62,33 @@ def CompareStat(tup1, tup2):
     return True
 
 
+def is_archive(path):
+    """ Check if file in path is an ZIP, RAR or 7z file
+    :param path: path to file
+    :return: zf, status: -1==Error/Retry, 0==OK, 1==Ignore
+    """
+    if zipfile.is_zipfile(path):
+        try:
+            zf = zipfile.ZipFile(path)
+            return 0, zf
+        except:
+            return -1, None
+    elif is_rarfile(path):
+        try:
+            zf = RarFile(path)
+            return 0, zf
+        except:
+            return -1, None
+    elif is_sevenfile(path):
+        try:
+            zf = SevenZip(path)
+            return 0, zf
+        except:
+            return -1, None
+    else:
+        return 1, None
+
+
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                        priority=None, url='', nzbname=None, password=None, nzo_id=None):
     """ Analyse ZIP file and create job(s).
@@ -76,23 +103,10 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
     filename, cat = name_to_cat(filename, catdir)
 
-    if zipfile.is_zipfile(path):
-        try:
-            zf = zipfile.ZipFile(path)
-        except:
-            return -1, []
-    elif is_rarfile(path):
-        try:
-            zf = RarFile(path)
-        except:
-            return -1, []
-    elif is_sevenfile(path):
-        try:
-            zf = SevenZip(path)
-        except:
-            return -1, []
-    else:
-        return 1, []
+    status, zf = is_archive(path)
+
+    if status != 0:
+        return status, []
 
     status = 1
     names = zf.namelist()
@@ -130,6 +144,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                             # Re-use existing nzo_id, when a "future" job gets it payload
                             sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
                             nzo.nzo_id = nzo_id
+                            nzo_id = None
                         nzo_ids.append(add_nzo(nzo))
                         nzo.update_rating()
         zf.close()
