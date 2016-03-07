@@ -65,7 +65,8 @@ def CompareStat(tup1, tup2):
 def is_archive(path):
     """ Check if file in path is an ZIP, RAR or 7z file
     :param path: path to file
-    :return: zf, status: -1==Error/Retry, 0==OK, 1==Ignore
+    :return: (zf, status, expected_extension)
+            status: -1==Error/Retry, 0==OK, 1==Ignore
     """
     if zipfile.is_zipfile(path):
         try:
