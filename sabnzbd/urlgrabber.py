@@ -181,7 +181,7 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(url) + '.nzb'
+                    filename = os.path.basename(url)
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]
@@ -231,7 +231,13 @@ class URLGrabber(Thread):
                         self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
-                    if dirscanner.is_archive(path)[0]:
+                    status, zf, extenstion = dirscanner.is_archive(path)
+                    if status == 0:
+                        if not os.path.splitext(filename)[1] or os.path.splitext(filename)[1] not in ('.rar', '.zip', '.7z'):
+                            filename = filename + extenstion
+                            os.rename(path, path + extenstion)
+                            path = path + extenstion
+
                         dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
                                                      nzbname=nzbname, url=future_nzo.url, keep=False,
                                                      nzo_id=future_nzo.nzo_id)

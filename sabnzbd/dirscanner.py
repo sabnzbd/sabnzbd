@@ -70,23 +70,23 @@ def is_archive(path):
     if zipfile.is_zipfile(path):
         try:
             zf = zipfile.ZipFile(path)
-            return 0, zf
+            return 0, zf, '.zip'
         except:
-            return -1, None
+            return -1, None, ''
     elif is_rarfile(path):
         try:
             zf = RarFile(path)
-            return 0, zf
+            return 0, zf, '.rar'
         except:
-            return -1, None
+            return -1, None, ''
     elif is_sevenfile(path):
         try:
             zf = SevenZip(path)
-            return 0, zf
+            return 0, zf, '.7z'
         except:
-            return -1, None
+            return -1, None, ''
     else:
-        return 1, None
+        return 1, None, ''
 
 
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
@@ -103,7 +103,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
     filename, cat = name_to_cat(filename, catdir)
 
-    status, zf = is_archive(path)
+    status, zf, extension = is_archive(path)
 
     if status != 0:
         return status, []
