@@ -112,7 +112,8 @@ class Rating(Thread):
         self.shutdown = False
         self.queue = OrderedSetQueue()
         try:
-            (self.version, self.ratings, self.nzo_indexer_map) = sabnzbd.load_admin("Rating.sab")
+            self.version, self.ratings, self.nzo_indexer_map = sabnzbd.load_admin("Rating.sab",
+                                                                                  silent=not cfg.rating_enable())
             if self.version == 1:
                 ratings = {}
                 for k, v in self.ratings.iteritems():

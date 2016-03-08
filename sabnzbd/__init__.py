@@ -959,7 +959,7 @@ def save_admin(data, _id, do_pickle=True):
 
 
 @synchronized(IO_LOCK)
-def load_admin(_id, remove=False, do_pickle=True):
+def load_admin(_id, remove=False, do_pickle=True, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
     logging.info("Loading data for %s from %s", _id, path)
@@ -979,9 +979,10 @@ def load_admin(_id, remove=False, do_pickle=True):
         if remove:
             os.remove(path)
     except:
-        excepterror = str(sys.exc_info()[0])
-        logging.error(T('Loading %s failed with error %s'), path, excepterror)
-        logging.info("Traceback: ", exc_info=True)
+        if not silent:
+            excepterror = str(sys.exc_info()[0])
+            logging.error(T('Loading %s failed with error %s'), path, excepterror)
+            logging.info("Traceback: ", exc_info=True)
         return None
 
     return data
