@@ -199,9 +199,9 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-writingSpeed')</td>
             <td>  
-                <!--#if $downloaddirspeed > 0 #-->
+                <!--#if $downloaddirspeed >= 0 #-->
                     $downloaddirspeed MB/s
-                <!--#elif $downloaddirspeed == 0 #-->
+                <!--#elif $downloaddirspeed < 0 #-->
                    $T('dashboard-clickToStart')
                 <!--#else#-->
                     <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
@@ -217,9 +217,9 @@
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-writingSpeed')</td>
             <td>  
-                <!--#if $completedirspeed > 0 #-->
+                <!--#if $completedirspeed >=0 #-->
                     $completedirspeed MB/s
-                <!--#elif $completedirspeed == 0 #-->
+                <!--#elif $completedirspeed < 0 #-->
                     $T('dashboard-clickToStart')
                 <!--#else#-->
                     <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
