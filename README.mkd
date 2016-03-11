@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 1.0.0RC4
+Release Notes  -  SABnzbd 1.0.0RC5
 ==================================
+
+## Changes in RC5
+- Fix SABnzbd icon in OSX El Capitan's Notification Center
+- Show user's public IPV4 when an IPV6 is also available
+- Suppress warning about bad ratings file when rating feature is off
+- Fix Glitter's speed display in  below-1MB/s range
 
 ## Changes in RC4
 - Fix "SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled."
