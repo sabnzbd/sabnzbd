@@ -429,6 +429,10 @@ tr.separator {
     opacity: 0 !important;
     transition: all 0.3s !important;
 }
+#modal_qr .modal-body canvas {
+    padding: 10px;
+    margin-bottom: 10px;
+}
 
 .modal.in .modal-dialog {
     transform: scale(1) !important;
@@ -611,12 +615,7 @@ ul.tabs li.active a {
     color: #000;
     cursor: default;
 }
-.ui-tooltip-qrcode {
-    max-width: 320px;
-}
-.ui-tooltip-qrcode img {
-    margin: 0 auto;
-}
+
 .checkbox-days {
     float:  left;
 }

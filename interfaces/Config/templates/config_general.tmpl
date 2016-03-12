@@ -219,7 +219,7 @@
         $.ajax({
           type: "POST",
           url: "../../tapi",
-          data: {mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val()},
+          data: { mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val() },
           success: function(msg){
             \$('#nzbkey').val(msg);
             document.location = document.location;
@@ -229,17 +229,13 @@
     });
 
     \$('.show_qrcode').click(function (e) {
-        // Make QR code
-        var qrcode = \$('<img />', {
-            src: 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + \$(this).attr('rel'),
-            alt: 'loading...',
-            width: 300,
-            height: 300
-        });
-        
         // Show in modal
         \$('#modal_qr .modal-dialog').width(330)
-        \$('#modal_qr .modal-body').html(qrcode)
+        \$('#modal_qr .modal-body').html('').qrcode({
+            "size": 280,
+            "color": "#3a3",
+            "text": \$(this).attr('rel')
+        });
         \$('#modal_qr').modal('show');
         
         // No save on this button click
