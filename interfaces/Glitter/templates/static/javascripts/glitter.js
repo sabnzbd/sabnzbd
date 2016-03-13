@@ -133,7 +133,6 @@ $(function() {
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
         self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
-        self.hasStatusInfo = ko.observable(false); // True when we load it
         self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         
@@ -160,7 +159,26 @@ $(function() {
         self.allMessages = ko.observableArray([]);
         self.onQueueFinish = ko.observable('');
         self.speedHistory = [];
+
+        // Statusinfo container
+        self.hasStatusInfo = ko.observable(false);
+        self.hasDiskStatusInfo = ko.observable(false);
         self.statusInfo = {};
+        self.statusInfo.folders = ko.observableArray([]);
+        self.statusInfo.servers = ko.observableArray([]);
+        self.statusInfo.localipv4 = ko.observable();
+        self.statusInfo.publicipv4 = ko.observable();
+        self.statusInfo.ipv6 = ko.observable();
+        self.statusInfo.dnslookup = ko.observable();
+        self.statusInfo.pystone = ko.observable();
+        self.statusInfo.cpumodel = ko.observable();
+        self.statusInfo.loglevel = ko.observable();
+        self.statusInfo.cache_size = ko.observable();
+        self.statusInfo.cache_art = ko.observable();
+        self.statusInfo.downloaddir = ko.observable();
+        self.statusInfo.downloaddirspeed = ko.observable();
+        self.statusInfo.completedir = ko.observable();
+        self.statusInfo.completedirspeed = ko.observable();
         
         /***
             Dynamic functions
@@ -769,44 +787,81 @@ $(function() {
 
         // Load status info
         self.loadStatusInfo = function(item, event) {
-            // Hide tooltips (otherwise they stay forever..)
-            $('#options-status [data-tooltip="true"]').tooltip('hide')
-
-            // Reset if not called from a function
-            if(item) {
-                self.hasStatusInfo(false)
-            }
-            
             // Full refresh? Only on click and for the status-screen
             var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
 
+            // Make it spin
+            self.hasStatusInfo(false)
+
             // Load the custom status info
             callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {                
-                // Making the new objects
-                self.statusInfo = ko.mapping.fromJS(data.status);
-                
-                // Only now we can subscribe to the log-level-changes!
-                self.statusInfo.loglevel.subscribe(function(newValue) {
-                    // Update log-level
-                    callSpecialAPI('./status/change_loglevel/', {
-                        loglevel: newValue
-                    });
-                })
-                
-                // Show again
-                self.hasStatusInfo(true)
+                // Update basic
+                self.statusInfo.loglevel(data.status.loglevel)
+                self.statusInfo.cache_art(data.status.cache_art)
+                self.statusInfo.cache_size(data.status.cache_size)
+                self.statusInfo.folders(data.status.folders)
 
-                // Add tooltips again
+                // Update the full set
+                if(statusFullRefresh) {
+                    self.statusInfo.pystone(data.status.pystone)
+                    self.statusInfo.cpumodel(data.status.cpumodel)
+                    self.statusInfo.downloaddir(data.status.downloaddir)
+                    self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
+                    self.statusInfo.completedir(data.status.completedir)
+                    self.statusInfo.completedirspeed(data.status.completedirspeed)
+                    self.statusInfo.dnslookup(data.status.dnslookup)
+                    self.statusInfo.localipv4(data.status.localipv4)
+                    self.statusInfo.publicipv4(data.status.publicipv4)
+                    self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
+                    // Loaded disk info
+                    self.hasDiskStatusInfo(true)
+                }
+                
+                // Update the servers
+                if(self.statusInfo.servers().length == 0) {
+                    // Initial add
+                    $.each(data.status.servers, function() {
+                        self.statusInfo.servers.push({
+                            'servername': this.servername,
+                            'serveroptional': this.serveroptional,
+                            'serverpriority': this.serverpriority,
+                            'serveractiveconn': ko.observable(this.serveractiveconn),
+                            'servererror': ko.observable(this.servererror),
+                            'serveractive': ko.observable(this.serveractive),
+                            'serverconnections': ko.observableArray(this.serverconnections)
+                        })
+                    })
+
+                    // Only now we can subscribe to the log-level-changes!
+                    self.statusInfo.loglevel.subscribe(function(newValue) {
+                        // Update log-level
+                        callSpecialAPI('./status/change_loglevel/', {
+                            loglevel: newValue
+                        });
+                    })
+                } else {
+                    // Update
+                    $.each(data.status.servers, function(index) {
+                        var activeServer = self.statusInfo.servers()[index];
+                        activeServer.serveractiveconn(this.serveractiveconn)
+                        activeServer.servererror(this.servererror)
+                        activeServer.serveractive(this.serveractive)
+                        activeServer.serverconnections(this.serverconnections)
+                    })
+                }
+
+                // Add tooltips to possible new items
                 if(!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+            
+                // Stop it spin
+                self.hasStatusInfo(true)
             });
         }
 
         // Do a disk-speedtest
-        self.testDiskSpeed = function() {
-            // Hide tooltips (otherwise they stay forever..)
-            $('#options-status [data-tooltip="true"]').tooltip('hide')
-            // Hide before running the test
-            self.hasStatusInfo(false)
+        self.testDiskSpeed = function(item, event) {
+            self.hasDiskStatusInfo(false)
+
             // Run it and then display it
             callSpecialAPI('./status/dashrefresh/').then(function() {
                 self.loadStatusInfo(true, true)
@@ -835,9 +890,6 @@ $(function() {
                 // Only when we show them
                 if(self.showActiveConnections()) {
                     self.loadStatusInfo()
-                    // Trick to force the interface to refresh
-                    self.hasStatusInfo(false)
-                    self.hasStatusInfo(true)
                 }
             }, self.refreshRate() * 1000)
         })
