@@ -1,113 +1,31 @@
-Release Notes  -  SABnzbd 1.0.0RC5
-==================================
-
-## Changes in RC5
-- Fix SABnzbd icon in OSX El Capitan's Notification Center
-- Show user's public IPV4 when an IPV6 is also available
-- Suppress warning about bad ratings file when rating feature is off
-- Fix Glitter's speed display in  below-1MB/s range
-
-## Changes in RC4
-- Fix "SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled."
-
-## Changes in RC3
-- SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled.
-- The Windows installer failed to detect an already running version.
-- Glitter: cosmetic fixes.
-
-## Changes in RC2
-- Changing server priorities during a download could lead to unexpected results and lockups
-- Made Glitter friendly for reverse proxies
-- Config->General shows more diagnostic info
-- Default host to test IPv6 is now self-test.sabnzbd.org
-
-## Changes in RC1
-- Bump version from 0.8.0RC1 to 1.0.0RC1
-- Fixed "disk-full" notification
-- Glitter: several small problems fixed
-- OSX: fixed error message that comes when job with accented characters completes
-- Fixed diskspeed meter (in Glitter)
-
-## Changes in Beta6
-- Fixed issues in Config->Server (Firefox)
-- Fixed queue upgrade warning for Windows
-- SSL protocol by default auto-negotiated with server
-- Fixed problem of multiple instances of SABnzbd when starting it with an NZB
-- Fix problem of stray RAR files after unpack, which would fail the job
-- Lots of Glitter tweaks and fixes
-
-## Changes in Beta5
-- Glitter improvements
-- Faster initial loading of Glitter on Firefox and Chrome
-- Support extra parameters for par2 on other platforms than Windows
-- Proper sorting of download report
-- Several fixes for rare problems
-
-## Changes in Beta4
-- Unicode crashes in user interface fixed
-- Glitter skin improved
-- Resume can now give notification
-- In Config->Server, show active servers before inactive ones
-- Update unrar to 5.30
-- Added Windows Notifications (local)
-- Updated many localizations
-
-## Changes in Beta3
-- Speedlimit corrections
-- Windows build now verifies https certificates
-- Windows build now supports TLS 1.2
-- Fixed bug that could lead to all NZBs being reported as duplicates
-- Skin improvements
-
-## Changes in Beta2
-- Improvements in IPv6 handling
-- Extension of SSL protocols (where supported)
-- Many improvemnts in the Glitter skin
-- On Windows, Season Sort often failed
-- Speedlimiting can now be absolute or in percentage
-- Scheduler action to remove completed history items
-
-## Changes in Beta1
-- Glitter is now the default skin
-- Glitter fixes and improvements
-- Removed Classic and Mobile skins
-- Removed Config parts of smpl and Plush skins
-- API-call "history" now accepts one or more "category" parameters in order to filter.
-- API-call "addurl" now returns a list of nzo_id's, which will be valid for the actual jobs.
-- Update unrar to release 5.21
-- Enable renaming of Usenet servers.
-- Add Pushbullet support.
-- Implement Pushover support.
-- Restore Rating function
-- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
-- Lots of bug fixes
-
-## Changes in Alpha3
-- New skin: Glitter
-- Assign servers to categories
-- When upgrading from 0.7.x, a backup server will get priority 1
-- Lots of bug fixes
-
-## Changes in Alpha2
-- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
-- Work-arounds to avoid bugs in PyOpenSSL 0.14
-- Support RAR's REV files to some extent
-- Diagnostic dashboard tab for "Status" page
-
+Release Notes  -  SABnzbd 1.0.0
+===============================
 
 ## What's new in 1.0.0
 
 - Full Unicode support with Chinese and Russian translations
-- Improved Notifications (including Prowl)
+- New default UI: Glitter
+- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
 - Duplicate detection for series
-- Bonjour/ZeroConfig support
 - More filters in RSS
 - 7zip support
 - Option to save repair time by downloading all par2 files
 - Support for long paths in Windows (above 260)
 - Improved security for external access
 - Lots of small improvements and bug fixes
-- The "Classic" skin is gone
+- Redesign of notifications classes
+- More notification services supported
+- Diagnostic dashboard tab for "Status" page
+- Bonjour/ZeroConfig support
+
+## Remarks
+- SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled.
+- Classic skin has been removed
+- Support extra parameters for par2 on other platforms than Windows
+- Tries to verify HTTPS connections (with an option to disable)
+- Auto-negotiates best Usenet ssl protocol (override possible)
+- When upgrading from 0.7.x, a backup server will get priority 1
+
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
