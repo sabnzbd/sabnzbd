@@ -702,7 +702,7 @@ class NzbObject(TryList):
             if 'A&A)' in nzb:
                 # Fix needed to compensate for some dumb NZB posters
                 nzb = nzb.replace('A&A)', 'A&amp;A)')
-            handler = NzbParser(self, cfg.ignore_samples() == 2 and not reuse)
+            handler = NzbParser(self, False)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
             parser.setContentHandler(handler)

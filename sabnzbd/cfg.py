@@ -142,7 +142,7 @@ no_dupes = OptionNumber('misc', 'no_dupes', 0)
 no_series_dupes = OptionNumber('misc', 'no_series_dupes', 0)
 backup_for_duplicates = OptionBool('misc', 'backup_for_duplicates', True)
 
-ignore_samples = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
+ignore_samples = OptionBool('misc', 'ignore_samples', False)
 create_group_folders = OptionBool('misc', 'create_group_folders', False)
 auto_sort = OptionBool('misc', 'auto_sort', False)
 folder_rename = OptionBool('misc', 'folder_rename', True)

@@ -423,7 +423,7 @@ def process_job(nzo):
             else:
                 job_result = int(par_error) + int(bool(unpack_error)) * 2
 
-            if cfg.ignore_samples() > 0:
+            if cfg.ignore_samples():
                 remove_samples(workdir_complete)
 
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
@@ -593,7 +593,7 @@ def parring(nzo, workdir):
 
     if repair_sets:
         for setname in repair_sets:
-            if cfg.ignore_samples() > 0 and 'sample' in setname.lower():
+            if cfg.ignore_samples() and 'sample' in setname.lower():
                 continue
             if not verified.get(setname, False):
                 logging.info("Running repair on set %s", setname)
