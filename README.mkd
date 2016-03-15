@@ -19,10 +19,12 @@ Release Notes  -  SABnzbd 1.0.0
 - Bonjour/ZeroConfig support
 
 ## Remarks
-- SABnzbd's webserver now doesn't listen to IPv6 addresses by default. Use Config->Special->ipv6_hosting if you want this enabled.
+- SABnzbd's webserver now doesn't listen to IPv6 addresses by default.
+  - Use Config->Special->ipv6_hosting if you want this enabled.
+  - "localhost" will be replaced with "127.0.0.1", check any browser bookmark and third-party tool
 - Classic skin has been removed
 - Support extra parameters for par2 on other platforms than Windows
-- Tries to verify HTTPS connections (with an option to disable)
+- Option to verify HTTPS connections (default off)
 - Auto-negotiates best Usenet ssl protocol (override possible)
 - When upgrading from 0.7.x, a backup server will get priority 1
 
