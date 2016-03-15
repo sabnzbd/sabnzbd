@@ -6,6 +6,7 @@ Release Notes  -  SABnzbd 1.0.0
 - Full Unicode support with Chinese and Russian translations
 - New default UI: Glitter
 - Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
+- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
 - Duplicate detection for series
 - More filters in RSS
 - 7zip support
