@@ -95,8 +95,11 @@ def check_access(access_type=4):
         `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
-    range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if referrer.startswith(r)])
-    allowed = referrer in ('127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
+    
+    # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
+    # It will always contain that ::ffff: prefix
+    range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace('::ffff:', '').startswith(r))])
+    allowed = referrer in ('127.0.0.1', '::ffff:127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
     if not allowed:
         logging.debug('Refused connection to %s', referrer)
     return allowed
