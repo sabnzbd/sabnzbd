@@ -84,61 +84,65 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#options-status" data-toggle="tab">$T('menu-cons')</a></li>
                     <li><a href="#options_connections" data-toggle="tab">$T('connections')</a></li>
-                    <li><a href="#options-orphans" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: hasStatusInfo() && statusInfo.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.folders().length"></span><!-- /ko --></a></li>
+                    <li><a href="#options-orphans" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: statusInfo.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.folders().length"></span><!-- /ko --></a></li>
                     <li><a href="#options-interface" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>  
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="options-status">
-                        <!-- ko if: !hasStatusInfo() || !statusInfo.hasOwnProperty('publicipv4') -->
-                        <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
-                        <!-- /ko -->
-                        <!-- ko if: hasStatusInfo() && statusInfo.hasOwnProperty('publicipv4') -->
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-localIP4')</div>
-                            <div class="col-sm-6" data-bind="text: !statusInfo.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.localipv4(), css: { 'options-bad-status' : !statusInfo.localipv4() }"></div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.localipv4(), css: { 'options-bad-status' : !statusInfo.localipv4() }"></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-publicIP4')</div>
-                            <div class="col-sm-6" data-bind="text: !statusInfo.publicipv4() ? '$T('dashboard-connectionError')' : statusInfo.publicipv4(), css: { 'options-bad-status ' : !statusInfo.publicipv4() }"></div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.publicipv4() ? '$T('dashboard-connectionError')' : statusInfo.publicipv4(), css: { 'options-bad-status ' : !statusInfo.publicipv4() }"></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
-                        <div class="row" data-bind="visible: (statusInfo.ipv6()!=='')">
+                        <div class="row">
                             <div class="col-sm-6">$T('dashboard-IP6')</div>
-                            <div class="col-sm-6" data-bind="text: statusInfo.ipv6"></div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: statusInfo.ipv6"></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-NameserverDNS')</div>
-                            <div class="col-sm-6" data-bind="text: !statusInfo.dnslookup() ? '$T('dashboard-connectionError')' : statusInfo.dnslookup(), css: { 'options-bad-status' : (statusInfo.dnslookup() != 'OK') }"></div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.dnslookup() ? '$T('dashboard-connectionError')' : statusInfo.dnslookup(), css: { 'options-bad-status' : (statusInfo.dnslookup() != 'OK') }"></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <hr/>
                         <div class="row">
+                            <div class="col-sm-6">$T('cache')</div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo">
+                                <span data-bind="text: statusInfo.cache_size"></span> (<span data-bind="text: statusInfo.cache_art"></span> $T('Glitter-articles'))
+                            </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                        </div>
+                        <div class="row">
                             <div class="col-sm-6">$T('dashboard-systemPerformance')</div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
                                 <a href="#" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="truncatedText: statusInfo.cpumodel, length: 25"></small>
                             </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed')</div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" data-bind="visible: hasDiskStatusInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.downloaddir, length: 24"></span>)</small>
                             </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasDiskStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed')</div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" data-bind="visible: hasDiskStatusInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
-                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.completedir, length: 24"></span>)</small>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">$T('cache')</div>
-                            <div class="col-sm-6">
-                                <span data-bind="text: statusInfo.cache_size"></span> (<span data-bind="text: statusInfo.cache_art"></span> $T('Glitter-articles'))
-                            </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasDiskStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <hr />   
                         <div class="row options-function-box">
@@ -166,13 +170,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- /ko -->
                     </div>
                     <div class="tab-pane fade" id="options_connections">
-                        <!-- ko if: !hasStatusInfo() -->
-                        <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
-                        <!-- /ko -->
-                        <!-- ko if: hasStatusInfo() -->
                         <div class="options-switch">
                             <label>
                                 <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> 
@@ -229,38 +228,32 @@
                                 <!-- /ko -->
                             </div>
                         </div>
-                        <!-- /ko -->
                     </div>
                     <div class="tab-pane fade" id="options-orphans">
-                        <!-- ko if: !hasStatusInfo() -->
-                            <h4>$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></h4>
+                        <!-- ko if: statusInfo.folders().length == 0 -->
+                        <h4>$T('none')</h4>
                         <!-- /ko -->
-                        <!-- ko if: hasStatusInfo() -->
-                            <!-- ko if: statusInfo.folders().length == 0 -->
-                            <h4>$T('none')</h4>
-                            <!-- /ko -->
-                            <!-- ko if: statusInfo.folders().length > 0 -->
-                            <a href="#" class="hover-button remove-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
-                            <div class="clearfix"></div>
-                            <table class="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 30px;"></th>
-                                        <th></th>
-                                        <th style="width: 30px;"></th>
-                                        <th style="width: 30px;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody data-bind="foreach: statusInfo.folders">
-                                    <tr>
-                                        <td><span class="glyphicon glyphicon-folder-open"></span></td>
-                                        <td class="row-wrap-text"><strong data-bind="html: \$data"></strong></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                        <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- /ko -->
+                        <!-- ko if: statusInfo.folders().length > 0 -->
+                        <a href="#" class="hover-button remove-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
+                        <div class="clearfix"></div>
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;"></th>
+                                    <th></th>
+                                    <th style="width: 30px;"></th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: statusInfo.folders">
+                                <tr>
+                                    <td><span class="glyphicon glyphicon-folder-open"></span></td>
+                                    <td class="row-wrap-text"><strong data-bind="html: \$data"></strong></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
                         <!-- /ko -->
                     </div>
                     <div class="tab-pane fade" id="options-interface">

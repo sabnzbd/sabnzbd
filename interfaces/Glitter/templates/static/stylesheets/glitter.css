@@ -1135,16 +1135,6 @@ tr.queue-item>td:first-child>a {
     margin-right: 0;
 }
 
-@-webkit-keyframes stretchdelay {
-    0%,40%,100% {
-        -webkit-transform: scaleY(0.4);
-    }
-
-    20% {
-        -webkit-transform: scaleY(1.0);
-    }
-}
-
 @keyframes stretchdelay {
     0%, 40%, 100% {
         transform: scaleY(0.4);
@@ -1241,9 +1231,14 @@ tr.queue-item>td:first-child>a {
     outline: none;
 }
 
-#modal-options .modal-header a.rotate-refresh span {
-    transition: all 1s;
-    transform: rotate(360deg);
+.rotate-refresh span {
+    animation: spin 2s infinite linear;
+}
+
+.col-loading {
+    color: #9E9E9E;
+    font-size: 85%;
+    padding-top: 3px;
 }
 
 #modal-options #options-status .glyphicon:not(.glyphicon-comment) {
@@ -1366,6 +1361,11 @@ tr.queue-item>td:first-child>a {
     0% { opacity: 0; }
     50% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* PURGE MODAL */
