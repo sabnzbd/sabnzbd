@@ -1,0 +1,270 @@
+/**
+    MAIN & NAVBAR
+**/
+
+.container {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.main-navbar {
+    margin-top: 0;
+    padding: 0;
+}
+
+.navbar-collapse {
+    padding-left: 0;
+}
+
+.main-content {
+    border: 0;
+    margin-bottom: 0 !important;
+}
+
+#navbar-logo-big {
+    display: none;
+}
+
+#navbar-logo-small {
+    display: inline-block;
+}
+
+.main-menu-link .icon-bar:first-child {
+    margin-top: 1px;
+}
+
+.navbar-inverse .navbar-nav .open .dropdown-menu .divider {
+    background-color: #e5e5e5;
+}
+
+h2 {
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+.max-speed-input {
+    margin-top: 1px !important;
+    margin-left: -5px !important;
+    width: 300px !important;
+}
+
+.max-speed-input .ui-slider {
+    margin-bottom: 10px;
+}
+
+.main-restarting.in strong {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.main-restarting small {
+    font-size: 0.7em;
+}
+
+.main-restarting.in span {
+    top: 2px;
+}
+
+#feedback-slider {
+    display: none;
+}
+
+/**
+    QUEUE & HISTORY
+**/
+.info-container {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    float: none;
+    clear: both;
+    line-height: 2.3em;
+}
+
+.info-container-box {
+    float: left;
+}
+
+.history-info {
+    margin-top: 5px;
+}
+
+.info-container-break:after {
+    content: "\A";
+    white-space: pre;
+}
+
+.info-container .info-container-box-sorting {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    font-size: 1em;
+}
+
+.queue-table .table-header-progress {
+    width: 0%;
+}
+
+.queue-table tr td {
+    vertical-align: top !important;
+    height: 5em;
+}
+
+.queue-table .no-downloads tr td {
+    height: 2em;
+}
+
+.queue-table .progress-indicator {
+    display: block;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    margin-top: 2.8em;
+    height: 2em;
+    border: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+.queue-table .progress {
+    margin: 0px 8px;
+}
+
+.queue-table td.name .row-wrap-text,
+.queue-table td.name:hover .row-wrap-text {
+    max-width: calc(100% - 45px);
+}
+
+tr.queue-item>td:first-child>a {
+    margin-top: 3px;
+}
+
+.queue-table td.name .name-options {
+    display: block;
+}
+
+.queue-table td.name .name-options small {
+    display: none;
+}
+
+.queue-table td.name .glyphicon-folder-open {
+    width: 1.5em;
+    margin-left: 1px;
+}
+
+.multioperations-selector .add-nzb-inputbox {
+    width: 50%;
+}
+
+.multioperations-selector .add-nzb-inputbox-small {
+    width: 72px;
+}
+
+.multioperations-selector .add-nzb-inputbox-clear {
+    clear: both;
+}
+
+.multioperations-selector .add-nzb-inputbox-options {
+    width: 55px;
+    margin-right: -3px;
+}
+
+.table-messages strong {
+    margin-right: 5px;
+    min-width: 0px;
+}
+
+.history-table .history-ratings {
+    display: none;
+}
+
+.name-has-ratings .row-wrap-text {
+    max-width: calc(100% - 1px) !important;
+}
+
+.history-table .delete .dropdown-menu {
+    width: 100%;
+    left: 0;
+    right: inherit;
+    margin-bottom: 10px;
+}
+
+.history-table .status-header {
+    width: 0;
+}
+
+.history-status-table .col-sm-2 {
+    text-align: left;
+}
+
+.search-box input {
+    width: 250px !important;
+}
+
+.search-box {
+    margin-bottom: 5px;
+}
+
+.info-container .info-container-box-sorting .dropdown-menu {
+    margin-top:  0px;
+}
+
+.history-item .dropdown-menu:before {
+    right: 37px;
+}
+
+.history-item .dropdown-menu:after {
+    right: 38px;
+}
+
+/**
+    MODALS
+**/
+/* Only remove on mobiles, not on iPad */
+@media only screen and (max-device-width:760px)  {
+    .modal-dialog {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .modal-dialog .modal-content {
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+    }
+}
+
+.modal.fade .modal-dialog, .modal.in .modal-dialog {
+  transform: translate(0, 0);
+}
+
+.modal-header .close {
+    opacity: 1 !important;
+}
+
+#modal-options .modal-header a {
+    opacity: 1;
+    font-size: 1.2em;
+    margin-top: 2px;
+}
+
+#modal-options .col-sm-6:first-of-type {
+    text-align: left;
+}
+
+#modal-options .options-function-box {
+    margin-top: 0;
+}
+
+#modal-options .options-function-box .col-sm-6 {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+#modal-options .form-checkbox input[type="checkbox"] {
+    margin-top: 0;
+}
+
+#modal-item-files .form-group {
+    clear: left;
+    margin-bottom: 5px;
+}

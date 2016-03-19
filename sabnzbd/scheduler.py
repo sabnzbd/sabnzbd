@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,8 +18,6 @@
 """
 sabnzbd.scheduler - Event Scheduler
 """
-#------------------------------------------------------------------------------
-
 
 import random
 import logging
@@ -27,19 +25,20 @@ import time
 
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
-from sabnzbd.newzbin import Bookmarks
 import sabnzbd.downloader
 import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.postproc import PostProcessor
+from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
 __SCHED = None  # Global pointer to Scheduler instance
 
 RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
+PP_PAUSE_EVENT = False
 
 
 def schedule_guard():
@@ -47,16 +46,21 @@ def schedule_guard():
     global SCHEDULE_GUARD_FLAG
     SCHEDULE_GUARD_FLAG = True
 
+
 def pp_pause():
     PostProcessor.do.paused = True
+
 
 def pp_resume():
     PostProcessor.do.paused = False
 
 
+def pp_pause_event():
+    return PP_PAUSE_EVENT
+
+
 def init():
-    """ Create the scheduler and set all required events
-    """
+    """ Create the scheduler and set all required events """
     global __SCHED
 
     reset_guardian()
@@ -78,7 +82,7 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning(Ta('Bad schedule %s at %s:%s'), action_name, m, h)
+            logging.warning(T('Bad schedule %s at %s:%s'), action_name, m, h)
             continue
 
         if d.isdigit():
@@ -118,11 +122,37 @@ def init():
             rss_planned = True
         elif action_name == 'remove_failed':
             action = sabnzbd.api.history_remove_failed
+        elif action_name == 'remove_completed':
+            action = sabnzbd.api.history_remove_completed
+        elif action_name == 'enable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [True]
+        elif action_name == 'disable_quota':
+            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            arguments = [False]
+        elif action_name == 'pause_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'pause_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'pause_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            arguments = [HIGH_PRIORITY]
+        elif action_name == 'resume_all_low':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [LOW_PRIORITY]
+        elif action_name == 'resume_all_normal':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [NORMAL_PRIORITY]
+        elif action_name == 'resume_all_high':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            arguments = [HIGH_PRIORITY]
         else:
-            logging.warning(Ta('Unknown action: %s'), action_name)
+            logging.warning(T('Unknown action: %s'), action_name)
             continue
 
-        logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
+        logging.debug("scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
 
         __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
                              kronos.method.sequential, arguments, None)
@@ -134,10 +164,10 @@ def init():
     # Set RSS check interval
     if not rss_planned:
         interval = cfg.rss_rate()
-        delay = random.randint(0, interval-1)
+        delay = random.randint(0, interval - 1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
         sabnzbd.rss.next_run(time.time() + delay * 60)
-        __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
+        __SCHED.add_interval_task(rss.run_method, "RSS", delay * 60, interval * 60,
                                       kronos.method.sequential, None, None)
         __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
 
@@ -151,16 +181,6 @@ def init():
         __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, 'VerCheck', d, None, (h, m),
                                  kronos.method.sequential, [], None)
 
-
-    if False: #cfg.newzbin_bookmarks():
-        interval = cfg.bookmark_rate()
-        delay = random.randint(0, interval-1)
-        logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
-        __SCHED.add_interval_task(Bookmarks.do.run, 'Bookmarks', delay*60, interval*60,
-                                  kronos.method.sequential, None, None)
-        __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
-
-
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
@@ -171,16 +191,12 @@ def init():
     __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
                              kronos.method.sequential, [], None)
 
-
     # Subscribe to special schedule changes
-    cfg.newzbin_bookmarks.callback(schedule_guard)
-    cfg.bookmark_rate.callback(schedule_guard)
     cfg.rss_rate.callback(schedule_guard)
 
 
 def start():
-    """ Start the scheduler
-    """
+    """ Start the scheduler """
     global __SCHED
     if __SCHED:
         logging.debug('Starting scheduler')
@@ -188,8 +204,7 @@ def start():
 
 
 def restart(force=False):
-    """ Stop and start scheduler
-    """
+    """ Stop and start scheduler """
     global __PARMS, SCHEDULE_GUARD_FLAG
 
     if force:
@@ -206,8 +221,7 @@ def restart(force=False):
 
 
 def stop():
-    """ Stop the scheduler, destroy instance
-    """
+    """ Stop the scheduler, destroy instance """
     global __SCHED
     if __SCHED:
         logging.debug('Stopping scheduler')
@@ -220,8 +234,7 @@ def stop():
 
 
 def abort():
-    """ Emergency stop, just set the running attribute false
-    """
+    """ Emergency stop, just set the running attribute false """
     global __SCHED
     if __SCHED:
         logging.debug('Terminating scheduler')
@@ -251,12 +264,12 @@ def sort_schedules(all_events, now=None):
             try:
                 m, h, dd, action = schedule.split(None, 3)
             except:
-                continue # Bad schedule, ignore
+                continue  # Bad schedule, ignore
         action = action.strip()
         if dd == '*':
             dd = '1234567'
         if not dd.isdigit():
-            continue # Bad schedule, ignore
+            continue  # Bad schedule, ignore
         for d in dd:
             then = (int(d) - 1) * day_min + int(h) * 60 + int(m)
             dif = then - now
@@ -272,17 +285,23 @@ def sort_schedules(all_events, now=None):
     return events
 
 
-def analyse(was_paused=False):
+def analyse(was_paused=False, priority=None):
     """ Determine what pause/resume state we would have now.
+        'priority': evaluate only effect for given priority, return True for paused
     """
+    global PP_PAUSE_EVENT
+    PP_PAUSE_EVENT = False
     paused = None
     paused_all = False
     pause_post = False
+    pause_low = pause_normal = pause_high = False
     speedlimit = None
+    quota = True
     servers = {}
 
     for ev in sort_schedules(all_events=True):
-        logging.debug('Schedule check result = %s', ev)
+        if priority is None:
+            logging.debug('Schedule check result = %s', ev)
         action = ev[1]
         try:
             value = ev[2]
@@ -292,26 +311,56 @@ def analyse(was_paused=False):
             paused = True
         elif action == 'pause_all':
             paused_all = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume':
             paused = False
             paused_all = False
         elif action == 'pause_post':
             pause_post = True
+            PP_PAUSE_EVENT = True
         elif action == 'resume_post':
             pause_post = False
-        elif action == 'speedlimit' and value!=None:
-            speedlimit = int(ev[2])
+            PP_PAUSE_EVENT = True
+        elif action == 'speedlimit' and value is not None:
+            speedlimit = ev[2]
+        elif action == 'pause_all_low':
+            pause_low = True
+        elif action == 'pause_all_normal':
+            pause_normal = True
+        elif action == 'pause_all_high':
+            pause_high = True
+        elif action == 'resume_all_low':
+            pause_low = False
+        elif action == 'resume_all_normal':
+            pause_normal = False
+        elif action == 'resume_all_high':
+            pause_high = False
+        elif action == 'enable_quota':
+            quota = True
+        elif action == 'disable_quota':
+            quota = False
         elif action == 'enable_server':
             try:
                 servers[value] = 1
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning(Ta('Schedule for non-existing server %s'), value)
+                logging.warning(T('Schedule for non-existing server %s'), value)
 
+    # Special case, a priority was passed, so evaluate only that and return state
+    if priority == LOW_PRIORITY:
+        return pause_low
+    if priority == NORMAL_PRIORITY:
+        return pause_normal
+    if priority == HIGH_PRIORITY:
+        return pause_high
+    if priority is not None:
+        return False
+
+    # Normal analysis
     if not was_paused:
         if paused_all:
             sabnzbd.pause_all()
@@ -320,8 +369,11 @@ def analyse(was_paused=False):
         sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
 
     PostProcessor.do.paused = pause_post
-    if speedlimit:
+    if speedlimit is not None:
         sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
+
+    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)
+
     for serv in servers:
         try:
             item = config.get_config('servers', serv)
@@ -334,14 +386,12 @@ def analyse(was_paused=False):
     config.save_config()
 
 
-#------------------------------------------------------------------------------
 # Support for single shot pause (=delayed resume)
-
 __PAUSE_END = None     # Moment when pause will end
 
+
 def scheduled_resume():
-    """ Scheduled resume, only when no oneshot resume is active
-    """
+    """ Scheduled resume, only when no oneshot resume is active """
     global __PAUSE_END
     if __PAUSE_END is None:
         sabnzbd.unpause_all()
@@ -352,7 +402,7 @@ def __oneshot_resume(when):
         Only resumes if call comes at the planned time
     """
     global __PAUSE_END
-    if __PAUSE_END != None and (when > __PAUSE_END-5) and (when < __PAUSE_END+55):
+    if __PAUSE_END is not None and (when > __PAUSE_END - 5) and (when < __PAUSE_END + 55):
         __PAUSE_END = None
         logging.debug('Resume after pause-interval')
         sabnzbd.unpause_all()
@@ -361,13 +411,12 @@ def __oneshot_resume(when):
 
 
 def plan_resume(interval):
-    """ Set a scheduled resume after the interval
-    """
+    """ Set a scheduled resume after the interval """
     global __SCHED, __PAUSE_END
     if interval > 0:
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug('Schedule resume at %s', __PAUSE_END)
-        __SCHED.add_single_task(__oneshot_resume, '', interval*60, kronos.method.sequential, [__PAUSE_END], None)
+        __SCHED.add_single_task(__oneshot_resume, '', interval * 60, kronos.method.sequential, [__PAUSE_END], None)
         sabnzbd.downloader.Downloader.do.pause()
     else:
         __PAUSE_END = None
@@ -387,13 +436,12 @@ def pause_int():
         else:
             sign = ''
         min = int(val / 60L)
-        sec = int(val - min*60)
+        sec = int(val - min * 60)
         return "%s%d:%02d" % (sign, min, sec)
 
 
 def pause_check():
-    """ Unpause when time left is negative, compensate for missed schedule
-    """
+    """ Unpause when time left is negative, compensate for missed schedule """
     global __PAUSE_END
     if __PAUSE_END is not None and (__PAUSE_END - time.time()) < 0:
         __PAUSE_END = None
@@ -401,36 +449,35 @@ def pause_check():
         sabnzbd.unpause_all()
 
 
-#------------------------------------------------------------------------------
 def plan_server(action, parms, interval):
-    """ Plan to re-activate server after "interval" minutes
-    """
-    __SCHED.add_single_task(action, '', interval*60, kronos.method.sequential, parms, None)
+    """ Plan to re-activate server after 'interval' minutes """
+    __SCHED.add_single_task(action, '', interval * 60, kronos.method.sequential, parms, None)
 
-#------------------------------------------------------------------------------
+
 def force_rss():
-    """ Add a one-time RSS scan, one second from now
-    """
+    """ Add a one-time RSS scan, one second from now """
     __SCHED.add_single_task(rss.run_method, 'RSS', 1, kronos.method.sequential, None, None)
 
 
-#------------------------------------------------------------------------------
 # Scheduler Guarding system
 # Each check sets the guardian flag False
-# Each succesful scheduled check sets the flag
-# If 4 consequetive checks fail, the sheduler is assumed to have crashed
+# Each successful scheduled check sets the flag
+# If 4 consecutive checks fail, the scheduler is assumed to have crashed
 
 __SCHED_GUARDIAN = False
 __SCHED_GUARDIAN_CNT = 0
+
 
 def reset_guardian():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
     __SCHED_GUARDIAN = False
     __SCHED_GUARDIAN_CNT = 0
 
+
 def sched_guardian():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
     __SCHED_GUARDIAN = True
+
 
 def sched_check():
     global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT

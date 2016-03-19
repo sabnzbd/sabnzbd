@@ -1,50 +1,42 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
-<script type="text/javascript" src="static/javascript/jquery.js"></script>
-<script type="text/javascript" src="static/javascript/pagetwo.js"></script>
-<form action="./three" method="post" autocomplete="off">
-<div class="indented bigger">
-<h3>$T('wizard-access')</h3>
-<!--#if $host in ('localhost','0.0.0.0')#-->
-  <input type="radio" name="access" id="all" value="0.0.0.0" <!--#if $host == '0.0.0.0' then 'checked="checked"' else ''#-->> <label for="all">$T('wizard-access-anypc')</label><br />
-  <input type="radio" name="access" id="local" value="localhost" <!--#if $host == 'localhost' then 'checked="checked"' else ''#-->> <label for="local">$T('wizard-access-mypc')</label><br />
-  <br />
-<!--#end if#-->
-  <input type="checkbox" name="enable_webpass" id="enable_webpass" value="1" <!--#if $web_user then 'checked="checked"' else ''#--> <label for="enable_webpass">$T('wizard-access-pass')</label><br />
-  <br class="clear" />
-  <div id="serverDetails">
-    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$web_user" name="web_user" id="web_user">
-    <br class="clear" />
-    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$web_pass" name="web_pass" id="web_pass">
-  </div>
-  <br class="clear" />
-
-  <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#--></label><br />
-<br />
-<h3>$T('wizard-misc')</h3>
-  <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">$T('wizard-misc-browser')</label><br />
-  <!--<input type="checkbox" name="autostart" id="autostart" value="1"> <label for="autostart">Launch SABnzbd when windows starts.</label><br />-->
+<script type="text/javascript">
+    <!--#include raw $webdir + "/static/javascript/restart.js"#-->
+</script>
+<div class="container">
+    <div id="inner">
+        <div id="content" class="bigger">
+            <div id="rightGreyText">$T('wizard-version') $version</div>
+            <h1>$T('wizard-quickstart')</h1>
+            <hr />
+            <br/><br/>
+            <h4 id="restarting" class="align-center">$T('wizard-restarting')</h4>
+            <h4 id="complete" class="align-center success hidden">$T('wizard-complete')</h4>
+            <br />
+            <br/>
+            <div id="tips" class="hidden">
+                $T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
+                <!--#set $tip3 = $T('wizard-tip3') % ''#-->
+                $tip3<br/><br/>
+                <div class="quoteBlock">
+                    <!--#set $i = 0#-->
+                    <!--#for $url in $urls#-->
+                    <!--#set $i = $i+1#-->
+                    <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
+                    <!--#end for#-->
+                </div>
+                <br/>
+                $T('wizard-tip4')
+                <br/><br/>
+                $T('wizard-tip-wiki') <a target="_blank" href="$helpuri">wiki</a>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <input type="hidden" name="session" id="apikey" value="$session"/>
+                <a class="btn btn-default disabled" href="$access_url">$T('wizard-goto') <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+    </div>
 </div>
-<input type="hidden" name="dummyval" value="1" />
-
-
-</div>
-<hr /><br/>
-<div class="full-width">
-<table class="full-width">
-  <tr>
-    <td><input class="bigbutton" type="button" onclick="document.location ='./one'" value="&lsaquo; $T('wizard-previous')" /></td>
-    <td>
-      <div class="align-center">
-        <!--#for $step in xrange($steps)#-->
-          <!--#set $step = $step + 1#-->
-            <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
-        <!--#end for#-->
-      </div>
-    </td>
-    <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
-  </tr>
-</table>
-</div>
-</form>
-
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

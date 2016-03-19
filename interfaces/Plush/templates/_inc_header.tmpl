@@ -14,6 +14,7 @@
   <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${path}rss?mode=history"/>
 
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/overcast/jquery-ui-1.8.15.custom.css?$version"/>
+  <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/rateit/rateit.css"/>
   #if $color_scheme#
   <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/$color_scheme/${color_scheme}.css?$version"/>
@@ -22,6 +23,12 @@
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/gold/gold.css?$version"/>
   #end if#
 
+  <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+  <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />        
+  
   <script type="text/javascript" src="${path}static/javascripts/lib.js?$version"></script>
 
 #if $pane=="Main"#
@@ -109,37 +116,7 @@
   <div id="config_container" class="config_margin_status lang-$active_lang">
     <div id="config_content">
 #else#
-  #if $pane=="Status"#
-  #else if $pane=="RSS"#
-  #else#
-  <div class="config_nav">
-    <ul>
-      <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="${path}config/general/">
-        <div class="config_sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
-      <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="${path}config/folders/">
-        <div class="config_sprite_container sprite_config_nav_folders">$T('cmenu-folders')</div></a></li>
-      <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="${path}config/switches/">
-        <div class="config_sprite_container sprite_config_nav_switches">$T('cmenu-switches')</div></a></li>
-      <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="${path}config/server/">
-        <div class="config_sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
-      <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="${path}config/scheduling/">
-        <div class="config_sprite_container sprite_config_nav_scheduling">$T('Plush-cmenu-scheduling')</div></a></li>
-      <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="${path}config/notify/">
-        <div class="config_sprite_container sprite_config_nav_email">$T('cmenu-notif')</div></a></li>
-      <!--#if 0#-->
-      <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="${path}config/indexers/">
-        <div class="config_sprite_container sprite_config_nav_indexsites">$T('cmenu-newzbin')</div></a></li>
-      <!--#end if#-->
-      <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="${path}config/categories/">
-        <div class="config_sprite_container sprite_config_nav_categories">$T('cmenu-cat')</div></a></li>
-      <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="${path}config/sorting/">
-        <div class="config_sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
-      <li><a class="#if $pane=="Special"#nav_active#end if#" id="config_nav_special" href="${path}config/special/">
-        <div class="config_sprite_container sprite_config_nav_special">$T('cmenu-special')</div></a></li>
-    </ul>
-  </div>
-  #end if#
-  <div id="config_container" class="config_margin#if $pane=="Categories"# config_margin_wide#end if#">
+  <div id="config_container" class="config_margin">
     <div id="config_content">
       <div id="config">
         <div id="config-content" class="clearfix">

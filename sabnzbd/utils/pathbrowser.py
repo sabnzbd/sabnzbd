@@ -52,7 +52,7 @@ def get_win_drives():
         bitmask >>= 1
     return drives
 
-def folders_at_path(path, include_parent = False):
+def folders_at_path(path, include_parent = False, show_hidden = False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
@@ -90,8 +90,10 @@ def folders_at_path(path, include_parent = False):
             try:
                 if NT:
                     doit = (win32api.GetFileAttributes(fpath) & MASK) == TMASK and filename != 'PerfLogs'
-                else:
+                elif not show_hidden:
                     doit = not filename.startswith('.')
+                else:
+                    doit = True
             except:
                 doit = False
             if doit:

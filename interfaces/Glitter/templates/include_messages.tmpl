@@ -1,0 +1,40 @@
+<div id="queue-messages" class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
+    <table class="table table-hover table-messages">
+        <thead>
+            <tr>
+                <th class="table-messages-header-label"></th>
+                <th style="width: 30px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ko if: hasWarnings() -->
+                <tr>
+                    <td class="table-messages-hide"></td>
+                    <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
+                        <a href="#" class="hover-button"><span class="glyphicon glyphicon-remove"></span></a>
+                    </td>
+                </tr>
+                <!-- ko foreach: allWarnings -->
+                <tr>
+                    <td class="table-messages-label">
+                        <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                        <strong data-bind="text: date, attr: { 'data-timestamp': timestamp }"></strong>
+                        <span class="queue-message-text" data-bind="html: text"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko foreach: allMessages -->
+                <tr>
+                    <td class="table-messages-label">
+                        <span class="label" data-bind="css: 'label-' + css, text: type"></span>
+                        <span class="queue-message-text" data-bind="html: text"></span>
+                    </td>
+                    <td class="table-messages-remove">
+                        <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hover-button"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
+                    </td>
+                </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
+</div>

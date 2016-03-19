@@ -1,13 +1,14 @@
 <!--#set global $pane="Folders"#-->
-<!--#set global $help_uri="configure-folders-0-7"#-->
+<!--#set global $help_uri="configure-folders-1-0"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="saveDirectories" method="post" name="fullform" id="fullform">
+    <form action="saveDirectories" method="post" name="fullform" class="fullform" autocomplete="off">
     <input type="hidden" id="session" name="session" value="$session" />
+    <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section">
         <div class="col2">
-            <h3>$T('userFolders')</h3>
+            <h3>$T('userFolders') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p>$T('explain-folderConfig')</p>
         </div><!-- /col2 -->
         <div class="col1">
@@ -15,60 +16,65 @@
                 <div class="field-pair">
                     <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_home</span></h5>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="download_dir">$T('opt-download_dir')</label>
-                    <input type="text" name="download_dir" id="download_dir" value="$download_dir" size="45" />
+                    <input type="text" name="download_dir" id="download_dir" value="$download_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-download_dir')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="download_free">$T('opt-download_free')</label>
-                    <input type="text" name="download_free" id="download_free" value="$download_free" size="8" />
+                    <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input"  />
                     <span class="desc">$T('explain-download_free')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="complete_dir">$T('opt-complete_dir')</label>
-                    <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" size="45" />
+                    <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-complete_dir')</span>
                 </div>
-                <div class="field-pair <!--#if $nt then "disabled" else "" #-->">
+                <!--#if not $nt#-->
+                <div class="field-pair">
                     <label class="config" for="permissions">$T('opt-permissions')</label>
-                    <input type="text" name="permissions" id="permissions" value="$permissions" size="8" <!--#if $nt then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                    <input type="text" name="permissions" id="permissions" value="$permissions" class="smaller_input" />
                     <span class="desc">$T('explain-permissions')</span>
                 </div>
-                <div class="field-pair alt">
+                <!--#end if#-->
+                <div class="field-pair">
                     <label class="config" for="dirscan_dir">$T('opt-dirscan_dir')</label>
-                    <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" size="45" />
+                    <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-dirscan_dir')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="dirscan_speed">$T('opt-dirscan_speed')</label>
-                    <input type="number" name="dirscan_speed" id="dirscan_speed" value="$dirscan_speed" size="8" min="0" max="3600" />
+                    <input type="number" name="dirscan_speed" id="dirscan_speed" value="$dirscan_speed"  min="0" max="3600" />
                     <span class="desc">$T('explain-dirscan_speed')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="script_dir">$T('opt-script_dir')</label>
-                    <input type="text" name="script_dir" id="script_dir" value="$script_dir" size="45" />
+                    <input type="text" name="script_dir" id="script_dir" value="$script_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-script_dir')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="email_dir">$T('opt-email_dir')</label>
-                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" size="45" />
+                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-email_dir')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="password_file">$T('opt-password_file')</label>
-                    <input type="text" name="password_file" id="password_file" value="$password_file" size="45" />
+                    <input type="text" name="password_file" id="password_file" value="$password_file" />
                     <span class="desc">$T('explain-password_file')</span>
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="config_err_msg" class="darkred nomargin">&nbsp;</span>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
     <div class="section">
         <div class="col2">
-            <h3>$T('systemFolders')</h3>
+            <h3>$T('systemFolders') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p>$T('explain-folderConfig')</p>
         </div><!-- /col2 -->
         <div class="col1">
@@ -76,43 +82,35 @@
                 <div class="field-pair">
                     <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="admin_dir">$T('opt-admin_dir')</label>
-                    <input type="text" name="admin_dir" id="admin_dir" value="$admin_dir" size="45" />
+                    <input type="text" name="admin_dir" id="admin_dir" value="$admin_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-admin_dir1')</span>
                     <span class="desc">$T('explain-admin_dir2')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="log_dir">$T('opt-log_dir')</label>
-                    <input type="text" name="log_dir" id="log_dir" value="$log_dir" size="45" />
+                    <input type="text" name="log_dir" id="log_dir" value="$log_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-log_dir')</span>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="nzb_backup_dir">$T('opt-nzb_backup_dir')</label>
-                    <input type="text" name="nzb_backup_dir" id="nzb_backup_dir" value="$nzb_backup_dir" size="45" />
+                    <input type="text" name="nzb_backup_dir" id="nzb_backup_dir" value="$nzb_backup_dir" data-initialdir="$my_lcldata" />
                     <span class="desc">$T('explain-nzb_backup_dir')</span>
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                    <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
-                </div>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+               </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="padding alt">
-        <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-        <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
-    </div>
+
     </form>
 </div><!-- /colmask -->
-
-<script>
-\$(document).ready(function(){
-    \$('#download_dir').fileBrowser({ title: 'Select $T('opt-download_dir')' });
-    \$('#complete_dir').fileBrowser({ title: 'Select $T('opt-complete_dir')' });
-    \$('#dirscan_dir').fileBrowser({ title: 'Select $T('opt-dirscan_dir')' });
-    \$('#script_dir').fileBrowser({ title: 'Select $T('opt-script_dir')' });
-    \$('#email_dir').fileBrowser({ title: 'Select $T('opt-email_dir')' });
-});
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        // Add autocomplete and file-browser
+        \$('.col1 input[name$="_dir"]').typeahead().fileBrowser();
+    })
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

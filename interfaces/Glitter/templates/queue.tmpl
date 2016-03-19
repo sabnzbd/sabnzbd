@@ -1,0 +1,40 @@
+<!--#if $paused#-->
+    <!--#if $pause_int != '0' #-->
+        <!--#from math import floor#-->
+        
+        <!--#set pauseSplit = $pause_int.split(':')#-->
+        <!--#set seconds = int(pauseSplit[0]) * 60 + int(pauseSplit[1])#-->
+        <!--#set hours = floor(seconds/3600)#-->
+        <!--#set minutes = floor((seconds - hours * 3600) / 60)#-->
+        <!--#set seconds = seconds - minutes * 60 - hours * 3600#-->
+        
+        <!--#if seconds < 10 #-->
+            <!--#set seconds = '0' + str(int(seconds)) #-->
+        <!--#else#-->
+            <!--#set seconds = str(int(seconds)) #-->
+        <!--#end if#-->
+        
+        <!--#if (minutes < 10) & (hours > 0) #-->
+            <!--#set minutes = '0' + str(int(minutes)) #-->
+        <!--#else#-->
+            <!--#set minutes = str(int(minutes)) #-->
+        <!--#end if#-->
+        
+        <!--#if hours > 0 #-->
+            <!--#set timeString = str(int(hours)) + ":" + minutes + ":" + seconds#-->
+        <!--#else#-->
+            <!--#set timeString = minutes + ":" + seconds#-->
+        <!--#end if#-->
+    <!--#end if#-->
+    
+    $T('post-Paused') <!--#if $pause_int != '0' #-->($timeString) <!--#end if#-->
+    <!--#if float($mbleft) > 0#-->
+        - $sizeleft $T('Glitter-left') 
+    <!--#end if#-->
+    - SABnzbd
+<!--#else if float($mbleft) < 0.1#-->
+    SABnzbd
+<!--#else#-->
+    <!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s - $sizeleft $T('Glitter-left') - SABnzbd
+<!--#end if#-->
+|||<!--#echo "%.0f" % float($kbpersec)#-->

@@ -7,8 +7,6 @@
 #   - Improve compatibility with Python's ZipFile support:
 #       - Always use Unix separators '/' in pathnames (ascii & unicode)
 #       - Foldernames must always end with a '/' (ascii & unicode)
-#       - Use CP850 as default codepage
-#       - Convert ASCII filenames to Python's default 'latin-1' encoding
 #
 # Optimized to fit in SABnzbd:
 #   - No extract hack (not needed for just rarred NZB files).
@@ -42,6 +40,7 @@ _use_extract_hack = 0
 #
 
 RAR_ID = "Rar!\x1a\x07\x00"
+RAR5_ID = "Rar!\x1a\x07\x01\x00"
 
 # block types
 RAR_BLOCK_MARK          = 0x72 # r
@@ -108,8 +107,12 @@ RAR_OS_UNIX  = 3
 def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
     try:
-        buf = open(fn, "rb").read(len(RAR_ID))
-        return buf == RAR_ID
+        buf = open(fn, "rb").read(50)
+        if(buf.startswith(RAR5_ID)):
+            return "rar5 signature"
+        if(buf.startswith(RAR_ID)):
+            return "rar4 (or lower) signature"
+        return None
     except:
         return False
 
@@ -357,8 +360,7 @@ class RarFile:
             h.filename = name[:nul]
             u = _UnicodeFilename(h.filename, name[nul + 1 : ])
             h.unicode_filename = u.decode()
-            # Remap ASCII name from CP850 to Python's default Latin-1
-            h.filename = h.filename.decode(self.charset, 'replace').encode('latin-1', 'replace')
+            h.filename = h.filename.decode(self.charset, 'replace')
         else:
             h.filename = name
             h.unicode_filename = name.decode(self.charset, 'replace')

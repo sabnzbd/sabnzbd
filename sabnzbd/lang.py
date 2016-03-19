@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: utf-8 -*-
-# Copyright 2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,28 +34,34 @@ sabnzbd.lang - Language support
 # TT()  Dummy translation, use to mark table entries for POT scanning
 
 
-import gettext, __builtin__
-import glob, os, operator, locale
+import gettext
+import __builtin__
+import glob
+import os
+import operator
+import locale
 # This module cannot import any application modules!!
 
 __all__ = ['set_locale_info', 'set_language', 'list_languages']
 
 _DOMAIN = ''        # Holds translation domain
 _LOCALEDIR = ''     # Holds path to the translation base folder
+CODEPAGE = '1252'
 
 
 def set_locale_info(domain, localedir):
-    """ Setup the domain and localedir for translations
-    """
+    """ Setup the domain and localedir for translations """
     global _DOMAIN, _LOCALEDIR
     _DOMAIN = domain
     _LOCALEDIR = localedir
 
 
 def set_language(language=None):
-    """ Activate language, empty language will set default texts.
-    """
-    if not language: language = ''
+    """ Activate language, empty language will set default texts. """
+    global CODEPAGE
+    if not language:
+        language = ''
+    CODEPAGE = str(LanguageTable.get(language, (0, 0, 0))[2] or 1252)
 
     # 'codeset' will determine the output of lgettext
     lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True, codeset='latin-1')
@@ -63,9 +69,9 @@ def set_language(language=None):
     # The unicode flag will make _() return Unicode
     lng.install(unicode=True, names=['lgettext'])
     __builtin__.__dict__['T'] = __builtin__.__dict__['_']           # Unicode
-    __builtin__.__dict__['Ta'] = __builtin__.__dict__['lgettext']   # Latin-1
+    __builtin__.__dict__['Ta'] = __builtin__.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
     __builtin__.__dict__['Tx'] = __builtin__.__dict__['_']          # Dynamic translation (unicode)
-    __builtin__.__dict__['TT'] = lambda x:x                         # Use in text tables
+    __builtin__.__dict__['TT'] = lambda x: unicode(x)               # Use in text tables
 
 
 def list_languages():
@@ -106,94 +112,97 @@ def list_languages():
 
 
 LanguageTable = {
-    'aa' : ('Afar', 'Afaraf'),
-    'af' : ('Afrikaans', 'Afrikaans'),
-    'ak' : ('Akan', 'Akan'),
-    'sq' : ('Albanian', 'Shqip'),
-    'an' : ('Aragonese', 'Aragonés'),
-    'ae' : ('Avestan', 'Avesta'),
-    'ay' : ('Aymara', 'Aymararu'),
-    'bm' : ('Bambara', 'Bamanankan'),
-    'eu' : ('Basque', 'Euskara'),
-    'bi' : ('Bislama', 'Bislama'),
-    'bs' : ('Bosnian', 'Bosanskijezik'),
-    'br' : ('Breton', 'Brezhoneg'),
-    'ca' : ('Catalan', 'Català'),
-    'ch' : ('Chamorro', 'Chamoru'),
-    'kw' : ('Cornish', 'Kernewek'),
-    'co' : ('Corsican', 'Corsu'),
-    'hr' : ('Croatian', 'Hrvatski'),
-    'cs' : ('Czech', 'Cesky, ceština'),
-    'da' : ('Danish', 'Dansk'),
-    'nl' : ('Dutch', 'Nederlands'),
-    'en' : ('English', 'English'),
-    'eo' : ('Esperanto', 'Esperanto'),
-    'et' : ('Estonian', 'Eesti'),
-    'fo' : ('Faroese', 'Føroyskt'),
-    'fj' : ('Fijian', 'Vosa Vakaviti'),
-    'fi' : ('Finnish', 'Suomi'),
-    'fr' : ('French', 'Français'),
-    'gl' : ('Galician', 'Galego'),
-    'de' : ('German', 'Deutsch'),
-    'hz' : ('Herero', 'Otjiherero'),
-    'ho' : ('Hiri Motu', 'Hiri Motu'),
-    'hu' : ('Hungarian', 'Magyar'),
-    'id' : ('Indonesian', 'Bahasa Indonesia'),
-    'ga' : ('Irish', 'Gaeilge'),
-    'io' : ('Ido', 'Ido'),
-    'is' : ('Icelandic', 'Íslenska'),
-    'it' : ('Italian', 'Italiano'),
-    'jv' : ('Javanese', 'BasaJawa'),
-    'rw' : ('Kinyarwanda', 'Ikinyarwanda'),
-    'kg' : ('Kongo', 'KiKongo'),
-    'kj' : ('Kwanyama', 'Kuanyama'),
-    'la' : ('Latin', 'Lingua latina'),
-    'lb' : ('Luxembourgish', 'Lëtzebuergesch'),
-    'lg' : ('Luganda', 'Luganda'),
-    'li' : ('Limburgish', 'Limburgs'),
-    'ln' : ('Lingala', 'Lingála'),
-    'lt' : ('Lithuanian', 'Lietuviukalba'),
-    'lv' : ('Latvian', 'Latviešuvaloda'),
-    'gv' : ('Manx', 'Gaelg'),
-    'mg' : ('Malagasy', 'Malagasy fiteny'),
-    'mt' : ('Maltese', 'Malti'),
-    'nb' : ('Norwegian Bokmål', 'Norsk bokmål'),
-    'nn' : ('Norwegian Nynorsk', 'Norsk nynorsk'),
-    'no' : ('Norwegian', 'Norsk'),
-    'oc' : ('Occitan', 'Occitan'),
-    'om' : ('Oromo', 'Afaan Oromoo'),
-    'pl' : ('Polish', 'Polski'),
-    'pt' : ('Portuguese', 'Português'),
-    'pt_BR' : ('Portuguese Brazillian', 'Português Brasileiro'),
-    'rm' : ('Romansh', 'Rumantsch grischun'),
-    'rn' : ('Kirundi', 'kiRundi'),
-    'ro' : ('Romanian', 'Româna'),
-    'sc' : ('Sardinian', 'Sardu'),
-    'se' : ('Northern Sami', 'Davvisámegiella'),
-    'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
-    'gd' : ('Gaelic', 'Gàidhlig'),
-    'sn' : ('Shona', 'Chi Shona'),
-    'sk' : ('Slovak', 'Slovencina'),
-    'sl' : ('Slovene', 'Slovenšcina'),
-    'st' : ('Southern Sotho', 'Sesotho'),
-    'es' : ('Spanish Castilian', 'Español, castellano'),
-    'su' : ('Sundanese', 'Basa Sunda'),
-    'sw' : ('Swahili', 'Kiswahili'),
-    'ss' : ('Swati', 'SiSwati'),
-    'sv' : ('Swedish', 'Svenska'),
-    'tn' : ('Tswana', 'Setswana'),
-    'to' : ('Tonga (Tonga Islands)', 'faka Tonga'),
-    'tr' : ('Turkish', 'Türkçe'),
-    'ts' : ('Tsonga', 'Xitsonga'),
-    'tw' : ('Twi', 'Twi'),
-    'ty' : ('Tahitian', 'Reo Tahiti'),
-    'wa' : ('Walloon', 'Walon'),
-    'cy' : ('Welsh', 'Cymraeg'),
-    'wo' : ('Wolof', 'Wollof'),
-    'fy' : ('Western Frisian', 'Frysk'),
-    'xh' : ('Xhosa', 'isi Xhosa'),
-    'yo' : ('Yoruba', 'Yorùbá'),
-    'zu' : ('Zulu', 'isi Zulu'),
+    'aa': ('Afar', 'Afaraf', 0),
+    'af': ('Afrikaans', 'Afrikaans', 0),
+    'ak': ('Akan', 'Akan', 0),
+    'sq': ('Albanian', 'Shqip', 0),
+    'an': ('Aragonese', 'Aragonés', 0),
+    'ae': ('Avestan', 'Avesta', 0),
+    'ay': ('Aymara', 'Aymararu', 0),
+    'bm': ('Bambara', 'Bamanankan', 0),
+    'eu': ('Basque', 'Euskara', 0),
+    'bi': ('Bislama', 'Bislama', 0),
+    'bs': ('Bosnian', 'Bosanskijezik', 0),
+    'br': ('Breton', 'Brezhoneg', 0),
+    'ca': ('Catalan', 'Català', 0),
+    'ch': ('Chamorro', 'Chamoru', 0),
+    'kw': ('Cornish', 'Kernewek', 0),
+    'co': ('Corsican', 'Corsu', 0),
+    'hr': ('Croatian', 'Hrvatski', 0),
+    'cs': ('Czech', 'Cesky, ceština', 0),
+    'da': ('Danish', 'Dansk', 0),
+    'nl': ('Dutch', 'Nederlands', 0),
+    'en': ('English', 'English', 0),
+    'eo': ('Esperanto', 'Esperanto', 0),
+    'et': ('Estonian', 'Eesti', 0),
+    'fo': ('Faroese', 'Føroyskt', 0),
+    'fj': ('Fijian', 'Vosa Vakaviti', 0),
+    'fi': ('Finnish', 'Suomi', 0),
+    'fr': ('French', 'Français', 0),
+    'gl': ('Galician', 'Galego', 0),
+    'de': ('German', 'Deutsch', 0),
+    'hz': ('Herero', 'Otjiherero', 0),
+    'ho': ('Hiri Motu', 'Hiri Motu', 0),
+    'hu': ('Hungarian', 'Magyar', 0),
+    'id': ('Indonesian', 'Bahasa Indonesia', 0),
+    'ga': ('Irish', 'Gaeilge', 0),
+    'io': ('Ido', 'Ido', 0),
+    'is': ('Icelandic', 'Íslenska', 0),
+    'it': ('Italian', 'Italiano', 0),
+    'jv': ('Javanese', 'BasaJawa', 0),
+    'rw': ('Kinyarwanda', 'Ikinyarwanda', 0),
+    'kg': ('Kongo', 'KiKongo', 0),
+    'kj': ('Kwanyama', 'Kuanyama', 0),
+    'la': ('Latin', 'Lingua latina', 0),
+    'lb': ('Luxembourgish', 'Lëtzebuergesch', 0),
+    'lg': ('Luganda', 'Luganda', 0),
+    'li': ('Limburgish', 'Limburgs', 0),
+    'ln': ('Lingala', 'Lingála', 0),
+    'lt': ('Lithuanian', 'Lietuviukalba', 0),
+    'lv': ('Latvian', 'Latviešuvaloda', 0),
+    'gv': ('Manx', 'Gaelg', 0),
+    'mg': ('Malagasy', 'Malagasy fiteny', 0),
+    'mt': ('Maltese', 'Malti', 0),
+    'nb': ('Norwegian Bokmål', 'Norsk bokmål', 0),
+    'nn': ('Norwegian Nynorsk', 'Norsk nynorsk', 0),
+    'no': ('Norwegian', 'Norsk', 0),
+    'oc': ('Occitan', 'Occitan', 0),
+    'om': ('Oromo', 'Afaan Oromoo', 0),
+    'pl': ('Polish', 'Polski', 0),
+    'pt': ('Portuguese', 'Português', 0),
+    'pt_BR': ('Portuguese Brazillian', 'Português Brasileiro', 0),
+    'rm': ('Romansh', 'Rumantsch grischun', 0),
+    'rn': ('Kirundi', 'kiRundi', 0),
+    'ro': ('Romanian', 'Româna', 1250),
+    'sc': ('Sardinian', 'Sardu', 0),
+    'se': ('Northern Sami', 'Davvisámegiella', 0),
+    'sm': ('Samoan', 'Gagana fa\'a Samoa', 0),
+    'gd': ('Gaelic', 'Gàidhlig', 0),
+    'ru': ('Russian', 'русский язык', 1251),
+    'sr': ('Serbian', 'српски', 1251),
+    'sn': ('Shona', 'Chi Shona', 0),
+    'sk': ('Slovak', 'Slovencina', 0),
+    'sl': ('Slovene', 'Slovenšcina', 0),
+    'st': ('Southern Sotho', 'Sesotho', 0),
+    'es': ('Spanish Castilian', 'Español, castellano', 0),
+    'su': ('Sundanese', 'Basa Sunda', 0),
+    'sw': ('Swahili', 'Kiswahili', 0),
+    'ss': ('Swati', 'SiSwati', 0),
+    'sv': ('Swedish', 'Svenska', 0),
+    'tn': ('Tswana', 'Setswana', 0),
+    'to': ('Tonga (Tonga Islands)', 'faka Tonga', 0),
+    'tr': ('Turkish', 'Türkçe', 0),
+    'ts': ('Tsonga', 'Xitsonga', 0),
+    'tw': ('Twi', 'Twi', 0),
+    'ty': ('Tahitian', 'Reo Tahiti', 0),
+    'wa': ('Walloon', 'Walon', 0),
+    'cy': ('Welsh', 'Cymraeg', 0),
+    'wo': ('Wolof', 'Wollof', 0),
+    'fy': ('Western Frisian', 'Frysk', 0),
+    'xh': ('Xhosa', 'isi Xhosa', 0),
+    'yo': ('Yoruba', 'Yorùbá', 0),
+    'zu': ('Zulu', 'isi Zulu', 0),
+    'zh_CN': ('SimpChinese', '简体中文', 936),
 }
 
 # Setup a safe null-translation

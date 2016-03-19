@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,9 +17,10 @@
 
 CONFIG_VERSION = 19
 
-QUEUE_VERSION = 9
-POSTPROC_QUEUE_VERSION = 1
+QUEUE_VERSION = 10
+POSTPROC_QUEUE_VERSION = 2
 
+REC_RAR_VERSION = 500
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
 PNFO_DELETE_FIELD = 2
@@ -44,6 +45,7 @@ QNFO_BYTES_FIELD = 0
 QNFO_BYTES_LEFT_FIELD = 1
 QNFO_PNFO_LIST_FIELD = 2
 QNFO_Q_SIZE_LIST_FIELD = 3
+QNFO_Q_FULLSIZE_FIELD = 4
 
 ANFO_ARTICLE_SUM_FIELD = 0
 ANFO_CACHE_SIZE_FIELD = 1
@@ -53,15 +55,15 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME  = 'totals%s.sab' % QUEUE_VERSION
-QUEUE_FILE_TMPL  = 'queue%s.sab'
-QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
-POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
-RSS_FILE_NAME    = 'rss_data.sab'
-BOOKMARK_FILE_NAME = 'bookmarks.sab'
-SCAN_FILE_NAME    = 'watched_data.sab'
-TERM_FLAG_FILE    = 'running.sab'
-FUTURE_Q_FOLDER   = 'future'
+BYTES_FILE_NAME_OLD = 'totals9.sab'
+BYTES_FILE_NAME = 'totals10.sab'
+QUEUE_FILE_TMPL = 'queue%s.sab'
+QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
+POSTPROC_QUEUE_FILE_NAME = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
+RSS_FILE_NAME = 'rss_data.sab'
+SCAN_FILE_NAME = 'watched_data2.sab'
+TERM_FLAG_FILE = 'running.sab'
+FUTURE_Q_FOLDER = 'future'
 JOB_ADMIN = '__ADMIN__'
 VERIFIED_FILE = '__verified__'
 QCHECK_FILE = '__skip_qcheck__'
@@ -77,37 +79,37 @@ DB_QUEUE_NAME = 'queue%s.db' % DB_QUEUE_VERSION
 
 DEF_DOWNLOAD_DIR = 'Downloads/incomplete'
 DEF_COMPLETE_DIR = 'Downloads/complete'
-DEF_CACHE_DIR    = 'cache'
-DEF_ADMIN_DIR    = 'admin'
-DEF_LOG_DIR      = 'logs'
-DEF_NZBBACK_DIR  = ''
-DEF_LANGUAGE     = 'locale'
-DEF_INTERFACES   = 'interfaces'
+DEF_ADMIN_DIR = 'admin'
+DEF_LOG_DIR = 'logs'
+DEF_NZBBACK_DIR = ''
+DEF_LANGUAGE = 'locale'
+DEF_INTERFACES = 'interfaces'
 DEF_INT_LANGUAGE = 'locale'
-DEF_EMAIL_TMPL   = 'email'
-DEF_STDCONFIG    = 'Config'
-DEF_STDINTF      = 'Plush'
-DEF_SKIN_COLORS  = {'smpl':'white', 'classic':'darkblue', 'mobile':'light', 'plush' : 'gold'}
-DEF_MAIN_TMPL    = 'templates/main.tmpl'
-DEF_INI_FILE     = 'sabnzbd.ini'
-DEF_HOST         = 'localhost'
-DEF_PORT_WIN     = 8080
-DEF_PORT_UNIX    = 8080
+DEF_EMAIL_TMPL = 'email'
+DEF_STDCONFIG = 'Config'
+DEF_STDINTF = 'Glitter'
+DEF_SKIN_COLORS = {'smpl': 'white', 'Glitter': 'Default', 'plush': 'gold'}
+DEF_MAIN_TMPL = 'templates/main.tmpl'
+DEF_INI_FILE = 'sabnzbd.ini'
+DEF_HOST = '127.0.0.1'
+DEF_PORT_WIN = 8080
+DEF_PORT_UNIX = 8080
 DEF_PORT_WIN_SSL = 9090
-DEF_PORT_UNIX_SSL= 9090
-DEF_WORKDIR      = 'sabnzbd'
-DEF_LOG_FILE     = 'sabnzbd.log'
-DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
-DEF_LOG_CHERRY   = 'cherrypy.log'
-DEF_TIMEOUT      = 60
-MIN_TIMEOUT      = 10
-MAX_TIMEOUT      = 200
-DEF_LOGLEVEL     = 1
-DEF_SCANRATE     = 5
-DEF_QRATE        = 0
+DEF_PORT_UNIX_SSL = 9090
+DEF_WORKDIR = 'sabnzbd'
+DEF_LOG_FILE = 'sabnzbd.log'
+DEF_LOG_ERRFILE = 'sabnzbd.error.log'
+DEF_LOG_CHERRY = 'cherrypy.log'
+DEF_TIMEOUT = 60
+MIN_TIMEOUT = 10
+MAX_TIMEOUT = 200
+DEF_LOGLEVEL = 1
+DEF_SCANRATE = 5
+DEF_QRATE = 0
 MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
-MAX_WARNINGS     = 20
+MAX_WARNINGS = 20
+MAX_WIN_DFOLDER = 60
 
 REPAIR_PRIORITY = 3
 TOP_PRIORITY = 2
@@ -119,30 +121,33 @@ PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
 STOP_PRIORITY = -4
 
-#(MATCHER, [EXTRA,MATCHERS])
-series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
-                      [ r'^[-\.]+([sS]|[\d])+x(\d+)',
-                        r'^[-\.](\d+)'
-                      ] ),
+STAGES = { 'Source' : 0, 'Download' : 1, 'Servers' : 2, 'Repair' : 3, 'Filejoin' : 4, 'Unpack' : 5, 'Script' : 6 }
 
-                 (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                      [ r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)',
-                        r'^[-\.](\d+)'
-                      ] ),
-                 (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]', # .101. / _101_ / etc.
-                      [
-                      ] ),
-                 (r'[ \-_\.](\d)(\d{2,2})$', # .101 at end of title
-                      [
-                      ] )
+VALID_ARCHIVES = ('.zip', '.rar', '.7z')
+
+IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
+
+# (MATCHER, [EXTRA, MATCHERS])
+series_match = [(r'( [sS]|[\d]+)x(\d+)',  # 1x01
+                [r'^[-\.]+([sS]|[\d])+x(\d+)', r'^[-\.](\d+)']),
+
+                (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
+                [r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', r'^[-\.](\d+)']),
+
+                (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]',  # .101. / _101_ / etc.
+                []),
+
+                (r'[ \-_\.](\d)(\d{2,2})$',  # .101 at end of title
+                [])
                ]
 
-date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
-              r'(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
+date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})',  # 2008-10-16
+              r'(\d{1,2})\W(\d{1,2})\W(\d{4})']  # 10.16.2008
 
-year_match = r'[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
+year_match = r'[\W]([1|2]\d{3})([^\w]|$)'  # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
-sample_match = r'((^|[\W_])sample\d*[\W_])|(-s\.\w+$)' # something-sample.avi something-s.avi
+sample_match = r'((^|[\W_])sample\d*[\W_])'  # something-sample.avi
+
 
 class Status():
     COMPLETED = 'Completed'
@@ -160,4 +165,4 @@ class Status():
     RUNNING = 'Running'
     VERIFYING = 'Verifying'
 
-NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'other')
+NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')

@@ -3,7 +3,10 @@
   <h3>$T('nzoDetails')</h3>
   <form id="nzbEditForm" class="cmxform">
     <label class="label">$T('nzoName'):</label>
-    <input type="text" name="name" style="width:400px" size="80" value="$slot.filename">
+    <input type="text" name="name" style="width:400px" size="80" value="$slot.filename_clean">
+    <br class="clear" />
+    <label class="label">$T('srv-password'):</label>
+    <input type="text" name="password" style="width:200px" size="100" value="$slot.password">
     <br class="clear" />
     <label class="label">$T('pp'):</label>
     <select name="pp">
@@ -19,6 +22,7 @@
     <select name="priority">
       <optgroup label="$T('priority')">
         <option value="-100" <!--#if $slot.priority == "-100" then "selected" else ""#-->>$T('default')</option>
+        <option value="2" <!--#if $slot.priority == "2" then "selected" else ""#-->>$T('pr-force')</option>
         <option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>$T('pr-high')</option>
         <option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>$T('pr-normal')</option>
         <option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>$T('pr-low')</option>

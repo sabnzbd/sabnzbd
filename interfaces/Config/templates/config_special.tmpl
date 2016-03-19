@@ -1,58 +1,56 @@
 <!--#set global $pane="Special"#-->
-<!--#set global $help_uri="configure+special-0-7"#-->
+<!--#set global $help_uri="configure-special-1-0"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="saveSpecial" method="post" name="fullform" id="fullform">
-    <input type="hidden" id="session" name="session" value="$session" />
-    <div class="padTable">
-        <h3 class="darkred nomargin">$T('explain-special')</h3>
-    </div>
-    <div class="section">
-        <div class="col2">
-            <h3>$T('sptag-boolean')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-            <!--#set $odd = False#-->
-            <!--#for $option in $switches#-->
-                <!--#set $odd = not $odd#-->
-                <div class="field-pair <!--#if $odd then "alt" else ""#-->">
-                    <label class="config wide" for="$option[0]">$option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> )</label>
-                    <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if int($option[1]) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">&nbsp;</span>
-                </div>
-            <!--#end for#-->
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('sptag-entries')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-            <!--#set $odd = False#-->
-            <!--#for $option in $entries#-->
-                <!--#set $odd = not $odd#-->
-                <div class="field-pair <!--#if $odd then "alt" else ""#-->">
-                    <label class="config narrow" for="$option[0]">$option[0] (&nbsp;<span class="path">$option[2]</span>&nbsp;)</label>
-                    <input type="text" name="$option[0]" id="$option[0]" value="$option[1]" />
-                </div>
-            <!--#end for#-->
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="padding alt">
-        <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-        <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
-    </div>
+    <form action="saveSpecial" method="post" autocomplete="off">
+        <input type="hidden" id="session" name="session" value="$session" />
+        <div class="padTable">
+            <h4 class="darkred nomargin">$T('explain-special')</h4>
+        </div>
+        <div class="section">
+            <div class="col2">
+                <h3>$T('sptag-boolean') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <!--#for $option in $switches#-->
+                        <div class="field-pair">
+                            <label class="config wide" for="$option[0]">
+                                $option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> ) 
+                                <!--#if $option[1] != $option[2] then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
+                            </label>
+                            <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if int($option[1]) > 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc"></span>
+                        </div>
+                    <!--#end for#-->
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('sptag-entries') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <!--#for $option in $entries#-->
+                        <div class="field-pair">
+                            <label class="config narrow" for="$option[0]">$option[0] (&nbsp;<span class="path">$option[2]</span>&nbsp;)</label>
+                            <input type="text" name="$option[0]" id="$option[0]" value="$option[1]" />
+                            <!--#if ($option[1] != $option[2]) and ($option[2] != "") then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
+                        </div>
+                    <!--#end for#-->
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
     </form>
 </div><!-- /colmask -->
 

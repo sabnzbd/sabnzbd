@@ -1,4 +1,4 @@
-The original author of SABnzbd based his work on Pynewleecher by Freddy@madcowdesease.org.
+The original author of SABnzbd based his work on Pynewsleecher by Freddy@madcowdesease.org.
 
 Few parts of Pynewsleecher have survived the generations of SABnzbd in a
 recognizable form.

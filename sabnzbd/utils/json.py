@@ -1,5 +1,6 @@
 import string
 import types
+import logging
 
 ##    json.py implements a JSON (http://json.org) reader and writer.
 ##    Copyright (C) 2005  Patrick D. Logan
@@ -24,6 +25,9 @@ import types
 ##    The full source package can be obtained from:
 ##    http://sourceforge.net/projects/json-py
 
+# Log first 10 encounters of LATIN-1 strings
+LATIN_COUNTER = 10
+
 class WriteException(Exception):
     pass
 
@@ -39,6 +43,7 @@ class JsonWriter(object):
         return "".join(self._results)
 
     def _write(self, obj):
+        global LATIN_COUNTER
         ty = type(obj)
         if ty is types.DictType:
             n = len(obj)
@@ -69,6 +74,9 @@ class JsonWriter(object):
                     obj.decode('utf-8')
                 except:
                     obj = obj.decode('latin-1').encode('utf-8', 'replace')
+                    if LATIN_COUNTER:
+                        logging.info('JSON encoder sees Latin-1: %s', obj)
+                        LATIN_COUNTER -= 1
             obj = obj.replace('\\', r'\\')
             if self._escaped_forward_slash:
                 obj = obj.replace('/', r'\/')

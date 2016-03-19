@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,14 +21,17 @@ sabnzbd.panic - Send panic message to the browser
 
 import os
 import logging
-import webbrowser
 import tempfile
+try:
+    import webbrowser
+except ImportError:
+    webbrowser = None
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 
-PANIC_NONE  = 0
-PANIC_PORT  = 1
+PANIC_NONE = 0
+PANIC_PORT = 1
 PANIC_TEMPL = 2
 PANIC_QUEUE = 3
 PANIC_FWALL = 4
@@ -37,11 +40,13 @@ PANIC_XPORT = 6
 PANIC_SQLITE = 7
 PANIC_HOST = 8
 
+
 def MSG_BAD_NEWS():
+    # TODO: do we need Ta / T for this?
     return r'''
     <html>
     <head>
-    <title>''' + Ta('Problem with') + ''' %s %s</title>
+    <title>''' + T('Problem with') + ''' %s %s</title>
     </head>
     <body>
     <h1><font color="#0000FF"> %s %s</font></h1>
@@ -55,6 +60,7 @@ def MSG_BAD_NEWS():
 </html>
 '''
 
+
 def MSG_BAD_FWALL():
     return Ta(r'''
     SABnzbd is not compatible with some software firewalls.<br>
@@ -64,6 +70,7 @@ def MSG_BAD_FWALL():
     <br>
 ''')
 
+
 def MSG_BAD_PORT():
     return Ta(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
@@ -71,12 +78,13 @@ def MSG_BAD_PORT():
     Some other software uses the port or SABnzbd is already running.<br>
     <br>
     Please restart SABnzbd with a different port number.''') + \
-    '''<br>
+        '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>''' + \
-    Ta(r'If you get this error message again, please try a different number.<br>')
+        Ta(r'If you get this error message again, please try a different number.<br>')
+
 
 def MSG_ILL_PORT():
     return Ta(r'''
@@ -85,12 +93,13 @@ def MSG_ILL_PORT():
     On OSX and Linux systems, normal users must use ports above 1023.<br>
     <br>
     Please restart SABnzbd with a different port number.''') + \
-    '''<br>
+        '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>''' + \
-    Ta(r'If you get this error message again, please try a different number.<br>')
+        Ta(r'If you get this error message again, please try a different number.<br>')
+
 
 def MSG_BAD_HOST():
     return Ta(r'''
@@ -99,12 +108,13 @@ def MSG_BAD_HOST():
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
     <br>
     Please restart SABnzbd with a proper host address.''') + \
-    '''<br>
+        '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
 '''
+
 
 def MSG_BAD_QUEUE():
     return Ta(r'''
@@ -114,12 +124,13 @@ def MSG_BAD_QUEUE():
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
     SABnzbd read the file "%s".''') + \
-    '''<br>
+        '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
     <br>
 '''
+
 
 def MSG_BAD_TEMPL():
     return Ta(r'''
@@ -128,16 +139,19 @@ def MSG_BAD_TEMPL():
     <br>
 ''')
 
+
 def MSG_OTHER():
-    return Ta('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
+    return T('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
+
 
 def MSG_OLD_QUEUE():
     return Ta(r'''
-    SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
-    Both queue and history will be ignored and may get lost!<br><br>
+    SABnzbd detected a queue from an older release.<br><br>
+    You can convert the queue by clicking "Repair" in Status-&gt;"Queue Repair".<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
     Click OK to proceed to SABnzbd''') + \
-    ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % Ta('OK'))
+        ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % T('OK'))
+
 
 def MSG_SQLITE():
     return Ta(r'''
@@ -147,14 +161,14 @@ def MSG_SQLITE():
     <br>
 ''')
 
+
 def panic_message(panic, a=None, b=None):
-    """Create the panic message from templates
-    """
+    """ Create the panic message from templates """
     if sabnzbd.WIN32:
-        os_str = Ta('Press Startkey+R and type the line (example):')
+        os_str = T('Press Startkey+R and type the line (example):')
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
-        os_str = Ta('Open a Terminal window and type the line (example):')
+        os_str = T('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
     if panic == PANIC_PORT:
@@ -174,7 +188,7 @@ def panic_message(panic, a=None, b=None):
         msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
     elif panic == PANIC_FWALL:
         if a:
-            msg = MSG_BAD_FWALL() % Ta('It is likely that you are using ZoneAlarm on Vista.<br>')
+            msg = MSG_BAD_FWALL() % T('It is likely that you are using ZoneAlarm on Vista.<br>')
         else:
             msg = MSG_BAD_FWALL() % "<br>"
     elif panic == PANIC_SQLITE:
@@ -185,7 +199,7 @@ def panic_message(panic, a=None, b=None):
         msg = MSG_OTHER() % (a, b)
 
     msg = MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
-                          msg, Ta('Program did not start!'))
+                          msg, T('Program did not start!'))
 
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
@@ -202,56 +216,68 @@ def panic_message(panic, a=None, b=None):
 def panic_fwall(vista):
     launch_a_browser(panic_message(PANIC_FWALL, vista))
 
+
 def panic_port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
+
 
 def panic_host(host, port):
     launch_a_browser(panic_message(PANIC_HOST, host, port))
 
+
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
-    logging.error(Ta('You have no permisson to use port %s'), port)
+    logging.error(T('You have no permission to use port %s'), port)
+
 
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
 
+
 def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
 
+
 def panic_sqlite(name):
     launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
+
 
 def panic_old_queue():
     msg = MSG_OLD_QUEUE()
     return MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
+
 def panic(reason, remedy=""):
-    print "\n%s:\n  %s\n%s" % (Ta('Fatal error'), reason, remedy)
+    print "\n%s:\n  %s\n%s" % (T('Fatal error'), reason, remedy)
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
 def launch_a_browser(url, force=False):
-    """Launch a browser pointing to the URL
-    """
+    """ Launch a browser pointing to the URL """
     if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
-    if '::1' in url and not '[::1]' in url:
-        # Get around ideosyncrasy in Python runtime
+    if '::1' in url and '[::1]' not in url:
+        # Get around idiosyncrasy in Python runtime
         url = url.replace('::1', '[::1]')
 
     if cfg.enable_https() and not cfg.https_port.get_int():
         # Must use https, because http is not available
         url = url.replace('http:', 'https:')
 
-    logging.info("Lauching browser with %s", url)
+    if 'localhost' in url and not cfg.ipv6_hosting():
+        url = url.replace('localhost', '127.0.0.1')
+    logging.info("Launching browser with %s", url)
     try:
         if url and not url.startswith('http'):
             url = 'file:///%s' % url
-        webbrowser.open(url, 2, 1)
+        if webbrowser:
+            webbrowser.open(url, 2, 1)
+        else:
+            logging.info('Not showing panic message in webbrowser, no support found')
     except:
-        logging.warning(Ta('Cannot launch the browser, probably not found'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.warning(T('Cannot launch the browser, probably not found'))
+        logging.info("Traceback: ", exc_info=True)
 
 
 def error_page_401(status, message, traceback, version):
@@ -273,16 +299,15 @@ def error_page_401(status, message, traceback, version):
 
 def error_page_404(status, message, traceback, version):
     """ Custom handler for 404 error, redirect to main page """
-    import cherrypy
     return r'''
 <html>
     <head>
       <script type="text/javascript">
       <!--
-      location.href = "%s"
+      location.href = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/sabnzbd/' ;
       //-->
       </script>
     </head>
     <body><br/></body>
 </html>
-''' % cherrypy.wsgiserver.REDIRECT_URL
+'''

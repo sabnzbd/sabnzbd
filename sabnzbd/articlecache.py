@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,13 +24,17 @@ import threading
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
+from sabnzbd.constants import GIGI
 
 
 ARTICLE_LOCK = threading.Lock()
+
+
 class ArticleCache(object):
     do = None
 
     def __init__(self):
+        self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
 
@@ -40,13 +44,16 @@ class ArticleCache(object):
 
     @synchronized(ARTICLE_LOCK)
     def cache_info(self):
-        return (len(self.__article_list), self.__cache_size, self.__cache_limit)
+        return (len(self.__article_list), self.__cache_size, self.__cache_limit_org)
 
     @synchronized(ARTICLE_LOCK)
     def new_limit(self, limit):
         """ Called when cache limit changes """
-        self.__cache_limit = limit
-
+        self.__cache_limit_org = limit
+        if limit < 0:
+            self.__cache_limit = GIGI
+        else:
+            self.__cache_limit = min(limit, GIGI)
 
     @synchronized(ARTICLE_LOCK)
     def save_article(self, article, data):
@@ -73,16 +80,16 @@ class ArticleCache(object):
                 data_size = len(data)
 
                 while (self.__cache_size > (self.__cache_limit - data_size)) \
-                and self.__article_list:
-                    ## Flush oldest article in cache
+                        and self.__article_list:
+                    # Flush oldest article in cache
                     old_article = self.__article_list.pop(0)
                     old_data = self.__article_table.pop(old_article)
                     self.__cache_size -= len(old_data)
-                    ## No need to flush if this is a refreshment article
+                    # No need to flush if this is a refreshment article
                     if old_article != article:
                         self.__flush_article(old_article, old_data)
 
-                ## Does our article fit into our limit now?
+                # Does our article fit into our limit now?
                 if (self.__cache_size + data_size) <= self.__cache_limit:
                     self.__add_to_cache(article, data)
                 else:
@@ -146,9 +153,9 @@ class ArticleCache(object):
         if art_id:
             if sabnzbd.LOG_ALL:
                 logging.debug("Flushing %s to disk", article)
-            # Save data, but don't complain when destistation folder is missing
+            # Save data, but don't complain when destination folder is missing
             # because this flush may come after completion of the NZO.
-            sabnzbd.save_data(data, art_id, nzo.workpath, do_pickle = False, silent=True)
+            sabnzbd.save_data(data, art_id, nzo.workpath, do_pickle=False, silent=True)
         else:
             logging.warning("Flushing %s failed -> no art_id", article)
 
@@ -164,5 +171,5 @@ class ArticleCache(object):
             logging.debug("Added %s to cache", article)
 
 
-### Create the instance
+# Create the instance
 ArticleCache()

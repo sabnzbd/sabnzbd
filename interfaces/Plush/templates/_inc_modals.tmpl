@@ -1,3 +1,21 @@
+  <script type="text/javascript">
+    function expired_host_changed(self) {
+      var host = document.getElementsByName('expired_host')[0];
+      host.value = self.value;
+      host.readOnly = self.value.length > 0;
+    }
+    function flag_modal_submit(self) {
+      var radios = document.getElementsByName('rating_flag');
+      for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+          document.getElementById('noopt').setAttribute('style', 'display:none;size:1');
+          document.getElementById('submitbtn').click();
+          return;
+        }
+      }
+      document.getElementById('noopt').removeAttribute('style');
+    }
+  </script>
 
   <!-- modals -->
   <div style='display:none'>
@@ -10,7 +28,7 @@
     </table>
     <div class="sabnzbd_logo main_sprite_container sprite_sabnzbdplus_logo"></div>
     <p><strong>SABnzbd $T('version'):</strong> $version</p>
-    <p><small>Copyright (C) 2008-2013, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
+    <p><small>Copyright (C) 2008-2016, The SABnzbd Team &lt;team@sabnzbd.org&gt;</small></p>
     <p><small>$T('yourRights')</small></p>
   </div>
 
@@ -116,6 +134,11 @@ $T('Plush-containerWidth'):
     <br/><br/><input type="submit" name="delete" value="$T('purgeNZBs-Files')" class="juiButton" />
   </div>
 
+  <div id="queue_retry_modal" class="center">
+    <br/><br/><strong>$T('retryQueue')</strong>
+    <br/><br/><input type="submit" name="all" value="$T('retryNZBs')" class="juiButton" />
+  </div>
+
   <div id="history_purge_modal" class="center">
     <br/><br/><strong>$T('purgeHist')</strong>
     <!--<br/><br/><input type="submit" name="all" value="Purge All NZBs" class="juiButton" />-->
@@ -130,6 +153,7 @@ $T('Plush-containerWidth'):
       <input type="hidden" name="session" value="$session" />
       <br/><p><strong id="retry_modal_title">title</strong></p>
       <br/><p>$T('opt-extra-NZB'):<br/><input type="file" name="nzbfile" /></p>
+      <br/><p>$T('srv-password'):<br/><input type="text" name="password" /></p>
       <br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
     </form>
   </div>
@@ -140,6 +164,51 @@ $T('Plush-containerWidth'):
     <br/><br/><strong id="delete_nzb_modal_title">title</strong><br/><br/>
     <input type="submit" id="delete_nzb_modal_remove_nzb" value="$T('removeNZB')" class="juiButton" />
     <input type="submit" id="delete_nzb_modal_remove_files" value="$T('removeNZB-Files')" class="juiButton" />
+  </div>
+
+  <div id="flag_modal">
+    <input type="hidden" id="flag_modal_job" />
+    <div class="rating_flag_radio"><input type="radio" name="rating_flag" value="spam">&nbsp;$T('spam')</div>
+    <div class="rating_flag_radio"><input type="radio" name="rating_flag" value="encrypted">&nbsp;$T('encrypted')</div>
+    <div class="rating_flag_radio">
+      <input type="radio" name="rating_flag" value="expired">&nbsp;$T('expired')
+      <div class="rating_modal_extra">
+      <div class="rating_modal_expired">$T('host')&nbsp;&nbsp;<input type="text" name="expired_host" value="www.altopia.com" readonly></div>
+      <select name="common_host" onchange="expired_host_changed(this)">
+        <option value='www.altopia.com' selected>Altopia</option>
+        <option value='www.astraweb.com'>Astraweb</option>
+        <option value='www.euroaccess.ln'>EuroAccess</option>
+        <option value='www.forteinc.com'>Forte Agent</option>
+        <option value='www.giganews.com'>Giganews</option>
+        <option value='www.highwinds.com'>Highwinds</option>
+        <option value='www.newsdemon.com'>Newsdemon</option>
+        <option value='www.newsgroupdirect.com'>NewsGroupDirect</option>
+        <option value='www.newshosting.com'>NewsHosting</option>
+        <option value='www.readnews.com'>Readnews</option>
+        <option value='www.supernews.com'>SuperNews</option>
+        <option value='www.thundernews.com'>ThunderNews</option>        
+        <option value='www.tweaknews.eu'>Tweaknews</option>
+        <option value='www.usenetserver.com'>UsenetServer</option>
+        <option value='www.xentech.net'>XenTech</option>
+        <option value='www.xsnews.nl'>XSnews</option>
+        <option value=''>$T('other')</option>
+      </select>
+      </div>
+    </div>
+    <div class="rating_flag_radio">
+      <input type="radio" name="rating_flag" value="other">&nbsp;$T('otherProblem')
+      <div class="rating_modal_extra"><input style="width:99%" type="text" name="other"></div>
+    </div>
+    <div class="rating_flag_radio">
+      <input type="radio" name="rating_flag" value="comment">&nbsp;$T('comment')
+      <div class="rating_modal_extra"><input style="width:99%" type="text" name="comment"></div>
+    </div>
+    <br/>
+    <div class="center">
+      <input id="submitbtn" type="submit" style="display:none;size:1"/>
+      <input value="Send" class="juiButton" onclick="flag_modal_submit(this)"/>
+      <label id="noopt" class="rating_modal_noopt" style="display:none;size:1">No option selected</label>
+    </div>
   </div>
 
 #end if#

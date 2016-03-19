@@ -1,315 +1,516 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configure-switches-0-7"#-->
+<!--#set global $help_uri="configure-switches-1-0"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="saveSwitches" method="post" name="fullform" id="fullform">
-    <input type="hidden" id="session" name="session" value="$session" />
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-general')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair alt">
-                    <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
-                    <select name="check_new_rel" id="check_new_rel">
-                        <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected" class="selected"' else ""#--> >$T('off')</option>
-                        <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected" class="selected"' else ""#--> >$T('on')</option>
-                        <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected" class="selected"' else ""#--> >$T('also-test')</option>
-                    </select>
-                    <span class="desc">$T('explain-check_new_rel')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
-                    <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-auto_browser')</span>
-                </div>
-                <div class="field-pair alt <!--#if not $have_ampm then "disabled" else "" #-->">
-                    <label class="config" for="ampm">$T('opt-ampm')</label>
-                    <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-ampm')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-server')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair alt">
-                    <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
-                    <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" size="8" min="2" />
-                    <span class="desc">$T('explain-max_art_tries')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="max_art_opt">$T('opt-max_art_opt')</label>
-                    <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-max_art_opt')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>
-                    <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if int($auto_disconnect) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-auto_disconnect')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="send_group">$T('opt-send_group')</label>
-                    <input type="checkbox" name="send_group" id="send_group" value="1" <!--#if int($send_group) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-send_group')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="ssl_type">$T('opt-ssl_type')</label>
-                    <select name="ssl_type" id="ssl_type">
-                        <option value="v23" <!--#if $ssl_type == "v23" then 'selected="selected" class="selected"' else ""#--> >V23</option>
-                        <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected="selected" class="selected"' else ""#--> >V2</option>
-                        <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected="selected" class="selected"' else ""#--> >V3</option>
-                    </select>
-                    <span class="desc">$T('explain-ssl_type')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-queue')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
-                    <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-fail_hopeless')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="pre_check">$T('opt-pre_check')</label>
-                    <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-pre_check')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
-                    <select name="no_dupes" id="no_dupes">
-                        <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-ignore')</option>
-                        <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
-                    </select>
-                    <span class="desc">$T('explain-no_dupes')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="pause_on_post_processing">$T('opt-pause_on_post_processing')</label>
-                    <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-pause_on_post_processing')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
-                    <select name="pause_on_pwrar" id="pause_on_pwrar">
-                        <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-off')</option>
-                        <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('nodupes-pause')</option>
-                        <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('abort')</option>
-                    </select>
-                    <span class="desc">$T('explain-pause_on_pwrar')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="top_only">$T('opt-top_only')</label>
-                    <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-top_only')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
-                    <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-auto_sort')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="pre_script">$T('opt-pre_script')</label>
-                    <select name="pre_script" id="pre_script">
-                    <!--#for $sc in $script_list#-->
-                        <!--#if $sc.lower() == $pre_script.lower()#-->
-                            <option value="$sc" selected="selected" class="selected">$Tspec($sc)</option>
-                        <!--#else#-->
-                            <option value="$sc">$Tspec($sc)</option>
-                        <!--#end if#-->
-                    <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-pre_script')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-pp')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair alt">
-                    <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
-                    <select name="ignore_samples" id="ignore_samples">
-                        <option value="0" <!--#if int($ignore_samples) == 0 then 'selected="selected" class="selected"' else ""#--> >$T('igsam-off')</option>
-                        <option value="1" <!--#if int($ignore_samples) == 1 then 'selected="selected" class="selected"' else ""#--> >$T('igsam-del')</option>
-                        <option value="2" <!--#if int($ignore_samples) == 2 then 'selected="selected" class="selected"' else ""#--> >$T('igsam-not')</option>
-                    </select>
-                    <span class="desc">$T('explain-ignore_samples')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="quick_check">$T('opt-quick_check')</label>
-                    <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-quick_check')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
-                    <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-enable_unrar')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
-                    <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-enable_unzip')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
-                    <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-enable_filejoin')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
-                    <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-ts_join')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="enable_par_cleanup">$T('opt-enable_par_cleanup')</label>
-                    <input type="checkbox" name="enable_par_cleanup" id="enable_par_cleanup" value="1" <!--#if int($enable_par_cleanup) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-enable_par_cleanup')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="fail_on_crc">$T('opt-fail_on_crc')</label>
-                    <input type="checkbox" name="fail_on_crc" id="fail_on_crc" value="1" <!--#if int($fail_on_crc) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-fail_on_crc')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
-                    <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-safe_postproc')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
-                    <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-sfv_check')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="unpack_check">$T('opt-unpack_check')</label>
-                    <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if int($unpack_check) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-unpack_check')</span>
-                </div>
-                <div class="field-pair <!--#if not $nt then "disabled" else "" #-->">
-                    <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
-                    <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $nt then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-par2_multicore')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="par_option">$T('opt-par_option')</label>
-                    <input type="text" name="par_option" id="par_option" value="$par_option" size="20" />
-                    <span class="desc">$T('explain-par_option')</span>
-                </div>
-                <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
-                    <label class="config" for="nice">$T('opt-nice')</label>
-                    <input type="text" name="nice" id="nice" value="$nice" size="20" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-nice')</span>
-                </div>
-                <div class="field-pair alt <!--#if not $have_ionice then "disabled" else "" #-->">
-                    <label class="config" for="ionice">$T('opt-ionice')</label>
-                    <input type="text" name="ionice" id="ionice" value="$ionice" size="20" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                    <span class="desc">$T('explain-ionice')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-naming')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair alt">
-                    <label class="config" for="folder_rename">$T('opt-folder_rename')</label>
-                    <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if int($folder_rename) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-folder_rename')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="replace_spaces">$T('opt-replace_spaces')</label>
-                    <input type="checkbox" name="replace_spaces" id="replace_spaces" value="1" <!--#if int($replace_spaces) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-replace_spaces')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="replace_dots">$T('opt-replace_dots')</label>
-                    <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-replace_dots')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="replace_illegal">$T('opt-replace_illegal')</label>
-                    <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-replace_illegal')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('swtag-quota')</h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair alt">
-                    <label class="config" for="quota_size">$T('opt-quota_size')</label>
-                    <input type="text" name="quota_size" id="quota_size" value="$quota_size" size="8" />
-                    <span class="desc">$T('explain-quota_size')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="quota_period">$T('opt-quota_period')</label>
-                    <select name="quota_period" id="quota_period">
-                        <option value="d" <!--#if $quota_period == "d" then 'selected="selected" class="selected"' else ""#--> >$T('day').capitalize()</option>
-                        <option value="w" <!--#if $quota_period == "w" then 'selected="selected" class="selected"' else ""#--> >$T('week').capitalize()</option>
-                        <option value="m" <!--#if $quota_period == "m" then 'selected="selected" class="selected"' else ""#--> >$T('month').capitalize()</option>
-                        <option value="x" <!--#if $quota_period == "x" then 'selected="selected" class="selected"' else ""#--> >$T('manual').capitalize()</option>
-                    </select>
-                    <span class="desc">$T('explain-quota_period')</span>
-                </div>
-                <div class="field-pair alt">
-                    <label class="config" for="quota_day">$T('opt-quota_day')</label>
-                    <input type="text" name="quota_day" id="quota_day" value="$quota_day" size="20" />
-                    <span class="desc">$T('explain-quota_day')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="quota_resume">$T('opt-quota_resume')</label>
-                    <input type="checkbox" name="quota_resume" id="quota_resume" value="1" <!--#if int($quota_resume) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-quota_resume')</span>
-                </div>
-                <div class="field-pair">
-                    <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="padding alt">
-        <input type="submit" value="$T('button-saveChanges')" class="saveButton" />
-        <input type="button" value="$T('button-restart') SABnzbd" class="sabnzbd_restart" />
-    </div>
+    <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
+        <input type="hidden" id="session" name="session" value="$session" />
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-general') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
+                        <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-auto_browser')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
+                        <select name="check_new_rel" id="check_new_rel">
+                            <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
+                            <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
+                            <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
+                        </select>
+                        <span class="desc">$T('explain-check_new_rel')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
+                        <label class="config" for="ampm">$T('opt-ampm')</label>
+                        <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-ampm')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
+                        <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
+                        <span class="desc">$T('explain-max_art_tries')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="max_art_opt">$T('opt-max_art_opt')</label>
+                        <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-max_art_opt')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
+                          <select name="load_balancing" id="load_balancing">
+                              <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
+                              <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
+                              <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
+                          </select>
+                        <span class="desc">$T('explain-load_balancing')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>
+                        <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if int($auto_disconnect) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-auto_disconnect')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-queue') <a href="$helpuri$help_uri#toc2" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="pre_script">$T('opt-pre_script')</label>
+                        <select name="pre_script" id="pre_script">
+                        <!--#for $sc in $script_list#-->
+                            <!--#if $sc.lower() == $pre_script.lower()#-->
+                                <option value="$sc" selected="selected">$Tspec($sc)</option>
+                            <!--#else#-->
+                                <option value="$sc">$Tspec($sc)</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                        <span class="desc">$T('explain-pre_script')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="top_only">$T('opt-top_only')</label>
+                        <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-top_only')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="pre_check">$T('opt-pre_check')</label>
+                        <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-pre_check')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
+                        <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-fail_hopeless')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
+                        <select name="no_dupes" id="no_dupes">
+                            <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
+                            <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        </select>
+                        <span class="desc">$T('explain-no_dupes')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
+                        <select name="no_series_dupes" id="no_series_dupes">
+                            <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
+                            <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                        </select>
+                        <span class="desc">$T('explain-no_series_dupes')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
+                        <select name="pause_on_pwrar" id="pause_on_pwrar">
+                            <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                            <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                        </select>
+                        <span class="desc">$T('explain-pause_on_pwrar')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="action_on_unwanted_extensions">$T('opt-action_on_unwanted_extensions')</label>
+                        <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
+                            <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                            <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                        </select>
+                        <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
+                        <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
+                        <span class="desc">$T('explain-unwanted_extensions')</span>
+                    </div>
+                    
+                    <div class="field-pair">
+                        <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
+                        <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-auto_sort')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-pp') <a href="$helpuri$help_uri#toc3" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="pause_on_post_processing">$T('opt-pause_on_post_processing')</label>
+                        <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-pause_on_post_processing')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
+                        <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_all_par')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="quick_check">$T('opt-quick_check')</label>
+                        <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-quick_check')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_multicore then "disabled" else "" #-->">
+                        <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
+                        <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_multicore then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-par2_multicore')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="par_option">$T('opt-par_option')</label>
+                        <input type="text" name="par_option" id="par_option" value="$par_option" />
+                        <span class="desc">$T('explain-par_option')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
+                        <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-sfv_check')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
+                        <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-safe_postproc')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_unrar then "disabled" else "" #-->">
+                        <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
+                        <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if not $have_unrar then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_unrar')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_unzip then "disabled" else "" #-->">
+                        <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
+                        <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if not $have_unzip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_unzip')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_7zip then "disabled" else "" #-->">
+                        <label class="config" for="enable_7zip">$T('opt-enable_7zip')</label>
+                        <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if not $have_7zip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_7zip')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
+                        <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_recursive')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="flat_unpack">$T('opt-flat_unpack')</label>
+                        <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-flat_unpack')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
+                        <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-overwrite_files')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
+                        <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_filejoin')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
+                        <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-ts_join')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="unpack_check">$T('opt-unpack_check')</label>
+                        <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if int($unpack_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-unpack_check')</span>
+                    </div>
+                    
+                    <div class="field-pair">
+                        <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
+                        <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-script_can_fail')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
+                        <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-new_nzb_on_failure')</span>
+                    </div>
+                    <!--#if not $nt#-->
+                    <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
+                        <label class="config" for="nice">$T('opt-nice')</label>
+                        <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-nice')</span>
+                    </div>
+                    <div class="field-pair <!--#if not $have_ionice then "disabled" else "" #-->">
+                        <label class="config" for="ionice">$T('opt-ionice')</label>
+                        <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-ionice')</span>
+                    </div>
+                    <!--#end if#-->
+                    <div class="field-pair">
+                        <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
+                        <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
+                        <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
+                        <span class="desc">$T('explain-cleanup_list')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-naming') <a href="$helpuri$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="folder_rename">$T('opt-folder_rename')</label>
+                        <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if int($folder_rename) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-folder_rename')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="replace_spaces">$T('opt-replace_spaces')</label>
+                        <input type="checkbox" name="replace_spaces" id="replace_spaces" value="1" <!--#if int($replace_spaces) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-replace_spaces')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="replace_dots">$T('opt-replace_dots')</label>
+                        <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-replace_dots')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="replace_illegal">$T('opt-replace_illegal')</label>
+                        <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-replace_illegal')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
+                        <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-sanitize_safe')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
+                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_meta')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-quota') <a href="$helpuri$help_uri#toc5" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="quota_size">$T('opt-quota_size')</label>
+                        <input type="text" name="quota_size" id="quota_size" value="$quota_size" class="smaller_input" />
+                        <span class="desc">$T('explain-quota_size')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="quota_period">$T('opt-quota_period')</label>
+                        <select name="quota_period" id="quota_period">
+                            <option value="d" <!--#if $quota_period == "d" then 'selected="selected"' else ""#--> >$T('day').capitalize()</option>
+                            <option value="w" <!--#if $quota_period == "w" then 'selected="selected"' else ""#--> >$T('week').capitalize()</option>
+                            <option value="m" <!--#if $quota_period == "m" then 'selected="selected"' else ""#--> >$T('month').capitalize()</option>
+                            <option value="x" <!--#if $quota_period == "x" then 'selected="selected"' else ""#--> >$T('manual').capitalize()</option>
+                        </select>
+                        <span class="desc">$T('explain-quota_period')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="quota_day">$T('opt-quota_day')</label>
+                        <input type="text" name="quota_day" id="quota_day" value="$quota_day" class="smaller_input" />
+                        <span class="desc">$T('explain-quota_day')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="quota_resume">$T('opt-quota_resume')</label>
+                        <input type="checkbox" name="quota_resume" id="quota_resume" value="1" <!--#if int($quota_resume) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-quota_resume')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('swtag-indexing') <a href="$helpuri$help_uri#toc6" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="rating_enable">$T('opt-rating_enable')</label>
+                        <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if int($rating_enable) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-rating_enable')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
+                        <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" />
+                        <span class="desc">$T('explain-rating_api_key')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="rating_feedback">$T('opt-rating_feedback')</label>
+                        <input type="checkbox" name="rating_feedback" id="rating_feedback" value="1" <!--#if int($rating_feedback) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-rating_feedback')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="rating_filter_enable">$T('opt-rating_filter_enable')</label>
+                        <input type="checkbox" name="rating_filter_enable" id="rating_filter_enable" value="1" <!--#if int($rating_filter_enable) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-rating_filter_enable')</span>
+                    </div>
+                    <div class="field-pair" id="rating_filter_abort">
+                        <label class="config">$T('opt-rating_filter_abort_if')</label>
+                        <div class="rating-filter">
+                            <p>
+                                <label for="rating_filter_abort_video">$T('opt-rating_filter_video')</label>
+                                <select name="rating_filter_abort_video" id="rating_filter_abort_video">
+                                    <option value="0" <!--#if $rating_filter_abort_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>                                
+                                    <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_video == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                </select>
+                            </p>
+                            <p>
+                                <label for="rating_filter_abort_audio">$T('opt-rating_filter_audio')</label>
+                                <select name="rating_filter_abort_audio" id="rating_filter_abort_audio">
+                                    <option value="0" <!--#if $rating_filter_abort_audio == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                    <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_audio == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                </select>
+                            </p>
+                            <p>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_abort_encrypted" name="rating_filter_abort_encrypted" <!--#if int($rating_filter_abort_encrypted) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_abort_encrypted">$T('opt-rating_filter_passworded')</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_abort_encrypted_confirm" name="rating_filter_abort_encrypted_confirm" <!--#if int($rating_filter_abort_encrypted_confirm) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_abort_encrypted_confirm">$T('opt-rating_filter_confirmed')</label>
+                                </span>
+                            </p>                            
+                            <p>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_abort_spam" name="rating_filter_abort_spam" <!--#if int($rating_filter_abort_spam) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_abort_spam">$T('opt-rating_filter_spam')</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_abort_spam_confirm" name="rating_filter_abort_spam_confirm" <!--#if int($rating_filter_abort_spam_confirm) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_abort_spam_confirm">$T('opt-rating_filter_confirmed')</label>
+                                </span>
+                            </p>                            
+                            <p>
+                                <input type="checkbox" value="1" id="rating_filter_abort_downvoted" name="rating_filter_abort_downvoted" <!--#if int($rating_filter_abort_downvoted) > 0 then 'checked="checked"' else ""#--> />
+                                <label for="rating_filter_abort_downvoted">$T('opt-rating_filter_downvoted')</label>
+                            </p>
+                            <p>
+                                <label for="rating_filter_abort_keywords">$T('opt-rating_filter_keywords')</label>
+                                <input type="text" name="rating_filter_abort_keywords" id="rating_filter_abort_keywords" value="$rating_filter_abort_keywords"/>
+                                <span class="desc">$T('explain-rating_filter_keywords')</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="field-pair" id="rating_filter_pause">
+                        <label class="config">$T('opt-rating_filter_pause_if')</label>
+                        <div class="rating-filter">
+                            <p>
+                                <label for="rating_filter_pause_video">$T('opt-rating_filter_video')</label>
+                                <select name="rating_filter_pause_video" id="rating_filter_pause_video">
+                                    <option value="0" <!--#if $rating_filter_pause_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                    <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_video == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
+                                </select>
+                            </p>
+                            <p>
+                                <label for="rating_filter_pause_audio">$T('opt-rating_filter_audio')</label>
+                                <select name="rating_filter_pause_audio" id="rating_filter_pause_audio">
+                                    <option value="0" <!--#if $rating_filter_pause_audio == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
+                                    <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_pause_audio == $val then 'selected="selected"' else ""#--> >$val $T('orLess') </option><!--#end for#-->
+                                </select>
+                            </p>
+                            <p>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_pause_encrypted" name="rating_filter_pause_encrypted" <!--#if int($rating_filter_pause_encrypted) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_pause_encrypted">$T('opt-rating_filter_passworded')</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_pause_encrypted_confirm" name="rating_filter_pause_encrypted_confirm" <!--#if int($rating_filter_pause_encrypted_confirm) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_pause_encrypted_confirm">$T('opt-rating_filter_confirmed')</label>
+                                </span>
+                            </p>                            
+                            <p>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_pause_spam" name="rating_filter_pause_spam" <!--#if int($rating_filter_pause_spam) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_pause_spam">$T('opt-rating_filter_spam')</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" value="1" id="rating_filter_pause_spam_confirm" name="rating_filter_pause_spam_confirm" <!--#if int($rating_filter_pause_spam_confirm) > 0 then 'checked="checked"' else ""#--> />
+                                    <label for="rating_filter_pause_spam_confirm">$T('opt-rating_filter_confirmed')</label>
+                                </span>
+                            </p>                            
+                            <p>
+                                <input type="checkbox" value="1" id="rating_filter_pause_downvoted" name="rating_filter_pause_downvoted" <!--#if int($rating_filter_pause_downvoted) > 0 then 'checked="checked"' else ""#--> />
+                                <label for="rating_filter_pause_downvoted">$T('opt-rating_filter_downvoted')</label>
+                            </p>
+                            <p>
+                                <label for="rating_filter_pause_keywords">$T('opt-rating_filter_keywords')</label>
+                                <input type="text" name="rating_filter_pause_keywords" id="rating_filter_pause_keywords" value="$rating_filter_pause_keywords"/>
+                                <span class="desc">$T('explain-rating_filter_keywords')</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
     </form>
 </div><!-- /colmask -->
+
+<script type="text/javascript">
+\$(document).ready(function() {
+    if (!\$('#rating_filter_enable').is(":checked")) {
+        \$("#rating_filter_abort").hide();   
+        \$("#rating_filter_pause").hide();    
+    }
+    \$('#rating_filter_enable').change(function () {
+        if (\$(this).is(":checked")) {
+            \$("#rating_filter_abort").show();   
+            \$("#rating_filter_pause").show();   
+        }        
+        else {
+            \$("#rating_filter_abort").hide();   
+            \$("#rating_filter_pause").hide();
+        }
+    });
+});
+</script>
 
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

@@ -1,5 +1,5 @@
 <!--#set global $pane="Scheduling"#-->
-<!--#set global $help_uri="configure-scheduling-0-7"#-->
+<!--#set global $help_uri="configure-scheduling-1-0"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <%
@@ -15,13 +15,13 @@ else:
 <div class="colmask">
     <div class="section">
         <div class="col2">
-            <h3>$T('addSchedule')</h3>
+            <h3>$T('addSchedule') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
-        <form action="addSchedule" method="post">
+        <form action="addSchedule" method="post" autocomplete="off">
         <input type="hidden" id="session" name="session" value="$session" />
         <div class="col1">
             <fieldset>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="hour">$T('hour').capitalize() : $T('minute').capitalize()</label>
                     <select name="hour" id="hour">
                         <!--#for $i in range(24)#-->
@@ -34,36 +34,45 @@ else:
                     </select>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="daysofweek">$T('sch-frequency')</label>
+                    <label class="config">$T('sch-frequency')</label>
                     <div class="checkbox-days">
-                      <p><input type="checkbox" name="daysofweek" value="1"><label>$T('monday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="2"><label>$T('tuesday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="3"><label>$T('wednesday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="4"><label>$T('thursday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="5"><label>$T('friday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="6"><label>$T('saturday')</label></p>
-                      <p><input type="checkbox" name="daysofweek" value="7"><label>$T('sunday')</label></p>
+                      <label><input type="checkbox" name="daysofweek" value="1"/> $T('monday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="2"/> $T('tuesday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="3"/> $T('wednesday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="4"/> $T('thursday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="5"/> $T('friday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="6"/> $T('saturday')</label><br />
+                      <label><input type="checkbox" name="daysofweek" value="7"/> $T('sunday')</label>
                     </div>
                 </div>
-                <div class="field-pair alt">
+                <div class="field-pair">
                     <label class="config" for="action">$T('sch-action')</label>
                     <select name="action" id="action">
-                        <!--#for $action in $actions#-->
-                            <option value="$action">$actions_lng[$action]</option>
-                        <!--#end for#-->
+                        <optgroup label="$T('sch-action')">
+                            <!--#for $action in $actions#-->
+                                <option value="$action" data-action="" data-noarg="<!--#if $action is 'speedlimit' then 0 else 1#-->">$actions_lng[$action]</option>
+                            <!--#end for#-->
+                        </optgroup>
+                        <optgroup label="$T('cmenu-servers')">
+                            <!--#for $server in $actions_servers.keys()#-->
+                                <option value="$server" data-action="1"data-noarg="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
+                                <option value="$server" data-action="0"data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
+                            <!--#end for#-->
+                        </optgroup>
                     </select>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair" id="hidden_arguments" style="display: none">
                     <label class="config" for="arguments">$T('sch-arguments')</label>
-                    <input type="text" name="arguments" id="arguments" value="" size="20" />
+                    <input type="text" name="arguments" id="arguments" class="select_width" />
                 </div>
                 <div class="field-pair">
-                    <input type="submit" value="$T('button-addSchedule')" />
+                    <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addSchedule')</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
+        </form>
     </div><!-- /section -->
-    </form>
+    
     <div class="section">
         <div class="col2">
             <h3>$T('currentSchedules')</h3>
@@ -76,10 +85,10 @@ else:
                         <!--#for $line in $schedlines#-->
                             <!--#set $odd = not $odd#-->
                             <form action="delSchedule" method="post">
-                                <input type="hidden" name="session" id="session" value="$session">
+                                <input type="hidden" name="session" value="$session"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
-                                <div class="field-pair infoTableSeperator<!--#if $odd then "" else " alt"#-->">
-                                    <input class="float-left" type="submit" value="$T('button-x')" />
+                                <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
+                                    <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
                                     <div class="scheduleEntry">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
                                     </div>
@@ -96,5 +105,16 @@ else:
         </div><!-- /col1 -->
     </div><!-- /section -->
 </div><!-- /colmask -->
-
+<script type="text/javascript">
+    \$('#action').on('change', function() {
+        // Set the action
+        \$('#arguments').val((\$(this).find('option:selected').data('action')))
+        // Arguments
+        if(\$(this).find('option:selected').data('noarg')) {
+            \$('#hidden_arguments').hide()
+        } else {
+            \$('#hidden_arguments').show()
+        }
+    })
+</script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

@@ -1,10 +1,10 @@
-                                SABnzbd 0.7.11
+                                SABnzbd 1.0.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
 -------------------------------------------------------------------------------
 
-(c) Copyright 2007-2013 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2016 by "The SABnzbd-team" <team@sabnzbd.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -------------------------------------------------------------------------------
 Just run the downloaded EXE file and the installer will start.
 It's just a simple standard installer.
-After installaton, find the SABnzbd program in the Start menu and start it.
+After installation, find the SABnzbd program in the Start menu and start it.
 
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
@@ -55,7 +55,7 @@ You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
 Unix/Linux/OSX
-    Python-2.5, 2.6 or 2.7  http://www.python.org
+    Python-2.6 or 2.7       http://www.python.org
 
 OSX Leopard/SnowLeopard
     Python 2.6              http://www.activestate.com
@@ -64,32 +64,35 @@ OSX Lion/MountainLion
     Apple Python 2.7        Included in OSX (default)
 
 Windows
-    Python-2.7.latest       http://www.activestate.com
+    Python-2.7.latest       http://www.python.com
+                            Most versions will work: 2.7.10 recommended
+    PyWin32                 use "pip install pypiwin32"
 
 Essential modules
-    cheetah-2.0.1+          http://www.cheetahtemplate.org/ (or use "pypm install cheetah")
+    cheetah-2.0.1+          use "pip install cheetah"
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
-                            http://chuchusoft.com/par2_tbb/index.html (multi-core)
+    unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
-    unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
+    7zip >= 9.20            http://www.7zip.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
 
 Optional modules Windows
-    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
+    pyopenssl >= 0.13       "pip install pyopenssl"
+                            or http://www.egenix.com/products/python/pyOpenSSL/
                             (Binaries, including the OpenSSL libraries)
 
 Optional modules Unix/Linux/OSX
-    pyopenssl >= 0.11       http://pypi.python.org/pypi/pyOpenSSL
-    openssl => v0.9.8g+     http://www.openssl.org/
+    pyopenssl >= 0.15       http://pypi.python.org/pypi/pyOpenSSL
+    openssl => ?            http://www.openssl.org/
                             Make sure the OpenSSL libraries match with PyOpenSSL
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
 
-Embedded modules (only use the included version)
-    CherryPy-3.2 rev2138 with patches  http://www.cherrypy.org
+Embedded modules (preferably use the included version)
+    CherryPy-3.8.0 with patches  http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
@@ -135,4 +138,4 @@ Visit the WIKI site:
 
 Several parts of SABnzbd were built by other people, illustrating the
 wonderful world of Free Open Source Software.
-See the licences folder of the main program and of the skin folders.
+See the licenses folder of the main program and of the skin folders.

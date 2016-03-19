@@ -10,7 +10,8 @@
   <a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgefailhist')</a> |
   <a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0&del_files=1', -1,this.parentNode.parentNode.id);}">$T('purgeFailed-Files')</a> |
   <a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a> |
-  <a onClick="javascript:loadSearch('history/tog_failed_only', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $failed_only then $T('showAllHis') else $T('showFailedHis')#--></a>
+  <a onClick="javascript:loadSearch('history/tog_failed_only', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $failed_only then $T('showAllHis') else $T('showFailedHis')#--></a> |
+  <a onClick="if(confirm('$T('smpl-retryAllJobs?')')){javascript:loadSearch('history/retry_all', 'historySearch', 'limit=$limit&start=0&del_files=1', -1,this.parentNode.parentNode.id);}">$T('smpl-retryAll')</a>
   </span>
 </div>
 
@@ -35,9 +36,6 @@
     </a></td>
     <td>$line.name<!--#if $line.action_line#--> - <span class="action_message">$line.action_line</span><!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
     <td>
-      <!--#if $line.report#-->
-        <a href="https://$newzbin_url/browse/post/$line.report"><img class="imglink" src="static/images/newzbin.png" /></a>
-      <!--#end if#-->
       <!--#if $line.url_info#-->
         <a href="$line.url_info"><img class="imglink" src="static/images/browser.png" /></a>
       <!--#end if#-->
@@ -167,4 +165,3 @@ $T('smpl-oneresult')
     <!--#end if#-->
   <!--#end if#-->
 </div>
-

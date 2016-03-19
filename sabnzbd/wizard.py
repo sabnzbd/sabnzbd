@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ sabnzbd.wizard - Wizard Webinterface
 """
 
 import os
+import logging
 import cherrypy
 from Cheetah.Template import Template
 
@@ -33,26 +34,34 @@ import sabnzbd.interface
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
-#------------------------------------------------------------------------------
+
 class Wizard(object):
+
     def __init__(self, web_dir, root, prim):
         self.__root = root
         # Get the path for the folder named wizard
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':3, 'version':sabnzbd.__version__,
+                     'steps': 2, 'version': sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
     def index(self, **kwargs):
         """ Show the language selection page """
         info = self.info.copy()
-        info['num'] = ''
-        info['number'] = 0
-        info['lang'] = cfg.language()
+        lng = None
+        if sabnzbd.WIN32:
+            import util.apireg
+            lng = util.apireg.get_install_lng()
+            logging.debug('Installer language code "%s"', lng)
+        info['lang'] = lng or cfg.language()
+        info['active_lang'] = info['lang']
         info['languages'] = list_languages()
         info['T'] = Ttemplate
+
+        set_language(info['lang'])
+        sabnzbd.api.clear_trans_cache()
 
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
@@ -74,19 +83,18 @@ class Wizard(object):
     @cherrypy.expose
     def one(self, **kwargs):
         """ Accept language and show server page """
-        language = kwargs.get('lang')
+        language = kwargs.get('lang') if kwargs.get('lang') else cfg.language()
         cfg.language.set(language)
         set_language(language)
         sabnzbd.api.clear_trans_cache()
 
-        # Always setup Plush
-        sabnzbd.interface.change_web_dir('Plush - Gold')
+        # Always setup Glitter
+        sabnzbd.interface.change_web_dir('Glitter - Default')
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step One')
-        info['number'] = 1
         info['session'] = cfg.api_key()
         info['language'] = cfg.language()
+        info['active_lang'] = info['language']
         info['T'] = Ttemplate
         info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
 
@@ -115,71 +123,31 @@ class Wizard(object):
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
-
     @cherrypy.expose
     def two(self, **kwargs):
-        """ Accept server and show internal web server page """
+        """ Accept server and show the final page for restart """
         # Save server details
         if kwargs:
             kwargs['enable'] = 1
             sabnzbd.interface.handle_server(kwargs)
 
-        # Create web server page
+        config.save_config()
+
+        # Show Restart screen
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Two')
-        info['number'] = 2
+        info['helpuri'] = 'http://wiki.sabnzbd.org/'
+        info['session'] = cfg.api_key()
+
+        info['access_url'], info['urls'] = self.get_access_info()
+        info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
-
-        host = cfg.cherryhost()
-        info['host'] = host
-        # Allow special operation if host is not one of the defaults
-        if host not in ('localhost','0.0.0.0'):
-            info['custom_host'] = True
-        else:
-            info['custom_host'] = False
-
-        info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
-        info['enable_https'] = cfg.enable_https()
-        info['autobrowser'] = cfg.autobrowser()
-        info['web_user'] = cfg.username()
-        info['web_pass'] = cfg.password()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
-
-    @cherrypy.expose
-    def three(self, **kwargs):
-        """ Accept webserver parms and show Indexers page """
-        if kwargs:
-            if 'access' in kwargs:
-                cfg.cherryhost.set(kwargs['access'])
-            cfg.enable_https.set(kwargs.get('enable_https',0))
-            cfg.autobrowser.set(kwargs.get('autobrowser',0))
-            cfg.username.set(kwargs.get('web_user', ''))
-            cfg.password.set(kwargs.get('web_pass', ''))
-            if not cfg.username() or not cfg.password():
-                sabnzbd.interface.set_auth(cherrypy.config)
-
-        config.save_config()
-
-        # Show Restart screen
-        info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 3
-        info['helpuri'] = 'http://wiki.sabnzbd.org/'
-        info['session'] = cfg.api_key()
-
-        info['access_url'], info['urls'] = self.get_access_info()
-        info['T'] = Ttemplate
-
-        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
-                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
-        return template.respond()
-
     def get_access_info(self):
-        ''' Build up a list of url's that sabnzbd can be accessed from '''
+        """ Build up a list of url's that sabnzbd can be accessed from """
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.cherryhost()
@@ -198,7 +166,7 @@ class Wizard(object):
                 # Filter out ipv6 addresses (should not be allowed)
                 if ':' not in address and address not in socks:
                     socks.append(address)
-            if cherrypy.request.headers.has_key('host'):
+            if "host" in cherrypy.request.headers:
                 host = cherrypy.request.headers['host']
                 host = host.rsplit(':')[0]
                 access_uri = host
@@ -219,7 +187,7 @@ class Wizard(object):
                     address = '[%s]' % address
                     if address not in socks:
                         socks.append(address)
-            if cherrypy.request.headers.has_key('host'):
+            if "host" in cherrypy.request.headers:
                 host = cherrypy.request.headers['host']
                 host = host.rsplit(':')[0]
                 access_uri = host
@@ -254,5 +222,5 @@ class Wizard(object):
 
     @cherrypy.expose
     def servertest(self, **kwargs):
-        result, msg = test_nntp_server_dict(kwargs)
+        _result, msg = test_nntp_server_dict(kwargs)
         return msg

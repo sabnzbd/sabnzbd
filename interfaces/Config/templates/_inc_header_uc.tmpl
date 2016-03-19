@@ -1,156 +1,183 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>SABnzbd $version - $T('queued'): $mbleft $T('MB')</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="robots" content="noindex">
-        <!--[if lt IE 9]>
-            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-
 #if $pane == "Config"#
-  #set global $root = '../'#
+    #set global $root = '../'#
 #else#
-  #set global $root = '../../'#
+    #set global $root = '../../'#
 #end if#
+<!DOCTYPE HTML>
+<html lang="$active_lang">
+<head>
+    <title>
+        SABnzbd $T('menu-config')
+        #if $pane != "Config" then "-" else ""#
+        #if $pane == "General" then $T('cmenu-general') else ""#
+        #if $pane == "Folders" then $T('cmenu-folders') else ""#
+        #if $pane == "Switches" then $T('cmenu-switches') else ""#
+        #if $pane == "Servers" then $T('cmenu-servers') else ""#
+        #if $pane == "Scheduling" then $T('cmenu-scheduling') else ""#
+        #if $pane == "Email" then $T('cmenu-notif') else ""#
+        #if $pane == "Categories" then $T('cmenu-cat') else ""#
+        #if $pane == "Sorting" then $T('cmenu-sorting') else ""#
+        #if $pane == "Special" then $T('cmenu-special') else ""#
+        #if $pane == "RSS" then $T('cmenu-rss') else ""#
+    </title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="apple-mobile-web-app-title" content="SABnzbd" />
+    
+    <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="${root}staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="${root}staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />        
 
-        <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico">
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="${root}staticcfg/ico/apple-touch-icon-144x144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="${root}staticcfg/ico/apple-touch-icon-114x114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="${root}staticcfg/ico/apple-touch-icon-72x72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="${root}staticcfg/ico/apple-touch-icon-57x57-precomposed.png">
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
+    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico" />
 
-        <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css" />
-        <script src="${root}staticcfg/js/script.js"></script>
-
-        <script type="text/javascript">
-            \$.Browser = {
-                defaults: {
-                    title:             'Choose Directory',
-                    url:               '${root}api?mode=browse&output=json&apikey=$session',
-                    autocompleteURL:   '${root}api?mode=browse&output=json&compact=1&apikey=$session'
+    <script type="text/javascript">
+        // Keeping track of the form state
+        var formHasChanged = false;
+        var formWasSubmitted = false;
+        
+        // Information we need
+        var sabSession = '$session';
+        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session'; 
+        var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
+        
+        // Translations
+        var configTranslate = new Object();
+        configTranslate.browseText = "$T('browse-folder')";
+        configTranslate.saveChanges = "$T('button-saveChanges')";
+        configTranslate.saving = "$T('smpl-saving')";
+        configTranslate.failed = "$T('smpl-failed')";
+        configTranslate.explainRestart = "$T('explain-Restart')";
+        configTranslate.wizzardRestart = "$T('wizard-restarting')";
+        configTranslate.needRestart = "$T('restartRequired')";
+        configTranslate.buttonRestart = "$T('button-restart')";
+        configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
+    </script>
+    <script type="text/javascript" src="${root}staticcfg/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="${root}staticcfg/js/script.js?p=$pid"></script>
+    <script type="text/javascript">
+        // Set default functions for the autocomplete everywhere
+        \$.extend(\$.fn.typeahead.defaults, {
+            source: function (query, process) {
+                // If there's no seperator, it must be a relative path
+                if(query.split(folderSeperator).length < 2 && this.\$element.data('initialdir')) {
+                    query  = this.\$element.data('initialdir') + folderSeperator + query;
                 }
-            };
-            var config_pane = "$pane";
-            var help_uri = "$help_uri";
-            var apikey = "$session";
-            var confirmWithoutSavingPrompt = "$T('Plush-confirmWithoutSavingPrompt')";
-            function config_success() {
-                \$('.saveButton').each(function () {
-                    \$(this).removeAttr("disabled").attr("value", "$T('button-saveChanges')");
+                // Get info from the API
+                return \$.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
+                    return process(data);
                 });
+            },
+            updater: function(item) {
+                // Is it a relative path?
+                if(item.indexOf(this.\$element.data('initialdir')) === 0) {
+                    // Remove start
+                    return item.replace(this.\$element.data('initialdir')+folderSeperator, '');
+                }
+                // Full path
+                return item
             }
-            function config_failure() {
-                \$('.saveButton').each(function () {
-                    \$(this).removeAttr("disabled").attr("value", "$T('smpl-failed')");
-                });
-            }
-
-            \$(document).ready(function () {
-
-                #if $pane != "Servers"#
-                    \$('.col2 H3').click(function () { \$(this).parent().next().toggle() });
-                #end if#
-
-                \$('.sabnzbd_restart').click(function () {
-                    \$('.sabnzbd_restart').each(function () {
-                        \$(this).attr("disabled", "disabled");
-                    });
-                    var msg = "$T('explain-Restart')";
-                    if (confirm(msg.replace(/\<br(\s*\/|)\>/g, '\n'))) {
-                        \$(this).attr("value", "$T('wizard-restarting')");
-                        location.href = '${root}config/restart?session=$session';
-                    }
-                    \$('.sabnzbd_restart').each(function () {
-                        \$(this).removeAttr("disabled");
-                    });
-                    return false;
-                });
-
-                \$('#fullform').ajaxForm({
-                    beforeSubmit: function () {
-                        \$('.saveButton').each(function () {
-                            \$(this).attr("disabled", "disabled").attr("value", "$T('smpl-saving')");
-                        });
-                    },
-                    success: function () {
-                        setTimeout(config_success, 1000);
-                    },
-                    error: function () {
-                        setTimeout(config_failure, 1000);
-                    },
-                    timeout: 3000
-                });
-
-                \$("#sidebar-trigger").click(function () {
-                    if (\$("#sidebar-trigger").hasClass("trigger-left")) {
-                        \$("#sidebar").animate({marginLeft: "-150px", queue: false}, 250);
-                        \$("#sidebar-pane").animate({marginLeft: "-150px", queue: false}, 250);
-                        \$("#content").animate({left: "6px", queue: false}, 250);
-                        \$("#sidebar-trigger").removeClass("trigger-left").addClass("trigger-right");
-                    } else {
-                        \$("#sidebar").animate({marginLeft: "0px", queue: false}, 250);
-                        \$("#sidebar-pane").animate({marginLeft: "0px", queue: false}, 250);
-                        \$("#content").animate({left: "156px", queue: false}, 250);
-                        \$("#sidebar-trigger").removeClass("trigger-right").addClass("trigger-left");
-                    }
-                });
-
-            });
-
-        </script>
-
+        })
+    </script>
 </head>
+
 <body class="$pane">
-    <div id="sidebar">
-        <a href="${root}"><img src="${root}staticcfg/images/logo.png" width="120" height="45" id="logo" alt="[home]" /></a>
-        <div id="tab-container">
-            <a href="${root}config/">
-                <div #if $pane == "Config" then 'class="active"' else ""#>$T('menu-config')</div>
-            </a>
-            <a href="${root}config/general/">
-                <div #if $pane == "General" then 'class="active"' else ""#>$T('cmenu-general')</div>
-            </a>
-            <a href="${root}config/folders/">
-                <div #if $pane == "Folders" then 'class="active"' else ""#>$T('cmenu-folders')</div>
-            </a>
-            <a href="${root}config/switches/">
-                <div #if $pane == "Switches" then 'class="active"' else ""#>$T('cmenu-switches')</div>
-            </a>
-            <a href="${root}config/server/">
-                <div #if $pane == "Servers" then 'class="active"' else ""#>$T('cmenu-servers')</div>
-            </a>
-            <a href="${root}config/scheduling/">
-                <div #if $pane == "Scheduling" then 'class="active"' else ""#>$T('Plush-cmenu-scheduling')</div>
-            </a>
-            <a href="${root}config/notify/">
-                <div #if $pane == "Email" then 'class="active"' else ""#>$T('cmenu-notif')</div>
-            </a>
-            <!--#if 0#-->
-            <a href="${root}config/indexers/">
-                <div #if $pane == "Index Sites" then 'class="active"' else ""#>$T('cmenu-newzbin')</div>
-            </a>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--#if $active_lang in ('pl', 'es', 'ru', 'sr', 'fi') #-->
+            <a class="navbar-brand navbar-brand-small" href="${root}" title="$T('Home')"><img src="${root}staticcfg/images/logo-small.png" width="47" height="45" id="logo" alt="$T('Home')" /></a>
+            <a class="navbar-brand navbar-brand-mobile" href="${root}" title="$T('Home')"><img src="${root}staticcfg/images/logo.png" width="120" height="45" id="logo" alt="$T('Home')" /></a>
+            <!--#else#-->
+            <a class="navbar-brand" href="${root}" title="$T('Home')"><img src="${root}staticcfg/images/logo.png" width="120" height="45" id="logo" alt="$T('Home')" /></a>
             <!--#end if#-->
-            <a href="${root}config/categories/">
-                <div #if $pane == "Categories" then 'class="active"' else ""#>$T('cmenu-cat')</div>
-            </a>
-            <a href="${root}config/sorting/">
-                <div #if $pane == "Sorting" then 'class="active"' else ""#>$T('cmenu-sorting')</div>
-            </a>
-            <a href="${root}config/special/">
-                <div #if $pane == "Special" then 'class="active"' else ""#>$T('cmenu-special')</div>
-            </a>
-            <a href="${root}config/rss/">
-                <div #if $pane == "RSS" then 'class="active"' else ""#>$T('cmenu-rss')</div>
-            </a>
-            <br/>
-            <a href="$helpuri$help_uri" target="_blank">
-                <div>$T('menu-help')</div>
-            </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="${root}config/general/" #if $pane == "General" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-cog"></span>
+                        <strong>$T('cmenu-general')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/folders/" #if $pane == "Folders" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-folder-open"></span>
+                        <strong>$T('cmenu-folders')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/server/" #if $pane == "Servers" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-sort"></span>
+                        <strong>$T('cmenu-servers')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/categories/" #if $pane == "Categories" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-tag"></span>
+                        <strong>$T('cmenu-cat')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/switches/" #if $pane == "Switches" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-check"></span>
+                        <strong>$T('cmenu-switches')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/sorting/" #if $pane == "Sorting" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+                        <strong>$T('cmenu-sorting')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/notify/" #if $pane == "Email" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-comment"></span>
+                        <strong>$T('cmenu-notif')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/scheduling/" #if $pane == "Scheduling" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-time"></span>
+                        <strong>$T('cmenu-scheduling')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/rss/" #if $pane == "RSS" then 'class="active"' else ""#>
+                        <svg class="rss-icon-svg" viewBox="0 0 8 8">
+                            <rect class="rss-button" width="8" height="8" />
+                            <circle class="rss-symbol" cx="2" cy="6" r="1" />
+                            <path class="rss-symbol" d="m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z" />
+                            <path class="rss-symbol" d="m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z" />
+                        </svg>
+                        <strong>$T('cmenu-rss')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="${root}config/special/" #if $pane == "Special" then 'class="active"' else ""#>
+                        <span class="glyphicon glyphicon-education"></span>
+                        <strong>$T('cmenu-special')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="$helpuri$help_uri" target="_blank">
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                        <strong>$T('menu-help')</strong>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
-<div id="sidebar-pane"><div id="sidebar-trigger" class="trigger-left"></div></div>
-    <div id="content">
-    <!-- Content start -->
+</nav>
+<div id="content" class="container">
+<!-- Content start -->

@@ -4,7 +4,7 @@
 
   jQuery(function($) {
     $.plush.queuenoofslots = $noofslots;
-    $.plush.SetQueueSpeedLimit('$speedlimit');
+    $.plush.SetQueueSpeedLimit('$speedlimit', '$speedlimit_abs');
     $.plush.SetQueueFinishAction('$finishaction');
     $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'").replace('\\','\\\\') #-->");
     $.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');
@@ -19,10 +19,10 @@
   stats += '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
   <!--#end if#-->
   <!--#if $diskspace1 == $diskspace2#-->
-  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
+  stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1_norm$T('B')</strong>&nbsp;$T('Plush-freeSpace')';
   <!--#else#-->
   stats += '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
-    +'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
+    +'<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2_norm$T('B')</strong>&nbsp;$T('Plush-freeSpace')';
   <!--#end if#-->
   $.plush.SetQueueStats(stats);
 });
@@ -55,10 +55,27 @@
     <% # <!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active %>
   </td>
 
-  <td class="download-title">
+  <td class="download-title" <!--#if $rating_enable#-->style="width:35%"<!--#end if#-->>
     <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age<br/><!--#if $slot.missing#-->$T('missingArt'): $slot.missing<!--#end if#-->">$slot.filename.replace('.', '.&#8203;').replace('_', '_&#8203;')</a>
   </td>
 
+  <!--#if $rating_enable#-->
+    <!--#if $slot.has_rating#-->
+      <td>
+        <div class="rating_stars_block_c">
+          <div class="rating_stars">
+            <div class="rating_icon_vision"></div><span class="avg_rate" value="$slot.rating_avg_video"></span>
+          </div>
+          <div class="rating_stars">
+            <div class="rating_icon_sound"></div><span class="avg_rate" value="$slot.rating_avg_audio"></span>
+          </div>
+        </div>
+      </td>
+    <!--#else#-->
+      <td></td>
+    <!--#end if#-->
+  <!--#end if#-->
+  
   <td>
     <div class="main_sprite_container sprite_progressbar_bg">
       <div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -401px">
@@ -69,7 +86,7 @@
   </td>
 
   <td class="eta nowrap">
-    <!--#if not $paused and $slot.status not in ("Paused", "Checking")#-->
+    <!--#if (not $paused and $slot.status not in ("Paused", "Checking")) or $slot.priority == 'Force'#-->
     <span title="$slot.eta">$slot.timeleft&nbsp;$T('Plush-left')</span>
     <!--#else#-->
     $T('post-'+$slot.status)

@@ -24,7 +24,7 @@
   <td class="nzb_status_col">
     &nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->main_sprite_container sprite_hv_error<!--#else#-->main_sprite_container sprite_hv_star<!--#end if#-->">&nbsp;</div>
   </td>
-  <td class="historyTitle">
+  <td class="historyTitle" <!--#if $rating_enable#-->style="width:35%"<!--#end if#-->>
     <a href="scriptlog?name=$line.nzo_id" class="modal-detail" rel="details">$line.name</a>
 
   <div style="display:none">
@@ -60,11 +60,6 @@
 
   </td>
   <td>
-    <!--#if $line.report #-->
-      <a href="https://$newzbin_url/browse/post/$line.report/" target="_blank">
-        <div class="icon_history_verbose main_sprite_container sprite_hv_report pointer" title='$T('Plush-openSourceURL')<br><br>https://$newzbin_url/browse/post/$line.report'>&nbsp;</div>
-      </a>
-    <!--#end if#-->
     <!--#if $line.url_info #-->
       <a href="$line.url_info" target="_blank">
         <div class="icon_history_verbose main_sprite_container sprite_hv_star pointer" title="$T('Plush-openInfoURL')<br><br>$line.url_info">&nbsp;</div>
@@ -86,7 +81,7 @@
           <!--#end for#-->
         <!--#end if#-->
       <!--#else#-->
-        <!--#if $stage.name != "Source"#-->
+        <!--#if $stage.name != "Source" and $stage.name != "Servers"#-->
           <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
         <!--#end if#-->
       <!--#end if#-->
@@ -105,6 +100,44 @@
     <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
     <!--#end if#-->
   </td>
+
+  <!--#if $rating_enable#-->
+    <!--#if $line.has_rating#-->
+      <td>
+        <div class="rating_stars_block_r">
+          <div class="rating_stars">
+            <div class="rating_icon_vision"></div><span class="avg_rate" value="$line.rating_avg_video"></span>
+            <input class="user_combo" type="hidden" value="$line.rating_user_video">
+            <select class="user_combo video" style="background:transparent">
+            <!--#if not $line.rating_user_video#--><option>-</option><!--#end if#-->
+            <!--#for $val in $range(1, 11)#--><option>$val</option><!--#end for#-->
+            </select>
+          </div>
+          <div class="rating_stars">
+            <div class="rating_icon_sound"></div><span class="avg_rate" value="$line.rating_avg_audio"></span>
+            <input class="user_combo" type="hidden" value="$line.rating_user_audio">
+            <select class="user_combo audio" style="background:transparent">
+            <!--#if not $line.rating_user_audio#--><option>-</option><!--#end if#-->
+            <!--#for $val in $range(1, 11)#--><option>$val</option><!--#end for#-->
+            </select>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="rating_vote_block">
+          <div class="rating_icon_thumbup user_vote up"></div>
+          <!--#if $line.rating_user_vote==1#--><b><!--#end if#-->$line.rating_avg_vote_up<!--#if $line.rating_user_vote==1#--></b><!--#end if#-->
+          <div class="rating_icon_thumbdown user_vote down"></div>
+          <!--#if $line.rating_user_vote==2#--><b><!--#end if#-->$line.rating_avg_vote_down<!--#if $line.rating_user_vote==2#--></b><!--#end if#-->          
+        </div>
+        <div class="rating_flag">
+          <a href="#" class="show_flags">$T('report')</a>
+        </div>
+      </td>
+    <!--#else#-->
+      <td></td><td></td>
+    <!--#end if#-->
+  <!--#end if#-->
 
   <td class="options nowrap">
     <!--#if not $line.loaded#-->

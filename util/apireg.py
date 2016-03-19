@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ util.apireg - Registration of API connection info
 """
 
 import _winreg
+
 
 def reg_info(user):
     """ Return the reg key for API """
@@ -46,7 +47,6 @@ def get_connection_info(user=True):
         key = _winreg.OpenKey(hive, keypath + r'\api')
         for i in range(0, _winreg.QueryInfoKey(key)[1]):
             name, value, val_type = _winreg.EnumValue(key, i)
-            value = value.encode('latin-1', 'replace')
             if name == 'url':
                 url = value
 
@@ -101,6 +101,26 @@ def del_connection_info(user=True):
         _winreg.CloseKey(hive)
 
 
-#print get_connection_info()
-#del_connection_info()
-#set_connection_info('localhost', '8080', 'blabla', user=False)
+def get_install_lng():
+    """ Return language-code used by the installer """
+    lng = 0
+    try:
+        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
+        key = _winreg.OpenKey(hive, r"Software\SABnzbd")
+        for i in range(0, _winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = _winreg.EnumValue(key, i)
+            if name == 'Installer Language':
+                lng = value
+        _winreg.CloseKey(key)
+    except WindowsError:
+        pass
+    finally:
+        _winreg.CloseKey(hive)
+    return lng
+
+
+if __name__ == '__main__':
+    print 'URL = %s' % get_connection_info()
+    print 'Language = %s' % get_install_lng()
+    # del_connection_info()
+    # set_connection_info('localhost', '8080', 'blabla', user=False)

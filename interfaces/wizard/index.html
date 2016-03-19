@@ -1,37 +1,37 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
-<script type="text/javascript">
-function selectLang(lang)
-{
-  var elem = document.getElementById(lang);
-  elem.checked = "checked";
-}
-</script>
-
-<form action="one" method="post">
-<div class="bigger">
-<h3>Language</h3>
-Please choose your prefered language<br /><br />
-<div class="container">
-  <!--#for $l, $language in $languages#-->
-  <div class="language">
-    <label class="skin-select">
-      <br />$language<br /><input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked=true' else ''#-->>
-    </label>
-  </div>
-  <!--#end for#-->
-</div>
-</div>
-</div>
-<hr />
-<br/>
-<div class="full-width">
-  <table class="full-width">
-    <tr>
-      <td class="align-center"><input class="bigbutton" type="button" onclick="document.location ='./exit'" value="Exit SABnzbd" /></td>
-      <td class="align-center"><input class="bigbutton" type="submit" value="Start Wizard" /></td>
-    </tr>
-  </table>
-</div>
+<form action="./one" method="post">
+    <div class="container">
+        <div id="inner">
+            <div id="content" class="bigger">
+                <div id="rightGreyText">$T('wizard-version') $version</div>
+                <h1>$T('wizard-quickstart')</h1>
+                <hr />
+                <div class="bigger">
+                    <h3>$T('opt-language')</h3>
+                    $T('explain-language')<br /><br />
+                    <div class="main-container">
+                        <!--#for $l, $language in $languages#-->
+                        <label class="language <!--#if $lang == $l then 'language-active' else ''#-->">
+                            $language<br />
+                            <input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked="checked"' else ''#--> />
+                        </label>
+                        <!--#end for#-->
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-xs-4 text-center">
+                    <a class="btn btn-danger" href="./exit"><span class="glyphicon glyphicon-remove"></span> $T('wizard-exit')</a>
+                </div>
+                <div class="col-xs-4 text-center">
+                </div>
+                <div class="col-xs-4 text-center">
+                    <button class="btn btn-default">$T('wizard-start') <span class="glyphicon glyphicon-chevron-right"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
-
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

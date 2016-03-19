@@ -1,5 +1,5 @@
 
-(c) Copyright 2007-2013 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2016 by "The SABnzbd-team" <team@sabnzbd.org>
 
 The SABnzbd-team is:
 
@@ -7,6 +7,7 @@ Active team:
     ShyPike <shypike@sabnzbd.org>
     inpheaux <inpheaux@sabnzbd.org>
     zoggy <zoggy@sabnzbd.org>
+    Safihre <safihre@sabnzbd.org>
 Sleeping members
     sw1tch <switch@sabnzbd.org>
     pairofdimes <pairofdimes@sabnzbd.org>
@@ -15,18 +16,20 @@ Honorary member (and original author)
     Gregor Kaufmann <tdian@users.sourceforge.net>
 
 The main contributors and moderators of the translations
-    Danish: Rene (nordjyden6)
-    Dutch: ShyPike
-    French : rAf and Fox Ace
-    German: Severin Heiniger
-    Norwegian: Protx
+    Danish: Rene (nordjyden6), Scott
+    Dutch: ShyPike, Safihre
+    French : rAf, Fox Ace, Fred, Morback, Jih
+    German: Severin Heiniger, Tim Hartmann, DonPizza, Alex
+    Norwegian: Protx, mjelva, TomP, John
     Romanian: nicusor
-    Serbian: Ozzii
-    Swedish: Malmis
-    Spanish: Syquus
-    Portuguese (Brazil): lrrosa
+    Serbian: Ozzii, Krišan Darko
+    Swedish: Malmis, Kim Joahnsson, Patrik-liind, Chris M
+    Spanish: Syquus, Adolfo Jayme
+    Portuguese (Brazil): lrrosa, diegosps
     Russian: Pavel Maryanov
     Polish: Tomasz 'Zen' Napierala
+    Chinese: XsLiDian
+    Finnish: Matti Ylönen
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

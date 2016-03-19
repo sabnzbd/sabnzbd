@@ -1,0 +1,113 @@
+# English corrections for sabnzbd
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2015-07-04 10:12+0000\n"
+"PO-Revision-Date: 2015-07-04 12:26+0000\n"
+"Last-Translator: shypike <Unknown>\n"
+"Language-Team: Dutch <nl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: sabnzbd/skintext.py:67 [Config->Scheduler]
+msgid "Pause low prioirty jobs"
+msgstr "Pause low priority jobs"
+
+#: sabnzbd/skintext.py:68 [Config->Scheduler]
+msgid "Pause normal prioirty jobs"
+msgstr "Pause normal priority jobs"
+
+#: sabnzbd/skintext.py:69 [Config->Scheduler]
+msgid "Pause high prioirty jobs"
+msgstr "Pause high priority jobs"
+
+#: sabnzbd/skintext.py:70 [Config->Scheduler]
+msgid "Resume low prioirty jobs"
+msgstr "Resume low priority jobs"
+
+#: sabnzbd/skintext.py:71 [Config->Scheduler]
+msgid "Resume normal prioirty jobs"
+msgstr "Resume normal priority jobs"
+
+#: sabnzbd/skintext.py:72 [Config->Scheduler]
+msgid "Resume high prioirty jobs"
+msgstr "Resume high priority jobs"
+
+msgid ""
+"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
+"click the button below.<br /><br /><strong><a "
+"href=\"..\">Refresh</a></strong><br />"
+msgstr ""
+"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 seconds and then "
+"click the button below.<br /><br /><strong><a "
+"href=\"..\">Refresh</a></strong><br />"
+
+#: sabnzbd/skintext.py:251 [Retry all failed jobs in History]
+msgid "Retry all failed"
+msgstr "Retry All Failed"
+
+#: sabnzbd/skintext.py:54 [#: Config->Scheduler]
+msgid "disable server"
+msgstr "Disable server:"
+
+#: sabnzbd/skintext.py:55 [#: Config->Scheduler]
+msgid "enable server"
+msgstr "Enable server:"
+
+#: sabnzbd/skintext.py:661
+msgid "Generic Sorting"
+msgstr "Movie Sorting"
+
+#: sabnzbd/emailer.py:117
+msgid "The server didn't reply properly to the helo greeting"
+msgstr "The server didn't reply properly to the hello greeting"
+
+#: sabnzbd/interface.py:226
+msgid "API Key missing, please enter the api key from Config->General into your 3rd party program:"
+msgstr "API key missing, please enter the API key from Config->General into your 3rd party program:"
+
+#: sabnzbd/interface.py:233
+msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
+msgstr "API key incorrect, Use the API key from Config->General in your 3rd party program:"
+
+#: sabnzbd/skintext.py:330
+msgid "HTTPS Chain Certifcates"
+msgstr "HTTPS Chain Certificates"
+
+#: sabnzbd/skintext.py:336
+msgid "Highest possible linespeed in Bytes/second, e.g. 2M."
+msgstr "Highest possible line speed in Bytes/second, e.g. 2M."
+
+#: sabnzbd/skintext.py:338
+msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
+msgstr "Which percentage of the line speed should SABnzbd use, e.g. 50"
+
+#: sabnzbd/skintext.py:465
+msgid "Replace Spaces in Foldername"
+msgstr "Replace spaces in folder name"
+
+#: sabnzbd/skintext.py:467
+msgid "Replace dots in Foldername"
+msgstr "Replace dots in folder name"
+
+#: sabnzbd/skintext.py:693
+msgid "Original Foldername"
+msgstr "Original folder name"
+
+#: sabnzbd/skintext.py:808
+msgid "How long or untill when do you want to pause? (in English!)"
+msgstr "How long or until when do you want to pause? (in English!)"
+
+#: sabnzbd/skintext.py:917
+msgid "Timeleft"
+msgstr "Time left"
+
+#: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
+msgid "Optionally specify a filename"
+msgstr "Optionally specify a name"

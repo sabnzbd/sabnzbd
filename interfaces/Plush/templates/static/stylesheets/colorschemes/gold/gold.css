@@ -1,10 +1,4 @@
-/*------------------------------------------------------------------
-[Plush default]
--------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------
-[reset]
-------------------------------------------------------------------*/
+/* --------------------- RESET ----------------*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
   margin: 0;
   padding: 0;
@@ -28,6 +22,7 @@ body {
 ol, ul {
   list-style: none;
 }
+
 /* tables still need 'cellspacing="0"' in the markup */
 table {
   border-collapse: separate;
@@ -45,56 +40,22 @@ blockquote, q {
   quotes: "" "";
 }
 
-/*------------------------------------------------------------------
-[Plush typography]
--------------------------------------------------------------------*/
-
-body,
-input,
-textarea{
+/* ---------------- TYPOGRAPHY -----------------*/
+body, input, textarea{
   font:75% 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color:#000;
 }
-html>body{
-  font-size:12px;
-}
-h1,
-h2,
-h3,
-h4{
-  font-family:'Century Gothic', 'AppleGothic', sans-serif;
-}
-h1{
-  font-size:1.5em;
-}
-h2{
-  font-size:1.25em;
-}
-h3{
-  font-size:1em;
-}
-p,
-ul,
-ul li,
-td{
-  font-size:1em;
-}
-p,li,dt,dd,td,th{
-  line-height:1.5;
-}
-p,dt,dd,td,th,ul,ol,dl{
-  margin-bottom:10px;
-}
-strong {
-  font-weight:bold;
-}
-small {
-  font-size:0.8333em;
-}
-input,
-textarea{
-  font-size:1em;
-}
+html>body{ font-size:12px; }
+h1, h2, h3, h4{ font-family:'Century Gothic', 'AppleGothic', sans-serif; }
+h1{ font-size:1.5em; }
+h2{ font-size:1.25em; }
+h3{ font-size:1em; }
+p, ul, ul li, td{ font-size:1em; }
+p,li,dt,dd,td,th{ line-height:1.5; }
+p,dt,dd,td,th,ul,ol,dl{ margin-bottom:10px; }
+strong { font-weight:bold; }
+small { font-size:0.8333em; }
+input, textarea{ font-size:1em; }
 
 a:link,a:visited{
   color:#599FCF;
@@ -111,10 +72,7 @@ a:hover,a:active{
   font-size:0.8333em;
 }
 
-/*------------------------------------------------------------------
-[Plush default]
--------------------------------------------------------------------*/
-
+/* -------------------------- PLUSH DEFAULT] -----------------*/
 body {
   background: #B1B1B1;
   padding-bottom: 10px;
@@ -168,7 +126,7 @@ body {
 }
 
 
-/* for jQuery Pagination Plugin */
+/* ------------- jQuery Pagination Plugin -------------- */
 
 .pagination-perpage {
   float: left;
@@ -180,36 +138,36 @@ body {
   margin-left:10px;
 }
 
-  .pagination a {
-    background: #E0E0E0;
-    border: solid 1px #B1B1B1;
-    color: #000;
-    cursor: pointer;
-    text-decoration: none;
-  }
+.pagination a {
+  background: #E0E0E0;
+  border: solid 1px #B1B1B1;
+  color: #000;
+  cursor: pointer;
+  text-decoration: none;
+}
 
-  .pagination a:hover { border: solid 1px #000; }
+.pagination a:hover { border: solid 1px #000; }
 
-  .pagination a, .pagination span {
-    display: block;
-    float: left;
-    margin-right: 5px;
-    padding:3px 5px;
-  }
+.pagination a, .pagination span {
+  display: block;
+  float: left;
+  margin-right: 5px;
+  padding:3px 5px;
+}
 
-  .pagination .current {
-    background: #FFF;
-    border: solid 1px #000;
-    color: #000;
-  }
+.pagination .current {
+  background: #FFF;
+  border: solid 1px #000;
+  color: #000;
+}
 
-  .pagination .current.prev, .pagination .current.next {
-    background: #E0E0E0;
-    border-color: #B1B1B1;
-    color: #B1B1B1;
-  }
+.pagination .current.prev, .pagination .current.next {
+  background: #E0E0E0;
+  border-color: #B1B1B1;
+  color: #B1B1B1;
+}
 
-  .pagination .loading { background: #FFF url('images/loading-spinner.gif') 50% 50% no-repeat; }
+.pagination .loading { background: #FFF url('images/loading-spinner.gif') 50% 50% no-repeat; }
 
 
 #add_nzb_modal select {
@@ -235,13 +193,7 @@ body {
   margin: 0 auto 0 0;
 }
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  navigation
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/*---------------- navigation -------------- */
 
 .wrapper {
   width:100%;
@@ -303,16 +255,16 @@ body {
 */
   -moz-transition-property: background;
   -moz-transition-duration: 700ms;
-  }
+}
 
 .navigation ul.menu li.first, .navigation ul li.first a {
   -moz-border-radius-bottomleft: 10px;
--webkit-border-bottom-left-radius: 10px;
+  -webkit-border-bottom-left-radius: 10px;
 }
 
 .navigation ul.menu li.last, .navigation ul li.last a {
   -moz-border-radius-bottomright: 10px;
--webkit-border-bottom-right-radius: 10px;
+  -webkit-border-bottom-right-radius: 10px;
 }
 
 .navigation ul li a:hover {
@@ -333,13 +285,12 @@ body {
   opacity: 1.00;
 }
 
-
-
 .navigation ul li a span {
   padding-left:26px;
   background-repeat:no-repeat;
   background-position:6px 0px;
 }
+
 .navigation ul li a span.icon_nav_download { background-image: url('images/nav/downloads-grey.png'); }
 .navigation ul li.active a span.icon_nav_download, .navigation ul li a:hover span.icon_nav_download { background-image: url('images/nav/downloads.png'); }
 .navigation ul li a span.icon_nav_connections { background-image: url('images/nav/connections-grey.png'); }
@@ -376,15 +327,7 @@ body {
   color:#000;
 }
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  queue + history overall container
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
-
-
+/* ------------------------- queue + history overall container ----------- */
 
 /* sprite-main.png */
 #main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; }
@@ -434,7 +377,6 @@ body {
 .sprite_topleft_queue{ background-position: 0 -1084px;  }
 .sprite_topright_queue{ background-position: right -1161px;  }  /* right */
 
-
 /* tile-x sprite */
 .tilex_sprite_container { background: url('images/sprite-tilex.png') repeat-x top right; }
 .sprite_tile_bottom_wrap { background-position: 0 0; }
@@ -447,7 +389,6 @@ body {
 .tiley_sprite_container { background: url('images/sprite-tiley.png') repeat-y top right; }
 .sprite_tile_page_wrap { background-position: 0 0; }
 .sprite_tile_queue_wrap { background-position: bottom right; }
-
 
 .box_fatbottom {
   color: #606060;
@@ -490,7 +431,7 @@ body {
   padding: 0;
 }
 
-  .box_banner_menu li { float: right; }
+.box_banner_menu li { float: right; }
 
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .sprite_h_purge {
@@ -524,13 +465,13 @@ body {
   overflow:hidden;
 }
 
-  .box_banner_history h1 {
-    color: #c7c7c7;
-    cursor: default;
-    float: left;
-    font-weight: normal;
-    padding:17px 8em 11px 21px;
-  }
+.box_banner_history h1 {
+  color: #c7c7c7;
+  cursor: default;
+  float: left;
+  font-weight: normal;
+  padding:17px 8em 11px 21px;
+}
 
 .box_banner_r {
   float:right;
@@ -539,29 +480,43 @@ body {
   width:350px;
 }
 
-#historySearchBox {
-  color:black;
-  width:120px;
-  border:0px;
+.listSearchBox {
+  color: black;
+  width: 120px;
+  border: 0px;
   margin: 7px 9px 1px 1px;
   padding-right:20px;
-  border:1px solid #444;
-background-color: #e5e5e5
-  /*background: url('images/sprite-main.png') no-repeat top right;
-  background-position: 0 -671px;*/
+  border: 1px solid #444;
+  background-color: #e5e5e5
 }
-#historySearchBox:hover,#historySearchBox:focus {
-  border:1px solid gray;
+.listSearchBox:hover,.listSearchBox:focus {
+  border: 1px solid gray;
 }
+
+#queueSearchForm {
+  display: block;
+  height: 0px;
+  text-align: right;
+  margin-right: 151px;
+}
+#queueSearchBox {
+  width: 121px;
+  margin-top: 35px;
+}
+/* a window narrower than this doesn't have room for the search box, so hide it */
+@media screen and (max-width:900px) { #queueSearchForm { display: none; } }
+
+/* a window wider than this has enough room for a bigger box, so grow it to line up with histsearchbox below it */
+@media screen and (min-width:1190px) { #queueSearchBox { width: 121px; background-position-x: 125px;} }
 
 #hdr-queue {
   height: 67px;
 }
 
-  #hdr-queue .logo {
-    float: left;
-    height: 67px;
-  }
+#hdr-queue .logo {
+  float: left;
+  height: 67px;
+}
 
 #hdr-queue .logo h1 {
   color: #c7c7c7;
@@ -591,12 +546,12 @@ background-color: #e5e5e5
   text-decoration:none;
 }
 
-  .queue-buttons ul {
-    float:left;
+.queue-buttons ul {
+  float:left;
   margin-right:24px;
-  }
+}
 
-  .queue-buttons #pause_int {
+.queue-buttons #pause_int {
   color:#ccc;
   font-size:small;
   padding-right:16px;
@@ -604,34 +559,33 @@ background-color: #e5e5e5
   right:104px;
   text-indent:0;
   top:34px;
-  }
-  .queue-buttons ul li {
-    float: left;
-    cursor:pointer;
-    display:block;
-    height:21px;
-    position:relative;
-    text-indent:-5000px;
-    width:21px;
+}
+.queue-buttons ul li {
+  float: left;
+  display:block;
+  height:21px;
+  position:relative;
+  text-indent:-5000px;
+  width:21px;
 }
 .queue-buttons ul li.sprite_q_queue {
   margin-left:10px;
 }
 
-  /* Queue right-side pull down menu: multiops/eoq/purge/sort */
-    .queue-buttons ul li ul{ /* Second Level */
-      border-bottom:2px solid #403f3f;
-      border-right:2px solid #403f3f;
-        display:none;
-      float:left;
-      height:auto;
-      right:1px;
-      margin:0;
-      position:absolute;
-      top:21px;
-      width:220px;
-      z-index:100;
-    }
+/* Queue right-side pull down menu: multiops/eoq/purge/sort */
+.queue-buttons ul li ul{ /* Second Level */
+  border-bottom:2px solid #403f3f;
+  border-right:2px solid #403f3f;
+  display:none;
+  float:left;
+  height:auto;
+  right:1px;
+  margin:0;
+  position:absolute;
+  top:21px;
+  z-index:100;
+  color:#aaa;
+}
 
 /* These are to make the menu width language sensitive,
   not usable because sort-table width isn't language sensitive
@@ -645,48 +599,62 @@ background-color: #e5e5e5
   }
 */
 
-  .queue-buttons ul li.sprite_q_queue ul{
-    right:0;
-  }
-  .queue-buttons ul li ul li{
-    background:#1d1c1c;
-    border-top:1px solid #474646;
-    clear:left;
-    height:auto;
-    margin:0;
-    text-indent:0;
-    width:100%;
-  }
-  .queue-buttons ul li ul li:first-child{
-    border:0;
-  }
+.queue-buttons ul li.sprite_q_queue ul{
+  right:0;
+}
+.queue-buttons ul li ul li{
+  background:#1d1c1c;
+  border-top:1px solid #474646;
+  clear:left;
+  height:auto;
+  margin:0;
+  text-indent:0;
+  width:100%;
+  padding-left: 5px;
+}
 
-  .queue-buttons ul li ul li a{
-    color:#aaa;
-    clear:left;
-    float:left;
-    margin:0;
-    padding:4px 6px;
-    text-align:left;
-    width:188px;
-  }
-  .queue-buttons ul li ul li a:hover{
-    color:#eee;
-  }
-  .queue-buttons ul li.sprite_q_queue ul li a:hover {
-    text-decoration:none;
-  }
-  .queue-buttons ul li ul li #onQueueFinish-option{
-    width:130px;
-  }
-  .queue-buttons ul li ul li ul,
-    .queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
-    border:0;
-    position:absolute;
-    right:200px;
-    top:0;
-  }
-
+.queue-buttons ul li ul li:first-child{
+  border:0;
+}
+#speed-wrapper ul li ul li {
+    padding: 5px;
+}
+#speed-wrapper ul li ul li:last-child {
+    text-align: center;
+}
+#speed-wrapper ul li ul li:first-child input {
+    text-align: center;
+    vertical-align: bottom;
+}
+.queue-buttons ul li ul li a,
+.queue-buttons ul li ul li span{
+  color:#aaa;
+  clear:left;
+  float:left;
+  margin:0;
+  padding:4px 6px;
+  text-align:left;
+  width:188px;
+}
+.queue-buttons ul li ul li span {
+    cursor: auto;
+}
+.queue-buttons ul li ul li a:hover{
+  color:#eee;
+}
+.queue-buttons ul li.sprite_q_queue ul li a:hover {
+  text-decoration:none;
+}
+.queue-buttons ul li ul li #onQueueFinish-option{
+  width:130px;
+}
+.queue-buttons ul li ul li ul,
+  .queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
+  border:0;
+  position:absolute;
+  right:200px;
+  top:0;
+}
 /*
   .queue-buttons.lang-nl ul li ul li ul,
     .queue-buttons.lang-nl ul li.sprite_q_queue ul li ul{
@@ -699,7 +667,6 @@ background-color: #e5e5e5
     right:265px;
   }
 */
-
 #queue-wrap {
   padding:0 16px;
 }
@@ -708,16 +675,16 @@ background-color: #e5e5e5
   clear: both;
   height: 26px;
 }
-  #btm-wrapper div {
-    background-repeat: no-repeat;
-    float: left;
-    height:26px;
-    width:26px;
-  }
+#btm-wrapper div {
+  background-repeat: no-repeat;
+  float: left;
+  height:26px;
+  width:26px;
+}
 
-  #btm-wrapper .sprite_btm_corner_right {
-    float: right;
-  }
+#btm-wrapper .sprite_btm_corner_right {
+  float: right;
+}
 
 #queue_sort_list {
   margin-right:-202px;
@@ -728,13 +695,7 @@ background-color: #e5e5e5
   border-left:0px;
 }
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  box header, above queue (sabnzbd logo & stats)
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/* ---------------- box header, above queue (sabnzbd logo & stats) ----------------- */
 .centerpiece {
   margin: auto;
   padding:13px 0 0 20px;
@@ -796,43 +757,41 @@ background-color: #e5e5e5
   width: 100%;
 }
 
-  .queueTable tr {
-    background-color: #e0e0e0;
-    cursor: default;
-  }
-  .queueTable tr:hover,
-  .queueTable tr.alt:hover {
-    background-color: #f9f9f9;
-    color: #000;
+.queueTable tr {
+  background-color: #e0e0e0;
+  cursor: default;
 }
-  .queueTable tr select {
-    background: #e5e5e5;
-    border:1px solid #e0e0e0;
-    color:#606060;
-    padding:2px;
+.queueTable tr:hover,
+.queueTable tr.alt:hover {
+  background-color: #f9f9f9;
+  color: #000;
+}
+.queueTable tr select {
+  background: #e5e5e5;
+  border:1px solid #e0e0e0;
+  color:#606060;
+  padding:2px;
 }
 
-  .queueTable tr select.hovering {
-    background:#fff;
-    border: 1px solid #c0c0c0;
-    color: #000;
-  }
-
-  .queueTable tr.alt {
-    background-color:#d0d0d0;
-  }
-  .queueTable tr.alt select {
-    border:1px solid #d0d0d0;
-    background: #d5d5d5;
+.queueTable tr select.hovering {
+  background:#fff;
+  border: 1px solid #c0c0c0;
+  color: #000;
 }
-  .queueTable tr.alt select.hovering {
-    border:1px solid #b0b0b0;
-    background: #fff;
+
+.queueTable tr.alt {
+  background-color:#d0d0d0;
+}
+.queueTable tr.alt select {
+  border:1px solid #d0d0d0;
+  background: #d5d5d5;
+}
+.queueTable tr.alt select.hovering {
+  border:1px solid #b0b0b0;
+  background: #fff;
 }
 
 #queueTable tr:hover { cursor: move; }
-
-
 
 .queueTable td {
   border-bottom: 1px solid #B1B1B1;
@@ -867,7 +826,7 @@ tr:hover .nzb_status_grippie {
   padding-left: 16px;
 }
 
-  .nzb_status.Loaded { background: url('images/loading-spinner.gif') no-repeat; }
+.nzb_status.Loaded { background: url('images/loading-spinner.gif') no-repeat; }
 
 #queueTable .nzb_status {
   cursor: pointer;
@@ -920,8 +879,7 @@ tr:hover .nzb_status_grippie {
 
 .sprite_ql_cross_on { cursor: pointer; }
 
-#topmenu_bar {
-}
+#topmenu_bar {}
 
 #multiops_bar {
   height:51px;
@@ -931,8 +889,7 @@ tr:hover .nzb_status_grippie {
   color: #C0C0C0;
   font-style: italic;
 }
-#multiops_inputs {
-}
+#multiops_inputs { }
 #multiops_inputs .left {
   float:left;
   padding-left: 20px;
@@ -963,14 +920,7 @@ tr:hover .nzb_status_grippie {
   color:#FFF;
 }
 
-
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  Queue
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Queue ------------------------------- */
 /* progress bar & MB/left stats */
 .sprite_progressbar_bg {
   width: 121px;
@@ -1020,13 +970,7 @@ tr:hover .nzb_status_grippie {
   padding: 4px;
 }
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  History
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/* ------------------------------- History ------------------------------- */
 .history_added {
   cursor: default;
   font-size: 75%;
@@ -1073,18 +1017,77 @@ tr:hover .history_added { color: black; }
 
 .pointer { cursor: pointer; }
 
+/* ------------------------------- Ratings ------------------------------- */
+.rating_stars_block_r {
+  text-align: right;
+}
 
+.rating_stars_block_c {
+  text-align: center;
+}
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
+.rating_vote_block {
+  float: left;
+}
 
-  MAIN MENU -- courtesy of jquery superfish plugin
-  See LICENSE-MIT & LICENSE-GPL
-  with modifications by jbw
+.rating_stars {
+  display: inline-block;
+  margin-right: 10px;
+}
 
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+.rating_flag {
+  margin: 4px 10px 0px 85px;
+}
 
+.rating_flag_radio {
+  margin: 5px 15px 5px 5px;
+}
+
+.rating_modal_extra {
+  float: right;
+  width: 330px
+}
+
+.rating_modal_expired {
+  float: right;
+}
+
+.rating_modal_noopt {
+  color: red;
+  margin-left: 10px;
+}
+ 
+.rating_icon_vision {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  background: url('images/vision16.png') no-repeat top center;
+}
+
+.rating_icon_sound {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  background: url('images/sound16.png') no-repeat top center;
+}
+
+.rating_icon_thumbup {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background: url('images/thumbup20.png') no-repeat top center;
+}
+
+.rating_icon_thumbdown {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background: url('images/thumbdown20.png') no-repeat top center;
+}
+
+/* ------------------ MAIN MENU - courtesy jquery superfish plugin w/mods by jbw ---------------- */
 
 #main_menu {
   padding-top:10px;
@@ -1127,20 +1130,17 @@ tr:hover .history_added { color: black; }
   top:0;
   width:10px;
 }
-
-
 #main_menu ul li ul{ /* Second Level */
   display:none;
-float:left;
-height:auto;
-left:10px;
-margin:0;
-position:absolute;
-top:18px;
-width:200px;
-z-index:100;
+  float:left;
+  height:auto;
+  left:10px;
+  margin:0;
+  position:absolute;
+  top:18px;
+  width:200px;
+  z-index:100;
 }
-
 #main_menu ul li ul li{
   background:#a2a2a2;
   border-bottom:1px solid #878787;
@@ -1149,7 +1149,6 @@ z-index:100;
   margin:0;
   width:100%;
 }
-
 #main_menu ul li ul li a{
   clear:left;
   float:left;
@@ -1163,11 +1162,9 @@ z-index:100;
   height:auto;
   top:32%;
 }
-
 #main_menu ul li ul.config_links li a{
   padding:3px 6px;
 }
-
 #main_menu ul li ul li:hover,
 #main_menu ul li ul li ul li:hover {
   background:#ccc;
@@ -1216,7 +1213,6 @@ z-index:100;
 #main_menu ul li ul#navaddnzb li#processingContainer ul{
   left:275px;
 }
-
 #main_menu ul li ul li#processingContainer ul li label{
   float:left;
   text-align:left;
@@ -1225,7 +1221,6 @@ z-index:100;
 #main_menu ul li ul li#processingContainer ul li select{
   width:60%;
 }
-
 #main_menu ul li ul#navqueue{
   width:230px;
 }
@@ -1240,7 +1235,6 @@ z-index:100;
   left:230px;
   width:200px;
 }
-
 #main_menu ul li ul#navqueue li ul li a{
   width:180px;
 }
@@ -1276,11 +1270,6 @@ z-index:100;
   overflow: hidden;
 }
 
-
-
-
-
-
 /*
   ColorBox Core Style
   The following rules are the styles that are consistant between themes.
@@ -1303,27 +1292,26 @@ z-index:100;
 */
 #cboxOverlay{background-color:#000;}
 #colorbox{}
-  #cboxTopLeft{width:21px; height:21px; background:url(images/colorbox-controls.png) -100px 0 no-repeat;}
-  #cboxTopRight{width:21px; height:21px; background:url(images/colorbox-controls.png) -129px 0 no-repeat;}
-  #cboxBottomLeft{width:21px; height:21px; background:url(images/colorbox-controls.png) -100px -29px no-repeat;}
-  #cboxBottomRight{width:21px; height:21px; background:url(images/colorbox-controls.png) -129px -29px no-repeat;}
-  #cboxMiddleLeft{width:21px; background:url(images/colorbox-controls.png) left top repeat-y;}
-  #cboxMiddleRight{width:21px; background:url(images/colorbox-controls.png) right top repeat-y;}
-  #cboxTopCenter{height:21px; background:url(images/colorbox-border.png) 0 0 repeat-x;}
-  #cboxBottomCenter{height:21px; background:url(images/colorbox-border.png) 0 -29px repeat-x;}
-  #cboxContent{background:#fff;}
-    #cboxLoadedContent{margin-top:28px;}
-    #cboxLoadedContent a{font-weight:bold;}
-    #cboxTitle{position:absolute; top:4px; left:0; text-align:center; width:100%; color:#949494; font-weight:bold;}
-    #cboxCurrent{position:absolute; top:4px; left:58px; color:#fff;}
-    #cboxSlideshow{position:absolute; top:4px; right:30px; color:#0092ef;}
-    #cboxPrevious{position:absolute; top:0; left:0px; background:url(images/colorbox-controls.png) -75px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
-    #cboxPrevious.hover{background-position:-75px -25px;}
-    #cboxNext{position:absolute; top:0; left:27px; background:url(images/colorbox-controls.png) -50px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
-    #cboxNext.hover{background-position:-50px -25px;}
-    #cboxClose{position:absolute; top:0; right:0; background:url(images/colorbox-controls.png) -25px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
-    #cboxClose.hover{background-position:-25px -25px;}
-
+#cboxTopLeft{width:21px; height:21px; background:url(images/colorbox-controls.png) -100px 0 no-repeat;}
+#cboxTopRight{width:21px; height:21px; background:url(images/colorbox-controls.png) -129px 0 no-repeat;}
+#cboxBottomLeft{width:21px; height:21px; background:url(images/colorbox-controls.png) -100px -29px no-repeat;}
+#cboxBottomRight{width:21px; height:21px; background:url(images/colorbox-controls.png) -129px -29px no-repeat;}
+#cboxMiddleLeft{width:21px; background:url(images/colorbox-controls.png) left top repeat-y;}
+#cboxMiddleRight{width:21px; background:url(images/colorbox-controls.png) right top repeat-y;}
+#cboxTopCenter{height:21px; background:url(images/colorbox-border.png) 0 0 repeat-x;}
+#cboxBottomCenter{height:21px; background:url(images/colorbox-border.png) 0 -29px repeat-x;}
+#cboxContent{background:#fff;}
+#cboxLoadedContent{margin-top:28px;}
+#cboxLoadedContent a{font-weight:bold;}
+#cboxTitle{position:absolute; top:4px; left:0; text-align:center; width:100%; color:#949494; font-weight:bold;}
+#cboxCurrent{position:absolute; top:4px; left:58px; color:#fff;}
+#cboxSlideshow{position:absolute; top:4px; right:30px; color:#0092ef;}
+#cboxPrevious{position:absolute; top:0; left:0px; background:url(images/colorbox-controls.png) -75px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
+#cboxPrevious.hover{background-position:-75px -25px;}
+#cboxNext{position:absolute; top:0; left:27px; background:url(images/colorbox-controls.png) -50px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
+#cboxNext.hover{background-position:-50px -25px;}
+#cboxClose{position:absolute; top:0; right:0; background:url(images/colorbox-controls.png) -25px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
+#cboxClose.hover{background-position:-25px -25px;}
 
 #plush_options_modal, #add_nzb_modal {
   padding: 20px 0 0 50px;
@@ -1349,89 +1337,77 @@ z-index:100;
   width:100px;
 }
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  N Z O (nzb files page, linked from queue)
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/* ---------------- N Z O (nzb files page, linked from queue) -------------------- */
 body.nzo {}
-  body.nzo .config_nav {
-    cursor: default;
-  }
-  body.nzo #config_content input,
-  body.nzo .config_nav a {
-    cursor: pointer;
-  }
+body.nzo .config_nav {
+  cursor: default;
+}
+body.nzo #config_content input,
+body.nzo .config_nav a {
+  cursor: pointer;
+}
 
 table.nzoTable {
   border-collapse:collapse;
-    color: #131313;
-    margin:1px;
-    width:99%;
+  color: #131313;
+  margin:1px;
+  width:99%;
 }
 
-  table.nzoTable tr {
-    cursor: pointer;
-  }
-  table.nzoTable tr.even {
-    background-color: #cdf;
-  }
-  table.nzoTable tr.evenLine {
-    background-color: #eee;
-  }
-  table.nzoTable tr.odd {
-    background-color: #99bbff;
-  }
-  table.nzoTable tr.oddLine {
-    background-color: #f8f8f8;
-  }
-  table.nzoTable tr.nzo_highlight {
-    background-color:#FFFFE0;
-  }
-  table.nzoTable tr:hover {
-    background-color: #666;
-    color: #FFF;
-  }
+table.nzoTable tr {
+  cursor: pointer;
+}
+table.nzoTable tr.even {
+  background-color: #cdf;
+}
+table.nzoTable tr.evenLine {
+  background-color: #eee;
+}
+table.nzoTable tr.odd {
+  background-color: #99bbff;
+}
+table.nzoTable tr.oddLine {
+  background-color: #f8f8f8;
+}
+table.nzoTable tr.nzo_highlight {
+  background-color:#FFFFE0;
+}
+table.nzoTable tr:hover {
+  background-color: #666;
+  color: #FFF;
+}
 
-  table.nzoTable th {
-    background: #b5b5b5;
-    color: white;
-    cursor: default;
-    font-weight: bold;
-  }
+table.nzoTable th {
+  background: #b5b5b5;
+  color: white;
+  cursor: default;
+  font-weight: bold;
+}
 
-  table.nzoTable th,
-  table.nzoTable td {
-    border:1px solid #999;
-    padding:3px 5px;
-  }
-  table.nzoTable td.alignRight {
-    text-align:right;
-  }
-  table.nzoTable td.filename {
-    width:95%;
-  }
-  table.nzoTable th.check,
-  table.nzoTable td.check {
-    width:22px;
-  }
+table.nzoTable th,
+table.nzoTable td {
+  border:1px solid #999;
+  padding:3px 5px;
+}
+table.nzoTable td.alignRight {
+  text-align:right;
+}
+table.nzoTable td.filename {
+  width:95%;
+}
+table.nzoTable th.check,
+table.nzoTable td.check {
+  width:22px;
+}
 
 .nzo_save_form { margin-left: 120px; }
 
-  .nzo_save_form div {
-    display: inline;
-    white-space: nowrap;
-  }
+.nzo_save_form div {
+  display: inline;
+  white-space: nowrap;
+}
 
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-  C O N F I G
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
+/* --------------------- CONFIG --------------------- */
 
 #config_container {
   background: #363636;
@@ -1448,95 +1424,94 @@ table.nzoTable {
   overflow: hidden;
   width: 100%;
 }
-  #config_content .catheaderinfo { font-weight:bold;}
-  #config_content div.tabs {
-    min-height:338px;
-    overflow:auto;
-  }
+#config_content .catheaderinfo { font-weight:bold;}
+#config_content div.tabs {
+  min-height:338px;
+  overflow:auto;
+}
 
 #config_go_back {
   padding: 1px;
   text-align: center;
 }
 
-  #config_go_back div {
-    margin-bottom: -4px;
-    margin: auto;
-    padding: 25px 0 4px 20px;
-    width: 80px;
-  }
+#config_go_back div {
+  margin-bottom: -4px;
+  margin: auto;
+  padding: 25px 0 4px 20px;
+  width: 80px;
+}
 
-  #config_go_back a {
-    color: black;
-    font-size: 66%;
-    margin-left: -20px;
-    padding: 30px 10px 0px 40px;
-    text-decoration: none;
-  }
+#config_go_back a {
+  color: black;
+  font-size: 66%;
+  margin-left: -20px;
+  padding: 30px 10px 0px 40px;
+  text-decoration: none;
+}
 
-  #config_go_back a:hover { border-bottom: 1px dotted black; }
+#config_go_back a:hover { border-bottom: 1px dotted black; }
 
 div.EntryBlock form { display: inline; }
-div.EntryBlock {
+div.EntryBlock { }
 
-}
 fieldset.EntryFieldSet {
   border:1px solid #333;
-    display: inline;
-    float: left;
-    margin: 5px;
-    padding: 7px 7px 10px;
-    vertical-align: top;
+  display: inline;
+  float: left;
+  margin: 5px;
+  padding: 7px 7px 10px;
+  vertical-align: top;
 }
 .add-rss fieldset.EntryFieldSet {
   width:97%;
 }
-  .add-rss fieldset.EntryFieldSet .feedname{
-    font-weight:bold;
-      width:20%;
-  }
-  .add-rss fieldset.EntryFieldSet .feeduri{
-    width:70%;
-  }
-  .add-rss fieldset.EntryFieldSet .inputsubmit{
-    width:6%;
-  }
-  .update-rss fieldset.EntryFieldSet .feeduri{
-    width:99%;
-  }
+.add-rss fieldset.EntryFieldSet .feedname{
+  font-weight:bold;
+  width:20%;
+}
+.add-rss fieldset.EntryFieldSet .feeduri{
+  width:70%;
+}
+.add-rss fieldset.EntryFieldSet .inputsubmit{
+  width:6%;
+}
+.update-rss fieldset.EntryFieldSet .feeduri{
+  width:99%;
+}
 .catTable {
   width:99%;
 }
-  .catTable th,
-  .catTable td {
-    padding:3px 3px 5px;
-  }
-  .catTable th {
-    font-weight:bold;
-  }
-  .catTable tr.odd {
-    background-color:#ddd;
-  }
-  .catTable td.lastCol {
-    width:8%;
-  }
+.catTable th,
+.catTable td {
+  padding:3px 3px 5px;
+}
+.catTable th {
+  font-weight:bold;
+}
+.catTable tr.odd {
+  background-color:#ddd;
+}
+.catTable td.lastCol {
+  width:8%;
+}
 
 .rssTable { border-spacing: 1px; }
-  .rssTable th,
-  .rssTable td {
-    padding:3px 3px 5px;
-  }
-  .rssTable th {
-    background-color:#555;
-    color:#FFF;
-    font-weight:bold;
-  }
-  .rssTable tr {
-    background-color:#eee;
-  }
-  .rssTable tr.odd {
-    background-color:#ddd;
-  }
+.rssTable th,
+.rssTable td {
+  padding:3px 3px 5px;
+}
+.rssTable th {
+  background-color:#555;
+  color:#FFF;
+  font-weight:bold;
+}
+.rssTable tr {
+  background-color:#eee;
+}
+.rssTable tr.odd {
+  background-color:#ddd;
+}
 
 .rssLeftColumn {text-align: right;}
 
@@ -1571,49 +1546,49 @@ fieldset.EntryFieldSet {
   width: 140px;
 }
 */
-  .config_nav ul {
-    border: none;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
+.config_nav ul {
+  border: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-  .config_nav li {
-    margin: 0;
-    padding: 3px 0px 3px 5px;
-  }
+.config_nav li {
+  margin: 0;
+  padding: 3px 0px 3px 5px;
+}
 
-  .config_nav li a {
-    background-color: #b1b1b1;
-    color: #363636;
-    display: block;
-    font-size: 9pt;
-    font-weight: bold;
-    padding: 4px 22px 4px 4px;
-    text-decoration: none;
-    width: 100%;
-    border-radius: 10px 0px 0px 10px;
-    -moz-border-radius: 10px 0px 0px 10px;
-    -webkit-border-top-right-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-  }
+.config_nav li a {
+  background-color: #b1b1b1;
+  color: #363636;
+  display: block;
+  font-size: 9pt;
+  font-weight: bold;
+  padding: 4px 22px 4px 4px;
+  text-decoration: none;
+  width: 100%;
+  border-radius: 10px 0px 0px 10px;
+  -moz-border-radius: 10px 0px 0px 10px;
+  -webkit-border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+}
 
-  .config_nav li a .config_sprite_container {
-    margin: 3px 0px 3px 0px;
-    padding-left: 22px;
-    padding-bottom: 1px;
-    width: 100%;
-  }
+.config_nav li a .config_sprite_container {
+  margin: 3px 0px 3px 0px;
+  padding-left: 22px;
+  padding-bottom: 1px;
+  width: 100%;
+}
 
-  .config_nav li:hover a, .config_nav li a:hover {
-    background-color: #ccc;
-    color: #000;
-  }
+.config_nav li:hover a, .config_nav li a:hover {
+  background-color: #ccc;
+  color: #000;
+}
 
-  .config_nav .nav_active {
-    background-color: #363636;
-    color: #fff;
-  }
+.config_nav .nav_active {
+  background-color: #363636;
+  color: #fff;
+}
 
 legend .config_sprite_container {
   display: inline;
@@ -1635,7 +1610,6 @@ legend .config_sprite_container {
 #config_content legend.serverDisabled { background-color:#8B0000; }
 #config_content legend.feedEnabled { background-color:#006400; }
 #config_content legend.feedDisabled { background-color:#8B0000; }
-
 
 /* sprite-config.png */
 .config_sprite_container { background: url('images/sprite-config.png') no-repeat top left; }
@@ -1684,8 +1658,6 @@ legend .config_sprite_container {
 .sprite_nzo_top { background-position: 0 -1096px; width: 16px; height: 16px; }
 .sprite_nzo_up { background-position: 0 -1122px; width: 16px; height: 16px; }
 
-
-
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
 
 /* jqueryui config */
@@ -1727,19 +1699,19 @@ legend .config_sprite_container {
   margin: 5px 0 0 10px;
 }
 
-  .left_links a {
-    background-color: #363636;
-    color: #ddd;
-    display: inline;
-    font-size: 9pt;
-    font-weight: bold;
-    text-decoration: none;
-  }
+.left_links a {
+  background-color: #363636;
+  color: #ddd;
+  display: inline;
+  font-size: 9pt;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-  .left_links a:hover {
-    background-color: #000;
-    color: #fff;
-  }
+.left_links a:hover {
+  background-color: #000;
+  color: #fff;
+}
 
 .config_margin { margin: 5px 110px 0 110px; margin-right:10px; }
 /*
@@ -1753,19 +1725,19 @@ legend .config_sprite_container {
   margin: 5px 40px 0 0;
 }
 
-  .right_links a {
-    background-color: #ddd;
-    color: #666;
-    display: block;
-    font-size: 9pt;
-    font-weight: bold;
-    text-decoration: none;
-  }
+.right_links a {
+  background-color: #ddd;
+  color: #666;
+  display: block;
+  font-size: 9pt;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-  .right_links a:hover {
-    background-color: #666;
-    color: #fff;
-  }
+.right_links a:hover {
+  background-color: #666;
+  color: #fff;
+}
 
 .center { text-align: center; }
 
@@ -1801,11 +1773,6 @@ legend .config_sprite_container {
 *+html {
   overflow-x:visible;
 }
-
-
-
-
-
 
 /*
   new config design, adapted from Sickbeard
@@ -1860,7 +1827,6 @@ input.ui-button { padding: .2em .5em; }
 #config div.field-pair select { font-size: 1.1em; border: 1px solid #d4d0c8;}
 #config div.field-pair select option { padding: 0 10px; line-height: 1.4; }
 
-
 #config-settings { float: right; width: 200px; background: #fffae5; border-bottom: 1px dotted #666; border-top: 1px solid #999;padding: 20px 0 30px; margin-right: 20px; }
 #config-settings .config-settings-group { margin: 0 15px 15px; border-bottom: 1px dotted #999; padding-bottom: 15px; }
 #config-settings .config-settings-group h2 { margin-bottom: 0; }
@@ -1876,8 +1842,9 @@ input.ui-button { padding: .2em .5em; }
 /* End hide from IE-mac */
 
 .multiple_cats {
-padding: 5px 10px;
+  padding: 5px 10px;
 }
 .apikey {
-width:220px;
+  width:220px;
 }
+

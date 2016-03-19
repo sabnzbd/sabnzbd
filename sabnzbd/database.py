@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,16 +32,18 @@ import time
 import datetime
 import zlib
 import logging
+import sys
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.misc import format_source_url
 
 _HISTORY_DB = None        # Will contain full path to history database
 _DONE_CLEANING = False    # Ensure we only do one Vacuum per session
+
 
 def get_history_handle():
     """ Get an instance of the history db hanlder """
@@ -58,34 +60,35 @@ def convert_search(search):
         search = ''
     else:
         # Allow * for wildcard matching and space
-        search = search.replace('*','%').replace(' ', '%')
+        search = search.replace('*', '%').replace(' ', '%')
 
     # Allow ^ for start of string and $ for end of string
     if search and search.startswith('^'):
-        search = search.replace('^','')
+        search = search.replace('^', '')
         search += '%'
     elif search and search.endswith('$'):
-        search = search.replace('$','')
+        search = search.replace('$', '')
         search = '%' + search
     else:
         search = '%' + search + '%'
     return search
 
 
-# Note: Add support for execute return values
-
+# TODO: Add support for execute return values
 class HistoryDB(object):
+
     def __init__(self, db_path):
+        self.db_path = db_path
+        self.con = self.c = None
+        self.connect()
+
+    def connect(self):
         global _DONE_CLEANING
-        #Thread.__init__(self)
-        if not os.path.exists(db_path):
+        if not os.path.exists(self.db_path):
             create_table = True
         else:
             create_table = False
-        if sabnzbd.WIN32 and isinstance(db_path, str):
-            self.con = sqlite3.connect(db_path.decode('latin-1').encode('utf-8'))
-        else:
-            self.con = sqlite3.connect(db_path)
+        self.con = sqlite3.connect(self.db_path)
         self.con.row_factory = dict_factory
         self.c = self.con.cursor()
         if create_table:
@@ -96,6 +99,14 @@ class HistoryDB(object):
             # http://www.sqlite.org/lang_vacuum.html
             _DONE_CLEANING = True
             self.execute('VACUUM')
+
+        self.execute('PRAGMA user_version;')
+        version = self.c.fetchone()['user_version']
+        if version < 1:
+            # Add any missing columns added since first DB version
+            self.execute('PRAGMA user_version = 1;')
+            self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
+            self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
@@ -108,13 +119,28 @@ class HistoryDB(object):
                 self.save()
             return True
         except:
-            logging.error(Ta('SQL Command Failed, see log'))
-            logging.debug("SQL: %s" , command)
-            logging.info("Traceback: ", exc_info = True)
-            try:
-                self.con.rollback()
-            except:
-                logging.debug("Rollback Failed:", exc_info = True)
+            error = str(sys.exc_value)
+            if 'readonly' in error:
+                logging.error(T('Cannot write to History database, check access rights!'))
+                # Report back success, because there's no recovery possible
+                return True
+            elif 'not a database' in error or 'malformed' in error:
+                logging.error(T('Damaged History database, created empty replacement'))
+                logging.info("Traceback: ", exc_info=True)
+                self.close()
+                try:
+                    os.remove(self.db_path)
+                except:
+                    pass
+                self.connect()
+            else:
+                logging.error(T('SQL Command Failed, see log'))
+                logging.debug("SQL: %s", command)
+                logging.info("Traceback: ", exc_info=True)
+                try:
+                    self.con.rollback()
+                except:
+                    logging.debug("Rollback Failed:", exc_info=True)
             return False
 
     def create_history_db(self):
@@ -143,24 +169,27 @@ class HistoryDB(object):
             "fail_message" TEXT,
             "url_info" TEXT,
             "bytes" INTEGER,
-            "meta" TEXT
+            "meta" TEXT,
+            "series" TEXT,
+            "md5sum" TEXT
         )
         """)
+        self.execute('PRAGMA user_version = 1;')
 
     def save(self):
         try:
             self.con.commit()
         except:
-            logging.error(Ta('SQL Commit Failed, see log'))
-            logging.info("Traceback: ", exc_info = True)
+            logging.error(T('SQL Commit Failed, see log'))
+            logging.info("Traceback: ", exc_info=True)
 
     def close(self):
         try:
             self.c.close()
             self.con.close()
         except:
-            logging.error(Ta('Failed to close database, see log'))
-            logging.info("Traceback: ", exc_info = True)
+            logging.error(T('Failed to close database, see log'))
+            logging.info("Traceback: ", exc_info=True)
 
     def remove_completed(self, search=None):
         search = convert_search(search)
@@ -193,28 +222,33 @@ class HistoryDB(object):
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
 
-
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
 
         if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
         url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-        downloaded, completeness, fail_message, url_info, bytes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
+        downloaded, completeness, fail_message, url_info, bytes, series, md5sum)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0):
+    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
 
         search = convert_search(search)
 
-        # Get the number of results
+        post = ''
+        if categories:
+            categories = ['*' if c == 'Default' else c for c in categories]
+            post = ' AND (CATEGORY = "'
+            post += '" OR CATEGORY = "'.join(categories)
+            post += '" )'
         if failed_only:
-            res = self.execute('select count(*) from History WHERE name LIKE ? AND STATUS = "Failed"', (search,))
-        else:
-            res = self.execute('select count(*) from History WHERE name LIKE ?', (search,))
+            post += ' AND STATUS = "Failed"'
+
+        cmd = 'SELECT COUNT(*) FROM history WHERE name LIKE ?'
+        res = self.execute(cmd + post, (search,))
         total_items = -1
         if res:
             try:
-                total_items = self.c.fetchone().get('count(*)')
+                total_items = self.c.fetchone().get('COUNT(*)')
             except AttributeError:
                 pass
 
@@ -224,10 +258,8 @@ class HistoryDB(object):
             limit = total_items
 
         t = (search, start, limit)
-        if failed_only:
-            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? AND STATUS = "Failed" ORDER BY completed desc LIMIT ?, ?''', t)
-        else:
-            fetch_ok = self.execute('''SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?''', t)
+        cmd = 'SELECT * FROM history WHERE name LIKE ?'
+        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', t)
 
         if fetch_ok:
             items = self.c.fetchall()
@@ -237,15 +269,39 @@ class HistoryDB(object):
         fetched_items = len(items)
 
         # Unpack the single line stage log
-        # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+        # Stage Name is separated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
 
         return (items, fetched_items, total_items)
 
+    def have_episode(self, series, season, episode):
+        """ Check whether History contains this series episode """
+        total = 0
+        series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
+        if series and season and episode:
+            pattern = '%s/%s/%s' % (series, season, episode)
+            res = self.execute('select count(*) from History WHERE series = ? AND STATUS != "Failed"', (pattern,))
+            if res:
+                try:
+                    total = self.c.fetchone().get('count(*)')
+                except AttributeError:
+                    pass
+        return total > 0
+
+    def have_md5sum(self, md5sum):
+        """ Check whether this md5sum already in History """
+        total = 0
+        res = self.execute('select count(*) from History WHERE md5sum = ? AND STATUS != "Failed"', (md5sum,))
+        if res:
+            try:
+                total = self.c.fetchone().get('count(*)')
+            except AttributeError:
+                pass
+        return total > 0
+
     def get_history_size(self):
-        """
-        Returns the total size of the history and
-        amounts downloaded in the last month and week
+        """ Returns the total size of the history and
+            amounts downloaded in the last month and week
         """
         # Total Size of the history
         total = 0
@@ -256,8 +312,8 @@ class HistoryDB(object):
                 pass
 
         # Amount downloaded this month
-        #r = time.gmtime(time.time())
-        #month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
+        # r = time.gmtime(time.time())
+        # month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
         month_timest = int(this_month(time.time()))
 
         month = 0
@@ -279,7 +335,6 @@ class HistoryDB(object):
 
         return (total, month, week)
 
-
     def get_script_log(self, nzo_id):
         data = ''
         t = (nzo_id,)
@@ -300,7 +355,6 @@ class HistoryDB(object):
                 pass
         return name
 
-
     def get_path(self, nzo_id):
         t = (nzo_id,)
         path = ''
@@ -311,14 +365,30 @@ class HistoryDB(object):
                 pass
         return path
 
+    def get_other(self, nzo_id):
+        t = (nzo_id,)
+        if self.execute('SELECT * FROM history WHERE nzo_id=?', t):
+            try:
+                items = self.c.fetchall()[0]
+                dtype = items.get('report')
+                url = items.get('url')
+                pp = items.get('pp')
+                script = items.get('script')
+                cat = items.get('category')
+            except AttributeError:
+                return '', '', '', '', ''
+        return dtype, url, pp, script, cat
+
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
 
+
 def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line=''):
-    ''' Collects all the information needed for the database '''
+    """ Collects all the information needed for the database """
 
     if not downpath:
         downpath = nzo.downpath
@@ -329,21 +399,14 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     flagRepair, flagUnpack, flagDelete = nzo.repair_opts
     nzo_info = decode_factory(nzo.nzo_info)
 
-    # Get the url and newzbin msgid
-    report = decode_factory(nzo_info.get('msgid', ''))
-    if report:
-        url = format_source_url(report)
-    else:
-        url = decode_factory(nzo.url)
-
-    #group = nzo.group
+    url = decode_factory(nzo.url)
 
     completed = int(time.time())
     name = decode_factory(nzo.final_name)
 
     nzb_name = decode_factory(nzo.filename)
     category = decode_factory(nzo.cat)
-    pps = ['','R','U','D']
+    pps = ['', 'R', 'U', 'D']
     try:
         pp = pps[sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete)]
     except:
@@ -365,35 +428,47 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     downloaded = nzo.bytes_downloaded
     completeness = 0
     fail_message = decode_factory(nzo.fail_msg)
-    url_info = nzo_info.get('more_info', '')
+    url_info = nzo_info.get('details', '') or nzo_info.get('more_info', '')
 
     # Get the dictionary containing the stages and their unpack process
     stages = decode_factory(nzo.unpack_info)
-    # Pack the ditionary up into a single string
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
+    # Pack the dictionary up into a single string
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
     for key, results in stages.iteritems():
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
-    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path, \
-            script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
-            fail_message, url_info, bytes,)
+    # Reuse the old 'report' column to indicate a URL-fetch
+    report = 'future' if nzo.futuretype else ''
+
+    # Analyze series info only when job is finished
+    series = u''
+    if postproc_time:
+        seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+        if seriesname and season and episode:
+            series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
+
+    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
+            script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness,
+            fail_message, url_info, bytes, series, nzo.md5sum)
+
+
 
 def unpack_history_info(item):
-    '''
-        Expands the single line stage_log from the DB
+    """ Expands the single line stage_log from the DB
         into a python dictionary for use in the history display
-    '''
-    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
-    if item['stage_log']:
+    """
+    # Stage Name is separated by ::: stage lines by ; and stages by \r\n
+    lst = item['stage_log']
+    if lst:
         try:
-            lines = item['stage_log'].split('\r\n')
+            lines = lst.split('\r\n')
         except:
             logging.error(T('Invalid stage logging in history for %s') + ' (\\r\\n)', unicoder(item['name']))
-            logging.debug('Lines: %s', item['stage_log'])
+            logging.debug('Lines: %s', lst)
             lines = []
-        item['stage_log'] = []
+        lst = [None for x in STAGES]
         for line in lines:
             stage = {}
             try:
@@ -412,7 +487,13 @@ def unpack_history_info(item):
                 logs = []
             for log in logs:
                 stage['actions'].append(log)
-            item['stage_log'].append(stage)
+            try:
+                lst[STAGES[key]] = stage
+            except KeyError:
+                lst.append(stage)
+        # Remove unused stages
+        item['stage_log'] = [x for x in lst if x is not None]
+
     if item['script_log']:
         item['script_log'] = zlib.decompress(item['script_log'][:])
     # The action line is only available for items in the postproc queue
@@ -422,10 +503,9 @@ def unpack_history_info(item):
 
 
 def decode_factory(text):
-    '''
-        Recursivly looks through the supplied argument
+    """ Recursively looks through the supplied argument
         and converts and text to Unicode
-    '''
+    """
     if isinstance(text, str):
         return unicoder(text)
 
@@ -442,4 +522,3 @@ def decode_factory(text):
         return new_text
     else:
         return text
-

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2011 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,8 +33,7 @@ CreateMailslot = windll.kernel32.CreateMailslotA
 
 
 class MailSlot(object):
-    """ Simple Windows Mailslot communication
-    """
+    """ Simple Windows Mailslot communication """
     slotname = r'mailslot\SABnzbd\ServiceSlot'
 
     def __init__(self):
@@ -50,31 +49,27 @@ class MailSlot(object):
         return self.handle != -1
 
     def connect(self):
-        """ Connect to existing Mailslot so that writing is possible
-        """
+        """ Connect to existing Mailslot so that writing is possible """
         slot = r'\\%s\%s' % (os.environ['COMPUTERNAME'], MailSlot.slotname)
         self.handle = CreateFile(slot, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
         return self.handle != -1
 
     def disconnect(self):
-        """ Disconnect from Mailslot
-        """
+        """ Disconnect from Mailslot """
         if self.handle != -1:
             CloseHandle(self.handle)
             self.handle = -1
         return True
 
     def send(self, command):
-        """ Send one message to Mailslot
-        """
+        """ Send one message to Mailslot """
         if self.handle == -1:
             return False
         w = c_uint()
         return bool(WriteFile(self.handle, command, len(command), byref(w), 0))
 
     def receive(self):
-        """ Receive one message from Mailslot
-        """
+        """ Receive one message from Mailslot """
         r = c_uint()
         buf = c_buffer(1024)
         if ReadFile(self.handle, buf, sizeof(buf), byref(r), 0):
@@ -83,13 +78,14 @@ class MailSlot(object):
             return None
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Simple test
 #
 # First start "mailslot.py server" in one process,
 # Then start "mailslot.py client" in another.
 # Five "restart" and one "stop" will be send from client to server.
 # The server will stop after receiving "stop"
+##############################################################################
 
 if __name__ == '__main__':
     import sys

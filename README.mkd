@@ -1,31 +1,33 @@
-Release Notes  -  SABnzbd 0.7.11
-================================
+Release Notes  -  SABnzbd 1.0.0
+===============================
 
+## What's new in 1.0.0
 
-## Bug fixes
-- Obfuscated file name support causes regular multi-set NZBs to verify (much) slower
-- Bad articles from some servers are accepted as valid data
-- Generic Sort fails to rename files when an extra folder level is present in the RAR files
+- Full Unicode support with Chinese and Russian translations
+- New default UI: Glitter
+- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
+- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
+- Duplicate detection for series
+- More filters in RSS
+- 7zip support
+- Option to save repair time by downloading all par2 files
+- Support for long paths in Windows (above 260)
+- Improved security for external access
+- Lots of small improvements and bug fixes
+- Redesign of notifications classes
+- More notification services supported
+- Diagnostic dashboard tab for "Status" page
+- Bonjour/ZeroConfig support
 
-## What's new in 0.7.0
-
-- Download quota management
-- Windows: simple system tray menu
-- Multi-platform Growl support
-- NotifyOSD support for Linux distros that have it
-- Option to set maximum number of retries for servers (prevents deadlock)
-- Pre-download check to estimate completeness (reliability is limited)
-- Prevent partial downloading of par2 files that are not needed yet
-- Config->Special for settings previously only available in the sabnzbd.ini file
-- For Usenet servers with multiple IP addresses, pick a random one per connection
-- Add pseudo-priority "Stop" that will send the job immediately to the post-processing queue
-- Allow jobs still  waiting for post-processing to be deleted too
-- More persistent retries for unreliable indexers
-- Single Configuration skin for all others skins (there is an option for the old style)
-- Config->Special for settings that were previously only changeable in the sabnzbd.ini file
-- Add Spanish, Portuguese (Brazil) and Polish translations
-- Individual RSS filter toggle
-- Unified OSX DMG
+## Remarks
+- SABnzbd's webserver now doesn't listen to IPv6 addresses by default.
+  - Use Config->Special->ipv6_hosting if you want this enabled.
+  - "localhost" will be replaced with "127.0.0.1", check any browser bookmark and third-party tool
+- Classic skin has been removed
+- Support extra parameters for par2 on other platforms than Windows
+- Option to verify HTTPS connections (default off)
+- Auto-negotiates best Usenet ssl protocol (override possible)
+- When upgrading from 0.7.x, a backup server will get priority 1
 
 
 ## About
@@ -35,30 +37,24 @@ Release Notes  -  SABnzbd 0.7.11
   built-in post-processing options that automatically verify, repair,
   extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2013 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2016 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
-### IMPORTANT INFORMATION about release 0.7.x
-<http://wiki.sabnzbd.org/introducing-0-7-0>
+### IMPORTANT INFORMATION about release 1.0.0
+<http://wiki.sabnzbd.org/introducing-1-0-0>
 
 ### Known problems and solutions
 - Read the file "ISSUES.txt"
 
-### Upgrading from 0.6.x
+### Upgrading from 0.7.x and older
+- Finish queue
 - Stop SABnzbd
 - Install new version
 - Start SABnzbd
 
-### Upgrading from 0.5.x
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd.
-
-The organization of the download queue is different from 0.5.x.
-0.7.x will finish downloading an existing queue, but you
-cannot go back to an older version without losing your queue.
+The organization of the download queue is different from older versions.
+1.0.x will not see the existing queue, but you can go to
+Status->QueueRepair and "Repair" the old queue.
 Also, your sabnzbd.ini file will be upgraded, making it
-incompatible with release 0.5.x
+incompatible with releases older than 0.7.9
 
-### Upgrading from 0.4.x
-Download your current queue before upgrading.

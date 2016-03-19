@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,18 +16,23 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info < (2,5):
-    print "Sorry, requires Python 2.5 or higher."
+if sys.version_info[:2] < (2, 6) or sys.version_info[:2] >= (3, 0):
+    print "Sorry, requires Python 2.6 or 2.7."
     sys.exit(1)
 
 import os
 import time
 import subprocess
 
-#------------------------------------------------------------------------------
+
 try:
-    import win32api, win32file
-    import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
+    import win32api
+    import win32file
+    import win32serviceutil
+    import win32evtlogutil
+    import win32event
+    import win32service
+    import pywintypes
 except ImportError:
     print "Sorry, requires Python module PyWin32."
     sys.exit(1)
@@ -35,11 +40,10 @@ except ImportError:
 from util.mailslot import MailSlot
 from util.apireg import del_connection_info, set_connection_info
 
-#------------------------------------------------------------------------------
 
 WIN_SERVICE = None
 
-#------------------------------------------------------------------------------
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
@@ -52,7 +56,6 @@ def start_sab():
     return subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
 
 
-#------------------------------------------------------------------------------
 def main():
 
     mail = MailSlot()
@@ -78,13 +81,13 @@ def main():
             elif msg.startswith('api '):
                 active = True
                 counter = 0
-                cmd, url = msg.split()
+                _cmd, url = msg.split()
                 if url:
                     set_connection_info(url.strip(), user=False)
 
         if active:
             counter += 1
-            if counter > 120: # 120 seconds
+            if counter > 120:  # 120 seconds
                 counter = 0
                 start_sab()
 
@@ -96,11 +99,12 @@ def main():
             return ''
 
 
-#####################################################################
-#
+##############################################################################
 # Windows Service Support
-#
+##############################################################################
 import servicemanager
+
+
 class SABHelper(win32serviceutil.ServiceFramework):
     """ Win32 Service Handler """
 
@@ -115,7 +119,7 @@ class SABHelper(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
 
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.overlapped = pywintypes.OVERLAPPED()
+        self.overlapped = pywintypes.OVERLAPPED()  # @UndefinedVariable
         self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
         WIN_SERVICE = self
 
@@ -143,11 +147,9 @@ class SABHelper(win32serviceutil.ServiceFramework):
                                     unicode(text))
 
 
-
-#####################################################################
-#
+##############################################################################
 # Platform specific startup code
-#
+##############################################################################
 if __name__ == '__main__':
 
     win32serviceutil.HandleCommandLine(SABHelper, argv=sys.argv)

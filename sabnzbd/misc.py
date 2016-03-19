@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,56 +29,69 @@ import threading
 import subprocess
 import socket
 import time
-import glob
+import fnmatch
 import stat
 try:
     socket.ssl
     _HAVE_SSL = True
 except:
     _HAVE_SSL = False
+from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, Status, MEBI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, latin1
-import sabnzbd.growler as growler
+from sabnzbd.encoding import unicoder, special_fixer, gUTF
 
-RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
-RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
+RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
+RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
 
-#------------------------------------------------------------------------------
-def time_format(format):
-    """ Return time-format string adjusted for 12/24 hour clock setting
-    """
-    if cfg.ampm() and HAVE_AMPM:
-        return format.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
-    else:
-        return format
 
-#------------------------------------------------------------------------------
+def time_format(fmt):
+    """ Return time-format string adjusted for 12/24 hour clock setting """
+    if cfg.ampm() and HAVE_AMPM:
+        return fmt.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
+    else:
+        return fmt
+
+
 def safe_lower(txt):
-    """ Return lowercased string. Return '' for None
-    """
+    """ Return lowercased string. Return '' for None """
     if txt:
         return txt.lower()
     else:
         return ''
 
-#------------------------------------------------------------------------------
-def globber(path, pattern='*'):
-    """ Do a glob.glob(), disabling the [] pattern in 'path' """
-    if pattern:
-        return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
-    else:
-        return glob.glob(path.replace('[', '[[]'))
 
-#------------------------------------------------------------------------------
+def globber(path, pattern=u'*'):
+    """ Return matching base file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    if os.path.exists(path):
+        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    else:
+        return []
+
+
+def globber_full(path, pattern=u'*'):
+    """ Return matching full file/folder names in folder `path` """
+    # Cannot use glob.glob() because it doesn't support Windows long name notation
+    if os.path.exists(path):
+        try:
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+        except UnicodeDecodeError:
+            # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
+            path = path.encode('utf-8')
+            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    else:
+        return []
+
+
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """ Derive options from category, if options not already defined.
         Specified options have priority over category-options.
@@ -108,36 +121,36 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    #logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
+    # logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
     return cat, pp, script, priority
 
 
-#------------------------------------------------------------------------------
 _wildcard_to_regex = {
     '\\': r'\\',
-    '^' : r'\^',
-    '$' : r'\$',
-    '.' : r'\.',
-    '[' : r'\[',
-    ']' : r'\]',
-    '(' : r'\(',
-    ')' : r'\)',
-    '+' : r'\+',
-    '?' : r'.' ,
-    '|' : r'\|',
-    '{' : r'\{',
-    '}' : r'\}',
-    '*' : r'.*'
+    '^': r'\^',
+    '$': r'\$',
+    '.': r'\.',
+    '[': r'\[',
+    ']': r'\]',
+    '(': r'\(',
+    ')': r'\)',
+    '+': r'\+',
+    '?': r'.',
+    '|': r'\|',
+    '{': r'\{',
+    '}': r'\}',
+    '*': r'.*'
 }
+
+
 def wildcard_to_re(text):
-    """ Convert plain wildcard string (with '*' and '?') to regex.
-    """
+    """ Convert plain wildcard string (with '*' and '?') to regex. """
     return ''.join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
-#------------------------------------------------------------------------------
+
 def cat_convert(cat):
-    """ Convert newzbin/nzbs.org category/group-name to user categories.
-        If no match found, but newzbin-cat equals user-cat, then return user-cat
+    """ Convert indexer's category/group-name to user categories.
+        If no match found, but indexer-cat equals user-cat, then return user-cat
         If no match found, return None
     """
     newcat = cat
@@ -147,12 +160,12 @@ def cat_convert(cat):
         cats = config.get_categories()
         for ucat in cats:
             try:
-                newzbin = cats[ucat].newzbin()
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin]
+                indexer = cats[ucat].newzbin()
+                if type(indexer) != type([]):
+                    indexer = [indexer]
             except:
-                newzbin = []
-            for name in newzbin:
+                indexer = []
+            for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
                         logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
@@ -176,16 +189,34 @@ def cat_convert(cat):
         return None
 
 
-################################################################################
-# sanitize_filename                                                            #
-################################################################################
+##############################################################################
+# sanitize_filename
+##############################################################################
+_DEVICES = ('con', 'prn', 'aux', 'nul',
+            'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
+            'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9')
+
+def replace_win_devices(name):
+    ''' Remove reserved Windows device names from a name.
+        aux.txt ==> _aux.txt
+        txt.aux ==> txt.aux
+    '''
+    if name:
+        lname = name.lower()
+        for dev in _DEVICES:
+            if lname == dev or lname.startswith(dev + '.'):
+                name = '_' + name
+                break
+    return name
+
 if sabnzbd.WIN32:
     # the colon should be here too, but we'll handle that separately
     CH_ILLEGAL = r'\/<>?*|"'
-    CH_LEGAL   = r'++{}!@#`'
+    CH_LEGAL = r'++{}!@#`'
 else:
     CH_ILLEGAL = r'/'
-    CH_LEGAL   = r'+'
+    CH_LEGAL = r'+'
+
 
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
@@ -194,7 +225,7 @@ def sanitize_filename(name):
     if not name:
         return name
     illegal = CH_ILLEGAL
-    legal   = CH_LEGAL
+    legal = CH_LEGAL
 
     if ':' in name:
         if sabnzbd.WIN32:
@@ -202,7 +233,7 @@ def sanitize_filename(name):
             name = name.replace(':', '3A')
         elif sabnzbd.DARWIN:
             # Compensate for the foolish way par2 on OSX handles a colon character
-            name = name[name.rfind(':')+1:]
+            name = name[name.rfind(':') + 1:]
 
     lst = []
     for ch in name.strip():
@@ -220,23 +251,30 @@ def sanitize_filename(name):
         ext = lowext
     return name + ext
 
-FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
-FL_LEGAL   = CH_LEGAL +   "-''"
-uFL_ILLEGAL = FL_ILLEGAL.decode('latin-1')
-uFL_LEGAL   = FL_LEGAL.decode('latin-1')
 
-def sanitize_foldername(name):
+def sanitize_foldername(name, limit=True):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
     if not name:
         return name
+
+    FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
+    FL_LEGAL = CH_LEGAL + "-''"
+    uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
+    uFL_LEGAL = FL_LEGAL.decode('cp1252')
+
     if isinstance(name, unicode):
         illegal = uFL_ILLEGAL
-        legal   = uFL_LEGAL
+        legal = uFL_LEGAL
     else:
         illegal = FL_ILLEGAL
-        legal   = FL_LEGAL
+        legal = FL_LEGAL
+
+    if cfg.sanitize_safe():
+        # Remove all bad Windows chars too
+        illegal += r'\/<>?*|":'
+        legal += r'++{}!@#`;'
 
     repl = cfg.replace_illegal()
     lst = []
@@ -249,18 +287,48 @@ def sanitize_foldername(name):
             lst.append(ch)
     name = ''.join(lst)
 
-    name = name.strip('. ')
+    name = name.strip()
+    if name != '.' and name != '..':
+        name = name.rstrip('.')
     if not name:
         name = 'unknown'
 
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
+        name = replace_win_devices(name)
+
     maxlen = cfg.folder_max_length()
-    if len(name) > maxlen:
+    if limit and len(name) > maxlen:
         name = name[:maxlen]
 
     return name
 
 
-#------------------------------------------------------------------------------
+def sanitize_and_trim_path(path):
+    """ Remove illegal characters and trim element size """
+    path = path.strip()
+    new_path = ''
+    if sabnzbd.WIN32:
+        if path.startswith(u'\\\\?\\UNC\\'):
+            new_path = u'\\\\?\\UNC\\'
+            path = path[8:]
+        elif path.startswith(u'\\\\?\\'):
+            new_path = u'\\\\?\\'
+            path = path[4:]
+
+    path = path.replace('\\', '/')
+    parts = path.split('/')
+    if sabnzbd.WIN32 and len(parts[0]) == 2 and ':' in parts[0]:
+        new_path += parts[0] + '/'
+        parts.pop(0)
+    elif path.startswith('//'):
+        new_path = '//'
+    elif path.startswith('/'):
+        new_path = '/'
+    for part in parts:
+        new_path = os.path.join(new_path, sanitize_foldername(part))
+    return os.path.abspath(os.path.normpath(new_path))
+
+
 def flag_file(path, flag, create=False):
     """ Create verify flag file or return True if it already exists """
     path = os.path.join(path, JOB_ADMIN)
@@ -277,12 +345,13 @@ def flag_file(path, flag, create=False):
         return os.path.exists(path)
 
 
-################################################################################
-# DirPermissions                                                               #
-################################################################################
+##############################################################################
+# DirPermissions
+##############################################################################
 def create_all_dirs(path, umask=False):
     """ Create all required path elements and set umask on all
-        Return True if last elelent could be made or exists """
+        Return True if last element could be made or exists
+    """
     result = True
     if sabnzbd.WIN32:
         try:
@@ -290,10 +359,10 @@ def create_all_dirs(path, umask=False):
         except:
             result = False
     else:
-        list = []
-        list.extend(path.split('/'))
+        lst = []
+        lst.extend(path.split('/'))
         path = ''
-        for d in list:
+        for d in lst:
             if d:
                 path += '/' + d
                 if not os.path.exists(path):
@@ -311,9 +380,9 @@ def create_all_dirs(path, umask=False):
                                 pass
     return result
 
-################################################################################
-# Real_Path                                                                    #
-################################################################################
+##############################################################################
+# Real_Path
+##############################################################################
 def real_path(loc, path):
     """ When 'path' is relative, return normalized join of 'loc' and 'path'
         When 'path' is absolute, return normalized path
@@ -327,7 +396,7 @@ def real_path(loc, path):
         path = ''
     if path:
         if not sabnzbd.WIN32 and path.startswith('~/'):
-            path = path.replace('~', sabnzbd.DIR_HOME, 1)
+            path = path.replace('~', os.environ.get('HOME', sabnzbd.DIR_HOME), 1)
         if sabnzbd.WIN32:
             path = path.replace('/', '\\')
             if len(path) > 1 and path[0].isalpha() and path[1] == ':':
@@ -348,14 +417,15 @@ def real_path(loc, path):
     return os.path.normpath(os.path.abspath(path))
 
 
-################################################################################
-# Create_Real_Path                                                             #
-################################################################################
-def create_real_path(name, loc, path, umask=False):
+##############################################################################
+# Create_Real_Path
+##############################################################################
+def create_real_path(name, loc, path, umask=False, writable=True):
     """ When 'path' is relative, create join of 'loc' and 'path'
         When 'path' is absolute, create normalized path
         'name' is used for logging.
         Optional 'umask' will be applied.
+        'writable' means that an existing folder should be writable
         Returns ('success', 'full path')
     """
     if path:
@@ -363,75 +433,30 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(Ta('Cannot create directory %s'), my_dir)
+                logging.error(T('Cannot create directory %s'), clip_path(my_dir))
                 return (False, my_dir)
 
-        if os.access(my_dir, os.R_OK + os.W_OK):
+        checks = (os.W_OK + os.R_OK) if writable else os.R_OK
+        if os.access(my_dir, checks):
             return (True, my_dir)
         else:
-            logging.error(Ta('%s directory: %s error accessing'), name, my_dir)
+            logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
             return (False, my_dir)
     else:
         return (False, "")
 
-################################################################################
-# get_user_shellfolders
-#
-# Return a dictionary with Windows Special Folders
-# Read info from the registry
-################################################################################
 
-def get_user_shellfolders():
-    """ Return a dictionary with Windows Special Folders
-    """
-    import _winreg
-    values = {}
-
-    # Open registry hive
-    try:
-        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-    except WindowsError:
-        logging.error(Ta('Cannot connect to registry hive HKEY_CURRENT_USER.'))
-        return values
-
-    # Then open the registry key where Windows stores the Shell Folder locations
-    try:
-        key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-    except WindowsError:
-        logging.error(Ta('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-        _winreg.CloseKey(hive)
-        return values
-
-    try:
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
-            try:
-                values[name] = value.encode('latin-1')
-            except UnicodeEncodeError:
-                try:
-                    # If the path name cannot be converted to latin-1 (contains high ASCII value strings)
-                    # then try and use the short name
-                    import win32api
-                    # Need to make sure the path actually exists, otherwise ignore
-                    if os.path.exists(value):
-                        values[name] = win32api.GetShortPathName(value)
-                except:
-                    # probably a pywintypes.error error such as folder does not exist
-                    logging.error("Traceback: ", exc_info = True)
-                    values[name] = 'c:\\'
-            i += 1
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return values
-    except WindowsError:
-        # On error, return empty dict.
-        logging.error(Ta('Failed to read registry keys for special folders'))
-        _winreg.CloseKey(key)
-        _winreg.CloseKey(hive)
-        return {}
+def is_relative_path(p):
+    """ Return True if path is relative """
+    p = p.replace('\\', '/')
+    if p and p[0] == '/':
+        return False
+    if sabnzbd.WIN32 and p and len(p) > 2:
+        if p[0].isalpha() and p[1] == ':' and p[2] == '/':
+            return False
+    return True
 
 
-#------------------------------------------------------------------------------
 def windows_variant():
     """ Determine Windows variant
         Return vista_plus, x64
@@ -441,7 +466,7 @@ def windows_variant():
     import _winreg
 
     vista_plus = x64 = False
-    maj, min, buildno, plat, csd = GetVersionEx()
+    maj, _minor, _buildno, plat, _csd = GetVersionEx()
 
     if plat == VER_PLATFORM_WIN32_NT:
         vista_plus = maj > 5
@@ -453,7 +478,7 @@ def windows_variant():
             key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
                     r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
             for n in xrange(_winreg.QueryInfoKey(key)[1]):
-                name, value, val_type = _winreg.EnumValue(key, n)
+                name, value, _val_type = _winreg.EnumValue(key, n)
                 if name == 'PROCESSOR_ARCHITECTURE':
                     x64 = value.upper() == u'AMD64'
                     break
@@ -462,10 +487,9 @@ def windows_variant():
     return vista_plus, x64
 
 
-#------------------------------------------------------------------------------
-
 _SERVICE_KEY = 'SYSTEM\\CurrentControlSet\\services\\'
 _SERVICE_PARM = 'CommandLine'
+
 
 def get_serv_parms(service):
     """ Get the service command line parameters from Registry """
@@ -475,14 +499,14 @@ def get_serv_parms(service):
     try:
         key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
         for n in xrange(_winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, n)
+            name, value, _val_type = _winreg.EnumValue(key, n)
             if name == _SERVICE_PARM:
                 break
         _winreg.CloseKey(key)
     except WindowsError:
         pass
     for n in xrange(len(value)):
-        value[n] = latin1(value[n])
+        value[n] = value[n]
     return value
 
 
@@ -503,41 +527,13 @@ def set_serv_parms(service, args):
     return True
 
 
-
-
-
-
-################################################################################
-# Check latest version
-#
-# Perform an online version check
-# Syntax of online version file:
-#     <current-final-release>
-#     <url-of-current-final-release>
-#     <latest-alpha/beta-or-rc>
-#     <url-of-latest-alpha/beta/rc-release>
-# The latter two lines are only present when a alpha/beta/rc is available.
-# Formula for the version numbers (line 1 and 3).
-# - <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
-#
-# The <cand> value for a final version is assumned to be 99.
-# The <cand> value for the beta/rc version is 1..98, with RC getting
-# a boost of 80 and Beta of 40.
-# This is done to signal alpha/beta/rc users of availability of the final
-# version (which is implicitly 99).
-# People will only be informed to upgrade to a higher alpha/beta/rc version, if
-# they are already using an alpha/beta/rc.
-# RC's are valued higher than Beta's, which are valued higher than Alpha's.
-#
-################################################################################
-
 def convert_version(text):
     """ Convert version string to numerical value and a testversion indicator """
     version = 0
     test = True
     m = RE_VERSION.search(text)
     if m:
-        version = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100
+        version = int(m.group(1)) * 1000000 + int(m.group(2)) * 10000 + int(m.group(3)) * 100
         try:
             if m.group(4).lower() == 'rc':
                 version = version + 80
@@ -551,7 +547,28 @@ def convert_version(text):
 
 
 def check_latest_version():
-    """ Do an online check for the latest version """
+    """ Do an online check for the latest version
+
+        Perform an online version check
+        Syntax of online version file:
+            <current-final-release>
+            <url-of-current-final-release>
+            <latest-alpha/beta-or-rc>
+            <url-of-latest-alpha/beta/rc-release>
+        The latter two lines are only present when an alpha/beta/rc is available.
+        Formula for the version numbers (line 1 and 3).
+            <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
+
+        The <cand> value for a final version is assumned to be 99.
+        The <cand> value for the beta/rc version is 1..98, with RC getting
+        a boost of 80 and Beta of 40.
+        This is done to signal alpha/beta/rc users of availability of the final
+        version (which is implicitly 99).
+        People will only be informed to upgrade to a higher alpha/beta/rc version, if
+        they are already using an alpha/beta/rc.
+        RC's are valued higher than Beta's, which are valued higher than Alpha's.
+    """
+
     if not cfg.version_check():
         return
 
@@ -560,13 +577,19 @@ def check_latest_version():
         logging.debug("Unsupported release number (%s), will not check", sabnzbd.__version__)
         return
 
+    # Using catch-all except's is poor coding practice.
+    # However, the last thing you want is the app crashing due
+    # to bad file content.
+
     try:
-        fn = urllib.urlretrieve('http://sabnzbdplus.sourceforge.net/version/latest')[0]
+        fn = urllib.urlretrieve('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt')[0]
         f = open(fn, 'r')
         data = f.read()
         f.close()
         os.remove(fn)
     except:
+        logging.info('Cannot retrieve version information from GitHub.com')
+        logging.debug('Traceback: ', exc_info=True)
         return
 
     try:
@@ -586,32 +609,32 @@ def check_latest_version():
     except:
         url_beta = url
 
+    latest = convert_version(latest_label)[0]
+    latest_test = convert_version(latest_testlabel)[0]
 
-    latest, dummy = convert_version(latest_label)
-    latest_test, dummy = convert_version(latest_testlabel)
-
-    logging.debug("Checked for a new release, cur= %s, latest= %s (on %s)", current, latest, url)
+    logging.debug('Checked for a new release, cur= %s, latest= %s (on %s), latest_test= %s (on %s)',
+                  current, latest, url, latest_test, url_beta)
 
     if latest_test and cfg.version_check() > 1:
         # User always wants to see the latest test release
         latest = latest_test
+        latest_label = latest_testlabel
         url = url_beta
 
     if testver and current < latest:
         # This is a test version, but user has't seen the
         # "Final" of this one yet, so show the Final
-        sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
+        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
     elif current < latest:
         # This one is behind, show latest final
-        sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
+        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
-        sabnzbd.NEW_VERSION = "%s;%s" % (latest_testlabel, url_beta)
+        sabnzbd.NEW_VERSION = '%s;%s' % (latest_testlabel, url_beta)
 
 
 def from_units(val):
-    """ Convert K/M/G/T/P notation to float
-    """
+    """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
         return val
@@ -623,7 +646,7 @@ def from_units(val):
             n = 0
             while unit != TAB_UNITS[n]:
                 val = val * 1024.0
-                n = n+1
+                n = n + 1
         else:
             val = m.group(1)
         try:
@@ -632,6 +655,7 @@ def from_units(val):
             return 0.0
     else:
         return 0.0
+
 
 def to_units(val, spaces=0, dec_limit=2, postfix=''):
     """ Convert number to K/M/G/T/P notation
@@ -662,10 +686,10 @@ def to_units(val, spaces=0, dec_limit=2, postfix=''):
     else:
         decimals = 0
 
-    format = '%%s%%.%sf %%s%%s' % decimals
-    return format % (sign, val, unit, postfix)
+    fmt = '%%s%%.%sf %%s%%s' % decimals
+    return fmt % (sign, val, unit, postfix)
 
-#------------------------------------------------------------------------------
+
 def same_file(a, b):
     """ Return 0 if A and B have nothing in common
         return 1 if A and B are actually the same path
@@ -687,20 +711,18 @@ def same_file(a, b):
     else:
         return int(a == b)
 
-#------------------------------------------------------------------------------
+
 def exit_sab(value):
-    """ Leave the program after flushing stderr/stdout
-    """
+    """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         sabnzbd.SABSTOP = True
-        from PyObjCTools import AppHelper
+        from PyObjCTools import AppHelper  # @UnresolvedImport
         AppHelper.stopEventLoop()
     sys.exit(value)
 
 
-#------------------------------------------------------------------------------
 def split_host(srv):
     """ Split host:port notation, allowing for IPV6 """
     # Cannot use split, because IPV6 of "a:b:c:port" notation
@@ -709,8 +731,8 @@ def split_host(srv):
     if mark < 0:
         host = srv
     else:
-        host = srv[0 : mark]
-        port = srv[mark+1 :]
+        host = srv[0: mark]
+        port = srv[mark + 1:]
     try:
         port = int(port)
     except:
@@ -718,7 +740,6 @@ def split_host(srv):
     return (host, port)
 
 
-#------------------------------------------------------------------------------
 def check_mount(path):
     """ Return False if volume isn't mounted on Linux or OSX
         Retry 6 times with an interval of 1 sec.
@@ -738,10 +759,12 @@ def check_mount(path):
             time.sleep(1)
     return not m
 
-#------------------------------------------------------------------------------
-# Locked directory operations
 
+##############################################################################
+# Locked directory operations
+##############################################################################
 DIR_LOCK = threading.RLock()
+
 
 @synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
@@ -760,12 +783,12 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         else:
             return path
     else:
-        return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
+        return get_unique_path(dirpath, n=n + 1, create_dir=create_dir)
+
 
 @synchronized(DIR_LOCK)
 def get_unique_filename(path):
-    """ Check if path is unique. If not, add number like: "/path/name.NUM.ext".
-    """
+    """ Check if path is unique. If not, add number like: "/path/name.NUM.ext". """
     num = 1
     while os.path.exists(path):
         path, fname = os.path.split(path)
@@ -782,7 +805,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(Ta('Failed making (%s)'), dirpath)
+            logging.error(T('Failed making (%s)'), clip_path(dirpath))
             return None
     return dirpath
 
@@ -794,6 +817,7 @@ def move_to_path(path, new_path):
     """
     ok = True
     overwrite = cfg.overwrite_files()
+    new_path = os.path.abspath(new_path)
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
@@ -817,16 +841,15 @@ def move_to_path(path, new_path):
                 os.remove(path)
             except:
                 if not (cfg.marker_file() and cfg.marker_file() in path):
-                    logging.error(Ta('Failed moving %s to %s'), path, new_path)
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.error(T('Failed moving %s to %s'), clip_path(path), clip_path(new_path))
+                    logging.info("Traceback: ", exc_info=True)
                 ok = False
     return ok, new_path
 
 
 @synchronized(DIR_LOCK)
 def cleanup_empty_directories(path):
-    """ Remove all empty folders inside (and including) 'path'
-    """
+    """ Remove all empty folders inside (and including) 'path' """
     path = os.path.normpath(path)
     while 1:
         repeat = False
@@ -859,7 +882,8 @@ def get_filepath(path, nzo, filename):
     if not created:
         for n in xrange(200):
             dName = dirname
-            if n: dName += '.' + str(n)
+            if n:
+                dName += '.' + str(n)
             try:
                 os.mkdir(os.path.join(path, dName))
                 break
@@ -869,16 +893,39 @@ def get_filepath(path, nzo, filename):
         nzo.created = True
 
     fPath = os.path.join(os.path.join(path, dName), filename)
+    fPath, ext = os.path.splitext(fPath)
     n = 0
     while True:
-        fullPath = fPath
-        if n: fullPath += '.' + str(n)
+        if n:
+            fullPath = "%s.%d%s" % (fPath, n, ext)
+        else:
+            fullPath = fPath + ext
         if os.path.exists(fullPath):
             n = n + 1
         else:
             break
 
     return fullPath
+
+
+def trim_win_path(path):
+    """ Make sure Windows path stays below 70 by trimming last part """
+    if sabnzbd.WIN32 and len(path) > 69:
+        path, folder = os.path.split(path)
+        maxlen = 69 - len(path)
+        if len(folder) > maxlen:
+            folder = folder[:maxlen]
+        path = os.path.join(path, folder).rstrip('. ')
+    return path
+
+
+def check_win_maxpath(folder):
+    """ Return False if any file path in folder exceeds the Windows maximum """
+    if sabnzbd.WIN32:
+        for p in os.listdir(folder):
+            if len(os.path.join(folder, p)) > 259:
+                return False
+    return True
 
 
 def make_script_path(script):
@@ -893,86 +940,18 @@ def make_script_path(script):
     return s_path
 
 
-def get_admin_path(newstyle, name, future):
+def get_admin_path(name, future):
     """ Return news-style full path to job-admin folder of names job
         or else the old cache path
     """
-    if newstyle:
-        if future:
-            return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
-        else:
-            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+    if future:
+        return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return cfg.cache_dir.get_path()
-
-def bad_fetch(nzo, url, msg='', retry=False, content=False):
-    """ Create History entry for failed URL Fetch
-        msg : message to be logged
-        retry : make retry link in histort
-        content : report in history that cause is a bad NZB file
-    """
-    if msg:
-        msg = unicoder(msg)
-    else:
-        msg = ''
-
-    pp = nzo.pp
-    if pp is None:
-        pp = ''
-    else:
-        pp = '&pp=%s' % str(pp)
-    cat = nzo.cat
-    if cat:
-        cat = '&cat=%s' % urllib.quote(cat)
-    else:
-        cat = ''
-    script = nzo.script
-    if script:
-        script = '&script=%s' % urllib.quote(script)
-    else:
-        script = ''
-
-    nzo.status = Status.FAILED
-
-
-    if url:
-        nzo.filename = url
-        nzo.final_name = url.strip()
-
-    if content:
-        # Bad content
-        msg = T('Unusable NZB file')
-    else:
-        # Failed fetch
-        msg = ' (' + msg + ')'
-
-    if retry:
-        nzbname = nzo.custom_name
-        if nzbname:
-            nzbname = '&nzbname=%s' % urllib.quote(nzbname)
-        else:
-            nzbname = ''
-        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s&job=%s%s%s%s%s">' + T('Try again') + '</a>'
-        parms = (msg, cfg.api_key(), urllib.quote(url), nzo.nzo_id, pp, cat, script, nzbname)
-        nzo.fail_msg = text % parms
-    else:
-        nzo.fail_msg = msg
-
-    if isinstance(url, int) or url.isdigit():
-        url = 'Newzbin #%s' % url
-    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
-    if cfg.email_endjob() > 0:
-        #import sabnzbd.emailer
-        sabnzbd.emailer.badfetch_mail(msg, url)
-
-    from sabnzbd.nzbqueue import NzbQueue
-    assert isinstance(NzbQueue.do, NzbQueue)
-    NzbQueue.do.remove(nzo.nzo_id, add_to_history=True)
+        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
 def on_cleanup_list(filename, skip_nzb=False):
-    """ Return True if a filename matches the clean-up list
-    """
+    """ Return True if a filename matches the clean-up list """
     lst = cfg.cleanup_list()
     if lst:
         name, ext = os.path.splitext(filename)
@@ -985,17 +964,17 @@ def on_cleanup_list(filename, skip_nzb=False):
                 return True
     return False
 
+
 def get_ext(filename):
-    """ Return lowercased file extension
-    """
+    """ Return lowercased file extension """
     try:
         return os.path.splitext(filename)[1].lower()
     except:
         return ''
 
+
 def get_filename(path):
-    """ Return path without the file extension
-    """
+    """ Return path without the file extension """
     try:
         return os.path.split(path)[1]
     except:
@@ -1011,9 +990,13 @@ def memory_usage():
         virt = int(_PAGE_SIZE * int(v[0]) / MEBI)
         res = int(_PAGE_SIZE * int(v[1]) / MEBI)
         return "V=%sM R=%sM" % (virt, res)
+    except IOError:
+        pass
     except:
+        logging.debug('Error retrieving memory usage')
+        logging.info("Traceback: ", exc_info=True)
+    else:
         return ''
-
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
 except:
@@ -1022,8 +1005,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
 
 def loadavg():
-    """ Return 1, 5 and 15 minute load average of host or "" if not supported
-    """
+    """ Return 1, 5 and 15 minute load average of host or "" if not supported """
     p = ''
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         opt = cfg.show_sysload()
@@ -1039,39 +1021,33 @@ def loadavg():
 
 def format_time_string(seconds, days=0):
     """ Return a formatted and translated time string """
+
+    def unit(single, n):
+        if n == 1:
+            return sabnzbd.api.Ttemplate(single)
+        else:
+            return sabnzbd.api.Ttemplate(single + 's')
+
     seconds = int_conv(seconds)
     completestr = []
     if days:
-        completestr.append('%s %s' % (days, s_returner('day', days)))
-    if (seconds/3600) >= 1:
-        completestr.append('%s %s' % (seconds/3600, s_returner('hour', (seconds/3600))))
-        seconds -= (seconds/3600)*3600
-    if (seconds/60) >= 1:
-        completestr.append('%s %s' % (seconds/60, s_returner('minute',(seconds/60))))
-        seconds -= (seconds/60)*60
+        completestr.append('%s %s' % (days, unit('day', days)))
+    if (seconds / 3600) >= 1:
+        completestr.append('%s %s' % (seconds / 3600, unit('hour', (seconds / 3600))))
+        seconds -= (seconds / 3600) * 3600
+    if (seconds / 60) >= 1:
+        completestr.append('%s %s' % (seconds / 60, unit('minute', (seconds / 60))))
+        seconds -= (seconds / 60) * 60
     if seconds > 0:
-        completestr.append('%s %s' % (seconds, s_returner('second', seconds)))
+        completestr.append('%s %s' % (seconds, unit('second', seconds)))
     elif not completestr:
-        completestr.append('0 %s' % s_returner('second', 0))
+        completestr.append('0 %s' % unit('second', 0))
 
-    p = ' '.join(completestr)
-    if isinstance(p, unicode):
-        return p.encode('latin-1')
-    else:
-        return p
+    return ' '.join(completestr)
 
-
-def s_returner(item, value):
-    """ Return a plural form of 'item', based on 'value' (english only)
-    """
-    if value == 1:
-        return Tx(item)
-    else:
-        return Tx(item + 's')
 
 def int_conv(value):
-    """ Safe conversion to int (can handle None)
-    """
+    """ Safe conversion to int (can handle None) """
     try:
         value = int(value)
     except:
@@ -1079,8 +1055,17 @@ def int_conv(value):
     return value
 
 
-#------------------------------------------------------------------------------
+##############################################################################
 # Diskfree
+##############################################################################
+def find_dir(p):
+    """ Return first folder level that exists in this path """
+    x = 'x'
+    while x and not os.path.exists(p):
+        p, x = os.path.split(p)
+    return p
+
+
 if sabnzbd.WIN32:
     # windows diskfree
     try:
@@ -1088,17 +1073,19 @@ if sabnzbd.WIN32:
         import win32api
     except:
         pass
+
     def diskfree(_dir):
-        """ Return amount of free diskspace in GBytes
-        """
+        """ Return amount of free diskspace in GBytes """
+        _dir = find_dir(_dir)
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return available / GIGI
         except:
             return 0.0
+
     def disktotal(_dir):
-        """ Return amount of free diskspace in GBytes
-        """
+        """ Return amount of free diskspace in GBytes """
+        _dir = find_dir(_dir)
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return disk_size / GIGI
@@ -1108,9 +1095,10 @@ else:
     try:
         os.statvfs
         # posix diskfree
+
         def diskfree(_dir):
-            """ Return amount of free diskspace in GBytes
-            """
+            """ Return amount of free diskspace in GBytes """
+            _dir = find_dir(_dir)
             try:
                 s = os.statvfs(_dir)
                 if s.f_bavail < 0:
@@ -1119,9 +1107,10 @@ else:
                     return float(s.f_bavail) * float(s.f_frsize) / GIGI
             except OSError:
                 return 0.0
+
         def disktotal(_dir):
-            """ Return amount of total diskspace in GBytes
-            """
+            """ Return amount of total diskspace in GBytes """
+            _dir = find_dir(_dir)
             try:
                 s = os.statvfs(_dir)
                 if s.f_blocks < 0:
@@ -1133,38 +1122,38 @@ else:
     except ImportError:
         def diskfree(_dir):
             return 10.0
+
         def disktotal(_dir):
             return 20.0
 
 
 def create_https_certificates(ssl_cert, ssl_key):
-    """ Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
-    """
+    """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
     try:
         from OpenSSL import crypto
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
              TYPE_RSA, serial
     except:
-        logging.warning(Ta('pyopenssl module missing, please install for https access'))
+        logging.warning(T('pyopenssl module missing, please install for https access'))
         return False
 
     # Create the CA Certificate
     cakey = createKeyPair(TYPE_RSA, 1024)
     careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60*60*24*365*10)) # ten years
+    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
     cname = 'SABnzbd'
     pkey = createKeyPair(TYPE_RSA, 1024)
     req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60*60*24*365*10)) # ten years
+    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
     # Save the key and certificate to disk
     try:
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error(Ta('Error creating SSL key and certificate'))
-        logging.info("Traceback: ", exc_info = True)
+        logging.error(T('Error creating SSL key and certificate'))
+        logging.info("Traceback: ", exc_info=True)
         return False
 
     return True
@@ -1178,7 +1167,7 @@ def find_on_path(targets):
         paths = os.getenv('PATH').split(':')
 
     if isinstance(targets, basestring):
-        targets = ( targets, )
+        targets = (targets, )
 
     for path in paths:
         for target in targets:
@@ -1188,10 +1177,8 @@ def find_on_path(targets):
     return None
 
 
-#------------------------------------------------------------------------------
 _RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
 _RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
-
 def ip_extract():
     """ Return list of IP addresses of this system """
     ips = []
@@ -1200,7 +1187,8 @@ def ip_extract():
         program = [program, 'a']
     else:
         program = find_on_path('ifconfig')
-        if program: program = [program]
+        if program:
+            program = [program]
 
     if sabnzbd.WIN32 or not program:
         try:
@@ -1225,17 +1213,23 @@ def ip_extract():
     return ips
 
 
-#------------------------------------------------------------------------------
-
 def renamer(old, new):
     """ Rename file/folder with retries for Win32 """
+    # Sanitize last part of new name
+    path, name = os.path.split(new)
+    # Use the more stringent folder rename to end up with a nicer name,
+    # but do not trim size
+    new = os.path.join(path, sanitize_foldername(name, False))
+
+    logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                os.rename(old, new)
+                shutil.move(old, new)
                 return
             except WindowsError, err:
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err[0] == 32:
                     logging.debug('Retry rename %s to %s', old, new)
                     retries -= 1
@@ -1244,7 +1238,7 @@ def renamer(old, new):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        os.rename(old, new)
+        shutil.move(old, new)
 
 
 def remove_dir(path):
@@ -1268,12 +1262,11 @@ def remove_dir(path):
 
 
 def remove_all(path, pattern='*', keep_folder=False, recursive=False):
-    """ Remove folder and all its content (optionally recursive)
-    """
+    """ Remove folder and all its content (optionally recursive) """
     if os.path.exists(path):
-        files = globber(path, pattern)
+        files = globber_full(path, pattern)
         if pattern == '*' and not sabnzbd.WIN32:
-            files.extend(globber(path, '.*'))
+            files.extend(globber_full(path, '.*'))
 
         for f in files:
             if os.path.isfile(f):
@@ -1304,46 +1297,53 @@ def format_source_url(url):
         prot = 'https'
     else:
         prot = 'http:'
-    if url and str(url).isdigit():
-        return '%s://%s/browse/post/%s/' % (prot, cfg.newzbin_url(), str(url))
-    else:
-        return url
+    return url
 
-RE_URL = re.compile(r'://([^/]+)/')
+
 def get_base_url(url):
-    m = RE_URL.search(url)
-    if m:
-        return m.group(1)
+    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
+        But also api.althub.co.za -> althub.co.za
+    """
+    url_host = urlparse(url).hostname
+    if url_host:
+        url_split = url_host.split(".")
+        # Exception for localhost and IPv6 addresses
+        if len(url_split) < 3:
+            return url_host
+        return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
     else:
         return ''
 
+
 def match_str(text, matches):
-    ''' Return first matching element of list 'matches' in 'text', otherwise None '''
+    """ Return first matching element of list 'matches' in 'text', otherwise None """
     for match in matches:
         if match in text:
             return match
     return None
 
+
 def starts_with_path(path, prefix):
-    ''' Return True if 'path' starts with 'prefix',
-        considering case-sensitivity of filesystem
-    '''
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    """ Return True if 'path' starts with 'prefix',
+        considering case-sensitivity of the file system
+    """
+    if sabnzbd.WIN32:
+        return clip_path(path).lower().startswith(prefix.lower())
+    elif sabnzbd.DARWIN:
         return path.lower().startswith(prefix.lower())
     else:
         return path.startswith(prefix)
 
 
 def set_chmod(path, permissions, report):
-    """ Set 'permissions' on 'path', report any errors when 'report' is True
-    """
+    """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
         os.chmod(path, permissions)
     except:
         lpath = path.lower()
         if report and '.appledouble' not in lpath and '.ds_store' not in lpath:
-            logging.error(Ta('Cannot change permissions of %s'), path)
-            logging.info("Traceback: ", exc_info = True)
+            logging.error(T('Cannot change permissions of %s'), clip_path(path))
+            logging.info("Traceback: ", exc_info=True)
 
 
 def set_permissions(path, recursive=True):
@@ -1351,8 +1351,8 @@ def set_permissions(path, recursive=True):
     if not sabnzbd.WIN32:
         umask = cfg.umask()
         try:
-            # Make sure that user R is on
-            umask = int(umask, 8) | int('0400', 8)
+            # Make sure that user R+W+X is on
+            umask = int(umask, 8) | int('0700', 8)
             report = True
         except ValueError:
             # No or no valid permissions
@@ -1367,7 +1367,7 @@ def set_permissions(path, recursive=True):
         if os.path.isdir(path):
             if recursive:
                 # Parse the dir/file tree and set permissions
-                for root, dirs, files in os.walk(path):
+                for root, _dirs, files in os.walk(path):
                     set_chmod(root, umask, report)
                     for name in files:
                         set_chmod(os.path.join(root, name), umask_file, report)
@@ -1375,3 +1375,62 @@ def set_permissions(path, recursive=True):
                 set_chmod(path, umask, report)
         else:
             set_chmod(path, umask_file, report)
+
+
+def short_path(path, always=True):
+    """ For Windows, return shortened ASCII path, for others same path
+        When `always` is off, only return a short path when size is above 259
+    """
+    if sabnzbd.WIN32:
+        import win32api
+        path = os.path.normpath(path)
+        if always or len(path) > 259:
+            # First make the path "long"
+            path = long_path(path)
+            if os.path.exists(path):
+                # Existing path can always be shortened
+                path = win32api.GetShortPathName(path)
+            else:
+                # For new path, shorten only existing part (recursive)
+                path1, name = os.path.split(path)
+                path = os.path.join(short_path(path1, always), name)
+        path = clip_path(path)
+    return path
+
+
+def clip_path(path):
+    """ Remove \\?\ or \\?\UNC\ prefix from Windows path """
+    if sabnzbd.WIN32 and path and '?' in path:
+        path = path.replace(u'\\\\?\\UNC\\', u'\\\\').replace(u'\\\\?\\', u'')
+    return path
+
+
+def long_path(path):
+    """ For Windows, convert to long style path; others, return same path """
+    if sabnzbd.WIN32 and path and not path.startswith(u'\\\\?\\'):
+        if path.startswith('\\\\'):
+            # Special form for UNC paths
+            path = path.replace(u'\\\\', u'\\\\?\\UNC\\', 1)
+        else:
+            # Normal form for local paths
+            path = u'\\\\?\\' + path
+    return path
+
+
+def fix_unix_encoding(folder):
+    """ Fix bad name encoding for Unix systems """
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and gUTF:
+        for root, dirs, files in os.walk(folder.encode('utf-8')):
+            for name in files:
+                new_name = special_fixer(name).encode('utf-8')
+                if name != new_name:
+                    try:
+                        shutil.move(os.path.join(root, name), os.path.join(root, new_name))
+                    except:
+                        logging.info('Cannot correct name of %s', os.path.join(root, name))
+
+
+def get_urlbase(url):
+    """ Return the base URL (like http://server.domain.com/) """
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)

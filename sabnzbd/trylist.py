@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,9 +34,13 @@ from sabnzbd.decorators import synchronized
 # previous releases (despite the mapping done in nzbstuff).
 
 TRYLIST_LOCK = Lock()
+
+
 class TryList:
+
     def __init__(self):
         self.__try_list = []
+        self.fetcher_priority = 0
 
     @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
@@ -47,14 +51,16 @@ class TryList:
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
         if server not in self.__try_list:
-            if sabnzbd.LOG_ALL: logging.debug("Appending %s to %s.__try_list", server, self)
+            if sabnzbd.LOG_ALL:
+                logging.debug("Appending %s to %s.__try_list", server, self)
             self.__try_list.append(server)
 
     @synchronized(TRYLIST_LOCK)
     def remove_from_try_list(self, server):
         """ Server is no longer listed as tried """
         if server in self.__try_list:
-            if sabnzbd.LOG_ALL: logging.debug("Removing %s from %s.__try_list",  server, self)
+            if sabnzbd.LOG_ALL:
+                logging.debug("Removing %s from %s.__try_list", server, self)
             self.__try_list.remove(server)
 
     @synchronized(TRYLIST_LOCK)
@@ -62,3 +68,4 @@ class TryList:
         """ Clean the list """
         if self.__try_list:
             self.__try_list = []
+        self.fetcher_priority = 0

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,10 +25,12 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 import time
 import logging
+import re
 
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
+from sabnzbd.utils.sslinfo import ssl_method
 
 try:
     from OpenSSL import SSL
@@ -43,10 +45,14 @@ except ImportError:
 
     # Dummy class so this exception is ignored by clients without ssl installed
     class WantReadError(Exception):
+
         def __init__(self, value):
             self.parameter = value
+
         def __str__(self):
             return repr(self.parameter)
+
+
 
 import threading
 _RLock = threading.RLock
@@ -58,14 +64,20 @@ import select
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
 
-#------------------------------------------------------------------------------
+def force_bytes(p):
+    """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
+    if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
+        return p.encode('cp1252', 'replace')
+    else:
+        return p
+
 # getaddrinfo() can be very slow. In some situations this can lead
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
 
+
 def _retrieve_info(server):
-    """ Async attempt to run getaddrinfo() for specified server
-    """
+    """ Async attempt to run getaddrinfo() for specified server """
     info = GetServerParms(server.host, server.port)
 
     if info is None:
@@ -77,32 +89,37 @@ def _retrieve_info(server):
 
 
 def request_server_info(server):
-    """ Launch async request to resolve server address
-    """
+    """ Launch async request to resolve server address """
     if not server.request:
         server.request = True
         Thread(target=_retrieve_info, args=(server,)).start()
 
 
 def GetServerParms(host, port):
-    """ Return processed getaddrinfo() for server
-    """
+    """ Return processed getaddrinfo() for server """
     try:
         int(port)
     except:
         port = 119
     opt = sabnzbd.cfg.ipv6_servers()
+    ''' ... with the following meaning for 'opt':
+    Control the use of IPv6 Usenet server addresses. Meaning:
+    0 = don't use
+    1 = use when available and reachable (DEFAULT)
+    2 = force usage (when SABnzbd's detection fails)
+    '''
     try:
         # Standard IPV4 or IPV6
         ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
-            # IPv6 reachable and allowed, or forced by user
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
+            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
+            # So return all IP addresses, no matter IPv4 or IPv6:
             return ips
         else:
-            # IPv6 unreachable or not allowed by user
+            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
             return [ip for ip in ips if ':' not in ip[4][0]]
     except:
-        if opt == 2 or (_EXTERNAL_IPV6 and opt == 1):
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
             try:
                 # Try IPV6 explicitly
                 return socket.getaddrinfo(host, port, socket.AF_INET6,
@@ -141,7 +158,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 # Are we safe to hardcode the ETIMEDOUT error?
                 (_errno, strerror) = (errno.ETIMEDOUT, str(e))
                 e = (_errno, strerror)
-            #expected, do nothing
+            # expected, do nothing
             if _errno == errno.EINPROGRESS:
                 pass
         finally:
@@ -150,14 +167,31 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
+
+def probablyipv4(ip):
+    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
+def probablyipv6(ip):
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
 class NNTP(object):
-    def __init__(self, host, port, info, sslenabled, nw, user=None, password=None, block=False, write_fds=None):
+
+    def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
         assert isinstance(nw, NewsWrapper)
         self.host = host
         self.port = port
         self.nw = nw
         self.blocking = block
         self.error_msg = None
+
         if not info:
             if block:
                 info = GetServerParms(host, port)
@@ -166,25 +200,23 @@ class NNTP(object):
 
         af, socktype, proto, canonname, sa = info[0]
 
-        if sslenabled and _ssl:
-            # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.ssl_type.get()
-            if ssl_type == 'v2':
-                ctx = _ssl.Context(_ssl.SSLv2_METHOD)
-            elif ssl_type == 'v3':
-                ctx = _ssl.Context(_ssl.SSLv3_METHOD)
-            else:
-                ctx = _ssl.Context(_ssl.SSLv23_METHOD)
+        # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
+        if probablyipv4(host):
+            af = socket.AF_INET
+        if probablyipv6(host):
+            af = socket.AF_INET6
 
+        if sslenabled and _ssl:
+            ctx = _ssl.Context(ssl_method(ssl_type))
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error(Ta('Error importing OpenSSL module. Connecting with NON-SSL'))
+            logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            # Windows must do the connection in a seperate thread due to non-blocking issues
+            # Windows must do the connection in a separate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
@@ -212,7 +244,7 @@ class NNTP(object):
                     # Are we safe to hardcode the ETIMEDOUT error?
                     (_errno, strerror) = (errno.ETIMEDOUT, str(e))
                     e = (_errno, strerror)
-                #expected, do nothing
+                # expected, do nothing
                 if _errno == errno.EINPROGRESS:
                     pass
             finally:
@@ -222,8 +254,8 @@ class NNTP(object):
             self.error(e)
 
     def error(self, error):
-        if 'SSL23_GET_SERVER_HELLO' in str(error):
-            error = 'This server does not allow SSL on this port'
+        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
+            error = T('This server does not allow SSL on this port')
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
@@ -233,7 +265,9 @@ class NNTP(object):
             logging.info(msg)
             self.nw.server.warning = msg
 
+
 class NewsWrapper(object):
+
     def __init__(self, server, thrdnum, block=False):
         self.server = server
         self.thrdnum = thrdnum
@@ -259,7 +293,8 @@ class NewsWrapper(object):
         self.force_login = False
 
     def init_connect(self, write_fds):
-        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl, self,
+        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
+                         self.server.ssl_type, self.server.send_group, self,
                          self.server.username, self.server.password, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
@@ -273,10 +308,10 @@ class NewsWrapper(object):
             self.pass_sent = True
             self.pass_ok = True
 
-        if code == '501' and self.user_sent:
-            # Server asked for username, we sent empty one,
-            # but it doesn't accept
+        if code in ('501', '502') and self.user_sent:
+            # Change to a sensible text
             code = '481'
+            self.lines[0] = T('Authentication failed, check username/password.')
             self.user_ok = True
             self.pass_sent = True
 
@@ -291,7 +326,7 @@ class NewsWrapper(object):
         if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
-            command = 'authinfo user %s\r\n' % (self.server.username)
+            command = 'authinfo user %s\r\n' % force_bytes(self.server.username)
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
@@ -305,7 +340,7 @@ class NewsWrapper(object):
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = 'authinfo pass %s\r\n' % (self.server.password)
+            command = 'authinfo pass %s\r\n' % force_bytes(self.server.password)
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
@@ -336,8 +371,7 @@ class NewsWrapper(object):
         self.nntp.sock.sendall(command)
 
     def recv_chunk(self, block=False):
-        """ Receive data, return #bytes, done, skip
-        """
+        """ Receive data, return #bytes, done, skip """
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
@@ -348,7 +382,7 @@ class NewsWrapper(object):
                 # Either ignore the connection until it responds
                 # Or wait in a loop until it responds
                 if block:
-                    #time.sleep(0.0001)
+                    # time.sleep(0.0001)
                     continue
                 else:
                     return (0, False, True)
@@ -410,6 +444,7 @@ class NewsWrapper(object):
 
 
 class SSLConnection(object):
+
     def __init__(self, *args):
         self._ssl_conn = apply(_ssl.Connection, args)
         self._lock = _RLock()
@@ -429,24 +464,3 @@ class SSLConnection(object):
             finally:
                 self._lock.release()\n""" % (f, f)
 
-
-def test_ipv6():
-    """ Check if external IPv6 addresses are reachable """
-    # Use google.com to test IPv6 access
-    try:
-        info = socket.getaddrinfo('www.google.com', 80, socket.AF_INET6, socket.SOCK_STREAM,
-                                  socket.IPPROTO_IP, socket.AI_CANONNAME)
-    except:
-        return False
-
-    try:
-        af, socktype, proto, canonname, sa = info[0]
-        sock = socket.socket(af, socktype, proto)
-        sock.settimeout(6)
-        sock.connect(sa[0:2])
-        sock.close()
-        return True
-    except:
-        return False
-
-_EXTERNAL_IPV6 = test_ipv6()

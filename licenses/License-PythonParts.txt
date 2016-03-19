@@ -1,0 +1,3 @@
+pystone.py and msgfmt.py have been copied from the Python sourcecode.
+They are covered by the same license as Python itself,
+that license is contained in the file "License_Python.txt".

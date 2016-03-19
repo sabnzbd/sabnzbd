@@ -1,14 +1,36 @@
-    <!-- Content end -->
+        <!-- Content end -->
+        <div class="clearfix"></div>
+        
+        <!-- Filebrowser modal -->
+        <div class="modal fade" id="filebrowser_modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <!--#if not $nt#-->
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="show_hidden_folders"> <span>$T('systemFolders')</span>
+                            </label>
+                        </div>
+                        <!--#end if#-->
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
+                        <button type="button" class="btn btn-default" id="filebrowser_modal_accept"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
-<script>
-    function is_touch_device() {
-        return !!('ontouchstart' in window) ? 1 : 0;
-    }
-    if (is_touch_device() === 1) {
-        // touch device found
-        \$('#content').css('overflow-y', 'inherit');
-        \$('html').css('overflow-y', 'scroll');
-    }
-</script>
+    <div class="main-restarting modal-backdrop fade in" style="display: none;">
+        <div>
+            <strong><span class="glyphicon glyphicon-retweet"></span> $T('wizard-restarting')</strong><br />
+            <small><span class="restarting-url"></span><span class="dotOne">.</span><span class="dotTwo">.</span><span class="dotThree">.</span></small>
+        </div>
+    </div>
 </body>
 </html>

@@ -275,7 +275,7 @@ def simplelist(inline):
 
 ##############################################
 # LineParser - a multi purpose line parser
-# handles lines with comma seperated values on it, followed by a comment
+# handles lines with comma separated values on it, followed by a comment
 # correctly handles quoting
 # *and* can handle nested lists - marked between '[...]' or '(...)'
 # See the docstring for how this works
@@ -786,7 +786,7 @@ Doesn't allow Python style string escaping (but has '&mjf-quot;' and '&mjf-lf;')
 Uses both \' and \" as quotes and sometimes doesn't quote at all - see
 elem_quote - may not *always* be compatible with other programs.
 
-Allow space seperated lists ? e.g. 10 5 100 20
+Allow space separated lists ? e.g. 10 5 100 20
 
 Lineparser could create tuples.
 

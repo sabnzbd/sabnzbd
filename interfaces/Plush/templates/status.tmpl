@@ -7,7 +7,9 @@
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
     <li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
     <li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
+    <li><a href="#tabs-dashboard">$T('dashboard-title')</a></li>
   </ul>
+
   <div id="tabs-warnings">
     <p>
       <a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a>
@@ -85,12 +87,15 @@
 
 
   <div id="tabs-connections">
+  <a href="refresh_conn?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
+  <a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
+  <hr>
   <!--#if $servers#-->
     <!--#set $count=0#-->
     <!--#for $server in $servers#-->
       <!--#set $count=$count+1#-->
       <p>$T('swtag-server'): <strong>$server[0]</strong></p>
-      <p>$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
+      <p>$T('Priority') = $server[7]&nbsp;&nbsp;<!--#if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
       <p># $T('connections'): $server[2]</p>
       <!--#if not $server[5]#-->
         <a href="./unblock_server?server=$server[0]&session=$session" class="juiButton">$T('server-blocked')</a>
@@ -116,9 +121,115 @@
   <!--#else#-->
     <p>$T('none')</p>
   <!--#end if#-->
-<a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
   </div>
 
+  <div id="tabs-dashboard">
+    <table class="rssTable">
+        <tr> 
+            <th colspan="2">$T('dashboard-title')</th> 
+        </tr>
+        <!--#set $odd = False#-->
+
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-localIP4')</td>
+            <td>  
+                <!--#if $localipv4#-->
+                    $localipv4
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-publicIP4')</td>
+            <td>  
+                <!--#if $publicipv4#-->
+                    $publicipv4
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-IP6')</td>
+            <td>  
+                <!--#if $ipv6#-->
+                    $ipv6
+                <!--#else#-->
+                    $T('none')
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-NameserverDNS')</td>
+            <td>  
+                <!--#if $dnslookup#-->
+                    $dnslookup
+                <!--#else#-->
+		            <!--#if $publicipv4#-->
+                        <strong style="color: red;">$T('none')</strong>
+		            <!--#else#-->
+                        <strong style="color: red;">$T('dashboard-connectionError')</strong>
+                    <!--#end if#-->
+                <!--#end if#-->
+             </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+           <td>$T('dashboard-systemPerformance')</td>
+           <td>$pystone</td>
+        </tr>
+        <!--#if $cpumodel#-->
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-cpuModel')</td>
+            <td>$cpumodel</td>
+        </tr>
+        <!--#end if#-->
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('opt-download_dir')</td>
+            <td>$downloaddir</td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-writingSpeed')</td>
+            <td>  
+                <!--#if $downloaddirspeed >= 0 #-->
+                    $downloaddirspeed MB/s
+                <!--#elif $downloaddirspeed < 0 #-->
+                   $T('dashboard-clickToStart')
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('opt-complete_dir')</td>
+            <td>$completedir</td>
+        </tr>
+        <!--#set $odd = not $odd#-->    
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td>$T('dashboard-writingSpeed')</td>
+            <td>  
+                <!--#if $completedirspeed >=0 #-->
+                    $completedirspeed MB/s
+                <!--#elif $completedirspeed < 0 #-->
+                    $T('dashboard-clickToStart')
+                <!--#else#-->
+                    <strong style="color: red;">$T('dashboard-speedTestFailed')</strong>
+                <!--#end if#-->
+            </td>
+        </tr>
+    </table>
+    <br/>
+    <a href="dashrefresh?session=$session" class="juiButton">$T('dashboard-repeatTest')</a>
+  </div>
 </div>
 
 

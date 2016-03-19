@@ -9,6 +9,7 @@ jQuery(function($){
   //  Plush defaults
 
   refreshRate:          $.cookie('plushRefreshRate')     ? $.cookie('plushRefreshRate')  : 4, // refresh rate in seconds
+  speedLimitType:       $.cookie('plushSpeedLimitType')  ? $.cookie('plushSpeedLimitType')  : '%', // how to display the speedlimit
   containerWidth:       $.cookie('plushContainerWidth')  ? $.cookie('plushContainerWidth')  : '100%', // width of all elements on page
   queuePerPage:         $.cookie('plushQueuePerPage')    ? $.cookie('plushQueuePerPage') : 5, // pagination - nzbs per page
   histPerPage:          $.cookie('plushHistPerPage')     ? $.cookie('plushHistPerPage')  : 5, // pagination - nzbs per page
@@ -44,7 +45,7 @@ jQuery(function($){
           type: "POST",
           url: "tapi",
           data: {
-            mode:     'addid',
+            mode:     'addurl',
             name:     $("#addID_input").val(),
             pp:       $("#addID_pp").val(),
             script:   $("#addID_script").val(),
@@ -145,57 +146,87 @@ jQuery(function($){
   $("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(),
     innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
   });
+  
+  // Save the type of speedlimit display
+  $('#maxSpeed-label').change(function() {
+    $.plush.speedLimitType = $(this).val();
+    $.cookie('plushSpeedLimitType', $.plush.speedLimitType, { expires: 365 });
+    // Update the text
+    $.plush.focusedOnSpeedChanger = false;
+    $.plush.SetQueueSpeedLimit();
+  })
+  // Set stored value
+  $('#maxSpeed-label').val($.plush.speedLimitType)
 
   // Max Speed main menu input -- don't change value on refresh when focused
-  $("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
-    .blur(function(){ $.plush.focusedOnSpeedChanger = false; })
-    .parent().click(function(){ $("#maxSpeed-option").focus(); });
-  $("#maxSpeed-enable,#maxSpeed-disable").click( function(e) {  // works with hitting enter
-    if ($(e.target).attr('id')=="maxSpeed-disable")
-      $('#maxSpeed-option').val('');
-    var str = $('#maxSpeed-option').val();
-    if (str && str!="")
-      $('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
-    else
-      $('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+  $("#maxSpeed-option").focus(function(){ 
+    $.plush.focusedOnSpeedChanger = true; 
+  }).blur(function(){ 
+    $.plush.focusedOnSpeedChanger = false; 
+  }).keyup(function (e) {
+    // Catch the enter
+    if (e.keyCode == 13) {
+      $("#maxSpeed-enable").click()
+    }
+  })
+  
+  // Submit the new speedlimit
+  $("#maxSpeed-enable, #maxSpeed-disable").click( function(e) { 
+    // Remove
+    if ($(e.target).attr('id')=="maxSpeed-disable") {
+        $('#maxSpeed-option').val('');
+    }
+    var speedLimit = $('#maxSpeed-option').val();
+    if (speedLimit && speedLimit!="") {
+        $('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+    } else {
+        $('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+    }
+    // Transform if nessecary
+    if(speedLimit != '' && $.plush.speedLimitType != '%') {
+        // Add the label
+        speedLimit = speedLimit + $.plush.speedLimitType;
+    }
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
       url: "tapi",
-      data: {mode:'config', name:'set_speedlimit', value: str, apikey: $.plush.apikey}
+      data: {mode:'config', name:'set_speedlimit', value: speedLimit, apikey: $.plush.apikey}
     });
+    // Update
+    $.plush.RefreshQueue();
   });
 
   // Refresh rate
   $("#refreshRate-option").val($.plush.refreshRate).change( function() {
     $.plush.refreshRate = $("#refreshRate-option").val();
-    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365, path: '/'  });
+    $.cookie('plushRefreshRate', $.plush.refreshRate, { expires: 365 });
     $.plush.Refresh();
   });
 
   // Container width
   $("#containerWidth-option").val($.plush.containerWidth).change( function() {
     $.plush.containerWidth = $("#containerWidth-option").val();
-    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365, path: '/' });
+    $.cookie('plushContainerWidth', $.plush.containerWidth, { expires: 365 });
     $('#master-width').css('width',$.plush.containerWidth);
   }).trigger('change');
 
   // Confirm Queue Deletions toggle
   $("#confirmDeleteQueue").prop('checked', $.plush.confirmDeleteQueue ).change( function() {
     $.plush.confirmDeleteQueue = $("#confirmDeleteQueue").prop('checked');
-    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteQueue', $.plush.confirmDeleteQueue ? 1 : 0, { expires: 365 });
   });
 
   // Confirm History Deletions toggle
   $("#confirmDeleteHistory").prop('checked', $.plush.confirmDeleteHistory ).change( function() {
     $.plush.confirmDeleteHistory = $("#confirmDeleteHistory").prop('checked');
-    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushConfirmDeleteHistory', $.plush.confirmDeleteHistory ? 1 : 0, { expires: 365 });
   });
 
   // Block Refreshes on Hover toggle
   $("#blockRefresh").prop('checked', $.plush.blockRefresh ).change( function() {
     $.plush.blockRefresh = $("#blockRefresh").prop('checked');
-    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushBlockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
   });
 
   // Sabnzbd restart
@@ -240,7 +271,28 @@ jQuery(function($){
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
       url: "tapi",
-      data: {mode:'queue', name:'delete', value:value, del_files:del_files, apikey: $.plush.apikey},
+      data: {mode:'queue', name:'delete', value:value, del_files:del_files, search: $('#queueSearchBox').val(), apikey: $.plush.apikey},
+      success: function(){
+        $.colorbox.close();
+        $.plush.modalOpen=false;
+        $.plush.RefreshQueue();
+      }
+    });
+  });
+
+  // Retry all failed jobs
+  $('#queue_retry').click(function(event) {
+    $.colorbox({ inline:true, href:"#queue_retry_modal", title:'',
+      innerWidth:"375px", innerHeight:"250px", initialWidth:"375px", initialHeight:"250px", speed:0, opacity:0.7
+    });
+    return false;
+  });
+  $('#queue_retry_modal input:submit').click(function(){
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'retry_all', apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
         $.plush.modalOpen=false;
@@ -329,6 +381,17 @@ jQuery(function($){
     });
   });
 
+  // Resume Post Processing
+  $('#resume_pp').click(function() {
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'resume_pp', apikey: $.plush.apikey},
+      success: $.plush.RefreshQueue
+    });
+  });
+
   $('#multiops_toggle').click(function(){
     if( $('#multiops_bar').is(':visible') ) { // hide
       $('#multiops_bar').hide();
@@ -341,7 +404,7 @@ jQuery(function($){
       $.plush.multiOpsChecks = new Array();
       $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
     }
-    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushMultiOps', $.plush.multiOps ? 1 : 0, { expires: 365 });
   });
   if ($.plush.multiOps)
     $('#multiops_toggle').trigger('click');
@@ -354,7 +417,7 @@ jQuery(function($){
       $('#topmenu_bar').show();
       $.plush.noTopMenu = false;
     }
-    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365, path: '/'  });
+    $.cookie('plushNoTopMenu', $.plush.noTopMenu ? 1 : 0, { expires: 365 });
   });
   if ($.plush.noTopMenu)
     $('#topmenu_toggle').trigger('click');
@@ -433,7 +496,7 @@ jQuery(function($){
 };
 
   // static-element tooltips
-  $('body').delegate('#last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+  $('body').delegate('#pausefor_title, #last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
     var link = this,
       $link = $(this);
 
@@ -478,6 +541,13 @@ jQuery(function($){
 
   InitQueue : function() {
 
+  // Search
+  $('#queueSearchForm').submit(function(){
+    $.plush.queuecurpage = 0; // default 1st page
+    $.plush.RefreshQueue();
+    return false;
+  });
+
   // Pause/resume toggle (queue)
   $('#pause_resume').click(function(event) {
     $('.queue-buttons-pause .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
@@ -510,7 +580,7 @@ jQuery(function($){
   $("#queue-pagination-perpage").change(function(event){
     $.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
     $.plush.queuePerPage = $(event.target).val();
-    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365, path: '/'  });
+    $.cookie('plushQueuePerPage', $.plush.queuePerPage, { expires: 365 });
     $.plush.queueforcerepagination = true;
     $.plush.RefreshQueue();
   });
@@ -519,17 +589,6 @@ jQuery(function($){
   $('#queue').hover(
     function(){ $.plush.skipRefresh=true; }, // over
     function(){ $.plush.skipRefresh=false; } // out
-  );
-
-  // refresh on mouseout after deletion
-  $('#queue').hover(  // $.mouseout was triggering too often
-    function(){}, // over
-    function(){   // out
-      if ($.plush.pendingQueueRefresh) {
-        $.plush.pendingQueueRefresh = false;
-        $.plush.RefreshQueue();
-      }
-    }
   );
 
   // NZB pause/resume individual toggle
@@ -739,9 +798,9 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   var last1, last2;
   $("#multiops_select_range").click(function(){
-    if (last1 && last2 && last1 < last2)
+    if (last1 >= 0 && last2 >= 0 && last1 < last2)
       $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).prop('checked', true).trigger('change');
-    else if (last1 && last2)
+    else if (last1 >= 0 && last2 >= 0)
       $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).prop('checked', true).trigger('change');
   });
   $("#multiops_select_invert").click(function(){
@@ -754,7 +813,7 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
   });
   $("#queue").delegate('.multiops','change',function(event) {
     // range event interaction
-    if (last1) last2 = last1;
+    if (last1 >= 0) last2 = last1;
     last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 
   // checkbox state persistence
@@ -937,7 +996,7 @@ $("a","#multiops_inputs").click(function(e){
   $("#history-pagination-perpage").change(function(event){
     $.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
     $.plush.histPerPage = $(event.target).val();
-    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365, path: '/'  });
+    $.cookie('plushHistPerPage', $.plush.histPerPage, { expires: 365 });
     $.plush.histforcerepagination = true;
     if ($.plush.histPerPage=="1")
       $("#history-pagination").html(''); // pagination rebuild not triggered on blank history (disabled)
@@ -1022,7 +1081,7 @@ $("a","#multiops_inputs").click(function(e){
   // show all / show failed
   $('#failed_only').change(function(){
     $.plush.failedOnly = $("#failed_only").val();
-    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365, path: '/'  });
+    $.cookie('plushFailedOnly', $.plush.failedOnly, { expires: 365 });
     $.plush.RefreshHistory();
   }).val($.plush.failedOnly);
 
@@ -1033,8 +1092,14 @@ $("a","#multiops_inputs").click(function(e){
   $('#historyTable .modal').colorbox({ innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
   $("#historyTable .modal-detail").colorbox({ inline:true,
     href: function(){return "#details-"+$(this).parent().parent().attr('id');},
-    title:function(){return $(this).text();},
+    title:function(){return $(this).text().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");},
     innerWidth:"80%", innerHeight:"300px", initialWidth:"80%", initialHeight:"300px", speed:0, opacity:0.7 });
+
+  // modal for reporting issues  
+  $("#historyTable .modal-report").colorbox({ inline:true,
+    href: function(){return "#report-"+$(this).parent().parent().parent().attr('id');},
+    title:function(){return $(this).text();},
+    innerWidth:"250px", innerHeight:"110px", initialWidth:"250px", initialHeight:"110px", speed:0, opacity:0.7 });
 
   // Build pagination only when needed
   if ($.plush.histPerPage=="1") // disabled history
@@ -1062,6 +1127,55 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
   }); // end livequery
 
+  $('.user_combo').livequery('change', function(){
+    var nzo_id = $(this).parent().parent().parent().parent().attr('id');
+    var videoAudio = $(this).hasClass('video') ? 'video' : 'audio';
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: videoAudio, setting: $(this).val(), apikey: $.plush.apikey},
+      success: $.plush.Refresh
+    });
+  });
+
+  $('.user_vote').livequery('click', function(){
+    var nzo_id = $(this).parent().parent().parent().attr('id');
+    var upDown = $(this).hasClass('up') ? 'up' : 'down';
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: 'vote', setting: upDown, apikey: $.plush.apikey},
+      success: $.plush.Refresh
+    });
+  });
+
+  $('#history .show_flags').live('click', function(){
+    $('#flag_modal_job').val( $(this).parent().parent().parent().attr('id') );
+    $.colorbox({ inline:true, href:"#flag_modal", title:$(this).text(),
+      innerWidth:"500px", innerHeight:"185px", initialWidth:"500px", initialHeight:"185px", speed:0, opacity:0.7
+    });
+    return false;
+  });
+  $('#flag_modal input:submit').click(function(){
+    var nzo_id = $('#flag_modal_job').val();
+    var flag = $('input[name=rating_flag]:checked', '#flag_modal').val();
+    var expired_host = $('input[name=expired_host]', '#flag_modal').val();
+    var other = $('input[name=other]', '#flag_modal').val();
+    var comment = $('input[name=comment]', '#flag_modal').val();
+    var _detail = (flag == 'comment') ? comment : ((flag == 'other') ? other : expired_host);
+    $.colorbox.close();
+    $.plush.modalOpen=false;
+    $.ajax({
+      headers: {"Cache-Control": "no-cache"},
+      type: "POST",
+      url: "tapi",
+      data: {mode:'queue', name:'rating', value: nzo_id, type: 'flag', setting: flag, detail: _detail, apikey: $.plush.apikey},
+      success: $.plush.RefreshHistory
+    });
+  });
+
   }, // end $.plush.InitHistory()
 
 
@@ -1085,7 +1199,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
 
   // ***************************************************************
-  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl (AHAH)
+  //  $.plush.RefreshQueue() -- fetch HTML data from queue.tmpl
 
   RefreshQueue : function(page) {
 
@@ -1107,34 +1221,55 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
   // Refresh state notification
   $('#manual_refresh_wrapper').removeClass('refresh_skipped').addClass('refreshing');
 
+  if ($('#queueSearchBox').val() )
+    var data = {start: 0, limit: 0, search: $('#queueSearchBox').val() };
+  else
+    var data = {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage};
+
   // Fetch updated content from queue.tmpl
   $.ajax({
     headers: {"Cache-Control": "no-cache"},
     type: "POST",
     url: "queue/",
-    data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
+    data: data,
     success: function(result){
       if (!result) {
         $('#manual_refresh_wrapper').addClass('refresh_skipped'); // Failed refresh notification
         return;
       }
 
-  $('.left_stats .initial-loading').hide();
-  $('#queue').html(result);               // Replace queue contents with queue.tmpl
+      $('.left_stats .initial-loading').hide();
+      $('#queue').html(result);               // Replace queue contents with queue.tmpl
+      $('#queue .avg_rate').rateit({readonly: true, resetable: false, step: 0.5});
+      $('#queue .avg_rate').each(function() { $(this).rateit('value', $(this).attr('value') / 2); });
 
-  if ($.plush.multiOps) // add checkboxes
-    $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
-  if ($.plush.multiOpsChecks) // checkbox state persistence
-    for (var nzo_id in $.plush.multiOpsChecks)
-      $('#'+nzo_id+' .multiops').prop('checked',true);
+      if ($.plush.multiOps) // add checkboxes
+        $('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+      if ($.plush.multiOpsChecks) // checkbox state persistence
+        for (var nzo_id in $.plush.multiOpsChecks)
+          $('#'+nzo_id+' .multiops').prop('checked',true);
 
-
-  $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
-  $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
-}
-});
+      $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
+      $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
+    }
+  });
 
   }, // end $.plush.RefreshQueue()
+
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
+
+
+  // ***************************************************************
+  //  $.plush.SetQueueStats(str) -- called from queue.tmpl
+  SetQueueStats : function(str) {
+    $('#queue_stats').html(str);
+  },
 
 
   // ***************************************************************
@@ -1176,6 +1311,11 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       }
       $('.left_stats .initial-loading').hide();
       $('#history').html(result);               // Replace history contents with history.tmpl
+      $('#history .avg_rate').rateit({readonly: true, resetable: false, step: 0.5});
+      $('#history .avg_rate').each(function() { $(this).rateit('value', $(this).attr('value') / 2); });
+      $('#history .user_combo option').filter(function() {
+        return $(this).attr('value') == $(this).parent().parent().find('input.user_combo').attr('value'); 
+      }).attr('selected', true);
       $('#history-pagination span').removeClass('loading'); // Remove spinner graphic from pagination
     }
   });
@@ -1192,11 +1332,37 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
   // ***************************************************************
   //  $.plush.SetQueueSpeedLimit(str) -- called from queue.tmpl
-  SetQueueSpeedLimit : function(str) {
-    $.plush.speedLimit = str;
-    if ($("#maxSpeed-option").val() != str && !$.plush.focusedOnSpeedChanger)
-      $("#maxSpeed-option").val(str);
-    if (str && str!="")
+  SetQueueSpeedLimit : function(speedLimit, speedLimitAbs) {
+    // For switching using the select
+    if(!speedLimit) speedLimit = $.plush.speedLimit;
+    if(speedLimitAbs == undefined) speedLimitAbs = $.plush.speedLimitAbs;
+    
+    // Save 
+    $.plush.speedLimit = speedLimit;
+    $.plush.speedLimitAbs = speedLimitAbs;
+    
+    // How do we format?
+    switch($.plush.speedLimitType) {
+        case '%':
+            speedlimitDisplay = speedLimit;
+            break;
+        case 'K':
+            // Only whole KB/s
+            speedlimitDisplay = Math.round(speedLimitAbs/1024);
+            break;
+        case 'M':
+            speedlimitDisplay = speedLimitAbs/1024/1024;
+            break;
+    }
+    
+    // In case nothing and we make the displaying of the float more pretty
+    speedlimitDisplay = (isNaN(speedlimitDisplay) || speedlimitDisplay == '0') ? '' : speedlimitDisplay;
+    speedlimitDisplay = Math.round(speedlimitDisplay*10)/10;
+    
+    // Update
+    if ($("#maxSpeed-option").val() != speedlimitDisplay && !$.plush.focusedOnSpeedChanger)
+      $("#maxSpeed-option").val(speedlimitDisplay);
+    if (speedlimitDisplay && speedlimitDisplay!="")
       $('#speed-wrapper .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
     else
       $('#speed-wrapper .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');

@@ -8,6 +8,7 @@
 import os
 import sys
 
+import pywintypes
 import win32api
 import win32con
 import win32gui_struct
@@ -18,8 +19,8 @@ except ImportError:
 from threading import Thread
 from time import sleep
 
+
 class SysTrayIconThread(Thread):
-    '''TODO'''
     QUIT = 'QUIT'
     SPECIAL_ACTIONS = [QUIT]
 
@@ -39,33 +40,31 @@ class SysTrayIconThread(Thread):
         self.hover_text = hover_text
         self.on_quit = on_quit
 
-#        menu_options = menu_options + (('Quit', None, self.QUIT),)
+        # menu_options = menu_options + (('Quit', None, self.QUIT),)
         self._next_action_id = self.FIRST_ID
         self.menu_actions_by_id = set()
         self.menu_options = self._add_ids_to_menu_options(list(menu_options))
         self.menu_actions_by_id = dict(self.menu_actions_by_id)
         del self._next_action_id
 
-
         self.default_menu_index = (default_menu_index or 0)
         self.window_class_name = window_class_name or "SysTrayIconPy"
 
         self.start()
 
-
     def initialize(self):
         message_map = {win32gui.RegisterWindowMessage("TaskbarCreated"): self.restart,
                        win32con.WM_DESTROY: self.destroy,
                        win32con.WM_COMMAND: self.command,
-                       win32con.WM_USER+20 : self.notify,}
+                       win32con.WM_USER + 20: self.notify, }
         # Register the Window class.
         window_class = win32gui.WNDCLASS()
         hinst = window_class.hInstance = win32gui.GetModuleHandle(None)
         window_class.lpszClassName = self.window_class_name
-        window_class.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW;
+        window_class.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW
         window_class.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
         window_class.hbrBackground = win32con.COLOR_WINDOW
-        window_class.lpfnWndProc = message_map # could also specify a wndproc.
+        window_class.lpfnWndProc = message_map  # could also specify a wndproc.
         classAtom = win32gui.RegisterClass(window_class)
         # Create the Window.
         style = win32con.WS_OVERLAPPED | win32con.WS_SYSMENU
@@ -95,6 +94,20 @@ class SysTrayIconThread(Thread):
     # override this
     def doUpdates(self):
         pass
+        
+    # Notification
+    def sendnotification(self, title, msg):
+        hicon = self.get_icon(self.icon)
+        win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY,
+                                  (self.hwnd, 
+                                   0, 
+                                   win32gui.NIF_INFO,
+                                   win32con.WM_USER+20, 
+                                   hicon,
+                                   "Balloon tooltip", 
+                                   msg, 
+                                   200, 
+                                   title))
 
     def _add_ids_to_menu_options(self, menu_options):
         result = []
@@ -114,8 +127,9 @@ class SysTrayIconThread(Thread):
         return result
 
     def get_icon(self, path):
-        hicon = self.icons.get(path);
-        if hicon != None: return hicon
+        hicon = self.icons.get(path)
+        if hicon != None:
+            return hicon
 
         # Try and find a custom icon
         hinst = win32gui.GetModuleHandle(None)
@@ -136,12 +150,14 @@ class SysTrayIconThread(Thread):
 
     def refresh_icon(self):
         hicon = self.get_icon(self.icon)
-        if self.notify_id: message = win32gui.NIM_MODIFY
-        else: message = win32gui.NIM_ADD
+        if self.notify_id:
+            message = win32gui.NIM_MODIFY
+        else:
+            message = win32gui.NIM_ADD
         self.notify_id = (self.hwnd,
                           0,
                           win32gui.NIF_ICON | win32gui.NIF_MESSAGE | win32gui.NIF_TIP,
-                          win32con.WM_USER+20,
+                          win32con.WM_USER + 20,
                           hicon,
                           self.hover_text)
         try:
@@ -154,17 +170,18 @@ class SysTrayIconThread(Thread):
         self.refresh_icon()
 
     def destroy(self, hwnd, msg, wparam, lparam):
-        if self.on_quit: self.on_quit(self)
+        if self.on_quit:
+            self.on_quit(self)
         nid = (self.hwnd, 0)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
-        win32gui.PostQuitMessage(0) # Terminate the app.
+        win32gui.PostQuitMessage(0)  # Terminate the app.
 
     def notify(self, hwnd, msg, wparam, lparam):
-        if lparam==win32con.WM_LBUTTONDBLCLK:
+        if lparam == win32con.WM_LBUTTONDBLCLK:
             self.execute_menu_option(self.default_menu_index + self.FIRST_ID)
-        elif lparam==win32con.WM_RBUTTONUP:
+        elif lparam == win32con.WM_RBUTTONUP:
             self.show_menu()
-        elif lparam==win32con.WM_LBUTTONUP:
+        elif lparam == win32con.WM_LBUTTONUP:
             pass
         return True
 
@@ -173,17 +190,21 @@ class SysTrayIconThread(Thread):
         self.create_menu(menu, self.menu_options)
         #win32gui.SetMenuDefaultItem(menu, 1000, 0)
 
-        pos = win32gui.GetCursorPos()
-        # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
-        win32gui.SetForegroundWindow(self.hwnd)
-        win32gui.TrackPopupMenu(menu,
-                                win32con.TPM_LEFTALIGN,
-                                pos[0],
-                                pos[1],
-                                0,
-                                self.hwnd,
-                                None)
-        win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
+        try:
+            pos = win32gui.GetCursorPos()
+            # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
+            win32gui.SetForegroundWindow(self.hwnd)
+            win32gui.TrackPopupMenu(menu,
+                                    win32con.TPM_LEFTALIGN,
+                                    pos[0],
+                                    pos[1],
+                                    0,
+                                    self.hwnd,
+                                    None)
+            win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
+        except pywintypes.error:
+            # Weird PyWin/win32gui bug, just ignore it for now
+            logging.debug('win32gui problem, cannot show SysTray menu')
 
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:
@@ -237,6 +258,7 @@ class SysTrayIconThread(Thread):
         else:
             menu_action(self)
 
+
 def non_string_iterable(obj):
     try:
         iter(obj)
@@ -244,4 +266,3 @@ def non_string_iterable(obj):
         return False
     else:
         return not isinstance(obj, basestring)
-

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,25 +37,27 @@ from sabnzbd.constants import MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import name_fixer
+from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
-#-------------------------------------------------------------------------------
 
 class CrcError(Exception):
+
     def __init__(self, needcrc, gotcrc, data):
         Exception.__init__(self)
         self.needcrc = needcrc
         self.gotcrc = gotcrc
         self.data = data
 
+
 class BadYenc(Exception):
+
     def __init__(self):
         Exception.__init__(self)
 
-#-------------------------------------------------------------------------------
 
 class Decoder(Thread):
+
     def __init__(self, servers):
         Thread.__init__(self)
 
@@ -104,9 +106,9 @@ class Decoder(Thread):
                     nzf.article_count += 1
                     found = True
                 except IOError, e:
-                    logme = Ta('Decoding %s failed') % art_id
+                    logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
 
@@ -117,16 +119,10 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logme = Ta('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
+                    logme = T('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
                     logging.info(logme)
 
                     data = e.data
-
-                    if cfg.fail_on_crc():
-                        new_server_found = self.__search_new_server(article)
-                        if new_server_found:
-                            register = False
-                            logme = None
 
                 except BadYenc:
                     # Handles precheck and badly formed articles
@@ -154,7 +150,7 @@ class Decoder(Thread):
                             logging.debug('Server has article %s', art_id)
                             register = True
                     elif not killed and not found:
-                        logme = Ta('Badly formed yEnc article in %s') % art_id
+                        logme = T('Badly formed yEnc article in %s') % art_id
                         logging.info(logme)
 
                     if not found or killed:
@@ -164,9 +160,9 @@ class Decoder(Thread):
                             logme = None
 
                 except:
-                    logme = Ta('Unknown Error while decoding %s') % art_id
+                    logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
-                    logging.info("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info=True)
 
                     new_server_found = self.__search_new_server(article)
                     if new_server_found:
@@ -204,7 +200,7 @@ class Decoder(Thread):
 
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
-                if server.fillserver:
+                if not sabnzbd.highest_server(server):
                     fill_server_found = True
                 else:
                     new_server_found = True
@@ -219,43 +215,42 @@ class Decoder(Thread):
             article.fetcher = None
             article.tries = 0
 
-            ## Allow all servers to iterate over this nzo and nzf again ##
+            # Allow all servers to iterate over this nzo and nzf again
             NzbQueue.do.reset_try_lists(nzf, nzo)
 
             if sabnzbd.LOG_ALL:
                 logging.debug('%s => found at least one untested server', article)
 
         else:
-            msg = Ta('%s => missing from all servers, discarding') % article
+            msg = T('%s => missing from all servers, discarding') % article
             logging.info(msg)
             article.nzf.nzo.inc_log('missing_art_log', msg)
 
-
         return new_server_found
-#-------------------------------------------------------------------------------
+
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data):
     data = strip(data)
-    ## No point in continuing if we don't have any data left
+    # No point in continuing if we don't have any data left
     if data:
         nzf = article.nzf
         yenc, data = yCheck(data)
         ybegin, ypart, yend = yenc
         decoded_data = None
 
-        #Deal with non-yencoded posts
+        # Deal with non-yencoded posts
         if not ybegin:
             found = False
             try:
                 for i in xrange(min(40, len(data))):
                     if data[i].startswith('begin '):
-                        nzf.filename = name_fixer(data[i].split(None, 2)[2])
+                        nzf.filename = yenc_name_fixer(data[i].split(None, 2)[2])
                         nzf.type = 'uu'
                         found = True
                         break
                 if found:
-                    for n in xrange(i+1):
+                    for n in xrange(i + 1):
                         data.pop(0)
                 if data[-1] == 'end':
                     data.pop()
@@ -269,18 +264,17 @@ def decode(article, data):
             else:
                 raise BadYenc()
 
-        #Deal with yenc encoded posts
+        # Deal with yenc encoded posts
         elif (ybegin and yend):
             if 'name' in ybegin:
-                nzf.filename = name_fixer(ybegin['name'])
+                nzf.filename = yenc_name_fixer(ybegin['name'])
             else:
-                logging.debug("Possible corrupt header detected " + \
-                              "=> ybegin: %s", ybegin)
+                logging.debug("Possible corrupt header detected => ybegin: %s", ybegin)
             nzf.type = 'yenc'
             # Decode data
             if HAVE_YENC:
                 decoded_data, crc = _yenc.decode_string(''.join(data))[:2]
-                partcrc = '%08X' % ((crc ^ -1) & 2**32L - 1)
+                partcrc = '%08X' % ((crc ^ -1) & 2 ** 32L - 1)
             else:
                 data = ''.join(data)
                 for i in (0, 9, 10, 13, 27, 32, 46, 61):
@@ -288,7 +282,7 @@ def decode(article, data):
                     data = data.replace(j, chr(i))
                 decoded_data = data.translate(YDEC_TRANS)
                 crc = binascii.crc32(decoded_data)
-                partcrc = '%08X' % (crc & 2**32L - 1)
+                partcrc = '%08X' % (crc & 2 ** 32L - 1)
 
             if ypart:
                 crcname = 'pcrc32'
@@ -299,8 +293,7 @@ def decode(article, data):
                 _partcrc = '0' * (8 - len(yend[crcname])) + yend[crcname].upper()
             else:
                 _partcrc = None
-                logging.debug("Corrupt header detected " + \
-                              "=> yend: %s", yend)
+                logging.debug("Corrupt header detected => yend: %s", yend)
 
             if not (_partcrc == partcrc):
                 raise CrcError(_partcrc, partcrc, decoded_data)
@@ -309,12 +302,13 @@ def decode(article, data):
 
         return decoded_data
 
+
 def yCheck(data):
     ybegin = None
     ypart = None
     yend = None
 
-    ## Check head
+    # Check head
     for i in xrange(min(40, len(data))):
         try:
             if data[i].startswith('=ybegin '):
@@ -326,17 +320,17 @@ def yCheck(data):
 
                 ybegin = ySplit(data[i], splits)
 
-                if data[i+1].startswith('=ypart '):
-                    ypart = ySplit(data[i+1])
-                    data = data[i+2:]
+                if data[i + 1].startswith('=ypart '):
+                    ypart = ySplit(data[i + 1])
+                    data = data[i + 2:]
                     break
                 else:
-                    data = data[i+1:]
+                    data = data[i + 1:]
                     break
         except IndexError:
             break
 
-    ## Check tail
+    # Check tail
     for i in xrange(-1, -11, -1):
         try:
             if data[i].startswith('=yend '):
@@ -350,7 +344,7 @@ def yCheck(data):
 
 # Example: =ybegin part=1 line=128 size=123 name=-=DUMMY=- abc.par
 YSPLIT_RE = re.compile(r'([a-zA-Z0-9]+)=')
-def ySplit(line, splits = None):
+def ySplit(line, splits=None):
     fields = {}
 
     if splits:
@@ -362,10 +356,11 @@ def ySplit(line, splits = None):
         return fields
 
     for i in range(0, len(parts), 2):
-        key, value = parts[i], parts[i+1]
+        key, value = parts[i], parts[i + 1]
         fields[key] = value.strip()
 
     return fields
+
 
 def strip(data):
     while data and not data[0]:

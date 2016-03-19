@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<!DOCTYPE service_bundle SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
+<service_bundle type='manifest' name='export'>
+  <service name='network/sabnzbd' type='service' version='0'>
+    <instance name='default' enabled='true'>
+      <dependency name='multi-user' grouping='require_all' restart_on='none' type='service'>
+        <service_fmri value='svc:/milestone/multi-user'/>
+      </dependency>
+      <dependency name='network' grouping='require_all' restart_on='none' type='service'>
+        <service_fmri value='svc:/milestone/network:default'/>
+      </dependency>
+      <dependency name='filesystem-local' grouping='require_all' restart_on='none' type='service'>
+        <service_fmri value='svc:/system/filesystem/local:default'/>
+      </dependency>
+      <method_context>
+        <method_credential group='other' user='root'/>
+      </method_context>
+      <exec_method name='start' type='method' exec='/opt/sabnzbd/venv_sabnzbd/bin/python /opt/sabnzbd/SABnzbd.py -f /data/sabnzbd/.sabnzbd/sabnzbd.ini -d' timeout_seconds='30'/>
+      <exec_method name='stop' type='method' exec=':kill' timeout_seconds='2'/>
+      <property_group name='startd' type='framework'>
+        <propval name='ignore_error' type='astring' value='core,signal'/>
+      </property_group>
+      <property_group name='general' type='framework'>
+        <property name='action_authorization' type='astring'/>
+      </property_group>
+      <template>
+        <common_name>
+          <loctext xml:lang='C'>SABnzbd</loctext>
+        </common_name>
+        <documentation>
+          <doc_link name='sabnzbd' uri='http://sabnzbd.org/'/>
+        </documentation>
+      </template>
+    </instance>
+    <stability value='Evolving'/>
+  </service>
+</service_bundle>

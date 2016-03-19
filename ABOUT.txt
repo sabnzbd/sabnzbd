@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 0.7.11              ***
+*** This is SABnzbd 1.0.0               ***
 *******************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -12,15 +12,17 @@ and offers a complete API for third-party applications to hook into.
 There is an extensive Wiki on the use of SABnzbd.
 http://wiki.sabnzbd.org/
 
-IMPORTANT INFORMATION about release 0.7.0:
-http://wiki.sabnzbd.org/introducing-0-7-0
+IMPORTANT INFORMATION about release 1.0.0:
+http://wiki.sabnzbd.org/introducing-1-0-0
 
 
 Please also read the file "ISSUES.txt"
 
+
 *******************************************
-*** Upgrading from 0.6.x                ***
+*** Upgrading from 0.7.x or 0.6.x       ***
 *******************************************
+Empty your current queue
 Stop SABnzbd.
 Install new version
 Start SABnzbd.
@@ -34,23 +36,7 @@ Uninstall current version, keeping the data.
 Install new version
 Start SABnzbd.
 
-The organization of the download queue is different from 0.5.x.
-0.6.x will finish downloading an existing queue, but you
-cannot go back to an older version without losing your queue.
+The organization of the download queue is different from 0.7.x (and older).
+1.0.0 will not finish downloading an existing queue.
 Also, your sabnzbd.ini file will be upgraded, making it
-incompatible with release 0.5.x
-
-
-*******************************************
-*** Upgrading from 0.4.x                ***
-*******************************************
-
->>>>> PLEASE DOWNLOAD YOUR CURRENT QUEUE BEFORE UPGRADING <<<<<<
-
-When upgrading from a 0.4.x release such as 0.4.12 your old settings will be kept.
-You will however be given a fresh queue and history. If you have items in your queue
-from the older version of SABnzbd, you can either re-import the nzb files if you kept
-an nzb backup folder, or temporarily go back to 0.4.x until your queue is complete.
-
-The history is now stored in a better format meaning future upgrades should be backwards
-compatible.
+incompatible with older releases.

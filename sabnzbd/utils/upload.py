@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2009-2012 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2009-2015 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.utils.upload - File assosiation functions for adding nzb files to sabnzbd
+sabnzbd.utils.upload - File association functions for adding nzb files to sabnzbd
 """
 
 import urllib2
@@ -26,8 +26,10 @@ import os
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename
 import sabnzbd.newsunpack
+from sabnzbd.constants import VALID_ARCHIVES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
+
 
 def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
@@ -47,7 +49,7 @@ def upload_file(url, fp):
         sabnzbd.newsunpack.get_from_url(url)
     except:
         logging.error("Failed to upload file: %s", fp)
-        logging.info("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def add_local(f):
@@ -55,9 +57,9 @@ def add_local(f):
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
-            if get_ext(fn) in ('.zip', '.rar'):
+            if get_ext(fn) in VALID_ARCHIVES:
                 ProcessArchiveFile(fn, f, keep=True)
-            elif get_ext(fn) in ('.nzb', '.gz'):
+            elif get_ext(fn) in ('.nzb', '.gz', '.bz2'):
                 ProcessSingleFile(fn, f, keep=True)
         else:
             logging.error("Filename not found: %s", f)
