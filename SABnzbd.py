@@ -98,7 +98,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, deunicode
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
 from threading import Thread
@@ -1557,7 +1557,7 @@ def main():
         if sabnzbd.FOUNDATION:
             import sabnzbd.osxmenu
             sabnzbd.osxmenu.notify("SAB_Launched", None)
-        growler.send_notification('SABnzbd%s' % growler.hostname(),
+        notifier.send_notification('SABnzbd%s' % notifier.hostname(),
                                   T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
         # Now's the time to check for a new version
         check_latest_version()
@@ -1606,11 +1606,11 @@ def main():
         if sabnzbd.LAST_WARNING:
             msg = sabnzbd.LAST_WARNING
             sabnzbd.LAST_WARNING = None
-            sabnzbd.growler.send_notification(T('Warning'), msg, 'warning')
+            sabnzbd.notifier.send_notification(T('Warning'), msg, 'warning')
         if sabnzbd.LAST_ERROR:
             msg = sabnzbd.LAST_ERROR
             sabnzbd.LAST_ERROR = None
-            sabnzbd.growler.send_notification(T('Error'), msg, 'error')
+            sabnzbd.notifier.send_notification(T('Error'), msg, 'error')
 
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
@@ -1727,7 +1727,7 @@ def main():
             # Failing AppHelper libary!
             os._exit(0)
     else:
-        growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
+        notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
 
 
