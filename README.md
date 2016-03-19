@@ -63,8 +63,8 @@ The workflow we use, is a simplified form of "GitFlow".
 Basically:
 - "master" contains only stable releases (which have been merged to "master")
 - "develop" is the target for integration
-- "release/1.0.x" is a release and maintenance branch for 1.0.x: 1.0.0 -> 1.0.1 -> 1.0.2
-- "release/1.1.x" is a release and maintenance branch for 1.0.x: 1.1.0 -> 1.1.1 -> 1.1.2
+- "1.0.x" is a release and maintenance branch for 1.0.x: 1.0.0 -> 1.0.1 -> 1.0.2
+- "1.1.x" is a release and maintenance branch for 1.0.x: 1.1.0 -> 1.1.1 -> 1.1.2
 - "feature/my_feature" is a temporary feature branch
 - "hotfix/my_hotfix is an optional temporary branch for bugfix(es)
 
