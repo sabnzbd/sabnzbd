@@ -163,6 +163,12 @@ def send_notification(title, msg, gtype):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
+    # Notification script.
+    if sabnzbd.cfg.nscript_enable():
+        if sabnzbd.cfg.nscript_script():
+            Thread(target=send_nscript, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
@@ -481,6 +487,36 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Failed to send pushbullet message')
     return ''
 
+def send_nscript(title, msg, gtype, force=False, test=None):
+    if test:
+        script = test.get('nscript_script')
+    else:
+        script = sabnzbd.cfg.nscript_script()
+    if not script:
+        return T('Cannot send, missing required data')
+    title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+
+    if force or check_classes(gtype, 'nscript'):
+        try:
+            script_path = os.path.join(sabnzbd.cfg.script_dir(), script)
+            if os.path.exists(script_path):
+                command = [script_path, title, msg]
+                proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                output = proc.stdout.read()
+                ret = proc.wait()
+                if ret:
+                    return T('Script returned exit code %s and output "%"') % (ret, output)
+                else:
+                    logging.info('Successfully executed notification script ' + script)
+            else:
+                return T('Notification script "%s" does not exist') % script_path
+        except:
+            logging.warning('Failed to execute notification script ' + script)
+            logging.debug("Traceback: ", exc_info=True)
+            return T('Failed to execute notification script %s') % script
+
+    return ''
+
 def send_windows(title, msg, gtype):
     if sabnzbd.WINTRAY:
         try:
@@ -490,3 +526,4 @@ def send_windows(title, msg, gtype):
             logging.debug("Traceback: ", exc_info=True)
             return T('Failed to send Windows notification')
     return None
+

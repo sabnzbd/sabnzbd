@@ -677,6 +677,78 @@
 		   </fieldset>
 	   </div><!-- /col1 -->
 	</div><!-- /section -->
+	<div class="section" id="nscript">
+	    <div class="col2">
+		<h3>$T('section-NScript')</h3>
+		<table>
+		    <tr>
+			<td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+			<td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
+		    </tr>
+		</table>
+		<em>$T('explain-nscript_enable')</em>
+	    </div><!-- /col2 -->
+	    <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
+		<fieldset>
+		    <div class="field-pair">
+			<label class="config" for="nscript_script">$T('opt-nscript_script')</label>
+			<select name="nscript_script">
+			    <!--#for $sc in $script_list#-->
+			    <option value="$sc" <!--#if $nscript_script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+			    <!--#end for#-->
+			</select>
+			<span class="desc">$T('explain-nscript_script')</span>
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
+			<input type="checkbox" name="nscript_prio_startup" id="nscript_prio_startup" value="1" <!--#if int($nscript_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_download">$T($notify_texts['download']) / $T('link-pause') / $T('link-resume')</label>
+			<input type="checkbox" name="nscript_prio_download" id="nscript_prio_download" value="1" <!--#if int($nscript_prio_download) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_pp">$T($notify_texts['pp'])</label>
+			<input type="checkbox" name="nscript_prio_pp" id="nscript_prio_pp" value="1" <!--#if int($nscript_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_complete">$T($notify_texts['complete'])</label>
+			<input type="checkbox" name="nscript_prio_complete" id="nscript_prio_complete" value="1" <!--#if int($nscript_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_failed">$T($notify_texts['failed'])</label>
+			<input type="checkbox" name="nscript_prio_failed" id="nscript_prio_failed" value="1" <!--#if int($nscript_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_queue_done">$T($notify_texts['queue_done'])</label>
+			<input type="checkbox" name="nscript_prio_queue_done" id="nscript_prio_queue_done" value="1" <!--#if int($nscript_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_disk_full">$T($notify_texts['disk_full'])</label>
+			<input type="checkbox" name="nscript_prio_disk_full" id="nscript_prio_disk_full" value="1" <!--#if int($nscript_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_warning">$T($notify_texts['warning'])</label>
+			<input type="checkbox" name="nscript_prio_warning" id="nscript_prio_warning" value="1" <!--#if int($nscript_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_error">$T($notify_texts['error'])</label>
+			<input type="checkbox" name="nscript_prio_error" id="nscript_prio_error" value="1" <!--#if int($nscript_prio_error) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+			<label class="config wide" for="nscript_prio_other">$T($notify_texts['other'])</label>
+			<input type="checkbox" name="nscript_prio_other" id="nscript_prio_other" value="1" <!--#if int($nscript_prio_other) > 0 then 'checked="checked"' else ""#--> />
+		    </div>
+		    <div class="field-pair">
+		       <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+		       <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+		   </div>
+                   <div class="field-pair result-box">
+                      <div class="alert"></div>
+                   </div>
+	       </fieldset>
+	   </div><!-- /col1 -->
+	</div><!-- /section -->
     </form>
 </div><!-- /colmask -->
 
@@ -733,7 +805,7 @@
             }
         })
     }
-    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_growl, #test_osd').click(function () {
+    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_growl, #test_osd, #test_nscript').click(function () {
         testNotification(this)
     })
 });

@@ -381,5 +381,12 @@ $.fn.extractFormDataTo = function(target) {
         target[elem.name] = elem.value;
     });
 
+    var selects = $("select", this);
+
+    selects.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
+
     return this;
 }
+

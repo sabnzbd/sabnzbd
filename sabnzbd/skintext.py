@@ -653,6 +653,11 @@ SKIN_TEXT = {
     'explain-pushbullet_apikey' : TT('Your personal Pushbullet API key (required)'), #: Pushbullet settings
     'opt-pushbullet_device' : TT('Device'), #: Pushbullet settings
     'explain-pushbullet_device' : TT('Device to which message should be sent'), #: Pushbullet settings
+    'section-NScript' : TT('Notification Script'), #: Header for Notification Script notification section
+    'opt-nscript_enable' : TT('Enable notification script'), #: Notification Script settings
+    'opt-nscript_script' : TT('Script'), #: Notification Script settings
+    'explain-nscript_enable' : TT('Executes a custom script'), #: Notification Scriptsettings
+    'explain-nscript_script' : TT('Which script should we execute for notification?'), #: Notification Scriptsettings
 
 # Config->Cat
     'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
