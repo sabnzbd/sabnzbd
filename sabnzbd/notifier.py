@@ -17,7 +17,7 @@
 #
 
 """
-sabnzbd.growler - Send notifications to Growl
+sabnzbd.notifier - Send notifications to any notification services
 """
 
 from __future__ import with_statement
@@ -116,6 +116,14 @@ def check_classes(gtype, section):
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
 
+def get_prio(gtype, section):
+    """ Check if `gtype` is enabled in `section` """
+    try:
+        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
+    except TypeError:
+        logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
+        return None
+
 
 def send_notification(title, msg, gtype):
     """ Send Notification message """
@@ -151,7 +159,7 @@ def send_notification(title, msg, gtype):
 
     # Pushbullet
     if sabnzbd.cfg.pushbullet_enable():
-        if sabnzbd.cfg.pushbullet_apikey():
+        if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
@@ -377,28 +385,8 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     title = urllib2.quote(title.encode('utf8'))
     msg = urllib2.quote(msg.encode('utf8'))
-    prio = -3
+    prio = get_prio(gtype, 'prowl');
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.prowl_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.prowl_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.prowl_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.prowl_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.prowl_prio_failed()
-    if gtype == 'disk_full':
-        prio = sabnzbd.cfg.prowl_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.prowl_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.prowl_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.prowl_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.prowl_prio_other()
     if force:
         prio = 0
 
@@ -430,28 +418,8 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = -2
+    prio = get_prio(gtype, 'pushover');
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.pushover_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.pushover_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.pushover_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.pushover_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.pushover_prio_failed()
-    if gtype == 'disk_full':
-        prio = sabnzbd.cfg.pushover_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.pushover_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.pushover_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.pushover_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.pushover_prio_other()
     if force:
         prio = 1
 
@@ -490,28 +458,27 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+    
+    try:
+        conn = httplib.HTTPSConnection('api.pushbullet.com:443')
+        conn.request('POST', '/v2/pushes',
+            json.dumps({
+                'type': 'note',
+                'device': device,
+                'title': title,
+                'body': msg}),
+            headers={'Authorization': 'Bearer ' + apikey,
+                     'Content-type': 'application/json'})
+        res = conn.getresponse()
+        if res.status != 200:
+            logging.error(T('Bad response from Pushbullet (%s): %s'), res.status, res.read())
+        else:
+            logging.info('Successfully sent to Pushbullet')
 
-    if force or check_classes(gtype, 'nscript'):
-        try:
-            conn = httplib.HTTPSConnection('api.pushbullet.com:443')
-            conn.request('POST', '/v2/pushes',
-                json.dumps({
-                    'type': 'note',
-                    'device': device,
-                    'title': title,
-                    'body': msg}),
-                headers={'Authorization': 'Bearer ' + apikey,
-                         'Content-type': 'application/json'})
-            res = conn.getresponse()
-            if res.status != 200:
-                logging.error(T('Bad response from Pushbullet (%s): %s'), res.status, res.read())
-            else:
-                logging.info('Successfully sent to Pushbullet')
-
-        except:
-            logging.warning(T('Failed to send pushbullet message'))
-            logging.info('Traceback: ', exc_info=True)
-            return T('Failed to send pushbullet message')
+    except:
+        logging.warning(T('Failed to send pushbullet message'))
+        logging.info('Traceback: ', exc_info=True)
+        return T('Failed to send pushbullet message')
     return ''
 
 def send_windows(title, msg, gtype):

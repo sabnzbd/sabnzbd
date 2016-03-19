@@ -42,7 +42,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import *
 from sabnzbd.misc import get_filename, get_ext, diskfree, to_units
 from sabnzbd.panic import launch_a_browser
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 
 from sabnzbd.api import fast_queue
 from sabnzbd.nzbqueue import NzbQueue
@@ -546,7 +546,7 @@ class SABnzbdDelegate(NSObject):
             if sabnzbd.NEW_VERSION and self.version_notify:
                 # logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
                 new_release, _new_rel_url = sabnzbd.NEW_VERSION
-                growler.send_notification("SABnzbd", "%s : %s" % (T('New release available'), new_release), 'other')
+                notifier.send_notification("SABnzbd", "%s : %s" % (T('New release available'), new_release), 'other')
                 self.version_notify = 0
         except:
             logging.info("[osx] versionUpdate Exception %s" % (sys.exc_info()[0]))
@@ -780,7 +780,7 @@ class SABnzbdDelegate(NSObject):
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
         try:
-            growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), growler.NOTIFICATION['other'])
+            notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), notifier.NOTIFICATION['other'])
         except AttributeError:
             # Fails for the OSX binary
             pass

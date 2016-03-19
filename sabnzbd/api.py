@@ -64,7 +64,7 @@ from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
-import sabnzbd.growler
+import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
 
@@ -725,48 +725,48 @@ def _api_test_email(name, output, kwargs):
 def _api_test_windows(name, output, kwargs):
     """ API: send a test to Windows, return result """
     logging.info("Sending test notification")
-    res = sabnzbd.growler.send_windows('SABnzbd', T('Test Notification'), 'other')
+    res = sabnzbd.notifier.send_windows('SABnzbd', T('Test Notification'), 'other')
     return report(output, error=res)
 
 def _api_test_notif(name, output, kwargs):
     """ API: send a test to Notification Center, return result """
     logging.info("Sending test notification")
-    res = sabnzbd.growler.send_notification_center('SABnzbd', T('Test Notification'), 'other')
+    res = sabnzbd.notifier.send_notification_center('SABnzbd', T('Test Notification'), 'other')
     return report(output, error=res)
 
 
 def _api_test_growl(name, output, kwargs):
     """ API: send a test Growl notification, return result """
     logging.info("Sending Growl notification")
-    res = sabnzbd.growler.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
+    res = sabnzbd.notifier.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
     return report(output, error=res)
 
 
 def _api_test_osd(name, output, kwargs):
     """ API: send a test OSD notification, return result """
     logging.info("Sending OSD notification")
-    res = sabnzbd.growler.send_notify_osd('SABnzbd', T('Test Notification'))
+    res = sabnzbd.notifier.send_notify_osd('SABnzbd', T('Test Notification'))
     return report(output, error=res)
 
 
 def _api_test_prowl(name, output, kwargs):
     """ API: send a test Prowl notification, return result """
     logging.info("Sending Prowl notification")
-    res = sabnzbd.growler.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    res = sabnzbd.notifier.send_prowl('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
 
 def _api_test_pushover(name, output, kwargs):
     """ API: send a test Pushover notification, return result """
     logging.info("Sending Pushover notification")
-    res = sabnzbd.growler.send_pushover('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    res = sabnzbd.notifier.send_pushover('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
 
 def _api_test_pushbullet(name, output, kwargs):
     """ API: send a test Pushbullet notification, return result """
     logging.info("Sending Pushbullet notification")
-    res = sabnzbd.growler.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
+    res = sabnzbd.notifier.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
 

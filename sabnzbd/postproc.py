@@ -46,7 +46,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 
 
 class PostProcessor(Thread):
@@ -508,10 +508,10 @@ def process_job(nzo):
 
         # Show final status in history
         if all_ok:
-            growler.send_notification(T('Download Completed'), filename, 'complete')
+            notifier.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = Status.COMPLETED
         else:
-            growler.send_notification(T('Download Failed'), filename, 'failed')
+            notifier.send_notification(T('Download Failed'), filename, 'failed')
             nzo.status = Status.FAILED
 
     except:
@@ -520,7 +520,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info=True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        growler.send_notification(T('Download Failed'), filename, 'failed')
+        notifier.send_notification(T('Download Failed'), filename, 'failed')
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
@@ -574,7 +574,7 @@ def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
     assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
     filename = nzo.final_name
-    growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
+    notifier.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)
 
     # Get verification status of sets
