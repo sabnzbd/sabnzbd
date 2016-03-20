@@ -146,24 +146,6 @@ class HeaderElement(object):
         # Split the element into a value and parameters. The 'value' may
         # be of the form, "token=token", but we don't split that here.
         atoms = [x.strip() for x in elementstr.split(";") if x.strip()]
-
-        # Clumsy fix for lack of proper handling of constructions like:
-        # form-data; name="name"; filename="one;word.nzb"
-        # A proper parser should be used, but this patch will at least allow
-        # having semicolons in a file name.
-        if 'filename' in elementstr:
-            xatoms = []
-            append_next = False
-            for atom in atoms:
-                if append_next:
-                    append_next = False
-                    atom = xatoms.pop(-1) + ';' + atom
-                if '"' in atom and not atom.endswith('"'):
-                    append_next = True
-                xatoms.append(atom)
-            atoms = xatoms
-        # End of patch
-
         if not atoms:
             initial_value = ''
         else:

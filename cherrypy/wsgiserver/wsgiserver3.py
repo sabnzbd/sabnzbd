@@ -75,7 +75,8 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class']
+           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class',
+           'socket_errors_to_ignore']
 
 import os
 try:
@@ -86,20 +87,28 @@ import re
 import email.utils
 import socket
 import sys
+import threading
+import time
+import traceback as traceback_
+import errno
+import logging
+try:
+    # prefer slower Python-based io module
+    import _pyio as io
+except ImportError:
+    # Python 2.6
+    import io
+
+
 if 'win' in sys.platform and hasattr(socket, "AF_INET6"):
     if not hasattr(socket, 'IPPROTO_IPV6'):
         socket.IPPROTO_IPV6 = 41
     if not hasattr(socket, 'IPV6_V6ONLY'):
         socket.IPV6_V6ONLY = 27
-if sys.version_info < (3, 1):
-    import io
-else:
-    import _pyio as io
+
+
 DEFAULT_BUFFER_SIZE = io.DEFAULT_BUFFER_SIZE
 
-import threading
-import time
-from traceback import format_exc
 
 if sys.version_info >= (3, 0):
     bytestr = bytes
@@ -138,8 +147,6 @@ QUESTION_MARK = ntob('?')
 ASTERISK = ntob('*')
 FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
-
-import errno
 
 
 def plat_specific_errors(*errnames):
@@ -184,7 +191,6 @@ comma_separated_headers = [
 ]
 
 
-import logging
 if not hasattr(logging, 'statistics'):
     logging.statistics = {}
 
@@ -650,6 +656,10 @@ class HTTPRequest(object):
 
         # uri may be an abs_path (including "http://host.domain.tld");
         scheme, authority, path = self.parse_request_uri(uri)
+        if path is None:
+            self.simple_response("400 Bad Request",
+                                 "Invalid path in Request-URI.")
+            return False
         if NUMBER_SIGN in path:
             self.simple_response("400 Bad Request",
                                  "Illegal #fragment in Request-URI.")
@@ -1468,7 +1478,7 @@ class HTTPServer(object):
     timeout = 10
     """The timeout in seconds for accepted connections (default 10)."""
 
-    version = "CherryPy/3.8.0"
+    version = "CherryPy/5.1.0"
     """A version string for the HTTPServer."""
 
     software = None
@@ -1608,7 +1618,7 @@ class HTTPServer(object):
 
             # So everyone can access the socket...
             try:
-                os.chmod(self.bind_addr, 511)  # 0777
+                os.chmod(self.bind_addr, 0o777)
             except:
                 pass
 
@@ -1676,7 +1686,7 @@ class HTTPServer(object):
         sys.stderr.write(msg + '\n')
         sys.stderr.flush()
         if traceback:
-            tblines = format_exc()
+            tblines = traceback_.format_exc()
             sys.stderr.write(tblines)
             sys.stderr.flush()
 
@@ -1874,6 +1884,7 @@ class Gateway(object):
 # of such classes (in which case they will be lazily loaded).
 ssl_adapters = {
     'builtin': 'cherrypy.wsgiserver.ssl_builtin.BuiltinSSLAdapter',
+    'pyopenssl': 'cherrypy.wsgiserver.ssl_pyopenssl.pyOpenSSLAdapter',
 }
 
 

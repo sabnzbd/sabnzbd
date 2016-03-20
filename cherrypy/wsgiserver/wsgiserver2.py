@@ -75,8 +75,8 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
-           'socket_errors_to_ignore',
-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class', 'redirect_url']
+           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class',
+           'socket_errors_to_ignore']
 
 import os
 try:
@@ -84,21 +84,34 @@ try:
 except:
     import Queue as queue
 import re
-import rfc822
+import email.utils
 import socket
 import sys
+import threading
+import time
+import traceback as traceback_
+import operator
+from urllib import unquote
+import warnings
+import errno
+import logging
+try:
+    # prefer slower Python-based io module
+    import _pyio as io
+except ImportError:
+    # Python 2.6
+    import io
+
+
 if 'win' in sys.platform and hasattr(socket, "AF_INET6"):
     if not hasattr(socket, 'IPPROTO_IPV6'):
         socket.IPPROTO_IPV6 = 41
     if not hasattr(socket, 'IPV6_V6ONLY'):
         socket.IPV6_V6ONLY = 27
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
-DEFAULT_BUFFER_SIZE = -1
 
-REDIRECT_URL = None  # Application can write its HTTP-->HTTPS redirection URL here
+
+DEFAULT_BUFFER_SIZE = io.DEFAULT_BUFFER_SIZE
+
 
 class FauxSocket(object):
 
@@ -111,23 +124,6 @@ _fileobject_uses_str_type = isinstance(
     socket._fileobject(FauxSocket())._rbuf, basestring)
 del FauxSocket  # this class is not longer required for anything.
 
-import threading
-import time
-import traceback
-
-
-def format_exc(limit=None):
-    """Like print_exc() but return a string. Backport for Python 2.3."""
-    try:
-        etype, value, tb = sys.exc_info()
-        return ''.join(traceback.format_exception(etype, value, tb, limit))
-    finally:
-        etype = value = tb = None
-
-import operator
-
-from urllib import unquote
-import warnings
 
 if sys.version_info >= (3, 0):
     bytestr = bytes
@@ -166,14 +162,6 @@ QUESTION_MARK = ntob('?')
 ASTERISK = ntob('*')
 FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
-
-import errno
-
-def redirect_url(url=None):
-    global REDIRECT_URL
-    if url and '%s' in url:
-        REDIRECT_URL = url
-    return REDIRECT_URL
 
 
 def plat_specific_errors(*errnames):
@@ -218,7 +206,6 @@ comma_separated_headers = [
 ]
 
 
-import logging
 if not hasattr(logging, 'statistics'):
     logging.statistics = {}
 
@@ -682,7 +669,11 @@ class HTTPRequest(object):
 
         # uri may be an abs_path (including "http://host.domain.tld");
         scheme, authority, path = self.parse_request_uri(uri)
-        if path and NUMBER_SIGN in path:
+        if path is None:
+            self.simple_response("400 Bad Request",
+                                 "Invalid path in Request-URI.")
+            return False
+        if NUMBER_SIGN in path:
             self.simple_response("400 Bad Request",
                                  "Illegal #fragment in Request-URI.")
             return False
@@ -691,24 +682,23 @@ class HTTPRequest(object):
             self.scheme = scheme
 
         qs = EMPTY
-        if path and QUESTION_MARK in path:
+        if QUESTION_MARK in path:
             path, qs = path.split(QUESTION_MARK, 1)
 
-        if path is not None:
-            # Unquote the path+params (e.g. "/this%20path" -> "/this path").
-            # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
-            #
-            # But note that "...a URI must be separated into its components
-            # before the escaped characters within those components can be
-            # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
-            # Therefore, "/this%2Fpath" becomes "/this%2Fpath", not "/this/path".
-            try:
-                atoms = [unquote(x) for x in quoted_slash.split(path)]
-            except ValueError:
-                ex = sys.exc_info()[1]
-                self.simple_response("400 Bad Request", ex.args[0])
-                return False
-            path = "%2F".join(atoms)
+        # Unquote the path+params (e.g. "/this%20path" -> "/this path").
+        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
+        #
+        # But note that "...a URI must be separated into its components
+        # before the escaped characters within those components can be
+        # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
+        # Therefore, "/this%2Fpath" becomes "/this%2Fpath", not "/this/path".
+        try:
+            atoms = [unquote(x) for x in quoted_slash.split(path)]
+        except ValueError:
+            ex = sys.exc_info()[1]
+            self.simple_response("400 Bad Request", ex.args[0])
+            return False
+        path = "%2F".join(atoms)
         self.path = path
 
         # Note that, like wsgiref and most other HTTP servers,
@@ -847,11 +837,7 @@ class HTTPRequest(object):
             # http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query
             # ]]
             scheme, remainder = uri[:i].lower(), uri[i + 3:]
-            try:
-                authority, path = remainder.split(FORWARD_SLASH, 1)
-            except ValueError:
-                authority = remainder.split(FORWARD_SLASH, 1)
-                path = ''
+            authority, path = remainder.split(FORWARD_SLASH, 1)
             path = FORWARD_SLASH + path
             return scheme, authority, path
 
@@ -893,9 +879,6 @@ class HTTPRequest(object):
                status + CRLF,
                "Content-Length: %s\r\n" % len(msg),
                "Content-Type: text/plain\r\n"]
-
-        if status[:3] in ("301",):
-            buf.append("Location: %s" % msg)
 
         if status[:3] in ("413", "414"):
             # Request Entity Too Large / Request-URI Too Long
@@ -986,7 +969,7 @@ class HTTPRequest(object):
                 self.rfile.read(remaining)
 
         if "date" not in hkeys:
-            self.outheaders.append(("Date", rfc822.formatdate()))
+            self.outheaders.append(("Date", email.utils.formatdate()))
 
         if "server" not in hkeys:
             self.outheaders.append(("Server", self.server.server_name))
@@ -1067,7 +1050,7 @@ class CP_fileobject(socket._fileobject):
             if size < 0:
                 # Read until EOF
                 # reset _rbuf.  we consume it via buf.
-                self._rbuf = StringIO.StringIO()
+                self._rbuf = io.BytesIO()
                 while True:
                     data = self.recv(rbufsize)
                     if not data:
@@ -1082,12 +1065,12 @@ class CP_fileobject(socket._fileobject):
                     # return.
                     buf.seek(0)
                     rv = buf.read(size)
-                    self._rbuf = StringIO.StringIO()
+                    self._rbuf = io.BytesIO()
                     self._rbuf.write(buf.read())
                     return rv
 
                 # reset _rbuf.  we consume it via buf.
-                self._rbuf = StringIO.StringIO()
+                self._rbuf = io.BytesIO()
                 while True:
                     left = size - buf_len
                     # recv() will malloc the amount of memory given as its
@@ -1125,7 +1108,7 @@ class CP_fileobject(socket._fileobject):
                 buf.seek(0)
                 bline = buf.readline(size)
                 if bline.endswith('\n') or len(bline) == size:
-                    self._rbuf = StringIO.StringIO()
+                    self._rbuf = io.BytesIO()
                     self._rbuf.write(buf.read())
                     return bline
                 del bline
@@ -1136,7 +1119,7 @@ class CP_fileobject(socket._fileobject):
                     buf.seek(0)
                     buffers = [buf.read()]
                     # reset _rbuf.  we consume it via buf.
-                    self._rbuf = StringIO.StringIO()
+                    self._rbuf = io.BytesIO()
                     data = None
                     recv = self.recv
                     while data != "\n":
@@ -1148,7 +1131,7 @@ class CP_fileobject(socket._fileobject):
 
                 buf.seek(0, 2)  # seek end
                 # reset _rbuf.  we consume it via buf.
-                self._rbuf = StringIO.StringIO()
+                self._rbuf = io.BytesIO()
                 while True:
                     data = self.recv(self._rbufsize)
                     if not data:
@@ -1170,11 +1153,11 @@ class CP_fileobject(socket._fileobject):
                 if buf_len >= size:
                     buf.seek(0)
                     rv = buf.read(size)
-                    self._rbuf = StringIO.StringIO()
+                    self._rbuf = io.BytesIO()
                     self._rbuf.write(buf.read())
                     return rv
                 # reset _rbuf.  we consume it via buf.
-                self._rbuf = StringIO.StringIO()
+                self._rbuf = io.BytesIO()
                 while True:
                     data = self.recv(self._rbufsize)
                     if not data:
@@ -1410,13 +1393,10 @@ class HTTPConnection(object):
                 # Unwrap our wfile
                 self.wfile = CP_fileobject(
                     self.socket._sock, "wb", self.wbufsize)
-                if REDIRECT_URL:
-                    req.simple_response("301 Moved Permanently", REDIRECT_URL % self.remote_addr)
-                else:
-                    req.simple_response(
-                        "400 Bad Request",
-                        "The client sent a plain HTTP request, but "
-                        "this server only speaks HTTPS on this port.")
+                req.simple_response(
+                    "400 Bad Request",
+                    "The client sent a plain HTTP request, but "
+                    "this server only speaks HTTPS on this port.")
                 self.linger = True
         except Exception:
             e = sys.exc_info()[1]
@@ -1776,7 +1756,7 @@ class HTTPServer(object):
     timeout = 10
     """The timeout in seconds for accepted connections (default 10)."""
 
-    version = "CherryPy/3.8.0"
+    version = "CherryPy/5.1.0"
     """A version string for the HTTPServer."""
 
     software = None
@@ -1903,25 +1883,6 @@ class HTTPServer(object):
         if self.software is None:
             self.software = "%s Server" % self.version
 
-        # SSL backward compatibility
-        if (self.ssl_adapter is None and
-                getattr(self, 'ssl_certificate', None) and
-                getattr(self, 'ssl_private_key', None)):
-            warnings.warn(
-                "SSL attributes are deprecated in CherryPy 3.2, and will "
-                "be removed in CherryPy 3.3. Use an ssl_adapter attribute "
-                "instead.",
-                DeprecationWarning
-            )
-            try:
-                from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
-            except ImportError:
-                pass
-            else:
-                self.ssl_adapter = pyOpenSSLAdapter(
-                    self.ssl_certificate, self.ssl_private_key,
-                    getattr(self, 'ssl_certificate_chain', None))
-
         # Select the appropriate socket
         if isinstance(self.bind_addr, basestring):
             # AF_UNIX socket
@@ -1934,7 +1895,7 @@ class HTTPServer(object):
 
             # So everyone can access the socket...
             try:
-                os.chmod(self.bind_addr, 511)  # 0777
+                os.chmod(self.bind_addr, 0o777)
             except:
                 pass
 
@@ -2003,7 +1964,7 @@ class HTTPServer(object):
         sys.stderr.write(msg + '\n')
         sys.stderr.flush()
         if traceback:
-            tblines = format_exc()
+            tblines = traceback_.format_exc()
             sys.stderr.write(tblines)
             sys.stderr.flush()
 
@@ -2205,7 +2166,7 @@ ssl_adapters = {
 }
 
 
-def get_ssl_adapter_class(name='pyopenssl'):
+def get_ssl_adapter_class(name='builtin'):
     """Return an SSL adapter class for the given name."""
     adapter = ssl_adapters[name.lower()]
     if isinstance(adapter, basestring):
