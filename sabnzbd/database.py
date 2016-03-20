@@ -495,7 +495,7 @@ def unpack_history_info(item):
         item['stage_log'] = [x for x in lst if x is not None]
 
     if item['script_log']:
-        del item['script_log']
+        item['script_log'] = ''
     # The action line is only available for items in the postproc queue
     if not item.has_key('action_line'):
         item['action_line'] = ''
