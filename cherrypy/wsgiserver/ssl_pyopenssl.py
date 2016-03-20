@@ -192,7 +192,11 @@ class pyOpenSSLAdapter(wsgiserver.SSLAdapter):
         c = SSL.Context(SSL.SSLv23_METHOD)
         c.use_privatekey_file(self.private_key)
         if self.certificate_chain:
-            c.load_verify_locations(self.certificate_chain)
+            if isinstance(self.certificate_chain, unicode) and self.certificate_chain.encode('cp1252', 'ignore') == self.certificate_chain.encode('cp1252', 'replace'):
+                # Support buggy PyOpenSSL 0.14, which cannot handle Unicode names
+                c.load_verify_locations(self.certificate_chain.encode('cp1252', 'ignore'))
+            else:
+                c.load_verify_locations(self.certificate_chain)
         c.use_certificate_file(self.certificate)
         return c
 
