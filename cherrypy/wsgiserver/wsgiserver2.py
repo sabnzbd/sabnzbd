@@ -844,7 +844,11 @@ class HTTPRequest(object):
             # http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query
             # ]]
             scheme, remainder = uri[:i].lower(), uri[i + 3:]
-            authority, path = remainder.split(FORWARD_SLASH, 1)
+            try:
+                authority, path = remainder.split(FORWARD_SLASH, 1)
+            except ValueError:
+                authority = remainder.split(FORWARD_SLASH, 1)
+                path = ''
             path = FORWARD_SLASH + path
             return scheme, authority, path
 
