@@ -431,7 +431,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if force:
         prio = 1
 
-    if prio > -2:
+    if prio > -3:
         try:
             conn = httplib.HTTPSConnection("api.pushover.net:443")
             conn.request("POST", "/1/messages.json", urllib.urlencode({

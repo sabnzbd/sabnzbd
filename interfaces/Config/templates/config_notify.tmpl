@@ -496,7 +496,7 @@
 					<input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" />
 					<span class="desc">$T('explain-pushover_userkey')</span>
 				</div>
-				<div class="field-pair" style="display:none">
+				<div class="field-pair">
 					<label class="config" for="pushover_device">$T('opt-pushover_device')</label>
 					<input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" />
 					<span class="desc">$T('explain-pushover_device')</span>
@@ -504,91 +504,111 @@
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
 					<select name="pushover_prio_startup" id="pushover_prio_startup">
-						<option value="-2" <!--#if $pushover_prio_startup == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_startup == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_startup == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_startup == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_startup == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_startup == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_startup == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_startup == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 			   </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_download">$T($notify_texts['download']) / $T('link-pause') / $T('link-resume')</label>
 					<select name="pushover_prio_download" id="pushover_prio_download">
-						<option value="-2" <!--#if $pushover_prio_download == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_download == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_download == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_download == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_download == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_download == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_download == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_download == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 			   </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_pp">$T($notify_texts['pp'])</label>
 					<select name="pushover_prio_pp" id="pushover_prio_pp">
-						<option value="-2" <!--#if $pushover_prio_pp == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_pp == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_pp == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_pp == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_pp == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_pp == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_pp == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_pp == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 			   </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_complete">$T($notify_texts['complete'])</label>
 					<select name="pushover_prio_complete" id="pushover_prio_complete">
-						<option value="-2" <!--#if $pushover_prio_complete == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_complete == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_complete == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_complete == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_complete == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_complete == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_complete == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_complete == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 			   </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_failed">$T($notify_texts['failed'])</label>
 					<select name="pushover_prio_failed" id="pushover_prio_failed">
-						<option value="-2" <!--#if $pushover_prio_failed == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_failed == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_failed == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_failed == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_failed == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_failed == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_failed == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_failed == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 				</div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_queue_done">$T($notify_texts['queue_done'])</label>
 					<select name="pushover_prio_queue_done" id="pushover_prio_queue_done">
-						<option value="-2" <!--#if $pushover_prio_queue_done == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_queue_done == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_queue_done == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_queue_done == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_queue_done == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_queue_done == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_queue_done == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_queue_done == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 				</div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_disk_full">$T($notify_texts['disk_full'])</label>
 					<select name="pushover_prio_disk_full" id="pushover_prio_disk_full">
-						<option value="-2" <!--#if $pushover_prio_disk_full == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_disk_full == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_disk_full == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_disk_full == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_disk_full == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_disk_full == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 			   </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_warning">$T($notify_texts['warning'])</label>
 					<select name="pushover_prio_warning" id="pushover_prio_warning">
-						<option value="-2" <!--#if $pushover_prio_warning == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_warning == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_warning == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_warning == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_warning == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_warning == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_warning == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_warning == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 				</div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_error">$T($notify_texts['error'])</label>
 					<select name="pushover_prio_error" id="pushover_prio_error">
-						<option value="-2" <!--#if $pushover_prio_error == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_error == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_error == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_error == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_error == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_error == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_error == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_error == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
 				</div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_other">$T($notify_texts['other'])</label>
 					<select name="pushover_prio_other" id="pushover_prio_other">
-						<option value="-2" <!--#if $pushover_prio_other == -2 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-3" <!--#if $pushover_prio_other == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+						<option value="-2" <!--#if $pushover_prio_other == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
 						<option value="-1" <!--#if $pushover_prio_other == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+						<option value="0"  <!--#if $pushover_prio_other == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
 						<option value="1"  <!--#if $pushover_prio_other == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-						<option value="2"  <!--#if $pushover_prio_other == 2  then 'selected="selected"' else ""#--> >$T('pushover-confirm')</option>
+						<option value="2"  <!--#if $pushover_prio_other == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
                 </div>
 
