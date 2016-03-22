@@ -146,6 +146,7 @@ WEBUI_READY = False
 LAST_WARNING = None
 LAST_ERROR = None
 EXTERNAL_IPV6 = False
+LAST_HISTORY_CALL = time.time()
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False

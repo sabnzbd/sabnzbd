@@ -411,7 +411,7 @@ $(function() {
         }
 
         // Refresh function
-        self.refresh = function() {
+        self.refresh = function(forceFullHistory) {
             // Clear previous timeout and set a new one to prevent double-calls
             clearTimeout(self.interval);
             self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
@@ -478,13 +478,18 @@ $(function() {
                 // Show screen
                 self.isRestarting(1)
             });
+            // Force full history update?
+            if(forceFullHistory) {
+                self.history.lastUpdate = 0
+            }
             // History
             callAPI({
                 mode: "history",
                 search: self.history.searchTerm(),
                 failed_only: self.history.showFailed()*1,
                 start: self.history.pagination.currentStart(),
-                limit: parseInt(self.history.paginationLimit())
+                limit: parseInt(self.history.paginationLimit()),
+                last_history_call: self.history.lastUpdate
             }).done(self.updateHistory);
             
             // We are now done with any loading
@@ -1888,6 +1893,7 @@ $(function() {
         self.parent = parent;
 
         // Variables
+        self.lastUpdate = 0;
         self.historyItems = ko.observableArray([])
         self.showFailed = ko.observable(false);
         self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
@@ -1904,6 +1910,12 @@ $(function() {
 
         // Update function for history list
         self.updateFromData = function(data) {
+            /***
+                See if there's anything to update
+            ***/
+            if(!data) return;
+            self.lastUpdate = data.last_history_call
+
             /***
                 History list functions per item
             ***/
@@ -2002,7 +2014,9 @@ $(function() {
                 processData: false,
                 contentType: false,
                 data: data
-            }).then(self.parent.refresh);
+            }).then(function() {
+                self.parent.refresh(true)
+            });
 
             $("#modal-retry-job").modal("hide");
             $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
@@ -2011,8 +2025,10 @@ $(function() {
               
         // Searching in history (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
+            // Make sure we refresh
+            self.lastUpdate = 0
             // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) > 2 ) {
+            if(parseInt(self.parent.refreshRate()) >= 2 ) {
                 self.parent.refresh();
             }
             // Go back to page 1
@@ -2047,7 +2063,7 @@ $(function() {
             // Forde hide tooltip so it doesn't linger
             $('#history-options a').tooltip('hide')
             // Force refresh
-            self.parent.refresh()
+            self.parent.refresh(true)
         }
 
         // Empty history options
@@ -2198,7 +2214,7 @@ $(function() {
             
             // Update all info
             self.updateAllHistory = true;
-            parent.parent.refresh();
+            parent.parent.refresh(true);
 
             // Try to keep open
             keepOpen(event.target)
@@ -2263,7 +2279,7 @@ $(function() {
             }).then(function(response) {
                 // Update all info
                 self.updateAllHistory = true;
-                self.parent.parent.refresh()
+                self.parent.parent.refresh(true)
             })
         }
 
@@ -2288,6 +2304,7 @@ $(function() {
             }).then(function(response) {
                 // Update all info
                 self.updateAllHistory = true;
+                self.parent.parent.refresh(true)
             })
         }
 
@@ -2698,7 +2715,7 @@ $(function() {
             // Re-paginate
             self.updatePages();
             // Force full update
-            parent.parent.refresh();
+            parent.parent.refresh(true);
         }
     }
 
