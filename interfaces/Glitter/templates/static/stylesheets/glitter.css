@@ -438,6 +438,38 @@ tbody>tr>td:last-child {
     text-overflow: ellipsis;
 }
 
+/**
+    Tabbed navigation
+**/
+.container-tabbed #history-tab,
+.container-tabbed #queue-tab,
+.container-tabbed .history h2,
+.container-tabbed .queue h2,
+.history-queue-swicher {
+    display: none;
+}
+
+.container-tabbed #history-tab.active,
+.container-tabbed #queue-tab.active,
+.container-tabbed .history-queue-swicher {
+    display: block;
+}
+
+.history-queue-swicher {
+    float: left;
+    z-index: 1001;
+    position: relative;
+}
+
+.history-queue-swicher .nav {
+    border-bottom: none;
+}
+
+.history-queue-swicher .badge {
+    margin-left: 4px;
+}
+
+
 /***
     QUEUE Specific
 ***/
@@ -1723,6 +1755,13 @@ input[name="nzbURL"] {
     .sparkline-container {
         display: none !important;
     }
+
+    .container-tabbed .nav li.active>a {
+        border-bottom: 1px solid #ddd;
+        box-shadow: none;
+        margin-bottom: 5px;
+    }
+
 }
 
 @media screen and (min-width: 768px) {
@@ -1976,11 +2015,19 @@ legend {
     text-transform: capitalize;
     font-weight: bold;
     font-size: 1.1em;
+    color: black !important;
+    opacity: 0.7;
 }
 
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, 
+.nav-tabs>li.active>a, 
 .nav-tabs>li.active>a:hover {
-    box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.15)
+    box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.15);
+    color: black;
+}
+
+.nav-tabs>li.active>a,
+.nav-tabs>li:hover>a  {
+    opacity: 1
 }
 
 .tab-content {

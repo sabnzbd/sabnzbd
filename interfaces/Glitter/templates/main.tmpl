@@ -139,6 +139,17 @@
         </div>
 
         <div class="container main-content">
+            <div class="history-queue-swicher">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#queue-tab" data-toggle="tab">$T('menu-queue') <span class="badge" data-bind="text: queue.totalItems"></span></a>
+                    </li>
+                    <li>
+                        <a href="#history-tab" data-toggle="tab">$T('menu-history')<span class="badge" data-bind="text: history.totalItems"></span></a>
+                    </li>
+                </ul>
+            </div>
+
             <!--#include $webdir + "/include_queue.tmpl"#-->
             <!--#include $webdir + "/include_messages.tmpl"#-->
             <!--#include $webdir + "/include_history.tmpl"#-->

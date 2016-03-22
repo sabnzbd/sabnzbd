@@ -821,6 +821,7 @@ SKIN_TEXT = {
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
+    'Glitter-displayTabbed' : TT('Queue and History on seperate pages'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
     'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
