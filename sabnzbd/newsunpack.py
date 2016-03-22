@@ -179,6 +179,31 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     return output, ret
 
 
+def external_script(script, p1, p2):
+    """ Run a user script with two parameters, return console output and exit value """
+    command = [script, p1, p2]
+
+    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
+        command.insert(0, 'python')
+    stup, need_shell, command, creationflags = build_command(command)
+    env = fix_env()
+
+    logging.info('Running user script %s(%s, %s)', script, p1, p2)
+
+    try:
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            startupinfo=stup, env=env, creationflags=creationflags)
+    except:
+        logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
+        return "Cannot run script %s\r\n" % extern_proc, -1
+
+    output = p.stdout.read()
+    ret = p.wait()
+    return output, ret
+
+
+
 def SimpleRarExtract(rarfile, name):
     """ Extract single file from rar archive, returns (retcode, data) """
     command = [sabnzbd.newsunpack.RAR_COMMAND, "p", "-inul", rarfile, name]

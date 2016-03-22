@@ -36,6 +36,8 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import unicoder
 from sabnzbd.constants import NOTIFY_KEYS
+from sabnzbd.misc import split_host, make_script_path
+from sabnzbd.newsunpack import external_script
 
 from gntp import GNTPRegister
 from gntp.notifier import GrowlNotifier
@@ -183,7 +185,7 @@ def reset_growl():
 def register_growl(growl_server, growl_password):
     """ Register this app with Growl """
     error = None
-    host, port = sabnzbd.misc.split_host(growl_server or '')
+    host, port = split_host(growl_server or '')
 
     sys_name = hostname(host)
 
@@ -487,7 +489,9 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Failed to send pushbullet message')
     return ''
 
+
 def send_nscript(title, msg, gtype, force=False, test=None):
+    """ Run user's notification script """
     if test:
         script = test.get('nscript_script')
     else:
@@ -497,24 +501,15 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
 
     if force or check_classes(gtype, 'nscript'):
-        try:
-            script_path = os.path.join(sabnzbd.cfg.script_dir(), script)
-            if os.path.exists(script_path):
-                command = [script_path, title, msg]
-                proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                output = proc.stdout.read()
-                ret = proc.wait()
-                if ret:
-                    return T('Script returned exit code %s and output "%"') % (ret, output)
-                else:
-                    logging.info('Successfully executed notification script ' + script)
+        script_path = make_script_path(script)
+        if script_path:
+            ret, outoput = external_script(script_path, title, gtype)
+            if ret:
+                return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
-                return T('Notification script "%s" does not exist') % script_path
-        except:
-            logging.warning('Failed to execute notification script ' + script)
-            logging.debug("Traceback: ", exc_info=True)
-            return T('Failed to execute notification script %s') % script
-
+                logging.info('Successfully executed notification script ' + script_path)
+        else:
+            return T('Notification script "%s" does not exist') % script_path
     return ''
 
 def send_windows(title, msg, gtype):
