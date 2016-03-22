@@ -2736,8 +2736,13 @@ function keepOpen(thisItem) {
             e.stopPropagation();
         }
     });
-    // Add possible tooltips
-    if(!isMobile) $(thisItem).siblings('.dropdown-menu').children('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    // Add possible tooltips and make sure they get removed
+    if(!isMobile)  {
+        $(thisItem).siblings('.dropdown-menu').children('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+        $(thisItem).parent().on('hide.bs.dropdown', function() {
+            $(thisItem).siblings('.dropdown-menu').children('[data-tooltip="true"]').tooltip('hide')
+        })
+    }
 }
 
 // Show history details
