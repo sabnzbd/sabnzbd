@@ -44,6 +44,11 @@ $(function() {
         // Add extra class
         $('body').addClass('container-compact')
     }
+
+    // Tabbed layout?
+    if(localStorageGetItem('displayTabbed') === 'true') {
+        $('body').addClass('container-tabbed')
+    }
     
     // Basic API-call
     function callAPI(data) {
@@ -129,6 +134,7 @@ $(function() {
         self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
         self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
         self.dateFormat = ko.observable('DD/MM/YYYY HH:mm').extend({ persist: 'pageDateFormat' });
+        self.displayTabbed = ko.observable().extend({ persist: 'displayTabbed' });
         self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
@@ -946,8 +952,14 @@ $(function() {
             }     
         }
 
+        // Toggle Glitter's compact layout dynamically
         self.displayCompact.subscribe(function() {
             $('body').toggleClass('container-compact')
+        })
+
+        // Toggle Glitter's tabbed modus
+        self.displayTabbed.subscribe(function() {
+            $('body').toggleClass('container-tabbed')
         })
 
         /**
@@ -1097,7 +1109,7 @@ $(function() {
                 clear: function() { self.clearMessages('LocalStorageMsg')}
             });
         }
-        
+
         /***
             Date-stuff
         ***/
