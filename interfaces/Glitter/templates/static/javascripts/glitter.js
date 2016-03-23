@@ -886,7 +886,14 @@ $(function() {
         // Refresh connections page
         var connectionRefresh
         $('.nav-tabs a[href="#options_connections"]').on('shown.bs.tab', function() {
+            // Check size on open
+            checkSize()
+
+            // Set the interval
             connectionRefresh = setInterval(function() {
+                // Start small
+                checkSize()
+
                 // Check if still visible
                 if(!$('#options_connections').is(':visible') && connectionRefresh) {
                     // Stop refreshing
@@ -899,6 +906,23 @@ $(function() {
                 }
             }, self.refreshRate() * 1000)
         })
+
+        // On close of the tab
+        $('.nav-tabs a[href="#options_connections"]').on('hidden.bs.tab', function() {
+            checkSize()
+        })
+
+        // Function that handles the actual sizing of connections tab
+        function checkSize() {
+            // Any connections?
+            if(self.showActiveConnections() && $('#options_connections').is(':visible') && $('.table-server-connections').height() > 1) {
+                var mainWidth = $('.main-content').width()
+                $('#modal-options .modal-dialog').width(mainWidth*0.85 > 650 ? mainWidth*0.85 : '')
+            } else {
+                // Small again
+                $('#modal-options .modal-dialog').width('')
+            }
+        }
 
         // Make sure Connections get refreshed also after open->close->open
         $('#modal-options').on('show.bs.modal', function () {
