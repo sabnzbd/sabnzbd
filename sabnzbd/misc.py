@@ -1139,13 +1139,13 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # Create the CA Certificate
     cakey = createKeyPair(TYPE_RSA, 2048)
-    careq = createCertRequest(cakey, digest='sha1', CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha1')  # ten years
+    careq = createCertRequest(cakey, digest='sha256', CN='Certificate Authority')
+    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
 
     cname = 'SABnzbd'
     pkey = createKeyPair(TYPE_RSA, 2048)
-    req = createCertRequest(pkey, digest='sha1', CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha1')  # ten years
+    req = createCertRequest(pkey, digest='sha256', CN=cname)
+    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
 
     # Save the key and certificate to disk
     try:
