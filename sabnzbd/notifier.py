@@ -117,14 +117,15 @@ def check_classes(gtype, section):
         return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
+        return False
 
 def get_prio(gtype, section):
     """ Check if `gtype` is enabled in `section` """
     try:
-        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
+        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))()
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
-        return None
+        return -1000
 
 
 def send_notification(title, msg, gtype):
@@ -466,7 +467,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
-    
+
     try:
         conn = httplib.HTTPSConnection('api.pushbullet.com:443')
         conn.request('POST', '/v2/pushes',
