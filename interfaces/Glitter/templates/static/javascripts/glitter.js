@@ -536,6 +536,12 @@ $(function() {
         
         // Update on changes
         self.pauseCustom.subscribe(function(newValue) {
+            // Is it plain numbers?
+            if(newValue.match(/^\s*\d+\s*$/)) {
+                // Treat it as a number of minutes
+                newValue += " minutes";
+            }
+
             // At least 3 charaters
             if(newValue.length < 3) {
                 $('#customPauseOutput').text('').data('time', 0)
