@@ -44,6 +44,7 @@ legend,
 }
 
 .main-restarting,
+.main-filedrop,
 .nav-tabs>li>a {
     color: white !important;
 }
@@ -59,7 +60,7 @@ legend,
 .main-notification-box {
     background-color: #727272;
     border-color: #252525 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .container,
@@ -146,6 +147,16 @@ select.form-control,
     border-color: #252525 !important;
 }
 
+
+.history-failed-download td.status,
+.retry-buttontext,
+.retry-button, .retry-button-inactive,
+.history-options-show-failed,
+.queue-error-info,
+.options-bad-status {
+    color: #F95151 !important;
+}
+
 .ui-sortable-helper td {
     background-color: #555555 !important;
 }
@@ -169,8 +180,9 @@ pre {
     opacity: 1 !important;
 }
 
-legend, hr {
-    border-color: #EBEBEB;
+legend, 
+hr {
+    border-color: #C6C6C6 !important;
 }
 
 .ui-slider .ui-slider-handle {
@@ -197,6 +209,11 @@ legend, hr {
 .history-item .dropdown-menu:after, 
 .info-container-box-sorting .dropdown-menu:after {
     border-bottom-color: #666;
+}
+
+.container-compact .progress,
+.container-compact .queue .progress-bar {
+    box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
 }
 
 /* Placeholders - Will not work if grouped! */
