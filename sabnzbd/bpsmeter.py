@@ -146,13 +146,12 @@ class BPSMeter(object):
 
     def save(self):
         """ Save admin to disk """
-        if self.grand_total or self.day_total or self.week_total or self.month_total:
-            data = (self.last_update, self.grand_total,
-                    self.day_total, self.week_total, self.month_total,
-                    self.end_of_day, self.end_of_week, self.end_of_month,
-                    self.quota, self.left, self.q_time
-                    )
-            sabnzbd.save_admin(data, BYTES_FILE_NAME)
+        data = (self.last_update, self.grand_total,
+                self.day_total, self.week_total, self.month_total,
+                self.end_of_day, self.end_of_week, self.end_of_month,
+                self.quota, self.left, self.q_time
+                )
+        sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """
@@ -320,6 +319,7 @@ class BPSMeter(object):
             del self.month_total[server]
         if server in self.grand_total:
             del self.grand_total[server]
+        self.save()
 
     def get_bps(self):
         return self.bps
