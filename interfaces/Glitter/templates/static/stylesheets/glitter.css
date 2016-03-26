@@ -465,6 +465,15 @@ tbody>tr>td:last-child {
     border-bottom: none;
 }
 
+.history-queue-swicher .nav-tabs>li>a,
+.history-queue-swicher .nav-tabs>li.active>a  {
+    border-bottom: 1px solid #eee
+}
+
+.history-queue-swicher .nav-tabs>li>a:hover {
+
+}
+
 .history-queue-swicher .badge {
     margin-left: 4px;
 }
