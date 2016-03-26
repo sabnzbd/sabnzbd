@@ -1501,7 +1501,7 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
-              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
+              'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 
               'enable_https_verification', 'api_logging', 'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
