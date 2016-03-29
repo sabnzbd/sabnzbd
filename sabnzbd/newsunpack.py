@@ -1067,7 +1067,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         # Download all par2 files that haven't been downloaded yet
         readd = False
         for extrapar in parfile_nzf.extrapars[:]:
-            if extrapar in nzo.files:
+            if extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 parfile_nzf.extrapars.remove(extrapar)
                 readd = True

@@ -545,7 +545,7 @@ $(function() {
             // Is it plain numbers?
             if(newValue.match(/^\s*\d+\s*$/)) {
                 // Treat it as a number of minutes
-                newValue += " minutes";
+                newValue += "minutes";
             }
 
             // At least 3 charaters

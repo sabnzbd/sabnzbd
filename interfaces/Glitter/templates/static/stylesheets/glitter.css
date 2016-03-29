@@ -455,14 +455,27 @@ tbody>tr>td:last-child {
     display: block;
 }
 
+.container-tabbed .info-container {
+    margin-bottom: 5px;
+}
+
+.container-compact.container-tabbed .info-container {
+    margin-top: 1em;
+}
+
 .history-queue-swicher {
     float: left;
-    z-index: 1001;
+    z-index: 800;
     position: relative;
 }
 
 .history-queue-swicher .nav {
     border-bottom: none;
+}
+
+.history-queue-swicher .nav-tabs>li>a,
+.history-queue-swicher .nav-tabs>li.active>a  {
+    border-bottom: 1px solid #eee
 }
 
 .history-queue-swicher .badge {
@@ -541,10 +554,6 @@ tbody>tr>td:last-child {
 
 .info-container .info-container-box-sorting .dropdown-menu small {
     color: #AAA;
-}
-
-.queue-table td.name {
-    padding-left: 0;
 }
 
 .queue-table td.name,
@@ -1644,14 +1653,17 @@ input[name="nzbURL"] {
     padding: 5px 6px;
 }
 .container-compact .sparkline-container svg {
-    margin-top: 5px;
     margin-bottom: 0;
+    height: 30px;
 }
 .container-compact .form-control {
     height: 29px;
 }
 .container-compact .modal-header {
     padding: 5px 12px;
+}
+.container-compact legend {
+    font-size: 1.4em;
 }
 .container-compact hr {
     margin: 13px 0px;
@@ -1668,6 +1680,12 @@ input[name="nzbURL"] {
 }
 .container-compact #modal-options .tab-content {
     min-height: 190px;
+}
+.container-compact #modal-item-files .multioperations-selector {
+    padding: 1px 8px 5px;
+}
+.container-compact #modal-item-files .multioperations-selector input {
+    margin-top: 3px;
 }
 .container-compact h2 {
     font-size: 1.8em;
@@ -1758,8 +1776,12 @@ input[name="nzbURL"] {
 
     .container-tabbed .nav li.active>a {
         border-bottom: 1px solid #ddd;
-        box-shadow: none;
+        box-shadow: none !important;
         margin-bottom: 5px;
+    }
+
+    .history-queue-swicher .nav-tabs>li>a {
+        border-bottom: inherit;
     }
 
 }
