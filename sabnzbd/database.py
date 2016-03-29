@@ -237,9 +237,9 @@ class HistoryDB(object):
         post = ''
         if categories:
             categories = ['*' if c == 'Default' else c for c in categories]
-            post = ' AND (CATEGORY = "'
-            post += '" OR CATEGORY = "'.join(categories)
-            post += '" )'
+            post = " AND (CATEGORY = '"
+            post += "' OR CATEGORY = '".join(categories)
+            post += "' )"
         if failed_only:
             post += ' AND STATUS = "Failed"'
 
@@ -280,7 +280,7 @@ class HistoryDB(object):
         series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
         if series and season and episode:
             pattern = '%s/%s/%s' % (series, season, episode)
-            res = self.execute('select count(*) from History WHERE series = ? AND STATUS != "Failed"', (pattern,))
+            res = self.execute("select count(*) from History WHERE series = ? AND STATUS != 'Failed'", (pattern,))
             if res:
                 try:
                     total = self.c.fetchone().get('count(*)')
@@ -291,7 +291,7 @@ class HistoryDB(object):
     def have_md5sum(self, md5sum):
         """ Check whether this md5sum already in History """
         total = 0
-        res = self.execute('select count(*) from History WHERE md5sum = ? AND STATUS != "Failed"', (md5sum,))
+        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != 'Failed'", (md5sum,))
         if res:
             try:
                 total = self.c.fetchone().get('count(*)')
