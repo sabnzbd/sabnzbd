@@ -568,6 +568,9 @@ def process_job(nzo):
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
 
+    # Update the last check time
+    sabnzbd.LAST_HISTORY_CALL = time.time()
+
     return True
 
 
