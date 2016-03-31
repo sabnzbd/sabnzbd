@@ -459,7 +459,7 @@ tbody>tr>td:last-child {
     margin-bottom: 5px;
 }
 
-.container-compact.container-tabbed .info-container {
+.container-compact.container-tabbed .queue .info-container {
     margin-top: 1em;
 }
 
@@ -1680,7 +1680,8 @@ input[name="nzbURL"] {
     padding: 8px 12px;
     font-size: 1em;
 }
-.container-compact #modal-options .options-switch label {
+.container-compact #modal-options .options-switch label,
+.container-compact #modal-options #options-orphans .remove-all-orphaned {
     font-size: 1em;
 }
 .container-compact #modal-options .options-switch input {
@@ -1698,6 +1699,9 @@ input[name="nzbURL"] {
 .container-compact h2 {
     font-size: 1.8em;
     margin-bottom: 8px;
+}
+.container-compact h4 {
+    font-size: 1.1em;
 }
 .container-compact tr.queue-item>td:first-child>a {
     padding: 0 0 0 3px;
@@ -2042,7 +2046,6 @@ legend {
 }
 
 .nav-tabs>li>a {
-    text-transform: capitalize;
     font-weight: bold;
     font-size: 1.1em;
     color: black !important;

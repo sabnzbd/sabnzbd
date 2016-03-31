@@ -111,3 +111,19 @@ msgstr "Time left"
 #: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
 msgid "Optionally specify a filename"
 msgstr "Optionally specify a name"
+
+#: sabnzbd/skintext.py:819 # sabnzbd/skintext.py:880
+msgid "Confirm Queue Deletions"
+msgstr "Confirm queue deletions"
+
+#: sabnzbd/skintext.py:820 # sabnzbd/skintext.py:881
+msgid "Confirm History Deletions"
+msgstr "Confirm history deletions"
+
+#: sabnzbd/skintext.py:288 [Do not translate Pystone]
+msgid "System Performance (Pystone)"
+msgstr "System performance (Pystone)"
+
+#: sabnzbd/skintext.py:317 # sabnzbd/skintext.py:779
+msgid "Web Interface"
+msgstr "Web interface"
