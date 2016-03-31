@@ -2199,6 +2199,21 @@ $(function() {
         self.extraText = ko.pureComputed(function() {
             // Picked anything?
             switch(self.parent.parent.extraHistoryColumn()) {
+                case 'speed':
+                    // Anything to calculate?
+                    if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
+                        var theSpeed = self.historyStatus.bytes()/self.historyStatus.download_time();
+                        theSpeed = theSpeed/1024;
+
+                        // MB/s or KB/s
+                        if(theSpeed > 1024) {
+                            theSpeed = theSpeed/1024;
+                            return theSpeed.toFixed(1) + ' MB/s'
+                        } else {
+                            return Math.round(theSpeed) + ' KB/s'
+                        }
+                    }
+                    return;
                 case 'category':
                     // Exception for *
                     if(self.historyStatus.category() == "*") 

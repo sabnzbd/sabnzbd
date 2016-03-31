@@ -823,6 +823,7 @@ SKIN_TEXT = {
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
     'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
+    'Glitter-speed' : TT('Speed'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
     'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
