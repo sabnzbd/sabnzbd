@@ -463,6 +463,14 @@ tbody>tr>td:last-child {
     margin-top: 1em;
 }
 
+.container-compact.container-tabbed .nav-tabs>li>a {
+    padding: 5px 8px;
+}
+
+.container-compact.container-tabbed .history-queue-swicher {
+    margin-top: 4px;
+}
+
 .history-queue-swicher {
     float: left;
     z-index: 800;
@@ -2043,7 +2051,7 @@ legend {
 
 .nav-tabs>li.active>a, 
 .nav-tabs>li.active>a:hover {
-    box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.08);
     color: black;
 }
 
