@@ -566,7 +566,7 @@ tbody>tr>td:last-child {
 
 .queue-table td.name,
 .queue-table td.progress-indicator,
-.queue-table td.queue-extra-text {
+.queue-table td.row-extra-text {
     cursor: move;
 }
 
@@ -574,14 +574,20 @@ tbody>tr>td:last-child {
     width: 40%;
 }
 
-.queue-table .table-header-extra {
+.queue-table .table-header-extra,
+.history-table .table-header-extra {
     width: 0;
 }
 
-.queue-table .queue-extra-text {
+.queue-table .row-extra-text,
+.history-table .row-extra-text {
     text-align: right;
     color: #888;
     padding-left: 0;
+}
+
+.history-table .row-extra-text {
+    text-align: left;
 }
 
 td.name .row-wrap-text {
@@ -951,7 +957,8 @@ tr.queue-item>td:first-child>a {
 }
 
 .history-table tr td.status,
-.history-table tr td.history-completedon {
+.history-table tr td.history-completedon,
+.history-table tr td.row-extra-text {
     color: #888;
     font-size: 12px;
     padding-right: 0 !important;
@@ -959,8 +966,12 @@ tr.queue-item>td:first-child>a {
     cursor: pointer;
 }
 
-.history-table .status-header {
+.history-table .table-status-header {
     width: 35%;
+}
+
+.history-table .table-header-status-smaller {
+    width: 30%;
 }
 
 .history-table .delete .dropdown {
@@ -1750,11 +1761,13 @@ input[name="nzbURL"] {
     Dynamic sizing
 ***/
 @media screen and (min-width: 1200px) {
-    .queue-table .table-extra-header-visible {
+    .queue-table .table-extra-header-visible,
+    .history-table .table-extra-header-visible {
         width: 10%;
     }
     
-    .queue-table .table-header-progress-smaller {
+    .queue-table .table-header-progress-smaller,
+    .history-table .table-header-progress-smaller {
         width: 35%;
     }
     
@@ -1842,7 +1855,7 @@ input[name="nzbURL"] {
         display: block !important;
     }
 
-    .history-table .status-header {
+    .history-table .table-status-header {
         width: 25% !important;
     }
     

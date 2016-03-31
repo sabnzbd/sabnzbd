@@ -188,7 +188,7 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 10px;
 }
 
-.history-table .status-header {
+.history-table .table-status-header {
     width: 0;
 }
 

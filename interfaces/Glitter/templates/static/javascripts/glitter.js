@@ -138,7 +138,8 @@ $(function() {
         self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
-        self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
+        self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
+        self.extraHistoryColumn = ko.observable('').extend({ persist: 'extraHistoryColumn' });
         self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         
@@ -1706,7 +1707,7 @@ $(function() {
         // Extra queue column
         self.extraText = ko.pureComputed(function() {
             // Picked anything?
-            switch(self.parent.parent.extraColumn()) {
+            switch(self.parent.parent.extraQueueColumn()) {
                 case 'category':
                     // Exception for *
                     if(self.category() == "*") 
@@ -2193,6 +2194,21 @@ $(function() {
 
             return self.script_line();
         });
+
+        // Extra history column
+        self.extraText = ko.pureComputed(function() {
+            // Picked anything?
+            switch(self.parent.parent.extraHistoryColumn()) {
+                case 'category':
+                    // Exception for *
+                    if(self.historyStatus.category() == "*") 
+                        return glitterTranslate.defaultText 
+                    return self.historyStatus.category();
+                case 'size':
+                    return self.historyStatus.size();
+            }
+            return;
+        })
 
         // Format completion time
         self.completedOn = ko.pureComputed(function() {
