@@ -102,17 +102,18 @@ h2 {
     border-left: 0;
 }
 
-.navbar-header img {
-    margin-right: 1em;
-    margin-left: 10px;
-}
-
-#navbar-logo-big {
+.navbar-logo {
+    vertical-align: middle;
     display: inline-block;
+    margin-right: 12px;
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: -1px;
 }
 
-#navbar-logo-small {
-    display: none;
+.navbar-logo svg {
+    height: 41px;
+    width: 41px;
 }
 
 li.dropdown {
