@@ -198,7 +198,7 @@ class BPSMeter(object):
             self.defaults()
         # Force update of counters and validate data
         try:
-            for server in self.grand_total:
+            for server in self.grand_total.keys():
                 self.update(server)
         except TypeError:
             self.defaults()
@@ -446,7 +446,7 @@ class BPSMeter(object):
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """
-        for server in self.day_total:
+        for server in self.day_total.keys():
             self.update(server)
 
 
