@@ -1348,10 +1348,8 @@ $(function() {
         
         // Searching in queue (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
-            // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) > 2 ) {
-                self.parent.refresh();
-            }
+            // Refresh now
+            self.parent.refresh();
             // Go back to page 1
             if(self.pagination.currentPage() != 1) {
                 self.pagination.moveToPage(1);
@@ -2028,10 +2026,7 @@ $(function() {
         self.searchTerm.subscribe(function() {
             // Make sure we refresh
             self.lastUpdate = 0
-            // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) >= 2 ) {
-                self.parent.refresh();
-            }
+            self.parent.refresh();
             // Go back to page 1
             if(self.pagination.currentPage() != 1) {
                 self.pagination.moveToPage(1);

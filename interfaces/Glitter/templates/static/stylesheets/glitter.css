@@ -2098,6 +2098,7 @@ legend {
 .pagination>li>span,
 .pagination>li>span:hover {
     color: #333;
+    z-index: 2;
 }
 
 .progress-bar {
