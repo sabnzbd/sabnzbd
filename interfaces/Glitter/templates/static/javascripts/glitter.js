@@ -138,7 +138,8 @@ $(function() {
         self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
         self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
         self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
-        self.extraColumn = ko.observable('').extend({ persist: 'extraColumn' });
+        self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
+        self.extraHistoryColumn = ko.observable('').extend({ persist: 'extraHistoryColumn' });
         self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
         self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
         
@@ -411,7 +412,7 @@ $(function() {
         }
 
         // Refresh function
-        self.refresh = function() {
+        self.refresh = function(forceFullHistory) {
             // Clear previous timeout and set a new one to prevent double-calls
             clearTimeout(self.interval);
             self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
@@ -478,13 +479,18 @@ $(function() {
                 // Show screen
                 self.isRestarting(1)
             });
+            // Force full history update?
+            if(forceFullHistory) {
+                self.history.lastUpdate = 0
+            }
             // History
             callAPI({
                 mode: "history",
                 search: self.history.searchTerm(),
                 failed_only: self.history.showFailed()*1,
                 start: self.history.pagination.currentStart(),
-                limit: parseInt(self.history.paginationLimit())
+                limit: parseInt(self.history.paginationLimit()),
+                last_history_call: self.history.lastUpdate
             }).done(self.updateHistory);
             
             // We are now done with any loading
@@ -1342,10 +1348,8 @@ $(function() {
         
         // Searching in queue (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
-            // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) > 2 ) {
-                self.parent.refresh();
-            }
+            // Refresh now
+            self.parent.refresh();
             // Go back to page 1
             if(self.pagination.currentPage() != 1) {
                 self.pagination.moveToPage(1);
@@ -1701,7 +1705,7 @@ $(function() {
         // Extra queue column
         self.extraText = ko.pureComputed(function() {
             // Picked anything?
-            switch(self.parent.parent.extraColumn()) {
+            switch(self.parent.parent.extraQueueColumn()) {
                 case 'category':
                     // Exception for *
                     if(self.category() == "*") 
@@ -1888,6 +1892,7 @@ $(function() {
         self.parent = parent;
 
         // Variables
+        self.lastUpdate = 0;
         self.historyItems = ko.observableArray([])
         self.showFailed = ko.observable(false);
         self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
@@ -1904,6 +1909,12 @@ $(function() {
 
         // Update function for history list
         self.updateFromData = function(data) {
+            /***
+                See if there's anything to update
+            ***/
+            if(!data) return;
+            self.lastUpdate = data.last_history_call
+
             /***
                 History list functions per item
             ***/
@@ -2002,7 +2013,9 @@ $(function() {
                 processData: false,
                 contentType: false,
                 data: data
-            }).then(self.parent.refresh);
+            }).then(function() {
+                self.parent.refresh(true)
+            });
 
             $("#modal-retry-job").modal("hide");
             $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
@@ -2011,10 +2024,9 @@ $(function() {
               
         // Searching in history (rate-limited in decleration)
         self.searchTerm.subscribe(function() {
-            // If the refresh-rate is high we do a forced refresh
-            if(parseInt(self.parent.refreshRate()) > 2 ) {
-                self.parent.refresh();
-            }
+            // Make sure we refresh
+            self.lastUpdate = 0
+            self.parent.refresh();
             // Go back to page 1
             if(self.pagination.currentPage() != 1) {
                 self.pagination.moveToPage(1);
@@ -2047,7 +2059,7 @@ $(function() {
             // Forde hide tooltip so it doesn't linger
             $('#history-options a').tooltip('hide')
             // Force refresh
-            self.parent.refresh()
+            self.parent.refresh(true)
         }
 
         // Empty history options
@@ -2178,6 +2190,36 @@ $(function() {
             return self.script_line();
         });
 
+        // Extra history column
+        self.extraText = ko.pureComputed(function() {
+            // Picked anything?
+            switch(self.parent.parent.extraHistoryColumn()) {
+                case 'speed':
+                    // Anything to calculate?
+                    if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
+                        var theSpeed = self.historyStatus.bytes()/self.historyStatus.download_time();
+                        theSpeed = theSpeed/1024;
+
+                        // MB/s or KB/s
+                        if(theSpeed > 1024) {
+                            theSpeed = theSpeed/1024;
+                            return theSpeed.toFixed(1) + ' MB/s'
+                        } else {
+                            return Math.round(theSpeed) + ' KB/s'
+                        }
+                    }
+                    return;
+                case 'category':
+                    // Exception for *
+                    if(self.historyStatus.category() == "*") 
+                        return glitterTranslate.defaultText 
+                    return self.historyStatus.category();
+                case 'size':
+                    return self.historyStatus.size();
+            }
+            return;
+        })
+
         // Format completion time
         self.completedOn = ko.pureComputed(function() {
             return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
@@ -2198,7 +2240,7 @@ $(function() {
             
             // Update all info
             self.updateAllHistory = true;
-            parent.parent.refresh();
+            parent.parent.refresh(true);
 
             // Try to keep open
             keepOpen(event.target)
@@ -2263,7 +2305,7 @@ $(function() {
             }).then(function(response) {
                 // Update all info
                 self.updateAllHistory = true;
-                self.parent.parent.refresh()
+                self.parent.parent.refresh(true)
             })
         }
 
@@ -2288,6 +2330,7 @@ $(function() {
             }).then(function(response) {
                 // Update all info
                 self.updateAllHistory = true;
+                self.parent.parent.refresh(true)
             })
         }
 
@@ -2698,7 +2741,7 @@ $(function() {
             // Re-paginate
             self.updatePages();
             // Force full update
-            parent.parent.refresh();
+            parent.parent.refresh(true);
         }
     }
 

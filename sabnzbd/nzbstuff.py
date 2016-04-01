@@ -1499,6 +1499,8 @@ class NzbObject(TryList):
             self.unpack_info[key] = [msg]
 
     def set_action_line(self, action=None, msg=None):
+        # Update the last check time
+        sabnzbd.LAST_HISTORY_CALL = time.time()
         if action and msg:
             self.action_line = '%s: %s' % (action, msg)
         else:

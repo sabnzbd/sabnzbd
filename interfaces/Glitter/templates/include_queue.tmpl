@@ -62,8 +62,8 @@
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraColumn }"></th>
-                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraColumn }"></th>
+                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraQueueColumn }"></th>
+                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumn }"></th>
                 <th style="width: 85px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -111,7 +111,7 @@
                         <small data-bind="text: avg_age"></small>
                     </div>
                 </td>
-                <td class="queue-extra-text">
+                <td class="row-extra-text">
                     <div class="row-wrap-text" data-bind="text: extraText">
                     </div>
                 </td>

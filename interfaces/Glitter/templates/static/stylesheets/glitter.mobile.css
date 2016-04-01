@@ -21,16 +21,13 @@
     margin-bottom: 0 !important;
 }
 
-#navbar-logo-big {
-    display: none;
-}
-
-#navbar-logo-small {
-    display: inline-block;
-}
-
 .main-menu-link .icon-bar:first-child {
     margin-top: 1px;
+}
+
+.navbar-logo {
+    margin-right: 8px;
+    margin-left: 8px;
 }
 
 .navbar-inverse .navbar-nav .open .dropdown-menu .divider {
@@ -188,7 +185,7 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 10px;
 }
 
-.history-table .status-header {
+.history-table .table-status-header {
     width: 0;
 }
 
