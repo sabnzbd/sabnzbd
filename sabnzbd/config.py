@@ -300,7 +300,7 @@ class OptionStr(Option):
     def set(self, value):
         """ Set stripped value """
         error = None
-        if type(value) == type('') and self.__strip:
+        if isinstance(value, basestring) and self.__strip:
             value = value.strip()
         if self.__validation:
             error, val = self.__validation(value)
