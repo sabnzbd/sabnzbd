@@ -504,7 +504,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     if force or check_classes(gtype, 'nscript'):
         script_path = make_script_path(script)
         if script_path:
-            ret, outoput = external_script(script_path, title, gtype)
+            ret, output = external_script(script_path, title, gtype)
             if ret:
                 return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
