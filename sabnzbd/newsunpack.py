@@ -1658,9 +1658,6 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
 
     for file in md5pack:
-        if sabnzbd.misc.on_cleanup_list(file, False):
-            result = True
-            continue
         found = False
         for nzf in nzf_list:
             if file == nzf.filename:
