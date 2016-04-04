@@ -191,6 +191,9 @@ class PostProcessor(Thread):
             self.remove(nzo)
             check_eoq = True
 
+            # Update the last check time
+            sabnzbd.LAST_HISTORY_CALL = time.time()
+
             # Allow download to proceed
             sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
