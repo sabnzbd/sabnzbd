@@ -205,11 +205,14 @@ class Decoder(Thread):
                         for parset in nzo.extrapars.keys():
                             if parset in nzf.filename and nzo.extrapars[parset]:
                                 extrapars_sorted = sorted(nzo.extrapars[parset], key=lambda x: x.blocks, reverse=True)
-                                # Add the first one
-                                new_nzf = extrapars_sorted.pop()
-                                nzo.add_parfile(new_nzf)
-                                nzo.extrapars[parset] = extrapars_sorted
-                                logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, nzo.final_name)
+                                # Loop untill we have enough
+                                while blocks_already < total_need and extrapars_sorted:
+                                    # Add the first one
+                                    new_nzf = extrapars_sorted.pop()
+                                    nzo.add_parfile(new_nzf)
+                                    nzo.extrapars[parset] = extrapars_sorted
+                                    blocks_already = blocks_already + int_conv(new_nzf.blocks)
+                                    logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, nzo.final_name)
 
             if data:
                 ArticleCache.do.save_article(article, data)
