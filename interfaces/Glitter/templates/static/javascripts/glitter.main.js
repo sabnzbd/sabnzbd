@@ -722,6 +722,7 @@ function ViewModel() {
                         'servername': this.servername,
                         'serveroptional': this.serveroptional,
                         'serverpriority': this.serverpriority,
+                        'servertotalconn': this.servertotalconn,
                         'serveractiveconn': ko.observable(this.serveractiveconn),
                         'servererror': ko.observable(this.servererror),
                         'serveractive': ko.observable(this.serveractive),

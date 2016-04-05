@@ -1390,6 +1390,7 @@ tr.queue-item>td:first-child>a {
     padding: 3px !important;
     height: auto;
     visibility: visible;
+    border: 1px solid #F0F0F0;
 }
 
 #modal-options .tab-content h4 {
@@ -2128,6 +2129,8 @@ legend {
     color: white;
     border: 0;
     padding: 10px 12px;
+    margin-left: -1px;
+    margin-right: -1px;
 }
 
 .modal-header .close {

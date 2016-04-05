@@ -1256,6 +1256,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
         if output:
             server_info = { 'servername': server.displayname, 
                             'serveractiveconn': connected, 
+                            'servertotalconn': server.threads, 
                             'serverconnections': serverconnections, 
                             'serverssl': server.ssl,
                             'serveractive': server.active, 

@@ -194,7 +194,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
-                                    <div class="col-sm-6" data-bind="text: serveractiveconn"></div>
+                                    <div class="col-sm-6">
+                                        <span data-bind="html: isFinite(serveractiveconn()) ? serverconnections().length : serveractiveconn()"></span> / 
+                                        <span data-bind="text: servertotalconn"></span>
+                                    </div>
                                 </div>
                                 <div class="row" data-bind="visible: servererror()">
                                     <div class="col-sm-12">
