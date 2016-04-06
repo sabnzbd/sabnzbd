@@ -1238,7 +1238,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
-        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING) and not found_active:
+        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING) and not found_active:
             if status == Status.CHECKING:
                 slot['status'] = Status.CHECKING
             else:
