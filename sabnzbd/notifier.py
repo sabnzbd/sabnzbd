@@ -63,16 +63,17 @@ except:
 ##############################################################################
 TT = lambda x: x
 NOTIFICATION = {
-    'startup': TT('Startup/Shutdown'),        #: Message class for Growl server
-    'download': TT('Added NZB'),               #: Message class for Growl server
-    'pp': TT('Post-processing started'),  # : Message class for Growl server
-    'complete': TT('Job finished'),            #: Message class for Growl server
-    'failed': TT('Job failed'),              #: Message class for Growl server
-    'warning': TT('Warning'),                 #: Message class for Growl server
-    'error': TT('Error'),                   #: Message class for Growl server
-    'disk_full': TT('Disk full'),               #: Message class for Growl server
-    'queue_done': TT('Queue finished'),          #: Message class for Growl server
-    'other': TT('Other Messages')           #: Message class for Growl server
+    'startup': TT('Startup/Shutdown'),        #: Notification
+    'download': TT('Added NZB'),               #: Notification
+    'pp': TT('Post-processing started'),  # : Notification
+    'complete': TT('Job finished'),            #: Notification
+    'failed': TT('Job failed'),              #: Notification
+    'warning': TT('Warning'),                 #: Notification
+    'error': TT('Error'),                   #: Notification
+    'disk_full': TT('Disk full'),               #: Notification
+    'queue_done': TT('Queue finished'),          #: Notification
+    'new_login': TT('User logged in'),          #: Notification
+    'other': TT('Other Messages')           #: Notification
 }
 
 ##############################################################################
