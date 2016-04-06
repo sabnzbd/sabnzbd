@@ -24,17 +24,6 @@ if(isMobile) {
     });
 }
 
-// Force compact mode as fast as possible
-if(localStorageGetItem('displayCompact') === 'true') {
-    // Add extra class
-    $('body').addClass('container-compact')
-}
-
-// Tabbed layout?
-if(localStorageGetItem('displayTabbed') === 'true') {
-    $('body').addClass('container-tabbed')
-}
-
 // Basic API-call
 function callAPI(data) {
     // Fill basis var's

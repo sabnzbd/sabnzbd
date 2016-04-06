@@ -931,6 +931,17 @@ function ViewModel() {
     /***
         Retrieve config information and do startup functions
     ***/
+    // Force compact mode as fast as possible
+    if(localStorageGetItem('displayCompact') === 'true') {
+        // Add extra class
+        $('body').addClass('container-compact')
+    }
+
+    // Tabbed layout?
+    if(localStorageGetItem('displayTabbed') === 'true') {
+        $('body').addClass('container-tabbed')
+    }
+    
     // Get the speed-limit, refresh rate and server names
     callAPI({
         mode: 'get_config'
