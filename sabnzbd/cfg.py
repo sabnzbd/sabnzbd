@@ -399,6 +399,7 @@ history_limit = OptionNumber('misc', 'history_limit', 10, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 web_watchdog = OptionBool('misc', 'web_watchdog', False)
 enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
+allow_duplicate_files = OptionBool('misc', 'allow_duplicate_files', False)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
 

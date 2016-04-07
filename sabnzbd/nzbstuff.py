@@ -474,7 +474,27 @@ class NzbParser(xml.sax.handler.ContentHandler):
             except:
                 tm = datetime.datetime.fromtimestamp(self.now)
                 self.file_date = self.now
+
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
+
+            # Check if file was added with same name 
+            if not cfg.allow_duplicate_files():
+                nzo_matches = filter(lambda x: (x.filename == nzf.filename), self.nzo.files)
+                if nzo_matches:
+                    logging.info('File %s occured twice in NZB, discarding smaller file', nzf.filename)
+                    # Which is smaller? Current or old one
+                    if nzo_matches[0].bytes >= nzf.bytes:
+                        # Skip this new one
+                        return
+                    else:
+                        # Have to remove the old one but still add the new one
+                        self.nzo.files.remove(nzo_matches[0])
+                        del self.nzo.files_table[nzo_matches[0].nzf_id]
+                        self.nzo.bytes -= nzo_matches[0].bytes
+                        self.avg_age -= time.mktime(nzo_matches[0].date.timetuple())
+                        self.valids -= 1
+                        self.nzf_list.remove(nzo_matches[0])
+
             if nzf.valid and nzf.nzf_id:
                 logging.info('File %s added to queue', self.filename)
                 self.nzo.files.append(nzf)
