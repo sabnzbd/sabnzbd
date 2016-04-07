@@ -512,7 +512,15 @@ class MainPage(object):
             if cfg.api_logging():
                 logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
                               cherrypy.request.headers.get('User-Agent', '??'), kwargs)
-        if kwargs.get('mode', '') not in ('version', 'auth'):
+        mode = kwargs.get('mode', '')
+        if isinstance(mode, list):
+            mode = mode[0]
+            kwargs['mode'] = mode
+        name = kwargs.get('name', '')
+        if isinstance(name, list):
+            name = name[0]
+            kwargs['name'] = name
+        if mode not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg:
                 return msg
