@@ -862,6 +862,20 @@ function ViewModel() {
         }     
     }
 
+    // Orphaned folder adding of all
+    self.addAllOrphaned = function() {
+        if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+             // Show notification
+            showNotification('.main-notification-box-sendback')
+            // Delete them all
+            callSpecialAPI("./status/add_all/").then(function() {
+                // Remove notifcation and update screen
+                hideNotification(true)
+                self.loadStatusInfo(true, true)
+            })
+        }     
+    }
+
     // Toggle Glitter's compact layout dynamically
     self.displayCompact.subscribe(function() {
         $('body').toggleClass('container-compact')

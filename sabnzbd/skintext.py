@@ -799,6 +799,7 @@ SKIN_TEXT = {
     'Glitter-orphanedJobs' : TT('Orphaned jobs'),
     'Glitter-backToQueue' : TT('Send back to queue'),
     'Glitter-purgeOrphaned' : TT('Delete All'),
+    'Glitter-retryAllOrphaned' : TT('Retry all'),
     'Glitter-deleteJobAndFolders' : TT('Remove NZB & Delete Files'),
     'Glitter-addFromURL' : TT('Fetch NZB from URL'),
     'Glitter-addFromFile' : TT('Upload NZB'),

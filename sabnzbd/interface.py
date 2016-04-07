@@ -1354,6 +1354,12 @@ def orphan_add(kwargs):
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         sabnzbd.nzbqueue.repair_job(path, None, None)
 
+def orphan_add_all():
+    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False);
+    for path in paths:
+        kwargs = {'name': path}
+        orphan_add(kwargs)
+
 
 ##############################################################################
 LIST_DIRPAGE = (
@@ -2668,6 +2674,14 @@ class Status(object):
         if msg:
             return msg
         orphan_add(kwargs)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def add_all(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            return msg
+        orphan_add_all()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
