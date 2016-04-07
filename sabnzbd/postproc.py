@@ -116,6 +116,8 @@ class PostProcessor(Thread):
             self.history_queue.append(nzo)
         self.queue.put(nzo)
         self.save()
+        # Update the last check time
+        sabnzbd.LAST_HISTORY_CALL = time.time()
 
     def remove(self, nzo):
         """ Remove given nzo from the queue """
@@ -127,6 +129,8 @@ class PostProcessor(Thread):
             logging.error(T('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
             logging.info('Traceback: ', exc_info=True)
         self.save()
+        # Update the last check time
+        sabnzbd.LAST_HISTORY_CALL = time.time()
 
     def stop(self):
         """ Stop thread after finishing running job """

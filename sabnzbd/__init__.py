@@ -254,6 +254,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.web_dir2.callback(guard_restart)
     cfg.web_color.callback(guard_restart)
     cfg.web_color2.callback(guard_restart)
+    cfg.username.callback(guard_restart)
+    cfg.password.callback(guard_restart)
     cfg.log_dir.callback(guard_restart)
     cfg.https_port.callback(guard_restart)
     cfg.https_cert.callback(guard_restart)

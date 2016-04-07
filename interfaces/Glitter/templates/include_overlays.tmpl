@@ -194,7 +194,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
-                                    <div class="col-sm-6" data-bind="text: serveractiveconn"></div>
+                                    <div class="col-sm-6">
+                                        <span data-bind="html: isFinite(serveractiveconn()) ? serverconnections().length : serveractiveconn()"></span> / 
+                                        <span data-bind="text: servertotalconn"></span>
+                                    </div>
                                 </div>
                                 <div class="row" data-bind="visible: servererror()">
                                     <div class="col-sm-12">
@@ -234,7 +237,8 @@
                         <h4>$T('none')</h4>
                         <!-- /ko -->
                         <!-- ko if: statusInfo.folders().length > 0 -->
-                        <a href="#" class="hover-button remove-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
+                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
+                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: addAllOrphaned">$T('Glitter-retryAllOrphaned') <span class="glyphicon glyphicon-plus-sign"></span></a> 
                         <div class="clearfix"></div>
                         <table class="table table-hover table-striped">
                             <thead>
@@ -560,7 +564,7 @@
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-lock"></span>
                                 </span>
-                                <input type="text" class="form-control" id="retry_job_password" placeholder="$T('srv-password')" />
+                                <input type="text" class="form-control" id="retry_job_password" placeholder="$T('srv-password') ($T('srv-optional'))" />
                             </div>
                         </div>
                     </fieldset>

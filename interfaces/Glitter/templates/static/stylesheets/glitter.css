@@ -1244,7 +1244,7 @@ tr.queue-item>td:first-child>a {
 }
 
 #modal-options .options-switch label,
-#modal-options #options-orphans .remove-all-orphaned {
+#modal-options #options-orphans .process-all-orphaned {
     font-size: 1.4rem;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -1254,13 +1254,13 @@ tr.queue-item>td:first-child>a {
 }
 
 #modal-options .options-switch a,
-#modal-options #options-orphans .remove-all-orphaned,
+#modal-options #options-orphans .process-all-orphaned,
 #modal-options .options-switch input+span {
     opacity: 0.6;
 }
 
 #modal-options .options-switch label:hover span,
-#modal-options #options-orphans .remove-all-orphaned:hover,
+#modal-options #options-orphans .process-all-orphaned:hover,
 #modal-options .options-switch a:hover {
     opacity: 1;
 }
@@ -1278,8 +1278,9 @@ tr.queue-item>td:first-child>a {
     margin-right: 4px;
 }
 
-#modal-options #options-orphans .remove-all-orphaned {
+#modal-options #options-orphans .process-all-orphaned {
     margin-right: 8px;
+    margin-left: 5px;
     float: right;
 }
 
@@ -1390,6 +1391,7 @@ tr.queue-item>td:first-child>a {
     padding: 3px !important;
     height: auto;
     visibility: visible;
+    border: 1px solid #F0F0F0;
 }
 
 #modal-options .tab-content h4 {
@@ -1693,7 +1695,7 @@ input[name="nzbURL"] {
     font-size: 1em;
 }
 .container-compact #modal-options .options-switch label,
-.container-compact #modal-options #options-orphans .remove-all-orphaned {
+.container-compact #modal-options #options-orphans .process-all-orphaned {
     font-size: 1em;
 }
 .container-compact #modal-options .options-switch input {
@@ -2128,6 +2130,8 @@ legend {
     color: white;
     border: 0;
     padding: 10px 12px;
+    margin-left: -1px;
+    margin-right: -1px;
 }
 
 .modal-header .close {

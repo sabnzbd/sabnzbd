@@ -29,7 +29,7 @@ legend,
 #modal-options legend a,
 #modal-item-files .item-files-table .progress small,
 #modal-options .options-switch label, 
-#modal-options #options-orphans .remove-all-orphaned,
+#modal-options #options-orphans .process-all-orphaned,
 .text-muted {
     color: #EBEBEB;
 }

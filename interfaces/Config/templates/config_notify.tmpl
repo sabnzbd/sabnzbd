@@ -112,6 +112,10 @@
                     <input type="checkbox" name="ncenter_prio_disk_full" id="ncenter_prio_disk_full" value="1" <!--#if int($ncenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="ncenter_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="ncenter_prio_new_login" id="ncenter_prio_new_login" value="1" <!--#if int($ncenter_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="ncenter_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="ncenter_prio_warning" id="ncenter_prio_warning" value="1" <!--#if int($ncenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -176,6 +180,10 @@
                     <input type="checkbox" name="acenter_prio_disk_full" id="acenter_prio_disk_full" value="1" <!--#if int($acenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="acenter_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="acenter_prio_new_login" id="acenter_prio_new_login" value="1" <!--#if int($acenter_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="acenter_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="acenter_prio_warning" id="acenter_prio_warning" value="1" <!--#if int($acenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -238,6 +246,10 @@
                 <div class="field-pair">
                     <label class="config wide" for="ntfosd_prio_disk_full">$T($notify_texts['disk_full'])</label>
                     <input type="checkbox" name="ntfosd_prio_disk_full" id="ntfosd_prio_disk_full" value="1" <!--#if int($ntfosd_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="ntfosd_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="ntfosd_prio_new_login" id="ntfosd_prio_new_login" value="1" <!--#if int($ntfosd_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
                     <label class="config wide" for="ntfosd_prio_warning">$T($notify_texts['warning'])</label>
@@ -311,6 +323,10 @@
                 <div class="field-pair">
                     <label class="config wide" for="growl_prio_disk_full">$T($notify_texts['disk_full'])</label>
                     <input type="checkbox" name="growl_prio_disk_full" id="growl_prio_disk_full" value="1" <!--#if int($growl_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="growl_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="growl_prio_new_login" id="growl_prio_new_login" value="1" <!--#if int($growl_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
                     <label class="config wide" for="growl_prio_warning">$T($notify_texts['warning'])</label>
@@ -428,7 +444,18 @@
                         <option value="1"  <!--#if $prowl_prio_disk_full == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
                         <option value="2"  <!--#if $prowl_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                     </select>
-               </div>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="prowl_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <select name="prowl_prio_new_login" id="prowl_prio_new_login">
+                        <option value="-3" <!--#if $prowl_prio_new_login == -3 then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
+                        <option value="-2" <!--#if $prowl_prio_new_login == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                        <option value="-1" <!--#if $prowl_prio_new_login == -1 then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
+                        <option value="0"  <!--#if $prowl_prio_new_login == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                        <option value="1"  <!--#if $prowl_prio_new_login == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
+                        <option value="2"  <!--#if $prowl_prio_new_login == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                    </select>
+                </div>
                 <div class="field-pair">
                     <label class="config" for="prowl_prio_warning">$T($notify_texts['warning'])</label>
                     <select name="prowl_prio_warning" id="prowl_prio_warning">
@@ -577,7 +604,18 @@
 						<option value="1"  <!--#if $pushover_prio_disk_full == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
 						<option value="2"  <!--#if $pushover_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
-			   </div>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <select name="pushover_prio_new_login" id="pushover_prio_new_login">
+                        <option value="-3" <!--#if $pushover_prio_new_login == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+                        <option value="-2" <!--#if $pushover_prio_new_login == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                        <option value="-1" <!--#if $pushover_prio_new_login == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+                        <option value="0"  <!--#if $pushover_prio_new_login == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                        <option value="1"  <!--#if $pushover_prio_new_login == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
+                        <option value="2"  <!--#if $pushover_prio_new_login == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                    </select>
+                </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_warning">$T($notify_texts['warning'])</label>
 					<select name="pushover_prio_warning" id="pushover_prio_warning">
@@ -675,6 +713,10 @@
 					<label class="config wide" for="pushbullet_prio_disk_full">$T($notify_texts['disk_full'])</label>
 					<input type="checkbox" name="pushbullet_prio_disk_full" id="pushbullet_prio_disk_full" value="1" <!--#if int($pushbullet_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
 				</div>
+                <div class="field-pair">
+                    <label class="config wide" for="pushbullet_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="pushbullet_prio_new_login" id="pushbullet_prio_new_login" value="1" <!--#if int($pushbullet_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
 				<div class="field-pair">
 					<label class="config wide" for="pushbullet_prio_warning">$T($notify_texts['warning'])</label>
 					<input type="checkbox" name="pushbullet_prio_warning" id="pushbullet_prio_warning" value="1" <!--#if int($pushbullet_prio_warning) > 0 then 'checked="checked"' else ""#--> />
@@ -709,65 +751,69 @@
 		<em>$T('explain-nscript_enable')</em>
 	    </div><!-- /col2 -->
 	    <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
-		<fieldset>
-		    <div class="field-pair">
-			<label class="config" for="nscript_script">$T('opt-nscript_script')</label>
-			<select name="nscript_script">
-			    <!--#for $sc in $script_list#-->
-			    <option value="$sc" <!--#if $nscript_script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
-			    <!--#end for#-->
-			</select>
-			<span class="desc">$T('explain-nscript_script')</span>
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
-			<input type="checkbox" name="nscript_prio_startup" id="nscript_prio_startup" value="1" <!--#if int($nscript_prio_startup) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_download">$T($notify_texts['download']) / $T('link-pause') / $T('link-resume')</label>
-			<input type="checkbox" name="nscript_prio_download" id="nscript_prio_download" value="1" <!--#if int($nscript_prio_download) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_pp">$T($notify_texts['pp'])</label>
-			<input type="checkbox" name="nscript_prio_pp" id="nscript_prio_pp" value="1" <!--#if int($nscript_prio_pp) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_complete">$T($notify_texts['complete'])</label>
-			<input type="checkbox" name="nscript_prio_complete" id="nscript_prio_complete" value="1" <!--#if int($nscript_prio_complete) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_failed">$T($notify_texts['failed'])</label>
-			<input type="checkbox" name="nscript_prio_failed" id="nscript_prio_failed" value="1" <!--#if int($nscript_prio_failed) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_queue_done">$T($notify_texts['queue_done'])</label>
-			<input type="checkbox" name="nscript_prio_queue_done" id="nscript_prio_queue_done" value="1" <!--#if int($nscript_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_disk_full">$T($notify_texts['disk_full'])</label>
-			<input type="checkbox" name="nscript_prio_disk_full" id="nscript_prio_disk_full" value="1" <!--#if int($nscript_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_warning">$T($notify_texts['warning'])</label>
-			<input type="checkbox" name="nscript_prio_warning" id="nscript_prio_warning" value="1" <!--#if int($nscript_prio_warning) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_error">$T($notify_texts['error'])</label>
-			<input type="checkbox" name="nscript_prio_error" id="nscript_prio_error" value="1" <!--#if int($nscript_prio_error) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-			<label class="config wide" for="nscript_prio_other">$T($notify_texts['other'])</label>
-			<input type="checkbox" name="nscript_prio_other" id="nscript_prio_other" value="1" <!--#if int($nscript_prio_other) > 0 then 'checked="checked"' else ""#--> />
-		    </div>
-		    <div class="field-pair">
-		       <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-		       <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-		   </div>
-                   <div class="field-pair result-box">
-                      <div class="alert"></div>
-                   </div>
-	       </fieldset>
-	   </div><!-- /col1 -->
+    		<fieldset>
+                <div class="field-pair">
+                    <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
+                    <select name="nscript_script">
+                        <!--#for $sc in $script_list#-->
+                        <option value="$sc" <!--#if $nscript_script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+                        <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('explain-nscript_script')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
+                    <input type="checkbox" name="nscript_prio_startup" id="nscript_prio_startup" value="1" <!--#if int($nscript_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_download">$T($notify_texts['download']) / $T('link-pause') / $T('link-resume')</label>
+                    <input type="checkbox" name="nscript_prio_download" id="nscript_prio_download" value="1" <!--#if int($nscript_prio_download) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_pp">$T($notify_texts['pp'])</label>
+                    <input type="checkbox" name="nscript_prio_pp" id="nscript_prio_pp" value="1" <!--#if int($nscript_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_complete">$T($notify_texts['complete'])</label>
+                    <input type="checkbox" name="nscript_prio_complete" id="nscript_prio_complete" value="1" <!--#if int($nscript_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_failed">$T($notify_texts['failed'])</label>
+                    <input type="checkbox" name="nscript_prio_failed" id="nscript_prio_failed" value="1" <!--#if int($nscript_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_queue_done">$T($notify_texts['queue_done'])</label>
+                    <input type="checkbox" name="nscript_prio_queue_done" id="nscript_prio_queue_done" value="1" <!--#if int($nscript_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_disk_full">$T($notify_texts['disk_full'])</label>
+                    <input type="checkbox" name="nscript_prio_disk_full" id="nscript_prio_disk_full" value="1" <!--#if int($nscript_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="nscript_prio_new_login" id="nscript_prio_new_login" value="1" <!--#if int($nscript_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_warning">$T($notify_texts['warning'])</label>
+                    <input type="checkbox" name="nscript_prio_warning" id="nscript_prio_warning" value="1" <!--#if int($nscript_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_error">$T($notify_texts['error'])</label>
+                    <input type="checkbox" name="nscript_prio_error" id="nscript_prio_error" value="1" <!--#if int($nscript_prio_error) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_other">$T($notify_texts['other'])</label>
+                    <input type="checkbox" name="nscript_prio_other" id="nscript_prio_other" value="1" <!--#if int($nscript_prio_other) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+            </fieldset>
+	    </div><!-- /col1 -->
 	</div><!-- /section -->
     </form>
 </div><!-- /colmask -->
