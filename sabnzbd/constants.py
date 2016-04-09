@@ -153,6 +153,7 @@ class Status():
     COMPLETED = 'Completed'
     CHECKING = 'Checking'
     DOWNLOADING = 'Downloading'
+    TO_PP = 'ToPP'
     EXTRACTING = 'Extracting'
     FAILED = 'Failed'
     FETCHING = 'Fetching'
@@ -164,5 +165,6 @@ class Status():
     REPAIRING = 'Repairing'
     RUNNING = 'Running'
     VERIFYING = 'Verifying'
+    DELETED = 'Deleted'
 
 NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')

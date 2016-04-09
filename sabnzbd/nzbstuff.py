@@ -1110,7 +1110,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id:
+        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
@@ -1508,7 +1508,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """ Save job's admin to disk """
         self.save_attribs()
-        if self.nzo_id:
+        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):

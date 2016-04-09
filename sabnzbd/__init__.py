@@ -931,8 +931,7 @@ def remove_data(_id, path):
             os.remove(path)
             logging.info("%s removed", path)
     except:
-        logging.info("Failed to remove %s", path)
-        logging.info("Traceback: ", exc_info=True)
+        logging.debug("Failed to remove %s", path)
 
 
 @synchronized(IO_LOCK)
