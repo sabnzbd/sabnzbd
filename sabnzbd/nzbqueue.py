@@ -438,9 +438,8 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
+            nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
-
-            sabnzbd.remove_data(nzo_id, nzo.workpath)
 
             if add_to_history:
                 # Create the history DB instance
@@ -452,6 +451,8 @@ class NzbQueue(TryList):
 
             elif cleanup:
                 self.cleanup_nzo(nzo, keep_basic, del_files)
+
+            sabnzbd.remove_data(nzo_id, nzo.workpath)
 
             if save:
                 self.save(nzo)
@@ -809,27 +810,30 @@ class NzbQueue(TryList):
         if reset:
             self.reset_try_list()
 
-        if file_done:
-            if nzo.next_save is None or time.time() > nzo.next_save:
-                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
-                BPSMeter.do.save()
-                if nzo.save_timeout is None:
-                    nzo.next_save = None
-                else:
-                    nzo.next_save = time.time() + nzo.save_timeout
+        if nzo.status in (Status.COMPLETED, Status.DELETED):
+            logging.debug('Discarding file completion %s for deleted job', filename)
+        else:
+            if file_done:
+                if nzo.next_save is None or time.time() > nzo.next_save:
+                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                    BPSMeter.do.save()
+                    if nzo.save_timeout is None:
+                        nzo.next_save = None
+                    else:
+                        nzo.next_save = time.time() + nzo.save_timeout
 
-            if not nzo.precheck:
-                _type = nzf.type
+                if not nzo.precheck:
+                    _type = nzf.type
 
-                # Only start decoding if we have a filename and type
-                if filename and _type:
-                    Assembler.do.process((nzo, nzf))
+                    # Only start decoding if we have a filename and type
+                    if filename and _type:
+                        Assembler.do.process((nzo, nzf))
 
-                else:
-                    if file_has_articles(nzf):
-                        logging.warning(T('%s -> Unknown encoding'), filename)
-        if post_done:
-            self.end_job(nzo)
+                    else:
+                        if file_has_articles(nzf):
+                            logging.warning(T('%s -> Unknown encoding'), filename)
+            if post_done:
+                self.end_job(nzo)
 
     def end_job(self, nzo):
         """ Send NZO to the post-processing queue """
@@ -841,6 +845,7 @@ class NzbQueue(TryList):
         # Notify assembler to call postprocessor
         if not nzo.deleted:
             nzo.deleted = True
+            nzo.status = Status.TO_PP
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
