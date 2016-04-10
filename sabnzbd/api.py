@@ -1351,6 +1351,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         bytesleft = pnfo.bytes_left
         bytes = pnfo.bytes
         average_date = pnfo.avg_date
+        is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
         status = pnfo.status
         priority = pnfo.priority
         mbleft = (bytesleft / MEBI)
@@ -1382,7 +1383,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING) and not found_active:
-            if status == Status.CHECKING:
+            if is_propagating:
+                slot['status'] = 'Propagating'
+            elif status == Status.CHECKING:
                 slot['status'] = Status.CHECKING
             else:
                 slot['status'] = Status.DOWNLOADING
@@ -1405,8 +1408,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100))
         slot['missing'] = missing
 
-        if (Downloader.do.paused or Downloader.do.postproc or status not in (Status.DOWNLOADING, Status.QUEUED)) \
-           and priority != TOP_PRIORITY:
+        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
+           status not in (Status.DOWNLOADING, Status.QUEUED)) and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:

@@ -1433,7 +1433,7 @@ class ConfigFolders(object):
 SWITCH_LIST = \
     ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
              'enable_tsjoin', 'overwrite_files', 'top_only',
-             'auto_sort', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
+             'auto_sort', 'propagation_delay', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',

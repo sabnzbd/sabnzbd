@@ -44,6 +44,7 @@ SKIN_TEXT = {
     'post-QuickCheck'    : TT('Quick Check...'), #: PP status
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
+    'post-Propagating'   : TT('Propagation delay'),
     'post-Checking'      : TT('Checking'), #: PP status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
@@ -465,6 +466,8 @@ SKIN_TEXT = {
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
+    'opt-propagation_delay' : TT('Propagation delay'),
+    'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age.'),
     'opt-check_new_rel' : TT('Check for New Release'),
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'also-test' : TT('Also test releases'), #: Pick list for weekly test for new releases
