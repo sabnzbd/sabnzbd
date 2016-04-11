@@ -631,7 +631,7 @@ def parring(nzo, workdir):
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-    logging.info('Par2 check finished on %s', filename)
+    logging.info('Verification and repair finished for %s', filename)
     return par_error, re_add
 
 
