@@ -752,9 +752,11 @@ class NzbQueue(TryList):
             return False
         # Check if this server is allowed for any object, then return if we've tried this server.
         for nzo in self.__nzo_list:
-            if nzo.status not in (Status.PAUSED, Status.GRABBING):
+            # Not when queue paused and not a forced item
+            if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay
                 if not cfg.propagation_delay() or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
+                    # Check if category allowed
                     if nzo.server_allowed(server) or self.__top_only:
                         return not self.server_in_try_list(server)
         return False
@@ -776,8 +778,8 @@ class NzbQueue(TryList):
             if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay
                 if not cfg.propagation_delay() or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
-                    # Don't try to get an article if server is in try_list of nzo
-                    if (not nzo.server_in_try_list(server) or self.__top_only) and nzo.server_allowed(server):
+                    # Don't try to get an article if server is in try_list of nzo and category allowed by server
+                    if nzo.server_allowed(server) and (not nzo.server_in_try_list(server) or self.__top_only):
                         article = nzo.get_article(server, servers)
                         if article:
                             return article
