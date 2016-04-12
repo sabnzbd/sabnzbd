@@ -21,6 +21,7 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 
 import socket
 import sys
+import select
 
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
@@ -84,6 +85,10 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.lines = []
             nw.recv_chunk(block=True)
+            #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
+            read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
+            if read_sockets:
+                nw.recv_chunk(block=True)
             nw.finish_connect(nw.lines[0][:3])
 
     except socket.timeout, e:
