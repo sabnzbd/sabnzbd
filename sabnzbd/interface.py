@@ -1515,17 +1515,17 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
-              'never_repair', 'allow_streaming', 'ignore_unrar_dates', 'rss_filenames',
+              'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates', 
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
-              'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
+              'rss_filenames', 'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
               'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 
               'enable_https_verification', 'api_logging', 'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload', 'ipv6_servers',
-              'rating_host', 'selftest_host'
+              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload', 
+              'ipv6_servers', 'rating_host', 'selftest_host'
      )
 SPECIAL_LIST_LIST = \
     ('rss_odd_titles', 'prio_sort_list'
