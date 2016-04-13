@@ -274,9 +274,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        if cfg.cache_limit() == '' or cfg.cache_limit() == '200M':
-            cfg.cache_limit.set('750M')
+    if (sabnzbd.WIN32 or sabnzbd.DARWIN) and not cfg.cache_limit():
+        cfg.cache_limit.set('200M')
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     check_incomplete_vs_complete()
