@@ -1093,7 +1093,7 @@ class NzbObject(TryList):
         self.save_to_disk()
 
     @property
-    def final_name_pw(self):
+    def final_name_labeled(self):
         prefix = ''
         if self.duplicate:
             prefix = T('DUPLICATE') + ' / '  # : Queue indicator for duplicate job
@@ -1485,7 +1485,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
-                self.nzo_id, self.final_name, self.password, {},
+                self.nzo_id, self.final_name_labeled, self.password, {},
                 '', self.cat, self.url,
                 bytes_left_all, self.bytes, avg_date,
                 finished_files, active_files, queued_files, self.status, self.priority,
