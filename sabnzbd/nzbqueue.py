@@ -778,18 +778,22 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
-                        article = nzo.get_article(server, servers)
-                        if article:
-                            return article
+                    # Not when queue paused and not a forced item
+                    if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+                        if nzo.server_allowed(server):
+                            article = nzo.get_article(server, servers)
+                            if article:
+                                return article
 
         else:
             for nzo in self.__nzo_list:
-                # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
-                    article = nzo.get_article(server, servers)
-                    if article:
-                        return article
+                # Not when queue paused and not a forced item
+                if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+                    # Don't try to get an article if server is in try_list of nzo
+                    if not nzo.server_in_try_list(server) and nzo.server_allowed(server):
+                        article = nzo.get_article(server, servers)
+                        if article:
+                            return article
 
             # No articles for this server, block server (until reset issued)
             self.add_to_try_list(server)

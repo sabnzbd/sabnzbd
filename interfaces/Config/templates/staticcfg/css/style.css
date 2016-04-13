@@ -805,29 +805,45 @@ input[type="checkbox"] {
     background-color: #FFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-    
 }
 
 .navbar-fixed-top {
     z-index: 1000;
 }
 
-.navbar-default .navbar-brand {
-    padding: 0 !important;
-    margin: 0 !important;
-    padding-right: 5px !important;
+.navbar-logo {
+    display: inline-block;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    margin-left: 5px;
+    margin-bottom: -1px;
 }
-.navbar-default .navbar-brand-small {
-    padding-right: 10px !important;
+
+
+
+.navbar-logo-small svg {
+    height: 40px;
+    width: 40px;
 }
-.navbar-default .navbar-brand-mobile {
+/*
+.navbar-logo-wide {
     display: none;
 }
+.navbar-logo-wide {
+    padding-top: 9px;
+}
+.navbar-logo-wide svg {
+    height: 36px;
+    width: 130px;
+}
+*/
 .navbar-default .navbar-nav>li>a {
     color: black !important;
 }
 
-.navbar-default .navbar-nav>li>a:hover {
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-logo:hover {
     background-color: #e2e2e2 !important;
 }
 

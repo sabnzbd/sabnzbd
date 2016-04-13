@@ -16,6 +16,10 @@ body {
 	padding-bottom: 10px;
 }
 
+.logo-header svg {
+	height: 55px;
+}
+
 .account-wall {
 	width: 300px;
 	position: absolute;
