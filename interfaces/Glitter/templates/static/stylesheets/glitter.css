@@ -107,13 +107,13 @@ h2 {
     display: inline-block;
     margin-right: 12px;
     margin-left: 15px;
-    margin-top: 5px;
+    margin-top: 4px;
     margin-bottom: -1px;
 }
 
 .navbar-logo svg {
-    height: 41px;
-    width: 41px;
+    height: 40px;
+    width: 40px;
 }
 
 li.dropdown {
