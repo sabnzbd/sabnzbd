@@ -52,7 +52,7 @@
         configTranslate.failed = "$T('smpl-failed')";
         configTranslate.explainRestart = "$T('explain-Restart')";
         configTranslate.wizzardRestart = "$T('wizard-restarting')";
-        configTranslate.needRestart = "$T('restartRequired')";
+        configTranslate.needRestart = "$T('restartRequired') $T('explain-needNewLogin')".replace(/\<br(\s*\/|)\>/g, '\n');
         configTranslate.buttonRestart = "$T('button-restart')";
         configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
     </script>
