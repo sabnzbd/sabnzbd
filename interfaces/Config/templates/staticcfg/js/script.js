@@ -195,7 +195,7 @@ function config_success() {
 }
 function config_failure() {
     $('.saveButton').each(function () {
-        $(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-remove"></span> '+configTranslate.failed);
+        $(this).removeAttr("disabled").addClass('btn-danger').html('<span class="glyphicon glyphicon-remove"></span> '+configTranslate.failed);
     });
     // Can't go yet..
     formWasSubmitted = false;
@@ -296,13 +296,13 @@ $(document).ready(function () {
         datatype: 'json',
         beforeSubmit: function () {
             $('.saveButton').each(function () {
-                $(this).attr("disabled", "disabled").html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);
+                $(this).attr("disabled", "disabled").removeClass('btn-danger').html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);
             });
         },
         success: function (json) {
             if (json.error) {
                $('#config_err_msg').text(json.error);
-               setTimeout(config_failure, 1000);
+               config_failure()
             } else if(json.value && json.value.restart_req) {
                 // Trigger restart question
                 if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
@@ -318,7 +318,7 @@ $(document).ready(function () {
             }
         },
         error: function () {
-            setTimeout(config_failure, 1000);
+            config_failure()
         },
         timeout: 3000
     });
