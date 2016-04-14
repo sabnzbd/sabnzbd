@@ -304,6 +304,7 @@ SKIN_TEXT = {
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
+    'explain-sessionExpire': TT('When your IP address changes or SABnzbd is restarted the session will expire.'),
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),

@@ -37,7 +37,7 @@
                 
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
-                <div class="checkbox text-center">
+                <div class="checkbox text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">
                     <label>
                         <input type="checkbox" name="remember_me" value="1"> $T('rememberme')
                     </label>
@@ -45,6 +45,8 @@
             </form>
         </div>
         <script type="text/javascript">
+            // Tooltip
+            \$('[data-toggle="tooltip"]').tooltip()
             // Try-catch in case somebody disabled localstorage
             try {
                 // Set what was done previously
