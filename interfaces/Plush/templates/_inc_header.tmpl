@@ -89,7 +89,7 @@
         #end if#
         </ul>
         <ul class="menu" id="navigation_menu_left">
-          <li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('Plush-downloads').capitalize()</span></a></li>
+          <li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">#include $webdir + "/../../Config/templates/staticcfg/images/logo-arrow.svg"# $T('Plush-downloads').capitalize()</span></a></li>
           <li#if $pane=="Status"# class="active"#end if#><a href="${path}status/"><span class="icon_nav_connections">$T('menu-cons').capitalize()</span></a></li>
           <li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss/"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
           <li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config/"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>
