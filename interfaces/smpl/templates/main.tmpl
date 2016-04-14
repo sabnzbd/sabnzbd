@@ -549,7 +549,12 @@ function loadtitle() {
   d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, del_files: del, _dc: Math.random(), session: session});
 }
 
-  function handleServerError(){}
+  function handleServerError(result){
+    // Only reason for a 404 error could be a login failure -> redirect
+    if(result.number == 404) {
+      document.location=document.location;
+    }
+  }
 
   function killTimer(){
     clearTimeout (timerId2);

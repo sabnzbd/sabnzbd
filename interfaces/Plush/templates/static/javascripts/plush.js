@@ -1251,6 +1251,12 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
       $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
       $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
+    },
+    error: function(xhr){ 
+      // Only reason for a 404 error could be a login failure -> redirect
+      if(xhr.status == 404) {
+        document.location=document.location;
+      }
     }
   });
 
