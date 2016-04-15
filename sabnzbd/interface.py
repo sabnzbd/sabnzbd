@@ -96,7 +96,7 @@ def check_access(access_type=4):
         `access_type`: 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
-    
+
     # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
     # It will always contain that ::ffff: prefix
     range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace('::ffff:', '').startswith(r))])
@@ -169,9 +169,9 @@ COOKIE_SECRET = str(randint(1000,100000)*os.getpid())
 
 def set_login_cookie(remove=False, remember_me=False):
     """ We try to set a cookie as unique as possible
-        to the current user. Based on it's IP and the 
+        to the current user. Based on it's IP and the
         current process ID of the SAB instance and a random
-        number, so cookies cannot be re-used 
+        number, so cookies cannot be re-used
     """
     salt = randint(1,1000)
     cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
@@ -190,7 +190,7 @@ def set_login_cookie(remove=False, remember_me=False):
         cherrypy.response.cookie['login_salt']['expires'] = 0
     else:
         # Notify about new login
-        notifier.send_notification(T('User logged in'), T('User logged in to the web interface'), 'new_login') 
+        notifier.send_notification(T('User logged in'), T('User logged in to the web interface'), 'new_login')
 
 def check_login_cookie():
     # Do we have everything?
@@ -319,7 +319,7 @@ class MainPage(object):
         if first == 2:
             # Setup addresses with /sabnzbd prefix for primary and secondary skin
             self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', web_dirc=web_dirc, prim=True, first=1)
-        
+
         self.login = LoginPage(web_dirc, root + 'login/', prim)
         self.queue = QueuePage(web_dir, root + 'queue/', prim)
         self.history = HistoryPage(web_dir, root + 'history/', prim)
@@ -357,7 +357,7 @@ class MainPage(object):
             info['cat_list'] = list_cats(True)
             info['have_rss_defined'] = bool(config.get_rss())
             info['have_watched_dir'] = bool(cfg.dirscan_dir())
-            
+
             # Have logout only with HTML and if inet=5, only when we are external
             info['have_logout'] = cfg.username() and cfg.password() and (cfg.html_login() and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6))))
 
@@ -520,7 +520,7 @@ class MainPage(object):
         if isinstance(name, list):
             name = name[0]
             kwargs['name'] = name
-        if mode not in ('version', 'auth'):
+        if mode not in ('version', 'auth', 'getkey'):
             msg = check_apikey(kwargs)
             if msg:
                 return msg
@@ -603,7 +603,7 @@ class LoginPage(object):
             raise dcRaiser('../', kwargs)
         elif kwargs.get('username') or kwargs.get('password'):
             info['error'] = T('Authentication failed, check username/password.')
-        
+
         # Show login
         template = Template(file=os.path.join(self.__web_dir, 'login', 'main.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -1515,16 +1515,16 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
-              'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates', 
+              'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'no_ipv6', 'keep_awake', 'empty_postproc', 'html_login',
               'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
-              'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 
+              'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
               'enable_https_verification', 'api_logging', 'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload', 
+              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
               'ipv6_servers', 'rating_host', 'selftest_host'
      )
 SPECIAL_LIST_LIST = \
@@ -2356,7 +2356,7 @@ class ConfigScheduling(object):
         actions_lng = {}
         for action in actions:
             actions_lng[action] = Ttemplate("sch-" + action)
-        
+
         actions_servers = {}
         servers = config.get_servers()
         for srv in servers:
@@ -2667,7 +2667,7 @@ class Status(object):
             return msg
         orphan_delete(kwargs)
         raise dcRaiser(self.__root, kwargs)
-        
+
     @cherrypy.expose
     def delete_all(self, **kwargs):
         msg = check_session(kwargs)
