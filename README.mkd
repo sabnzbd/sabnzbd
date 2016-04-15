@@ -68,4 +68,3 @@ The organization of the download queue is different from older versions.
 Status->QueueRepair and "Repair" the old queue.
 Also, your sabnzbd.ini file will be upgraded, making it
 incompatible with releases older than 0.7.9
-
