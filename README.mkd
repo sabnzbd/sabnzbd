@@ -11,6 +11,7 @@ Release Notes  -  SABnzbd 1.0.0RC1
 - Fix PushOver support.
 - Fix breaking Glitter bug with large script_log
 - Fix issues with deleting jobs via the API
+- Fix issue where quotes in names break the History database
 
 ## What's new in 1.0.0
 - Full Unicode support with Chinese and Russian translations
