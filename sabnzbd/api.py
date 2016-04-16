@@ -794,7 +794,7 @@ def _api_undefined(name, output, kwargs):
 def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
-    
+
     if compact and compact == '1':
         paths = []
         name = platform_encode(kwargs.get('term', ''))
@@ -814,9 +814,7 @@ def _api_config(name, output, kwargs):
 
 def _api_config_speedlimit(output, kwargs):
     """ API: accepts output, value(=speed) """
-    value = kwargs.get('value')
-    if not value:
-        value = '0'
+    value = kwargs.get('value', '0')
     Downloader.do.limit_speed(value)
     return report(output)
 
@@ -888,6 +886,49 @@ def _api_server_stats(name, output, kwargs):
 
     return report(output, keyword='', data=stats)
 
+def _api_getkey(name, output, kwargs):
+    """ Special function to get apikey.
+
+        The request must come from the your local ip range
+        and any of the following conditions is true:
+
+            no username/password is enabled,
+            list of local network ranges,
+            apikey is disabled,
+            ma_username and ma_password in the querystring
+    """
+
+    from sabnzbd.interface import check_access
+
+    # Exclude all external traffic and require from local network
+    if check_access(-1):  # Pass -1 since we dont want this accessible from external network.
+
+        if (cfg.username() == '' and cfg.password() == '' or cfg.disable_key() == 1 or cfg.api_key() == kwargs.get('apikey') or
+            kwargs.get('ma_username') == cfg.username() and kwargs.get('ma_password') == cfg.password() or cfg.local_ranges()):
+
+            if cfg.api_key():
+                key = cfg.api_key()
+            else:
+                key = config.create_api_key()
+                cfg.api_key.set(key)
+                config.save_config()
+
+            return report(output, keyword='apikey', data=key)
+
+        elif 'apikey' in kwargs and kwargs.get('apikey') != cfg.api_key():
+            return report(output, 'Invalid apikey')
+
+        elif 'ma_username' not in kwargs or 'ma_username' not in kwargs and cfg.username() or cfg.password():
+            return report(output, ('Authentication with username and password is enabled. '
+                                   'Please add the required parameters ma_username and '
+                                   'ma_password'
+                                   ))
+
+        elif kwargs.get('ma_username') != cfg.username() or kwargs.get('ma_password') != cfg.password():
+            return report(output, 'Incorrect username or password')
+
+        else:
+            return report(output, 'Oh, crap something wrong happend')
 
 ##############################################################################
 _api_table = {
@@ -916,6 +957,7 @@ _api_table = {
     'shutdown': (_api_shutdown, 3),
     'warnings': (_api_warnings, 2),
     'config': (_api_config, 2),
+    'getkey': (_api_getkey, 1),
     'get_cats': (_api_get_cats, 2),
     'get_scripts': (_api_get_scripts, 2),
     'version': (_api_version, 1),
@@ -1234,10 +1276,10 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
 
             # For the templates or for JSON
             if output:
-                thread_info = { 'thrdnum': nw.thrdnum,
-                                'art_name': art_name,
-                                'nzf_name': nzf_name,
-                                'nzo_name': nzo_name }
+                thread_info = {'thrdnum': nw.thrdnum,
+                               'art_name': art_name,
+                               'nzf_name': nzf_name,
+                               'nzo_name': nzo_name}
                 serverconnections.append(thread_info)
             else:
                 serverconnections.append((nw.thrdnum, art_name, nzf_name, nzo_name))
@@ -1254,19 +1296,19 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
 
         # For the templates or for JSON
         if output:
-            server_info = { 'servername': server.displayname, 
-                            'serveractiveconn': connected, 
-                            'servertotalconn': server.threads, 
-                            'serverconnections': serverconnections, 
-                            'serverssl': server.ssl,
-                            'serveractive': server.active, 
-                            'servererror': server.errormsg, 
-                            'serverpriority': server.priority, 
-                            'serveroptional': server.optional }
+            server_info = {'servername': server.displayname,
+                           'serveractiveconn': connected,
+                           'servertotalconn': server.threads,
+                           'serverconnections': serverconnections,
+                           'serverssl': server.ssl,
+                           'serveractive': server.active,
+                           'servererror': server.errormsg,
+                           'serverpriority': server.priority,
+                           'serveroptional': server.optional}
             info['servers'].append(server_info)
         else:
             info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
-                                      server.active, server.errormsg, server.priority, server.optional))
+                                    server.active, server.errormsg, server.priority, server.optional))
 
     wlist = []
     for w in sabnzbd.GUIHANDLER.content():
