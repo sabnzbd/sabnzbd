@@ -147,15 +147,11 @@
                         <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                         <span class="desc">$T('explain-unwanted_extensions')</span>
                     </div>
+                    
                     <div class="field-pair">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-auto_sort')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="propagation_delay">$T('opt-propagation_delay')</label>
-                        <input type="number" name="propagation_delay" id="propagation_delay" value="$propagation_delay" min="2" max="2000" /> <i>$T('minutes')</i>
-                        <span class="desc">$T('explain-propagation_delay')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>

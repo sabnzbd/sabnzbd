@@ -1487,7 +1487,7 @@ class NzbObject(TryList):
         return PNFO(self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name, self.password, {},
                 '', self.cat, self.url,
-                bytes_left_all, self.bytes, self.avg_stamp, avg_date,
+                bytes_left_all, self.bytes, avg_date,
                 finished_files, active_files, queued_files, self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', []))
                 )

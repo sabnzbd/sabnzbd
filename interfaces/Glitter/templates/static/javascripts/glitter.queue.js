@@ -526,10 +526,6 @@ function QueueModel(parent, data) {
         if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
             return glitterTranslate.paused;
         }
-        // Propagating
-        if(self.status() == 'Propagating') {
-            return glitterTranslate.propagating
-        }
         // Just the time
         return rewriteTime(self.timeLeft());
     });
