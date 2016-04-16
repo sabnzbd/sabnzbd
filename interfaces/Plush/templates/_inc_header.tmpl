@@ -15,11 +15,10 @@
 
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/jqueryui/overcast/jquery-ui-1.8.15.custom.css?$version"/>
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/rateit/rateit.css"/>
+  <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=1.1.0"/>
   #if $color_scheme#
-  <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/$color_scheme/${color_scheme}.css?$version"/>
   #else#
-  <link rel="shortcut icon" type="image/ico" href="${path}static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
   <link rel="stylesheet" type="text/css" href="${path}static/stylesheets/colorschemes/gold/gold.css?$version"/>
   #end if#
 
@@ -27,7 +26,8 @@
   <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />        
+  <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" /> 
+  <link rel="apple-touch-icon" sizes="192x192" href="./staticcfg/ico/android-192x192.png" />
   
   <script type="text/javascript" src="${path}static/javascripts/lib.js?$version"></script>
 
@@ -89,7 +89,7 @@
         #end if#
         </ul>
         <ul class="menu" id="navigation_menu_left">
-          <li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">$T('Plush-downloads').capitalize()</span></a></li>
+          <li#if $pane=="Main"# class="active first"#else# class="first"#end if#><a href="${path}"><span class="icon_nav_download">#include $webdir + "/../../Config/templates/staticcfg/images/logo-arrow.svg"# $T('Plush-downloads').capitalize()</span></a></li>
           <li#if $pane=="Status"# class="active"#end if#><a href="${path}status/"><span class="icon_nav_connections">$T('menu-cons').capitalize()</span></a></li>
           <li#if $pane=="RSS"# class="active"#end if#><a href="${path}config/rss/"><span class="icon_nav_rss">$T('rss').upper()</span></a></li>
           <li#if $pane!="RSS" and $pane!="Nzo" and ($pane=="Config" or $path=='../../')# class="active last"#else# class="last"#end if#><a href="${path}config/"><span class="icon_nav_config">$T('menu-config').capitalize()</span></a></li>

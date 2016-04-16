@@ -12,13 +12,14 @@
   <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/white.css?smpl$version"/>
   <!--#end if#-->
   <link href="rss?mode=history&apikey=$session" rel="alternate" type="application/rss+xml" title="SABnzbd History" />
-  <link rel="shortcut icon" href="./staticcfg/ico/favicon.ico" />
+  <link rel="shortcut icon" href="./staticcfg/ico/favicon.ico?v=1.1.0" />
   
   <meta name="apple-mobile-web-app-title" content="SABnzbd" />
   <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />        
+  <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="./staticcfg/ico/android-192x192.png" />
 
   <script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
   <script type="text/javascript" src="static/PlotKit/PlotKit.js"></script>
@@ -549,7 +550,12 @@ function loadtitle() {
   d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, del_files: del, _dc: Math.random(), session: session});
 }
 
-  function handleServerError(){}
+  function handleServerError(result){
+    // Only reason for a 404 error could be a login failure -> redirect
+    if(result.number == 404) {
+      document.location=document.location;
+    }
+  }
 
   function killTimer(){
     clearTimeout (timerId2);

@@ -44,6 +44,7 @@ SKIN_TEXT = {
     'post-QuickCheck'    : TT('Quick Check...'), #: PP status
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
+    'post-Propagating'   : TT('Propagation delay'),
     'post-Checking'      : TT('Checking'), #: PP status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
@@ -296,12 +297,14 @@ SKIN_TEXT = {
 # Configuration
     'confgFile' : TT('Config File'),
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
-    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
+    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.') + TT('<br />If authentication is enabled, you will need to login again.'),
+    'explain-needNewLogin' : TT('<br />If authentication is enabled, you will need to login again.'),
     'button-restart' : TT('Restart'),
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
+    'explain-sessionExpire': TT('When your IP address changes or SABnzbd is restarted the session will expire.'),
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
@@ -465,6 +468,8 @@ SKIN_TEXT = {
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
+    'opt-propagation_delay' : TT('Propagation delay'),
+    'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay.'),
     'opt-check_new_rel' : TT('Check for New Release'),
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'also-test' : TT('Also test releases'), #: Pick list for weekly test for new releases

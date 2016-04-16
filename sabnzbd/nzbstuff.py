@@ -1093,7 +1093,7 @@ class NzbObject(TryList):
         self.save_to_disk()
 
     @property
-    def final_name_pw(self):
+    def final_name_labeled(self):
         prefix = ''
         if self.duplicate:
             prefix = T('DUPLICATE') + ' / '  # : Queue indicator for duplicate job
@@ -1111,6 +1111,9 @@ class NzbObject(TryList):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
+        if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
+            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time())/60 + 0.5)
+            prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagtion of post
         return '%s%s' % (prefix, self.final_name)
 
     @property
@@ -1485,9 +1488,9 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
-                self.nzo_id, self.final_name, self.password, {},
+                self.nzo_id, self.final_name_labeled, self.password, {},
                 '', self.cat, self.url,
-                bytes_left_all, self.bytes, avg_date,
+                bytes_left_all, self.bytes, self.avg_stamp, avg_date,
                 finished_files, active_files, queued_files, self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', []))
                 )

@@ -9,8 +9,9 @@
     <link rel="apple-touch-icon" sizes="76x76" href="../staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
     <link rel="apple-touch-icon" sizes="120x120" href="../staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="../staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="../staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />  
-    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico" />      
+    <link rel="apple-touch-icon" sizes="180x180" href="../staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="../staticcfg/ico/android-192x192.png" />
+    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico?v=1.1.0" />      
 
     <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" /> 
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?p=$pid" />
@@ -37,7 +38,7 @@
                 
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
-                <div class="checkbox text-center">
+                <div class="checkbox text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">
                     <label>
                         <input type="checkbox" name="remember_me" value="1"> $T('rememberme')
                     </label>
@@ -45,6 +46,8 @@
             </form>
         </div>
         <script type="text/javascript">
+            // Tooltip
+            \$('[data-toggle="tooltip"]').tooltip()
             // Try-catch in case somebody disabled localstorage
             try {
                 // Set what was done previously

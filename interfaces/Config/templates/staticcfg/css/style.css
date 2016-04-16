@@ -410,15 +410,18 @@ tr.separator {
     background-color: #3C3C3C;
     color: white;
     border: 0;
-    padding: 10px 12px;
+    padding:11px 12px 8px;
 }
 .modal-header .close {
-    opacity: 0.7;
+    opacity: 0.5;
     background: transparent;
     color: white;
     text-shadow: none !important;
     font-weight: normal !important;
-    font-size: 28px;
+    font-size: 32px;
+    vertical-align: middle;
+    margin-top: -5px;
+    font-family: arial, sans-serif !important;
 }
 .modal-header .close:hover {
     opacity: 1;
@@ -799,6 +802,10 @@ input[type="checkbox"] {
 
 .navbar .container {
     padding-right: 0;
+}
+
+.navbar .nav>li>a {
+    height: 50px;
 }
 
 .navbar-default {

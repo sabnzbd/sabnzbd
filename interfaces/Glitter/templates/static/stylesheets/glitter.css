@@ -1499,12 +1499,18 @@ input[name="nzbURL"] {
 
 /* HELP MODAL */
 
-#modal-help {
+#modal-help .modal-body {
     text-align: center;
 }
 
+#modal-help svg {
+    margin: 0.5em 0 0.5em;
+    height: 65px;
+    width: 234px;
+}
+
 #modal-help table {
-    margin: 1em auto;
+    margin: 0.5em auto;
     text-align: left;
     border-collapse: collapse;
 }
@@ -1522,6 +1528,14 @@ input[name="nzbURL"] {
 
 #modal-help table td a:hover {
     text-decoration: underline;
+}
+
+#modal-help hr {
+    margin: 0.75em 0;
+}
+
+#modal-help small {
+    color: #888;
 }
 
 /* FILES MODAL */

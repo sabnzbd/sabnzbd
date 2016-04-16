@@ -291,8 +291,32 @@ body {
   background-position:6px 0px;
 }
 
-.navigation ul li a span.icon_nav_download { background-image: url('images/nav/downloads-grey.png'); }
-.navigation ul li.active a span.icon_nav_download, .navigation ul li a:hover span.icon_nav_download { background-image: url('images/nav/downloads.png'); }
+.navigation ul li a span.icon_nav_download {
+  padding-left: 0;
+}
+
+.navigation ul li a span.icon_nav_download svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  float: left;
+  margin: 4px 5px 0px 4px;
+}
+
+/* When logo is inactive (grey) and then hovered */
+.navigation ul li:not(.active) a span.icon_nav_download svg .logo-arrow-outer {
+  fill: #B9B9B9;
+}
+.navigation ul li:not(.active) a span.icon_nav_download svg .logo-arrow-inner {
+  fill: #D5D5D5;
+}
+.navigation ul li:not(.active) a:hover span.icon_nav_download svg .logo-arrow-outer {
+  fill: #FFB300 ;
+}
+.navigation ul li:not(.active) a:hover span.icon_nav_download svg .logo-arrow-inner {
+  fill: #FFCA28;
+}
+
 .navigation ul li a span.icon_nav_connections { background-image: url('images/nav/connections-grey.png'); }
 .navigation ul li.active a span.icon_nav_connections, .navigation ul li a:hover span.icon_nav_connections { background-image: url('images/nav/connections.png'); }
 .navigation ul li a span.icon_nav_rss { background-image: url('images/nav/rss-grey.png'); }
@@ -699,7 +723,7 @@ body {
 .centerpiece {
   margin: auto;
   padding:13px 0 0 20px;
-  width:350px;
+  width:380px;
 }
 
 .sprite_sabnzbdplus_logo {
@@ -708,9 +732,12 @@ body {
 
 .sabnzbd_logo {
   float: left;
-  height: 40px;
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-top: 14px;
+}
+
+.sabnzbd_logo svg {
+  height: 35px;
+  width: 126px;
 }
 
 #speed, #time-left {
@@ -725,12 +752,12 @@ body {
 /* stats next to logo */
 #speed {
   float: left;
-  margin-left: 24px;
+  margin-left: 15px;
 }
 
 #time-left {
   float: left;
-  margin-right: 24px;
+  margin-right: 15px;
   width: 88px;
 }
 

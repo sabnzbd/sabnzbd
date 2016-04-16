@@ -92,6 +92,11 @@
                         <span class="desc">$T('explain-pre_script')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="propagation_delay">$T('opt-propagation_delay')</label>
+                        <input type="number" name="propagation_delay" id="propagation_delay" value="$propagation_delay" /> <i>$T('minutes')</i>
+                        <span class="desc">$T('explain-propagation_delay')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="top_only">$T('opt-top_only')</label>
                         <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-top_only')</span>
@@ -147,7 +152,6 @@
                         <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                         <span class="desc">$T('explain-unwanted_extensions')</span>
                     </div>
-                    
                     <div class="field-pair">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
