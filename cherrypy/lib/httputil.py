@@ -164,6 +164,7 @@ class HeaderElement(object):
             atoms = xatoms
         # End of patch
 
+
         if not atoms:
             initial_value = ''
         else:

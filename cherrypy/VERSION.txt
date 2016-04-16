@@ -1,4 +1,4 @@
-CherryPy 3.8.0 Official distribution: https://pypi.python.org/packages/source/C/CherryPy/CherryPy-3.8.0.tar.gz
+CherryPy 5.1.0 Official distribution: https://pypi.python.org/packages/source/C/CherryPy/CherryPy-5.1.0.tar.gz
 The folders 'tutorial', 'test' and 'scaffold' have been removed.
 This file has been added.
 A patch is required to enable proper Bonjour/Zeroconfig support.
