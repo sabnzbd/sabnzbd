@@ -102,9 +102,9 @@ function ViewModel() {
     // Dynamic icon
     self.SABIcon = ko.pureComputed(function() {
         if(self.downloadsPaused()) {
-            return './staticcfg/ico/faviconpaused.ico';
+            return './staticcfg/ico/faviconpaused.ico?v=1.1.0';
         } else {
-            return './staticcfg/ico/favicon.ico';
+            return './staticcfg/ico/favicon.ico?v=1.1.0';
         }
     })
 

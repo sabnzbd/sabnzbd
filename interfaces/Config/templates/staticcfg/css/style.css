@@ -804,6 +804,10 @@ input[type="checkbox"] {
     padding-right: 0;
 }
 
+.navbar .nav>li>a {
+    height: 50px;
+}
+
 .navbar-default {
     background-color: #FFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);

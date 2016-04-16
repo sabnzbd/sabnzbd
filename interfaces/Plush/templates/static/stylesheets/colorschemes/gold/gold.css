@@ -308,7 +308,7 @@ body {
   fill: #B9B9B9;
 }
 .navigation ul li:not(.active) a span.icon_nav_download svg .logo-arrow-inner {
-  fill: #E4E4E4;
+  fill: #D5D5D5;
 }
 .navigation ul li:not(.active) a:hover span.icon_nav_download svg .logo-arrow-outer {
   fill: #FFB300 ;
