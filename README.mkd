@@ -3,8 +3,8 @@ Release Notes  -  SABnzbd 1.0.0RC1
 
 ## What's new in 1.0.0RC1
 - Prevent creating orphan items in "incomplete" when deleting downloading jobs.
-- Forced item with missing articles caused overflow in paused queue
-- Do not ignore files in QuickCheck
+- Forced item with missing articles caused overflow into paused jobs
+- Do QuickCheck even on files that would be removed by the Cleanup-list (problematic for RAR files).
 - Fix "Download all par2 files" behavior
 - Treat ambiguous numeric values as number of minutes for custom pause time.
 - Accept MIME records that have only LF line endings (error in some third-party utilities)
