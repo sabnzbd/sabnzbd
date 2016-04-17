@@ -42,9 +42,9 @@ from sabnzbd.utils.upload import add_local
 
 class StatusIcon(Thread):
     sabicons = {
-        'default': 'icons/sabnzbd16.ico',
-        'green': 'icons/sabnzbd16green.ico',
-        'pause': 'icons/sabnzbd16paused.ico'
+        'default': 'icons/sabnzbd16_32.ico',
+        'green': 'icons/sabnzbd16_32green.ico',
+        'pause': 'icons/sabnzbd16_32paused.ico'
     }
 
     updatefreq = 1000  # ms

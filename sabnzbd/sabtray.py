@@ -39,9 +39,9 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 class SABTrayThread(SysTrayIconThread):
     sabicons = {
-        'default': 'icons/sabnzbd16.ico',
-        'green': 'icons/sabnzbd16green.ico',
-        'pause': 'icons/sabnzbd16paused.ico'
+        'default': 'icons/sabnzbd16_32.ico',
+        'green': 'icons/sabnzbd16_32green.ico',
+        'pause': 'icons/sabnzbd16_32paused.ico'
     }
 
     def __init__(self):
