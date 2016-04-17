@@ -286,7 +286,7 @@ def check_apikey(kwargs, nokey=False):
 
     # No active APIKEY, check web credentials instead
     if cfg.username() and cfg.password():
-        if kwargs.get('ma_username') == cfg.username() and kwargs.get('ma_password') == cfg.password():
+        if check_login() or (kwargs.get('ma_username') == cfg.username() and kwargs.get('ma_password') == cfg.password()):
             pass
         else:
             if not special:
@@ -500,7 +500,7 @@ class MainPage(object):
     @cherrypy.expose
     def tapi(self, **kwargs):
         """ Handler for API over http, for template use """
-        msg = check_session(kwargs)
+        msg = check_apikey(kwargs)
         if msg:
             return msg
         return api_handler(kwargs)
@@ -591,8 +591,8 @@ class LoginPage(object):
             raise dcRaiser('.', kwargs)
 
         # Check if there's even a username/password set
-        if check_login():
-            raise dcRaiser('../', kwargs)
+        #if check_login():
+        #    raise dcRaiser('../', kwargs)
 
         # Check login info
         if kwargs.get('username') == cfg.username() and kwargs.get('password') == cfg.password():

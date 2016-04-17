@@ -142,6 +142,14 @@ function ViewModel() {
         }
 
         /***
+            Possible login failure?
+        ***/
+        if(response.hasOwnProperty('error') && response.error == 'Missing authentication') {
+            // Restart 
+            document.location = document.location;
+        }
+
+        /***
             Basic information
         ***/
         // Queue left
