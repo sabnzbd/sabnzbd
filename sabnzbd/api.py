@@ -1338,159 +1338,159 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         info['finish'] = info['noofslots']
 
     for pnfo in pnfo_list:
-        repair = pnfo.repair
-        unpack = pnfo.unpack
-        delete = pnfo.delete
-        script = pnfo.script
-        nzo_id = pnfo.nzo_id
-        cat = pnfo.category
-        if not cat:
-            cat = 'None'
-        filename = pnfo.filename
-        password = pnfo.password
-        bytesleft = pnfo.bytes_left
-        bytes = pnfo.bytes
-        average_date = pnfo.avg_date
-        is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
-        status = pnfo.status
-        priority = pnfo.priority
-        mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
-        missing = pnfo.missing
-        if verbose or verbose_list:
-            finished_files = pnfo.finished_files
-            active_files = pnfo.active_files
-            queued_files = pnfo.queued_files
-
-        nzo_ids.append(nzo_id)
-
-        slot = {'index': n, 'nzo_id': str(nzo_id)}
-        unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
-
-        slot['unpackopts'] = str(unpackopts)
-        if script:
-            slot['script'] = script
-        else:
-            slot['script'] = 'None'
-        slot['filename'] = converter(filename)
-        slot['password'] = converter(password) if password else ""
-        slot['cat'] = cat
-        slot['mbleft'] = "%.2f" % mbleft
-        slot['mb'] = "%.2f" % mb
-        if not output:
-            slot['mb_fmt'] = locale.format('%d', int(mb), True)
-            slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
-        slot['size'] = format_bytes(bytes)
-        slot['sizeleft'] = format_bytes(bytesleft)
-        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING) and not found_active:
-            if is_propagating:
-                slot['status'] = 'Propagating'
-            elif status == Status.CHECKING:
-                slot['status'] = Status.CHECKING
-            else:
-                slot['status'] = Status.DOWNLOADING
-            found_active = True
-        else:
-            slot['status'] = "%s" % (status)
-        if priority == TOP_PRIORITY:
-            slot['priority'] = 'Force'
-        elif priority == REPAIR_PRIORITY:
-            slot['priority'] = 'Repair'
-        elif priority == HIGH_PRIORITY:
-            slot['priority'] = 'High'
-        elif priority == LOW_PRIORITY:
-            slot['priority'] = 'Low'
-        else:
-            slot['priority'] = 'Normal'
-        if mb == mbleft:
-            slot['percentage'] = "0"
-        else:
-            slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100))
-        slot['missing'] = missing
-
-        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
-           status not in (Status.DOWNLOADING, Status.QUEUED)) and priority != TOP_PRIORITY:
-            slot['timeleft'] = '0:00:00'
-            slot['eta'] = 'unknown'
-        else:
-            running_bytes += bytesleft
-            slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
-            try:
-                datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
-                # new eta format: 16:00 Fri 07 Feb
-                slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
-            except:
-                datestart = datetime.datetime.now()
-                slot['eta'] = 'unknown'
-
-        if status == Status.GRABBING:
-            slot['avg_age'] = '---'
-        else:
-            slot['avg_age'] = calc_age(average_date, bool(trans))
-
-        rating = Rating.do.get_rating_by_nzo(nzo_id)
-        slot['has_rating'] = rating is not None
-        if rating:
-            slot['rating_avg_video'] = rating.avg_video
-            slot['rating_avg_audio'] = rating.avg_audio
-
-        slot['verbosity'] = ""
-        if web_dir:
-            finished = []
-            active = []
-            queued = []
-            # this will list files in the xml output, wanted yes/no?
-            if verbose or nzo_id in verbose_list:
-                slot['verbosity'] = "True"
-                for tup in finished_files:
-                    bytes_left, bytes, fn, date = tup
-                    fn = converter(fn)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'age': age}
-                    finished.append(line)
-
-                for tup in active_files:
-                    bytes_left, bytes, fn, date, nzf_id = tup
-                    fn = converter(fn)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'nzf_id': nzf_id,
-                            'age': age}
-                    active.append(line)
-
-                for tup in queued_files:
-                    _set, bytes_left, bytes, fn, date = tup
-                    fn = converter(fn)
-                    _set = converter(_set)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn, 'set': _set,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'age': age}
-                    queued.append(line)
-
-            slot['finished'] = finished
-            slot['active'] = active
-            slot['queued'] = queued
-
         if (start <= n and n < start + limit) or not limit:
+            repair = pnfo.repair
+            unpack = pnfo.unpack
+            delete = pnfo.delete
+            script = pnfo.script
+            nzo_id = pnfo.nzo_id
+            cat = pnfo.category
+            if not cat:
+                cat = 'None'
+            filename = pnfo.filename
+            password = pnfo.password
+            bytesleft = pnfo.bytes_left
+            bytes = pnfo.bytes
+            average_date = pnfo.avg_date
+            is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
+            status = pnfo.status
+            priority = pnfo.priority
+            mbleft = (bytesleft / MEBI)
+            mb = (bytes / MEBI)
+            missing = pnfo.missing
+            if verbose or verbose_list:
+                finished_files = pnfo.finished_files
+                active_files = pnfo.active_files
+                queued_files = pnfo.queued_files
+    
+            nzo_ids.append(nzo_id)
+    
+            slot = {'index': n, 'nzo_id': str(nzo_id)}
+            unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
+    
+            slot['unpackopts'] = str(unpackopts)
+            if script:
+                slot['script'] = script
+            else:
+                slot['script'] = 'None'
+            slot['filename'] = converter(filename)
+            slot['password'] = converter(password) if password else ""
+            slot['cat'] = cat
+            slot['mbleft'] = "%.2f" % mbleft
+            slot['mb'] = "%.2f" % mb
+            if not output:
+                slot['mb_fmt'] = locale.format('%d', int(mb), True)
+                slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
+            slot['size'] = format_bytes(bytes)
+            slot['sizeleft'] = format_bytes(bytesleft)
+            if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING) and not found_active:
+                if is_propagating:
+                    slot['status'] = 'Propagating'
+                elif status == Status.CHECKING:
+                    slot['status'] = Status.CHECKING
+                else:
+                    slot['status'] = Status.DOWNLOADING
+                found_active = True
+            else:
+                slot['status'] = "%s" % (status)
+            if priority == TOP_PRIORITY:
+                slot['priority'] = 'Force'
+            elif priority == REPAIR_PRIORITY:
+                slot['priority'] = 'Repair'
+            elif priority == HIGH_PRIORITY:
+                slot['priority'] = 'High'
+            elif priority == LOW_PRIORITY:
+                slot['priority'] = 'Low'
+            else:
+                slot['priority'] = 'Normal'
+            if mb == mbleft:
+                slot['percentage'] = "0"
+            else:
+                slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100))
+            slot['missing'] = missing
+    
+            if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
+               status not in (Status.DOWNLOADING, Status.QUEUED)) and priority != TOP_PRIORITY:
+                slot['timeleft'] = '0:00:00'
+                slot['eta'] = 'unknown'
+            else:
+                running_bytes += bytesleft
+                slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
+                try:
+                    datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
+                    # new eta format: 16:00 Fri 07 Feb
+                    slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
+                except:
+                    datestart = datetime.datetime.now()
+                    slot['eta'] = 'unknown'
+    
+            if status == Status.GRABBING:
+                slot['avg_age'] = '---'
+            else:
+                slot['avg_age'] = calc_age(average_date, bool(trans))
+    
+            rating = Rating.do.get_rating_by_nzo(nzo_id)
+            slot['has_rating'] = rating is not None
+            if rating:
+                slot['rating_avg_video'] = rating.avg_video
+                slot['rating_avg_audio'] = rating.avg_audio
+    
+            slot['verbosity'] = ""
+            if web_dir:
+                finished = []
+                active = []
+                queued = []
+                # this will list files in the xml output, wanted yes/no?
+                if verbose or nzo_id in verbose_list:
+                    slot['verbosity'] = "True"
+                    for tup in finished_files:
+                        bytes_left, bytes, fn, date = tup
+                        fn = converter(fn)
+    
+                        age = calc_age(date)
+    
+                        line = {'filename': fn,
+                                'mbleft': "%.2f" % (bytes_left / MEBI),
+                                'mb': "%.2f" % (bytes / MEBI),
+                                'size': format_bytes(bytes),
+                                'sizeleft': format_bytes(bytes_left),
+                                'age': age}
+                        finished.append(line)
+    
+                    for tup in active_files:
+                        bytes_left, bytes, fn, date, nzf_id = tup
+                        fn = converter(fn)
+    
+                        age = calc_age(date)
+    
+                        line = {'filename': fn,
+                                'mbleft': "%.2f" % (bytes_left / MEBI),
+                                'mb': "%.2f" % (bytes / MEBI),
+                                'size': format_bytes(bytes),
+                                'sizeleft': format_bytes(bytes_left),
+                                'nzf_id': nzf_id,
+                                'age': age}
+                        active.append(line)
+    
+                    for tup in queued_files:
+                        _set, bytes_left, bytes, fn, date = tup
+                        fn = converter(fn)
+                        _set = converter(_set)
+    
+                        age = calc_age(date)
+    
+                        line = {'filename': fn, 'set': _set,
+                                'mbleft': "%.2f" % (bytes_left / MEBI),
+                                'mb': "%.2f" % (bytes / MEBI),
+                                'size': format_bytes(bytes),
+                                'sizeleft': format_bytes(bytes_left),
+                                'age': age}
+                        queued.append(line)
+    
+                slot['finished'] = finished
+                slot['active'] = active
+                slot['queued'] = queued
+    
             slotinfo.append(slot)
         n += 1
 
