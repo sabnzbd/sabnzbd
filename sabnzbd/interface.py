@@ -349,6 +349,7 @@ class MainPage(object):
 
         if kwargs.get('skip_wizard') or config.get_servers():
             info = build_header(self.__prim, self.__web_dir)
+            info['mb'] = info['mbleft'] = info['kbpersec'] = info['speed'] = '0'
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
