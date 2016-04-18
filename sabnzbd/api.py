@@ -511,7 +511,7 @@ def _api_history(name, output, kwargs):
         else:
             return report(output, _MSG_NO_VALUE)
     elif not name:
-        history, pnfo_list, bytespersec = build_header(True)
+        history = build_header(prim=True)
         if 'noofslots_total' in history:
             del history['noofslots_total']
         grand, month, week, day = BPSMeter.do.get_sums()
@@ -1157,7 +1157,7 @@ def handle_cat_api(output, kwargs):
 
 def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, output=None):
     # build up header full of basic information
-    info, _pnfo_list, _bytespersec = build_header(prim, web_dir)
+    info = build_header(prim, web_dir)
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -1291,7 +1291,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         dictn = []
     # build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
+    info, pnfo_list, bytespersec = build_queue_header(prim, webdir, search=search)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if 'queue_details' in cookie:
@@ -1795,7 +1795,8 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(prim, webdir='', search=None):
+def build_header(prim, webdir=''):
+    """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1850,6 +1851,32 @@ def build_header(prim, webdir='', search=None):
 
     header['session'] = cfg.api_key()
 
+    header['quota'] = to_units(BPSMeter.do.quota)
+    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
+    header['left_quota'] = to_units(BPSMeter.do.left)
+
+    anfo = ArticleCache.do.cache_info()
+    header['cache_art'] = str(anfo.article_sum)
+    header['cache_size'] = format_bytes(anfo.cache_size)
+    header['cache_max'] = str(anfo.cache_limit)
+
+    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
+
+    if sabnzbd.NEW_VERSION:
+        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
+    else:
+        header['new_release'] = ''
+        header['new_rel_url'] = ''
+
+    return header
+
+
+
+def build_queue_header(prim, webdir='', search=None):
+    """ Build full queue header """
+
+    header = build_header(prim, webdir)
+
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search)
 
@@ -1864,11 +1891,6 @@ def build_header(prim, webdir='', search=None):
     header['size'] = format_bytes(bytes)
     header['noofslots_total'] = qnfo.q_fullsize
 
-    header['quota'] = to_units(BPSMeter.do.quota)
-    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
-    header['left_quota'] = to_units(BPSMeter.do.left)
-    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
-
     status = ''
     if Downloader.do.paused or Downloader.do.postproc:
         status = Status.PAUSED
@@ -1878,19 +1900,7 @@ def build_header(prim, webdir='', search=None):
         status = 'Idle'
     header['status'] = status
 
-    anfo = ArticleCache.do.cache_info()
-
-    header['cache_art'] = str(anfo.article_sum)
-    header['cache_size'] = format_bytes(anfo.cache_size)
-    header['cache_max'] = str(anfo.cache_limit)
-
     header['nzb_quota'] = ''
-
-    if sabnzbd.NEW_VERSION:
-        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
-    else:
-        header['new_release'] = ''
-        header['new_rel_url'] = ''
 
     header['timeleft'] = calc_timeleft(bytesleft, bytespersec)
 
