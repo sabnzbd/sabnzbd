@@ -254,8 +254,8 @@ def _api_queue_default(output, value, kwargs):
     """ API: accepts output, sort, dir, start, limit """
     sort = kwargs.get('sort')
     direction = kwargs.get('dir', '')
-    start = kwargs.get('start')
-    limit = kwargs.get('limit')
+    start = int_conv(kwargs.get('start'))
+    limit = int_conv(kwargs.get('limit'))
     trans = kwargs.get('trans')
     search = kwargs.get('search')
 
@@ -470,8 +470,8 @@ def _api_fullstatus(name, output, kwargs):
 def _api_history(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), start, limit, search """
     value = kwargs.get('value', '')
-    start = kwargs.get('start')
-    limit = kwargs.get('limit')
+    start = int_conv(kwargs.get('start'))
+    limit = int_conv(kwargs.get('limit'))
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
@@ -511,7 +511,7 @@ def _api_history(name, output, kwargs):
         else:
             return report(output, _MSG_NO_VALUE)
     elif not name:
-        history, pnfo_list, bytespersec = build_header(True)
+        history = build_header(prim=True)
         if 'noofslots_total' in history:
             del history['noofslots_total']
         grand, month, week, day = BPSMeter.do.get_sums()
@@ -1157,7 +1157,7 @@ def handle_cat_api(output, kwargs):
 
 def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, output=None):
     # build up header full of basic information
-    info, _pnfo_list, _bytespersec = build_header(prim, web_dir)
+    info = build_header(prim, web_dir)
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -1277,7 +1277,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
     return info
 
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, trans=False, output=None,
+                dictionary=None, history=False, start=0, limit=0, dummy2=None, trans=False, output=None,
                 search=None):
     if output:
         converter = unicoder
@@ -1291,7 +1291,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         dictn = []
     # build up header full of basic information
-    info, pnfo_list, bytespersec = build_header(prim, webdir, search=search)
+    info, pnfo_list, bytespersec, q_size = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if 'queue_details' in cookie:
@@ -1329,7 +1329,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
     else:
         slotinfo = []
 
-    info['noofslots'] = len(pnfo_list) + len(slotinfo)
+    info['noofslots'] = q_size + len(slotinfo)
 
     info['start'] = start
     info['limit'] = limit
@@ -1490,8 +1490,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['active'] = active
             slot['queued'] = queued
 
-        if (start <= n and n < start + limit) or not limit:
-            slotinfo.append(slot)
+        slotinfo.append(slot)
         n += 1
 
     if slotinfo:
@@ -1795,7 +1794,8 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(prim, webdir='', search=None):
+def build_header(prim, webdir=''):
+    """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
     except:
@@ -1850,8 +1850,34 @@ def build_header(prim, webdir='', search=None):
 
     header['session'] = cfg.api_key()
 
+    header['quota'] = to_units(BPSMeter.do.quota)
+    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
+    header['left_quota'] = to_units(BPSMeter.do.left)
+
+    anfo = ArticleCache.do.cache_info()
+    header['cache_art'] = str(anfo.article_sum)
+    header['cache_size'] = format_bytes(anfo.cache_size)
+    header['cache_max'] = str(anfo.cache_limit)
+
+    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
+
+    if sabnzbd.NEW_VERSION:
+        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
+    else:
+        header['new_release'] = ''
+        header['new_rel_url'] = ''
+
+    return header
+
+
+
+def build_queue_header(prim, webdir='', search=None, start=0, limit=0):
+    """ Build full queue header """
+
+    header = build_header(prim, webdir)
+
     bytespersec = BPSMeter.do.get_bps()
-    qnfo = NzbQueue.do.queue_info(search=search)
+    qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left
     bytes = qnfo.bytes
@@ -1864,11 +1890,6 @@ def build_header(prim, webdir='', search=None):
     header['size'] = format_bytes(bytes)
     header['noofslots_total'] = qnfo.q_fullsize
 
-    header['quota'] = to_units(BPSMeter.do.quota)
-    header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
-    header['left_quota'] = to_units(BPSMeter.do.left)
-    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
-
     status = ''
     if Downloader.do.paused or Downloader.do.postproc:
         status = Status.PAUSED
@@ -1878,19 +1899,7 @@ def build_header(prim, webdir='', search=None):
         status = 'Idle'
     header['status'] = status
 
-    anfo = ArticleCache.do.cache_info()
-
-    header['cache_art'] = str(anfo.article_sum)
-    header['cache_size'] = format_bytes(anfo.cache_size)
-    header['cache_max'] = str(anfo.cache_limit)
-
     header['nzb_quota'] = ''
-
-    if sabnzbd.NEW_VERSION:
-        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
-    else:
-        header['new_release'] = ''
-        header['new_rel_url'] = ''
 
     header['timeleft'] = calc_timeleft(bytesleft, bytespersec)
 
@@ -1902,7 +1911,7 @@ def build_header(prim, webdir='', search=None):
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
-    return (header, qnfo.list, bytespersec)
+    return (header, qnfo.list, bytespersec, qnfo.q_fullsize)
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,

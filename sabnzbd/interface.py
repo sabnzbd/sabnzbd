@@ -64,7 +64,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
-    retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
+    retry_job, retry_all_jobs, build_queue_header, build_header, build_history, del_job_files, \
     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
     _api_test_email, _api_test_notif
 
@@ -348,7 +348,8 @@ class MainPage(object):
             config.save_config()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir, search=kwargs.get('search'))
+            info = build_header(self.__prim, self.__web_dir)
+            info['mb'] = info['mbleft'] = info['kbpersec'] = info['speed'] = '0'
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
@@ -583,7 +584,7 @@ class LoginPage(object):
     @cherrypy.expose
     def index(self, **kwargs):
         # Base output var
-        info, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        info = build_header(self.__prim, self.__web_dir)
         info['error'] = ''
 
         # Logout?
@@ -639,8 +640,10 @@ class NzoPage(object):
                 nzo_id = a
                 break
 
-        if nzo_id and NzbQueue.do.get_nzo(nzo_id):
-            info, pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        nzo = NzbQueue.do.get_nzo(nzo_id)
+        if nzo_id and nzo:
+            info = build_header(self.__prim, self.__web_dir)
+            pnfo_list = [nzo.gather_info()]
 
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
@@ -827,8 +830,8 @@ class QueuePage(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        start = kwargs.get('start')
-        limit = kwargs.get('limit')
+        start = int_conv(kwargs.get('start'))
+        limit = int_conv(kwargs.get('limit'))
         dummy2 = kwargs.get('dummy2')
         search = kwargs.get('search')
 
@@ -1072,14 +1075,14 @@ class HistoryPage(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        start = kwargs.get('start')
-        limit = kwargs.get('limit')
+        start = int_conv(kwargs.get('start'))
+        limit = int_conv(kwargs.get('limit'))
         search = kwargs.get('search')
         failed_only = kwargs.get('failed_only')
         if failed_only is None:
             failed_only = self.__failed_only
 
-        history, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        history = build_header(self.__prim, self.__web_dir)
 
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
@@ -1285,7 +1288,7 @@ class ConfigPage(object):
             return Protected()
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
         conf['cmdline'] = sabnzbd.CMDLINE
@@ -1391,7 +1394,7 @@ class ConfigFolders(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
@@ -1466,7 +1469,7 @@ class ConfigSwitches(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
@@ -1546,7 +1549,7 @@ class ConfigSpecial(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
 
@@ -1619,7 +1622,7 @@ class ConfigGeneral(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['configfn'] = config.get_filename()
 
@@ -1807,7 +1810,7 @@ class ConfigServer(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         new = []
         servers = config.get_servers()
@@ -1977,7 +1980,7 @@ class ConfigRss(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
@@ -2302,7 +2305,7 @@ class ConfigScheduling(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         actions = []
         actions.extend(_SCHED_ACTIONS)
@@ -2448,7 +2451,7 @@ class ConfigCats(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
 
@@ -2525,7 +2528,7 @@ class ConfigSorting(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
@@ -2848,7 +2851,7 @@ class ConfigNotify(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf, _pnfo_list, _bytespersec = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__prim, self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['lastmail'] = self.__lastmail
