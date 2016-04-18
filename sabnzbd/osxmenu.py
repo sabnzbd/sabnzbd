@@ -353,7 +353,7 @@ class SABnzbdDelegate(NSObject):
 
     def queueUpdate(self):
         try:
-            qnfo = NzbQueue.do.queue_info(max_jobs=10)
+            qnfo = NzbQueue.do.queue_info(start=0, limit=10)
             pnfo_list = qnfo.list
 
             bytesleftprogess = 0
