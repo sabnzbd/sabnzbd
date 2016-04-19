@@ -33,6 +33,7 @@ from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.utils.sslinfo import ssl_protocols
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
+from sabnzbd.articlecache import ArticleCache
 import sabnzbd.notifier as notifier
 from sabnzbd.constants import *
 import sabnzbd.config as config
@@ -255,7 +256,7 @@ class Downloader(Thread):
             if cfg.autodisconnect():
                 self.disconnect()
             if save:
-                sabnzbd.save_state()
+                ArticleCache.do.flush_articles()
 
     @synchronized_CV
     def delay(self):
