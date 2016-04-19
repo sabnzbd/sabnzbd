@@ -25,15 +25,7 @@
   <script type="text/javascript" src="static/PlotKit/PlotKit.js"></script>
   <!--[if IE]><script type="text/javascript" src="static/excanvas/excanvas.js"></script><![endif]-->
 
-<!--#set $mbdone = (float($mb) - float($mbleft))#-->
-<!--#set $mbdonesrt = float($mbdone) #-->
 
-
-<!--#set $kbpersec = float($kbpersec)#-->
-<!--#set $kbpersecrnd = str(int($kbpersec))#-->
-<!--#if $paused #-->
-<!--#set $kbpersecrnd = "0"#-->
-<!--#end if#-->
 
   <script type="text/javascript">
 
@@ -41,8 +33,8 @@
   RefreshTime = 5;
   var jsontimeout;
   var cookietimeout;
-  var speed = '$speed';
-  var kbpersec = $kbpersecrnd;
+  var speed = '';
+  var kbpersec = 0;
   var gDual = 0;
   var gUrl;
 
@@ -274,7 +266,7 @@ if (cook!=null && cook!="")
 }
 else
 {
-setCookie('speedlog2','0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,$kbpersecrnd',1);
+setCookie('speedlog2','0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0',1);
   }
 if (RefreshTime>0) {
   clearTimeout ( cookietimeout );
@@ -445,21 +437,8 @@ function loadtitle() {
 
 </script>
 
-
-<!--#set $statusstr2 = $T('link-pause')#-->
-<!--#set $pau = "0"#-->
-<!--#if $paused #-->
-<!--#set $pau = "1"#-->
-<!--#set $status = "<span class='paused'>"+$T('smpl-paused')+"</span>"#-->
-<!--#set $statusstr2 = $T('link-resume')#-->
-<!--#else if float($kbpersecrnd)>0 #-->
-<!--#set $status = "<span class='downloading'>"+$T('smpl-downloading')+"</span>"#-->
-<!--#else if float($kbpersecrnd) == 0 #-->
-<!--#set $status = "<span class='idle'>"+$T('smpl-idle')+"</span>"#-->
-<!--#end if#-->
-
 <script type="text/javascript">
-  var status2 = $pau;
+  var status2 = 0;
   var timerId2 = 0;
   var timerId3 = 0;
 
@@ -1111,9 +1090,9 @@ function loadingJSON(){
   <div id="Container">
     <div id="Header">
       <p class="status">
-        $T('status'): <span id="status">$status</span><br />
-        $T('smpl-speed'): <span id="speed">$speed</span>B/s<br />
-        $T('menu-queue'): <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
+        $T('status'): <span id="status"></span><br />
+        $T('smpl-speed'): <span id="speed"></span>B/s<br />
+        $T('menu-queue'): <span id="mbleft"></span>/<span id="mbtotal"></span>
       </p>
     <div id="logo">
       <a href=""><img id="title" src="static/sabnzbd_small4.png" alt="sabnzbd" /></a>
@@ -1135,7 +1114,7 @@ function loadingJSON(){
         <li><a href="#/status/" onclick="lr('status/','', 1, 0);">$T('menu-cons')</a></li>
         <li><a href="#/status/" onclick="lr('status/','', 1, 0);">$T('smpl-warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>
         <br />
-        <li><a class="bold" id="status2" onclick="toggle_paused()">$statusstr2</a> <a onclick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
+        <li><a class="bold" id="status2" onclick="toggle_paused()"></a> <a onclick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
         <ul id="hiddenTimedPause" class="secondul">
           <li><a class="config" onclick="javascript:timedPause(5)">5 $T("minutes")</a></li>
           <li><a class="config" onclick="javascript:timedPause(15)">15 $T("minutes")</a></li>
