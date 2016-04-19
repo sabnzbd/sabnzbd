@@ -100,6 +100,9 @@ def api_handler(kwargs):
     name = kwargs.get('name', '')
     callback = kwargs.get('callback', '')
 
+    # Extend the timeout of API calls to 10minutes
+    cherrypy.response.timeout = 60*10
+
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
