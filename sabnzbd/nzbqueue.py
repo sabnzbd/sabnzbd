@@ -868,8 +868,10 @@ class NzbQueue(TryList):
         return n
 
     @synchronized(NZBQUEUE_LOCK)
-    def queue_info(self, for_cli=False, max_jobs=0, search=None):
-        """ Return list of queued jobs, optionally filtered by 'search' """
+    def queue_info(self, for_cli=False, search=None, start=0, limit=0):
+        """ Return list of queued jobs,
+            optionally filtered by 'search' and limited by start and limit.
+        """
         if search:
             search = search.lower()
         bytes_left = 0
@@ -885,12 +887,16 @@ class NzbQueue(TryList):
                 q_size += 1
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
-                if not max_jobs or n < max_jobs:
-                    pnfo = nzo.gather_info(for_cli=for_cli)
-                    pnfo_list.append(pnfo)
+                try:
+                    if (not limit) or (start <= n < start+limit):
+                        pnfo = nzo.gather_info(for_cli=for_cli)
+                        pnfo_list.append(pnfo)
+                except:
+                    logging.info("Traceback: ", exc_info=True)
                 n += 1
-
-        return QNFO(bytes_total, bytes_left, pnfo_list, q_size, len(self.__nzo_list))
+        if not search:
+            n = len(self.__nzo_list)
+        return QNFO(bytes_total, bytes_left, pnfo_list, q_size, n)
 
     @synchronized(NZBQUEUE_LOCK)
     def remaining(self):
