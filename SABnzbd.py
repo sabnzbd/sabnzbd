@@ -1475,9 +1475,10 @@ def main():
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
-    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg')}
-    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
+    forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
+    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
+    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
     appconfig = {'/sabnzbd/api': {'tools.basic_auth.on': False},
                  '/api': {'tools.basic_auth.on': False},
@@ -1496,7 +1497,7 @@ def main():
                  }
 
     if web_dir2:
-        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
+        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static'), 'tools.staticdir.content_types': forced_mime_types}
         appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on': False}
         appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on': False}
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
