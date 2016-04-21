@@ -722,20 +722,19 @@ class NzoPage(object):
                 info['nzo_id'] = nzo_id
                 info['filename'] = xml_name(pnfo.filename)
 
-                for tup in pnfo.active_files:
-                    bytes_left, bytes, fn, date, nzf_id = tup
+                for nzf in pnfo.active_files:
                     checked = False
-                    if nzf_id in self.__cached_selection and \
-                       self.__cached_selection[nzf_id] == 'on':
+                    if nzf.nzf_id in self.__cached_selection and \
+                       self.__cached_selection[nzf.nzf_id] == 'on':
                         checked = True
 
-                    line = {'filename': xml_name(fn),
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'nzf_id': nzf_id,
-                            'age': calc_age(date),
+                    line = {'filename': xml_name(nzf.filename),
+                            'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                            'mb': "%.2f" % (nzf.bytes / MEBI),
+                            'size': format_bytes(nzf.bytes),
+                            'sizeleft': format_bytes(nzf.bytes_left),
+                            'nzf_id': nzf.nzf_id,
+                            'age': calc_age(nzf.date),
                             'checked': checked}
                     active.append(line)
                 break
