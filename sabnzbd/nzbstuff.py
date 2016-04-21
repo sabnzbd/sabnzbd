@@ -1445,59 +1445,23 @@ class NzbObject(TryList):
             bytes_left += nzf.bytes_left
         return bytes, bytes_left
 
-    def gather_info(self, for_cli=False):
-        bytes_left_all = 0
-
-        active_files = []
+    def gather_info(self):
         queued_files = []
-        finished_files = []
-
-        for nzf in self.finished_files:
-            bytes = nzf.bytes
-            filename = nzf.filename
-            if not filename:
-                filename = nzf.subject
-            date = nzf.date
-            if for_cli:
-                date = time.mktime(date.timetuple())
-            finished_files.append((0, bytes, filename, date))
-
-        for nzf in self.files:
-            bytes_left = nzf.bytes_left
-            bytes = nzf.bytes
-            filename = nzf.filename
-            if not filename:
-                filename = nzf.subject
-            date = nzf.date
-            if for_cli:
-                date = time.mktime(date.timetuple())
-
-            bytes_left_all += bytes_left
-            active_files.append((bytes_left, bytes, filename, date,
-                                 nzf.nzf_id))
-
+        bytes_extrapars = 0
         for _set in self.extrapars:
             for nzf in self.extrapars[_set]:
-                bytes_left = nzf.bytes_left
-                bytes = nzf.bytes
-                filename = nzf.filename
-                if not filename:
-                    filename = nzf.subject
-                date = nzf.date
-                if for_cli:
-                    date = time.mktime(date.timetuple())
+                bytes_extrapars += nzf.bytes
+                nzf.setname = _set
+                queued_files.append(nzf)
 
-                queued_files.append((_set, bytes_left, bytes, filename, date))
-
-        avg_date = self.avg_date
-        if for_cli:
-            avg_date = time.mktime(avg_date.timetuple())
+        # Subtract PAR2 sets and already downloaded bytes
+        bytes_left_all = self.bytes - self.bytes_downloaded - bytes_extrapars
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name_labeled, self.password, {},
                 '', self.cat, self.url,
-                bytes_left_all, self.bytes, self.avg_stamp, avg_date,
-                finished_files, active_files, queued_files, self.status, self.priority,
+                bytes_left_all, self.bytes, self.avg_stamp, self.avg_date,
+                self.finished_files, self.files, queued_files, self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', []))
                 )
 
