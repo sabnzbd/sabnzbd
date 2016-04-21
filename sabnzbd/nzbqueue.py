@@ -868,7 +868,7 @@ class NzbQueue(TryList):
         return n
 
     @synchronized(NZBQUEUE_LOCK)
-    def queue_info(self, for_cli=False, search=None, start=0, limit=0):
+    def queue_info(self, search=None, start=0, limit=0):
         """ Return list of queued jobs,
             optionally filtered by 'search' and limited by start and limit.
         """
@@ -879,6 +879,7 @@ class NzbQueue(TryList):
         q_size = 0
         pnfo_list = []
         n = 0
+
         for nzo in self.__nzo_list:
             if nzo.status != 'Paused':
                 b, b_left = nzo.total_and_remaining()
@@ -887,13 +888,10 @@ class NzbQueue(TryList):
                 q_size += 1
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
-                try:
-                    if (not limit) or (start <= n < start+limit):
-                        pnfo = nzo.gather_info(for_cli=for_cli)
-                        pnfo_list.append(pnfo)
-                except:
-                    logging.info("Traceback: ", exc_info=True)
+                if (not limit) or (start <= n < start+limit):
+                    pnfo_list.append(nzo.gather_info())
                 n += 1
+     
         if not search:
             n = len(self.__nzo_list)
         return QNFO(bytes_total, bytes_left, pnfo_list, q_size, n)
