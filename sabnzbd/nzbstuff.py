@@ -1445,14 +1445,15 @@ class NzbObject(TryList):
             bytes_left += nzf.bytes_left
         return bytes, bytes_left
 
-    def gather_info(self):
+    def gather_info(self, full=False):
         queued_files = []
         bytes_extrapars = 0
         for _set in self.extrapars:
             for nzf in self.extrapars[_set]:
                 bytes_extrapars += nzf.bytes
-                nzf.setname = _set
-                queued_files.append(nzf)
+                if full:
+                    nzf.setname = _set
+                    queued_files.append(nzf)
 
         # Subtract PAR2 sets and already downloaded bytes
         bytes_left_all = self.bytes - self.bytes_downloaded - bytes_extrapars
@@ -1461,7 +1462,10 @@ class NzbObject(TryList):
                 self.nzo_id, self.final_name_labeled, self.password, {},
                 '', self.cat, self.url,
                 bytes_left_all, self.bytes, self.avg_stamp, self.avg_date,
-                self.finished_files, self.files, queued_files, self.status, self.priority,
+                self.finished_files if full else [],
+                self.files if full else [],
+                queued_files,
+                self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', []))
                 )
 

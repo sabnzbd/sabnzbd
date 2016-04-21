@@ -640,7 +640,7 @@ class NzoPage(object):
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo_id and nzo:
             info = build_header(self.__prim, self.__web_dir)
-            pnfo_list = [nzo.gather_info()]
+            pnfo_list = [nzo.gather_info(full=True)]
 
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
