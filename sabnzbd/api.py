@@ -100,6 +100,9 @@ def api_handler(kwargs):
     name = kwargs.get('name', '')
     callback = kwargs.get('callback', '')
 
+    # Extend the timeout of API calls to 10minutes
+    cherrypy.response.timeout = 60*10
+
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
@@ -264,11 +267,7 @@ def _api_queue_default(output, value, kwargs):
             reverse = direction.lower() == 'desc'
             sort_queue(sort, reverse)
 
-        # &history=1 will show unprocessed items in the history
-        history = bool(kwargs.get('history'))
-
-        info, pnfo_list, bytespersec, verbose_list, dictn = \
-            build_queue(history=history, start=start, limit=limit, output=output, trans=trans, search=search)
+        info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, trans=trans, search=search)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
@@ -1276,78 +1275,41 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
 
     return info
 
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', verbose_list=None,
-                dictionary=None, history=False, start=0, limit=0, dummy2=None, trans=False, output=None,
-                search=None):
+def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0, trans=False, output=None, search=None):
     if output:
         converter = unicoder
     else:
         converter = xml_name
 
-    if not verbose_list:
-        verbose_list = []
-    if dictionary:
-        dictn = dictionary
-    else:
-        dictn = []
     # build up header full of basic information
     info, pnfo_list, bytespersec, q_size = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
-    info['isverbose'] = verbose
-    cookie = cherrypy.request.cookie
-    if 'queue_details' in cookie:
-        info['queue_details'] = str(int_conv(cookie['queue_details'].value))
-    else:
-        info['queue_details'] = '0'
-
-    if cfg.refresh_rate() > 0:
-        info['refresh_rate'] = str(cfg.refresh_rate())
-    else:
-        info['refresh_rate'] = ''
 
     datestart = datetime.datetime.now()
-
-    info['script_list'] = list_scripts()
-    info['cat_list'] = list_cats(output is None)
-
-    info['rating_enable'] = bool(cfg.rating_enable())
-
-    n = 0
-    found_active = False
-    running_bytes = 0
-    slotinfo = []
-    nzo_ids = []
-
+    priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
     limit = int_conv(limit)
     start = int_conv(start)
 
-    if history:
-        # Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
-        slotinfo = format_history_for_queue()
-        # if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
-        if len(slotinfo) < start:
-            slotinfo = []
-    else:
-        slotinfo = []
-
-    info['noofslots'] = q_size + len(slotinfo)
-
+    info['refresh_rate'] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ''
+    info['script_list'] = list_scripts()
+    info['cat_list'] = list_cats(output is None)
+    info['rating_enable'] = bool(cfg.rating_enable())
+    info['noofslots'] = q_size
     info['start'] = start
     info['limit'] = limit
     info['finish'] = info['start'] + info['limit']
+
+    # SMPL-skin specific stuff
     if info['finish'] > info['noofslots']:
         info['finish'] = info['noofslots']
+    info['queue_details'] = '0'
+    if 'queue_details' in cherrypy.request.cookie: 
+        info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value)) 
 
+    n = 0
+    running_bytes = 0
+    slotinfo = []
     for pnfo in pnfo_list:
-        repair = pnfo.repair
-        unpack = pnfo.unpack
-        delete = pnfo.delete
-        script = pnfo.script
         nzo_id = pnfo.nzo_id
-        cat = pnfo.category
-        if not cat:
-            cat = 'None'
-        filename = pnfo.filename
-        password = pnfo.password
         bytesleft = pnfo.bytes_left
         bytes = pnfo.bytes
         average_date = pnfo.avg_date
@@ -1357,56 +1319,33 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
         missing = pnfo.missing
-        if verbose or verbose_list:
-            finished_files = pnfo.finished_files
-            active_files = pnfo.active_files
-            queued_files = pnfo.queued_files
-
-        nzo_ids.append(nzo_id)
 
         slot = {'index': n, 'nzo_id': str(nzo_id)}
-        unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
-
-        slot['unpackopts'] = str(unpackopts)
-        if script:
-            slot['script'] = script
-        else:
-            slot['script'] = 'None'
-        slot['filename'] = converter(filename)
-        slot['password'] = converter(password) if password else ""
-        slot['cat'] = cat
+        slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
+        slot['priority'] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
+        slot['script'] = pnfo.script if pnfo.script else 'None'
+        slot['filename'] = converter(pnfo.filename)
+        slot['password'] = converter(pnfo.password) if pnfo.password else ''
+        slot['cat'] = converter(pnfo.category) if pnfo.category else 'None'
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
+        slot['size'] = format_bytes(bytes)
+        slot['sizeleft'] = format_bytes(bytesleft)
+        slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
+        slot['missing'] = pnfo.missing
         if not output:
             slot['mb_fmt'] = locale.format('%d', int(mb), True)
             slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
-        slot['size'] = format_bytes(bytes)
-        slot['sizeleft'] = format_bytes(bytesleft)
-        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING) and not found_active:
+
+        if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
                 slot['status'] = 'Propagating'
             elif status == Status.CHECKING:
                 slot['status'] = Status.CHECKING
             else:
                 slot['status'] = Status.DOWNLOADING
-            found_active = True
         else:
             slot['status'] = "%s" % (status)
-        if priority == TOP_PRIORITY:
-            slot['priority'] = 'Force'
-        elif priority == REPAIR_PRIORITY:
-            slot['priority'] = 'Repair'
-        elif priority == HIGH_PRIORITY:
-            slot['priority'] = 'High'
-        elif priority == LOW_PRIORITY:
-            slot['priority'] = 'Low'
-        else:
-            slot['priority'] = 'Normal'
-        if mb == mbleft:
-            slot['percentage'] = "0"
-        else:
-            slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100))
-        slot['missing'] = missing
 
         if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
            status not in (Status.DOWNLOADING, Status.QUEUED)) and priority != TOP_PRIORITY:
@@ -1434,62 +1373,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             slot['rating_avg_video'] = rating.avg_video
             slot['rating_avg_audio'] = rating.avg_audio
 
-        slot['verbosity'] = ""
-        if web_dir:
-            finished = []
-            active = []
-            queued = []
-            # this will list files in the xml output, wanted yes/no?
-            if verbose or nzo_id in verbose_list:
-                slot['verbosity'] = "True"
-                for tup in finished_files:
-                    bytes_left, bytes, fn, date = tup
-                    fn = converter(fn)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'age': age}
-                    finished.append(line)
-
-                for tup in active_files:
-                    bytes_left, bytes, fn, date, nzf_id = tup
-                    fn = converter(fn)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'nzf_id': nzf_id,
-                            'age': age}
-                    active.append(line)
-
-                for tup in queued_files:
-                    _set, bytes_left, bytes, fn, date = tup
-                    fn = converter(fn)
-                    _set = converter(_set)
-
-                    age = calc_age(date)
-
-                    line = {'filename': fn, 'set': _set,
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'age': age}
-                    queued.append(line)
-
-            slot['finished'] = finished
-            slot['active'] = active
-            slot['queued'] = queued
-
         slotinfo.append(slot)
         n += 1
 
@@ -1497,26 +1380,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
         info['slots'] = slotinfo
     else:
         info['slots'] = []
-        verbose_list = []
 
-    # Paging of the queue using limit and/or start values
-    if limit > 0:
-        try:
-            if start > 0:
-                if start > len(pnfo_list):
-                    pnfo_list = []
-                else:
-                    end = start + limit
-                    if start + limit > len(pnfo_list):
-                        end = len(pnfo_list)
-                    pnfo_list = pnfo_list[start:end]
-            else:
-                if not limit > len(pnfo_list):
-                    pnfo_list = pnfo_list[:limit]
-        except:
-            pass
-
-    return info, pnfo_list, bytespersec, verbose_list, dictn
+    return info, pnfo_list, bytespersec
 
 
 def fast_queue():
@@ -1595,46 +1460,43 @@ def build_file_list(id):
             queued_files = pnfo.queued_files
 
             n = 0
-            for tup in finished_files:
-                bytes_left, bytes, fn, date = tup
-                fn = xml_name(fn)
+            for nzf in finished_files:
+                fn = xml_name(nzf.filename)
 
-                age = calc_age(date)
+                age = calc_age(nzf.date)
 
-                line = {'filename': fn,
-                        'mbleft': "%.2f" % (bytes_left / MEBI),
-                        'mb': "%.2f" % (bytes / MEBI),
-                        'bytes': "%.2f" % bytes,
+                line = {'filename': nzf.filename,
+                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                        'mb': "%.2f" % (nzf.bytes / MEBI),
+                        'bytes': "%.2f" % nzf.bytes,
                         'age': age, 'id': str(n), 'status': 'finished'}
                 jobs.append(line)
                 n += 1
 
-            for tup in active_files:
-                bytes_left, bytes, fn, date, nzf_id = tup
-                fn = xml_name(fn)
+            for nzf in active_files:
+                fn = xml_name(nzf.filename)
 
-                age = calc_age(date)
+                age = calc_age(nzf.date)
 
-                line = {'filename': fn,
-                        'mbleft': "%.2f" % (bytes_left / MEBI),
-                        'mb': "%.2f" % (bytes / MEBI),
-                        'bytes': "%.2f" % bytes,
-                        'nzf_id': nzf_id,
+                line = {'filename': nzf.filename,
+                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                        'mb': "%.2f" % (nzf.bytes / MEBI),
+                        'bytes': "%.2f" % nzf.bytes,
+                        'nzf_id': nzf.nzf_id,
                         'age': age, 'id': str(n), 'status': 'active'}
                 jobs.append(line)
                 n += 1
 
-            for tup in queued_files:
-                _set, bytes_left, bytes, fn, date = tup
-                fn = xml_name(fn)
-                _set = xml_name(_set)
+            for nzf in queued_files:
+                fn = xml_name(nzf.filename)
+                _set = xml_name(nzf.setname)
 
-                age = calc_age(date)
+                age = calc_age(nzf.date)
 
-                line = {'filename': fn, 'set': _set,
-                        'mbleft': "%.2f" % (bytes_left / MEBI),
-                        'mb': "%.2f" % (bytes / MEBI),
-                        'bytes': "%.2f" % bytes,
+                line = {'filename': nzf.filename, 'set': _set,
+                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                        'mb': "%.2f" % (nzf.bytes / MEBI),
+                        'bytes': "%.2f" % nzf.bytes,
                         'age': age, 'id': str(n), 'status': 'queued'}
                 jobs.append(line)
                 n += 1
@@ -1898,9 +1760,6 @@ def build_queue_header(prim, webdir='', search=None, start=0, limit=0):
     else:
         status = 'Idle'
     header['status'] = status
-
-    header['nzb_quota'] = ''
-
     header['timeleft'] = calc_timeleft(bytesleft, bytespersec)
 
     try:

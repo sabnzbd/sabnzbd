@@ -349,7 +349,6 @@ class MainPage(object):
 
         if kwargs.get('skip_wizard') or config.get_servers():
             info = build_header(self.__prim, self.__web_dir)
-            info['mb'] = info['mbleft'] = info['kbpersec'] = info['speed'] = '0'
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
@@ -578,7 +577,6 @@ class LoginPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
         self.__prim = prim
 
     @cherrypy.expose
@@ -617,7 +615,6 @@ class NzoPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
         self.__prim = prim
         self.__cached_selection = {}  # None
 
@@ -725,20 +722,19 @@ class NzoPage(object):
                 info['nzo_id'] = nzo_id
                 info['filename'] = xml_name(pnfo.filename)
 
-                for tup in pnfo.active_files:
-                    bytes_left, bytes, fn, date, nzf_id = tup
+                for nzf in pnfo.active_files:
                     checked = False
-                    if nzf_id in self.__cached_selection and \
-                       self.__cached_selection[nzf_id] == 'on':
+                    if nzf.nzf_id in self.__cached_selection and \
+                       self.__cached_selection[nzf.nzf_id] == 'on':
                         checked = True
 
-                    line = {'filename': xml_name(fn),
-                            'mbleft': "%.2f" % (bytes_left / MEBI),
-                            'mb': "%.2f" % (bytes / MEBI),
-                            'size': format_bytes(bytes),
-                            'sizeleft': format_bytes(bytes_left),
-                            'nzf_id': nzf_id,
-                            'age': calc_age(date),
+                    line = {'filename': xml_name(nzf.filename),
+                            'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                            'mb': "%.2f" % (nzf.bytes / MEBI),
+                            'size': format_bytes(nzf.bytes),
+                            'sizeleft': format_bytes(nzf.bytes_left),
+                            'nzf_id': nzf.nzf_id,
+                            'age': calc_age(nzf.date),
                             'checked': checked}
                     active.append(line)
                 break
@@ -819,8 +815,6 @@ class QueuePage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
-        self.__verbose_list = []
         self.__prim = prim
 
     @cherrypy.expose
@@ -832,13 +826,9 @@ class QueuePage(object):
 
         start = int_conv(kwargs.get('start'))
         limit = int_conv(kwargs.get('limit'))
-        dummy2 = kwargs.get('dummy2')
         search = kwargs.get('search')
-
-        info, _pnfo_list, _bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,
-                                                                                       self.__prim, self.__web_dir, self.__verbose_list,
-                                                                                       self.__dict__, start=start, limit=limit,
-                                                                                       dummy2=dummy2, trans=True, search=search)
+        info, _pnfo_list, _bytespersec = build_queue(self.__web_dir, self.__root, self.__prim, self.__web_dir,
+                                                     start=start, limit=limit, trans=True, search=search)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -872,26 +862,6 @@ class QueuePage(object):
         nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
             NzbQueue.do.remove_nzf(nzo_id, nzf_id)
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def tog_verbose(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        self.__verbose = not self.__verbose
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def tog_uid_verbose(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        uid = kwargs.get('uid')
-        if self.__verbose_list.count(uid):
-            self.__verbose_list.remove(uid)
-        else:
-            self.__verbose_list.append(uid)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
