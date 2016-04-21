@@ -1447,59 +1447,59 @@ def qstatus_data():
     return status
 
 
-def build_file_list(id):
-    qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo.list
-
+def build_file_list(nzo_id):
+    """ Build file lists for specified job
+    """
     jobs = []
-    for pnfo in pnfo_list:
-        nzo_id = pnfo.nzo_id
-        if nzo_id == id:
-            finished_files = pnfo.finished_files
-            active_files = pnfo.active_files
-            queued_files = pnfo.queued_files
+    nzo = NzbQueue.do.get_nzo(nzo_id)
+    if nzo:
+        pnfo = nzo.gather_info(full=True)
 
-            n = 0
-            for nzf in finished_files:
-                fn = xml_name(nzf.filename)
+        finished_files = pnfo.finished_files
+        active_files = pnfo.active_files
+        queued_files = pnfo.queued_files
 
-                age = calc_age(nzf.date)
+        n = 0
+        for nzf in finished_files:
+            fn = xml_name(nzf.filename)
 
-                line = {'filename': nzf.filename,
-                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                        'mb': "%.2f" % (nzf.bytes / MEBI),
-                        'bytes': "%.2f" % nzf.bytes,
-                        'age': age, 'id': str(n), 'status': 'finished'}
-                jobs.append(line)
-                n += 1
+            age = calc_age(nzf.date)
 
-            for nzf in active_files:
-                fn = xml_name(nzf.filename)
+            line = {'filename': nzf.filename,
+                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                    'mb': "%.2f" % (nzf.bytes / MEBI),
+                    'bytes': "%.2f" % nzf.bytes,
+                    'age': age, 'id': str(n), 'status': 'finished'}
+            jobs.append(line)
+            n += 1
 
-                age = calc_age(nzf.date)
+        for nzf in active_files:
+            fn = xml_name(nzf.filename)
 
-                line = {'filename': nzf.filename,
-                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                        'mb': "%.2f" % (nzf.bytes / MEBI),
-                        'bytes': "%.2f" % nzf.bytes,
-                        'nzf_id': nzf.nzf_id,
-                        'age': age, 'id': str(n), 'status': 'active'}
-                jobs.append(line)
-                n += 1
+            age = calc_age(nzf.date)
 
-            for nzf in queued_files:
-                fn = xml_name(nzf.filename)
-                _set = xml_name(nzf.setname)
+            line = {'filename': nzf.filename,
+                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                    'mb': "%.2f" % (nzf.bytes / MEBI),
+                    'bytes': "%.2f" % nzf.bytes,
+                    'nzf_id': nzf.nzf_id,
+                    'age': age, 'id': str(n), 'status': 'active'}
+            jobs.append(line)
+            n += 1
 
-                age = calc_age(nzf.date)
+        for nzf in queued_files:
+            fn = xml_name(nzf.filename)
+            _set = xml_name(nzf.setname)
 
-                line = {'filename': nzf.filename, 'set': _set,
-                        'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                        'mb': "%.2f" % (nzf.bytes / MEBI),
-                        'bytes': "%.2f" % nzf.bytes,
-                        'age': age, 'id': str(n), 'status': 'queued'}
-                jobs.append(line)
-                n += 1
+            age = calc_age(nzf.date)
+
+            line = {'filename': nzf.filename, 'set': _set,
+                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                    'mb': "%.2f" % (nzf.bytes / MEBI),
+                    'bytes': "%.2f" % nzf.bytes,
+                    'age': age, 'id': str(n), 'status': 'queued'}
+            jobs.append(line)
+            n += 1
 
     return jobs
 
