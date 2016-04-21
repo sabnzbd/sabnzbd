@@ -302,7 +302,7 @@ function ViewModel() {
         // Only update the title when page not visible
         if(!pageIsVisible) {
             // Request new title 
-            callSpecialAPI('./queue/', {}).done(function(data) {
+            callSpecialAPI('./queue/', { limit: 1, start: 0 }).done(function(data) {
                 // Split title & speed
                 var dataSplit = data.split('|||');
 
