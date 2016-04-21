@@ -577,7 +577,6 @@ class LoginPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
         self.__prim = prim
 
     @cherrypy.expose
@@ -616,7 +615,6 @@ class NzoPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
         self.__prim = prim
         self.__cached_selection = {}  # None
 
@@ -818,8 +816,6 @@ class QueuePage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = False
-        self.__verbose_list = []
         self.__prim = prim
 
     @cherrypy.expose
@@ -831,13 +827,9 @@ class QueuePage(object):
 
         start = int_conv(kwargs.get('start'))
         limit = int_conv(kwargs.get('limit'))
-        dummy2 = kwargs.get('dummy2')
         search = kwargs.get('search')
-
-        info, _pnfo_list, _bytespersec, self.__verbose_list, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose,
-                                                                                       self.__prim, self.__web_dir, self.__verbose_list,
-                                                                                       self.__dict__, start=start, limit=limit,
-                                                                                       dummy2=dummy2, trans=True, search=search)
+        info, _pnfo_list, _bytespersec = build_queue(self.__web_dir, self.__root, self.__prim, self.__web_dir,
+                                                     start=start, limit=limit, trans=True, search=search)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -871,26 +863,6 @@ class QueuePage(object):
         nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
             NzbQueue.do.remove_nzf(nzo_id, nzf_id)
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def tog_verbose(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        self.__verbose = not self.__verbose
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def tog_uid_verbose(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        uid = kwargs.get('uid')
-        if self.__verbose_list.count(uid):
-            self.__verbose_list.remove(uid)
-        else:
-            self.__verbose_list.append(uid)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
