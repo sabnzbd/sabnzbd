@@ -3485,7 +3485,7 @@ def _parse_date_group_rfc822(m):
     # If the year is 2 digits, assume everything in the 90's is the 1990's
     if m['year'] < 100:
         m['year'] += (1900, 2000)[m['year'] < 90]
-    stamp = datetime.datetime(*[m[i] for i in 
+    stamp = datetime.datetime(*[m[i] for i in
                 ('year', 'month', 'day', 'hour', 'minute', 'second')])
 
     # Use the timezone information to calculate the difference between
@@ -3524,7 +3524,7 @@ def _parse_date_rfc822(dt):
 registerDateHandler(_parse_date_rfc822)
 
 def _parse_date_rfc822_grubby(dt):
-    """Parse date format similar to RFC 822, but 
+    """Parse date format similar to RFC 822, but
     the comma after the dayname is optional and
     month/day are inverted"""
     _rfc822_date_grubby = "%s %s %s" % (_rfc822_month, _rfc822_day, _rfc822_year)
@@ -3725,7 +3725,7 @@ def convert_to_utf8(http_headers, data):
                                  u'application/xml-external-parsed-entity')
     text_content_types = (u'text/xml', u'text/xml-external-parsed-entity')
     if (http_content_type in application_content_types) or \
-       (http_content_type.startswith(u'application/') and 
+       (http_content_type.startswith(u'application/') and
         http_content_type.endswith(u'+xml')):
         acceptable_content_type = 1
         rfc3023_encoding = http_encoding or xml_encoding or u'utf-8'

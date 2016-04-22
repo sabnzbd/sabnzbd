@@ -564,7 +564,7 @@ SKIN_TEXT = {
     'srv-send_group' : TT('Send Group'),
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
     'srv-categories' : TT('Categories'),
-    'srv-explain-categories' : TT('Only use this server for these categories.'),  
+    'srv-explain-categories' : TT('Only use this server for these categories.'),
     'srv-explain-no-categories' : TT('None of the enabled servers have the \'Default\' category selected. Jobs in the queue that are not assigned to one of the server\'s categories will not be downloaded.'),
     'srv-notes' : TT('Personal notes'),
 
@@ -846,7 +846,7 @@ SKIN_TEXT = {
     'Glitter-notification-removing1' : TT('Removing job'), # Notification window
     'Glitter-notification-removing' : TT('Removing jobs'), # Notification window
     'Glitter-notification-shutdown' : TT('Shutting down'), # Notification window
-    
+
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
     'Plush-confirm' : TT('Are you sure?'),

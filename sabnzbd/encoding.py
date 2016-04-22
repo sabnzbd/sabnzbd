@@ -91,7 +91,7 @@ def yenc_name_fixer(p):
         return p.decode('utf-8')
     except:
         return p.decode('cp1252')
-    
+
 
 def is_utf8(p):
     """ Return True when p is UTF-8 or plain ASCII """

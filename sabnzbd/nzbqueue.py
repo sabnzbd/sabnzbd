@@ -891,7 +891,7 @@ class NzbQueue(TryList):
                 if (not limit) or (start <= n < start+limit):
                     pnfo_list.append(nzo.gather_info())
                 n += 1
-     
+
         if not search:
             n = len(self.__nzo_list)
         return QNFO(bytes_total, bytes_left, pnfo_list, q_size, n)
