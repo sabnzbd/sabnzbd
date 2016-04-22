@@ -793,7 +793,7 @@ def _api_undefined(name, output, kwargs):
 def _api_browse(name, output, kwargs):
     """ Return tree of local path """
     compact = kwargs.get('compact')
-    
+
     if compact and compact == '1':
         paths = []
         name = platform_encode(kwargs.get('term', ''))
@@ -1253,14 +1253,14 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
 
         # For the templates or for JSON
         if output:
-            server_info = { 'servername': server.displayname, 
-                            'serveractiveconn': connected, 
-                            'servertotalconn': server.threads, 
-                            'serverconnections': serverconnections, 
+            server_info = { 'servername': server.displayname,
+                            'serveractiveconn': connected,
+                            'servertotalconn': server.threads,
+                            'serverconnections': serverconnections,
                             'serverssl': server.ssl,
-                            'serveractive': server.active, 
-                            'servererror': server.errormsg, 
-                            'serverpriority': server.priority, 
+                            'serveractive': server.active,
+                            'servererror': server.errormsg,
+                            'serverpriority': server.priority,
                             'serveroptional': server.optional }
             info['servers'].append(server_info)
         else:
@@ -1302,8 +1302,8 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
     if info['finish'] > info['noofslots']:
         info['finish'] = info['noofslots']
     info['queue_details'] = '0'
-    if 'queue_details' in cherrypy.request.cookie: 
-        info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value)) 
+    if 'queue_details' in cherrypy.request.cookie:
+        info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
     n = 0
     running_bytes = 0
