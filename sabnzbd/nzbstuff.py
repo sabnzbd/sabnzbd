@@ -894,6 +894,12 @@ class NzbObject(TryList):
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
 
+        # If accept&fail, fail the job
+        if accept == 2:
+            self.deleted = True
+            sabnzbd.Assembler.do.process((self, None))
+
+
     def check_for_dupe(self, nzf):
         filename = nzf.filename
 

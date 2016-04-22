@@ -1847,8 +1847,11 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                 if n < len(values) and line:
                     values[n] = TRANS(line)
                 n += 1
-        if int_conv(values[0]) < 1:
+        accept = int_conv(values[0])
+        if  accept < 1:
             logging.info('Pre-Q refuses %s', name)
+        elif accept == 2:
+            logging.info('Pre-Q accepts&fails %s', name)
         else:
             logging.info('Pre-Q accepts %s', name)
 
