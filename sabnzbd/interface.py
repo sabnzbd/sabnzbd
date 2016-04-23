@@ -715,29 +715,26 @@ class NzoPage(object):
         return info
 
     def nzo_files(self, info, pnfo_list, nzo_id):
-
         active = []
-        for pnfo in pnfo_list:
-            if pnfo.nzo_id == nzo_id:
-                info['nzo_id'] = nzo_id
-                info['filename'] = xml_name(pnfo.filename)
+        nzo = NzbQueue.do.get_nzo(nzo_id)
+        if nzo:
+            pnfo = nzo.gather_info(full=True)
+            info['nzo_id'] = pnfo.nzo_id
+            info['filename'] = xml_name(pnfo.filename)
 
-                for nzf in pnfo.active_files:
-                    checked = False
-                    if nzf.nzf_id in self.__cached_selection and \
-                       self.__cached_selection[nzf.nzf_id] == 'on':
-                        checked = True
-
-                    line = {'filename': xml_name(nzf.filename),
-                            'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                            'mb': "%.2f" % (nzf.bytes / MEBI),
-                            'size': format_bytes(nzf.bytes),
-                            'sizeleft': format_bytes(nzf.bytes_left),
-                            'nzf_id': nzf.nzf_id,
-                            'age': calc_age(nzf.date),
-                            'checked': checked}
-                    active.append(line)
-                break
+            for nzf in pnfo.active_files:
+                checked = False
+                if nzf.nzf_id in self.__cached_selection and \
+                   self.__cached_selection[nzf.nzf_id] == 'on':
+                    checked = True
+                active.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                               'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                               'mb': "%.2f" % (nzf.bytes / MEBI),
+                               'size': format_bytes(nzf.bytes),
+                               'sizeleft': format_bytes(nzf.bytes_left),
+                               'nzf_id': nzf.nzf_id,
+                               'age': calc_age(nzf.date),
+                               'checked': checked})
 
         info['active_files'] = active
         return info

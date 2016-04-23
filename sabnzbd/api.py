@@ -1461,44 +1461,35 @@ def build_file_list(nzo_id):
 
         n = 0
         for nzf in finished_files:
-            fn = xml_name(nzf.filename)
-
-            age = calc_age(nzf.date)
-
-            line = {'filename': nzf.filename,
-                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                    'mb': "%.2f" % (nzf.bytes / MEBI),
-                    'bytes': "%.2f" % nzf.bytes,
-                    'age': age, 'id': str(n), 'status': 'finished'}
-            jobs.append(line)
+            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                         'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                         'mb': "%.2f" % (nzf.bytes / MEBI),
+                         'bytes': "%.2f" % nzf.bytes,
+                         'age': calc_age(nzf.date),
+                         'id': str(n),
+                         'status': 'finished'})
             n += 1
 
         for nzf in active_files:
-            fn = xml_name(nzf.filename)
-
-            age = calc_age(nzf.date)
-
-            line = {'filename': nzf.filename,
-                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                    'mb': "%.2f" % (nzf.bytes / MEBI),
-                    'bytes': "%.2f" % nzf.bytes,
-                    'nzf_id': nzf.nzf_id,
-                    'age': age, 'id': str(n), 'status': 'active'}
-            jobs.append(line)
+            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                         'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                         'mb': "%.2f" % (nzf.bytes / MEBI),
+                         'bytes': "%.2f" % nzf.bytes,
+                         'nzf_id': nzf.nzf_id,
+                         'age': calc_age(nzf.date),
+                         'id': str(n),
+                         'status': 'active'})
             n += 1
 
         for nzf in queued_files:
-            fn = xml_name(nzf.filename)
-            _set = xml_name(nzf.setname)
-
-            age = calc_age(nzf.date)
-
-            line = {'filename': nzf.filename, 'set': _set,
-                    'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
-                    'mb': "%.2f" % (nzf.bytes / MEBI),
-                    'bytes': "%.2f" % nzf.bytes,
-                    'age': age, 'id': str(n), 'status': 'queued'}
-            jobs.append(line)
+            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                         'set': xml_name(nzf.setname),
+                         'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
+                         'mb': "%.2f" % (nzf.bytes / MEBI),
+                         'bytes': "%.2f" % nzf.bytes,
+                         'age': calc_age(nzf.date),
+                         'id': str(n),
+                         'status': 'queued'})
             n += 1
 
     return jobs
