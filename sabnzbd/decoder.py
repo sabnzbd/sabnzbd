@@ -401,7 +401,5 @@ def strip(data):
     while data and not data[-1]:
         data.pop()
 
-    for i in xrange(len(data)):
-        if data[i][:2] == '..':
-            data[i] = data[i][1:]
+    
     return data

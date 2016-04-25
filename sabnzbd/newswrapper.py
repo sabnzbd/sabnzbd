@@ -396,6 +396,11 @@ class NewsWrapper(object):
             new_lines = self.data.split('\n')
 
         self.data = new_lines.pop()
+
+        # Already remove the starting dots
+        for i in xrange(len(new_lines)):
+            if new_lines[i][:2] == '..':
+                new_lines[i] = new_lines[i][1:]
         self.lines.extend(new_lines)
 
         if self.lines and self.lines[-1] == '.':
