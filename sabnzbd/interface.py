@@ -273,6 +273,8 @@ def check_apikey(kwargs, nokey=False):
     if not (cfg.disable_key() or nokey):
         key = kwargs.get('apikey')
         if not key:
+            key = kwargs.get('session')
+        if not key:
             if not special:
                 log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)

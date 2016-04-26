@@ -350,7 +350,7 @@
         \$.ajax({
             type: "POST",
             url: "../../tapi",
-            data: "mode=config&amp;output=json&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize()
+            data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
         }).then(function(data) {
             // Fill the box and enable the button
             resultBox.removeClass('alert-success alert-danger').show()
