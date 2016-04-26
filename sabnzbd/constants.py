@@ -131,21 +131,20 @@ sample_match = r'((^|[\W_])sample\d*[\W_])'  # something-sample.avi
 
 
 class Status():
-    COMPLETED = 'Completed'
-    CHECKING = 'Checking'
-    DOWNLOADING = 'Downloading'
-    TO_PP = 'ToPP'
-    EXTRACTING = 'Extracting'
-    FAILED = 'Failed'
-    FETCHING = 'Fetching'
-    GRABBING = 'Grabbing'
-    MOVING = 'Moving'
-    PAUSED = 'Paused'
-    QUEUED = 'Queued'
-    QUICK_CHECK = 'QuickCheck'
-    REPAIRING = 'Repairing'
-    RUNNING = 'Running'
-    VERIFYING = 'Verifying'
-    DELETED = 'Deleted'
+    COMPLETED = 'Completed'         # PP: Job is finished
+    CHECKING = 'Checking'           # Q:  Pre-check is running
+    DOWNLOADING = 'Downloading'     # Q:  Normal downloading
+    EXTRACTING = 'Extracting'       # PP: Archives are being extraced
+    FAILED = 'Failed'               # PP: Job has failed, now in History
+    FETCHING = 'Fetching'           # Q:  Job is downloading extra par2 files
+    GRABBING = 'Grabbing'           # Q:  Getting an NZB from an external site
+    MOVING = 'Moving'               # PP: Files are being moved
+    PAUSED = 'Paused'               # Q:  Job is paused
+    QUEUED = 'Queued'               # Q:  Job is waiting for its turn to download
+    QUICK_CHECK = 'QuickCheck'      # PP: QuickCheck verification is running
+    REPAIRING = 'Repairing'         # PP: Job is being repaired (by par2)
+    RUNNING = 'Running'             # PP: User's post processing script is running
+    VERIFYING = 'Verifying'         # PP: Job is being verified (by par2)
+    DELETED = 'Deleted'             # Q:  Job has been deleted (and is almost gone)
 
 NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')

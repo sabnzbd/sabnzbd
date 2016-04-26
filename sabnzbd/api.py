@@ -1345,6 +1345,8 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
             else:
                 slot['status'] = Status.DOWNLOADING
         else:
+            # ensure compatibility of API status
+            if status in (Status.DELETED, ): status = Status.DOWNLOADING
             slot['status'] = "%s" % (status)
 
         if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \

@@ -438,7 +438,7 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            if nzo.status not in (Status.COMPLETED, Status.FAILED):
+            if cleanup and nzo.status not in (Status.COMPLETED, Status.FAILED):
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
@@ -840,7 +840,6 @@ class NzbQueue(TryList):
         # Notify assembler to call postprocessor
         if not nzo.deleted:
             nzo.deleted = True
-            nzo.status = Status.TO_PP
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
