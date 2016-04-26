@@ -1,7 +1,7 @@
-Release Notes  -  SABnzbd 1.0.0RC1
-==================================
+Release Notes  -  SABnzbd 1.0.1
+===============================
 
-## What's new in 1.0.0RC1
+## What's new in 1.0.1
 - Prevent creating orphan items in "incomplete" when deleting downloading jobs.
 - Forced item with missing articles caused overflow into paused jobs
 - Do QuickCheck even on files that would be removed by the Cleanup-list (problematic for RAR files).
@@ -13,6 +13,8 @@ Release Notes  -  SABnzbd 1.0.0RC1
 - Fix issues with deleting jobs via the API
 - Fix issue where Sonarr could not read using the History-API
 - Increase default cache to 450M
+- The pre-queue script can now return an accept value of 2, meaning immediate failure. (Useful for Sonarr.)
+- Add start script for portable Windows installations
 
 ## What's new in 1.0.0
 - Full Unicode support with Chinese and Russian translations
