@@ -33,7 +33,7 @@ except ImportError:
     HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
@@ -277,22 +277,19 @@ def decode(article, data):
             try:
                 for i in xrange(min(40, len(data))):
                     if data[i].startswith('begin '):
-                        nzf.filename = yenc_name_fixer(data[i].split(None, 2)[2])
                         nzf.type = 'uu'
                         found = True
+                        # Pause the job and show warning
+                        if nzf.nzo.status != Status.PAUSED:
+                            nzf.nzo.pause()
+                            msg = T('UUencode detected, only yEnc encoding is supported [%s]') % nzf.nzo.final_name
+                            logging.warning(msg)
                         break
-                if found:
-                    for n in xrange(i + 1):
-                        data.pop(0)
-                if data[-1] == 'end':
-                    data.pop()
-                    if data[-1] == '`':
-                        data.pop()
             except IndexError:
                 raise BadYenc()
 
             if found:
-                decoded_data = '\r\n'.join(data)
+                decoded_data = ''
             else:
                 raise BadYenc()
 

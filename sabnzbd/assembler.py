@@ -167,7 +167,6 @@ def _assemble(nzf, path, dupe):
     else:
         md5 = None
 
-    _type = nzf.type
     decodetable = nzf.decodetable
 
     for articlenum in decodetable:
@@ -180,37 +179,9 @@ def _assemble(nzf, path, dupe):
             logging.info(T('%s missing'), article)
         else:
             # yenc data already decoded, flush it out
-            if _type == 'yenc':
-                fout.write(data)
-                if md5:
-                    md5.update(data)
-            # need to decode uu data now
-            elif _type == 'uu':
-                data = data.split('\r\n')
-
-                chunks = []
-                for line in data:
-                    if not line:
-                        continue
-
-                    if line == '-- ' or line.startswith('Posted via '):
-                        continue
-                    try:
-                        tmpdata = binascii.a2b_uu(line)
-                        chunks.append(tmpdata)
-                    except binascii.Error, msg:
-                        # Workaround for broken uuencoders by
-                        # /Fredrik Lundh
-                        nbytes = (((ord(line[0]) - 32) & 63) * 4 + 5) / 3
-                        try:
-                            tmpdata = binascii.a2b_uu(line[:nbytes])
-                            chunks.append(tmpdata)
-                        except binascii.Error, msg:
-                            logging.info('Decode failed in part %s: %s', article.article, msg)
-                data = ''.join(chunks)
-                fout.write(data)
-                if md5:
-                    md5.update(data)
+            fout.write(data)
+            if md5:
+                md5.update(data)
 
     fout.flush()
     fout.close()
