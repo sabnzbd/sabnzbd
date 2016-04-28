@@ -786,7 +786,7 @@ def _read_config(path, try_backup=False):
 def save_config(force=False):
     """ Update Setup file with current option values """
     global CFG, database, modified
-    assert isinstance(CFG, configobj.ConfigObj)
+    if 0: assert isinstance(CFG, configobj.ConfigObj) # Assert only for debug purposes
 
     if not (modified or force):
         return True

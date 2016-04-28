@@ -373,7 +373,7 @@ class Downloader(Thread):
 
         while 1:
             for server in self.servers:
-                assert isinstance(server, Server)
+                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
                         if (nw.nntp and nw.nntp.error_msg):
@@ -397,7 +397,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                assert isinstance(server, Server)
+                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -405,7 +405,7 @@ class Downloader(Thread):
                     continue
 
                 for nw in server.idle_threads[:]:
-                    assert isinstance(nw, NewsWrapper)
+                    if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
                     if nw.timeout:
                         if time.time() < nw.timeout:
                             continue
