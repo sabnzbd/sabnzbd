@@ -377,7 +377,7 @@ function ViewModel() {
             failed_only: self.history.showFailed()*1,
             start: self.history.pagination.currentStart(),
             limit: parseInt(self.history.paginationLimit()),
-            last_history_call: self.history.lastUpdate
+            last_history_update: self.history.lastUpdate
         }).done(self.updateHistory);
         
         // We are now done with any loading

@@ -27,7 +27,7 @@ function HistoryListModel(parent) {
             See if there's anything to update
         ***/
         if(!data) return;
-        self.lastUpdate = data.last_history_call
+        self.lastUpdate = data.last_history_update
 
         /***
             History list functions per item
