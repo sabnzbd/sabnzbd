@@ -437,7 +437,8 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            nzo.status = Status.DELETED
+            if nzo.status not in (Status.COMPLETED, Status.FAILED):
+                nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
             if add_to_history:
