@@ -1259,6 +1259,11 @@ def main():
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
+    try:
+        logging.info('Preferred encoding = %s', locale.getpreferredencoding())
+    except:
+        logging.info('Preferred encoding = ERROR')
+
 
     if sabnzbd.cfg.log_level() > 1:
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
