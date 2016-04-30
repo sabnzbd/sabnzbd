@@ -1342,6 +1342,8 @@ def main():
 
     logging.debug('Unwanted extensions are ... %s', sabnzbd.cfg.unwanted_extensions())
 
+    logging.info('Preferred encoding = %s', locale.getpreferredencoding())    # Useful for debugging Unicode problems
+
     if fork and not sabnzbd.WIN32:
         daemonize()
 
