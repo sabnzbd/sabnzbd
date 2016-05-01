@@ -1246,7 +1246,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, webdir='', ve
             found_active = True
         else:
             # ensure compatibility of API status
-            if status in (Status.TO_PP, Status.DELETED): status = Status.DOWNLOADING
+            if status in (Status.DELETED, ): status = Status.DOWNLOADING
             slot['status'] = "%s" % (status)
         if priority == TOP_PRIORITY:
             slot['priority'] = 'Force'
