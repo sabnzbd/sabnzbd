@@ -32,6 +32,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-flash"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -68,6 +69,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-flash"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -159,6 +161,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-flash"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -284,6 +287,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-flash"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -326,6 +330,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-flash"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -514,6 +519,27 @@
             \$("#rating_filter_pause").hide();
         }
     });
+
+    \$('.restoreDefaults').click(function(e) {
+        // Confirm?
+        if(!confirm("$T('explain-restoreDefaults')\n$T('confirm')")) return false
+        e.preventDefault()
+
+        // Need to get all the input values, so same way as saving normally
+        var key_container = {}
+        \$(this).parents('.section').extractFormDataTo(key_container);
+        key_container = Object.keys(key_container)
+
+        // Send request
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: "mode=set_config_default&session=${session}&output=json&keyword=" + key_container.join('&keyword=')
+        }).then(function(data) {
+            // Reload page
+            document.location = document.location
+        })
+    })
 });
 </script>
 

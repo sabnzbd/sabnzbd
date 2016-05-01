@@ -135,6 +135,18 @@ def _api_set_config(name, output, kwargs):
     res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
 
+def _api_set_config_default(name, output, kwargs):
+    """ API: Reset requested config variables back to defaults. Currently only for misc-section """
+    keywords = kwargs.get('keyword', [])
+    if not isinstance(keywords, list):
+        keywords = [keywords]
+    for keyword in keywords:        
+        item = config.get_config('misc', keyword)
+        if item:
+            item.set(item.default())
+    config.save_config()
+    return report(output)
+
 
 def _api_del_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
@@ -893,6 +905,7 @@ _api_table = {
     'server_stats': (_api_server_stats, 2),
     'get_config': (_api_get_config, 3),
     'set_config': (_api_set_config, 3),
+    'set_config_default': (_api_set_config_default, 3),
     'del_config': (_api_del_config, 3),
     'qstatus': (_api_qstatus, 2),
     'queue': (_api_queue, 2),
