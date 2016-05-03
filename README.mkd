@@ -1,5 +1,10 @@
-Release Notes  -  SABnzbd 1.0.1
+Release Notes  -  SABnzbd 1.0.2
 ===============================
+
+## Bugfixes in 1.0.2
+- Fix hangups at 100% when QuickCheck is off and "all-pars" is on
+- Fix handling of "too many connections" for some Usenet servers
+
 
 ## What's new in 1.0.1
 - Prevent creating orphan items in "incomplete" when deleting downloading jobs.
