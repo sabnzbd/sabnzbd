@@ -59,17 +59,17 @@ class ArticleCache(object):
     @synchronized(ARTICLE_LOCK)
     def reserve_space(self, data):
         """ Is there space left in the set limit? """
-        data_size = sys.getsizeof(data)
+        data_size = sys.getsizeof(data)*32
+        self.__cache_size += data_size
         if self.__cache_size + data_size > max(self.__cache_limit, MAX_DECODE_QUEUE*data_size):
             return False
         else:
-            self.__cache_size += data_size
             return True
 
     @synchronized(ARTICLE_LOCK)
     def free_reserve_space(self, data):
         """ Remove previously reserved space """
-        data_size = sys.getsizeof(data)
+        data_size = sys.getsizeof(data)*32
         self.__cache_size -= data_size
         # Is there at least MIN_DECODE_QUEUE*size free?
         # To avoid rapid pausing and unpausing of the queue
