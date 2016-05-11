@@ -82,7 +82,7 @@ replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
-enable_https_verification = OptionBool('misc', 'enable_https_verification', True)
+enable_https_verification = OptionBool('misc', 'enable_https_verification', False)
 selftest_host  = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
