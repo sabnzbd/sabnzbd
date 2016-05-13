@@ -146,5 +146,6 @@ class Status():
     RUNNING = 'Running'             # PP: User's post processing script is running
     VERIFYING = 'Verifying'         # PP: Job is being verified (by par2)
     DELETED = 'Deleted'             # Q:  Job has been deleted (and is almost gone)
+    PROP = 'Propagating'            # Q:  Delayed download
 
 NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')

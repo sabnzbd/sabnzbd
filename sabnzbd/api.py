@@ -1339,7 +1339,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
 
         if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
-                slot['status'] = 'Propagating'
+                slot['status'] = Status.PROP
             elif status == Status.CHECKING:
                 slot['status'] = Status.CHECKING
             else:
