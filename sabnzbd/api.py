@@ -1261,7 +1261,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
             connected = unicoder(server.warning)
 
         if server.request and not server.info:
-            connected = T('&nbsp;Resolving address')
+            connected = T('&nbsp;Resolving address').replace('&nbsp;', '')
         serverconnections.sort()
 
         # For the templates or for JSON
