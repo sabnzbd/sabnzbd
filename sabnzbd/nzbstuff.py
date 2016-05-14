@@ -1170,6 +1170,12 @@ class NzbObject(TryList):
     def remove_parset(self, setname):
         self.partable.pop(setname)
 
+    def remove_extrapar(self, parfile):
+        """ Remove par file from any/all sets """
+        for _set in self.extrapars:
+            if parfile in self.extrapars[_set]:
+                self.extrapars[_set].remove(parfile)
+
     __re_quick_par2_check = re.compile('\.par2\W*', re.I)
 
     def check_quality(self, req_ratio=0):

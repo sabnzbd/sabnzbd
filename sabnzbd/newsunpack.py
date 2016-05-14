@@ -1043,6 +1043,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     # set the current nzo status to "Repairing". Used in History
 
+    assert(isinstance(nzo, sabnzbd.nzbstuff.NzbObject))
     parfile = os.path.join(workdir, parfile_nzf.filename)
     parfile = short_path(parfile)
     workdir = short_path(workdir)
@@ -1068,6 +1069,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         readd = False
         for extrapar in parfile_nzf.extrapars[:]:
             parfile_nzf.extrapars.remove(extrapar)
+            parfile_nzf.nzo.remove_extrapar(extrapar)
             if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 readd = True
