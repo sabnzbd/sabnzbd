@@ -1457,7 +1457,7 @@ class NzbObject(TryList):
         for _set in self.extrapars:
             for nzf in self.extrapars[_set]:
                 if nzf not in self.files and nzf not in self.finished_files:
-                    bytes_extrapars += nzf.bytes
+                    bytes_extrapars += nzf.bytes_left
                     if full:
                         nzf.setname = _set
                         queued_files.append(nzf)
