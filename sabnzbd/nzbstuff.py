@@ -1456,10 +1456,11 @@ class NzbObject(TryList):
         bytes_extrapars = 0
         for _set in self.extrapars:
             for nzf in self.extrapars[_set]:
-                bytes_extrapars += nzf.bytes
-                if full:
-                    nzf.setname = _set
-                    queued_files.append(nzf)
+                if nzf not in self.files and nzf not in self.finished_files:
+                    bytes_extrapars += nzf.bytes
+                    if full:
+                        nzf.setname = _set
+                        queued_files.append(nzf)
 
         # Subtract PAR2 sets and already downloaded bytes
         bytes_left_all = self.bytes - self.bytes_downloaded - bytes_extrapars
