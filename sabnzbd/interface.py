@@ -2017,6 +2017,8 @@ class ConfigRss(object):
         if msg:
             return msg
         cfg.rss_rate.set(kwargs.get('rss_rate'))
+        config.save_config()
+        scheduler.restart()
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
