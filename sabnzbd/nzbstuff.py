@@ -384,7 +384,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
             except ValueError:
                 return
             self.article_id = []
-            self.file_bytes += self.seg_bytes
             self.in_segment = True
 
         elif name == 'segments' and self.in_nzb and self.in_file:
@@ -455,6 +454,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                     logging.info("Skipping duplicate article (%s)", segm)
             else:
                 self.article_db[partnum] = (segm, self.seg_bytes)
+                self.file_bytes += self.seg_bytes
             self.in_segment = False
 
         elif name == 'groups' and self.in_groups:
