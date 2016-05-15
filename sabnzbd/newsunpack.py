@@ -1004,7 +1004,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     if not os.path.exists(name):
         return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
 
-    command = [SEVEN_COMMAND, method, '-y', '-aou', case, password,
+    command = [SEVEN_COMMAND, method, '-y', '-aou', '-t7z', case, password,
                '-o%s' % extraction_path, name]
 
     stup, need_shell, command, creationflags = build_command(command)
