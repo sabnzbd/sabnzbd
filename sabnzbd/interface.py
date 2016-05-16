@@ -2608,6 +2608,14 @@ class Status(object):
         log_data = LOG_USER_RE.sub("\g<1>=<USER>", log_data)
         log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
         log_data = LOG_HASH_RE.sub("<HIDE-HASH>", log_data)
+        # Try to replace the username
+        try:
+            import getpass
+            cur_user = getpass.getuser()
+            if cur_user:
+                log_data = log_data.replace(cur_user, '<USERNAME>')
+        except:
+            pass   
         # Set headers
         cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
         cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
