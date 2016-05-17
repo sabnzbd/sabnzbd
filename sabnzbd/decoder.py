@@ -33,7 +33,7 @@ except ImportError:
     HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.constants import Status
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
@@ -66,7 +66,8 @@ class Decoder(Thread):
 
     def decode(self, article, lines):
         self.queue.put((article, lines))
-        if self.queue.qsize() > MAX_DECODE_QUEUE:
+        # See if there's space left in cache, pause otherwise        
+        if not ArticleCache.do.reserve_space(lines):
             sabnzbd.downloader.Downloader.do.delay()
 
     def stop(self):
@@ -80,17 +81,17 @@ class Decoder(Thread):
             if not art_tup:
                 break
 
-            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.downloader.Downloader.do.delayed:
-                sabnzbd.downloader.Downloader.do.undelay()
-
             article, lines = art_tup
             nzf = article.nzf
             nzo = nzf.nzo
             art_id = article.article
             killed = False
 
-            data = None
+            # Check if the space that's now free can let us continue the queue?
+            if ArticleCache.do.free_reserve_space(lines) and sabnzbd.downloader.Downloader.do.delayed:
+                sabnzbd.downloader.Downloader.do.undelay()
 
+            data = None
             register = True  # Finish article
             found = False    # Proper article found
             logme = None
@@ -263,7 +264,8 @@ class Decoder(Thread):
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data):
-    data = strip(data)
+    # Filter out empty ones
+    data = filter(None, data)
     # No point in continuing if we don't have any data left
     if data:
         nzf = article.nzf
@@ -277,22 +279,19 @@ def decode(article, data):
             try:
                 for i in xrange(min(40, len(data))):
                     if data[i].startswith('begin '):
-                        nzf.filename = yenc_name_fixer(data[i].split(None, 2)[2])
                         nzf.type = 'uu'
                         found = True
+                        # Pause the job and show warning
+                        if nzf.nzo.status != Status.PAUSED:
+                            nzf.nzo.pause()
+                            msg = T('UUencode detected, only yEnc encoding is supported [%s]') % nzf.nzo.final_name
+                            logging.warning(msg)
                         break
-                if found:
-                    for n in xrange(i + 1):
-                        data.pop(0)
-                if data[-1] == 'end':
-                    data.pop()
-                    if data[-1] == '`':
-                        data.pop()
             except IndexError:
                 raise BadYenc()
 
             if found:
-                decoded_data = '\r\n'.join(data)
+                decoded_data = ''
             else:
                 raise BadYenc()
 
@@ -392,14 +391,3 @@ def ySplit(line, splits=None):
         fields[key] = value.strip()
 
     return fields
-
-
-def strip(data):
-    while data and not data[0]:
-        data.pop(0)
-
-    while data and not data[-1]:
-        data.pop()
-
-    
-    return data

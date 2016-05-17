@@ -2017,6 +2017,8 @@ class ConfigRss(object):
         if msg:
             return msg
         cfg.rss_rate.set(kwargs.get('rss_rate'))
+        config.save_config()
+        scheduler.restart()
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2539,6 +2541,12 @@ class ConfigSorting(object):
 
 
 ##############################################################################
+LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
+LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
+LOG_USER_RE = re.compile(r"(user|username)=[\w]+", re.I)
+LOG_PASS_RE = re.compile(r"(password)=[\w]+", re.I)
+LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
+
 class Status(object):
 
     def __init__(self, web_dir, root, prim):
@@ -2592,7 +2600,26 @@ class Status(object):
             sabnzbd.LOGHANDLER.flush()
         except:
             pass
-        return cherrypy.lib.static.serve_file(sabnzbd.LOGFILE, "application/x-download", "attachment")
+
+        # To remove all API-keys we need to open the file and serve it ourselves
+        log_data = open(sabnzbd.LOGFILE, "r").read()
+        log_data = LOG_API_RE.sub("apikey=<APIKEY>", log_data)
+        log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
+        log_data = LOG_USER_RE.sub("\g<1>=<USER>", log_data)
+        log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
+        log_data = LOG_HASH_RE.sub("<HIDE-HASH>", log_data)
+        # Try to replace the username
+        try:
+            import getpass
+            cur_user = getpass.getuser()
+            if cur_user:
+                log_data = log_data.replace(cur_user, '<USERNAME>')
+        except:
+            pass   
+        # Set headers
+        cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
+        cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
+        return log_data
 
     @cherrypy.expose
     def showweb(self, **kwargs):

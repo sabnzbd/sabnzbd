@@ -117,7 +117,7 @@ class PostProcessor(Thread):
         self.queue.put(nzo)
         self.save()
         # Update the last check time
-        sabnzbd.LAST_HISTORY_CALL = time.time()
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
 
     def remove(self, nzo):
         """ Remove given nzo from the queue """
@@ -130,7 +130,7 @@ class PostProcessor(Thread):
             logging.info('Traceback: ', exc_info=True)
         self.save()
         # Update the last check time
-        sabnzbd.LAST_HISTORY_CALL = time.time()
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
 
     def stop(self):
         """ Stop thread after finishing running job """
@@ -201,7 +201,7 @@ class PostProcessor(Thread):
 
 def process_job(nzo):
     """ Process one job """
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     start = time.time()
 
     # keep track of whether we can continue
@@ -573,14 +573,14 @@ def process_job(nzo):
         try_alt_nzb(nzo)
 
     # Update the last check time
-    sabnzbd.LAST_HISTORY_CALL = time.time()
+    sabnzbd.LAST_HISTORY_UPDATE = time.time()
 
     return True
 
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     filename = nzo.final_name
     notifier.send_notification(T('Post-processing'), nzo.final_name, 'pp')
     logging.info('Par2 check starting on %s', filename)

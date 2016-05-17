@@ -373,7 +373,7 @@ class Downloader(Thread):
 
         while 1:
             for server in self.servers:
-                assert isinstance(server, Server)
+                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
                         if (nw.nntp and nw.nntp.error_msg):
@@ -397,7 +397,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                assert isinstance(server, Server)
+                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -405,7 +405,7 @@ class Downloader(Thread):
                     continue
 
                 for nw in server.idle_threads[:]:
-                    assert isinstance(nw, NewsWrapper)
+                    if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
                     if nw.timeout:
                         if time.time() < nw.timeout:
                             continue
@@ -572,34 +572,42 @@ class Downloader(Thread):
                             ecode = msg[:3]
                             display_msg = ' [%s]' % msg
                             logging.debug('Server login problem: %s, %s', ecode, msg)
-                            if ecode in ('502', '481', '400') and clues_too_many(msg):
+                            if ecode in ('502', '400', '481', '482') and clues_too_many(msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
-                                    server.errormsg = T('Too many connections to server %s') % display_msg
-                                    logging.error(T('Too many connections to server %s'), server.id)
+                                    errormsg = T('Too many connections to server %s') % display_msg
+                                    if server.errormsg != errormsg:
+                                        server.errormsg = errormsg
+                                        logging.error(T('Too many connections to server %s'), server.id)
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
-                            elif ecode in ('502', '481') and clues_too_many_ip(msg):
+                            elif ecode in ('502', '481', '482') and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
-                                    server.errormsg = T('Probable account sharing') + display_msg
-                                    name = ' (%s)' % server.id
-                                    logging.error(T('Probable account sharing') + name)
+                                    errormsg = T('Probable account sharing') + display_msg
+                                    if server.errormsg != errormsg:
+                                        server.errormsg = errormsg
+                                        name = ' (%s)' % server.id
+                                        logging.error(T('Probable account sharing') + name)
                                     penalty = _PENALTY_SHARE
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    server.errormsg = T('Failed login for server %s') % display_msg
-                                    logging.error(T('Failed login for server %s'), server.id)
+                                    errormsg = T('Failed login for server %s') % display_msg
+                                    if server.errormsg != errormsg:
+                                        server.errormsg = errormsg
+                                        logging.error(T('Failed login for server %s'), server.id)
                                 penalty = _PENALTY_PERM
                                 block = True
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    server.errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
-                                    logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
+                                    errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    if server.errormsg != errormsg:
+                                        server.errormsg = errormsg
+                                        logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
                                 if clues_pay(msg):
                                     penalty = _PENALTY_PERM
                                 else:
@@ -614,8 +622,10 @@ class Downloader(Thread):
                             else:
                                 # Unknown error, just keep trying
                                 if server.active:
-                                    server.errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
-                                    logging.error(T('Cannot connect to server %s [%s]'), server.id, msg)
+                                    errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    if server.errormsg != errormsg:
+                                        server.errormsg = errormsg
+                                        logging.error(T('Cannot connect to server %s [%s]'), server.id, msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:

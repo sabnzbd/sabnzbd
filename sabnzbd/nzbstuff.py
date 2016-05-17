@@ -351,7 +351,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def __init__(self, nzo, remove_samples=False):
         self.nzo = nzo
-        assert isinstance(self.nzo, NzbObject)
+        if 0: assert isinstance(self.nzo, NzbObject) # Assert only for debug purposes
         self.in_nzb = False
         self.in_file = False
         self.in_groups = False
@@ -1188,7 +1188,7 @@ class NzbObject(TryList):
         anypars = False
         for nzf_id in self.files_table:
             nzf = self.files_table[nzf_id]
-            assert isinstance(nzf, NzbFile)
+            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes
             if nzf.deleted:
                 short += nzf.bytes_left
             if self.__re_quick_par2_check.search(nzf.subject):
@@ -1267,7 +1267,7 @@ class NzbObject(TryList):
         nzf_remove_list = []
 
         for nzf in self.files:
-            assert isinstance(nzf, NzbFile)
+            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes
             if nzf.deleted:
                 logging.debug('Skipping existing file %s', nzf.filename or nzf.subject)
             else:
@@ -1457,7 +1457,7 @@ class NzbObject(TryList):
         for _set in self.extrapars:
             for nzf in self.extrapars[_set]:
                 if nzf not in self.files and nzf not in self.finished_files:
-                    bytes_extrapars += nzf.bytes
+                    bytes_extrapars += nzf.bytes_left
                     if full:
                         nzf.setname = _set
                         queued_files.append(nzf)
@@ -1504,7 +1504,7 @@ class NzbObject(TryList):
 
     def set_action_line(self, action=None, msg=None):
         # Update the last check time
-        sabnzbd.LAST_HISTORY_CALL = time.time()
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
         if action and msg:
             self.action_line = '%s: %s' % (action, msg)
         else:

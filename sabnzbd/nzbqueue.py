@@ -276,7 +276,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
         """ Refresh a placeholder nzo with an actual nzo """
-        assert isinstance(future, NzbObject)
+        if 0: assert isinstance(future, NzbObject) # Assert only for debug purposes
         if nzo_info is None:
             nzo_info = {}
         nzo_id = future.nzo_id
@@ -377,7 +377,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True, quiet=False):
-        assert isinstance(nzo, NzbObject)
+        if 0: assert isinstance(nzo, NzbObject)  # Assert only for debug purposes
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
 

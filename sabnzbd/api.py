@@ -135,6 +135,18 @@ def _api_set_config(name, output, kwargs):
     res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
 
+def _api_set_config_default(name, output, kwargs):
+    """ API: Reset requested config variables back to defaults. Currently only for misc-section """
+    keywords = kwargs.get('keyword', [])
+    if not isinstance(keywords, list):
+        keywords = [keywords]
+    for keyword in keywords:        
+        item = config.get_config('misc', keyword)
+        if item:
+            item.set(item.default())
+    config.save_config()
+    return report(output)
+
 
 def _api_del_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
@@ -474,10 +486,10 @@ def _api_history(name, output, kwargs):
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
-    last_history_call = kwargs.get('last_history_call', 0)
+    last_history_update = kwargs.get('last_history_update', 0)
 
     # Do we need to send anything?
-    if(int(last_history_call) == int(sabnzbd.LAST_HISTORY_CALL)):
+    if(int(last_history_update) == int(sabnzbd.LAST_HISTORY_UPDATE)):
         return report(output, keyword='history', data=False)
 
     if categories and not isinstance(categories, list):
@@ -498,14 +510,14 @@ def _api_history(name, output, kwargs):
             if special in ('all', 'completed'):
                 history_db.remove_completed(search)
             # Update the last check time
-            sabnzbd.LAST_HISTORY_CALL = time.time()
+            sabnzbd.LAST_HISTORY_UPDATE = time.time()
             return report(output)
         elif value:
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
             # Update the last check time
-            sabnzbd.LAST_HISTORY_CALL = time.time()
+            sabnzbd.LAST_HISTORY_UPDATE = time.time()
             return report(output)
         else:
             return report(output, _MSG_NO_VALUE)
@@ -521,7 +533,7 @@ def _api_history(name, output, kwargs):
                                                                               search=search, failed_only=failed_only,
                                                                               categories=categories,
                                                                               output=output)
-        history['last_history_call'] = int(sabnzbd.LAST_HISTORY_CALL)
+        history['last_history_update'] = int(sabnzbd.LAST_HISTORY_UPDATE)
         return report(output, keyword='history', data=remove_callable(history))
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -893,6 +905,7 @@ _api_table = {
     'server_stats': (_api_server_stats, 2),
     'get_config': (_api_get_config, 3),
     'set_config': (_api_set_config, 3),
+    'set_config_default': (_api_set_config_default, 3),
     'del_config': (_api_del_config, 3),
     'qstatus': (_api_qstatus, 2),
     'queue': (_api_queue, 2),
@@ -1248,7 +1261,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
             connected = unicoder(server.warning)
 
         if server.request and not server.info:
-            connected = T('&nbsp;Resolving address')
+            connected = T('&nbsp;Resolving address').replace('&nbsp;', '')
         serverconnections.sort()
 
         # For the templates or for JSON
