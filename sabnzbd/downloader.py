@@ -239,8 +239,9 @@ class Downloader(Thread):
 
     @synchronized_CV
     def resume(self):
-        logging.info("Resuming")
-        if self.paused:
+        # Do not notify when SABnzbd is still starting
+        if self.paused and sabnzbd.WEB_DIR:
+            logging.info("Resuming")
             notifier.send_notification("SABnzbd", T('Resuming'), 'download')
         self.paused = False
 
