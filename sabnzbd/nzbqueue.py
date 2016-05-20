@@ -530,6 +530,7 @@ class NzbQueue(TryList):
             handled.append(nzo_id)
         return handled
 
+    @synchronized_CV
     @synchronized(NZBQUEUE_LOCK)
     def resume_nzo(self, nzo_id):
         handled = []

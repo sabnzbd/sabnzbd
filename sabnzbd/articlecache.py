@@ -25,7 +25,7 @@ import threading
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI, ANFO, Status, MAX_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.constants import GIGI, ANFO, Status
 
 
 ARTICLE_LOCK = threading.Lock()
@@ -61,7 +61,7 @@ class ArticleCache(object):
         """ Is there space left in the set limit? """
         data_size = sys.getsizeof(data)*32
         self.__cache_size += data_size
-        if self.__cache_size + data_size > max(self.__cache_limit, MAX_DECODE_QUEUE*data_size):
+        if self.__cache_size + data_size > self.__cache_limit:
             return False
         else:
             return True
@@ -71,9 +71,7 @@ class ArticleCache(object):
         """ Remove previously reserved space """
         data_size = sys.getsizeof(data)*32
         self.__cache_size -= data_size
-        # Is there at least MIN_DECODE_QUEUE*size free?
-        # To avoid rapid pausing and unpausing of the queue
-        return self.__cache_size + data_size*MIN_DECODE_QUEUE < self.__cache_limit
+        return self.__cache_size + data_size < self.__cache_limit
 
 
     @synchronized(ARTICLE_LOCK)

@@ -33,7 +33,7 @@ except ImportError:
     HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import Status
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
@@ -66,8 +66,9 @@ class Decoder(Thread):
 
     def decode(self, article, lines):
         self.queue.put((article, lines))
-        # See if there's space left in cache, pause otherwise        
-        if not ArticleCache.do.reserve_space(lines):
+        # See if there's space left in cache, pause otherwise
+        # But do allow some articles to enter queue, in case of full cache
+        if not ArticleCache.do.reserve_space(lines) and self.queue.qsize() > MAX_DECODE_QUEUE:
             sabnzbd.downloader.Downloader.do.delay()
 
     def stop(self):
