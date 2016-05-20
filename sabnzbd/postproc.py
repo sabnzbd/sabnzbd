@@ -280,7 +280,7 @@ def process_job(nzo):
         script = nzo.script
         cat = nzo.cat
 
-        logging.info('Starting PostProcessing on %s' +
+        logging.info('Starting Post-Processing on %s' +
                      ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s',
                      filename, flag_repair, flag_unpack, flag_delete, script, cat)
 
@@ -582,8 +582,8 @@ def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
     if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     filename = nzo.final_name
-    notifier.send_notification(T('Post-processing'), nzo.final_name, 'pp')
-    logging.info('Par2 check starting on %s', filename)
+    notifier.send_notification(T('Post-processing'), filename, 'pp')
+    logging.info('Starting verification and repair of %s', filename)
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
@@ -604,7 +604,7 @@ def parring(nzo, workdir):
             if cfg.ignore_samples() and 'sample' in setname.lower():
                 continue
             if not verified.get(setname, False):
-                logging.info("Running repair on set %s", setname)
+                logging.info("Running verification and repair on set %s", setname)
                 parfile_nzf = par_table[setname]
                 if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
