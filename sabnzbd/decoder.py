@@ -89,7 +89,7 @@ class Decoder(Thread):
             killed = False
 
             # Check if the space that's now free can let us continue the queue?
-            if ArticleCache.do.free_reserve_space(lines) and sabnzbd.downloader.Downloader.do.delayed:
+            if (ArticleCache.do.free_reserve_space(lines) or self.queue.qsize() < MAX_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
                 sabnzbd.downloader.Downloader.do.undelay()
 
             data = None
