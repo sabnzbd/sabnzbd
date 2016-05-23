@@ -24,7 +24,7 @@ import threading
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI
+from sabnzbd.constants import GIGI, Status
 
 
 ARTICLE_LOCK = threading.Lock()
@@ -60,12 +60,12 @@ class ArticleCache(object):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzf.deleted or nzo.deleted:
+        if nzo.status in (Status.COMPLETED, Status.DELETED):
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:
-                logging.debug("%s would be discarded", article)
-            # return
+                logging.debug("%s is discarded", article)
+            return
 
         saved_articles = article.nzf.nzo.saved_articles
 
@@ -142,12 +142,12 @@ class ArticleCache(object):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzf.deleted or nzo.deleted:
+        if nzo.status in (Status.COMPLETED, Status.DELETED):
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:
-                logging.debug("%s would be discarded", article)
-            # return
+                logging.debug("%s is discarded", article)
+            return
 
         art_id = article.get_art_id()
         if art_id:

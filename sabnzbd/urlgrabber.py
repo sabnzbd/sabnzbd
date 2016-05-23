@@ -124,6 +124,9 @@ class URLGrabber(Thread):
                     elif '401' in error1 or 'unauthorized' in error1:
                         msg = T('Unauthorized access')
                         retry = False
+                    elif '404' in error1:
+                        msg = T('File not on server')
+                        retry = False
 
                 new_url = dereferring(url, fn)
                 if new_url:

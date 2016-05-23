@@ -430,7 +430,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = -2
+    prio = -3
 
     if gtype == 'startup':
         prio = sabnzbd.cfg.pushover_prio_startup()
@@ -455,7 +455,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if force:
         prio = 1
 
-    if prio > -2:
+    if prio > -3:
         try:
             conn = httplib.HTTPSConnection("api.pushover.net:443")
             conn.request("POST", "/1/messages.json", urllib.urlencode({

@@ -308,7 +308,7 @@ class NewsWrapper(object):
             self.pass_sent = True
             self.pass_ok = True
 
-        if code in ('501', '502') and self.user_sent:
+        if code in ('501',) and self.user_sent:
             # Change to a sensible text
             code = '481'
             self.lines[0] = T('Authentication failed, check username/password.')

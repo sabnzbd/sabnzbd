@@ -274,8 +274,9 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
-    if (sabnzbd.WIN32 or sabnzbd.DARWIN) and not cfg.cache_limit():
-        cfg.cache_limit.set('200M')
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        if cfg.cache_limit() == '' or cfg.cache_limit() == '200M':
+            cfg.cache_limit.set('450M')
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     check_incomplete_vs_complete()
@@ -930,8 +931,7 @@ def remove_data(_id, path):
             os.remove(path)
             logging.info("%s removed", path)
     except:
-        logging.info("Failed to remove %s", path)
-        logging.info("Traceback: ", exc_info=True)
+        logging.debug("Failed to remove %s", path)
 
 
 @synchronized(IO_LOCK)

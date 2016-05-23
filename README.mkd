@@ -1,8 +1,27 @@
-Release Notes  -  SABnzbd 1.0.0
+Release Notes  -  SABnzbd 1.0.2
 ===============================
 
-## What's new in 1.0.0
+## Bugfixes in 1.0.2
+- Fix hangups at 100% when QuickCheck is off and "all-pars" is on
+- Fix handling of "too many connections" for some Usenet servers
 
+
+## What's new in 1.0.1
+- Prevent creating orphan items in "incomplete" when deleting downloading jobs.
+- Forced item with missing articles caused overflow into paused jobs
+- Do QuickCheck even on files that would be removed by the Cleanup-list (problematic for RAR files).
+- Fix "Download all par2 files" behavior
+- Treat ambiguous numeric values as number of minutes for custom pause time.
+- Accept MIME records that have only LF line endings (error in some third-party utilities)
+- Fix PushOver support.
+- Fix breaking Glitter bug with large script_log
+- Fix issues with deleting jobs via the API
+- Fix issue where Sonarr could not read using the History-API
+- Increase default cache to 450M
+- The pre-queue script can now return an accept value of 2, meaning immediate failure. (Useful for Sonarr.)
+- Add start script for portable Windows installations
+
+## What's new in 1.0.0
 - Full Unicode support with Chinese and Russian translations
 - New default UI: Glitter
 - Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
@@ -57,4 +76,3 @@ The organization of the download queue is different from older versions.
 Status->QueueRepair and "Repair" the old queue.
 Also, your sabnzbd.ini file will be upgraded, making it
 incompatible with releases older than 0.7.9
-

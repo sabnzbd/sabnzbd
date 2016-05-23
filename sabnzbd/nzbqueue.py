@@ -251,12 +251,13 @@ class NzbQueue(TryList):
 
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
-        for nzo in self.__nzo_list:
-            nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
-            if save_nzo is None or nzo is save_nzo:
-                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
-                if not nzo.futuretype:
-                    nzo.save_to_disk()
+        for nzo in self.__nzo_list[:]:
+            if not nzo.deleted:
+                nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
+                if save_nzo is None or nzo is save_nzo:
+                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                    if not nzo.futuretype:
+                        nzo.save_to_disk()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -436,9 +437,9 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
+            if cleanup and nzo.status not in (Status.COMPLETED, Status.FAILED):
+                nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
-
-            sabnzbd.remove_data(nzo_id, nzo.workpath)
 
             if add_to_history:
                 # Create the history DB instance
@@ -450,6 +451,8 @@ class NzbQueue(TryList):
 
             elif cleanup:
                 self.cleanup_nzo(nzo, keep_basic, del_files)
+
+            sabnzbd.remove_data(nzo_id, nzo.workpath)
 
             if save:
                 self.save(nzo)
@@ -775,18 +778,22 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
-                        article = nzo.get_article(server, servers)
-                        if article:
-                            return article
+                    # Not when queue paused and not a forced item
+                    if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+                        if nzo.server_allowed(server):
+                            article = nzo.get_article(server, servers)
+                            if article:
+                                return article
 
         else:
             for nzo in self.__nzo_list:
-                # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.status not in (Status.PAUSED, Status.GRABBING) and nzo.server_allowed(server):
-                    article = nzo.get_article(server, servers)
-                    if article:
-                        return article
+                # Not when queue paused and not a forced item
+                if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+                    # Don't try to get an article if server is in try_list of nzo
+                    if not nzo.server_in_try_list(server) and nzo.server_allowed(server):
+                        article = nzo.get_article(server, servers)
+                        if article:
+                            return article
 
             # No articles for this server, block server (until reset issued)
             self.add_to_try_list(server)
@@ -807,27 +814,30 @@ class NzbQueue(TryList):
         if reset:
             self.reset_try_list()
 
-        if file_done:
-            if nzo.next_save is None or time.time() > nzo.next_save:
-                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
-                BPSMeter.do.save()
-                if nzo.save_timeout is None:
-                    nzo.next_save = None
-                else:
-                    nzo.next_save = time.time() + nzo.save_timeout
+        if nzo.status in (Status.COMPLETED, Status.DELETED):
+            logging.debug('Discarding file completion %s for deleted job', filename)
+        else:
+            if file_done:
+                if nzo.next_save is None or time.time() > nzo.next_save:
+                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                    BPSMeter.do.save()
+                    if nzo.save_timeout is None:
+                        nzo.next_save = None
+                    else:
+                        nzo.next_save = time.time() + nzo.save_timeout
 
-            if not nzo.precheck:
-                _type = nzf.type
+                if not nzo.precheck:
+                    _type = nzf.type
 
-                # Only start decoding if we have a filename and type
-                if filename and _type:
-                    Assembler.do.process((nzo, nzf))
+                    # Only start decoding if we have a filename and type
+                    if filename and _type:
+                        Assembler.do.process((nzo, nzf))
 
-                else:
-                    if file_has_articles(nzf):
-                        logging.warning(T('%s -> Unknown encoding'), filename)
-        if post_done:
-            self.end_job(nzo)
+                    else:
+                        if file_has_articles(nzf):
+                            logging.warning(T('%s -> Unknown encoding'), filename)
+            if post_done:
+                self.end_job(nzo)
 
     def end_job(self, nzo):
         """ Send NZO to the post-processing queue """

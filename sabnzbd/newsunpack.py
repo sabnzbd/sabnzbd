@@ -1037,9 +1037,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         # Download all par2 files that haven't been downloaded yet
         readd = False
         for extrapar in parfile_nzf.extrapars[:]:
-            if extrapar in nzo.files:
+            parfile_nzf.extrapars.remove(extrapar)
+            if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
-                parfile_nzf.extrapars.remove(extrapar)
                 readd = True
         if readd:
             return readd, result
@@ -1658,9 +1658,6 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
 
     for file in md5pack:
-        if sabnzbd.misc.on_cleanup_list(file, False):
-            result = True
-            continue
         found = False
         for nzf in nzf_list:
             if file == nzf.filename:
@@ -1820,8 +1817,11 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                 if n < len(values) and line:
                     values[n] = TRANS(line)
                 n += 1
-        if int_conv(values[0]) < 1:
+        accept = int_conv(values[0])
+        if  accept < 1:
             logging.info('Pre-Q refuses %s', name)
+        elif accept == 2:
+            logging.info('Pre-Q accepts&fails %s', name)
         else:
             logging.info('Pre-Q accepts %s', name)
 
