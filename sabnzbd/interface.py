@@ -228,7 +228,7 @@ def set_auth(conf):
 def check_session(kwargs):
     """ Check session key """
     if not check_access():
-        return u'No access'
+        return u'Access denied'
     key = kwargs.get('session')
     if not key:
         key = kwargs.get('apikey')
@@ -267,7 +267,7 @@ def check_apikey(kwargs, nokey=False):
         # NZB-only actions
         pass
     elif not check_access(req_access):
-        return report(output, 'No access')
+        return report(output, 'Access denied')
 
     # First check APIKEY, if OK that's sufficient
     if not (cfg.disable_key() or nokey):
@@ -2708,7 +2708,8 @@ class Status(object):
 
 
 def Protected():
-    return badParameterResponse("Configuration is locked")
+    cherrypy.response.status = 403
+    return 'Access denied' 
 
 def NeedLogin(url, kwargs):
     raise dcRaiser(url + 'login/', kwargs)
