@@ -177,7 +177,7 @@
                 <div class="field-pair">
                     <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
                     <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
-                    <span class="desc">$T('explain-cache_limitstr')</span>
+                    <span class="desc">$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")</span>
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>

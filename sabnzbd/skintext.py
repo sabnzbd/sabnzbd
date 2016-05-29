@@ -345,7 +345,7 @@ SKIN_TEXT = {
     'opt-bandwidth_perc' : TT('Percentage of line speed'),
     'explain-bandwidth_perc' : TT('Which percentage of the linespeed should SABnzbd use, e.g. 50'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
-    'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>').replace("64M", "256M").replace("128M", "512M"),
+    'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'),
     'opt-cleanup_list' : TT('Cleanup List'),
     'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>'),
     'button-saveChanges' : TT('Save Changes'),
