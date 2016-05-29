@@ -37,7 +37,7 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
     try:
         # CREATE SOCKET
         if ip.find(':') >= 0:
-                s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         if ip.find('.') >= 0:
             time.sleep(ipv4delay)    # IPv4 ... so a delay for IPv4 as we prefer IPv6. Note: ipv4delay could be 0
             s = socket.socket(socket.AF_INET,  socket.SOCK_STREAM)
@@ -106,11 +106,11 @@ def happyeyeballs(HOST, **kwargs):
                 result = s[0]
                 break    # the first True/"OK" is enough, so break out of for loop
     except:
-        if DEBUG: logging.debug("some went wrong in the try block")
+        if DEBUG: logging.debug("something went wrong in the try block")
         result = None
     logging.info("Quickest IP address for %s (port %s, ssl %s, preferipv6 %s) is %s", HOST, PORT, SSL, preferipv6, result)
-    delay = 1000.0 * (time.clock() - start)
-    logging.debug("Happy Eyeballs lookup took %s microseconds", delay)
+    delay = int(1000 * (time.clock() - start))
+    logging.debug("Happy Eyeballs lookup and port connect took %s ms", delay)
     return result
 
 
