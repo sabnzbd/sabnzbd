@@ -1995,6 +1995,8 @@ def format_bytes(bytes):
 def calc_timeleft(bytesleft, bps):
     """ Calculate the time left in the format HH:MM:SS """
     try:
+        if bytesleft <= 0:
+            return '0:00:00'
         totalseconds = int(bytesleft / bps)
         minutes, seconds = divmod(totalseconds, 60)
         hours, minutes = divmod(minutes, 60)
