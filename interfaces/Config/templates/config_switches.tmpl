@@ -521,8 +521,11 @@
     });
 
     \$('.restoreDefaults').click(function(e) {
+        // Get section name
+        var sectionName = \$(this).parents('.section').find('.col2 h3').text().trim()
+
         // Confirm?
-        if(!confirm("$T('explain-restoreDefaults')\n$T('confirm')")) return false
+        if(!confirm("$T('explain-restoreDefaults') \""+sectionName+"\"\n$T('confirm')")) return false
         e.preventDefault()
 
         // Need to get all the input values, so same way as saving normally

@@ -350,7 +350,7 @@ SKIN_TEXT = {
     'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>'),
     'button-saveChanges' : TT('Save Changes'),
     'button-restoreDefaults' : TT('Restore Defaults'),
-    'explain-restoreDefaults' : TT('Only settings in the current section will be reset to their default values.'),
+    'explain-restoreDefaults' : TT('Reset'),
     'opt-language' : TT('Language'),
     'explain-language' : TT('Select a web interface language.'),
     'opt-apikey' : TT('API Key'),
