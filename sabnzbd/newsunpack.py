@@ -506,6 +506,9 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords = [nzo.password.strip()]
     else:
         passwords = []
+        pw = nzo.nzo_info.get('password')
+        if pw:
+            passwords.append(pw)
         # Append meta passwords, to prevent changing the original list
         passwords.extend(nzo.meta.get('password', []))
         if passwords:
