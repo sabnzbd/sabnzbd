@@ -649,11 +649,14 @@ def try_sfv_check(nzo, workdir, setname):
     for sfv in sfvs:
         if setname.lower() in os.path.basename(sfv).lower():
             found = True
+            nzo.status = Status.VERIFYING
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            nzo.set_action_line(T('Trying SFV verification'), '...')
+
             failed = sfv_check(sfv)
             if failed:
-                msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
-                msg += '; '
+                fail_msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                msg = fail_msg + '; '
                 msg += '; '.join(failed)
                 nzo.set_unpack_info('Repair', msg)
                 par_error = True
@@ -661,6 +664,10 @@ def try_sfv_check(nzo, workdir, setname):
                 nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
             if setname:
                 break
+    # Show error in GUI
+    if found and par_error:
+        nzo.status = Status.FAILED
+        nzo.fail_msg = fail_msg
     return (found or not setname) and not par_error
 
 

@@ -36,7 +36,7 @@ ko.bindingHandlers.longText = {
         // Any <br>'s?
         if(value.length > 4) {
             // Inital 3, then the button, then the closing
-            outputText += value.pop() + '<br />' + value.pop() + '<br />' + value.pop() + ' ';
+            outputText += value.shift() + '<br />' + value.shift() + '<br />' + value.shift() + ' ';
             outputText += '<a href="#" class="history-status-more">(' + glitterTranslate.moreText + ')</a><br />';
             outputText += '<span class="history-status-hidden">';
             outputText += value.join('<br />');
