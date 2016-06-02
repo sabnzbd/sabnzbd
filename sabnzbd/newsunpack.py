@@ -748,6 +748,19 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 3
 
+        elif 'checksum error' in line:
+            # Corrupt archive
+            # packed data checksum error in volume FILE
+            m = re.search(r'error in volume (.+)', line)
+            if m:
+                filename = TRANS(m.group(1)).strip()
+            else:
+                filename = '???'
+            nzo.fail_msg = T('Corrupt RAR file')
+            msg = ('[%s][%s] ' + T('Corrupt RAR file')) % (setname, filename)
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            fail = 3
+
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
             if m:
