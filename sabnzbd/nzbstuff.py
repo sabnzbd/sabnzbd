@@ -923,9 +923,10 @@ class NzbObject(TryList):
     def remove_nzf(self, nzf):
         if nzf in self.files:
             self.files.remove(nzf)
+        if nzf not in self.finished_files:
             self.finished_files.append(nzf)
-            nzf.import_finished = True
-            nzf.deleted = True
+        nzf.import_finished = True
+        nzf.deleted = True
         return not bool(self.files)
 
     def reset_all_try_lists(self):
@@ -1162,7 +1163,7 @@ class NzbObject(TryList):
             self.unwanted_ext = 2
 
     def add_parfile(self, parfile):
-        if parfile not in self.files:
+        if not parfile.completed and parfile not in self.files:
             self.files.append(parfile)
         if parfile.extrapars and parfile in parfile.extrapars:
             parfile.extrapars.remove(parfile)
@@ -1463,7 +1464,7 @@ class NzbObject(TryList):
                         queued_files.append(nzf)
 
         # Subtract PAR2 sets and already downloaded bytes
-        bytes_left_all = self.bytes - self.bytes_downloaded - bytes_extrapars
+        bytes_left_all = max(0, self.bytes - self.bytes_downloaded - bytes_extrapars)
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name_labeled, self.password, {},
