@@ -23,6 +23,7 @@ import urllib2
 import urllib
 import logging
 import os
+from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename
 import sabnzbd.newsunpack
@@ -34,6 +35,7 @@ from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
     try:
+        fp = unicoder(fp).encode('utf-8')
         fp = urllib.quote_plus(fp)
         url = '%s&mode=addlocalfile&name=%s' % (url, fp)
         # Add local apikey if it wasn't already in the registered URL
