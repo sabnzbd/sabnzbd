@@ -1,33 +1,25 @@
-Release Notes  -  SABnzbd 1.0.0
-===============================
+Release Notes  -  SABnzbd 1.1.0Beta1
+====================================
 
-## What's new in 1.0.0
+## What's new in 1.1.0Beta1
+- Performance improvements of download process
+- Performance improvements of and Glitter/Plush
+- Glitter now offers Compact and Tabbed layouts (similar to old Classic skin)
+- Glitter shows progress notifications for larger operations
+- Login via HTML-form instead of basic authentication
+- Added Propagation delay feature
+- Repair blocks are added prospectively during download when needed (reducing extra par2 verification runs)
+- Added notification scripts for custom notification services
+- New SABnzbd logo
+- Debug-logs are now anonymized automatically, for easier posting on public websites
 
-- Full Unicode support with Chinese and Russian translations
-- New default UI: Glitter
-- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
-- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
-- Duplicate detection for series
-- More filters in RSS
-- 7zip support
-- Option to save repair time by downloading all par2 files
-- Support for long paths in Windows (above 260)
-- Improved security for external access
-- Lots of small improvements and bug fixes
-- Redesign of notifications classes
-- More notification services supported
-- Diagnostic dashboard tab for "Status" page
-- Bonjour/ZeroConfig support
+## Bug fixes:
+- Many fixes of Glitter and Config pages
+- Bump self-signed certificate to sha256
+- If filename occurs twice in NZB, only larger file is added
 
-## Remarks
-- SABnzbd's webserver now doesn't listen to IPv6 addresses by default.
-  - Use Config->Special->ipv6_hosting if you want this enabled.
-  - "localhost" will be replaced with "127.0.0.1", check any browser bookmark and third-party tool
-- Classic skin has been removed
-- Support extra parameters for par2 on other platforms than Windows
-- Option to verify HTTPS connections (default off)
-- Auto-negotiates best Usenet ssl protocol (override possible)
-- When upgrading from 0.7.x, a backup server will get priority 1
+## API changes:
+- Job password is now a separate field and not included in the job-title anymore
 
 
 ## About
