@@ -571,7 +571,7 @@ class Downloader(Thread):
                             ecode = msg[:3]
                             display_msg = ' [%s]' % msg
                             logging.debug('Server login problem: %s, %s', ecode, msg)
-                            if ecode in ('502', '481', '400') and clues_too_many(msg):
+                            if ecode in ('502', '400', '481', '482') and clues_too_many(msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
@@ -580,7 +580,7 @@ class Downloader(Thread):
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
-                            elif ecode in ('502', '481') and clues_too_many_ip(msg):
+                            elif ecode in ('502', '481', '482') and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
                                     server.errormsg = T('Probable account sharing') + display_msg

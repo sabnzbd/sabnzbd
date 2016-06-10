@@ -506,6 +506,9 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
         passwords = [nzo.password.strip()]
     else:
         passwords = []
+        pw = nzo.nzo_info.get('password')
+        if pw:
+            passwords.append(pw)
         # Append meta passwords, to prevent changing the original list
         passwords.extend(nzo.meta.get('password', []))
         if passwords:
@@ -712,6 +715,19 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
                 filename = '???'
             nzo.fail_msg = T('Unusable RAR file')
             msg = ('[%s][%s] ' + T('Unusable RAR file')) % (setname, filename)
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            fail = 3
+
+        elif 'checksum error' in line:
+            # Corrupt archive
+            # packed data checksum error in volume FILE
+            m = re.search(r'error in volume (.+)', line)
+            if m:
+                filename = TRANS(m.group(1)).strip()
+            else:
+                filename = '???'
+            nzo.fail_msg = T('Corrupt RAR file')
+            msg = ('[%s][%s] ' + T('Corrupt RAR file')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
             fail = 3
 

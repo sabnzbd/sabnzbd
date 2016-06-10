@@ -1,5 +1,12 @@
-Release Notes  -  SABnzbd 1.0.2
+Release Notes  -  SABnzbd 1.0.3
 ===============================
+
+## Bugfixes in 1.0.3
+- Fix jobs hanging at 99% or 100%
+- Support X-DNZB-PASSWORD header for inders that use this
+- Prevent fatal "too many connections" issue
+- Show checksum errors reported by unrar
+- Windows: fix coupling of NZB files to SABnzbd, when the name contains non-US-ASCII characters
 
 ## Bugfixes in 1.0.2
 - Fix hangups at 100% when QuickCheck is off and "all-pars" is on

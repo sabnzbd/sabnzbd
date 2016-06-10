@@ -160,6 +160,8 @@ class URLGrabber(Thread):
                             nzo_info['failure'] = value
                         elif item == 'x-dnzb-details':
                             nzo_info['details'] = value
+                        elif item == 'x-dnzb-password':
+                            nzo_info['password'] = value
                         elif item == 'retry-after':
                             # For NZBFinder
                             wait = misc.int_conv(value)
