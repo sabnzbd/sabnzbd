@@ -543,7 +543,7 @@ def process_job(nzo):
     postproc_time = int(time.time() - start)
 
     # Create the history DB instance
-    history_db = database.get_history_handle()
+    history_db = database.HistoryDB()
     # Add the nzo to the database. Only the path, script and time taken is passed
     # Other information is obtained from the nzo
     history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)

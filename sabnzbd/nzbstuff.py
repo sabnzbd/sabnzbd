@@ -54,7 +54,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode, name_fixer
-from sabnzbd.database import get_history_handle
+from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
@@ -1556,7 +1556,7 @@ class NzbObject(TryList):
             return False, False
 
         res = False
-        history_db = get_history_handle()
+        history_db = HistoryDB()
 
         # dupe check off nzb contents
         if no_dupes:

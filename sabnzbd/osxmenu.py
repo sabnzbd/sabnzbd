@@ -51,7 +51,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.database import get_history_handle
+from sabnzbd.database import HistoryDB
 from sabnzbd.encoding import unicoder
 
 status_icons = {'idle': '../Resources/sab_idle.tiff', 'pause': '../Resources/sab_pause.tiff', 'clicked': '../Resources/sab_clicked.tiff'}
@@ -395,7 +395,7 @@ class SABnzbdDelegate(NSObject):
         try:
             # Fetch history items
             if not self.history_db:
-                self.history_db = sabnzbd.database.get_history_handle()
+                self.history_db = sabnzbd.database.HistoryDB()
             items, fetched_items, _total_items = self.history_db.fetch_history(0, 10, None)
 
             self.menu_history = NSMenu.alloc().init()
@@ -695,7 +695,7 @@ class SABnzbdDelegate(NSObject):
             NzbQueue.do.remove_all()
         elif mode == "history":
             if not self.history_db:
-                self.history_db = sabnzbd.database.get_history_handle()
+                self.history_db = sabnzbd.database.HistoryDB()
             self.history_db.remove_history()
 
     def pauseAction_(self, sender):

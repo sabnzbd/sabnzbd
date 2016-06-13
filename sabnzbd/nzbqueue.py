@@ -444,7 +444,7 @@ class NzbQueue(TryList):
 
             if add_to_history:
                 # Create the history DB instance
-                history_db = database.get_history_handle()
+                history_db = database.HistoryDB()
                 # Add the nzo to the database. Only the path, script and time taken is passed
                 # Other information is obtained from the nzo
                 history_db.add_history_db(nzo, '', '', 0, '', '')

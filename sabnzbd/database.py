@@ -33,6 +33,7 @@ import datetime
 import zlib
 import logging
 import sys
+import threading
 
 import sabnzbd
 import sabnzbd.cfg
@@ -40,17 +41,9 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.misc import format_source_url
+from sabnzbd.decorators import synchronized
 
-_HISTORY_DB = None        # Will contain full path to history database
-_DONE_CLEANING = False    # Ensure we only do one Vacuum per session
-
-
-def get_history_handle():
-    """ Get an instance of the history db hanlder """
-    global _HISTORY_DB
-    if not _HISTORY_DB:
-        _HISTORY_DB = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
-    return HistoryDB(_HISTORY_DB)
+DB_LOCK = threading.RLock()
 
 
 def convert_search(search):
@@ -74,39 +67,52 @@ def convert_search(search):
     return search
 
 
-# TODO: Add support for execute return values
 class HistoryDB(object):
+    """ Class to access the History database
+        Each class-instance will create an access channel that
+        can be used in one thread.
+        Each thread needs its own class-instance!
+    """
+    # These class attributes will be accessed directly because
+    # they need to be shared by all instances
+    db_path = None        # Will contain full path to history database
+    done_cleaning = False # Ensure we only do one Vacuum per session
 
-    def __init__(self, db_path):
-        self.db_path = db_path
+    @synchronized(DB_LOCK)
+    def __init__(self):
+        """ Determine databse path and create connection """
         self.con = self.c = None
+        if not HistoryDB.db_path:
+            HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
+        
 
     def connect(self):
-        global _DONE_CLEANING
-        if not os.path.exists(self.db_path):
-            create_table = True
-        else:
-            create_table = False
-        self.con = sqlite3.connect(self.db_path)
+        """ Create a connection to the database """
+        create_table = not os.path.exists(HistoryDB.db_path)
+        self.con = sqlite3.connect(HistoryDB.db_path)
         self.con.row_factory = dict_factory
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
-        elif not _DONE_CLEANING:
+        elif not HistoryDB.done_cleaning:
             # Run VACUUM on sqlite
             # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
             # http://www.sqlite.org/lang_vacuum.html
-            _DONE_CLEANING = True
+            HistoryDB.done_cleaning = True
             self.execute('VACUUM')
 
         self.execute('PRAGMA user_version;')
-        version = self.c.fetchone()['user_version']
+        try:
+            version = self.c.fetchone()['user_version']
+        except TypeError:
+            version = 0
         if version < 1:
             # Add any missing columns added since first DB version
-            self.execute('PRAGMA user_version = 1;')
-            self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
-            self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+            # Use "and" to stop when database has been reset due to corruption
+            self.execute('PRAGMA user_version = 1;') and \
+                self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;') and \
+                self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
@@ -124,15 +130,18 @@ class HistoryDB(object):
                 logging.error(T('Cannot write to History database, check access rights!'))
                 # Report back success, because there's no recovery possible
                 return True
-            elif 'not a database' in error or 'malformed' in error:
+            elif 'not a database' in error or 'malformed' in error or 'duplicate column name' in error:
                 logging.error(T('Damaged History database, created empty replacement'))
                 logging.info("Traceback: ", exc_info=True)
                 self.close()
                 try:
-                    os.remove(self.db_path)
+                    os.remove(HistoryDB.db_path)
                 except:
                     pass
                 self.connect()
+                # Return False in case of "duplicate column" error
+                # because the column addition in connect() must be terminated
+                return 'duplicate column name' not in error
             else:
                 logging.error(T('SQL Command Failed, see log'))
                 logging.debug("SQL: %s", command)
@@ -141,9 +150,10 @@ class HistoryDB(object):
                     self.con.rollback()
                 except:
                     logging.debug("Rollback Failed:", exc_info=True)
-            return False
+            return True
 
     def create_history_db(self):
+        """ Create a new (empty) database file """
         self.execute("""
         CREATE TABLE "history" (
             "id" INTEGER PRIMARY KEY,
@@ -177,6 +187,7 @@ class HistoryDB(object):
         self.execute('PRAGMA user_version = 1;')
 
     def save(self):
+        """ Save database to disk """
         try:
             self.con.commit()
         except:
@@ -184,6 +195,7 @@ class HistoryDB(object):
             logging.info("Traceback: ", exc_info=True)
 
     def close(self):
+        """ Close database connection """
         try:
             self.c.close()
             self.con.close()
@@ -192,6 +204,7 @@ class HistoryDB(object):
             logging.info("Traceback: ", exc_info=True)
 
     def remove_completed(self, search=None):
+        """ Remove all completed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Completed'""", (search,), save=True)
 
@@ -205,10 +218,12 @@ class HistoryDB(object):
             return []
 
     def remove_failed(self, search=None):
+        """ Remove all failed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,), save=True)
 
     def remove_history(self, jobs=None):
+        """ Remove all jobs in the list `jobs`, empty list will remove all completed jobs """
         if jobs is None:
             self.remove_completed()
         else:
@@ -221,7 +236,7 @@ class HistoryDB(object):
         self.save()
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
-
+        """ Add a new job entry to the database """
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
 
         if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
@@ -231,7 +246,7 @@ class HistoryDB(object):
             self.save()
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
-
+        """ Return records for specified jobs """
         search = convert_search(search)
 
         post = ''
@@ -336,6 +351,7 @@ class HistoryDB(object):
         return (total, month, week)
 
     def get_script_log(self, nzo_id):
+        """ Return decompressed log file """
         data = ''
         t = (nzo_id,)
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
@@ -346,6 +362,7 @@ class HistoryDB(object):
         return data
 
     def get_name(self, nzo_id):
+        """ Return name of the job `nzo_id` """
         t = (nzo_id,)
         name = ''
         if self.execute('SELECT name FROM history WHERE nzo_id=?', t):
@@ -356,6 +373,7 @@ class HistoryDB(object):
         return name
 
     def get_path(self, nzo_id):
+        """ Return the `incomplete` path of the job `nzo_id` """
         t = (nzo_id,)
         path = ''
         if self.execute('SELECT path FROM history WHERE nzo_id=?', t):
@@ -366,6 +384,7 @@ class HistoryDB(object):
         return path
 
     def get_other(self, nzo_id):
+        """ Return additional data for job `nzo_id` """
         t = (nzo_id,)
         if self.execute('SELECT * FROM history WHERE nzo_id=?', t):
             try:
@@ -381,6 +400,7 @@ class HistoryDB(object):
 
 
 def dict_factory(cursor, row):
+    """ Return a dictionary for the current database position """
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]

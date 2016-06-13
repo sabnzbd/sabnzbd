@@ -63,7 +63,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
-from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
+from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
@@ -1838,7 +1838,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet
-        history_db = get_history_handle()
+        history_db = HistoryDB()
         close_db = True
 
     # Fetch history items
@@ -2125,7 +2125,7 @@ def del_from_section(kwargs):
 def history_remove_failed():
     """ Remove all failed jobs from history, including files """
     logging.info('Scheduled removal of all failed jobs')
-    history_db = get_history_handle()
+    history_db = HistoryDB()
     del_job_files(history_db.get_failed_paths())
     history_db.remove_failed()
     history_db.close()
@@ -2135,7 +2135,7 @@ def history_remove_failed():
 def history_remove_completed():
     """ Remove all completed jobs from history """
     logging.info('Scheduled removal of all completed jobs')
-    history_db = get_history_handle()
+    history_db = HistoryDB()
     history_db.remove_completed()
     history_db.close()
     del history_db
