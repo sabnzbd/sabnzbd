@@ -150,7 +150,7 @@ class HistoryDB(object):
                     self.con.rollback()
                 except:
                     logging.debug("Rollback Failed:", exc_info=True)
-            return True
+            return False
 
     def create_history_db(self):
         """ Create a new (empty) database file """
