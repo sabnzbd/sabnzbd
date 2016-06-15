@@ -30,12 +30,13 @@
                     <input type="number" name="port" id="port" size="8" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="username">$T('srv-username')</label>
-                    <input type="text" name="username" id="username" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
+                    <label class="config" for="username-search">$T('srv-username')</label>
+                    <input type="text" name="username" id="username-search" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password">$T('srv-password')</label>
-                    <input type="text" name="password" id="password" />
+                    <label class="config" for="password-search">$T('srv-password')</label>
+                    <input type="text" name="password" id="password-search" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
@@ -158,12 +159,13 @@
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="username$cur">$T('srv-username')</label>
-                    <input type="text" name="username" id="username$cur" value="$server['username']" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
+                    <label class="config" for="username$cur-search">$T('srv-username')</label>
+                    <input type="text" name="username" id="username$cur-search" value="$server['username']" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password$cur">$T('srv-password')</label>
-                    <input type="text" name="password" id="password$cur" value="$server['password']" />
+                    <label class="config" for="password$cur-search">$T('srv-password')</label>
+                    <input type="text" name="password" id="password$cur-search" value="$server['password']" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
