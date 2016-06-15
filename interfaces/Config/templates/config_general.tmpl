@@ -14,8 +14,9 @@
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
-                    <label class="config" for="host">$T('opt-host')</label>
-                    <input type="text" name="host" id="host" value="$host" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
+                    <label class="config" for="host-search">$T('opt-host')</label>
+                    <input type="text" name="host" id="host-search" value="$host" />
                     <span class="desc">$T('explain-host')</span>
                 </div>
                 <div class="field-pair">
@@ -64,13 +65,15 @@
                     <span class="desc">$T('explain-language')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="username">$T('opt-web_username')</label>
-                    <input type="text" name="username" id="username" value="$username" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
+                    <label class="config" for="username-search">$T('opt-web_username')</label>
+                    <input type="text" name="username" id="username-search" value="$username" />
                     <span class="desc">$T('explain-web_username')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password">$T('opt-web_password')</label>
-                    <input type="text" name="password" id="password" value="$password" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
+                    <label class="config" for="password-search">$T('opt-web_password')</label>
+                    <input type="text" name="password" id="password-search" value="$password" />
                     <span class="desc">$T('explain-web_password')</span>
                 </div>  
                 <div class="field-pair">

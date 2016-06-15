@@ -59,8 +59,9 @@
                     <span class="desc">$T('explain-email_dir')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password_file">$T('opt-password_file')</label>
-                    <input type="text" name="password_file" id="password_file" value="$password_file" />
+                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! --> 
+                    <label class="config" for="password_file-search">$T('opt-password_file')</label>
+                    <input type="text" name="password_file" id="password_file-search" value="$password_file" />
                     <span class="desc">$T('explain-password_file')</span>
                 </div>
                 <div class="field-pair">
