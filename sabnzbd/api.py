@@ -140,7 +140,7 @@ def _api_set_config_default(name, output, kwargs):
     keywords = kwargs.get('keyword', [])
     if not isinstance(keywords, list):
         keywords = [keywords]
-    for keyword in keywords:        
+    for keyword in keywords:
         item = config.get_config('misc', keyword)
         if item:
             item.set(item.default())
@@ -1176,6 +1176,8 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
     info['loglevel'] = str(cfg.log_level())
     info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
+    info['lastmail'] = None  # Obsolete, keep for compatibility
+
 
     # Dashboard: Begin
     if not int_conv(skip_dashboard):
