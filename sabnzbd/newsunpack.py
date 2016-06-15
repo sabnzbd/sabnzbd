@@ -1664,13 +1664,23 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
         for root, dirs, files in os.walk(workdir_complete):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    filelist.append(os.path.join(root, _file))
+                    try:
+                        p = os.path.join(root, _file)
+                        filelist.append(p)
+                    except UnicodeDecodeError:
+                        # Just skip failing names
+                        pass
 
     if workdir and not filelist:
         for root, dirs, files in os.walk(workdir):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    filelist.append(os.path.join(root, _file))
+                    try:
+                        p = os.path.join(root, _file)
+                        filelist.append(p)
+                    except UnicodeDecodeError:
+                        # Just skip failing names
+                        pass
 
     sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
     sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
