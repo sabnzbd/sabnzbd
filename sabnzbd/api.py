@@ -1624,7 +1624,6 @@ def del_hist_job(job, del_files):
         else:
             history_db = sabnzbd.connect_db()
             path = history_db.get_path(job)
-            PostProcessor.do.delete(job, del_files=del_files)
             history_db.remove_history(job)
 
         if path and del_files and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):

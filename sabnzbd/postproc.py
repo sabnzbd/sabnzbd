@@ -104,10 +104,13 @@ class PostProcessor(Thread):
         """ Remove a job from the post processor queue """
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
-                self.remove(nzo)
-                nzo.purge_data(keep_basic=True, del_files=del_files)
-                logging.info('Removed job %s from postproc queue', nzo.work_name)
-                nzo.work_name = ''  # Mark as deleted job
+                if nzo.status in (Status.FAILED, Status.COMPLETED):
+                    nzo.to_be_removed = True
+                elif nzo.status in (Status.DOWNLOADING, Status.QUEUED):
+                    self.remove(nzo)
+                    nzo.purge_data(keep_basic=False, del_files=del_files)
+                    logging.info('Removed job %s from postproc queue', nzo.work_name)
+                    nzo.work_name = ''  # Mark as deleted job
                 break
 
     def process(self, nzo):
@@ -122,12 +125,9 @@ class PostProcessor(Thread):
     def remove(self, nzo):
         """ Remove given nzo from the queue """
         try:
-            if nzo in self.history_queue:
-                self.history_queue.remove(nzo)
+            self.history_queue.remove(nzo)
         except:
-            nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(T('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
-            logging.info('Traceback: ', exc_info=True)
+            pass
         self.save()
         # Update the last check time
         sabnzbd.LAST_HISTORY_UPDATE = time.time()
@@ -166,6 +166,7 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
+                if 0: assert(isinstance(nzo, sabnzbd.nzbstuff.NzbObject))
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
@@ -191,7 +192,15 @@ class PostProcessor(Thread):
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
 
             self.__busy = True
+
             process_job(nzo)
+
+            if nzo.to_be_removed:
+                history_db = database.HistoryDB()
+                history_db.remove_history(nzo.nzo_id)
+                history_db.close()
+                nzo.purge_data(keep_basic=False, del_files=True)
+
             self.remove(nzo)
             check_eoq = True
 

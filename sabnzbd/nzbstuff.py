@@ -637,6 +637,7 @@ class NzbObject(TryList):
 
         self.futuretype = futuretype
         self.deleted = False
+        self.to_be_removed = False
         self.parsed = False
         self.duplicate = False
         self.oversized = False
