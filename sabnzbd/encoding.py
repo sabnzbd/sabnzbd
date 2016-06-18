@@ -127,12 +127,14 @@ def special_fixer(p):
         return p.decode(codepage)
 
 
-def unicoder(p):
-    """ Make sure a Unicode string is returned """
+def unicoder(p, force=False):
+    """ Make sure a Unicode string is returned
+        When `force` is True, ignore filesystem encoding
+    """
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if gUTF:
+        if gUTF or force:
             try:
                 return p.decode('utf-8')
             except:

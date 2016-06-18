@@ -784,12 +784,12 @@ class NzbObject(TryList):
         # Pickup backed-up attributes when re-using
         if reuse:
             cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
-            cat = unicoder(cat)
-            script = unicoder(script)
+            cat = unicoder(cat, True)
+            script = unicoder(script, True)
             if name:
-                self.final_name = unicoder(name)
+                self.final_name = unicoder(name, True)
             if password:
-                self.password = unicoder(password)
+                self.password = unicoder(password, True)
 
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
