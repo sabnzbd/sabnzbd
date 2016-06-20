@@ -1594,6 +1594,7 @@ class NzbObject(TryList):
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
+        self.to_be_removed= False
         if self.meta is None:
             self.meta = {}
         if self.servercount is None:
