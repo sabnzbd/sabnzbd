@@ -1176,8 +1176,6 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
     info['loglevel'] = str(cfg.log_level())
     info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
-    info['lastmail'] = None  # Obsolete, keep for compatibility
-
 
     # Dashboard: Begin
     if not int_conv(skip_dashboard):
