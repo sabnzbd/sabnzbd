@@ -1295,7 +1295,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
         converter = xml_name
 
     # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
+    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
 
     datestart = datetime.datetime.now()
     priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
@@ -1319,7 +1319,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
         info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
     n = 0
-    running_bytes = 0
+    running_bytes = bytes_left_previous_page
     slotinfo = []
     for pnfo in pnfo_list:
         nzo_id = pnfo.nzo_id
@@ -1775,7 +1775,7 @@ def build_queue_header(prim, webdir='', search=None, start=0, limit=0):
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
-    return (header, qnfo.list, bytespersec, qnfo.q_fullsize)
+    return (header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page)
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
