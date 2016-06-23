@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info[:2] < (2, 6) or sys.version_info[:2] >= (3, 0):
-    print "Sorry, requires Python 2.6 or 2.7."
+if sys.version_info[:2] < (2, 7) or sys.version_info[:2] >= (3, 0):
+    print "Sorry, requires Python 2.7."
     sys.exit(1)
 
 # Make sure UTF-8 is default 8bit encoding
@@ -27,7 +27,7 @@ try:
     sys.setdefaultencoding('utf-8')
 except:
     print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
-    print 'or find another way to force Python to use UTF-8 for string encoding.'
+    print 'or find another way to force Python to use UTF-8 for text encoding.'
     sys.exit(1)
 
 import logging
@@ -104,19 +104,6 @@ import sabnzbd.zconfig
 from threading import Thread
 
 LOG_FLAG = False        # Global for this module, signaling loglevel change
-
-_first_log = True
-
-
-def FORCELOG(txt):
-    global _first_log
-    if _first_log:
-        os.remove('d:/temp/debug.txt')
-        _first_log = False
-    ff = open('d:/temp/debug.txt', 'a+')
-    ff.write(txt)
-    ff.write('\n')
-    ff.close()
 
 
 try:
