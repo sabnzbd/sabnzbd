@@ -2543,8 +2543,8 @@ class ConfigSorting(object):
 ##############################################################################
 LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
 LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
-LOG_USER_RE = re.compile(r"(user|username)=[\w]+", re.I)
-LOG_PASS_RE = re.compile(r"(password)=[\w]+", re.I)
+LOG_USER_RE = re.compile(r"(user|username)\s?=\s?[\w]+", re.I)
+LOG_PASS_RE = re.compile(r"(password)\s?=\s?[\w]+", re.I)
 LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
 
 class Status(object):
@@ -2601,13 +2601,20 @@ class Status(object):
         except:
             pass
 
-        # To remove all API-keys we need to open the file and serve it ourselves
-        log_data = open(sabnzbd.LOGFILE, "r").read()
+        # Fetch the INI and the log-data and add a message at the top
+        log_data  = '--------------------------------\n\n'
+        log_data += 'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
+        log_data += '\n\n--------------------------------\n'
+        log_data += open(sabnzbd.LOGFILE, "r").read()
+        log_data += open(config.get_filename(), 'r').read()
+
+        # We need to remove all passwords/usernames/api-keys
         log_data = LOG_API_RE.sub("apikey=<APIKEY>", log_data)
         log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
         log_data = LOG_USER_RE.sub("\g<1>=<USER>", log_data)
         log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
-        log_data = LOG_HASH_RE.sub("<HIDE-HASH>", log_data)
+        log_data = LOG_HASH_RE.sub("<HASH>", log_data)
+
         # Try to replace the username
         try:
             import getpass
