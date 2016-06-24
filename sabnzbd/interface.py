@@ -2545,6 +2545,7 @@ LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
 LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
 LOG_USER_RE = re.compile(r"(user|username)\s?=\s?[\w]+", re.I)
 LOG_PASS_RE = re.compile(r"(password)\s?=\s?[\w]+", re.I)
+LOG_INI_HIDE_RE = re.compile(r"(email_pwd|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server)\s?=\s?[\w]+", re.I)
 LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
 
 class Status(object):
@@ -2613,6 +2614,7 @@ class Status(object):
         log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
         log_data = LOG_USER_RE.sub("\g<1>=<USER>", log_data)
         log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
+        log_data = LOG_INI_HIDE_RE.sub(r"\1 = <REMOVED>", log_data)
         log_data = LOG_HASH_RE.sub("<HASH>", log_data)
 
         # Try to replace the username
