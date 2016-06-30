@@ -24,13 +24,13 @@
   For these the server blocking method is not very favourable.
   There is an INI-only option that will limit blocks to 1 minute.
       no_penalties = 1
-  See: http://wiki.sabnzbd.org/configure-special-1-0
+  See: https://sabnzbd.org/wiki/configuration/1.0/special
 
 - Some third-party utilties try to probe SABnzbd API in such a way that you will
   often see warnings about unauthenticated access.
   If you are sure these probes are harmless, you can suppress the warnings by
   setting the option "api_warnings" to 0.
-  See: http://wiki.sabnzbd.org/configure-special-1-0
+  See: https://sabnzbd.org/wiki/configuration/1.0/special
 
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
@@ -41,7 +41,7 @@
   You will see this only when downloaded files contain accented characters.
   You need to fix it yourself by running the convmv utility (available for most Linux platforms).
   Possible the file system override setting 'fsys_type' might be solve things:
-  See: http://wiki.sabnzbd.org/configure-special-1-0
+  See: https://sabnzbd.org/wiki/configuration/1.0/special
 
 - The "Watched Folder" sometimes fails to delete the NZB files it has
   processed. This happens when other software still accesses these files.
@@ -81,4 +81,4 @@
   - Squeeze Linux
   There is a "special" option that will allow you to select an alternative library.
       use_pickle = 1
-  See: http://wiki.sabnzbd.org/configure-special-1-0
+  See: https://sabnzbd.org/wiki/configuration/1.0/special

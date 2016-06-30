@@ -10,10 +10,10 @@ SABnzbd also has a fully customizable user interface,
 and offers a complete API for third-party applications to hook into.
 
 There is an extensive Wiki on the use of SABnzbd.
-http://wiki.sabnzbd.org/
+https://sabnzbd.org/wiki/
 
 IMPORTANT INFORMATION about release 1.0.0:
-http://wiki.sabnzbd.org/introducing-1-0-0
+https://sabnzbd.org/wiki/introducing-1-0
 
 
 Please also read the file "ISSUES.txt"

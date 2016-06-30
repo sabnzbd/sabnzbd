@@ -1689,7 +1689,7 @@ def build_header(prim, webdir=''):
     free1 = diskfree(cfg.download_dir.get_path())
     free2 = diskfree(cfg.complete_dir.get_path())
 
-    header['helpuri'] = 'http://wiki.sabnzbd.org/'
+    header['helpuri'] = 'https://sabnzbd.org/wiki/'
     header['diskspace1'] = "%.2f" % free1
     header['diskspace2'] = "%.2f" % free2
     header['diskspace1_norm'] = to_units(free1 * GIGI)
