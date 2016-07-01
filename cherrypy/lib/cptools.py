@@ -4,8 +4,10 @@ import logging
 import re
 from hashlib import md5
 
+import six
+
 import cherrypy
-from cherrypy._cpcompat import basestring, unicodestr
+from cherrypy._cpcompat import basestring
 from cherrypy.lib import httputil as _httputil
 from cherrypy.lib import is_iterator
 
@@ -304,7 +306,7 @@ class SessionAuth(object):
 
     def login_screen(self, from_page='..', username='', error_msg='',
                      **kwargs):
-        return (unicodestr("""<html><body>
+        return (six.text_type("""<html><body>
 Message: %(error_msg)s
 <form method="post" action="do_login">
     Login: <input type="text" name="username" value="%(username)s" size="10" />

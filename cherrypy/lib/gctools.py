@@ -143,10 +143,11 @@ class GCRoot(object):
          "Should be 1 in this request thread only."),
     ]
 
+    @cherrypy.expose
     def index(self):
         return "Hello, world!"
-    index.exposed = True
 
+    @cherrypy.expose
     def stats(self):
         output = ["Statistics:"]
 
@@ -214,4 +215,3 @@ class GCRoot(object):
                     output.extend(t.format(tree))
 
         return "\n".join(output)
-    stats.exposed = True

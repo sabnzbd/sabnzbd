@@ -475,6 +475,7 @@ class StatsPage(object):
         },
     }
 
+    @cherrypy.expose
     def index(self):
         # Transform the raw data into pretty output for HTML
         yield """
@@ -578,7 +579,6 @@ table.stats2 th {
 </body>
 </html>
 """
-    index.exposed = True
 
     def get_namespaces(self):
         """Yield (title, scalars, collections) for each namespace."""
@@ -678,22 +678,22 @@ table.stats2 th {
         return headers, subrows
 
     if json is not None:
+        @cherrypy.expose
         def data(self):
             s = extrapolate_statistics(logging.statistics)
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(s, sort_keys=True, indent=4)
-        data.exposed = True
 
+    @cherrypy.expose
     def pause(self, namespace):
         logging.statistics.get(namespace, {})['Enabled'] = False
         raise cherrypy.HTTPRedirect('./')
-    pause.exposed = True
     pause.cp_config = {'tools.allow.on': True,
                        'tools.allow.methods': ['POST']}
 
+    @cherrypy.expose
     def resume(self, namespace):
         logging.statistics.get(namespace, {})['Enabled'] = True
         raise cherrypy.HTTPRedirect('./')
-    resume.exposed = True
     resume.cp_config = {'tools.allow.on': True,
                         'tools.allow.methods': ['POST']}

@@ -76,7 +76,7 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
            'WSGIPathInfoDispatcher', 'get_ssl_adapter_class',
-           'socket_errors_to_ignore', 'redirect_url']
+           'socket_errors_to_ignore']
 
 import os
 try:
@@ -92,6 +92,7 @@ import time
 import traceback as traceback_
 import operator
 from urllib import unquote
+from urlparse import urlparse
 import warnings
 import errno
 import logging
@@ -102,6 +103,10 @@ except ImportError:
     # Python 2.6
     import io
 
+try:
+    import pkg_resources
+except ImportError:
+    pass
 
 if 'win' in sys.platform and hasattr(socket, "AF_INET6"):
     if not hasattr(socket, 'IPPROTO_IPV6'):
@@ -112,7 +117,12 @@ if 'win' in sys.platform and hasattr(socket, "AF_INET6"):
 
 DEFAULT_BUFFER_SIZE = io.DEFAULT_BUFFER_SIZE
 
-REDIRECT_URL = None  # Application can write its HTTP-->HTTPS redirection URL here
+
+try:
+    cp_version = pkg_resources.require('cherrypy')[0].version
+except Exception:
+    cp_version = 'unknown'
+
 
 class FauxSocket(object):
 
@@ -127,7 +137,6 @@ del FauxSocket  # this class is not longer required for anything.
 
 
 if sys.version_info >= (3, 0):
-    bytestr = bytes
     unicodestr = str
     basestring = (bytes, str)
 
@@ -138,7 +147,6 @@ if sys.version_info >= (3, 0):
         # In Python 3, the native string type is unicode
         return n.encode(encoding)
 else:
-    bytestr = str
     unicodestr = unicode
     basestring = basestring
 
@@ -163,12 +171,6 @@ QUESTION_MARK = ntob('?')
 ASTERISK = ntob('*')
 FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
-
-def redirect_url(url=None):
-    global REDIRECT_URL
-    if url and '%s' in url:
-        REDIRECT_URL = url
-    return REDIRECT_URL
 
 
 def plat_specific_errors(*errnames):
@@ -198,6 +200,8 @@ socket_errors_to_ignore = plat_specific_errors(
 )
 socket_errors_to_ignore.append("timed out")
 socket_errors_to_ignore.append("The read operation timed out")
+if sys.platform == 'darwin':
+    socket_errors_to_ignore.append(plat_specific_errors("EPROTOTYPE"))
 
 socket_errors_nonblocking = plat_specific_errors(
     'EAGAIN', 'EWOULDBLOCK', 'WSAEWOULDBLOCK')
@@ -304,7 +308,7 @@ class SizeCheckWrapper(object):
             self.bytes_read += len(data)
             self._check_length()
             res.append(data)
-            # See https://bitbucket.org/cherrypy/cherrypy/issue/421
+            # See https://github.com/cherrypy/cherrypy/issues/421
             if len(data) < 256 or data[-1:] == LF:
                 return EMPTY.join(res)
 
@@ -680,7 +684,7 @@ class HTTPRequest(object):
             self.simple_response("400 Bad Request",
                                  "Invalid path in Request-URI.")
             return False
-        if path and NUMBER_SIGN in path:
+        if NUMBER_SIGN in path:
             self.simple_response("400 Bad Request",
                                  "Illegal #fragment in Request-URI.")
             return False
@@ -689,7 +693,7 @@ class HTTPRequest(object):
             self.scheme = scheme
 
         qs = EMPTY
-        if path and QUESTION_MARK in path:
+        if QUESTION_MARK in path:
             path, qs = path.split(QUESTION_MARK, 1)
 
         # Unquote the path+params (e.g. "/this%20path" -> "/this path").
@@ -804,7 +808,7 @@ class HTTPRequest(object):
         if self.inheaders.get("Expect", "") == "100-continue":
             # Don't use simple_response here, because it emits headers
             # we don't want. See
-            # https://bitbucket.org/cherrypy/cherrypy/issue/951
+            # https://github.com/cherrypy/cherrypy/issues/951
             msg = self.server.protocol + " 100 Continue\r\n\r\n"
             try:
                 self.conn.wfile.sendall(msg)
@@ -837,19 +841,12 @@ class HTTPRequest(object):
         if uri == ASTERISK:
             return None, None, uri
 
-        i = uri.find('://')
-        if i > 0 and QUESTION_MARK not in uri[:i]:
+        scheme, authority, path, params, query, fragment = urlparse(uri)
+        if scheme and QUESTION_MARK not in scheme:
             # An absoluteURI.
             # If there's a scheme (and it must be http or https), then:
             # http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query
             # ]]
-            scheme, remainder = uri[:i].lower(), uri[i + 3:]
-            try:
-                authority, path = remainder.split(FORWARD_SLASH, 1)
-            except ValueError:
-                authority = remainder.split(FORWARD_SLASH, 1)
-                path = ''
-            path = FORWARD_SLASH + path
             return scheme, authority, path
 
         if uri.startswith(FORWARD_SLASH):
@@ -889,7 +886,7 @@ class HTTPRequest(object):
         buf = [self.server.protocol + SPACE +
                status + CRLF,
                "Content-Length: %s\r\n" % len(msg),
-               "Content-Type: text/html\r\n" if status[:3] == '301' else "Content-Type: text/plain\r\n"]
+               "Content-Type: text/plain\r\n"]
 
         if status[:3] in ("413", "414"):
             # Request Entity Too Large / Request-URI Too Long
@@ -1374,7 +1371,7 @@ class HTTPConnection(object):
                 # Don't error if we're between requests; only error
                 # if 1) no request has been started at all, or 2) we're
                 # in the middle of a request.
-                # See https://bitbucket.org/cherrypy/cherrypy/issue/853
+                # See https://github.com/cherrypy/cherrypy/issues/853
                 if (not request_seen) or (req and req.started_request):
                     # Don't bother writing the 408 if the response
                     # has already started being written.
@@ -1404,16 +1401,10 @@ class HTTPConnection(object):
                 # Unwrap our wfile
                 self.wfile = CP_fileobject(
                     self.socket._sock, "wb", self.wbufsize)
-                if REDIRECT_URL:
-                    msg = '<!DOCTYPE html><html><head>' \
-                          '<meta http-equiv="refresh" content="0; url=%s">' \
-                          '</head><body></body></html>' % (REDIRECT_URL % self.remote_addr)
-                    req.simple_response("301 Moved Permanently", msg)
-                else:
-                    req.simple_response(
-                        "400 Bad Request",
-                        "The client sent a plain HTTP request, but "
-                        "this server only speaks HTTPS on this port.")
+                req.simple_response(
+                    "400 Bad Request",
+                    "The client sent a plain HTTP request, but "
+                    "this server only speaks HTTPS on this port.")
                 self.linger = True
         except Exception:
             e = sys.exc_info()[1]
@@ -1673,7 +1664,7 @@ class ThreadPool(object):
                 except (AssertionError,
                         # Ignore repeated Ctrl-C.
                         # See
-                        # https://bitbucket.org/cherrypy/cherrypy/issue/691.
+                        # https://github.com/cherrypy/cherrypy/issues/691.
                         KeyboardInterrupt):
                     pass
 
@@ -1773,7 +1764,7 @@ class HTTPServer(object):
     timeout = 10
     """The timeout in seconds for accepted connections (default 10)."""
 
-    version = "CherryPy/5.1.0"
+    version = "CherryPy/" + cp_version
     """A version string for the HTTPServer."""
 
     software = None
@@ -1998,7 +1989,7 @@ class HTTPServer(object):
 
         # If listening on the IPV6 any address ('::' = IN6ADDR_ANY),
         # activate dual-stack. See
-        # https://bitbucket.org/cherrypy/cherrypy/issue/871.
+        # https://github.com/cherrypy/cherrypy/issues/871.
         if (hasattr(socket, 'AF_INET6') and family == socket.AF_INET6
                 and self.bind_addr[0] in ('::', '::0', '::0.0.0.0')):
             try:
@@ -2092,15 +2083,15 @@ class HTTPServer(object):
                 # the call, and I *think* I'm reading it right that Python
                 # will then go ahead and poll for and handle the signal
                 # elsewhere. See
-                # https://bitbucket.org/cherrypy/cherrypy/issue/707.
+                # https://github.com/cherrypy/cherrypy/issues/707.
                 return
             if x.args[0] in socket_errors_nonblocking:
                 # Just try again. See
-                # https://bitbucket.org/cherrypy/cherrypy/issue/479.
+                # https://github.com/cherrypy/cherrypy/issues/479.
                 return
             if x.args[0] in socket_errors_to_ignore:
                 # Our socket was closed.
-                # See https://bitbucket.org/cherrypy/cherrypy/issue/686.
+                # See https://github.com/cherrypy/cherrypy/issues/686.
                 return
             raise
 
@@ -2133,7 +2124,7 @@ class HTTPServer(object):
                     if x.args[0] not in socket_errors_to_ignore:
                         # Changed to use error code and not message
                         # See
-                        # https://bitbucket.org/cherrypy/cherrypy/issue/860.
+                        # https://github.com/cherrypy/cherrypy/issues/860.
                         raise
                 else:
                     # Note that we're explicitly NOT using AI_PASSIVE,

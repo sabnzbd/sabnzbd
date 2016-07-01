@@ -353,7 +353,7 @@ def get(invalid_methods=("POST", "PUT", "DELETE"), debug=False, **kwargs):
             return False
 
         # Copy the response headers. See
-        # https://bitbucket.org/cherrypy/cherrypy/issue/721.
+        # https://github.com/cherrypy/cherrypy/issues/721.
         response.headers = rh = httputil.HeaderMap()
         for k in h:
             dict.__setitem__(rh, k, dict.__getitem__(h, k))

@@ -59,9 +59,9 @@ hello.py::
 
     class HelloWorld:
         \"""Sample request handler class.\"""
+        @cherrypy.expose
         def index(self):
             return "Hello world!"
-        index.exposed = True
 
     cherrypy.tree.mount(HelloWorld())
     # CherryPy autoreload must be disabled for the flup server to work
