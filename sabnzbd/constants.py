@@ -28,7 +28,7 @@ PNFO = namedtuple('PNFO', 'repair unpack delete script nzo_id filename password 
                           'unpackstrht msgid category url bytes_left bytes avg_stamp '
                           'avg_date finished_files active_files queued_files status priority missing')
 
-QNFO = namedtuple('QNFO', 'bytes bytes_left list q_size_list q_fullsize')
+QNFO = namedtuple('QNFO', 'bytes bytes_left bytes_left_previous_page list q_size_list q_fullsize')
 
 ANFO = namedtuple('ANFO', 'article_sum cache_size cache_limit')
 

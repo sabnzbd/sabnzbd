@@ -33,7 +33,7 @@ Release Notes  -  SABnzbd 1.1.0Beta1
 
 
 ### IMPORTANT INFORMATION about release 1.0.0
-<http://wiki.sabnzbd.org/introducing-1-0-0>
+<https://sabnzbd.org/wiki/introducing-1-0>
 
 ### Known problems and solutions
 - Read the file "ISSUES.txt"

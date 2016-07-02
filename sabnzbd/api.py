@@ -1176,8 +1176,6 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
     info['loglevel'] = str(cfg.log_level())
     info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
-    info['lastmail'] = None  # Obsolete, keep for compatibility
-
 
     # Dashboard: Begin
     if not int_conv(skip_dashboard):
@@ -1297,7 +1295,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
         converter = xml_name
 
     # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
+    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
 
     datestart = datetime.datetime.now()
     priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
@@ -1321,7 +1319,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
         info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
     n = 0
-    running_bytes = 0
+    running_bytes = bytes_left_previous_page
     slotinfo = []
     for pnfo in pnfo_list:
         nzo_id = pnfo.nzo_id
@@ -1691,7 +1689,7 @@ def build_header(prim, webdir=''):
     free1 = diskfree(cfg.download_dir.get_path())
     free2 = diskfree(cfg.complete_dir.get_path())
 
-    header['helpuri'] = 'http://wiki.sabnzbd.org/'
+    header['helpuri'] = 'https://sabnzbd.org/wiki/'
     header['diskspace1'] = "%.2f" % free1
     header['diskspace2'] = "%.2f" % free2
     header['diskspace1_norm'] = to_units(free1 * GIGI)
@@ -1777,7 +1775,7 @@ def build_queue_header(prim, webdir='', search=None, start=0, limit=0):
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
-    return (header, qnfo.list, bytespersec, qnfo.q_fullsize)
+    return (header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page)
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,

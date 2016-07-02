@@ -195,16 +195,24 @@
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
                                     <div class="col-sm-6">
-                                        <span data-bind="html: isFinite(serveractiveconn()) ? serverconnections().length : serveractiveconn()"></span> / 
+                                        <span data-bind="text: serverconnections().length"></span> / 
                                         <span data-bind="text: servertotalconn"></span>
                                     </div>
                                 </div>
                                 <div class="row" data-bind="visible: servererror()">
                                     <div class="col-sm-12">
                                         <div class="alert alert-danger">
-                                        <a href="#" data-bind="visible: !serveractive(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
-                                        <span class="glyphicon glyphicon-exclamation-sign"></span>
-                                        <span data-bind="text: servererror()"></span>
+                                            <a href="#" data-bind="visible: !serveractive(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
+                                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                            <span data-bind="text: servererror()"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" data-bind="visible: !isFinite(serveractiveconn())">
+                                    <div class="col-sm-12">
+                                        <div class="alert alert-warning">
+                                            <span class="glyphicon glyphicon-info-sign"></span>
+                                            <span data-bind="text: serveractiveconn()"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -604,7 +612,7 @@
                     <tbody>
                         <tr>
                             <td><strong>$T('menu-wiki'):</strong></td>
-                            <td><a href="http://wiki.sabnzbd.org/" target="_blank">http://wiki.sabnzbd.org/</a></td>
+                            <td><a href="https://sabnzbd.org/wiki/" target="_blank">https://sabnzbd.org/wiki/</a></td>
                         </tr>
                         <tr>
                             <td><strong>$T('menu-forums'):</strong></td>

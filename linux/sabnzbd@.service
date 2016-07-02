@@ -12,7 +12,7 @@
 
 [Unit]
 Description=SABnzbd binary newsreader
-Documentation=http://wiki.sabnzbd.org
+Documentation=https://sabnzbd.org/wiki/
 Wants=network-online.target
 After=network-online.target
 

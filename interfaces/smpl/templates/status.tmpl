@@ -33,10 +33,6 @@ $T('logging'):
 <!--#end for#-->
 </ul>
 <!--#end if#-->
-<!--#if $lastmail#-->
-  <h2>$T('emailResult')</h2>
-  $lastmail
-<!--#end if#-->
 <!--#if $warnings#-->
   <h2>$T('lastWarnings') (<a class="config" onClick="lr('status/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
   <!--#for $warn in $warnings#-->

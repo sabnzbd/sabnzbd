@@ -877,6 +877,7 @@ class NzbQueue(TryList):
             search = search.lower()
         bytes_left = 0
         bytes_total = 0
+        bytes_left_previous_page = 0
         q_size = 0
         pnfo_list = []
         n = 0
@@ -887,6 +888,9 @@ class NzbQueue(TryList):
                 bytes_total += b
                 bytes_left += b_left
                 q_size += 1
+                # We need the number of bytes before the current page
+                if n < start:
+                    bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
                 if (not limit) or (start <= n < start+limit):
@@ -895,7 +899,7 @@ class NzbQueue(TryList):
 
         if not search:
             n = len(self.__nzo_list)
-        return QNFO(bytes_total, bytes_left, pnfo_list, q_size, n)
+        return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
 
     @synchronized(NZBQUEUE_LOCK)
     def remaining(self):

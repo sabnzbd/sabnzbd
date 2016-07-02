@@ -55,7 +55,7 @@ If you want multi-language support, run:
 python tools/make_mo.py
 ```
 
-Our many other command line options are explained in depth [here](http://wiki.sabnzbd.org/command-line-parameters).
+Our many other command line options are explained in depth [here](https://sabnzbd.org/wiki/advanced/command-line-parameters).
 
 ## About Our Repo
 

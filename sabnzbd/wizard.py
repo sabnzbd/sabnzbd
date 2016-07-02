@@ -135,7 +135,7 @@ class Wizard(object):
 
         # Show Restart screen
         info = self.info.copy()
-        info['helpuri'] = 'http://wiki.sabnzbd.org/'
+        info['helpuri'] = 'https://sabnzbd.org/wiki/'
         info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()

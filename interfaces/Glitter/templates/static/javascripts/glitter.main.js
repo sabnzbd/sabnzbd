@@ -327,6 +327,9 @@ function ViewModel() {
 
                 // Does it contain 'Paused'? Update icon!
                 self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
+
+                // Force the next full update to be full
+                self.history.lastUpdate = 0
             })
             // Do not continue!
             return;
@@ -1081,4 +1084,4 @@ function ViewModel() {
 
     // Activate tooltips
     if(!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
-    }
+}
