@@ -1,12 +1,12 @@
-
-import os
 import sys
 import time
 import warnings
 
+import six
+
 import cherrypy
-from cherrypy._cpcompat import basestring, copykeys, ntob, unicodestr
-from cherrypy._cpcompat import SimpleCookie, CookieError, py3k
+from cherrypy._cpcompat import basestring, copykeys, ntob
+from cherrypy._cpcompat import SimpleCookie, CookieError
 from cherrypy import _cpreqbody, _cpconfig
 from cherrypy._cperror import format_exc, bare_error
 from cherrypy.lib import httputil, file_generator
@@ -701,9 +701,9 @@ class Request(object):
                 self.query_string_encoding)
 
         # Python 2 only: keyword arguments must be byte strings (type 'str').
-        if not py3k:
+        if six.PY2:
             for key, value in p.items():
-                if isinstance(key, unicode):
+                if isinstance(key, six.text_type):
                     del p[key]
                     p[key.encode(self.query_string_encoding)] = value
         self.params.update(p)
@@ -799,7 +799,7 @@ class ResponseBody(object):
 
     """The body of the HTTP response (the response entity)."""
 
-    if py3k:
+    if six.PY3:
         unicode_err = ("Page handlers MUST return bytes. Use tools.encode "
                        "if you wish to return unicode.")
 
@@ -812,7 +812,7 @@ class ResponseBody(object):
 
     def __set__(self, obj, value):
         # Convert the given value to an iterable object.
-        if py3k and isinstance(value, str):
+        if six.PY3 and isinstance(value, str):
             raise ValueError(self.unicode_err)
 
         if isinstance(value, basestring):
@@ -824,7 +824,7 @@ class ResponseBody(object):
             else:
                 # [''] doesn't evaluate to False, so replace it with [].
                 value = []
-        elif py3k and isinstance(value, list):
+        elif six.PY3 and isinstance(value, list):
             # every item in a list must be bytes...
             for i, item in enumerate(value):
                 if isinstance(item, str):
@@ -906,7 +906,7 @@ class Response(object):
 
         newbody = []
         for chunk in self.body:
-            if py3k and not isinstance(chunk, bytes):
+            if six.PY3 and not isinstance(chunk, bytes):
                 raise TypeError("Chunk %s is not of type 'bytes'." %
                                 repr(chunk))
             newbody.append(chunk)
@@ -957,9 +957,9 @@ class Response(object):
                     # Python 2.4 emits cookies joined by LF but 2.5+ by CRLF.
                     line = line[:-1]
                 name, value = line.split(": ", 1)
-                if isinstance(name, unicodestr):
+                if isinstance(name, six.text_type):
                     name = name.encode("ISO-8859-1")
-                if isinstance(value, unicodestr):
+                if isinstance(value, six.text_type):
                     value = headers.encode(value)
                 h.append((name, value))
 

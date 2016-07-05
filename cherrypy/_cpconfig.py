@@ -46,21 +46,21 @@ To declare global configuration entries, place them in a [global] section.
 
 You may also declare config entries directly on the classes and methods
 (page handlers) that make up your CherryPy application via the ``_cp_config``
-attribute. For example::
+attribute, set with the ``cherrypy.config`` decorator. For example::
 
+    @cherrypy.config(**{'tools.gzip.on': True})
     class Demo:
-        _cp_config = {'tools.gzip.on': True}
 
+        @cherrypy.expose
+        @cherrypy.config(**{'request.show_tracebacks': False})
         def index(self):
             return "Hello world"
-        index.exposed = True
-        index._cp_config = {'request.show_tracebacks': False}
 
 .. note::
 
     This behavior is only guaranteed for the default dispatcher.
     Other dispatchers may have different restrictions on where
-    you can attach _cp_config attributes.
+    you can attach config attributes.
 
 
 Namespaces
@@ -167,7 +167,8 @@ class Config(reprconf.Config):
             config['tools.staticdir.section'] = "global"
         reprconf.Config._apply(self, config)
 
-    def __call__(self, *args, **kwargs):
+    @staticmethod
+    def __call__(*args, **kwargs):
         """Decorator for page handlers to set _cp_config."""
         if args:
             raise TypeError(
@@ -175,12 +176,23 @@ class Config(reprconf.Config):
                 "arguments; you must use keyword arguments.")
 
         def tool_decorator(f):
-            if not hasattr(f, "_cp_config"):
-                f._cp_config = {}
-            for k, v in kwargs.items():
-                f._cp_config[k] = v
+            _Vars(f).setdefault('_cp_config', {}).update(kwargs)
             return f
         return tool_decorator
+
+
+class _Vars(object):
+    """
+    Adapter that allows setting a default attribute on a function
+    or class.
+    """
+    def __init__(self, target):
+        self.target = target
+
+    def setdefault(self, key, default):
+        if not hasattr(self.target, key):
+            setattr(self.target, key, default)
+        return getattr(self.target, key)
 
 
 # Sphinx begin config.environments
@@ -309,8 +321,8 @@ def _tree_namespace_handler(k, v):
     if isinstance(v, dict):
         for script_name, app in v.items():
             cherrypy.tree.graft(app, script_name)
-            cherrypy.engine.log("Mounted: %s on %s" %
-                                (app, script_name or "/"))
+            msg = "Mounted: %s on %s" % (app, script_name or "/")
+            cherrypy.engine.log(msg)
     else:
         cherrypy.tree.graft(v, v.script_name)
         cherrypy.engine.log("Mounted: %s on %s" % (v, v.script_name or "/"))

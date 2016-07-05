@@ -8,12 +8,15 @@ to a public caning.
 """
 
 from binascii import b2a_base64
+
+import six
+
 from cherrypy._cpcompat import BaseHTTPRequestHandler, HTTPDate, ntob, ntou
-from cherrypy._cpcompat import basestring, bytestr, iteritems, nativestr
-from cherrypy._cpcompat import reversed, sorted, unicodestr, unquote_qs
+from cherrypy._cpcompat import basestring, iteritems
+from cherrypy._cpcompat import reversed, sorted, unquote_qs
 response_codes = BaseHTTPRequestHandler.responses.copy()
 
-# From https://bitbucket.org/cherrypy/cherrypy/issue/361
+# From https://github.com/cherrypy/cherrypy/issues/361
 response_codes[500] = ('Internal Server Error',
                        'The server encountered an unexpected condition '
                        'which prevented it from fulfilling the request.')
@@ -23,7 +26,7 @@ response_codes[503] = ('Service Unavailable',
                        'maintenance of the server.')
 
 import re
-import urllib
+from cgi import parse_header
 
 
 def urljoin(*atoms):
@@ -143,41 +146,7 @@ class HeaderElement(object):
 
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
-        # Split the element into a value and parameters. The 'value' may
-        # be of the form, "token=token", but we don't split that here.
-        atoms = [x.strip() for x in elementstr.split(";") if x.strip()]
-
-        # Clumsy fix for lack of proper handling of constructions like:
-        # form-data; name="name"; filename="one;word.nzb"
-        # A proper parser should be used, but this patch will at least allow
-        # having semicolons in a file name.
-        if 'filename' in elementstr:
-            xatoms = []
-            append_next = False
-            for atom in atoms:
-                if append_next:
-                    append_next = False
-                    atom = xatoms.pop(-1) + ';' + atom
-                if '"' in atom and not atom.endswith('"'):
-                    append_next = True
-                xatoms.append(atom)
-            atoms = xatoms
-        # End of patch
-
-
-        if not atoms:
-            initial_value = ''
-        else:
-            initial_value = atoms.pop(0).strip()
-        params = {}
-        for atom in atoms:
-            atom = [x.strip() for x in atom.split("=", 1) if x.strip()]
-            key = atom.pop(0)
-            if atom:
-                val = atom[0]
-            else:
-                val = ""
-            params[key] = val
+        initial_value, params = parse_header(elementstr)
         return initial_value, params
     parse = staticmethod(parse)
 
@@ -439,7 +408,7 @@ class CaseInsensitiveDict(dict):
 # A CRLF is allowed in the definition of TEXT only as part of a header
 # field continuation. It is expected that the folding LWS will be
 # replaced with a single SP before interpretation of the TEXT value."
-if nativestr == bytestr:
+if str == bytes:
     header_translate_table = ''.join([chr(i) for i in xrange(256)])
     header_translate_deletechars = ''.join(
         [chr(i) for i in xrange(32)]) + chr(127)
@@ -488,13 +457,13 @@ class HeaderMap(CaseInsensitiveDict):
         transmitting on the wire for HTTP.
         """
         for k, v in header_items:
-            if isinstance(k, unicodestr):
+            if isinstance(k, six.text_type):
                 k = cls.encode(k)
 
             if not isinstance(v, basestring):
                 v = str(v)
 
-            if isinstance(v, unicodestr):
+            if isinstance(v, six.text_type):
                 v = cls.encode(v)
 
             # See header_translate_* constants above.
