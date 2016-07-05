@@ -1,5 +1,11 @@
-Release Notes  -  SABnzbd 1.1.0Beta1
+Release Notes  -  SABnzbd 1.1.0RC1
 ====================================
+
+## What's new in 1.1.0RC1
+- Fix for stalling download at 99% (when using prospective downloading)
+- Fix History updates in Glitter
+- Add censored INI file to log download
+
 
 ## What's new in 1.1.0Beta1
 - Performance improvements of download process
