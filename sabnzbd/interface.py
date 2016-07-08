@@ -457,6 +457,12 @@ class MainPage(object):
     @cherrypy.expose
     def shutdown(self, **kwargs):
         msg = check_session(kwargs)
+
+        # Check for PID 
+        pid_in = kwargs.get('pid') 
+        if pid_in and int(pid_in) != os.getpid(): 
+            msg = "Incorrect PID for this instance, remove PID from URL to initiate shutdown." 
+
         if msg:
             yield msg
         else:
