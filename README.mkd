@@ -5,6 +5,7 @@ Release Notes  -  SABnzbd 1.1.0RC1
 - Fix for stalling download at 99% (when using prospective downloading)
 - Fix History updates in Glitter
 - Add censored INI file to log download
+- Requires Python 2.7
 
 
 ## What's new in 1.1.0Beta1
