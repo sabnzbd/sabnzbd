@@ -1139,7 +1139,10 @@ class NzbObject(TryList):
                 name = platform_encode(name)
                 self.password = platform_encode(password)
             else:
-                name, self.password = scan_password(platform_encode(name))
+                name, password = scan_password(platform_encode(name))
+                if password is not None:
+                    self.password = password
+
             self.final_name = sanitize_foldername(name)
             self.save_to_disk()
 

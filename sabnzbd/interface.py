@@ -457,6 +457,12 @@ class MainPage(object):
     @cherrypy.expose
     def shutdown(self, **kwargs):
         msg = check_session(kwargs)
+
+        # Check for PID 
+        pid_in = kwargs.get('pid') 
+        if pid_in and int(pid_in) != os.getpid(): 
+            msg = "Incorrect PID for this instance, remove PID from URL to initiate shutdown." 
+
         if msg:
             yield msg
         else:
@@ -671,7 +677,7 @@ class NzoPage(object):
             return template.respond()
         else:
             # Job no longer exists, go to main page
-            raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
+            raise dcRaiser(cherrypy.lib.httputil.urljoin(self.__root, '../queue/'), {})
 
     def nzo_details(self, info, pnfo_list, nzo_id):
         slot = {}
@@ -775,7 +781,7 @@ class NzoPage(object):
         if priority is not None and nzo.priority != int(priority):
             NzbQueue.do.set_priority(nzo_id, priority)
 
-        raise dcRaiser(cherrypy._urljoin(self.__root, '../queue/'), {})
+        raise dcRaiser(cherrypy.lib.httputil.urljoin(self.__root, '../queue/'), {})
 
     def bulk_operation(self, nzo_id, kwargs):
         self.__cached_selection = kwargs
@@ -800,9 +806,9 @@ class NzoPage(object):
                 NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
 
         if sabnzbd.nzbqueue.get_nzo(nzo_id):
-            url = cherrypy._urljoin(self.__root, nzo_id)
+            url = cherrypy.lib.httputil.urljoin(self.__root, nzo_id)
         else:
-            url = cherrypy._urljoin(self.__root, '../queue')
+            url = cherrypy.lib.httputil.urljoin(self.__root, '../queue')
         if url and not url.endswith('/'):
             url += '/'
         raise dcRaiser(url, kwargs)
