@@ -3,7 +3,7 @@ ko.bindingHandlers.truncatedText = {
         var value = ko.utils.unwrapObservable(valueAccessor());
         if (!value) return
         var length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
-            truncatedValue = value.length > length ? value.substring(0, Math.min(value.length, length)) + "&hellip;" : value;
+            truncatedValue = value.length > length ? convertHTMLtoText(value.substring(0, Math.min(value.length, length))) + "&hellip;" : convertHTMLtoText(value);
         ko.bindingHandlers.html.update(element, function() {
             return truncatedValue;
         });
@@ -19,9 +19,9 @@ ko.bindingHandlers.truncatedTextCenter = {
             var charsToShow = maxLength - 3,
                 frontChars = Math.ceil(charsToShow/2),
                 backChars = Math.floor(charsToShow/2);
-            var truncatedValue = value.substr(0, frontChars) + '&hellip;' +  value.substr(value.length - backChars);
+            var truncatedValue = convertHTMLtoText(value.substr(0, frontChars)) + '&hellip;' +  convertHTMLtoText(value.substr(value.length - backChars));
         } else {
-            var truncatedValue = value;
+            var truncatedValue = convertHTMLtoText(value);
         }
         ko.bindingHandlers.html.update(element, function() {
             return truncatedValue;
@@ -32,8 +32,11 @@ ko.bindingHandlers.longText = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         // Input is an array
         var value = ko.utils.unwrapObservable(valueAccessor())
-        var outputText = '';
+        // Convert HTML entities
+        value = value.map(convertHTMLtoText)
+        
         // Any <br>'s?
+        var outputText = '';
         if(value.length > 4) {
             // Inital 3, then the button, then the closing
             outputText += value.shift() + '<br />' + value.shift() + '<br />' + value.shift() + ' ';
