@@ -104,6 +104,11 @@ function fixPercentages(intPercent) {
     return Math.floor(intPercent || 0) + '%';
 }
 
+// Convert HTML tags to regular text
+function convertHTMLtoText(htmltxt) {
+    return $('<div>').text(htmltxt).html().replace(/&lt;br\/&gt;/g, '<br/>')
+}
+
 // Function to re-write 0:09:21 to 9:21
 function rewriteTime(timeString) {
     var timeSplit = timeString.split(/:/);

@@ -213,9 +213,10 @@ class Decoder(Thread):
                                     new_nzf = extrapars_sorted.pop()
                                     nzo.add_parfile(new_nzf)
                                     nzo.extrapars[parset] = extrapars_sorted
-                                    nzo.reset_try_list()
                                     blocks_already = blocks_already + int_conv(new_nzf.blocks)
                                     logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, nzo.final_name)
+                                    # Reset all try lists
+                                    NzbQueue.do.reset_all_try_lists()
 
             if data:
                 ArticleCache.do.save_article(article, data)
