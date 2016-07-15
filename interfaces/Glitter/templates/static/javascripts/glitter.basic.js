@@ -106,7 +106,7 @@ function fixPercentages(intPercent) {
 
 // Convert HTML tags to regular text
 function convertHTMLtoText(htmltxt) {
-    return $('<div>').text(htmltxt).html()
+    return $('<div>').text(htmltxt).html().replace(/&lt;br\/&gt;/g, '<br/>')
 }
 
 // Function to re-write 0:09:21 to 9:21
