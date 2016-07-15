@@ -368,8 +368,7 @@ msgstr "Pauset"
 
 #: sabnzbd/downloader.py:297 [Warning message] # sabnzbd/interface.py:1722 [Warning message] # sabnzbd/skintext.py:752
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
-msgstr ""
-"Du må sette maks båndbredde før du kan sette en båndbreddebegrensning"
+msgstr "Du må sette maks båndbredde før du kan sette en båndbreddebegrensning"
 
 #: sabnzbd/downloader.py:354 # sabnzbd/downloader.py:355 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
@@ -477,10 +476,10 @@ msgid ""
 "Please make room and resume SABnzbd manually.\n"
 "\n"
 msgstr ""
-"To: %s\n"
-"From: %s\n"
-"Date: %s\n"
-"Subject: SABnzbd rapporterer at disken er full\n"
+"Til: %s\n"
+"Fra: %s\n"
+"Dato: %s\n"
+"Emne: SABnzbd rapporterer at disken er full\n"
 "\n"
 "Hei,\n"
 "\n"
@@ -542,7 +541,7 @@ msgstr "Klarte ikke å sende pushover-melding"
 
 #: sabnzbd/growler.py:532 [Error message]
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Ukorrekt svar fra Pushover (%s): %s"
+msgstr "Ukorrekt svar fra Pusbullet (%s): %s"
 
 #: sabnzbd/growler.py:537 [Warning message] # sabnzbd/growler.py:539
 msgid "Failed to send pushbullet message"
@@ -550,7 +549,7 @@ msgstr "Klarte ikke å sende pushbullet-melding"
 
 #: sabnzbd/growler.py:547 # sabnzbd/growler.py:549
 msgid "Failed to send Windows notification"
-msgstr ""
+msgstr "Klarte ikke å sende Windows melding"
 
 #: sabnzbd/interface.py:85
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -4108,7 +4107,7 @@ msgstr "Pause 6 timer"
 
 #: sabnzbd/skintext.py:753 # sabnzbd/skintext.py:870
 msgid "left"
-msgstr "venstre"
+msgstr "gjenstår"
 
 #: sabnzbd/skintext.py:754 # sabnzbd/skintext.py:891
 msgid "Free Space"
@@ -4959,7 +4958,7 @@ msgstr "Kunne ikke koble til (%s)"
 #~ msgstr "Pause 24 timer"
 
 #~ msgid "Left"
-#~ msgstr "Venstre"
+#~ msgstr "Gjenstår"
 
 #~ msgid "Hour:Min"
 #~ msgstr "Time:Minutt"
