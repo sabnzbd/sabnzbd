@@ -127,3 +127,7 @@ msgstr "System performance (Pystone)"
 #: sabnzbd/skintext.py:317 # sabnzbd/skintext.py:779
 msgid "Web Interface"
 msgstr "Web interface"
+
+#: sabnzbd/notifier.py
+msgid "Script returned exit code %s and output \"%s\""
+msgstr "Notification script returned exit code %s and output \"%s\""
