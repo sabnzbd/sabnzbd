@@ -762,6 +762,11 @@
                     <span class="desc">$T('explain-nscript_script')</span>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="nscript_parameters">$T('opt-nscript_parameters')</label>
+                    <input type="text" name="nscript_parameters" id="nscript_parameters" value="$nscript_parameters" />
+                    <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="nscript_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
                     <input type="checkbox" name="nscript_prio_startup" id="nscript_prio_startup" value="1" <!--#if int($nscript_prio_startup) > 0 then 'checked="checked"' else ""#--> />
                 </div>

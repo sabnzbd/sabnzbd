@@ -179,9 +179,9 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     return output, ret
 
 
-def external_script(script, p1, p2):
+def external_script(script, p1, p2, p3=None, p4=None):
     """ Run a user script with two parameters, return console output and exit value """
-    command = [script, p1, p2]
+    command = [script, p1, p2, p3, p4]
 
     if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')

@@ -371,6 +371,7 @@ pushbullet_prio_other = OptionNumber('pushbullet', 'pushbullet_prio_other', 0)
 # [nscript]
 nscript_enable = OptionBool('nscript', 'nscript_enable')
 nscript_script = OptionStr('nscript', 'nscript_script')
+nscript_parameters = OptionStr('nscript', 'nscript_parameters')
 nscript_prio_startup = OptionBool('nscript', 'nscript_prio_startup', True)
 nscript_prio_download = OptionBool('nscript', 'nscript_prio_download', False)
 nscript_prio_pp = OptionBool('nscript', 'nscript_prio_pp', False)

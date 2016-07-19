@@ -496,8 +496,10 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     """ Run user's notification script """
     if test:
         script = test.get('nscript_script')
+        parameters = test.get('nscript_parameters')
     else:
         script = sabnzbd.cfg.nscript_script()
+        parameters = sabnzbd.cfg.nscript_parameters()
     if not script:
         return T('Cannot send, missing required data')
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
@@ -505,7 +507,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     if force or check_classes(gtype, 'nscript'):
         script_path = make_script_path(script)
         if script_path:
-            ret, output = external_script(script_path, title, gtype)
+            output, ret = external_script(script_path, gtype, title, msg, parameters)
             if ret:
                 return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
