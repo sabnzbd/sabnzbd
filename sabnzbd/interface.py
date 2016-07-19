@@ -2842,7 +2842,7 @@ LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_apikey', 'pushbullet_device'
                    'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
                    'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other',
                    'pushbullet_prio_new_login')
-LIST_NSCRIPT = ('nscript_enable', 'nscript_script',
+LIST_NSCRIPT = ('nscript_enable', 'nscript_script', 'nscript_parameters',
                 'nscript_prio_startup', 'nscript_prio_download', 'nscript_prio_pp', 'nscript_prio_complete', 'nscript_prio_failed',
                 'nscript_prio_disk_full', 'nscript_prio_warning', 'nscript_prio_error', 'nscript_prio_queue_done', 'nscript_prio_other',
                 'nscript_prio_new_login')
