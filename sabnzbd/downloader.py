@@ -696,6 +696,7 @@ class Downloader(Thread):
 
                 if done:
                     server.bad_cons = 0  # Succesful data, clear "bad" counter
+                    server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.id, article.article)
                     self.decoder.decode(article, nw.lines)
