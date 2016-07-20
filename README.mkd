@@ -1,5 +1,15 @@
-Release Notes  -  SABnzbd 1.1.0RC1
-====================================
+Release Notes  -  SABnzbd 1.1.0RC2
+==================================
+
+## What's new in 1.1.0RC2
+- Fix XSS vulnerability on OSX and Unix
+- Fix for stalling when using "prospective par2 dowloading"
+- Include the Python module "six" to prevent issues on some embedded systems
+- Fix problem with deleting files in NZB details view
+- Fix portable.cmd
+- Restore scanning for passwords after nZB name edit
+- Prevent old shutdown-page from stopping a new SABnzbd instance
+
 
 ## What's new in 1.1.0RC1
 - Fix for stalling download at 99% (when using prospective downloading)
