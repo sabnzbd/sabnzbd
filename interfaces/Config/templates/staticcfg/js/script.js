@@ -200,7 +200,7 @@ function config_failure() {
     // Can't go yet..
     formWasSubmitted = false;
 }
-function do_restart() {
+function do_restart(req_restart) {
     // Show overlay
     $('.main-restarting').show()
     
@@ -209,7 +209,7 @@ function do_restart() {
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
 
     // Are we on settings page?
-    if(!$('body').hasClass('General')) {
+    if(!$('body').hasClass('General') || !req_restart) {
         // Same as before, with fall-back in case location.origin is not supported (<IE9)
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
     } else {
@@ -281,7 +281,7 @@ $(document).ready(function () {
             $(this).attr("value", configTranslate.wizzardRestart);
             // Let us leave!
             formWasSubmitted = true;
-            do_restart();
+            do_restart(false);
         }
         $('.sabnzbd_restart').each(function () {
             $(this).removeAttr("disabled");
@@ -307,7 +307,7 @@ $(document).ready(function () {
                 // Trigger restart question
                 if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
                     // No more questions
-                    do_restart();
+                    do_restart(json.value.redirect_req);
                 } else {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);

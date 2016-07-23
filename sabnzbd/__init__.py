@@ -138,6 +138,7 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
+REDIRECT_REQ = False
 PAUSED_ALL = False
 OLD_QUEUE = False
 SCHED_RESTART = False  # Set when restarted through scheduler
@@ -249,7 +250,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     # Set call backs for Config items
     cfg.cache_limit.callback(new_limit)
     cfg.cherryhost.callback(guard_restart)
-    cfg.cherryport.callback(guard_restart)
+    cfg.cherryport.callback(guard_restart_redirect)
     cfg.web_dir.callback(guard_restart)
     cfg.web_dir2.callback(guard_restart)
     cfg.web_color.callback(guard_restart)
@@ -257,7 +258,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.username.callback(guard_restart)
     cfg.password.callback(guard_restart)
     cfg.log_dir.callback(guard_restart)
-    cfg.https_port.callback(guard_restart)
+    cfg.https_port.callback(guard_restart_redirect)
     cfg.https_cert.callback(guard_restart)
     cfg.https_key.callback(guard_restart)
     cfg.enable_https.callback(guard_restart)
@@ -461,6 +462,14 @@ def guard_restart():
     """ Callback for config options requiring a restart """
     global RESTART_REQ
     sabnzbd.RESTART_REQ = True
+
+
+def guard_restart_redirect():
+    """ Callback for config options requiring a restart and redirect to a new URL """
+    global RESTART_REQ
+    global REDIRECT_REQ
+    sabnzbd.RESTART_REQ = True
+    sabnzbd.REDIRECT_REQ = True
 
 
 def guard_top_only():
