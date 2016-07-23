@@ -200,7 +200,7 @@ function config_failure() {
     // Can't go yet..
     formWasSubmitted = false;
 }
-function do_restart(req_restart) {
+function do_restart() {
     // Show overlay
     $('.main-restarting').show()
     
@@ -209,14 +209,18 @@ function do_restart(req_restart) {
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
 
     // Are we on settings page?
-    if(!$('body').hasClass('General') || !req_restart) {
+    if(!$('body').hasClass('General')) {
         // Same as before, with fall-back in case location.origin is not supported (<IE9)
+        var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
+    } else if (($('#port').val() == $('#port').data('original')) && ($('#https_port ').val() == $('#https_port ').data('original'))) {
+        // If the http/https port config didn't change, don't try and guess the URL/port to redirect to
+        // This solves some incorrect behavior if running behind a reverse proxy
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
     } else {
         // Protocol and port depend on http(s) setting
         if($('#enable_https').is(':checked') && window.location.protocol == 'https:') {
             // Https on and we visited this page from HTTPS
-            var urlProtocol = 'https:'
+            var urlProtocol = 'https:';
             var urlPort = $('#https_port').val();
         } else {
             // Regular
@@ -281,7 +285,7 @@ $(document).ready(function () {
             $(this).attr("value", configTranslate.wizzardRestart);
             // Let us leave!
             formWasSubmitted = true;
-            do_restart(false);
+            do_restart();
         }
         $('.sabnzbd_restart').each(function () {
             $(this).removeAttr("disabled");
@@ -307,7 +311,7 @@ $(document).ready(function () {
                 // Trigger restart question
                 if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
                     // No more questions
-                    do_restart(json.value.redirect_req);
+                    do_restart();
                 } else {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);
