@@ -212,11 +212,15 @@ function do_restart() {
     if(!$('body').hasClass('General')) {
         // Same as before, with fall-back in case location.origin is not supported (<IE9)
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
+    } else if (($('#port').val() == $('#port').data('original')) && ($('#https_port ').val() == $('#https_port ').data('original'))) {
+        // If the http/https port config didn't change, don't try and guess the URL/port to redirect to
+        // This solves some incorrect behavior if running behind a reverse proxy
+        var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
     } else {
         // Protocol and port depend on http(s) setting
         if($('#enable_https').is(':checked') && window.location.protocol == 'https:') {
             // Https on and we visited this page from HTTPS
-            var urlProtocol = 'https:'
+            var urlProtocol = 'https:';
             var urlPort = $('#https_port').val();
         } else {
             // Regular
