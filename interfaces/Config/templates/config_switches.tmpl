@@ -31,6 +31,11 @@
                         <span class="desc">$T('explain-ampm')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
+                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_https_verification')</span>
+                    </div>
+                    <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>

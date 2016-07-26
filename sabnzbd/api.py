@@ -1318,7 +1318,7 @@ def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0,
     if 'queue_details' in cherrypy.request.cookie:
         info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
-    n = 0
+    n = start
     running_bytes = bytes_left_previous_page
     slotinfo = []
     for pnfo in pnfo_list:
