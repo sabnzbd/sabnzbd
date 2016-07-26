@@ -32,8 +32,11 @@ ko.bindingHandlers.longText = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         // Input is an array
         var value = ko.utils.unwrapObservable(valueAccessor())
-        // Convert HTML entities
-        value = value.map(convertHTMLtoText)
+
+        // Convert HTML entities for all but the Script (because of the (more)-link)
+        if(allBindingsAccessor.get('longTextType') != "Script") {
+            value = value.map(convertHTMLtoText)
+        }
         
         // Any <br>'s?
         var outputText = '';
