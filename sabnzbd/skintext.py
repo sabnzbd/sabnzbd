@@ -353,6 +353,7 @@ SKIN_TEXT = {
     'explain-restoreDefaults' : TT('Reset'),
     'opt-language' : TT('Language'),
     'explain-language' : TT('Select a web interface language.'),
+    'explain-ask-language': TT('Help us translate SABnzbd in your language! <br/>Add untranslated texts or improved existing translations here:'), # Link to sabnzbd.org follows this text
     'opt-apikey' : TT('API Key'),
     'explain-apikey' : TT('This key will give 3rd party programs full access to SABnzbd.'),
     'opt-nzbkey' : TT('NZB Key'),

@@ -26,20 +26,20 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="web_dir">$T('opt-web_dir')</label>
-                        <select name="web_dir" id="web_dir">
-                        <!--#for $webline in $web_list#-->
-                            <!--#if $webline.lower() == $web_dir.lower()#-->
-                                <option value="$webline" selected="selected">$webline</option>
-                            <!--#else#-->
-                                <option value="$webline">$webline</option>
-                            <!--#end if#-->
-                        <!--#end for#-->
+                    <select name="web_dir" id="web_dir">
+                    <!--#for $webline in $web_list#-->
+                        <!--#if $webline.lower() == $web_dir.lower()#-->
+                            <option value="$webline" selected="selected">$webline</option>
+                        <!--#else#-->
+                            <option value="$webline">$webline</option>
+                        <!--#end if#-->
+                    <!--#end for#-->
                     </select>
                     <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url1">$caller_url1</a></span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
-                        <select name="web_dir2" id="web_dir2">
+                    <select name="web_dir2" id="web_dir2">
                         <option value="None" selected="selected">$T("None")</option>
                         <!--#for $webline in $web_list#-->
                             <!--#if $webline.lower() == $web_dir2.lower()#-->
@@ -53,16 +53,19 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="language">$T('opt-language')</label>
-                        <select name="language" id="language" class="select">
-                        <!--#for $webline in $lang_list#-->
-                            <!--#if $webline[0].lower() == $language.lower()#-->
-                                <option value="$webline[0]" selected="selected">$webline[1]</option>
-                            <!--#else#-->
-                                <option value="$webline[0]">$webline[1]</option>
-                            <!--#end if#-->
-                        <!--#end for#-->
-                        </select>
+                    <select name="language" id="language" class="select">
+                    <!--#for $webline in $lang_list#-->
+                        <!--#if $webline[0].lower() == $language.lower()#-->
+                            <option value="$webline[0]" selected="selected">$webline[1]</option>
+                        <!--#else#-->
+                            <option value="$webline[0]">$webline[1]</option>
+                        <!--#end if#-->
+                    <!--#end for#-->
+                    </select>
                     <span class="desc">$T('explain-language')</span>
+                    <div class="alert alert-info alert-translate">
+                       $T('explain-ask-language') <a href="https://sabnzbd.org/wiki/translate" target="_blank" class="alert-link">https://sabnzbd.org/wiki/translate</a>
+                    </div>
                 </div>
                 <div class="field-pair">
                     <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
@@ -203,7 +206,20 @@
 
 <script type="text/javascript">
 \$(document).ready(function(){
+    // Show the message about translating when it's non-English
+    function hideOrShowTranslate() {
+        console.log(\$('#language').val())
+        if(\$('#language').val() == 'en') {
+            \$('.alert-translate').hide()
+        } else {
+            \$('.alert-translate').show()
+        }
+    }
+    \$('#language').on('change', hideOrShowTranslate)
+    hideOrShowTranslate()
+
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
+    
     \$('#generate_new_apikey').click(function () {
       if (confirm("$T('Plush-confirm')")) {
         $.ajax({

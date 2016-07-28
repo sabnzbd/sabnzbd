@@ -915,7 +915,8 @@ input[type="checkbox"] {
     display: none;
 }
 
-.alert-no-category {
+.alert-no-category,
+.alert-translate {
     display: none;
     margin: 5px 0px 0px;
 }
