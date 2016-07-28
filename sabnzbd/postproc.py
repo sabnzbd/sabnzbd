@@ -495,7 +495,7 @@ def process_job(nzo):
                 script_ret = ''
             if script_line:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, unicoder(script_line), urllib.quote(script_output),
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, urllib.quote(unicoder(script_line)), urllib.quote(script_output),
                                     T('More')), unique=True)
             else:
                 nzo.set_unpack_info('Script',
