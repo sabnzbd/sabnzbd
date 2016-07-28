@@ -22,6 +22,7 @@ from threading import RLock, Condition
 
 NZBQUEUE_LOCK = RLock()
 CV = Condition(NZBQUEUE_LOCK)
+IO_LOCK = RLock()
 
 def synchronized(lock):
     def wrap(f):

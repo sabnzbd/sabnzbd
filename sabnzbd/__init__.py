@@ -825,7 +825,6 @@ def CheckFreeSpace():
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
-IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
 def get_new_id(prefix, folder, check_list=None):

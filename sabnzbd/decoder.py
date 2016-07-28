@@ -187,36 +187,7 @@ class Decoder(Thread):
             if logme or not found:
                 # Add extra parfiles when there was a damaged article
                 if cfg.prospective_par_download() and nzo.extrapars:
-                    # How many do we need?
-                    bad = len(nzo.nzo_info.get('bad_art_log', []))
-                    miss = len(nzo.nzo_info.get('missing_art_log', []))
-                    killed = len(nzo.nzo_info.get('killed_art_log', []))
-                    dups = len(nzo.nzo_info.get('dup_art_log', []))
-                    total_need = bad + miss + killed + dups
-
-                    # How many do we already have?
-                    blocks_already = 0
-                    for nzf in nzo.files:
-                        # Only par2 files have a blocks attribute
-                        if nzf.blocks:
-                            blocks_already = blocks_already + int_conv(nzf.blocks)
-
-                    # Need more?
-                    if blocks_already < total_need:
-                        # We have to find the right par-set
-                        for parset in nzo.extrapars.keys():
-                            if parset in nzf.filename and nzo.extrapars[parset]:
-                                extrapars_sorted = sorted(nzo.extrapars[parset], key=lambda x: x.blocks, reverse=True)
-                                # Loop untill we have enough
-                                while blocks_already < total_need and extrapars_sorted:
-                                    # Add the first one
-                                    new_nzf = extrapars_sorted.pop()
-                                    nzo.add_parfile(new_nzf)
-                                    nzo.extrapars[parset] = extrapars_sorted
-                                    blocks_already = blocks_already + int_conv(new_nzf.blocks)
-                                    logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, nzo.final_name)
-                                    # Reset all try lists
-                                    NzbQueue.do.reset_all_try_lists()
+                    nzo.prospective_add()
 
             if data:
                 ArticleCache.do.save_article(article, data)
