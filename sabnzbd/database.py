@@ -29,7 +29,6 @@ except:
 
 import os
 import time
-import datetime
 import zlib
 import logging
 import sys
@@ -40,7 +39,6 @@ import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
-from sabnzbd.misc import format_source_url
 from sabnzbd.decorators import synchronized
 
 DB_LOCK = threading.RLock()
@@ -85,7 +83,7 @@ class HistoryDB(object):
         if not HistoryDB.db_path:
             HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
-        
+
 
     def connect(self):
         """ Create a connection to the database """
@@ -110,46 +108,51 @@ class HistoryDB(object):
         if version < 1:
             # Add any missing columns added since first DB version
             # Use "and" to stop when database has been reset due to corruption
-            self.execute('PRAGMA user_version = 1;') and \
+            _ = self.execute('PRAGMA user_version = 1;') and \
                 self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;') and \
                 self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
-        try:
-            if args and isinstance(args, tuple):
-                self.c.execute(command, args)
-            else:
-                self.c.execute(command)
-            if save:
-                self.save()
-            return True
-        except:
-            error = str(sys.exc_value)
-            if 'readonly' in error:
-                logging.error(T('Cannot write to History database, check access rights!'))
-                # Report back success, because there's no recovery possible
+        for tries in xrange(5, 0, -1):
+            try:
+                if args and isinstance(args, tuple):
+                    self.c.execute(command, args)
+                else:
+                    self.c.execute(command)
+                if save:
+                    self.save()
                 return True
-            elif 'not a database' in error or 'malformed' in error or 'duplicate column name' in error:
-                logging.error(T('Damaged History database, created empty replacement'))
-                logging.info("Traceback: ", exc_info=True)
-                self.close()
-                try:
-                    os.remove(HistoryDB.db_path)
-                except:
-                    pass
-                self.connect()
-                # Return False in case of "duplicate column" error
-                # because the column addition in connect() must be terminated
-                return 'duplicate column name' not in error
-            else:
-                logging.error(T('SQL Command Failed, see log'))
-                logging.debug("SQL: %s", command)
-                logging.info("Traceback: ", exc_info=True)
-                try:
-                    self.con.rollback()
-                except:
-                    logging.debug("Rollback Failed:", exc_info=True)
+            except:
+                error = str(sys.exc_value)
+                if tries >= 0 and 'is locked' in error:
+                    logging.debug('Database locked, wait and retry')
+                    time.sleep(0.5)
+                    continue
+                elif 'readonly' in error:
+                    logging.error(T('Cannot write to History database, check access rights!'))
+                    # Report back success, because there's no recovery possible
+                    return True
+                elif 'not a database' in error or 'malformed' in error or 'duplicate column name' in error:
+                    logging.error(T('Damaged History database, created empty replacement'))
+                    logging.info("Traceback: ", exc_info=True)
+                    self.close()
+                    try:
+                        os.remove(HistoryDB.db_path)
+                    except:
+                        pass
+                    self.connect()
+                    # Return False in case of "duplicate column" error
+                    # because the column addition in connect() must be terminated
+                    return 'duplicate column name' not in error
+                else:
+                    logging.error(T('SQL Command Failed, see log'))
+                    logging.debug("SQL: %s", command)
+                    logging.info("Traceback: ", exc_info=True)
+                    try:
+                        self.con.rollback()
+                    except:
+                        logging.debug("Rollback Failed:", exc_info=True)
             return False
 
     def create_history_db(self):
