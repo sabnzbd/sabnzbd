@@ -15,28 +15,17 @@ https://sabnzbd.org/wiki/
 IMPORTANT INFORMATION about release 1.0.0:
 https://sabnzbd.org/wiki/introducing-1-0
 
-
 Please also read the file "ISSUES.txt"
-
-
-*******************************************
-*** Upgrading from 0.7.x or 0.6.x       ***
-*******************************************
-Empty your current queue
-Stop SABnzbd.
-Install new version
-Start SABnzbd.
-
-
-*******************************************
-*** Upgrading from 0.5.x                ***
-*******************************************
-Stop SABnzbd.
-Uninstall current version, keeping the data.
-Install new version
-Start SABnzbd.
 
 The organization of the download queue is different from 0.7.x (and older).
 1.0.0 will not finish downloading an existing queue.
 Also, your sabnzbd.ini file will be upgraded, making it
 incompatible with older releases.
+
+*******************************************
+*** Upgrading from 0.7.x and below      ***
+*******************************************
+Empty your current queue
+Stop SABnzbd.
+Install new version
+Start SABnzbd.
