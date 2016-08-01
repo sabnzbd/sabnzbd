@@ -25,11 +25,6 @@
                         </select>
                         <span class="desc">$T('explain-check_new_rel')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
-                        <label class="config" for="ampm">$T('opt-ampm')</label>
-                        <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-ampm')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
                         <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> />

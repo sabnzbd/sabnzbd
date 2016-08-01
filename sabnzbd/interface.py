@@ -1459,7 +1459,6 @@ class ConfigSwitches(object):
         conf['unwanted_extensions'] = cfg.unwanted_extensions.get_string()
 
         conf['script_list'] = list_scripts() or ['None']
-        conf['have_ampm'] = HAVE_AMPM
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1492,7 +1491,7 @@ class ConfigSwitches(object):
 ##############################################################################
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
-              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',

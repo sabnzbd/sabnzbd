@@ -492,8 +492,6 @@ SKIN_TEXT = {
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
-    'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
-    'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
     'opt-enable_https_verification' : TT('Enable HTTPS verification'),
     'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
     'swtag-general' : TT('General'),
