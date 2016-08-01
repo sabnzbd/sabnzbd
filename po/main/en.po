@@ -131,3 +131,12 @@ msgstr "Web interface"
 #: sabnzbd/notifier.py
 msgid "Script returned exit code %s and output \"%s\""
 msgstr "Notification script returned exit code %s and output \"%s\""
+
+#: sabnzbd/skintext.py:390
+msgid "Post-Processing Scripts Folder"
+msgstr "Scripts Folder"
+
+#: sabnzbd/skintext.py:391
+msgid "Folder containing user scripts for post-processing."
+msgstr "Folder containing user scripts."
+
