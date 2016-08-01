@@ -106,7 +106,7 @@ par2_multicore = OptionBool('misc', 'par2_multicore', True)
 allow_64bit_tools = OptionBool('misc', 'allow_64bit_tools', True)
 allow_streaming = OptionBool('misc', 'allow_streaming', False)
 pre_check = OptionBool('misc', 'pre_check', False)
-fail_hopeless = OptionBool('misc', 'fail_hopeless', False)
+fail_hopeless = OptionBool('misc', 'fail_hopeless', True)
 req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 200)
 
 rating_enable = OptionBool('misc', 'rating_enable', False)
