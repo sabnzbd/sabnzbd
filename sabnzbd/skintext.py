@@ -492,7 +492,7 @@ SKIN_TEXT = {
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
-    'opt-enable_https_verification' : TT('Enable HTTPS verification'),
+    'opt-enable_https_verification' : TT('HTTPS certificate verification'),
     'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
     'swtag-general' : TT('General'),
     'swtag-server' : TT('Server'),
