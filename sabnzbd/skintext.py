@@ -831,6 +831,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
+    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'), 
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
     'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
