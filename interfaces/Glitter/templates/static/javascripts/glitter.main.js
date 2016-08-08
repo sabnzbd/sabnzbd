@@ -1056,6 +1056,17 @@ function ViewModel() {
         });
     }
 
+    // Message about tips and tricks, only once
+    if(!localStorageGetItem('TipsMsgV110')*1) {
+        self.allMessages.push({
+            index: 'TipsMsgV110',
+            type: glitterTranslate.status['INFO'],
+            text: glitterTranslate.glitterTips + ' <a class="queue-update-sab" href="https://sabnzbd.org/wiki/extra/glitter-tips-and-tricks" target="_blank">Glitter Tips and Tricks <span class="glyphicon glyphicon-new-window"></span></a>',
+            css: 'info',
+            clear: function() { self.clearMessages('TipsMsgV110')}
+        });
+    }
+
     /***
         Date-stuff
     ***/

@@ -1332,10 +1332,6 @@ def main():
     sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(), web_dir2)
     sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
-    logging.debug('Unwanted extensions are ... %s', sabnzbd.cfg.unwanted_extensions())
-
-    logging.info('Preferred encoding = %s', locale.getpreferredencoding())    # Useful for debugging Unicode problems
-
     if fork and not sabnzbd.WIN32:
         daemonize()
 

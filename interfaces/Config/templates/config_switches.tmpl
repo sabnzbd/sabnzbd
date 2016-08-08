@@ -25,11 +25,6 @@
                         </select>
                         <span class="desc">$T('explain-check_new_rel')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
-                        <label class="config" for="ampm">$T('opt-ampm')</label>
-                        <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-ampm')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
                         <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> />
@@ -185,7 +180,7 @@
                     <div class="field-pair">
                         <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_all_par')</span>
+                        <span class="desc">$T('explain-enable_all_par').replace('.', '<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="quick_check">$T('opt-quick_check')</label>
@@ -323,11 +318,13 @@
                         <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_illegal')</span>
                     </div>
+                    <!--#if not $nt#-->
                     <div class="field-pair">
                         <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
                         <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-sanitize_safe')</span>
                     </div>
+                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
                         <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />

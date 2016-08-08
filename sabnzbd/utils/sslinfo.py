@@ -1,5 +1,8 @@
-_ALL_PROTOCOLS = ('t12', 't11', 't1', 'v23', 'v3', 'v2')
+# v23 indicates "negotiate highest possible"
+_ALL_PROTOCOLS = ('v23', 't12', 't11', 't1', 'v3', 'v2')
 _SSL_PROTOCOLS = {}
+_SSL_PROTOCOLS_LABELS = []
+
 def ssl_potential():
     ''' Return a list of potentially supported SSL protocols'''
     try:
@@ -13,33 +16,38 @@ try:
 
     _potential = ssl_potential()
     try:
-        if 'TLSv1_2' in _potential:
-            _SSL_PROTOCOLS['t12'] = SSL.TLSv1_2_METHOD
-    except AttributeError:
-        pass
-    try:
-        if 'TLSv1_1' in _potential:
-            _SSL_PROTOCOLS['t11'] = SSL.TLSv1_1_METHOD
-    except AttributeError:
-        pass
-    try:
-        if 'TLSv1' in _potential:
-            _SSL_PROTOCOLS['t1'] = SSL.TLSv1_METHOD
-    except AttributeError:
-        pass
-    try:
         if 'SSLv23' in _potential:
             _SSL_PROTOCOLS['v23'] = SSL.SSLv23_METHOD
     except AttributeError:
         pass
     try:
+        if 'TLSv1_2' in _potential:
+            _SSL_PROTOCOLS['t12'] = SSL.TLSv1_2_METHOD
+            _SSL_PROTOCOLS_LABELS.append('TLS v1.2')
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1_1' in _potential:
+            _SSL_PROTOCOLS['t11'] = SSL.TLSv1_1_METHOD
+            _SSL_PROTOCOLS_LABELS.append('TLS v1.1')
+    except AttributeError:
+        pass
+    try:
+        if 'TLSv1' in _potential:
+            _SSL_PROTOCOLS['t1'] = SSL.TLSv1_METHOD
+            _SSL_PROTOCOLS_LABELS.append('TLS v1')
+    except AttributeError:
+        pass
+    try:
         if 'SSLv3' in _potential:
             _SSL_PROTOCOLS['v3'] = SSL.SSLv3_METHOD
+            _SSL_PROTOCOLS_LABELS.append('SSL v3')
     except AttributeError:
         pass
     try:
         if 'SSLv2' in _potential:
             _SSL_PROTOCOLS['v2'] = SSL.SSLv2_METHOD
+            _SSL_PROTOCOLS_LABELS.append('SSL v2')
     except AttributeError:
         pass
 except ImportError:
@@ -61,6 +69,11 @@ def ssl_method(method):
 def ssl_protocols():
     ''' Return acronyms for SSL protocols, highest quality first '''
     return [p for p in _ALL_PROTOCOLS if p in _SSL_PROTOCOLS]
+
+
+def ssl_protocols_labels():
+    ''' Return human readable labels for SSL protocols, highest quality first '''
+    return _SSL_PROTOCOLS_LABELS
 
 
 def ssl_version():

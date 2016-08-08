@@ -353,6 +353,7 @@ SKIN_TEXT = {
     'explain-restoreDefaults' : TT('Reset'),
     'opt-language' : TT('Language'),
     'explain-language' : TT('Select a web interface language.'),
+    'explain-ask-language': TT('Help us translate SABnzbd in your language! <br/>Add untranslated texts or improved existing translations here:'), # Link to sabnzbd.org follows this text
     'opt-apikey' : TT('API Key'),
     'explain-apikey' : TT('This key will give 3rd party programs full access to SABnzbd.'),
     'opt-nzbkey' : TT('NZB Key'),
@@ -491,9 +492,7 @@ SKIN_TEXT = {
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
-    'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
-    'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
-    'opt-enable_https_verification' : TT('Enable HTTPS verification'),
+    'opt-enable_https_verification' : TT('HTTPS certificate verification'),
     'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
     'swtag-general' : TT('General'),
     'swtag-server' : TT('Server'),
@@ -832,6 +831,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
+    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'), 
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
     'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
