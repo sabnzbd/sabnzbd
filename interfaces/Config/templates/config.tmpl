@@ -38,7 +38,7 @@
                     <th scope="row">OpenSSL:</th>
                     <td>
                         <!--#if HAVE_SSL#--> 
-                            <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo._SSL_PROTOCOLS_LABELS)#-->
+                            <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo.ssl_protocols_labels())#-->
                             $sabnzbd.utils.sslinfo.ssl_version() &nbsp; [$sslversions]
                         <!--#else#-->
                             <span class="label label-warning">$T('notAvailable')</span>

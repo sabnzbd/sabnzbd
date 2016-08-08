@@ -71,6 +71,11 @@ def ssl_protocols():
     return [p for p in _ALL_PROTOCOLS if p in _SSL_PROTOCOLS]
 
 
+def ssl_protocols_labels():
+    ''' Return human readable labels for SSL protocols, highest quality first '''
+    return _SSL_PROTOCOLS_LABELS
+
+
 def ssl_version():
     if SSL:
         try:
