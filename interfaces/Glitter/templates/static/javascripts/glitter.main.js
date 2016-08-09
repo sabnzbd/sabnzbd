@@ -130,9 +130,6 @@ function ViewModel() {
 
     // Update main queue
     self.updateQueue = function(response) {
-        // Succesfull API-call, set new one
-        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
-
         // Block in case off dragging
         if(!self.queue.shouldUpdate()) return;
 
@@ -302,6 +299,11 @@ function ViewModel() {
         self.history.updateFromData(response.history);
     }
 
+    // Set new update timer
+    self.setNextUpdate = function() {
+        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
+    }
+
     // Refresh function
     self.refresh = function(forceFullHistory) {
         // Clear previous timeout to prevent double-calls
@@ -333,10 +335,7 @@ function ViewModel() {
 
                 // Force the next full update to be full
                 self.history.lastUpdate = 0
-
-                // Set new update
-                self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
-            })
+            }).always(self.setNextUpdate)
             // Do not continue!
             return;
         }
@@ -350,6 +349,7 @@ function ViewModel() {
             self.updateHistory(glitterPreLoadHistory);
             glitterPreLoadQueue = undefined;
             glitterPreLoadHistory = undefined;
+            self.setNextUpdate()
             return;
         }
 
@@ -374,9 +374,7 @@ function ViewModel() {
             }
             // Show screen
             self.isRestarting(1)
-            // Try again
-            self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
-        });
+        }).always(self.setNextUpdate);
 
         // Force full history update?
         if(forceFullHistory) {
