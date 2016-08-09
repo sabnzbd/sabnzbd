@@ -71,12 +71,6 @@ function HistoryListModel(parent) {
         if(newItems.length > 0) {
             ko.utils.arrayPushAll(self.historyItems, newItems);
             self.historyItems.valueHasMutated();
-            
-            // Only now sort so newest on top. completed is updated every time while download is waiting
-            // so doing the sorting every time would cause it to bounce around
-            self.historyItems.sort(function(a, b) {
-                return a.historyStatus.completed() > b.historyStatus.completed() ? -1 : 1;
-            });
 
             // We also check if it might be in the Multi-edit
             if(self.parent.queue.multiEditItems().length > 0) {
@@ -86,6 +80,11 @@ function HistoryListModel(parent) {
                 })
             }
         }
+
+        // Sort every time (takes just few msec)
+        self.historyItems.sort(function(a, b) {
+            return a.index < b.index ? -1 : 1;
+        });
 
         /***
             History information
@@ -247,6 +246,7 @@ function HistoryModel(parent, data) {
     // The Status/Actionline/scriptline/completed we do update every time
     // When clicked on the more-info button we load the rest again
     self.nzo_id = data.nzo_id;
+    self.index = data.index;
     self.updateAllHistory = false;
     self.hasDropdown = ko.observable(false);
     self.historyStatus = ko.mapping.fromJS(data);
@@ -260,6 +260,7 @@ function HistoryModel(parent, data) {
     // Update function
     self.updateFromData = function(data) {
         // Fill all the basic info
+        self.index = data.index
         self.status(data.status)
         self.action_line(data.action_line)
         self.script_line(data.script_line)
