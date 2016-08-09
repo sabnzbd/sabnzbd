@@ -1581,7 +1581,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """ Save job's admin to disk """
         self.save_attribs()
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED):
+        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):

@@ -806,7 +806,7 @@ class NzbQueue(TryList):
         if reset:
             self.reset_try_list()
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED):
+        if nzo.status in (Status.COMPLETED, Status.DELETED, Status.FAILED):
             logging.debug('Discarding file completion %s for deleted job', filename)
         else:
             if file_done:
