@@ -1876,7 +1876,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     items.reverse()
 
     retry_folders = []
-    n = 0
     for item in items:
         for key in item:
             value = item[key]
@@ -1916,9 +1915,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
             rating = Rating.do.get_rating_by_nzo(item['nzo_id'])
         else:
             rating = None
-
-        item['index'] = n
-        n += 1
 
         item['has_rating'] = rating is not None
         if rating:
