@@ -130,6 +130,10 @@ function ViewModel() {
 
     // Update main queue
     self.updateQueue = function(response) {
+        // Succesfull API-call, set new one
+        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
+
+        // Block in case off dragging
         if(!self.queue.shouldUpdate()) return;
 
         // Make sure we are displaying the interface
@@ -300,9 +304,8 @@ function ViewModel() {
 
     // Refresh function
     self.refresh = function(forceFullHistory) {
-        // Clear previous timeout and set a new one to prevent double-calls
+        // Clear previous timeout to prevent double-calls
         clearTimeout(self.interval);
-        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
         
         /**
             Limited refresh
@@ -330,6 +333,9 @@ function ViewModel() {
 
                 // Force the next full update to be full
                 self.history.lastUpdate = 0
+
+                // Set new update
+                self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
             })
             // Do not continue!
             return;
@@ -368,11 +374,15 @@ function ViewModel() {
             }
             // Show screen
             self.isRestarting(1)
+            // Try again
+            self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
         });
+
         // Force full history update?
         if(forceFullHistory) {
             self.history.lastUpdate = 0
         }
+
         // History
         callAPI({
             mode: "history",
