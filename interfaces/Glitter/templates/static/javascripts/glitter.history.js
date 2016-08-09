@@ -207,7 +207,10 @@ function HistoryListModel(parent) {
             // List all the ID's
             var strIDs = '';
             $.each(self.historyItems(), function(index) {
-                strIDs = strIDs + this.nzo_id + ',';
+                // Only append when it's a download that can be deleted
+                if(!this.processingDownload() && !this.processingWaiting()) {
+                    strIDs = strIDs + this.nzo_id + ',';
+                }
             })
             // Send the command
             callAPI({
