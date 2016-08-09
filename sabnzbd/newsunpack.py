@@ -29,7 +29,7 @@ import binascii
 import shutil
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
@@ -183,7 +183,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
     """ Run a user script with two parameters, return console output and exit value """
     command = [script, p1, p2, p3, p4]
 
-    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
+    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(script, os.X_OK)):
         command.insert(0, 'python')
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
@@ -195,8 +195,8 @@ def external_script(script, p1, p2, p3=None, p4=None):
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
     except:
-        logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
-        return "Cannot run script %s\r\n" % extern_proc, -1
+        logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
+        return "Cannot run script %s\r\n" % script, -1
 
     output = p.stdout.read()
     ret = p.wait()
@@ -723,7 +723,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.01 : "The specified password is incorrect."
-            m = re.search('encrypted file (.+)\. Corrupt file', line)
+            m = re.search(r'encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
                 m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
@@ -1940,7 +1940,7 @@ class SevenZip(object):
                              startupinfo=stup, creationflags=creationflags)
 
         output = p.stdout.read()
-        ret = p.wait()
+        _ = p.wait()
         re_path = re.compile('^Path = (.+)')
         for line in output.split('\n'):
             m = re_path.search(line)
@@ -1967,7 +1967,7 @@ class SevenZip(object):
                              startupinfo=stup, creationflags=creationflags)
 
         output = p.stdout.read()
-        ret = p.wait()
+        _ = p.wait()
         stderr.close()
         return output
 

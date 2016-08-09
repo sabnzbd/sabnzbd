@@ -22,11 +22,11 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
+from math import floor
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
 from sabnzbd.encoding import unicoder
-from math import floor
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -156,7 +156,7 @@ class BPSMeter(object):
                 day_total, week_total, month_total,
                 self.end_of_day, self.end_of_week, self.end_of_month,
                 self.quota, self.left, self.q_time
-                )
+               )
         sabnzbd.save_admin(data, BYTES_FILE_NAME)
         del data
         del day_total, week_total, month_total, grand_total
@@ -308,7 +308,7 @@ class BPSMeter(object):
                 sum([v for v in self.month_total.values()]),
                 sum([v for v in self.week_total.values()]),
                 sum([v for v in self.day_total.values()])
-                )
+               )
 
     def amounts(self, server):
         """ Return grand, month, week, day totals for specified server """
@@ -411,8 +411,8 @@ class BPSMeter(object):
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
-    __re_day = re.compile('^\s*(\d+)[^:]*')
-    __re_hm = re.compile('(\d+):(\d+)\s*$')
+    __re_day = re.compile(r'^\s*(\d+)[^:]*')
+    __re_hm = re.compile(r'(\d+):(\d+)\s*$')
     def get_quota(self):
         """ If quota active, return check-function, hour, minute """
         if self.have_quota:
