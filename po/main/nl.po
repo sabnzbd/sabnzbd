@@ -354,7 +354,7 @@ msgstr "%s => ontbreekt op alle servers, overslaan"
 
 #: sabnzbd/decoder.py:261
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode codering gevonden, SABnzbd verwerkt alleen yEnc codering"
+msgstr "UUencode codering gevonden, SABnzbd verwerkt alleen yEnc codering [%s]"
 
 #: sabnzbd/dirscanner.py:140 [Error message] # sabnzbd/dirscanner.py:225 [Error message]
 msgid "Error removing %s"
