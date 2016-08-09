@@ -295,7 +295,7 @@ class DirScanner(threading.Thread):
 
     def save(self):
         """ Save dir scanner bookkeeping """
-        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
+        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME)
 
     def run(self):
         """ Start the scanner """

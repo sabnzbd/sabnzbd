@@ -678,7 +678,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
-        # TODO: Should have a translated message, but that's not available yet
+        # Should have a translated message, but that's not available yet
         logging.error(T('HTTP and HTTPS ports cannot be the same'))
 
     return cherryhost, cherryport, browserhost, https_port
@@ -930,7 +930,7 @@ def main():
                 autobrowser = bool(int(arg))
             except:
                 autobrowser = True
-        elif opt in ('--autorestarted'):
+        elif opt in ('--autorestarted', ):
             autorestarted = True
         elif opt in ('-c', '--clean'):
             clean_up = True
@@ -990,7 +990,7 @@ def main():
             osx_console = True
         elif opt in ('--ipv6_hosting',):
             ipv6_hosting = arg
-            
+
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
@@ -1671,7 +1671,7 @@ def main():
             sys.argv = re_argv
             os.chdir(org_dir)
             if sabnzbd.DARWIN:
-                # TODO: when executing from sources on osx, after a restart, process is detached from console
+                # When executing from sources on osx, after a restart, process is detached from console
                 # If OSX frozen restart of app instead of embedded python
                 if getattr(sys, 'frozen', None) == 'macosx_app':
                     # [[NSProcessInfo processInfo] processIdentifier]]

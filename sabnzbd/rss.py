@@ -25,7 +25,7 @@ import time
 import threading
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, NORMAL_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -593,7 +593,7 @@ class RSSQueue(object):
 
     @synchronized(LOCK)
     def save(self):
-        sabnzbd.save_admin(self.jobs, sabnzbd.RSS_FILE_NAME)
+        sabnzbd.save_admin(self.jobs, RSS_FILE_NAME)
 
     @synchronized(LOCK)
     def delete(self, feed):
