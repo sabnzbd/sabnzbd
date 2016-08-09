@@ -30,7 +30,7 @@ try:
     _HAVE_SSL = True
 except:
     _HAVE_SSL = False
-from threading import *
+from threading import RLock, Thread
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -120,7 +120,7 @@ class Rating(Thread):
                     ratings[k] = NzbRatingV2().to_v2(v)
                 self.ratings = ratings
                 self.version = 2
-            if (self.version != Rating.VERSION):
+            if self.version != Rating.VERSION:
                 raise Exception()
         except:
             self.version = Rating.VERSION

@@ -28,7 +28,7 @@ import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, \
-    get_admin_path, remove_all, globber, globber_full
+    get_admin_path, remove_all, globber_full
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV

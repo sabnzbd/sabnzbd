@@ -25,7 +25,6 @@ import cherrypy
 from Cheetah.Template import Template
 
 import sabnzbd
-from sabnzbd.constants import *
 import sabnzbd.api
 from sabnzbd.lang import list_languages, set_language
 from sabnzbd.utils.servertests import test_nntp_server_dict

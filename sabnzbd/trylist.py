@@ -45,7 +45,7 @@ class TryList:
     @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
         """ Return whether specified server has been tried """
-        return (server in self.__try_list)
+        return server in self.__try_list
 
     @synchronized(TRYLIST_LOCK)
     def add_to_try_list(self, server):

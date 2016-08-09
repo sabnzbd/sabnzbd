@@ -96,8 +96,9 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
-from sabnzbd.decorators import *
-from sabnzbd.constants import *
+from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
+from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
+     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 
 LINUX_POWER = powersup.HAVE_DBUS
 

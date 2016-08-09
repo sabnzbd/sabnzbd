@@ -38,7 +38,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
-from sabnzbd.misc import match_str, int_conv
+from sabnzbd.misc import match_str
 
 
 class CrcError(Exception):
@@ -270,7 +270,7 @@ def decode(article, data):
                 raise BadYenc()
 
         # Deal with yenc encoded posts
-        elif (ybegin and yend):
+        elif ybegin and yend:
             if 'name' in ybegin:
                 nzf.filename = yenc_name_fixer(ybegin['name'])
             else:
@@ -300,7 +300,7 @@ def decode(article, data):
                 _partcrc = None
                 logging.debug("Corrupt header detected => yend: %s", yend)
 
-            if not (_partcrc == partcrc):
+            if not _partcrc == partcrc:
                 raise CrcError(_partcrc, partcrc, decoded_data)
         else:
             raise BadYenc()

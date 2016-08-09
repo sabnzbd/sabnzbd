@@ -166,7 +166,7 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
-                if 0: assert(isinstance(nzo, sabnzbd.nzbstuff.NzbObject))
+                if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False

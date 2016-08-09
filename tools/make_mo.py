@@ -172,7 +172,7 @@ def translate_tmpl(prefix, lng):
     src.close()
     data = _(data).encode('utf-8')
     fp = open('email/%s-%s.tmpl' % (prefix, lng), 'wb')
-    if not (-1 < data.find('UTF-8') < 30):
+    if not -1 < data.find('UTF-8') < 30:
         fp.write('#encoding UTF-8\n')
     fp.write(data)
     fp.close()

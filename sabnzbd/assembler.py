@@ -21,7 +21,6 @@ sabnzbd.assembler - threaded assembly/decoding of files
 
 import os
 import Queue
-import binascii
 import logging
 import struct
 import re

@@ -32,11 +32,10 @@ def localipv4():
         s_ipv4.close()
     except:
         ipv4 = None
-        pass
     return ipv4
 
 def publicipv4():
-    # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention, 
+    # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention,
     # meaning forcing IPv4 connections, and not allowing IPv6 connections
     try:
         import urllib2
@@ -55,7 +54,7 @@ def publicipv4():
             req = urllib2.Request("http://" + selftest_ipv4 + "/")
             # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
             req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__ )
-            # specify the Host, because we only provide the IPv4 address in the URL: 
+            # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
             # get the response
             public_ipv4 = urllib2.urlopen(req, timeout=2).read() # timeout 2 seconds, in case website is not accessible

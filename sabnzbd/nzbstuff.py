@@ -43,7 +43,7 @@ except:
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-    HIGH_PRIORITY, PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
+    PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
     RENAMES_FILE, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, format_source_url, \
@@ -54,7 +54,7 @@ from sabnzbd.decorators import synchronized, IO_LOCK
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.encoding import unicoder, platform_encode, name_fixer
+from sabnzbd.encoding import unicoder, platform_encode
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
 
@@ -115,7 +115,7 @@ class Article(TryList):
                 if log:
                     logging.debug('Article %s | Server: %s | not the same priority', self.article, server.host)
                 # No, so is it a lower priority?
-                if (server.priority > self.fetcher_priority):
+                if server.priority > self.fetcher_priority:
                     if log:
                         logging.debug('Article %s | Server: %s | lower priority', self.article, server.host)
                     # Is there an available server that is a higher priority?
@@ -126,7 +126,7 @@ class Article(TryList):
                             logging.debug('Article %s | Server: %s | checking', self.article, server.host)
                         # if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
                         if server_check.active and (server_check.priority < found_priority):
-                            if (server_check.priority < server.priority):
+                            if server_check.priority < server.priority:
                                 if (not self.server_in_try_list(server_check)) and self.server_allowed(server_check):
                                     if log:
                                         logging.debug('Article %s | Server: %s | setting found priority to %s', self.article, server.host, server_check.priority)
@@ -1191,7 +1191,7 @@ class NzbObject(TryList):
             if parfile in self.extrapars[_set]:
                 self.extrapars[_set].remove(parfile)
 
-    __re_quick_par2_check = re.compile('\.par2\W*', re.I)
+    __re_quick_par2_check = re.compile(r'\.par2\W*', re.I)
 
 
     @synchronized(IO_LOCK)
@@ -1206,6 +1206,7 @@ class NzbObject(TryList):
         total_need = bad + miss + killed + dups
 
         # How many do we already have?
+        nzf = None
         blocks_already = 0
         for nzf in self.files:
             # Only par2 files have a blocks attribute
@@ -1213,7 +1214,7 @@ class NzbObject(TryList):
                 blocks_already = blocks_already + int_conv(nzf.blocks)
 
         # Need more?
-        if blocks_already < total_need:
+        if nzf and blocks_already < total_need:
             # We have to find the right par-set
             for parset in self.extrapars.keys():
                 if parset in nzf.filename and self.extrapars[parset]:
@@ -1764,7 +1765,7 @@ def split_filename(name):
     name = name.strip()
     if name.find('://') < 0:
         m = RE_NORMAL.match(name)
-        if (m):
+        if m:
             return m.group(1).rstrip('.').strip()
         else:
             return name.strip()

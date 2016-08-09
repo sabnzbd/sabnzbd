@@ -37,7 +37,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, HAVE_AMPM, long_path, \
+    time_format, long_path, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
@@ -56,7 +56,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.sslinfo import ssl_protocols
 
 from sabnzbd.constants import \
-    REC_RAR_VERSION, NORMAL_PRIORITY, PNFO, \
+    REC_RAR_VERSION, NORMAL_PRIORITY, \
     MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
     DEFAULT_PRIORITY
 
@@ -64,7 +64,7 @@ from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
-    retry_job, retry_all_jobs, build_queue_header, build_header, build_history, del_job_files, \
+    retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
     _api_test_email, _api_test_notif
 
@@ -99,7 +99,7 @@ def check_access(access_type=4):
 
     # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
     # It will always contain that ::ffff: prefix
-    range_ok = (not cfg.local_ranges()) or bool([1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace('::ffff:', '').startswith(r))])
+    range_ok = not cfg.local_ranges() or bool([1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace('::ffff:', '').startswith(r))])
     allowed = referrer in ('127.0.0.1', '::ffff:127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
     if not allowed:
         logging.debug('Refused connection to %s', referrer)
@@ -387,7 +387,7 @@ class MainPage(object):
                 queue['scripts'] = info.pop('script_list')
 
                 # History
-                history = {};
+                history = {}
                 grand, month, week, day = BPSMeter.do.get_sums()
                 history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                        to_units(grand), to_units(month), to_units(week), to_units(day)
@@ -395,8 +395,8 @@ class MainPage(object):
 
                 # Make sure the JSON works, otherwise leave empty
                 try:
-                    info['preload_queue'] = json.dumps({'queue': remove_callable(queue)});
-                    info['preload_history'] = json.dumps({'history': history});
+                    info['preload_queue'] = json.dumps({'queue': remove_callable(queue)})
+                    info['preload_history'] = json.dumps({'history': history})
                 except UnicodeDecodeError:
                     # We use the javascript recognized 'false'
                     info['preload_queue'] = 'false'
@@ -458,10 +458,10 @@ class MainPage(object):
     def shutdown(self, **kwargs):
         msg = check_session(kwargs)
 
-        # Check for PID 
-        pid_in = kwargs.get('pid') 
-        if pid_in and int(pid_in) != os.getpid(): 
-            msg = "Incorrect PID for this instance, remove PID from URL to initiate shutdown." 
+        # Check for PID
+        pid_in = kwargs.get('pid')
+        if pid_in and int(pid_in) != os.getpid():
+            msg = "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
         if msg:
             yield msg
@@ -1328,7 +1328,7 @@ def orphan_delete(kwargs):
         remove_all(path, recursive=True)
 
 def orphan_delete_all():
-    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False);
+    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_delete(kwargs)
@@ -1341,7 +1341,7 @@ def orphan_add(kwargs):
         sabnzbd.nzbqueue.repair_job(path, None, None)
 
 def orphan_add_all():
-    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False);
+    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_add(kwargs)
@@ -2617,7 +2617,7 @@ class Status(object):
         # We need to remove all passwords/usernames/api-keys
         log_data = LOG_API_RE.sub("apikey=<APIKEY>", log_data)
         log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
-        log_data = LOG_USER_RE.sub("\g<1>=<USER>", log_data)
+        log_data = LOG_USER_RE.sub(r'\g<1>=<USER>', log_data)
         log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
         log_data = LOG_INI_HIDE_RE.sub(r"\1 = <REMOVED>", log_data)
         log_data = LOG_HASH_RE.sub("<HASH>", log_data)
@@ -2629,7 +2629,7 @@ class Status(object):
             if cur_user:
                 log_data = log_data.replace(cur_user, '<USERNAME>')
         except:
-            pass   
+            pass
         # Set headers
         cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
         cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
@@ -2723,7 +2723,7 @@ class Status(object):
 
 def Protected():
     cherrypy.response.status = 403
-    return 'Access denied' 
+    return 'Access denied'
 
 def NeedLogin(url, kwargs):
     raise dcRaiser(url + 'login/', kwargs)

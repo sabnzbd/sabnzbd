@@ -35,13 +35,12 @@ from sabnzbd.utils.sslinfo import ssl_protocols
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.notifier as notifier
-from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
-from sabnzbd.misc import from_units, int_conv
-from sabnzbd.utils.happyeyeballs import *
+from sabnzbd.misc import from_units
+from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
 # Timeout penalty in minutes for each cause
@@ -114,16 +113,16 @@ class Server(object):
             # Return a random entry from the possible IPs
             rnd = random.randint(0, len(self.info) - 1)
             ip = self.info[rnd][4][0]
-            logging.debug('For server %s, using IP %s' % (self.host, ip))
+            logging.debug('For server %s, using IP %s', self.host, ip)
         elif cfg.load_balancing() == 2 and self.info and len(self.info) > 1:
             # RFC6555 / Happy Eyeballs:
             ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
             if ip:
-                logging.debug('For server %s, using IP %s as server' % (self.host, ip))
+                logging.debug('For server %s, using IP %s as server', self.host, ip)
             else:
                 # nothing returned, so there was a connection problem
                 ip = self.host
-                logging.debug('For server %s, no successful IP connection possible' % (self.host))
+                logging.debug('For server %s, no successful IP connection possible', self.host)
         else:
             ip = self.host
         return ip
@@ -377,7 +376,7 @@ class Downloader(Thread):
                 if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
-                        if (nw.nntp and nw.nntp.error_msg):
+                        if nw.nntp and nw.nntp.error_msg:
                             self.__reset_nw(nw, "", warn=False)
                         else:
                             self.__reset_nw(nw, "timed out")

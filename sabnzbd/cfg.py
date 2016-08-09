@@ -23,17 +23,17 @@ import re
 import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
     DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
-    NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
+    DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
     DEF_ADMIN_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
     OptionDir, OptionStr, OptionList, no_nonsense, \
-    validate_octal, validate_safedir, validate_dir_exists, \
+    validate_octal, validate_safedir, \
     create_api_key, validate_notempty
 
 ##############################################################################
 # Email validation support
 ##############################################################################
-RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
+RE_VAL = re.compile(r'[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
     global email_endjob, email_full, email_rss
     if email_endjob() or email_full() or email_rss():
@@ -83,7 +83,7 @@ pre_script = OptionStr('misc', 'pre_script', 'None')
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
 enable_https_verification = OptionBool('misc', 'enable_https_verification', False)
-selftest_host  = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
+selftest_host = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)

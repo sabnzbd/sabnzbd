@@ -41,12 +41,13 @@ except ImportError:
 
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import VALID_ARCHIVES, Status, \
+     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
+     KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repair_job
-import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.json import JsonWriter
@@ -115,7 +116,7 @@ def api_handler(kwargs):
 
 def _api_get_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
-    unused, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
+    _, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
 
 
@@ -489,7 +490,7 @@ def _api_history(name, output, kwargs):
     last_history_update = kwargs.get('last_history_update', 0)
 
     # Do we need to send anything?
-    if(int(last_history_update) == int(sabnzbd.LAST_HISTORY_UPDATE)):
+    if int(last_history_update) == int(sabnzbd.LAST_HISTORY_UPDATE):
         return report(output, keyword='history', data=False)
 
     if categories and not isinstance(categories, list):
@@ -2058,7 +2059,7 @@ def list_scripts(default=False, none=True):
         for script in globber_full(path):
             if os.path.isfile(script):
                 if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and
-                                      not (win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN)) or \
+                                      not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN) or \
                    script.endswith('.py') or \
                    (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))

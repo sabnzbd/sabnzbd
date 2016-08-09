@@ -23,15 +23,13 @@ import re
 import logging
 import time
 import threading
-import urllib
-import os
 
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re, cat_to_opts, \
+from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, \
     match_str, from_units, int_conv, get_urlbase
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import unicoder, xml_name
@@ -359,7 +357,7 @@ class RSSQueue(object):
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
 
         # Check for nzbs.org
-        if 'nzbs.org/' in uri and not ('&dl=1' in uri):
+        if 'nzbs.org/' in uri and '&dl=1' not in uri:
             uri += '&dl=1'
 
         # Read the RSS feed

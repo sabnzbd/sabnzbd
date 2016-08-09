@@ -28,7 +28,6 @@ import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import MEBI
 from sabnzbd.misc import to_units
 import os
 import cherrypy

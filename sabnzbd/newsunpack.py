@@ -998,7 +998,6 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single 7Z set 'sevenset' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), message
     """
-    msg = None
     if one_folder:
         method = 'e'  # Unpack without folders
     else:
@@ -1061,7 +1060,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     # set the current nzo status to "Repairing". Used in History
 
-    assert(isinstance(nzo, sabnzbd.nzbstuff.NzbObject))
+    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
     parfile = os.path.join(workdir, parfile_nzf.filename)
     parfile = short_path(parfile)
     workdir = short_path(workdir)

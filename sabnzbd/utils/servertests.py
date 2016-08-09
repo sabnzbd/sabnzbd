@@ -26,7 +26,6 @@ import select
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
-from sabnzbd.encoding import xml_name
 from sabnzbd.misc import int_conv
 
 

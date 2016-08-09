@@ -1399,7 +1399,7 @@ def short_path(path, always=True):
 
 
 def clip_path(path):
-    """ Remove \\?\ or \\?\UNC\ prefix from Windows path """
+    r""" Remove \\?\ or \\?\UNC\ prefix from Windows path """
     if sabnzbd.WIN32 and path and '?' in path:
         path = path.replace(u'\\\\?\\UNC\\', u'\\\\').replace(u'\\\\?\\', u'')
     return path

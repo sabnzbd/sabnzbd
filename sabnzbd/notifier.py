@@ -92,7 +92,7 @@ def get_icon():
         if sabnzbd.WIN32 or sabnzbd.DARWIN:
             fp = open(icon, 'rb')
             icon = fp.read()
-            fp.close
+            fp.close()
         else:
             # Due to a bug in GNTP, need this work-around for Linux/Unix
             icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
@@ -395,7 +395,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     title = urllib2.quote(title.encode('utf8'))
     msg = urllib2.quote(msg.encode('utf8'))
-    prio = get_prio(gtype, 'prowl');
+    prio = get_prio(gtype, 'prowl')
 
     if force:
         prio = 0
@@ -428,7 +428,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = get_prio(gtype, 'pushover');
+    prio = get_prio(gtype, 'pushover')
 
     if force:
         prio = 1

@@ -28,7 +28,7 @@ import bz2
 import threading
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
@@ -166,11 +166,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         b2 = f.read(1)
         f.close()
 
-        if (b1 == '\x1f' and b2 == '\x8b'):
+        if b1 == '\x1f' and b2 == '\x8b':
             # gzip file or gzip in disguise
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
-        elif (b1 == 'B' and b2 == 'Z'):
+        elif b1 == 'B' and b2 == 'Z':
             # bz2 file or bz2 in disguise
             name = filename.replace('.nzb.bz2', '.nzb')
             f = bz2.BZ2File(path, 'rb')
