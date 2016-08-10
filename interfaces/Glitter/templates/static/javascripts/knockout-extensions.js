@@ -99,7 +99,7 @@ ko.bindingHandlers.filedrop = {
             if(options.overlaySelector)
                 $(options.overlaySelector).hide();
             if(typeof options.onFileDrop === "function") {
-                options.onFileDrop(e.originalEvent.dataTransfer.files, 0)
+                options.onFileDrop(e.originalEvent.dataTransfer.files)
             }
         });
     }

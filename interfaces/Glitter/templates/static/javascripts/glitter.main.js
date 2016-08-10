@@ -636,13 +636,10 @@ function ViewModel() {
         }
 
         // Upload
-        self.addNZBFromFile($(form.nzbFile)[0].files[0]);
+        self.addNZBFromFile($(form.nzbFile)[0].files);
 
-        // After that, hide and reset
+        // Hide modal, upload will reset the form
         $("#modal-add-nzb").modal("hide");
-        form.reset()
-        $('#nzbname').val('')
-        $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
     }
     // From URL
     self.addNZBFromURL = function(form) {
@@ -673,13 +670,12 @@ function ViewModel() {
     }
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
-        // Multiple?
-        if(fileindex !== undefined) {
-            var file = files[fileindex]
-            fileindex++
-        } else {
-            var file = files
+        // First file
+        if(fileindex === undefined) {
+            fileindex = 0
         }
+        var file = files[fileindex]
+        fileindex++
 
         // Add notification
         showNotification('.main-notification-box-uploading', 0, fileindex)
@@ -709,10 +705,14 @@ function ViewModel() {
                 // Do the next one
                 self.addNZBFromFile(files, fileindex)
             } else {
-                // Hide notification
-                hideNotification('.main-notification-box-uploading')
                 // Refresh
                 self.refresh();
+                // Hide notification
+                hideNotification('.main-notification-box-uploading')
+                // Reset the form
+                $('#modal-add-nzb form').trigger('reset');
+                $('#nzbname').val('')
+                $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             }
         });
 
