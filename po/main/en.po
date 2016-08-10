@@ -140,3 +140,24 @@ msgstr "Scripts Folder"
 msgid "Folder containing user scripts for post-processing."
 msgstr "Folder containing user scripts."
 
+#: sabnzbd/skintext.py:520
+msgid "Enable OZnzb Integration"
+msgstr "Enable Indexer Integration"
+
+#: sabnzbd/skintext.py:521
+msgid ""
+"Enhanced functionality including ratings and extra status information is "
+"available when connected to OZnzb indexer."
+msgstr ""
+"Enhanced functionality including ratings and extra status information is "
+"available when connected to a supported indexer."
+
+#: sabnzbd/skintext.py:523
+msgid ""
+"This key provides identity to indexer. Refer to "
+"https://www.oznzb.com/profile."
+msgstr ""
+"This key provides identity to indexer. Check "
+"your profile on the indexer's website."
+
+
