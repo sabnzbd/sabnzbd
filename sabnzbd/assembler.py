@@ -326,7 +326,7 @@ def rar_contains_unwanted_file(filepath):
     # returns False if no unwanted extensions are found in the rar file
     # returns name of file if unwanted extension is found in the rar file
     unwanted = None
-    if is_rarfile(filepath):
+    if cfg.unwanted_extensions() and is_rarfile(filepath):
         # logging.debug('rar file to check: %s',filepath)
         # logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
         try:
