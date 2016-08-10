@@ -164,7 +164,7 @@ def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logging.warning(T('Signal %s caught, saving and exiting...'), signum)
     try:
-        save_state(flag=True)
+        save_state()
         sabnzbd.zconfig.remove_server()
     finally:
         if sabnzbd.WIN32:
@@ -299,14 +299,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     if check_repair_request():
         repair = 2
         pause_downloader = True
-    else:
-        # Check crash detection file
-        # if load_admin(TERM_FLAG_FILE, remove=True):
-            # Repair mode 2 is a bit over an over-reaction!
-        pass  # repair = 2
-
-    # Set crash detection file
-    # save_admin(1, TERM_FLAG_FILE)
 
     # Initialize threads
     rss.init()
@@ -418,7 +410,7 @@ def halt():
 
         # Save State
         try:
-            save_state(flag=True)
+            save_state()
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
 
@@ -512,7 +504,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     return future_nzo.nzo_id
 
 
-def save_state(flag=False):
+def save_state():
     """ Save all internal bookkeeping to disk """
     ArticleCache.do.flush_articles()
     NzbQueue.do.save()
@@ -521,9 +513,6 @@ def save_state(flag=False):
     Rating.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
-    # if flag:
-    #    # Remove crash detector
-    #    load_admin(TERM_FLAG_FILE, remove=True)
 
 
 def pause_all():

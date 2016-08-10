@@ -43,7 +43,6 @@ QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME = 'rss_data.sab'
 SCAN_FILE_NAME = 'watched_data2.sab'
-TERM_FLAG_FILE = 'running.sab'
 FUTURE_Q_FOLDER = 'future'
 JOB_ADMIN = '__ADMIN__'
 VERIFIED_FILE = '__verified__'

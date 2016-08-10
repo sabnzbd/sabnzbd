@@ -1609,7 +1609,7 @@ def main():
             if rc == win32event.WAIT_OBJECT_0:
                 if mail:
                     mail.send('stop')
-                sabnzbd.save_state(flag=True)
+                sabnzbd.save_state()
                 logging.info('Leaving SABnzbd')
                 sabnzbd.SABSTOP = True
                 return
