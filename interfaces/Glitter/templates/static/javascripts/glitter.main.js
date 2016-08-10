@@ -636,7 +636,6 @@ function ViewModel() {
         }
 
         // Upload
-        showNotification('.main-notification-box-uploading', 0, 1)
         self.addNZBFromFile($(form.nzbFile)[0].files[0]);
 
         // After that, hide and reset
@@ -673,7 +672,18 @@ function ViewModel() {
 
     }
     // From the upload or filedrop
-    self.addNZBFromFile = function(file) {
+    self.addNZBFromFile = function(files, fileindex) {
+        // Multiple?
+        if(fileindex !== undefined) {
+            var file = files[fileindex]
+            fileindex++
+        } else {
+            var file = files
+        }
+
+        // Add notification
+        showNotification('.main-notification-box-uploading', 0, fileindex)
+
         // Adding a file happens through this special function
         var data = new FormData();
         data.append("name", file);
@@ -684,7 +694,8 @@ function ViewModel() {
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val()); // Default priority
         data.append("pp", $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()); // Default post-processing options
         data.append("apikey", apiKey);
-        // Add 
+        
+        // Add this one
         $.ajax({
             url: "./tapi",
             type: "POST",
@@ -693,10 +704,16 @@ function ViewModel() {
             contentType: false,
             data: data
         }).then(function(r) {
-            // Hide notification
-            hideNotification('.main-notification-box-uploading')
-            // Refresh
-            self.refresh();
+            // Are we done?
+            if(fileindex < files.length) {
+                // Do the next one
+                self.addNZBFromFile(files, fileindex)
+            } else {
+                // Hide notification
+                hideNotification('.main-notification-box-uploading')
+                // Refresh
+                self.refresh();
+            }
         });
 
     }

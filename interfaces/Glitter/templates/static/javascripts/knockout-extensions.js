@@ -56,6 +56,7 @@ ko.bindingHandlers.longText = {
         });
     }
 };
+// Adapted for SABnzbd usage
 ko.bindingHandlers.filedrop = {
     init: function(element, valueAccessor) {
         var options = $.extend({}, {
@@ -97,12 +98,9 @@ ko.bindingHandlers.filedrop = {
             e.preventDefault();
             if(options.overlaySelector)
                 $(options.overlaySelector).hide();
-            if(typeof options.onFileDrop === "function")
-                $.each(e.originalEvent.dataTransfer.files, function(index) {
-                    // Add notification
-                    showNotification('.main-notification-box-uploading', 0, index+1)
-                    options.onFileDrop(this);
-                });
+            if(typeof options.onFileDrop === "function") {
+                options.onFileDrop(e.originalEvent.dataTransfer.files, 0)
+            }
         });
     }
 };
