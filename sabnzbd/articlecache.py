@@ -133,7 +133,7 @@ class ArticleCache(object):
                                      do_pickle=False, silent=True)
 
         if article in nzo.saved_articles:
-            nzo.saved_articles.remove(article)
+            nzo.remove_saved_article(article)
 
         return data
 

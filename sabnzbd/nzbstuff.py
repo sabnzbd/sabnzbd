@@ -917,10 +917,17 @@ class NzbObject(TryList):
 
         return dupe
 
-    def update_avg_kbs(self, bps):
+    @synchronized(IO_LOCK)
+    def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
             self.avg_bps_freq += 1
+        if serverid in self.servercount:
+            self.servercount[serverid] += bytes
+        else:
+            self.servercount[serverid] = bytes
+        self.bytes_downloaded += bytes
+
 
     @synchronized(IO_LOCK)
     def remove_nzf(self, nzf):
@@ -932,6 +939,7 @@ class NzbObject(TryList):
         nzf.deleted = True
         return not bool(self.files)
 
+    @synchronized(IO_LOCK)
     def reset_all_try_lists(self):
         for nzf in self.files:
             nzf.reset_all_try_lists()
@@ -1039,6 +1047,10 @@ class NzbObject(TryList):
             self.set_download_report()
 
         return (file_done, post_done, reset)
+
+    @synchronized(IO_LOCK)
+    def remove_saved_article(self, article):
+        self.saved_articles.remove(article)
 
     def check_existing_files(self, wdir):
         """ Check if downloaded files already exits, for these set NZF to complete """
