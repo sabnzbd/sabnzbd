@@ -893,8 +893,8 @@ class NzbObject(TryList):
         if not self.password and self.meta.get('password'):
             self.password = self.meta.get('password', [None])[0]
 
-        # Set nzo save-delay to 6 sec per GB with a max of 5 min
-        self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
+        # Set nzo save-delay to minimum 30 seconds
+        self.save_timeout = max(30, min(6.0 * float(self.bytes) / GIGI, 300.0))
 
         # If accept&fail, fail the job
         if accept == 2:
