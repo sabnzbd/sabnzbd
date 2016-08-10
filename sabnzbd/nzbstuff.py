@@ -1154,7 +1154,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED):
+        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):

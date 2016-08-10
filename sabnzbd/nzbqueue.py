@@ -253,7 +253,7 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
-            if not nzo.deleted:
+            if nzo.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
                     sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
