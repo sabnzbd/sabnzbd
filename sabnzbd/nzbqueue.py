@@ -461,6 +461,10 @@ class NzbQueue(TryList):
                 self.save(nzo)
         else:
             nzo_id = None
+
+        # Update the last check time, since history was updated
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+
         return nzo_id
 
     @synchronized(NZBQUEUE_LOCK)
