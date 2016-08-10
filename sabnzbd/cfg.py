@@ -148,7 +148,7 @@ auto_sort = OptionBool('misc', 'auto_sort', False)
 propagation_delay = OptionNumber('misc', 'propagation_delay', 0)
 folder_rename = OptionBool('misc', 'folder_rename', True)
 folder_max_length = OptionNumber('misc', 'folder_max_length', DEF_FOLDER_MAX, 20, 65000)
-pause_on_pwrar = OptionBool('misc', 'pause_on_pwrar', True)
+pause_on_pwrar = OptionNumber('misc', 'pause_on_pwrar', 1)
 prio_sort_list = OptionList('misc', 'prio_sort_list')
 enable_meta = OptionBool('misc', 'enable_meta', True)
 
