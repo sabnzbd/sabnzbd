@@ -256,9 +256,11 @@ class NzbQueue(TryList):
             if nzo.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
-                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                     if not nzo.futuretype:
+                        # Also includes save_data for NZO
                         nzo.save_to_disk()
+                    else:
+                       sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
