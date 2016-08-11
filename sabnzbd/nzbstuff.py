@@ -1497,8 +1497,8 @@ class NzbObject(TryList):
 
         if not self.futuretype:
             if keep_basic:
-                remove_all(wpath, 'SABnzbd_nz?_*')
-                remove_all(wpath, 'SABnzbd_article_*')
+                remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
+                remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
             else:
                 remove_all(wpath, recursive=True)
             if del_files:
