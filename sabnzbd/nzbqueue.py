@@ -253,12 +253,14 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
-            if not nzo.deleted:
+            if nzo.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
-                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                     if not nzo.futuretype:
+                        # Also includes save_data for NZO
                         nzo.save_to_disk()
+                    else:
+                       sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -459,6 +461,10 @@ class NzbQueue(TryList):
                 self.save(nzo)
         else:
             nzo_id = None
+
+        # Update the last check time, since history was updated
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+
         return nzo_id
 
     @synchronized(NZBQUEUE_LOCK)

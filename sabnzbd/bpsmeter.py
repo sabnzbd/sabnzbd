@@ -146,20 +146,12 @@ class BPSMeter(object):
 
     def save(self):
         """ Save admin to disk """
-        # Make copies to prevent changes during saving
-        day_total = self.day_total.copy()
-        week_total = self.week_total.copy()
-        month_total = self.month_total.copy()
-        grand_total = self.grand_total.copy()
-
-        data = (self.last_update, grand_total,
-                day_total, week_total, month_total,
+        data = (self.last_update, self.grand_total,
+                self.day_total, self.week_total, self.month_total,
                 self.end_of_day, self.end_of_week, self.end_of_month,
                 self.quota, self.left, self.q_time
                )
         sabnzbd.save_admin(data, BYTES_FILE_NAME)
-        del data
-        del day_total, week_total, month_total, grand_total
 
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """

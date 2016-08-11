@@ -1419,7 +1419,7 @@ SWITCH_LIST = \
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
-             'rating_enable', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
+             'rating_enable', 'rating_host', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
              'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
@@ -1502,7 +1502,7 @@ SPECIAL_BOOL_LIST = \
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
-              'ipv6_servers', 'rating_host', 'selftest_host'
+              'ipv6_servers', 'selftest_host'
      )
 SPECIAL_LIST_LIST = \
     ('rss_odd_titles', 'prio_sort_list'

@@ -893,8 +893,8 @@ class NzbObject(TryList):
         if not self.password and self.meta.get('password'):
             self.password = self.meta.get('password', [None])[0]
 
-        # Set nzo save-delay to 6 sec per GB with a max of 5 min
-        self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
+        # Set nzo save-delay to minimum 30 seconds
+        self.save_timeout = max(30, min(6.0 * float(self.bytes) / GIGI, 300.0))
 
         # If accept&fail, fail the job
         if accept == 2:
@@ -917,10 +917,17 @@ class NzbObject(TryList):
 
         return dupe
 
-    def update_avg_kbs(self, bps):
+    @synchronized(IO_LOCK)
+    def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
             self.avg_bps_freq += 1
+        if serverid in self.servercount:
+            self.servercount[serverid] += bytes
+        else:
+            self.servercount[serverid] = bytes
+        self.bytes_downloaded += bytes
+
 
     @synchronized(IO_LOCK)
     def remove_nzf(self, nzf):
@@ -932,6 +939,7 @@ class NzbObject(TryList):
         nzf.deleted = True
         return not bool(self.files)
 
+    @synchronized(IO_LOCK)
     def reset_all_try_lists(self):
         for nzf in self.files:
             nzf.reset_all_try_lists()
@@ -1039,6 +1047,10 @@ class NzbObject(TryList):
             self.set_download_report()
 
         return (file_done, post_done, reset)
+
+    @synchronized(IO_LOCK)
+    def remove_saved_article(self, article):
+        self.saved_articles.remove(article)
 
     def check_existing_files(self, wdir):
         """ Check if downloaded files already exits, for these set NZF to complete """
@@ -1154,7 +1166,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED):
+        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
@@ -1485,8 +1497,8 @@ class NzbObject(TryList):
 
         if not self.futuretype:
             if keep_basic:
-                remove_all(wpath, 'SABnzbd_nz?_*')
-                remove_all(wpath, 'SABnzbd_article_*')
+                remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
+                remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
             else:
                 remove_all(wpath, recursive=True)
             if del_files:
