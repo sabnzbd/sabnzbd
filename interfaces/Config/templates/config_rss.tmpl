@@ -520,6 +520,7 @@ function urlencode(str) {
 
     \$('.testFeed').click(function(){
         var whichFeed = \$(this).attr("rel");
+        \$(this).attr('disabled', true)
         \$.ajax({
             type: "POST",
             url: "test_rss_feed",

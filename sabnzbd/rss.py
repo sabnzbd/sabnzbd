@@ -679,25 +679,28 @@ def _get_link(uri, entry):
     size = 0L
     uri = uri.lower()
 
-    _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
-    _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
-    # Try to find size in Description
-    try:
-        desc = entry.description.replace('\n', ' ')
-        m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
-        if m:
-            size = from_units(m.group(1))
-            logging.debug('Found size %s for %s', size, uri)
-    except:
-        pass
-
-    # Try standard link first
+    # Try standard link and enclosures first
     link = entry.link
     if not link:
         link = entry.links[0].href
-    if encl_sites(uri, link):
+    if 'enclosures' in entry:
         try:
             link = entry.enclosures[0]['href']
+            size = int(entry.enclosures[0]['length'])
+            logging.debug('Found size %s for %s', size, uri)
+        except:
+            pass
+
+    if size == 0L:
+        _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
+        _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
+        # Try to find size in Description
+        try:
+            desc = entry.description.replace('\n', ' ')
+            m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
+            if m:
+                size = from_units(m.group(1))
+                logging.debug('Found size %s for %s', size, uri)
         except:
             pass
 
@@ -724,15 +727,6 @@ def _get_link(uri, entry):
 def special_rss_site(url):
     """ Return True if url describes an RSS site with odd titles """
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
-
-
-def encl_sites(url, link):
-    """ Return True if url or link matches sites that use enclosures """
-    _ENCL_SITES = ('nzbindex.nl', 'nzbindex.com', 'animeusenet.org', 'nzbclub.com')
-    for site in _ENCL_SITES:
-        if site in url or (link and site in link):
-            return True
-    return False
 
 
 def ep_match(season, episode, expr):
