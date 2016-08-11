@@ -1,5 +1,15 @@
-Release Notes  -  SABnzbd 1.1.0RC2
+Release Notes  -  SABnzbd 1.1.0RC3
 ==================================
+
+## What's new in 1.1.0RC3
+- Fix errors when saving job files to disk
+- Not all failed items in History had "Retry" buttons
+- Enable upload of multiple NZBs from the UI
+- Fix another stalling issue
+- Restore support for multi-volume 7zip files
+- Prevent "lock" errors in the History database
+- Lots of small fixes and improvements
+
 
 ## What's new in 1.1.0RC2
 - Fix XSS vulnerability on OSX and Unix**
