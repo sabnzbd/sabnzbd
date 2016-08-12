@@ -484,7 +484,7 @@ class Downloader(Thread):
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
                 
                 # Why check so often when so few things happend?
-                if len(read) < len(readkeys)/4:
+                if len(readkeys) >= 8 and len(read) < len(readkeys)/4:
                     time.sleep(0.05)
 
             else:
