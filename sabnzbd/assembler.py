@@ -313,7 +313,7 @@ def check_encrypted_rar(nzo, filepath):
                 nzo.encrypted = 1
             else:
                 # Don't check other files
-                nzo.encrypted = 2
+                nzo.encrypted = -1
                 encrypted = False
             zf.close()
             del zf
