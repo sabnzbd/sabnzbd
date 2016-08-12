@@ -34,7 +34,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import unicoder, join_path
 from sabnzbd.constants import NOTIFY_KEYS
 from sabnzbd.misc import split_host, make_script_path
 from sabnzbd.newsunpack import external_script
@@ -85,9 +85,9 @@ _GROWL_DATA = (None, None)    # Address and password
 
 
 def get_icon():
-    icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
+    icon = join_path(join_path(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
     if not os.path.isfile(icon):
-        icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+        icon = join_path(sabnzbd.DIR_PROG, 'sabnzbd.ico')
     if os.path.isfile(icon):
         if sabnzbd.WIN32 or sabnzbd.DARWIN:
             fp = open(icon, 'rb')
@@ -320,7 +320,7 @@ def send_notify_osd(title, message):
         return T('Not available')  # : Function is not available on this OS
 
     error = 'NotifyOSD not working'
-    icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
+    icon = join_path(sabnzbd.DIR_PROG, 'sabnzbd.ico')
     _NTFOSD = _NTFOSD or pynotify.init('icon-summary-body')
     if _NTFOSD:
         logging.info('Send to NotifyOSD: %s / %s', title, message)
@@ -338,7 +338,7 @@ def send_notify_osd(title, message):
 
 def ncenter_path():
     """ Return path of Notification Center tool, if it exists """
-    tool = os.path.normpath(os.path.join(sabnzbd.DIR_PROG, '../Resources/SABnzbd.app/Contents/MacOS/SABnzbd'))
+    tool = os.path.normpath(join_path(sabnzbd.DIR_PROG, '../Resources/SABnzbd.app/Contents/MacOS/SABnzbd'))
     if os.path.exists(tool):
         return tool
     else:

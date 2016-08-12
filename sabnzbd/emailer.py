@@ -29,7 +29,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
-from sabnzbd.encoding import EmailFilter
+from sabnzbd.encoding import EmailFilter, join_path
 import sabnzbd.cfg as cfg
 
 
@@ -169,16 +169,16 @@ def send_with_template(prefix, parm, test=None):
     path = cfg.email_dir.get_path()
     if path and os.path.exists(path):
         try:
-            lst = glob.glob(os.path.join(path, '%s-*.tmpl' % prefix))
+            lst = glob.glob(join_path(path, '%s-*.tmpl' % prefix))
         except:
             logging.error(T('Cannot find email templates in %s'), path)
     else:
-        path = os.path.join(sabnzbd.DIR_PROG, DEF_EMAIL_TMPL)
-        tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.language()))
+        path = join_path(sabnzbd.DIR_PROG, DEF_EMAIL_TMPL)
+        tpath = join_path(path, '%s-%s.tmpl' % (prefix, cfg.language()))
         if os.path.exists(tpath):
             lst = [tpath]
         else:
-            lst = [os.path.join(path, '%s-en.tmpl' % prefix)]
+            lst = [join_path(path, '%s-en.tmpl' % prefix)]
 
     sent = False
     for temp in lst:

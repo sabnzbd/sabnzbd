@@ -19,6 +19,7 @@
 sabnzbd.encoding - Unicoded filename support
 """
 
+import os
 import locale
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
@@ -349,6 +350,14 @@ def deunicode(p):
                 return p
     else:
         return p
+
+
+def join_path(first, second):
+    """ Join two paths in a Unicode-safe way """
+    try:
+        return os.path.join(first, second)
+    except UnicodeDecodeError:
+        return os.path.join(unicoder(first), unicoder(second))
 
 
 auto_fsys()

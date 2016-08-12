@@ -43,7 +43,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, MEBI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, special_fixer, gUTF
+from sabnzbd.encoding import unicoder, special_fixer, gUTF, join_path
 
 RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -83,11 +83,11 @@ def globber_full(path, pattern=u'*'):
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
         try:
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+            return [join_path(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
         except UnicodeDecodeError:
             # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
             path = path.encode('utf-8')
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+            return [join_path(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
     else:
         return []
 
@@ -325,14 +325,14 @@ def sanitize_and_trim_path(path):
     elif path.startswith('/'):
         new_path = '/'
     for part in parts:
-        new_path = os.path.join(new_path, sanitize_foldername(part))
+        new_path = join_path(new_path, sanitize_foldername(part))
     return os.path.abspath(os.path.normpath(new_path))
 
 
 def flag_file(path, flag, create=False):
     """ Create verify flag file or return True if it already exists """
-    path = os.path.join(path, JOB_ADMIN)
-    path = os.path.join(path, flag)
+    path = join_path(path, JOB_ADMIN)
+    path = join_path(path, flag)
     if create:
         try:
             f = open(path, 'w')
@@ -408,9 +408,9 @@ def real_path(loc, path):
                 if len(loc) > 1 and loc[0].isalpha() and loc[1] == ':':
                     path = loc[:2] + path
             else:
-                path = os.path.join(loc, path)
+                path = join_path(loc, path)
         elif path[0] != '/':
-            path = os.path.join(loc, path)
+            path = join_path(loc, path)
     else:
         path = loc
 
@@ -795,7 +795,7 @@ def get_unique_filename(path):
         name, ext = os.path.splitext(fname)
         fname = "%s.%d%s" % (name, num, ext)
         num += 1
-        path = os.path.join(path, fname)
+        path = join_path(path, fname)
     return path
 
 
@@ -885,14 +885,14 @@ def get_filepath(path, nzo, filename):
             if n:
                 dName += '.' + str(n)
             try:
-                os.mkdir(os.path.join(path, dName))
+                os.mkdir(join_path(path, dName))
                 break
             except:
                 pass
         nzo.work_name = dName
         nzo.created = True
 
-    fPath = os.path.join(os.path.join(path, dName), filename)
+    fPath = join_path(join_path(path, dName), filename)
     fPath, ext = os.path.splitext(fPath)
     n = 0
     while True:
@@ -915,7 +915,7 @@ def trim_win_path(path):
         maxlen = 69 - len(path)
         if len(folder) > maxlen:
             folder = folder[:maxlen]
-        path = os.path.join(path, folder).rstrip('. ')
+        path = join_path(path, folder).rstrip('. ')
     return path
 
 
@@ -923,7 +923,7 @@ def check_win_maxpath(folder):
     """ Return False if any file path in folder exceeds the Windows maximum """
     if sabnzbd.WIN32:
         for p in os.listdir(folder):
-            if len(os.path.join(folder, p)) > 259:
+            if len(join_path(folder, p)) > 259:
                 return False
     return True
 
@@ -934,7 +934,7 @@ def make_script_path(script):
     path = cfg.script_dir.get_path()
     if path and script:
         if script.lower() not in ('none', 'default'):
-            s_path = os.path.join(path, script)
+            s_path = join_path(path, script)
             if not os.path.exists(s_path):
                 s_path = None
     return s_path
@@ -945,9 +945,9 @@ def get_admin_path(name, future):
         or else the old cache path
     """
     if future:
-        return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
+        return join_path(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+        return join_path(join_path(cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
 def on_cleanup_list(filename, skip_nzb=False):
@@ -1171,7 +1171,7 @@ def find_on_path(targets):
 
     for path in paths:
         for target in targets:
-            target_path = os.path.abspath(os.path.join(path, target))
+            target_path = os.path.abspath(join_path(path, target))
             if os.path.isfile(target_path) and os.access(target_path, os.X_OK):
                 return target_path
     return None
@@ -1219,7 +1219,7 @@ def renamer(old, new):
     path, name = os.path.split(new)
     # Use the more stringent folder rename to end up with a nicer name,
     # but do not trim size
-    new = os.path.join(path, sanitize_foldername(name, False))
+    new = join_path(path, sanitize_foldername(name, False))
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
@@ -1370,7 +1370,7 @@ def set_permissions(path, recursive=True):
                 for root, _dirs, files in os.walk(path):
                     set_chmod(root, umask, report)
                     for name in files:
-                        set_chmod(os.path.join(root, name), umask_file, report)
+                        set_chmod(join_path(root, name), umask_file, report)
             else:
                 set_chmod(path, umask, report)
         else:
@@ -1393,7 +1393,7 @@ def short_path(path, always=True):
             else:
                 # For new path, shorten only existing part (recursive)
                 path1, name = os.path.split(path)
-                path = os.path.join(short_path(path1, always), name)
+                path = join_path(short_path(path1, always), name)
         path = clip_path(path)
     return path
 
@@ -1425,9 +1425,9 @@ def fix_unix_encoding(folder):
                 new_name = special_fixer(name).encode('utf-8')
                 if name != new_name:
                     try:
-                        shutil.move(os.path.join(root, name), os.path.join(root, new_name))
+                        shutil.move(join_path(root, name), join_path(root, new_name))
                     except:
-                        logging.info('Cannot correct name of %s', os.path.join(root, name))
+                        logging.info('Cannot correct name of %s', join_path(root, name))
 
 
 def get_urlbase(url):

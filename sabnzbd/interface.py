@@ -44,7 +44,7 @@ from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
-    platform_encode
+    platform_encode, join_path
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -402,7 +402,7 @@ class MainPage(object):
                     info['preload_queue'] = 'false'
                     info['preload_history'] = 'false'
 
-            template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
+            template = Template(file=join_path(self.__web_dir, 'main.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
         else:
@@ -672,7 +672,7 @@ class NzoPage(object):
                 info = self.nzo_details(info, pnfo_list, nzo_id)
                 info = self.nzo_files(info, pnfo_list, nzo_id)
 
-            template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
+            template = Template(file=join_path(self.__web_dir, 'nzo.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
         else:
@@ -835,7 +835,7 @@ class QueuePage(object):
         info, _pnfo_list, _bytespersec = build_queue(self.__web_dir, self.__root, self.__prim, self.__web_dir,
                                                      start=start, limit=limit, trans=True, search=search)
 
-        template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'queue.tmpl'),
                             filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1092,7 +1092,7 @@ class HistoryPage(object):
             history['finish'] = history['fetched']
         history['time_format'] = time_format
 
-        template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'history.tmpl'),
                             filter=FILTER, searchList=[history], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1276,7 +1276,7 @@ class ConfigPage(object):
 
         conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
 
-        template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1324,7 +1324,7 @@ def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
+        path = join_path(long_path(cfg.download_dir.get_path()), path)
         remove_all(path, recursive=True)
 
 def orphan_delete_all():
@@ -1337,7 +1337,7 @@ def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
         path = platform_encode(path)
-        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
+        path = join_path(long_path(cfg.download_dir.get_path()), path)
         sabnzbd.nzbqueue.repair_job(path, None, None)
 
 def orphan_add_all():
@@ -1377,7 +1377,7 @@ class ConfigFolders(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_folders.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_folders.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1460,7 +1460,7 @@ class ConfigSwitches(object):
 
         conf['script_list'] = list_scripts() or ['None']
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_switches.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1531,7 +1531,7 @@ class ConfigSpecial(object):
         conf['entries'] = [(kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
         conf['entries'].extend([(kw, config.get_config('misc', kw).get_string(), '') for kw in SPECIAL_LIST_LIST])
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_special.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_special.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1571,7 +1571,7 @@ class ConfigGeneral(object):
     def index(self, **kwargs):
         def ListColors(web_dir):
             lst = []
-            web_dir = os.path.join(sabnzbd.DIR_INTERFACES, web_dir)
+            web_dir = join_path(sabnzbd.DIR_INTERFACES, web_dir)
             dd = os.path.abspath(web_dir + '/templates/static/stylesheets/colorschemes')
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
@@ -1661,7 +1661,7 @@ class ConfigGeneral(object):
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
         conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -1803,7 +1803,7 @@ class ConfigServer(object):
         else:
             conf['have_ssl'] = 0
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2011,7 +2011,7 @@ class ConfigRss(object):
             unum += 1
         conf['feed'] = txt + str(unum)
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_rss.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2345,7 +2345,7 @@ class ConfigScheduling(object):
         conf['actions'] = actions
         conf['actions_lng'] = actions_lng
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_scheduling.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2445,7 +2445,7 @@ class ConfigCats(object):
         slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_cat.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2511,7 +2511,7 @@ class ConfigSorting(object):
             conf[kw] = config.get_config('misc', kw)()
         conf['cat_list'] = list_cats(False)
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_sorting.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2569,7 +2569,7 @@ class Status(object):
 
         header = build_status(web_dir=self.__web_dir, prim=self.__prim, skip_dashboard=kwargs.get('skip_dashboard'))
 
-        template = Template(file=os.path.join(self.__web_dir, 'status.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'status.tmpl'),
                             filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
         return template.respond()
 
@@ -2894,7 +2894,7 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('nscript', kw)()
         conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
-        template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
+        template = Template(file=join_path(self.__web_dir, 'config_notify.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 

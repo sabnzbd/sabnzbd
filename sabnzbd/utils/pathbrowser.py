@@ -29,6 +29,7 @@ else:
     NT = False
 
 import sabnzbd
+from sabnzbd.encoding import join_path
 
 _JUNKFOLDERS = (
         'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
@@ -86,7 +87,7 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
     file_list = []
     try:
         for filename in os.listdir(path):
-            fpath = os.path.join(path, filename)
+            fpath = join_path(path, filename)
             try:
                 if NT:
                     doit = (win32api.GetFileAttributes(fpath) & MASK) == TMASK and filename != 'PerfLogs'

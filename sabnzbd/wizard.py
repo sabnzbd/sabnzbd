@@ -29,6 +29,7 @@ import sabnzbd.api
 from sabnzbd.lang import list_languages, set_language
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.api import Ttemplate
+from sabnzbd.encoding import join_path
 import sabnzbd.interface
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -66,7 +67,7 @@ class Wizard(object):
             # If the wizard folder does not exist, simply load the normal page
             raise cherrypy.HTTPRedirect('')
         else:
-            template = Template(file=os.path.join(self.__web_dir, 'index.html'),
+            template = Template(file=join_path(self.__web_dir, 'index.html'),
                                 searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
             return template.respond()
 
@@ -118,7 +119,7 @@ class Wizard(object):
                 info['ssl'] = s.ssl()
                 if s.enable():
                     break
-        template = Template(file=os.path.join(self.__web_dir, 'one.html'),
+        template = Template(file=join_path(self.__web_dir, 'one.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
@@ -141,7 +142,7 @@ class Wizard(object):
         info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
 
-        template = Template(file=os.path.join(self.__web_dir, 'two.html'),
+        template = Template(file=join_path(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 

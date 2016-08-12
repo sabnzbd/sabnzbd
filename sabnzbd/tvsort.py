@@ -31,6 +31,7 @@ from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_pat
     get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
+from sabnzbd.encoding import join_path
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -70,7 +71,7 @@ def move_to_parent_folder(workdir):
     """ Move all in 'workdir' into 'workdir/..' """
     # Determine 'folder'/..
     workdir = os.path.abspath(os.path.normpath(workdir))
-    dest = os.path.abspath(os.path.normpath(os.path.join(workdir, '..')))
+    dest = os.path.abspath(os.path.normpath(join_path(workdir, '..')))
 
     # Check for DVD folders and stop if found
     for item in os.listdir(workdir):
@@ -79,7 +80,7 @@ def move_to_parent_folder(workdir):
 
     for root, dirs, files in os.walk(workdir):
         for _file in files:
-            path = os.path.join(root, _file)
+            path = join_path(root, _file)
             new_path = path.replace(workdir, dest)
             ok, new_path = move_to_path(path, new_path)
             if not ok:
@@ -162,7 +163,7 @@ class Sorter(object):
         path, part = os.path.split(workdir_complete)
         if '%fn' in part and self.sorter.fname:
             old = workdir_complete
-            workdir_complete = os.path.join(path, part.replace('%fn', self.sorter.fname))
+            workdir_complete = join_path(path, part.replace('%fn', self.sorter.fname))
             workdir_complete = get_unique_path(workdir_complete, create_dir=False)
             try:
                 renamer(old, workdir_complete)
@@ -219,11 +220,11 @@ class SeriesSorter(object):
         if self.get_values():
             # Get the final path
             path = self.construct_path()
-            self.final_path = os.path.join(self.original_path, path)
+            self.final_path = join_path(self.original_path, path)
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return join_path(self.original_path, self.original_dirname)
 
     def get_multi_ep_naming(self, one, two, extras):
         """ Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) """
@@ -388,7 +389,7 @@ class SeriesSorter(object):
             if is_full_path(f):
                 filepath = os.path.normpath(f)
             else:
-                filepath = os.path.normpath(os.path.join(current_path, f))
+                filepath = os.path.normpath(join_path(current_path, f))
             return filepath
 
         # Create a generator of filepaths, ignore sample files and excluded files (vobs ect)
@@ -413,7 +414,7 @@ class SeriesSorter(object):
             newname = "%s%s" % (self.filename_set, self.ext)
             # Replace %fn with the original filename
             newname = newname.replace('%fn', self.fname)
-            newpath = os.path.join(current_path, newname)
+            newpath = join_path(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace('%ext', self.ext)
             try:
@@ -532,11 +533,11 @@ class GenericSorter(object):
         if self.get_values():
             # Get the final path
             path = self.construct_path()
-            self.final_path = os.path.join(self.original_path, path)
+            self.final_path = join_path(self.original_path, path)
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return join_path(self.original_path, self.original_dirname)
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -636,7 +637,7 @@ class GenericSorter(object):
             if is_full_path(_file):
                 filepath = os.path.normpath(_file)
             else:
-                filepath = os.path.normpath(os.path.join(current_path, _file))
+                filepath = os.path.normpath(join_path(current_path, _file))
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
                 if size >= cfg.movie_rename_limit.get_int() and not RE_SAMPLE.search(_file) \
@@ -654,12 +655,12 @@ class GenericSorter(object):
             if is_full_path(file):
                 filepath = os.path.normpath(file)
             else:
-                filepath = os.path.normpath(os.path.join(current_path, file))
+                filepath = os.path.normpath(join_path(current_path, file))
             if os.path.exists(filepath):
                 self.fname, ext = os.path.splitext(os.path.split(file)[1])
                 newname = "%s%s" % (self.filename_set, ext)
                 newname = newname.replace('%fn', self.fname)
-                newpath = os.path.join(current_path, newname)
+                newpath = join_path(current_path, newname)
                 try:
                     logging.debug("Rename: %s to %s", filepath, newpath)
                     renamer(filepath, newpath)
@@ -677,13 +678,13 @@ class GenericSorter(object):
                 logging.debug("Renaming a series of generic files (%s)", matched_files)
                 renamed = matched_files.values()
                 for index, file in matched_files.iteritems():
-                    filepath = os.path.join(current_path, file)
+                    filepath = join_path(current_path, file)
                     renamed.append(filepath)
                     self.fname, ext = os.path.splitext(os.path.split(file)[1])
                     name = '%s%s' % (self.filename_set, self.extra)
                     name = name.replace('%1', str(index)).replace('%fn', self.fname)
                     name = name + ext
-                    newpath = os.path.join(current_path, name)
+                    newpath = join_path(current_path, name)
                     try:
                         logging.debug("Rename: %s to %s", filepath, newpath)
                         renamer(filepath, newpath)
@@ -740,11 +741,11 @@ class DateSorter(object):
         if self.get_values():
             # Get the final path
             path = self.construct_path()
-            self.final_path = os.path.join(self.original_path, path)
+            self.final_path = join_path(self.original_path, path)
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return join_path(self.original_path, self.original_dirname)
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -855,7 +856,7 @@ class DateSorter(object):
             if is_full_path(file):
                 filepath = os.path.normpath(file)
             else:
-                filepath = os.path.normpath(os.path.join(current_path, file))
+                filepath = os.path.normpath(join_path(current_path, file))
 
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
@@ -864,7 +865,7 @@ class DateSorter(object):
                         self.fname, ext = os.path.splitext(os.path.split(file)[1])
                         newname = "%s%s" % (self.filename_set, ext)
                         newname = newname.replace('%fn', self.fname)
-                        newpath = os.path.join(current_path, newname)
+                        newpath = join_path(current_path, newname)
                         if not os.path.exists(newpath):
                             try:
                                 logging.debug("Rename: %s to %s", filepath, newpath)
@@ -1088,18 +1089,18 @@ def rename_similar(folder, skip_ext, name, skipped_files):
 
     for root, dirs, files in os.walk(folder):
         for f in files:
-            path = os.path.join(root, f)
+            path = join_path(root, f)
             if path in skipped_files:
                 continue
             org, ext = os.path.splitext(f)
             if ext.lower() == skip_ext:
                 # Move file, but do not rename
-                newpath = os.path.join(folder, f)
+                newpath = join_path(folder, f)
             else:
                 # Move file and rename
                 newname = "%s%s" % (name, ext)
                 newname = newname.replace('%fn', org)
-                newpath = os.path.join(folder, newname)
+                newpath = join_path(folder, newname)
             if path != newpath:
                 newpath = get_unique_filename(newpath)
                 try:
@@ -1182,7 +1183,7 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     sorter.sort_string = expression
     sorter.match(force=True)
     path = sorter.get_final_path()
-    path = os.path.normpath(os.path.join(path, sorter.filename_set))
+    path = os.path.normpath(join_path(path, sorter.filename_set))
     fname = Ttemplate('orgFilename')
     fpath = path
     if sorttype == 'generic' and '%1' in multipart:

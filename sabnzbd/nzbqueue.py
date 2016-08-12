@@ -43,7 +43,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
-from sabnzbd.encoding import platform_encode
+from sabnzbd.encoding import platform_encode, join_path
 from sabnzbd.bpsmeter import BPSMeter
 
 
@@ -88,12 +88,12 @@ class NzbQueue(TryList):
                         nzo_ids = []
                         logging.error(T('Incompatible queuefile found, cannot proceed'))
                         if not repair:
-                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                            panic_queue(join_path(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                             exit_sab(2)
                 except ValueError:
                     nzo_ids = []
                     logging.error(T('Error loading %s, corrupt file detected'),
-                                  os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                                  join_path(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                     if not repair:
                         return
 
@@ -116,7 +116,7 @@ class NzbQueue(TryList):
         if repair:
             self.scan_jobs(not folders)
             # Handle any lost future jobs
-            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+            for item in globber_full(join_path(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
                 path, nzo_id = os.path.split(item)
                 if nzo_id not in self.__nzo_table:
                     if nzo_id.startswith('SABnzbd_nzo'):
@@ -188,7 +188,7 @@ class NzbQueue(TryList):
 
         nzo_id = None
         name = os.path.basename(folder)
-        path = os.path.join(folder, JOB_ADMIN)
+        path = join_path(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):
             filename = new_nzb.filename
         else:
@@ -254,13 +254,13 @@ class NzbQueue(TryList):
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
             if nzo.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
-                nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
+                nzo_ids.append(join_path(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
                     if not nzo.futuretype:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                       sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
+                       sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
