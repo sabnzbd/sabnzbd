@@ -186,7 +186,7 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(url) + '.nzb'
+                    filename = os.path.basename(url)
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]
@@ -201,10 +201,13 @@ class URLGrabber(Thread):
 
                 # process data
                 if gzipped:
-                    filename = filename + '.gz'
+                    filename += '.gz'
                 if not data:
                     data = fn.read()
                 fn.close()
+
+                if '<nzb' in data and misc.get_ext(filename) != '.nzb':
+                    filename += '.nzb'
 
                 # Sanatize filename first
                 filename = misc.sanitize_filename(filename)
@@ -218,7 +221,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
+                if misc.get_ext(filename) in ('.nzb', '.gz', 'bz2'):
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
@@ -236,9 +239,16 @@ class URLGrabber(Thread):
                         self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
-                    if dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
+                    status, zf, exp_ext = dirscanner.is_archive(path)
+                    if status == 0:
+                        if misc.get_ext(filename) not in ('.rar', '.zip', '.7z'):
+                            filename = filename + exp_ext
+                            os.rename(path, path + exp_ext)
+                            path = path + exp_ext
+
+                        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
                                                      nzbname=nzbname, url=future_nzo.url, keep=False,
-                                                     nzo_id=future_nzo.nzo_id)[0]:
+                                                     nzo_id=future_nzo.nzo_id)
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
                             os.remove(fn)
