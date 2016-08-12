@@ -109,8 +109,6 @@ class SABTrayThread(SysTrayIconThread):
 
             self.refresh_icon()
             self.counter = 0
-        if sabnzbd.SABSTOP:
-            self.terminate = True
 
     # menu handler
     def opencomplete(self, icon):

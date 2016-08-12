@@ -414,6 +414,10 @@ def halt():
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
 
+        # Stop the windows tray icon
+        if sabnzbd.WINTRAY:
+            sabnzbd.WINTRAY.terminate = True
+
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
         # needed to stop the scheduler.
