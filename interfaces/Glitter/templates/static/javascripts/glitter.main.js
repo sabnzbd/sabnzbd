@@ -125,7 +125,7 @@ function ViewModel() {
 
     // Check for any warnings/messages
     self.hasMessages = ko.pureComputed(function() {
-        return self.nrWarnings() > 0 || self.allMessages().length > 0;
+        return parseInt(self.nrWarnings()) + self.allMessages().length;
     })
 
     // Update main queue

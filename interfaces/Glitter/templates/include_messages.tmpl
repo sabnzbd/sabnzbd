@@ -1,4 +1,4 @@
-<div id="queue-messages" class="queue-messages" data-bind="visible: hasMessages()" style="display: none;">
+<div id="queue-messages" class="queue-messages" data-bind="visible: hasMessages() || displayTabbed()" style="display: none;">
     <table class="table table-hover table-messages">
         <thead>
             <tr>
@@ -35,6 +35,12 @@
                     </td>
                 </tr>
             <!-- /ko -->
+            <!-- ko if: !hasMessages() && displayTabbed() -->
+                <tr>
+                    <td>$T('none')</td>
+                    <td></td>
+                </tr>
+            <!-- /ko -->    
         </tbody>
     </table>
 </div>

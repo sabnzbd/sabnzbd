@@ -444,6 +444,8 @@ tbody>tr>td:last-child {
 **/
 .container-tabbed #history-tab,
 .container-tabbed #queue-tab,
+.container-tabbed #queue-tab,
+.container-tabbed #queue-messages,
 .container-tabbed .history h2,
 .container-tabbed .queue h2,
 .history-queue-swicher {
@@ -452,6 +454,7 @@ tbody>tr>td:last-child {
 
 .container-tabbed #history-tab.active,
 .container-tabbed #queue-tab.active,
+.container-tabbed #queue-messages.active,
 .container-tabbed .history-queue-swicher {
     display: block;
 }
@@ -485,6 +488,10 @@ tbody>tr>td:last-child {
 .history-queue-swicher .nav-tabs>li>a,
 .history-queue-swicher .nav-tabs>li.active>a  {
     border-bottom: 1px solid #eee
+}
+
+.history-queue-swicher .badge-warning {
+    background-color: #d9534f !important;
 }
 
 .history-queue-swicher .badge {
