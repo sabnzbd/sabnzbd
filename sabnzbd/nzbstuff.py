@@ -54,7 +54,7 @@ from sabnzbd.decorators import synchronized, IO_LOCK
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.encoding import unicoder, platform_encode
+from sabnzbd.encoding import unicoder, platform_encode, join_path
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
 
@@ -319,7 +319,7 @@ class NzbFile(TryList):
     def remove_admin(self):
         """ Remove article database from disk (sabnzbd_nzf_<id>)"""
         try:
-            os.remove(os.path.join(self.nzo.workpath, self.nzf_id))
+            os.remove(join_path(self.nzo.workpath, self.nzf_id))
         except:
             pass
 
@@ -693,8 +693,8 @@ class NzbObject(TryList):
             self.final_name = self.final_name.replace(' ', '_')
 
         # Determine "incomplete" folder
-        wdir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
-        adir = os.path.join(wdir, JOB_ADMIN)
+        wdir = long_path(join_path(cfg.download_dir.get_path(), self.work_name))
+        adir = join_path(wdir, JOB_ADMIN)
 
         # Check against identical checksum or series/season/episode
         if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
@@ -709,7 +709,7 @@ class NzbObject(TryList):
             wdir = trim_win_path(wdir)
             wdir = get_unique_path(wdir, create_dir=True)
             set_permissions(wdir)
-            adir = os.path.join(wdir, JOB_ADMIN)
+            adir = join_path(wdir, JOB_ADMIN)
 
         if not os.path.exists(adir):
             os.mkdir(adir)
@@ -1092,7 +1092,7 @@ class NzbObject(TryList):
         try:
             # Create an NZF for each remaining existing file
             for filename in files:
-                tup = os.stat(os.path.join(wdir, filename))
+                tup = os.stat(join_path(wdir, filename))
                 tm = datetime.datetime.fromtimestamp(tup.st_mtime)
                 nzf = NzbFile(tm, '"%s"' % filename, [], tup.st_size, self)
                 self.files.append(nzf)
@@ -1472,7 +1472,7 @@ class NzbObject(TryList):
         if self.futuretype:
             return ''
         else:
-            return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
+            return long_path(join_path(cfg.download_dir.get_path(), self.work_name))
 
     @property
     def group(self):
@@ -1820,7 +1820,7 @@ def scan_password(name):
 def get_attrib_file(path, size):
     """ Read job's attributes from file """
     attribs = []
-    path = os.path.join(path, ATTRIB_FILE)
+    path = join_path(path, ATTRIB_FILE)
     try:
         f = open(path, 'r')
     except:
@@ -1844,7 +1844,7 @@ def get_attrib_file(path, size):
 
 def set_attrib_file(path, attribs):
     """ Write job's attributes to file """
-    path = os.path.join(path, ATTRIB_FILE)
+    path = join_path(path, ATTRIB_FILE)
     try:
         f = open(path, 'w')
     except:

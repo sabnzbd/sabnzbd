@@ -57,7 +57,7 @@ from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
     starts_with_path, cat_convert, clip_path
-from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
+from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape, join_path
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -738,7 +738,7 @@ def _api_test_email(name, output, kwargs):
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
     res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
+                                 os.path.normpath(join_path(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
                                  123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
     if res == 'Email succeeded':
@@ -1904,7 +1904,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                                  path not in retry_folders and
                                  starts_with_path(path, cfg.download_dir.get_path()) and
                                  os.path.exists(path)) and
-                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
+                                 not bool(globber(join_path(path, JOB_ADMIN), 'SABnzbd_n*'))
                             )
         if item['report'] == 'future':
             item['retry'] = True

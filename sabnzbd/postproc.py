@@ -37,7 +37,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
-from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.encoding import TRANS, unicoder, join_path
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
@@ -341,11 +341,11 @@ def process_job(nzo):
             if one_folder:
                 workdir_complete = create_dirs(complete_dir)
             else:
-                workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+                workdir_complete = get_unique_path(join_path(complete_dir, dirname), create_dir=True)
                 marker_file = set_marker(workdir_complete)
 
             if not workdir_complete or not os.path.exists(workdir_complete):
-                crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, dirname))
+                crash_msg = T('Cannot create final folder %s') % unicoder(join_path(complete_dir, dirname))
                 raise IOError
 
             if cfg.folder_rename() and not one_folder:
@@ -382,7 +382,7 @@ def process_job(nzo):
                 for root, _dirs, files in os.walk(workdir):
                     if not root.endswith(JOB_ADMIN):
                         for file_ in files:
-                            path = os.path.join(root, file_)
+                            path = join_path(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
                             ok, new_path = move_to_path(path, new_path)
                             newfiles.append(new_path)
@@ -395,7 +395,7 @@ def process_job(nzo):
             set_permissions(tmp_workdir_complete)
 
             if all_ok and marker_file:
-                del_marker(os.path.join(tmp_workdir_complete, marker_file))
+                del_marker(join_path(tmp_workdir_complete, marker_file))
                 remove_from_list(marker_file, newfiles)
 
             if all_ok:
@@ -615,7 +615,7 @@ def parring(nzo, workdir):
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
                 parfile_nzf = par_table[setname]
-                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
+                if os.path.exists(join_path(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
                     re_add = re_add or need_re_add
                     if not res and not need_re_add and cfg.sfv_check():
@@ -691,7 +691,7 @@ def addPrefixes(path, dirprefix):
             break
         basepath = os.path.basename(os.path.abspath(path))
         if folder != basepath.lower():
-            path = os.path.join(path, folder)
+            path = join_path(path, folder)
     return path
 
 
@@ -719,7 +719,7 @@ def cleanup_list(wdir, skip_nzb):
         except:
             files = ()
         for filename in files:
-            path = os.path.join(wdir, filename)
+            path = join_path(wdir, filename)
             if os.path.isdir(path):
                 cleanup_list(path, skip_nzb)
             else:
@@ -742,7 +742,7 @@ def prefix(path, pre):
         '/my/path' and 'hi_' will give '/my/hi_path'
     """
     p, d = os.path.split(path)
-    return os.path.join(p, pre + d)
+    return join_path(p, pre + d)
 
 
 def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
@@ -753,7 +753,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     files = []
     for root, _dirs, names in os.walk(wdir):
         for name in names:
-            files.append(os.path.join(root, name))
+            files.append(join_path(root, name))
 
     for file_ in files:
         if os.path.splitext(file_)[1].lower() != '.nzb':
@@ -775,7 +775,7 @@ def one_file_or_folder(folder):
     if os.path.exists(folder) and os.path.isdir(folder):
         cont = os.listdir(folder)
         if len(cont) == 1:
-            folder = os.path.join(folder, cont[0])
+            folder = join_path(folder, cont[0])
             folder = one_file_or_folder(folder)
     return folder
 
@@ -799,7 +799,7 @@ def remove_samples(path):
     for root, _dirs, files in os.walk(path):
         for file_ in files:
             if RE_SAMPLE.search(file_):
-                path = os.path.join(root, file_)
+                path = join_path(root, file_)
                 try:
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
@@ -817,9 +817,9 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     items = globber(oldpath)
     if len(items) == 1:
         folder = items[0]
-        folder_path = os.path.join(oldpath, folder)
+        folder_path = join_path(oldpath, folder)
         if os.path.isdir(folder_path) and folder not in ('VIDEO_TS', 'AUDIO_TS'):
-            logging.info('Collapsing %s', os.path.join(newpath, folder))
+            logging.info('Collapsing %s', join_path(newpath, folder))
             oldpath = folder_path
 
     oldpath = os.path.normpath(oldpath)
@@ -838,7 +838,7 @@ def set_marker(folder):
     """ Set marker file and return name """
     name = cfg.marker_file()
     if name:
-        path = os.path.join(folder, name)
+        path = join_path(folder, name)
         logging.debug('Create marker file %s', path)
         try:
             fp = open(path, 'w')

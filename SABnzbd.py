@@ -97,7 +97,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, deunicode
+from sabnzbd.encoding import unicoder, deunicode, join_path
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
@@ -361,9 +361,9 @@ def Web_Template(key, defweb, wdir):
 
 def CheckColor(color, web_dir):
     """ Check existence of color-scheme """
-    if color and os.path.exists(os.path.join(web_dir, 'static/stylesheets/colorschemes/' + color + '.css')):
+    if color and os.path.exists(join_path(web_dir, 'static/stylesheets/colorschemes/' + color + '.css')):
         return color
-    elif color and os.path.exists(os.path.join(web_dir, 'static/stylesheets/colorschemes/' + color)):
+    elif color and os.path.exists(join_path(web_dir, 'static/stylesheets/colorschemes/' + color)):
         return color
     else:
         return ''
@@ -407,9 +407,9 @@ def GetProfileInfo(vista_plus):
         try:
             from win32com.shell import shell, shellcon
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0)
-            sabnzbd.DIR_APPDATA = os.path.join(path, DEF_WORKDIR)
+            sabnzbd.DIR_APPDATA = join_path(path, DEF_WORKDIR)
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
-            sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
+            sabnzbd.DIR_LCLDATA = join_path(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ['USERPROFILE']
             ok = True
         except:
@@ -756,7 +756,7 @@ def evaluate_inipath(path):
     if sabnzbd.WIN32:
         path = unicoder(path)
     path = os.path.normpath(os.path.abspath(path))
-    inipath = os.path.join(path, DEF_INI_FILE)
+    inipath = join_path(path, DEF_INI_FILE)
     if os.path.isdir(path):
         return inipath
     elif os.path.isfile(path) or os.path.isfile(path + '.bak'):
@@ -1176,7 +1176,7 @@ def main():
         log_handler = NewRotatingFileHandler
     else:
         log_handler = logging.handlers.RotatingFileHandler
-    sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+    sabnzbd.LOGFILE = join_path(logdir, DEF_LOG_FILE)
     logsize = sabnzbd.cfg.log_size.get_int()
 
     try:
@@ -1201,7 +1201,7 @@ def main():
         try:
             x = sys.stderr.fileno
             x = sys.stdout.fileno
-            ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
+            ol_path = join_path(logdir, DEF_LOG_ERRFILE)
             out_log = file(ol_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
@@ -1319,8 +1319,8 @@ def main():
     web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
     web_dirc = Web_Template(None, DEF_STDCONFIG, '')
 
-    wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    # sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
+    wizard_dir = join_path(sabnzbd.DIR_INTERFACES, 'wizard')
+    # sabnzbd.lang.install_language(join_path(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
@@ -1366,7 +1366,7 @@ def main():
 
     if cherrypylogging:
         if logdir:
-            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
+            sabnzbd.WEBLOGFILE = join_path(logdir, DEF_LOG_CHERRY)
         # Define our custom logger for cherrypy errors
         cherrypy_logging(sabnzbd.WEBLOGFILE, log_handler)
         if not fork:
@@ -1468,9 +1468,9 @@ def main():
                             })
 
     forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
-    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
-    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': join_path(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': join_path(web_dirc, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
+    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': join_path(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
     appconfig = {'/sabnzbd/api': {'tools.basic_auth.on': False},
                  '/api': {'tools.basic_auth.on': False},
@@ -1489,7 +1489,7 @@ def main():
                  }
 
     if web_dir2:
-        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': join_path(web_dir2, 'static'), 'tools.staticdir.content_types': forced_mime_types}
         appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on': False}
         appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on': False}
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}

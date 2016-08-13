@@ -545,7 +545,7 @@ NZB_LOCK = Lock()
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
-    return path and os.path.exists(os.path.join(path, filename + '.gz'))
+    return path and os.path.exists(encoding.join_path(path, filename + '.gz'))
 
 
 def backup_nzb(filename, data):
@@ -567,14 +567,14 @@ def save_compressed(folder, filename, data):
         filename += '.gz'
     else:
         filename += '.nzb.gz'
-    logging.info("Backing up %s", os.path.join(folder, filename))
+    logging.info("Backing up %s", encoding.join_path(folder, filename))
     try:
         f = gzip.GzipFile(filename, 'wb')
         f.write(data)
         f.flush()
         f.close()
     except:
-        logging.error(T('Saving %s failed'), os.path.join(folder, filename))
+        logging.error(T('Saving %s failed'), encoding.join_path(folder, filename))
         logging.info("Traceback: ", exc_info=True)
 
     os.chdir(here)
@@ -774,7 +774,7 @@ def change_queue_complete_action(action, new=True):
 
 def run_script(script):
     """ Run a user script (queue complete only) """
-    command = [os.path.join(cfg.script_dir.get_path(), script)]
+    command = [encoding.join_path(cfg.script_dir.get_path(), script)]
     if os.path.exists(command[0]):
         stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
         logging.info('Spawning external command %s', command)
@@ -846,7 +846,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
         logging.debug("Saving data for %s in %s", _id, path)
-    path = os.path.join(path, _id)
+    path = encoding.join_path(path, _id)
 
     try:
         _f = open(path, 'wb')
@@ -872,7 +872,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
 @synchronized(IO_LOCK)
 def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     """ Read data from disk file """
-    path = os.path.join(path, _id)
+    path = encoding.join_path(path, _id)
 
     if not os.path.exists(path):
         logging.info("%s missing", path)
@@ -905,7 +905,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
 @synchronized(IO_LOCK)
 def remove_data(_id, path):
     """ Remove admin file """
-    path = os.path.join(path, _id)
+    path = encoding.join_path(path, _id)
     try:
         if os.path.exists(path):
             os.remove(path)
@@ -917,7 +917,7 @@ def remove_data(_id, path):
 @synchronized(IO_LOCK)
 def save_admin(data, _id, do_pickle=True):
     """ Save data in admin folder in specified format """
-    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    path = encoding.join_path(cfg.admin_dir.get_path(), _id)
     logging.info("Saving data for %s in %s", _id, path)
 
     try:
@@ -941,7 +941,7 @@ def save_admin(data, _id, do_pickle=True):
 @synchronized(IO_LOCK)
 def load_admin(_id, remove=False, do_pickle=True, silent=False):
     """ Read data in admin folder in specified format """
-    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    path = encoding.join_path(cfg.admin_dir.get_path(), _id)
     logging.info("Loading data for %s from %s", _id, path)
 
     if not os.path.exists(path):
@@ -997,7 +997,7 @@ def opts_to_pp(repair, unpack, delete):
 
 def request_repair():
     """ Request a full repair on next restart """
-    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    path = encoding.join_path(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     try:
         f = open(path, 'w')
         f.write('\n')
@@ -1008,7 +1008,7 @@ def request_repair():
 
 def check_repair_request():
     """ Return True if repair request found, remove afterwards """
-    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    path = encoding.join_path(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     if os.path.exists(path):
         try:
             os.remove(path)
@@ -1076,7 +1076,7 @@ def pid_file(pid_path=None, pid_file=None, port=0):
     global DIR_PID
     if not sabnzbd.WIN32:
         if pid_path and pid_path.startswith('/'):
-            DIR_PID = os.path.join(pid_path, 'sabnzbd-%s.pid' % port)
+            DIR_PID = encoding.join_path(pid_path, 'sabnzbd-%s.pid' % port)
         elif pid_file and pid_file.startswith('/'):
             DIR_PID = pid_file
 
@@ -1098,7 +1098,7 @@ def check_incomplete_vs_complete():
     if misc.same_file(cfg.download_dir.get_path(), complete):
         if misc.real_path('X', cfg.download_dir()) == cfg.download_dir():
             # Abs path, so set an abs path too
-            cfg.download_dir.set(os.path.join(complete, 'incomplete'))
+            cfg.download_dir.set(encoding.join_path(complete, 'incomplete'))
         else:
             cfg.download_dir.set('incomplete')
 
@@ -1112,7 +1112,7 @@ def wait_for_download_folder():
 def check_old_queue():
     """ Check for old queue (when a new queue is not present) """
     old = False
-    if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
+    if not os.path.exists(encoding.join_path(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
         for ver in (QUEUE_VERSION -1 , QUEUE_VERSION - 2, QUEUE_VERSION - 3):
             data = load_admin(QUEUE_FILE_TMPL % str(ver))
             if data:

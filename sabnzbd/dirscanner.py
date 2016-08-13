@@ -31,6 +31,7 @@ import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
+from sabnzbd.encoding import join_path
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
@@ -252,7 +253,7 @@ def CleanList(list, folder, files):
         if fld == folder:
             present = False
             for name in files:
-                if os.path.join(folder, name) == path:
+                if join_path(folder, name) == path:
                     present = True
                     break
             if not present:
@@ -341,7 +342,7 @@ class DirScanner(threading.Thread):
                 files = []
 
             for filename in files:
-                path = os.path.join(folder, filename)
+                path = join_path(folder, filename)
                 if os.path.isdir(path) or path in self.ignored or filename[0] == '.':
                     continue
 
@@ -425,7 +426,7 @@ class DirScanner(threading.Thread):
 
                 cats = config.get_categories()
                 for dd in list:
-                    dpath = os.path.join(dirscan_dir, dd)
+                    dpath = join_path(dirscan_dir, dd)
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
             self.busy = False

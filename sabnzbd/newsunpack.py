@@ -30,7 +30,7 @@ import shutil
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
-    reliable_unpack_names, unicoder, platform_encode, deunicode
+    reliable_unpack_names, unicoder, platform_encode, deunicode, join_path
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     flag_file, real_path, globber, globber_full, short_path
@@ -87,7 +87,7 @@ def find_programs(curdir):
     global load_data, save_data
 
     def check(path, program):
-        p = os.path.abspath(os.path.join(path, program))
+        p = os.path.abspath(join_path(path, program))
         if os.access(p, os.X_OK):
             return p
         else:
@@ -788,7 +788,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
                 if '?' in path:
                     logging.info('Skipping check of file %s', path)
                     continue
-                fullpath = os.path.join(extraction_path, path)
+                fullpath = join_path(extraction_path, path)
                 logging.debug("Checking existence of %s", fullpath)
                 if path.endswith('/'):
                     # Folder
@@ -1061,7 +1061,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     # set the current nzo status to "Repairing". Used in History
 
     assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
-    parfile = os.path.join(workdir, parfile_nzf.filename)
+    parfile = join_path(workdir, parfile_nzf.filename)
     parfile = short_path(parfile)
     workdir = short_path(workdir)
 
@@ -1138,15 +1138,15 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             for path in new_dir_content:
                 if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
                     try:
-                        path = os.path.join(workdir, path)
+                        path = join_path(workdir, path)
 
                         logging.info("Deleting %s", path)
                         os.remove(path)
                     except:
                         logging.warning(T('Deleting %s failed!'), path)
 
-            path = os.path.join(workdir, setname + '.par2')
-            path2 = os.path.join(workdir, setname + '.PAR2')
+            path = join_path(workdir, setname + '.par2')
+            path2 = join_path(workdir, setname + '.PAR2')
 
             if os.path.exists(path):
                 try:
@@ -1172,7 +1172,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             deletables = []
             for f in pars:
                 if f in setpars:
-                    deletables.append(os.path.join(workdir, f))
+                    deletables.append(join_path(workdir, f))
             deletables.extend(used_joinables)
             deletables.extend(used_par2)
             for filepath in deletables:
@@ -1243,7 +1243,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         wildcard = setname + '*'
 
     if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        command.append(os.path.join(parfolder, wildcard))
+        command.append(join_path(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
         flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
@@ -1303,7 +1303,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             if extra_par2_name and line.startswith('Loaded '):
                 m = _RE_LOADED_PAR2.search(line)
                 if m and int(m.group(1)) > 0:
-                    used_par2.append(os.path.join(nzo.downpath, extra_par2_name))
+                    used_par2.append(join_path(nzo.downpath, extra_par2_name))
                 extra_par2_name = None
                 continue
             extra_par2_name = None
@@ -1475,10 +1475,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         # Special case of joined RAR files, the "of" and "from" must both be RAR files
                         # This prevents the joined rars files from being seen as an extra rar-set
                         if '.rar' in old_name.lower() and '.rar' in new_name.lower():
-                            used_joinables.append(os.path.join(workdir, old_name))
+                            used_joinables.append(join_path(workdir, old_name))
                     else:
                         logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
-                        reconstructed.append(os.path.join(workdir, old_name))
+                        reconstructed.append(join_path(workdir, old_name))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
                 # Hit a bug in par2-tbb, retry with par2-classic
@@ -1666,7 +1666,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
                     try:
-                        p = os.path.join(root, _file)
+                        p = join_path(root, _file)
                         filelist.append(p)
                     except UnicodeDecodeError:
                         # Just skip failing names
@@ -1677,7 +1677,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
                     try:
-                        p = os.path.join(root, _file)
+                        p = join_path(root, _file)
                         filelist.append(p)
                     except UnicodeDecodeError:
                         # Just skip failing names
@@ -1793,7 +1793,7 @@ def sfv_check(sfv_path):
             if x > 0:
                 filename = platform_encode(line[:x].strip())
                 checksum = line[x:].strip()
-                path = os.path.join(root, filename)
+                path = join_path(root, filename)
                 if os.path.exists(path):
                     if crc_check(path, checksum):
                         logging.debug('File %s passed SFV check', path)

@@ -37,7 +37,7 @@ import threading
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME, STAGES
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import unicoder, join_path
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 
@@ -81,7 +81,7 @@ class HistoryDB(object):
         """ Determine databse path and create connection """
         self.con = self.c = None
         if not HistoryDB.db_path:
-            HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
+            HistoryDB.db_path = join_path(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
 
 

@@ -30,7 +30,7 @@ from threading import Thread
 
 import sabnzbd
 from sabnzbd.constants import FUTURE_Q_FOLDER, Status
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import unicoder, join_path
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
@@ -213,8 +213,8 @@ class URLGrabber(Thread):
                 filename = misc.sanitize_filename(filename)
 
                 # Write data to temp file
-                path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
-                path = os.path.join(path, filename)
+                path = join_path(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
+                path = join_path(path, filename)
                 f = open(path, 'wb')
                 f.write(data)
                 f.close()
