@@ -41,7 +41,7 @@ def test_nntp_server_dict(kwargs):
     if not connections:
         return False, T('There are no connections set. Please set at least one connection.')
     ssl = int_conv(kwargs.get('ssl', 0))
-    ssl_type = kwargs.get('ssl_type', 't1')
+    ssl_type = kwargs.get('ssl_type', 'v23')
     port = int_conv(kwargs.get('port', 0))
     if not port:
         if ssl:
@@ -53,7 +53,7 @@ def test_nntp_server_dict(kwargs):
                         password=password, ssl=ssl, ssl_type=ssl_type)
 
 
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type='t1'):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type='v23'):
     """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
     if '*' in password and not password.strip('*'):
