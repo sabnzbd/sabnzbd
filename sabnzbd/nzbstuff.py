@@ -1124,7 +1124,7 @@ class NzbObject(TryList):
         prefix = ''
         if self.duplicate:
             prefix = T('DUPLICATE') + ' / '  # : Queue indicator for duplicate job
-        if self.encrypted and self.status == 'Paused':
+        if self.encrypted > 0 and self.status == 'Paused':
             prefix += T('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
         if self.oversized and self.status == 'Paused':
             prefix += T('TOO LARGE') + ' / '  # : Queue indicator for oversized job
@@ -1171,7 +1171,7 @@ class NzbObject(TryList):
 
     def resume(self):
         self.status = Status.QUEUED
-        if self.encrypted:
+        if self.encrypted > 0:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
         if self.rating_filtered:

@@ -560,7 +560,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
         passwords.append('')
-    elif not passwords or not nzo.encrypted:
+    elif not passwords or nzo.encrypted < 1:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, '')
@@ -973,7 +973,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
         passwords.append('')
-    elif not passwords or not nzo.encrypted:
+    elif not passwords or nzo.encrypted < 1:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, '')

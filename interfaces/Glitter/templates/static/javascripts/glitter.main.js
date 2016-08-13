@@ -168,6 +168,8 @@ function ViewModel() {
         // Same sizes? Then it's all 1 disk!
         if(response.queue.diskspace1 != response.queue.diskspace2) {
             self.diskSpaceLeft2(response.queue.diskspace2_norm)
+        } else {
+            self.diskSpaceLeft2('')
         }
         
         // Did we exceed the space?
