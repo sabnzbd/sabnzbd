@@ -65,7 +65,7 @@ def platform_encode(p):
         try:
             return p.decode('utf-8')
         except:
-            return p.decode(codepage)
+            return p.decode(codepage, errors='replace').replace('?', '!')
     else:
         return p
 
@@ -81,16 +81,17 @@ def name_fixer(p):
             try:
                 return p.decode(codepage)
             except:
-                return p.decode('cp1252', 'ignore')
+                return p.decode('cp1252', 'replace').replace('?', '!')
     else:
         return p
+
 
 def yenc_name_fixer(p):
     """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
     try:
         return p.decode('utf-8')
     except:
-        return p.decode('cp1252')
+        return p.decode('cp1252', errors='replace').replace('?', '!')
 
 
 def is_utf8(p):
