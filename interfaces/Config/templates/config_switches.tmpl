@@ -207,21 +207,6 @@
                         <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-safe_postproc')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_unrar then "disabled" else "" #-->">
-                        <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
-                        <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if not $have_unrar then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_unrar')</span>
-                    </div>
-                    <div class="field-pair <!--#if not $have_unzip then "disabled" else "" #-->">
-                        <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
-                        <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if not $have_unzip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_unzip')</span>
-                    </div>
-                    <div class="field-pair <!--#if not $have_7zip then "disabled" else "" #-->">
-                        <label class="config" for="enable_7zip">$T('opt-enable_7zip')</label>
-                        <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if not $have_7zip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_7zip')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
                         <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
@@ -236,16 +221,6 @@
                         <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
                         <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-overwrite_files')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
-                        <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_filejoin')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
-                        <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-ts_join')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="unpack_check">$T('opt-unpack_check')</label>
