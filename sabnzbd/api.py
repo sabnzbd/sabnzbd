@@ -2001,11 +2001,17 @@ def calc_timeleft(bytesleft, bps):
         totalseconds = int(bytesleft / bps)
         minutes, seconds = divmod(totalseconds, 60)
         hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
         if minutes < 10:
             minutes = '0%s' % minutes
         if seconds < 10:
             seconds = '0%s' % seconds
-        return '%s:%s:%s' % (hours, minutes, seconds)
+        if days > 0:
+            if hours < 10:
+                hours = '0%s' % hours
+            return '%s:%s:%s:%s' % (days, hours, minutes, seconds)
+        else:
+            return '%s:%s:%s' % (hours, minutes, seconds)
     except:
         return '0:00:00'
 

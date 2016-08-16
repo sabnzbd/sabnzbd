@@ -109,27 +109,17 @@ function convertHTMLtoText(htmltxt) {
     return $('<div>').text(htmltxt).html().replace(/&lt;br\/&gt;/g, '<br/>')
 }
 
-// Function to re-write 0:09:21 to 9:21
+// Function to re-write 0:09:21=>9:21, 0:10:10=>10:10, 0:00:30=>0:30
 function rewriteTime(timeString) {
-    var timeSplit = timeString.split(/:/);
-    var hours = parseInt(timeSplit[0]);
-    var minutes = parseInt(timeSplit[1]);
-    var seconds = parseInt(timeSplit[2]);
-
-    // Fix seconds
-    if(seconds < 10) seconds = "0" + seconds;
-
-    // With or without leading 0?
-    if(hours == 0) {
-        // Output
-        return minutes + ":" + seconds
+    // Remove "0:0" from start
+    if(timeString.substring(0,3) == '0:0') {
+        timeString = timeString.substring(3)
     }
-
-    // Fix minutes if more than 1 hour
-    if(minutes < 10) minutes = "0" + minutes;
-
-    // Regular
-    return hours + ':' + minutes + ':' + seconds;
+    // Remove "0:" from start
+    else if(timeString.substring(0,2) == '0:') {
+        timeString = timeString.substring(2)
+    }
+    return timeString
 }
 
 // How to display the date-time?
