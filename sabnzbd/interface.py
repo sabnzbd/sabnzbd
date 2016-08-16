@@ -1041,7 +1041,6 @@ class HistoryPage(object):
         self.__verbose_list = []
         self.__failed_only = False
         self.__prim = prim
-        self.__edit_rating = None
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1071,12 +1070,6 @@ class HistoryPage(object):
                to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
-
-        for line in history['lines']:
-            if self.__edit_rating is not None and line.get('nzo_id') == self.__edit_rating:
-                line['edit_rating'] = True
-            else:
-                line['edit_rating'] = ''
 
         if search:
             history['search'] = escape(search)
