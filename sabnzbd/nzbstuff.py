@@ -1447,8 +1447,8 @@ class NzbObject(TryList):
         if cfg.rating_enable():
             try:
                 def _get_first_meta(type):
-                    values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
-                    return values[0] if values else None
+                    values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
+                    return values[0] if values and isinstance(values, list) else values
                 rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup', 'votedown',
                                 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
                 fields = {}
