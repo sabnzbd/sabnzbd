@@ -380,7 +380,7 @@ class ConfigServer(object):
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
-        self.ssl_type = OptionStr(name, 'ssl_type', 'v23', add=False)
+        self.ssl_type = OptionStr(name, 'ssl_type', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
