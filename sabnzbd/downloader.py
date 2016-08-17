@@ -578,7 +578,7 @@ class Downloader(Thread):
                                     errormsg = T('Too many connections to server %s') % display_msg
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.error(T('Too many connections to server %s'), server.id)
+                                        logging.warning(T('Too many connections to server %s'), server.id)
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
@@ -589,7 +589,7 @@ class Downloader(Thread):
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
                                         name = ' (%s)' % server.id
-                                        logging.error(T('Probable account sharing') + name)
+                                        logging.warning(T('Probable account sharing') + name)
                                     penalty = _PENALTY_SHARE
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
@@ -624,7 +624,7 @@ class Downloader(Thread):
                                     errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.error(T('Cannot connect to server %s [%s]'), server.id, msg)
+                                        logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
