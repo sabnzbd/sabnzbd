@@ -149,8 +149,9 @@ msgid ""
 "Enhanced functionality including ratings and extra status information is "
 "available when connected to OZnzb indexer."
 msgstr ""
-"Enhanced functionality including ratings and extra status information is "
-"available when connected to a supported indexer."
+"Indexers can supply information when a job is added <strong>or</strong> "
+"using the settings below to provide ratings and extra status information. "
+"<br>The Server address and API key settings can be left blank, depending on your indexer. "
 
 #: sabnzbd/skintext.py:523
 msgid ""

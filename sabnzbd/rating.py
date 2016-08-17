@@ -21,6 +21,7 @@ sabnzbd.rating - Rating support functions
 
 import httplib
 import urllib
+import urlparse
 import time
 import logging
 import copy
@@ -37,7 +38,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.utils.ordered import OrderedSetQueue
 import sabnzbd.cfg as cfg
 
-RATING_URL = "/releaseRatings/releaseRatings.php"
+_RATING_URL = "/releaseRatings/releaseRatings.php"
 RATING_LOCK = RLock()
 
 _g_warnings = 0
@@ -160,8 +161,8 @@ class Rating(Thread):
 
     # The same file may be uploaded multiple times creating a new nzo_id each time
     @synchronized(RATING_LOCK)
-    def add_rating(self, indexer_id, nzo_id, host, fields):
-        if indexer_id and nzo_id and (len(fields) == 10):
+    def add_rating(self, indexer_id, nzo_id, fields):
+        if indexer_id and nzo_id:
             logging.debug('Add rating (%s, %s: %s, %s, %s, %s)', indexer_id, nzo_id, fields['video'], fields['audio'], fields['voteup'], fields['votedown'])
             try:
                 rating = self.ratings.get(indexer_id, NzbRatingV2())
@@ -183,7 +184,11 @@ class Rating(Thread):
                     rating.avg_encrypted_cnt = int(float(fields['passworded']))
                 if fields['confirmed-passworded']:
                     rating.avg_encrypted_confirm = (fields['confirmed-passworded'].lower() == 'yes')
-                rating.host = host[0] if host and isinstance(host, list) else host
+                # Indexers can supply a full URL or just a host
+                if fields['host']:
+                    rating.host = fields['host'][0] if fields['host'] and isinstance(fields['host'], list) else fields['host']
+                if fields['url']:
+                    rating.host = fields['url'][0] if fields['url'] and isinstance(fields['url'], list) else fields['url']
                 self.ratings[indexer_id] = rating
                 self.nzo_indexer_map[nzo_id] = indexer_id
             except:
@@ -263,6 +268,7 @@ class Rating(Thread):
 
         api_key = cfg.rating_api_key()
         rating_host = cfg.rating_host()
+        rating_url = _RATING_URL
         if not api_key:
             return True
 
@@ -270,7 +276,11 @@ class Rating(Thread):
         _headers = {'User-agent': 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
         rating = self._get_rating_by_indexer(indexer_id)  # Requesting info here ensures always have latest information even on retry
         if hasattr(rating, 'host') and rating.host:
-            rating_host = rating.host
+            host_parsed = urlparse.urlparse(rating.host)
+            rating_host = host_parsed.netloc
+            # Is it an URL or just a HOST?
+            if host_parsed.path and host_parsed.path != '/':
+                rating_url = host_parsed.path + '?' + host_parsed.query if host_parsed.query else host_parsed.path
         if not rating_host:
             return True
         if rating.changed & Rating.CHANGED_USER_VIDEO:
@@ -290,7 +300,7 @@ class Rating(Thread):
             for request in filter(lambda r: r is not None, requests):
                 request['apikey'] = api_key
                 request['i'] = indexer_id
-                conn.request('POST', RATING_URL, urllib.urlencode(request), headers=_headers)
+                conn.request('POST', rating_url, urllib.urlencode(request), headers=_headers)
 
                 response = conn.getresponse()
                 response.read()

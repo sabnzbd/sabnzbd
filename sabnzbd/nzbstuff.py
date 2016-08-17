@@ -1440,7 +1440,7 @@ class NzbObject(TryList):
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
 
-        # Determine if rating information (including site identifier so rating can be updated)
+    # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
     @synchronized(IO_LOCK)
     def update_rating(self):
@@ -1449,12 +1449,12 @@ class NzbObject(TryList):
                 def _get_first_meta(type):
                     values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
                     return values[0] if values and isinstance(values, list) else values
-                rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup', 'votedown',
-                                'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
+                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup', 
+                                'votedown', 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
                 fields = {}
                 for k in rating_types:
                     fields[k] = _get_first_meta(k)
-                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, fields)
             except:
                 pass
 
