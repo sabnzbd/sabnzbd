@@ -298,7 +298,8 @@ class Rating(Thread):
         try:
             conn = httplib.HTTPSConnection(rating_host)
             for request in filter(lambda r: r is not None, requests):
-                request['apikey'] = api_key
+                if api_key:
+                    request['apikey'] = api_key
                 request['i'] = indexer_id
                 conn.request('POST', rating_url, urllib.urlencode(request), headers=_headers)
 
