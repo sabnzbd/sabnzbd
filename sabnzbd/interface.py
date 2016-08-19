@@ -1041,7 +1041,6 @@ class HistoryPage(object):
         self.__verbose_list = []
         self.__failed_only = False
         self.__prim = prim
-        self.__edit_rating = None
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1071,12 +1070,6 @@ class HistoryPage(object):
                to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
-
-        for line in history['lines']:
-            if self.__edit_rating is not None and line.get('nzo_id') == self.__edit_rating:
-                line['edit_rating'] = True
-            else:
-                line['edit_rating'] = ''
 
         if search:
             history['search'] = escape(search)
@@ -1269,6 +1262,9 @@ class ConfigPage(object):
         conf['cmdline'] = sabnzbd.CMDLINE
         conf['build'] = sabnzbd.version.__baseline__[:7]
 
+        conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
+        conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+
         new = {}
         for svr in config.get_servers():
             new[svr] = {}
@@ -1409,14 +1405,13 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
-             'enable_tsjoin', 'overwrite_files', 'top_only',
+    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only',
              'auto_sort', 'propagation_delay', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-             'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check', 'folder_rename',
+             'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_7zip', 'enable_all_par',
+             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
              'rating_enable', 'rating_host', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
@@ -1449,9 +1444,6 @@ class ConfigSwitches(object):
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
-        conf['have_unrar'] = bool(sabnzbd.newsunpack.RAR_COMMAND)
-        conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
-        conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
 
         for kw in SWITCH_LIST:
@@ -1492,6 +1484,7 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
               'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'ampm',
+              'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',

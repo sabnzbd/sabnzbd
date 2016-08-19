@@ -23,7 +23,7 @@ import os
 import Queue
 import logging
 import sabnzbd
-import urllib
+import xml.sax.saxutils
 import time
 import re
 
@@ -493,14 +493,14 @@ def process_job(nzo):
                 script_ret = 'Exit(%s) ' % script_ret
             else:
                 script_ret = ''
-            if script_line:
+            if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, urllib.quote(unicoder(script_line)), urllib.quote(script_output),
-                                    T('More')), unique=True)
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line), 
+                                    xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
-                nzo.set_unpack_info('Script',
-                                    u'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
-                                    T('View script output')), unique=True)
+                # No '(more)' button needed
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, xml.sax.saxutils.escape(script_line)), unique=True)
+
 
         # Cleanup again, including NZB files
         if all_ok:

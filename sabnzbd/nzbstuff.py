@@ -1166,7 +1166,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if self.nzo_id and not self.is_gone():
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
@@ -1440,21 +1440,21 @@ class NzbObject(TryList):
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
 
-        # Determine if rating information (including site identifier so rating can be updated)
+    # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
     @synchronized(IO_LOCK)
     def update_rating(self):
         if cfg.rating_enable():
             try:
                 def _get_first_meta(type):
-                    values = self.meta.get('x-oznzb-rating-' + type, None) or self.meta.get('x-rating-' + type, None)
-                    return values[0] if values else None
-                rating_types = ['video', 'videocnt', 'audio', 'audiocnt', 'voteup', 'votedown',
-                                'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
+                    values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
+                    return values[0] if values and isinstance(values, list) else values
+                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup', 
+                                'votedown', 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
                 fields = {}
                 for k in rating_types:
                     fields[k] = _get_first_meta(k)
-                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, self.meta.get('x-rating-host'), fields)
+                Rating.do.add_rating(_get_first_meta('id'), self.nzo_id, fields)
             except:
                 pass
 
@@ -1593,7 +1593,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """ Save job's admin to disk """
         self.save_attribs()
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if self.nzo_id and not self.is_gone():
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):
@@ -1651,6 +1651,10 @@ class NzbObject(TryList):
 
         history_db.close()
         return res, series
+
+    def is_gone(self):
+        """ Is this job still going somehow? """
+        return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """

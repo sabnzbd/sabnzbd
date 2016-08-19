@@ -1,5 +1,5 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/1.0/configure"#-->
+<!--#set global $help_uri="configuration/1.1/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#from sabnzbd.newswrapper import HAVE_SSL#-->
@@ -68,6 +68,24 @@
                         <!--#end if#-->
                     </td>
                 </tr>
+                <!--#if not $have_unzip #-->
+                <tr>
+                    <th scope="row">$T('opt-enable_unzip'):</th>
+                    <td>
+                        <span class="label label-warning">$T('notAvailable')</span>
+                        <a href="${helpuri}installation/install-off-modules#toc8" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    </td>
+                </tr>
+                <!--#end if#-->
+                <!--#if not $have_7zip #-->
+                <tr>
+                    <th scope="row">$T('opt-enable_7zip'):</th>
+                    <td>
+                        <span class="label label-warning">$T('notAvailable')</span>
+                        <a href="${helpuri}installation/install-off-modules#toc8" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    </td>
+                </tr>
+                <!--#end if#-->
             </tbody>
         </table>
     </div>
