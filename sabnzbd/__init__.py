@@ -99,6 +99,7 @@ import sabnzbd.api
 from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
      REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
+import sabnzbd.getipaddress as getipaddress
 
 LINUX_POWER = powersup.HAVE_DBUS
 
@@ -1143,7 +1144,7 @@ def test_ipv6():
         # User disabled the test, assume active IPv6
         return True
     try:
-        info = socket.getaddrinfo(cfg.selftest_host(), 443, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+        info = getipaddress.addresslookup6(cfg.selftest_host())
     except:
         logging.debug("Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0] )
         return False

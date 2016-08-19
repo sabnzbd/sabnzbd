@@ -22,6 +22,38 @@ sabnzbd.getipaddress
 import socket
 import sabnzbd
 import sabnzbd.cfg
+import multiprocessing.pool
+import functools
+import socket
+
+# decorator stuff:
+def timeout(max_timeout):
+    """Timeout decorator, parameter in seconds."""
+    def timeout_decorator(item):
+        """Wrap the original function."""
+        @functools.wraps(item)
+        def func_wrapper(*args, **kwargs):
+            """Closure for function."""
+            pool = multiprocessing.pool.ThreadPool(processes=1)
+            async_result = pool.apply_async(item, args, kwargs)
+            # raises a TimeoutError if execution exceeds max_timeout
+            return async_result.get(max_timeout)
+        return func_wrapper
+    return timeout_decorator
+
+@timeout(3.0)
+def addresslookup(myhost):
+    return socket.getaddrinfo(myhost,80)
+
+@timeout(3.0)
+def addresslookup4(myhost):
+    return socket.getaddrinfo(myhost,80, socket.AF_INET)
+
+@timeout(3.0)
+def addresslookup6(myhost):
+    return socket.getaddrinfo(myhost,80, socket.AF_INET6)
+
+
 
 
 def localipv4():
@@ -41,7 +73,7 @@ def publicipv4():
         import urllib2
         ipv4_found = False
         # we only want IPv4 resolving, so socket.AF_INET:
-        result = socket.getaddrinfo(sabnzbd.cfg.selftest_host(), 80, socket.AF_INET, 0, socket.IPPROTO_TCP)
+        result = addresslookup4(sabnzbd.cfg.selftest_host())
     except:
 	# something very bad: no urllib2, no resolving of selftest_host, no network at all
         public_ipv4 = None
