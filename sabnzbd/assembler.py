@@ -36,7 +36,7 @@ except:
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
     set_permissions, flag_file, long_path, clip_path
-from sabnzbd.constants import QCHECK_FILE
+from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -88,7 +88,7 @@ class Assembler(Thread):
                     try:
                         filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
-                        if nzo.deleted:
+                        if nzo.is_gone():
                             # Job was deleted, ignore error
                             pass
                         else:
@@ -169,6 +169,11 @@ def _assemble(nzf, path, dupe):
     decodetable = nzf.decodetable
 
     for articlenum in decodetable:
+        # Break if deleted during writing
+        if nzf.nzo.status is Status.DELETED:
+            break
+
+        # Sleep to allow decoder/assembler switching
         sleep(0.001)
         article = decodetable[articlenum]
 
