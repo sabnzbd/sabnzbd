@@ -77,6 +77,7 @@ class Decoder(Thread):
     def run(self):
         from sabnzbd.nzbqueue import NzbQueue
         while 1:
+            # Sleep to allow decoder/assembler switching
             sleep(0.001)
             art_tup = self.queue.get()
             if not art_tup:

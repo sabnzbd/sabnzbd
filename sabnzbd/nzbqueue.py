@@ -253,7 +253,7 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
-            if nzo.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+            if not nzo.is_gone():
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
                     if not nzo.futuretype:
@@ -812,7 +812,7 @@ class NzbQueue(TryList):
         if reset:
             self.reset_try_list()
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if nzo.is_gone():
             logging.debug('Discarding file completion %s for deleted job', filename)
         else:
             if file_done:

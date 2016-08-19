@@ -79,7 +79,7 @@ class ArticleCache(object):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if nzo.is_gone():
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:
@@ -161,7 +161,7 @@ class ArticleCache(object):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if nzo.is_gone():
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:

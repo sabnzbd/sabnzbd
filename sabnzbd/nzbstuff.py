@@ -1166,7 +1166,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if self.nzo_id and not self.is_gone():
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def resume(self):
@@ -1593,7 +1593,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """ Save job's admin to disk """
         self.save_attribs()
-        if self.nzo_id and self.status not in (Status.COMPLETED, Status.DELETED, Status.FAILED):
+        if self.nzo_id and not self.is_gone():
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):
@@ -1651,6 +1651,10 @@ class NzbObject(TryList):
 
         history_db.close()
         return res, series
+
+    def is_gone(self):
+        """ Is this job still going somehow? """
+        return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
