@@ -30,12 +30,12 @@ import threading
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.encoding import platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-
 
 def name_to_cat(fname, cat=None):
     """ Retrieve category from file name, but only if "cat" is None. """
@@ -341,7 +341,7 @@ class DirScanner(threading.Thread):
                 files = []
 
             for filename in files:
-                path = os.path.join(folder, filename)
+                path = os.path.join(folder, platform_encode(filename))
                 if os.path.isdir(path) or path in self.ignored or filename[0] == '.':
                     continue
 
@@ -425,7 +425,7 @@ class DirScanner(threading.Thread):
 
                 cats = config.get_categories()
                 for dd in list:
-                    dpath = os.path.join(dirscan_dir, dd)
+                    dpath = os.path.join(dirscan_dir, platform_encode(dd))
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
             self.busy = False
