@@ -188,7 +188,7 @@ class Decoder(Thread):
             if logme or not found:
                 # Add extra parfiles when there was a damaged article
                 if cfg.prospective_par_download() and nzo.extrapars:
-                    nzo.prospective_add()
+                    nzo.prospective_add(nzf)
 
             if data:
                 ArticleCache.do.save_article(article, data)

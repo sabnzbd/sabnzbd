@@ -1210,7 +1210,7 @@ class NzbObject(TryList):
 
 
     @synchronized(IO_LOCK)
-    def prospective_add(self):
+    def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
         """
         # How many do we need?
@@ -1221,15 +1221,14 @@ class NzbObject(TryList):
         total_need = bad + miss + killed + dups
 
         # How many do we already have?
-        nzf = None
         blocks_already = 0
-        for nzf in self.files:
+        for nzf_check in self.files:
             # Only par2 files have a blocks attribute
-            if nzf.blocks:
-                blocks_already = blocks_already + int_conv(nzf.blocks)
+            if nzf_check.blocks:
+                blocks_already = blocks_already + int_conv(nzf_check.blocks)
 
         # Need more?
-        if nzf and blocks_already < total_need:
+        if not nzf.is_par2 and blocks_already < total_need:
             # We have to find the right par-set
             for parset in self.extrapars.keys():
                 if parset in nzf.filename and self.extrapars[parset]:
