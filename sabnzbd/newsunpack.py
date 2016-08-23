@@ -1364,7 +1364,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                     # Move from extrapar list to files to be downloaded
                     nzo.add_parfile(nzf)
-                    extrapars.remove(nzf)
                     # Now set new par2 file as primary par2
                     nzo.partable[setname] = nzf
                     nzf.extrapars = extrapars
