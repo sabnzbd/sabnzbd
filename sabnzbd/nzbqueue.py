@@ -889,7 +889,7 @@ class NzbQueue(TryList):
         n = 0
 
         for nzo in self.__nzo_list:
-            if nzo.status != 'Paused':
+            if nzo.status not in (Status.PAUSED, Status.CHECKING):
                 b_left = nzo.remaining()
                 bytes_total += nzo.bytes
                 bytes_left += b_left
