@@ -1089,6 +1089,7 @@ class NzbObject(TryList):
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
                     files.remove(filename)
+                    self.bytes_tried += nzf.bytes
                     break
 
         try:
