@@ -64,6 +64,7 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
 
 
 def happyeyeballs(HOST, **kwargs):
+    # Fill out the parameters into the variables
     try:
         PORT = kwargs['port']
     except:
@@ -77,6 +78,28 @@ def happyeyeballs(HOST, **kwargs):
     except:
         preferipv6 = True     # prefer IPv6, so give IPv6 connects a head start by delaying IPv4
 
+
+    # Find out if a result is available, and recent enough:
+    timecurrent = int(time.time())    # current time in seconds since epoch
+    retentionseconds = 100
+    hostkey = (HOST, PORT, SSL, preferipv6)	# Example key: (u'ssl.astraweb.com', 563, True, True)
+    try:
+        happyeyeballs.happylist[hostkey]	# just to check: does it exist?
+        # No exception, so entry exists, so let's check the time:
+        timefound = happyeyeballs.happylist[hostkey][1]
+        if timecurrent - timefound <= retentionseconds:
+            if DEBUG: logging.debug("existing result recent enough")
+            return happyeyeballs.happylist[hostkey][0]
+        else:
+            if DEBUG: logging.debug("existing result too old. Find a new one")
+            # Continue a few lines down
+    except:
+        # Exception, so entry not there, so we have to fill it out
+        if DEBUG: logging.debug("Host not yet known. Find entry")
+        pass
+    # we only arrive here if the entry has to be determined. So let's do that:
+
+    # We have to determine the (new) best IP address
     start = time.clock()
     if DEBUG: logging.debug("\n\n%s %s %s %s", HOST, PORT, SSL, preferipv6)
 
@@ -111,7 +134,15 @@ def happyeyeballs(HOST, **kwargs):
     logging.info("Quickest IP address for %s (port %s, ssl %s, preferipv6 %s) is %s", HOST, PORT, SSL, preferipv6, result)
     delay = int(1000 * (time.clock() - start))
     logging.debug("Happy Eyeballs lookup and port connect took %s ms", delay)
+
+    # We're done. Store and return the result
+    if result:
+        happyeyeballs.happylist[hostkey] = ( result, timecurrent )
+    print "Determined new result for", hostkey, "with result:", happyeyeballs.happylist[hostkey]
     return result
+
+
+happyeyeballs.happylist = {}    # this static variable must be after the def happy()
 
 
 
