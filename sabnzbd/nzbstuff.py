@@ -264,6 +264,7 @@ class NzbFile(TryList):
             self.articles.remove(article)
             if found:
                 self.bytes_left -= article.bytes
+            self.nzo.bytes_tried += article.bytes
 
         reset = False
         if article.partnum == self.lowest_partnum and self.articles:
@@ -541,8 +542,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
 # NzbObject
 ##############################################################################
 NzbObjectSaver = (
-    'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'repair',
-    'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
+    'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
+    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
@@ -596,6 +597,7 @@ class NzbObject(TryList):
         self.created = False        # dirprefixes + work_name created
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
+        self.bytes_tried = 0        # Which bytes did we try
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
@@ -1511,38 +1513,26 @@ class NzbObject(TryList):
 
     def remaining(self):
         """ Return remaining bytes """
-        bytes_left = 0
-        for nzf in self.files:
-            bytes_left += nzf.bytes_left
+        bytes_par2 = 0
+        for _set in self.extrapars:
+            for nzf in self.extrapars[_set]:
+                bytes_par2 += nzf.bytes_left
+        # Subtract PAR2 sets and already downloaded bytes
+        bytes_left = self.bytes - self.bytes_tried - bytes_par2
         return bytes_left
-
-    def total_and_remaining(self):
-        """ Return total and remaining bytes """
-        bytes = 0
-        bytes_left = 0
-        for nzf in self.files:
-            bytes += nzf.bytes
-            bytes_left += nzf.bytes_left
-        return bytes, bytes_left
 
     def gather_info(self, full=False):
         queued_files = []
-        bytes_extrapars = 0
-        for _set in self.extrapars:
-            for nzf in self.extrapars[_set]:
-                if nzf not in self.files and nzf not in self.finished_files:
-                    bytes_extrapars += nzf.bytes_left
-                    if full:
-                        nzf.setname = _set
-                        queued_files.append(nzf)
-
-        # Subtract PAR2 sets and already downloaded bytes
-        bytes_left_all = max(0, self.bytes - self.bytes_downloaded - bytes_extrapars)
+        if full:
+            for _set in self.extrapars:
+                for nzf in self.extrapars[_set]:
+                    nzf.setname = _set
+                    queued_files.append(nzf)
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
                 self.nzo_id, self.final_name_labeled, self.password, {},
                 '', self.cat, self.url,
-                bytes_left_all, self.bytes, self.avg_stamp, self.avg_date,
+                self.remaining(), self.bytes, self.avg_stamp, self.avg_date,
                 self.finished_files if full else [],
                 self.files if full else [],
                 queued_files,
@@ -1679,6 +1669,14 @@ class NzbObject(TryList):
             self.meta = {}
         if self.servercount is None:
             self.servercount = {}
+        if self.bytes_tried is None:
+            # Fill with old info
+            self.bytes_tried = 0
+            for nzf in self.finished_files:
+                # Emulate behavior of 1.0.x
+                self.bytes_tried += nzf.bytes
+            for nzf in self.files:
+                self.bytes_tried += nzf.bytes - nzf.bytes_left
         TryList.__init__(self)
 
     def __repr__(self):
