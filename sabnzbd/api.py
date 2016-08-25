@@ -68,6 +68,7 @@ from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
+import sabnzbd.getipaddress as getipaddress
 
 
 ##############################################################################
@@ -1185,7 +1186,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
         info['ipv6'] = ipv6()
         # Dashboard: DNS-check
         try:
-            socket.gethostbyname(cfg.selftest_host())
+            getipaddress.addresslookup(cfg.selftest_host())
             info['dnslookup'] = "OK"
         except:
             info['dnslookup'] = None
