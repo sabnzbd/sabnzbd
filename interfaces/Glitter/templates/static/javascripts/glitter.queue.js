@@ -422,9 +422,8 @@ function QueueListModel(parent) {
                 if(response.status) {
                     // Make sure the queue doesnt flicker and then fade-out
                     self.isLoading(true)
-                    $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
-                        self.parent.refresh();
-                    })
+                    $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration)
+                    self.parent.refresh()
                     // Empty it
                     self.multiEditItems.removeAll();
                     // Hide notification

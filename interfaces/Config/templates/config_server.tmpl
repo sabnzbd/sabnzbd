@@ -3,7 +3,7 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="addServer" method="post" autocomplete="off" novalidate>
+    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();" novalidate>
     <input type="hidden" name="session" value="$session" />
     <div id="addServer">
         <div class="padding alt">
@@ -29,14 +29,14 @@
                     <label class="config" for="port">$T('srv-port')</label>
                     <input type="number" name="port" id="port" size="8" />
                 </div>
+                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
-                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
-                    <label class="config" for="username-search">$T('srv-username')</label>
-                    <input type="text" name="username" id="username-search" />
+                    <label class="config" for="${pid}_00">$T('srv-username')</label>
+                    <input type="text" name="${pid}_00" id="${pid}_00" data-hide="username" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password-search">$T('srv-password')</label>
-                    <input type="text" name="password" id="password-search" />
+                    <label class="config" for="${pid}_01">$T('srv-password')</label>
+                    <input type="text" name="${pid}_01" id="${pid}_01" data-hide="password" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
@@ -158,14 +158,14 @@
                     <label class="config" for="port$cur">$T('srv-port')</label>
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
+                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
-                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
-                    <label class="config" for="username$cur-search">$T('srv-username')</label>
-                    <input type="text" name="username" id="username$cur-search" value="$server['username']" />
+                    <label class="config" for="${pid}_${cur}0">$T('srv-username')</label>
+                    <input type="text" name="${pid}_${cur}0" id="${pid}_${cur}0" value="$server['username']" data-hide="username" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password$cur-search">$T('srv-password')</label>
-                    <input type="text" name="password" id="password$cur-search" value="$server['password']" />
+                    <label class="config" for="${pid}_${cur}1">$T('srv-password')</label>
+                    <input type="text" name="${pid}_${cur}1" id="${pid}_${cur}1" value="$server['password']" data-hide="password" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>

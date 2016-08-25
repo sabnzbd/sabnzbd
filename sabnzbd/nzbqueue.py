@@ -889,9 +889,9 @@ class NzbQueue(TryList):
         n = 0
 
         for nzo in self.__nzo_list:
-            if nzo.status != 'Paused':
-                b, b_left = nzo.total_and_remaining()
-                bytes_total += b
+            if nzo.status not in (Status.PAUSED, Status.CHECKING):
+                b_left = nzo.remaining()
+                bytes_total += nzo.bytes
                 bytes_left += b_left
                 q_size += 1
                 # We need the number of bytes before the current page

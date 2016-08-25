@@ -273,6 +273,14 @@ function do_restart() {
     });
 }
 
+// Remove obfusication
+function removeObfuscation() {
+    $('input[data-hide]').each(function(index, objInput) {
+        $(objInput).attr('name', $(objInput).data('hide'))
+    })
+    return true
+}
+
 $(document).ready(function () {
     /**
         Restart function
@@ -298,6 +306,8 @@ $(document).ready(function () {
     **/
     $('.fullform').ajaxForm({
         datatype: 'json',
+        // But first remove Obfuscation!
+        beforeSerialize: removeObfuscation,
         beforeSubmit: function () {
             $('.saveButton').each(function () {
                 $(this).attr("disabled", "disabled").removeClass('btn-danger').html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);

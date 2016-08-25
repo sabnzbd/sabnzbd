@@ -1061,7 +1061,16 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     # set the current nzo status to "Repairing". Used in History
 
     assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+
+    # Check if file exists, otherwise see if another is done
     parfile = os.path.join(workdir, parfile_nzf.filename)
+    if not os.path.exists(parfile) and parfile_nzf.extrapars:
+        for new_par in parfile_nzf.extrapars:
+            test_parfile = os.path.join(workdir, new_par.filename)
+            if os.path.exists(test_parfile):
+                parfile = test_parfile
+                break
+    
     parfile = short_path(parfile)
     workdir = short_path(workdir)
 
@@ -1355,7 +1364,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                     # Move from extrapar list to files to be downloaded
                     nzo.add_parfile(nzf)
-                    extrapars.remove(nzf)
                     # Now set new par2 file as primary par2
                     nzo.partable[setname] = nzf
                     nzf.extrapars = extrapars

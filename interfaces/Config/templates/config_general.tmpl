@@ -14,9 +14,8 @@
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
-                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
-                    <label class="config" for="host-search">$T('opt-host')</label>
-                    <input type="text" name="host" id="host-search" value="$host" />
+                    <label class="config" for="host">$T('opt-host')</label>
+                    <input type="text" name="host" id="host" value="$host" />
                     <span class="desc">$T('explain-host')</span>
                 </div>
                 <div class="field-pair">
@@ -67,16 +66,15 @@
                        $T('explain-ask-language') <a href="https://sabnzbd.org/wiki/translate" target="_blank" class="alert-link">https://sabnzbd.org/wiki/translate</a>
                     </div>
                 </div>
+                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
-                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
-                    <label class="config" for="username-search">$T('opt-web_username')</label>
-                    <input type="text" name="username" id="username-search" value="$username" />
+                    <label class="config" for="${pid}_wu">$T('opt-web_username')</label>
+                    <input type="text" name="${pid}_wu" id="${pid}_wu" value="$username" data-hide="username" />
                     <span class="desc">$T('explain-web_username')</span>
                 </div>
                 <div class="field-pair">
-                    <!-- Here we add "search" to the ID as an exception to stop Password Managers (like LastPass)! -->
-                    <label class="config" for="password-search">$T('opt-web_password')</label>
-                    <input type="text" name="password" id="password-search" value="$password" />
+                    <label class="config" for="${pid}_wp">$T('opt-web_password')</label>
+                    <input type="text" name="${pid}_wp" id="${pid}_wp" value="$password" data-hide="password" />
                     <span class="desc">$T('explain-web_password')</span>
                 </div>  
                 <div class="field-pair">
