@@ -64,6 +64,8 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
 
 
 def happyeyeballs(HOST, **kwargs):
+    # Happyeyeballs function, with caching of the results
+
     # Fill out the parameters into the variables
     try:
         PORT = kwargs['port']
@@ -79,23 +81,23 @@ def happyeyeballs(HOST, **kwargs):
         preferipv6 = True     # prefer IPv6, so give IPv6 connects a head start by delaying IPv4
 
 
-    # Find out if a result is available, and recent enough:
+    # Find out if a cached result is available, and recent enough:
     timecurrent = int(time.time())    # current time in seconds since epoch
     retentionseconds = 100
     hostkey = (HOST, PORT, SSL, preferipv6)	# Example key: (u'ssl.astraweb.com', 563, True, True)
     try:
         happyeyeballs.happylist[hostkey]	# just to check: does it exist?
         # No exception, so entry exists, so let's check the time:
-        timefound = happyeyeballs.happylist[hostkey][1]
-        if timecurrent - timefound <= retentionseconds:
-            if DEBUG: logging.debug("existing result recent enough")
+        timecached = happyeyeballs.happylist[hostkey][1]
+        if timecurrent - timecached <= retentionseconds:
+            if DEBUG: logging.debug("existing cached result recent enough")
             return happyeyeballs.happylist[hostkey][0]
         else:
-            if DEBUG: logging.debug("existing result too old. Find a new one")
+            if DEBUG: logging.debug("existing cached result too old. Find a new one")
             # Continue a few lines down
     except:
         # Exception, so entry not there, so we have to fill it out
-        if DEBUG: logging.debug("Host not yet known. Find entry")
+        if DEBUG: logging.debug("Host not yet in the cache. Find entry")
         pass
     # we only arrive here if the entry has to be determined. So let's do that:
 
@@ -105,6 +107,7 @@ def happyeyeballs(HOST, **kwargs):
 
     ipv4delay = 0
     try:
+        # Check if there is an AAAA / IPv6 result for this host:
         info = socket.getaddrinfo(HOST, PORT, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
         if DEBUG: logging.debug("IPv6 address found for %s", HOST)
         if preferipv6:
@@ -115,6 +118,7 @@ def happyeyeballs(HOST, **kwargs):
     myqueue = Queue.Queue()    # queue used for threads giving back the results
 
     try:
+	# Get all IP (IPv4 and IPv6) addresses:
         allinfo = socket.getaddrinfo(HOST, PORT, 0, 0, socket.IPPROTO_TCP)
         for info in allinfo:
             address = info[4][0]
@@ -138,11 +142,11 @@ def happyeyeballs(HOST, **kwargs):
     # We're done. Store and return the result
     if result:
         happyeyeballs.happylist[hostkey] = ( result, timecurrent )
-    print "Determined new result for", hostkey, "with result:", happyeyeballs.happylist[hostkey]
+        if DEBUG: logging.debug("Determined new result for %s with result %s", (hostkey, happyeyeballs.happylist[hostkey]) )
     return result
 
 
-happyeyeballs.happylist = {}    # this static variable must be after the def happy()
+happyeyeballs.happylist = {}    # The cached results. This static variable must be after the def happyeyeballs()
 
 
 
@@ -169,5 +173,6 @@ if __name__ == '__main__':
 
     # Strange cases
     print happyeyeballs('does.not.resolve', port=443, ssl=True)
+    print happyeyeballs('www.google.com', port=119)
     print happyeyeballs('216.58.211.164')
 
