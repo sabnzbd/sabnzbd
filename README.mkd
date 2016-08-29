@@ -1,5 +1,18 @@
-Release Notes  -  SABnzbd 1.1.0RC3
+Release Notes  -  SABnzbd 1.1.0RC4
 ==================================
+
+## What's new in 1.1.0RC4
+- Can now download zipped NZB files from indexer
+- Optimizations in the Downloader
+- Move some seldom used options to Special
+- Prevent watched folder scan crash on invalid file names
+- Prevent action of password managers on Server page
+- Correct display of amount downloaded
+- Faster initial connections to servers with multiple IP-addresses (HappyEyeBalls)
+- Display days when ETA is above 24h
+- Support of more Rating headers (for indexers that support it)
+- Smaller optimizations and bug fixes
+
 
 ## What's new in 1.1.0RC3
 - Fix errors when saving job files to disk
