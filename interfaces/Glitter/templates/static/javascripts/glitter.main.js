@@ -1038,6 +1038,28 @@ function ViewModel() {
                 clear: function() { self.clearMessages('CacheMsg')}
             });
         }
+
+        // Message about tips and tricks, only once
+        if(response.config.misc.notified_new_skin < 2) {
+            self.allMessages.push({
+                index: 'TipsMsgV110',
+                type: glitterTranslate.status['INFO'],
+                text: glitterTranslate.glitterTips + ' <a class="queue-update-sab" href="https://sabnzbd.org/wiki/extra/glitter-tips-and-tricks" target="_blank">Glitter Tips and Tricks <span class="glyphicon glyphicon-new-window"></span></a>',
+                css: 'info',
+                clear: function() { 
+                    // Update the config to not show again
+                    callAPI({
+                        mode: 'set_config',
+                        section: 'misc',
+                        keyword: 'notified_new_skin',
+                        value: 2
+                    })
+
+                    // Remove the actual message
+                    self.clearMessages('TipsMsgV110')
+                }
+            });
+        }
     })
 
     // Orphaned folder check - Not for 5 days if user ignored it
@@ -1080,17 +1102,6 @@ function ViewModel() {
             text: glitterTranslate.noLocalStorage,
             css: 'warning',
             clear: function() { self.clearMessages('LocalStorageMsg')}
-        });
-    }
-
-    // Message about tips and tricks, only once
-    if(!localStorageGetItem('TipsMsgV110')*1) {
-        self.allMessages.push({
-            index: 'TipsMsgV110',
-            type: glitterTranslate.status['INFO'],
-            text: glitterTranslate.glitterTips + ' <a class="queue-update-sab" href="https://sabnzbd.org/wiki/extra/glitter-tips-and-tricks" target="_blank">Glitter Tips and Tricks <span class="glyphicon glyphicon-new-window"></span></a>',
-            css: 'info',
-            clear: function() { self.clearMessages('TipsMsgV110')}
         });
     }
 
