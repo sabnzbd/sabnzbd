@@ -26,11 +26,11 @@ Release Notes  -  SABnzbd 1.1.0RC4
 
 ## What's new in 1.1.0RC2
 - Fix XSS vulnerability on OSX and Unix**
-- Fix for stalling when using "prospective par2 dowloading"
+- Fix for stalling when using "prospective par2 downloading"
 - Include the Python module "six" to prevent issues on some embedded systems
 - Fix problem with deleting files in NZB details view
 - Fix portable.cmd
-- Restore scanning for passwords after nZB name edit
+- Restore scanning for passwords after NZB name edit
 - Prevent old shutdown-page from stopping a new SABnzbd instance
 
 ** The XSS vulnerability was discovered by Han Sahin from Securify BV.
