@@ -1591,6 +1591,7 @@ def retry_job(job, new_nzb, password):
         history_db = sabnzbd.connect_db()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
+            if pp == 'X': pp = None
             sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
         else:

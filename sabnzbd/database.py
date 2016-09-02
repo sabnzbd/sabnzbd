@@ -410,6 +410,7 @@ def dict_factory(cursor, row):
     return d
 
 
+_PP_LOOKUP = {0: '', 1: 'R', 2: 'U', 3: 'D'}
 def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line=''):
     """ Collects all the information needed for the database """
 
@@ -429,11 +430,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
 
     nzb_name = decode_factory(nzo.filename)
     category = decode_factory(nzo.cat)
-    pps = ['', 'R', 'U', 'D']
-    try:
-        pp = pps[sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete)]
-    except:
-        pp = ''
+    pp = _PP_LOOKUP.get(sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete), 'X')
     script = decode_factory(nzo.script)
     status = decode_factory(nzo.status)
     nzo_id = nzo.nzo_id
