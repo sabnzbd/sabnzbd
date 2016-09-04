@@ -345,6 +345,7 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
+        removeObfuscation()
         var theButton = \$(this)
         var resultBox = theButton.parents('.col1').find('.result-box .alert');
         theButton.attr("disabled", "disabled")
@@ -376,7 +377,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 100)
+            setTimeout(function() { location.reload(); }, 500)
         }
         return false;
     });
@@ -386,7 +387,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 100)
+            setTimeout(function() { location.reload(); }, 500)
         }
         return false;
     });
