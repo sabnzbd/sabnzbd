@@ -69,6 +69,7 @@ h2 {
 /**
     QUEUE & HISTORY
 **/
+
 .info-container {
     margin-top: 0px;
     margin-bottom: 10px;
@@ -227,6 +228,10 @@ tr.queue-item>td:first-child>a {
         border-left: 0;
         border-right: 0;
         border-top: 0;
+    }
+
+    .history-queue-swicher {
+        margin-top: 20px;
     }
 }
 
