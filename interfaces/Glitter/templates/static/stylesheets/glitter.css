@@ -459,6 +459,10 @@ tbody>tr>td:last-child {
     display: block;
 }
 
+.container-tabbed .queue-messages {
+    max-height: none;
+}
+
 .container-tabbed .info-container {
     margin-bottom: 5px;
 }

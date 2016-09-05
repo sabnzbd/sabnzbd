@@ -1206,7 +1206,7 @@ class NzbObject(TryList):
         for _set in self.extrapars:
             if parfile in self.extrapars[_set]:
                 self.extrapars[_set].remove(parfile)
-            if self.partable and self.partable[_set] and parfile in self.partable[_set].extrapars:
+            if self.partable and _set in self.partable and self.partable[_set] and parfile in self.partable[_set].extrapars:
                 self.partable[_set].extrapars.remove(parfile)
 
     __re_quick_par2_check = re.compile(r'\.par2\W*', re.I)
