@@ -231,13 +231,20 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def replace_in_q(self, nzo, nzo_id):
         """ Replace nzo by new in at the same spot in the queue, destroy nzo """
+        # Must be a separate function from "send_back()", due to the required queue-lock
         try:
+            old_id = nzo.nzo_id
             new_nzo = self.get_nzo(nzo_id)
             pos = self.__nzo_list.index(new_nzo)
             targetpos = self.__nzo_list.index(nzo)
             self.__nzo_list[targetpos] = new_nzo
             self.__nzo_list.pop(pos)
-            del self.__nzo_table[nzo.nzo_id]
+            # Reuse the old nzo_id
+            new_nzo.nzo_id = old_id
+            # Therefore: remove the new nzo_id
+            del self.__nzo_table[nzo_id]
+            # And attach the new nzo to the old nzo_id
+            self.__nzo_table[old_id] = new_nzo
             del nzo
             return new_nzo
         except:
@@ -260,7 +267,7 @@ class NzbQueue(TryList):
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                       sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
+                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
