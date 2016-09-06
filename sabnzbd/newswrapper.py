@@ -33,26 +33,22 @@ import sabnzbd.cfg
 from sabnzbd.utils.sslinfo import ssl_method
 
 try:
-    from OpenSSL import SSL
-    _ssl = SSL
-    WantReadError = _ssl.WantReadError
-    del SSL
+    import ssl
+    WantReadError = ssl.SSLWantReadError
+
+    # Test availability of SSLContext (python 2.7.9+)
+    ssl.SSLContext
     HAVE_SSL = True
 
-except ImportError:
-    _ssl = None
+except:
     HAVE_SSL = False
 
     # Dummy class so this exception is ignored by clients without ssl installed
     class WantReadError(Exception):
-
         def __init__(self, value):
             self.parameter = value
-
         def __str__(self):
             return repr(self.parameter)
-
-
 
 import threading
 _RLock = threading.RLock
@@ -135,7 +131,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     try:
         sock.connect((host, port))
         sock.setblocking(0)
-        if sslenabled and _ssl:
+        if sslenabled and HAVE_SSL:
             while True:
                 try:
                     sock.do_handshake()
@@ -164,8 +160,10 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         finally:
             nntp.error(e)
 
-    except _ssl.Error, e:
+    except ssl.SSLError, e:
         nntp.error(e)
+    print sock.cipher()
+    print sock.version()
 
 
 def probablyipv4(ip):
@@ -206,10 +204,15 @@ class NNTP(object):
         if probablyipv6(host):
             af = socket.AF_INET6
 
-        if sslenabled and _ssl:
-            ctx = _ssl.Context(ssl_method(ssl_type))
-            self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
-        elif sslenabled and not _ssl:
+        if sslenabled and HAVE_SSL:
+            # Setup the SSL socket
+            ctx = ssl.SSLContext(ssl_method(ssl_type))
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            #ctx.set_ciphers('RC4-MD5:RC4-MD5')
+            ctx.load_default_certs()
+
+            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto))
+        elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
@@ -219,7 +222,8 @@ class NNTP(object):
             # Windows must do the connection in a separate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
             if not block:
-                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
+                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start() 
+
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
                 if block:
@@ -227,13 +231,14 @@ class NNTP(object):
                 self.sock.connect((self.host, self.port))
                 if not block:
                     self.sock.setblocking(0)
-                if sslenabled and _ssl:
+                if sslenabled and HAVE_SSL:
                     while True:
                         try:
                             self.sock.do_handshake()
                             break
                         except WantReadError:
                             select.select([self.sock], [], [], 1.0)
+                
 
         except socket.error, e:
             try:
@@ -250,7 +255,7 @@ class NNTP(object):
             finally:
                 self.error(e)
 
-        except _ssl.Error, e:
+        except ssl.SSLError, e:
             self.error(e)
 
     def error(self, error):
@@ -452,26 +457,3 @@ class NewsWrapper(object):
             except:
                 pass
         del self.nntp
-
-
-class SSLConnection(object):
-
-    def __init__(self, *args):
-        self._ssl_conn = apply(_ssl.Connection, args)
-        self._lock = _RLock()
-
-    for f in ('get_context', 'pending', 'send', 'write', 'recv', 'read',
-              'renegotiate', 'bind', 'listen', 'connect', 'accept',
-              'setblocking', 'fileno', 'shutdown', 'close', 'get_cipher_list',
-              'getpeername', 'getsockname', 'getsockopt', 'setsockopt',
-              'makefile', 'get_app_data', 'set_app_data', 'state_string',
-              'sock_shutdown', 'get_peer_certificate', 'want_read',
-              'want_write', 'set_connect_state', 'set_accept_state',
-              'connect_ex', 'sendall', 'do_handshake', 'settimeout'):
-        exec """def %s(self, *args):
-            self._lock.acquire()
-            try:
-                return apply(self._ssl_conn.%s, args)
-            finally:
-                self._lock.release()\n""" % (f, f)
-
