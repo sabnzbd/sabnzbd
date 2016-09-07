@@ -2,10 +2,7 @@
 <!--#set global $help_uri="configuration/1.1/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<!--#from sabnzbd.newswrapper import HAVE_SSL#-->
 <!--#from locale import getpreferredencoding#-->
-<!--#import sabnzbd.utils.sslinfo#-->
-<!--#from sabnzbd.decoder import HAVE_YENC#-->
 <div class="colmask">
     <div class="section padTable">
         <table class="table table-striped">
@@ -37,20 +34,8 @@
                 <tr>
                     <th scope="row">OpenSSL:</th>
                     <td>
-                        <!--#if HAVE_SSL#--> 
-                            <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo.ssl_protocols_labels())#-->
-                            $sabnzbd.utils.sslinfo.ssl_version() &nbsp; [$sslversions]
-                        <!--#else#-->
-                            <span class="label label-warning">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">pyOpenSSL:</th>
-                    <td>
-                        <!--#if HAVE_SSL#--> 
-                            $sabnzbd.utils.sslinfo.pyopenssl_version()
+                        <!--#if $have_ssl#--> 
+                            $ssl_version &nbsp; [$ssl_protocols]
                         <!--#else#-->
                             <span class="label label-warning">$T('notAvailable')</span>
                             <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
@@ -60,7 +45,7 @@
                 <tr>
                     <th scope="row">yEnc:</th>
                     <td>
-                        <!--#if HAVE_YENC#--> 
+                        <!--#if $have_yenc#--> 
                             <span class="glyphicon glyphicon-ok"></span>
                         <!--#else#-->
                             <span class="label label-warning">$T('notAvailable')</span>

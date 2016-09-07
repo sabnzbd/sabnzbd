@@ -53,7 +53,8 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.utils.sslinfo import ssl_protocols
+from sabnzbd.decoder import HAVE_YENC
+from sabnzbd.utils.sslinfo import ssl_protocols, ssl_protocols_labels, ssl_version
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -1263,6 +1264,14 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf['have_yenc'] = HAVE_YENC
+
+        if sabnzbd.newswrapper.HAVE_SSL:
+            conf['have_ssl'] = 1
+            conf['ssl_version'] = ssl_version()
+            conf['ssl_protocols'] = ', '.join(ssl_protocols_labels())
+        else:
+            conf['have_ssl'] = 0
 
         new = {}
         for svr in config.get_servers():
