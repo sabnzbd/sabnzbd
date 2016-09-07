@@ -20,21 +20,24 @@ try:
     # Loop through supported versions
     for ssl_prop in dir(ssl):
         if ssl_prop.startswith('PROTOCOL_'):
-            if ssl_prop.endswith('TLSv1_2'):
-                _SSL_PROTOCOLS['t12'] = ssl.PROTOCOL_TLSv1_2
-                _SSL_PROTOCOLS_LABELS.append('TLS v1.2')
-            elif ssl_prop.endswith('TLSv1_1'):
-                _SSL_PROTOCOLS['t11'] = ssl.PROTOCOL_TLSv1_1
-                _SSL_PROTOCOLS_LABELS.append('TLS v1.1')
-            elif ssl_prop.endswith('TLSv1'):
-                _SSL_PROTOCOLS['t1'] = ssl.PROTOCOL_TLSv1
-                _SSL_PROTOCOLS_LABELS.append('TLS v1')
+            if ssl_prop.endswith('SSLv2'):
+                _SSL_PROTOCOLS['v2'] = ssl.PROTOCOL_SSLv2
+                _SSL_PROTOCOLS_LABELS.append('SSL v2')
             elif ssl_prop.endswith('SSLv3'):
                 _SSL_PROTOCOLS['v3'] = ssl.PROTOCOL_SSLv3
                 _SSL_PROTOCOLS_LABELS.append('SSL v3')
-            elif ssl_prop.endswith('SSLv2'):
-                _SSL_PROTOCOLS['v2'] = ssl.PROTOCOL_SSLv2
-                _SSL_PROTOCOLS_LABELS.append('SSL v2')
+            elif ssl_prop.endswith('TLSv1'):
+                _SSL_PROTOCOLS['t1'] = ssl.PROTOCOL_TLSv1
+                _SSL_PROTOCOLS_LABELS.append('TLS v1')
+            elif ssl_prop.endswith('TLSv1_1'):
+                _SSL_PROTOCOLS['t11'] = ssl.PROTOCOL_TLSv1_1
+                _SSL_PROTOCOLS_LABELS.append('TLS v1.1')
+            elif ssl_prop.endswith('TLSv1_2'):
+                _SSL_PROTOCOLS['t12'] = ssl.PROTOCOL_TLSv1_2
+                _SSL_PROTOCOLS_LABELS.append('TLS v1.2')
+
+    # Reverse the labels, SSL's always come first in the dir()
+    _SSL_PROTOCOLS_LABELS.reverse()
 except:
     pass
 
@@ -66,7 +69,7 @@ def ssl_version():
         import ssl
         return ssl.OPENSSL_VERSION
     except (ImportError, AttributeError):
-        return 'No OpenSSL installed'
+        return None
 
 
 def pyopenssl_version():
@@ -74,7 +77,7 @@ def pyopenssl_version():
         import OpenSSL
         return OpenSSL.__version__
     except ImportError:
-        return 'No pyOpenSSL installed'
+        return None
 
 if __name__ == '__main__':
     print 'SSL version: %s' % ssl_version()
