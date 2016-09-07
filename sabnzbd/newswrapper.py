@@ -162,8 +162,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
 
     except ssl.SSLError, e:
         nntp.error(e)
-    print sock.cipher()
-    print sock.version()
 
 
 def probablyipv4(ip):
