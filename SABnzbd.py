@@ -688,6 +688,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
         http_server = _cpwsgi_server.CPWSGIServer()
         http_server.bind_addr = (host, port)
         if cert and key:
+            http_server.ssl_provider = 'builtin'
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
             http_server.ssl_certificate_chain = chain
@@ -1356,8 +1357,7 @@ def main():
     import sabnzbd.utils.sslinfo
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
     logging.info("pyOpenSSL version %s", sabnzbd.utils.sslinfo.pyopenssl_version())
-    logging.info("SSL potentially supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_potential()))
-    logging.info("SSL actually supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols()))
+    logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
@@ -1417,7 +1417,8 @@ def main():
             # Extra HTTPS port for secondary localhost
             attach_server(hosts[1], cherryport, https_cert, https_key)
 
-        cherrypy.config.update({'server.ssl_certificate': https_cert,
+        cherrypy.config.update({'server.ssl_module': 'builtin',
+                                'server.ssl_certificate': https_cert,
                                 'server.ssl_private_key': https_key,
                                 'server.ssl_certificate_chain': https_chain})
     elif multilocal:
