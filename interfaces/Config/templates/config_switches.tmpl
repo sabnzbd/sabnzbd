@@ -25,9 +25,9 @@
                         </select>
                         <span class="desc">$T('explain-check_new_rel')</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                         <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
-                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> />
+                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                         <span class="desc">$T('explain-enable_https_verification')</span>
                     </div>
                     <div class="field-pair">
@@ -44,6 +44,24 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
+                        <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
+                        <select name="load_balancing" id="load_balancing">
+                            <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
+                            <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
+                            <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
+                        </select>
+                        <span class="desc">$T('explain-load_balancing')</span>
+                    </div>
+                    <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                        <label class="config" for="enable_nntps_verification">$T('opt-enable_nntps_verification')</label>
+                        <select name="enable_nntps_verification" id="enable_nntps_verification" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#-->>
+                              <option value="0" <!--#if $enable_nntps_verification == 0 then 'selected="selected"' else ""#--> >$T('nntps_verification-disabled')</option>
+                              <option value="1" <!--#if $enable_nntps_verification == 1 then 'selected="selected"' else ""#--> >$T('nntps_verification-normal')</option>
+                              <option value="2" <!--#if $enable_nntps_verification == 2 then 'selected="selected"' else ""#--> >$T('nntps_verification-strict')</option>
+                        </select>
+                        <span class="desc">$T('explain-enable_nntps_verification').replace('. ', '.<br/>')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
                         <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                         <span class="desc">$T('explain-max_art_tries')</span>
@@ -53,15 +71,7 @@
                         <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-max_art_opt')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
-                          <select name="load_balancing" id="load_balancing">
-                              <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
-                              <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
-                              <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
-                          </select>
-                        <span class="desc">$T('explain-load_balancing')</span>
-                    </div>
+                    
                     <div class="field-pair">
                         <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>
                         <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if int($auto_disconnect) > 0 then 'checked="checked"' else ""#--> />
@@ -180,7 +190,7 @@
                     <div class="field-pair">
                         <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_all_par').replace('.', '<br/>')</span>
+                        <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="quick_check">$T('opt-quick_check')</label>

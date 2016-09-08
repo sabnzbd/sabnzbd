@@ -84,6 +84,7 @@ script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
 enable_https_verification = OptionBool('misc', 'enable_https_verification', False)
 selftest_host = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
+enable_nntps_verification = OptionNumber('misc', 'enable_nntps_verification', 1) # 0=No, 1=Normal, 2=Strict (hostname verification)
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)

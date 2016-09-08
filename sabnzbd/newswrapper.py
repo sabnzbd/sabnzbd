@@ -211,9 +211,15 @@ class NNTP(object):
         if sslenabled and HAVE_SSL:
             # Setup the SSL socket
             ctx = ssl.create_default_context()
-            ctx.check_hostname = False
 
-            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto))
+            # Only verify hostname when we're strict
+            if(sabnzbd.cfg.enable_nntps_verification() < 2):
+                ctx.check_hostname = False
+            # Certificates optional
+            if(sabnzbd.cfg.enable_nntps_verification() == 0):
+                ctx.verify_mode = ssl.CERT_NONE
+
+            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=host)
         elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
@@ -267,6 +273,14 @@ class NNTP(object):
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
             error = T('This server does not allow SSL on this port')
+        
+        # Catch certificate errors        
+        if type(error) == ssl.CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
+            error = T('Server %s uses an untrusted HTTPS certificate') % self.host
+            # Prevent throwing a lot of errors or when testing server
+            if error not in self.nw.server.warning and self.nw.server.id != -1:
+                logging.error(error)
+
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
