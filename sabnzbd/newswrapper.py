@@ -148,6 +148,9 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         # This direct access is needed to prevent multi-threading sync problems.
         if write_fds is not None:
             write_fds[sock.fileno()] = nntp.nw
+    
+    except (ssl.SSLError, ssl.CertificateError) as e:
+        nntp.error(e)
 
     except socket.error, e:
         try:
@@ -164,8 +167,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         finally:
             nntp.error(e)
 
-    except ssl.SSLError, e:
-        nntp.error(e)
+    
 
 
 def probablyipv4(ip):
@@ -243,6 +245,8 @@ class NNTP(object):
                     logging.info("%s@%s: Connected using %s (%s)",
                                               self.nw.thrdnum, self.nw.server.id, self.sock.version(), self.sock.cipher()[0])
 
+        except (ssl.SSLError, ssl.CertificateError) as e:
+            self.error(e)
 
         except socket.error, e:
             try:
@@ -259,8 +263,6 @@ class NNTP(object):
             finally:
                 self.error(e)
 
-        except ssl.SSLError, e:
-            self.error(e)
 
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
