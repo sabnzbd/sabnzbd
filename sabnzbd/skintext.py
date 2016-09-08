@@ -550,8 +550,6 @@ SKIN_TEXT = {
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
-    'srv-ssl_type' : TT('SSL type'),
-    'srv-explain-ssl_type' : TT('Use the top value, unless your Usenet provider requires otherwise!'),
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server
     'button-testServer' : TT('Test Server'), #: Button: Test server

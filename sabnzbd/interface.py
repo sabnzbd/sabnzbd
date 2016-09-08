@@ -54,7 +54,7 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import HAVE_YENC
-from sabnzbd.utils.sslinfo import ssl_protocols, ssl_protocols_labels, ssl_version
+from sabnzbd.utils.sslinfo import ssl_protocols_labels, ssl_version
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -1800,7 +1800,6 @@ class ConfigServer(object):
 
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1
-            conf['ssl_protocols'] = ssl_protocols()
         else:
             conf['have_ssl'] = 0
 
