@@ -1429,7 +1429,7 @@ SWITCH_LIST = \
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
              'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
-             'load_balancing', 'enable_https_verification'
+             'load_balancing', 'enable_https_verification', 'enable_nntps_verification'
      )
 
 
@@ -1449,6 +1449,7 @@ class ConfigSwitches(object):
 
         conf = build_header(self.__prim, self.__web_dir)
 
+        conf['have_ssl'] = sabnzbd.newswrapper.HAVE_SSL
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
@@ -1797,11 +1798,7 @@ class ConfigServer(object):
                 new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
-
-        if sabnzbd.newswrapper.HAVE_SSL:
-            conf['have_ssl'] = 1
-        else:
-            conf['have_ssl'] = 0
+        conf['have_ssl'] = sabnzbd.newswrapper.HAVE_SSL
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
