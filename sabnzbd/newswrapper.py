@@ -139,6 +139,10 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 except WantReadError:
                     select.select([sock], [], [], 1.0)
 
+            # Log SSL/TLS info
+            logging.info("%s@%s: Connected using %s (%s)",
+                                              nntp.nw.thrdnum, nntp.nw.server.id, sock.version(), sock.cipher()[0])
+
         # Now it's safe to add the socket to the list of active sockets.
         # 'write_fds' is an attribute of the Downloader singleton.
         # This direct access is needed to prevent multi-threading sync problems.
@@ -236,7 +240,11 @@ class NNTP(object):
                             break
                         except WantReadError:
                             select.select([self.sock], [], [], 1.0)
-                
+                    
+                    # Log SSL/TLS info
+                    logging.info("%s@%s: Connected using %s (%s)",
+                                              self.nw.thrdnum, self.nw.server.id, self.sock.version(), self.sock.cipher()[0])
+
 
         except socket.error, e:
             try:
