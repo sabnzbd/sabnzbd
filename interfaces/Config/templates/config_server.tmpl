@@ -59,30 +59,6 @@
                     <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl_type">$T('srv-ssl_type')</label>
-                    <!--#if int($have_ssl) == 1#-->
-                        <select name="ssl_type" id="ssl_type">
-                                <option value="">$T('Default')</option>
-                            <!--#if 't12' in $ssl_protocols#-->
-                                <option value="t12">TLS v1.2</option>
-                            <!--#end if#-->
-                            <!--#if 't11' in $ssl_protocols#-->
-                                <option value="t11">TLS v1.1</option>
-                            <!--#end if#-->
-                            <!--#if 't1' in $ssl_protocols#-->
-                                <option value="t1">TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v3' in $ssl_protocols#-->
-                                <option value="v3">SSL v3</option>
-                            <!--#end if#-->
-                            <!--#if 'v2' in $ssl_protocols#-->
-                                <option value="v2">SSL v2</option>
-                            <!--#end if#-->
-                        </select>
-                    <!--#end if#-->
-                    <span class="desc">$T('srv-explain-ssl_type')</span>
-                </div>
                 <div class="field-pair">
                     <label class="config" for="send_group">$T('srv-send_group')</label>
                     <input type="checkbox" name="send_group" id="send_group" value="1" />
@@ -187,30 +163,6 @@
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
                     <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('srv-ssl')</span>
-                </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl_type$cur">$T('srv-ssl_type')</label>
-                    <!--#if int($have_ssl) == 1#-->
-                        <select name="ssl_type" id="ssl_type$cur">
-                                <option value=""  <!--#if $server['ssl_type'] == ""  then 'selected="selected"' else ""#--> >$T('Default')</option>
-                            <!--#if 't12' in $ssl_protocols#-->
-                                <option value="t12"  <!--#if $server['ssl_type'] == "t12"  then 'selected="selected"' else ""#--> >TLS v1.2</option>
-                            <!--#end if#-->
-                            <!--#if 't11' in $ssl_protocols#-->
-                                <option value="t11"  <!--#if $server['ssl_type'] == "t11"  then 'selected="selected"' else ""#--> >TLS v1.1</option>
-                            <!--#end if#-->
-                            <!--#if 't1' in $ssl_protocols#-->
-                                <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected"' else ""#--> >TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v3' in $ssl_protocols#-->
-                                <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected"' else ""#--> >SSL v3</option>
-                            <!--#end if#-->
-                            <!--#if 'v2' in $ssl_protocols#-->
-                                <option value="v2"  <!--#if $server['ssl_type'] == "v2"  then 'selected="selected"' else ""#--> >SSL v2</option>
-                            <!--#end if#-->
-                        </select>
-                    <!--#end if#-->
-                    <span class="desc">$T('srv-explain-ssl_type')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="optional$cur">$T('srv-optional')</label>

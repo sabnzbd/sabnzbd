@@ -59,7 +59,7 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, send_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
 
         self.id = id
@@ -72,7 +72,6 @@ class Server(object):
         self.threads = threads
         self.priority = priority
         self.ssl = ssl
-        self.ssl_type = None
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -92,11 +91,6 @@ class Server(object):
         self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True  # Assume server has "STAT", until proven otherwise
-
-        if ssl:
-            # When the user has set a supported protocol, use it
-            if ssl_type and ssl_type in ssl_protocols():
-                self.ssl_type = ssl_type
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -205,7 +199,6 @@ class Downloader(Thread):
             threads = srv.connections()
             priority = srv.priority()
             ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
-            ssl_type = srv.ssl_type()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
@@ -226,8 +219,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl,
-                                            ssl_type, send_group,
-                                            username, password, optional, retention, categories=categories))
+                                            send_group, username, password, optional, retention, categories=categories))
 
         return
 
@@ -443,7 +435,7 @@ class Downloader(Thread):
                         try:
                             logging.info("%s@%s: Initiating connection",
                                               nw.thrdnum, server.id)
-                            nw.init_connect(self.write_fds)
+                            nw.init_connect(self.write_fds)                            
                         except:
                             logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.id, sys.exc_info()[1])
                             self.__reset_nw(nw, "failed to initialize")

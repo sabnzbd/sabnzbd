@@ -184,7 +184,7 @@ def probablyipv6(ip):
 
 class NNTP(object):
 
-    def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
         if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
         self.host = host
         self.port = port
@@ -208,10 +208,8 @@ class NNTP(object):
 
         if sslenabled and HAVE_SSL:
             # Setup the SSL socket
-            ctx = ssl.SSLContext(ssl_method(ssl_type))
-            ctx.verify_mode = ssl.CERT_REQUIRED
-            #ctx.set_ciphers('RC4-MD5:RC4-MD5')
-            ctx.load_default_certs()
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
 
             self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto))
         elif sslenabled and not HAVE_SSL:
@@ -305,8 +303,8 @@ class NewsWrapper(object):
 
     def init_connect(self, write_fds):
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
-                         self.server.ssl_type, self.server.send_group, self,
-                         self.server.username, self.server.password, self.blocking, write_fds)
+                         self.server.send_group, self, self.server.username, self.server.password, 
+                         self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
         self.timeout = time.time() + self.server.timeout
