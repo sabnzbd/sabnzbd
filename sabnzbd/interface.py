@@ -54,7 +54,7 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import HAVE_YENC
-from sabnzbd.utils.sslinfo import ssl_protocols_labels, ssl_version
+from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -1605,10 +1605,7 @@ class ConfigGeneral(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        if sabnzbd.newswrapper.HAVE_SSL:
-            conf['have_ssl'] = 1
-        else:
-            conf['have_ssl'] = 0
+        conf['have_ssl'] = sabnzbd.newswrapper.HAVE_SSL
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
