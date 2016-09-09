@@ -71,7 +71,7 @@ Essential modules
     unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
-    unzip >= 5.52           http://www.info-zip.org/
+    unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
