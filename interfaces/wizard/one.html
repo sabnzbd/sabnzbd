@@ -41,7 +41,7 @@
                             </label>
                             <div class="col-sm-8 input-checkbox">
                                 <input type="checkbox" id="ssl" name="ssl" value="1" <!--#if $have_ssl then '' else 'disabled'#--><!--#if $ssl == 1 then 'checked' else ''#--> data-toggle="tooltip" data-placement="right" title="$T('wizard-server-ssl-explain')"/>
-                                <!--#if not $have_ssl then '<span class="label label-warning">pyopenssl (python-openssl) '+$T('opt-notInstalled')+'</span>' else ''#-->
+                                <!--#if not $have_ssl then '<span class="label label-warning">OpenSSL  '+$T('opt-notInstalled')+'</span>' else ''#-->
                                 <small></small>
                             </div>
                         </div>

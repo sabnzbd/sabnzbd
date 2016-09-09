@@ -508,11 +508,6 @@ def print_modules():
         else:
             logging.info("ionice binary... NOT found!")
 
-    if sabnzbd.newswrapper.HAVE_SSL:
-        logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
-    else:
-        logging.info("pyOpenSSL... NOT found! - Try apt-get install python-openssl (SSL is optional)")
-
 
 def all_localhosts():
     """ Return all unique values of localhost in order of preference """
@@ -1356,7 +1351,6 @@ def main():
 
     import sabnzbd.utils.sslinfo
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
-    logging.info("pyOpenSSL version %s", sabnzbd.utils.sslinfo.pyopenssl_version())
     logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
     cherrylogtoscreen = False

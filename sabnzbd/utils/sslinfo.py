@@ -72,14 +72,6 @@ def ssl_version():
         return None
 
 
-def pyopenssl_version():
-    try:
-        import OpenSSL
-        return OpenSSL.__version__
-    except ImportError:
-        return None
-
 if __name__ == '__main__':
     print 'SSL version: %s' % ssl_version()
-    print 'pyOpenSSL version: %s' % pyopenssl_version()
     print 'Supported protocols: %s' % ssl_protocols()

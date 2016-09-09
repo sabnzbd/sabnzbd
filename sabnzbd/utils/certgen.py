@@ -1,82 +1,95 @@
-# -*- coding: latin-1 -*-
-#
-# Copyright (C) Martin Sjögren and AB Strakt 2001, All rights reserved
-# Copyright (C) Jean-Paul Calderone 2008, All rights reserved
-# This file is licenced under the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1 or later (aka LGPL v2.1)
-# Please see LGPL2.1.txt for more information
-"""
-Certificate generation module.
-"""
+#!/usr/bin/env python
 
-from OpenSSL import crypto
-import time
+# Adapted from the docs of cryptography
+# Creates a key and self-signed certificate for local use
 
-TYPE_RSA = crypto.TYPE_RSA
-TYPE_DSA = crypto.TYPE_DSA
-
-serial = int(time.time())
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+import datetime
+import os
+import struct
 
 
-def createKeyPair(type, bits):
-    """
-    Create a public/private key pair.
+# Ported from cryptography/utils.py
+def int_from_bytes(data, byteorder, signed=False):
+    assert byteorder == 'big'
+    assert not signed
 
-    Arguments: type - Key type, must be one of TYPE_RSA and TYPE_DSA
-               bits - Number of bits to use in the key
-    Returns:   The public/private key pair in a PKey object
-    """
-    pkey = crypto.PKey()
-    pkey.generate_key(type, bits)
-    return pkey
+    if len(data) % 4 != 0:
+        data = (b'\x00' * (4 - (len(data) % 4))) + data
 
-def createCertRequest(pkey, digest="md5", **name):
-    """
-    Create a certificate request.
+    result = 0
 
-    Arguments: pkey   - The key to associate with the request
-               digest - Digestion method to use for signing, default is md5
-               **name - The name of the subject of the request, possible
-                        arguments are:
-                          C     - Country name
-                          ST    - State or province name
-                          L     - Locality name
-                          O     - Organization name
-                          OU    - Organizational unit name
-                          CN    - Common name
-                          emailAddress - E-mail address
-    Returns:   The certificate request in an X509Req object
-    """
-    req = crypto.X509Req()
-    subj = req.get_subject()
+    while len(data) > 0:
+        digit, = struct.unpack('>I', data[:4])
+        result = (result << 32) + digit
+        # TODO: this is quadratic in the length of data
+        data = data[4:]
 
-    for (key,value) in name.items():
-        setattr(subj, key, value)
+    return result
 
-    req.set_pubkey(pkey)
-    req.sign(pkey, digest)
-    return req
 
-def createCertificate(req, (issuerCert, issuerKey), serial, (notBefore, notAfter), digest="md5"):
-    """
-    Generate a certificate given a certificate request.
+# Ported from cryptography/utils.py
+def random_serial_number():
+    return int_from_bytes(os.urandom(20), "big") >> 1
 
-    Arguments: req        - Certificate reqeust to use
-               issuerCert - The certificate of the issuer
-               issuerKey  - The private key of the issuer
-               serial     - Serial number for the certificate
-               notBefore  - Timestamp (relative to now) when the certificate
-                            starts being valid
-               notAfter   - Timestamp (relative to now) when the certificate
-                            stops being valid
-               digest     - Digest method to use for signing, default is md5
-    Returns:   The signed certificate in an X509 object
-    """
-    cert = crypto.X509()
-    cert.set_serial_number(serial)
-    cert.gmtime_adj_notBefore(notBefore)
-    cert.gmtime_adj_notAfter(notAfter)
-    cert.set_issuer(issuerCert.get_subject())
-    cert.set_subject(req.get_subject())
-    cert.set_pubkey(req.get_pubkey())
-    cert.sign(issuerKey, digest)
+
+def generate_key(key_size=2048, output_file='key.pem'):
+    # Generate our key
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=key_size,
+        backend=default_backend()
+    )
+
+    # Write our key to disk for safe keeping
+    with open(output_file, "wb") as f:
+        f.write(private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()
+        ))
+    
+    return private_key
+
+
+def generate_local_cert(private_key, days_valid=356, output_file='cert.cert', LN='', ON='', CN=''):
+    # Various details about who we are. For a self-signed certificate the
+    # subject and issuer are always the same.
+    subject = issuer = x509.Name([
+        x509.NameAttribute(NameOID.LOCALITY_NAME, LN),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, ON),
+        x509.NameAttribute(NameOID.COMMON_NAME, CN),
+    ])
+
+    cert = x509.CertificateBuilder().subject_name(
+        subject
+    ).issuer_name(
+        issuer
+    ).public_key(
+        private_key.public_key()
+    ).not_valid_before(
+        datetime.datetime.utcnow()
+    ).not_valid_after(
+        # Our certificate will be valid for 10 days
+        datetime.datetime.utcnow() + datetime.timedelta(days=days_valid)
+    ).serial_number(
+        random_serial_number()
+    # Sign our certificate with our private key
+    ).sign(private_key, hashes.SHA256(), default_backend())
+
+    # Write our certificate out to disk.
+    with open(output_file, "wb") as f:
+        f.write(cert.public_bytes(serialization.Encoding.PEM))
+    
     return cert
+
+if __name__ == '__main__':
+    print 'Making key'
+    private_key = generate_key(key_size=2048, output_file='key.pem')
+    print 'Making cert'
+    cert = generate_local_cert(private_key, 356*10, 'cert.cert', u'SABnzbd', u'SABnzbd', u'SABnzbd')
+

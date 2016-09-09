@@ -1129,28 +1129,12 @@ else:
 
 def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
-    try:
-        from OpenSSL import crypto
-        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
-             TYPE_RSA, serial
-    except:
-        logging.warning(T('pyopenssl module missing, please install for https access'))
-        return False
-
-    # Create the CA Certificate
-    cakey = createKeyPair(TYPE_RSA, 2048)
-    careq = createCertRequest(cakey, digest='sha256', CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
-
-    cname = 'SABnzbd'
-    pkey = createKeyPair(TYPE_RSA, 2048)
-    req = createCertRequest(pkey, digest='sha256', CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
+    from sabnzbd.utils.certgen import generate_key, generate_local_cert
 
     # Save the key and certificate to disk
     try:
-        open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        private_key = generate_key(key_size=2048, output_file=ssl_key)
+        cert = generate_local_cert(private_key, days_valid=356*10, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'SABnzbd')
     except:
         logging.error(T('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info=True)
