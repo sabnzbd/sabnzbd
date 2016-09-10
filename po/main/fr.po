@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-08-08 19:21+0000\n"
-"PO-Revision-Date: 2016-05-20 11:16+0000\n"
+"PO-Revision-Date: 2016-08-18 20:34+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-08-09 05:44+0000\n"
-"X-Generator: Launchpad (build 18169)\n"
+"X-Launchpad-Export-Date: 2016-08-19 05:42+0000\n"
+"X-Generator: Launchpad (build 18176)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -358,7 +358,7 @@ msgstr "%s => absent de tous les serveurs, rejeté"
 
 #: sabnzbd/decoder.py:261
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "UUencode détecté, seul l'encodage yEnc est compatible [%s]"
 
 #: sabnzbd/dirscanner.py:140 [Error message] # sabnzbd/dirscanner.py:225 [Error message]
 msgid "Error removing %s"
@@ -813,7 +813,7 @@ msgstr "Fichier RAR inutilisable"
 
 #: sabnzbd/newsunpack.py:759 # sabnzbd/newsunpack.py:760
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "Fichier RAR corrompu"
 
 #: sabnzbd/newsunpack.py:799
 msgid "Missing expected file: %s => unrar error?"
@@ -2711,7 +2711,7 @@ msgstr "Enregistrer les modifications"
 
 #: sabnzbd/skintext.py:352
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Rétablir les valeurs par défaut"
 
 #: sabnzbd/skintext.py:353 # sabnzbd/skintext.py:893
 msgid "Reset"
@@ -2730,6 +2730,8 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+"Aidez-nous à traduire SABnzbd dans votre langue ! <br/>Améliorez les "
+"traductions existantes ou ajoutez celles qui manquent ici :"
 
 #: sabnzbd/skintext.py:357
 msgid "API Key"
@@ -3342,12 +3344,14 @@ msgstr "Supprimer après téléchargement"
 
 #: sabnzbd/skintext.py:495
 msgid "HTTPS certificate verification"
-msgstr ""
+msgstr "Vérification du certificat HTTPS"
 
 #: sabnzbd/skintext.py:496
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
+"Vérifier les certificats lors de la connexion aux indexeurs et sources RSS "
+"utilisant HTTPS."
 
 #: sabnzbd/skintext.py:498
 msgid "Server"
@@ -4453,6 +4457,7 @@ msgstr ""
 #: sabnzbd/skintext.py:834
 msgid "Glitter has some (new) features you might like!"
 msgstr ""
+"Glitter a des (nouvelles) fonctionnalités que vous devriez apprécier !"
 
 #: sabnzbd/skintext.py:835 # sabnzbd/skintext.py:947
 msgid "Custom"
