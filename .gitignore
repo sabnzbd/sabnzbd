@@ -1,5 +1,5 @@
 #Compiled python
-*.py[co]
+*.py[cod]
 
 # Working folders for Win build
 build/

@@ -36,10 +36,12 @@ import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
+_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt', 
+                    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
 
 
 class URLGrabber(Thread):
@@ -99,7 +101,7 @@ class URLGrabber(Thread):
                 logging.info('Grabbing URL %s', url)
                 req = urllib2.Request(url)
                 req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                if not [True for item in _BAD_GZ_HOSTS if item in url]:
+                if not any(item in url for item in _BAD_GZ_HOSTS):
                     req.add_header('Accept-encoding', 'gzip')
                 filename = None
                 category = None
@@ -166,6 +168,10 @@ class URLGrabber(Thread):
                             # For NZBFinder
                             wait = misc.int_conv(value)
 
+                        # Rating fields
+                        if item in _RARTING_FIELDS:
+                            nzo_info[item] = value
+
                         if not filename and "filename=" in value:
                             filename = value[value.index("filename=") + 9:].strip(';').strip('"')
 
@@ -186,7 +192,7 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(url) + '.nzb'
+                    filename = os.path.basename(url)
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]
@@ -201,10 +207,13 @@ class URLGrabber(Thread):
 
                 # process data
                 if gzipped:
-                    filename = filename + '.gz'
+                    filename += '.gz'
                 if not data:
                     data = fn.read()
                 fn.close()
+
+                if '<nzb' in data and misc.get_ext(filename) != '.nzb':
+                    filename += '.nzb'
 
                 # Sanatize filename first
                 filename = misc.sanitize_filename(filename)
@@ -218,7 +227,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz', 'bz2'):
+                if misc.get_ext(filename) in ('.nzb', '.gz', 'bz2'):
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
@@ -236,9 +245,16 @@ class URLGrabber(Thread):
                         self.add(url, future_nzo, when)
                 # Check if a supported archive
                 else:
-                    if dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
+                    status, zf, exp_ext = dirscanner.is_archive(path)
+                    if status == 0:
+                        if misc.get_ext(filename) not in ('.rar', '.zip', '.7z'):
+                            filename = filename + exp_ext
+                            os.rename(path, path + exp_ext)
+                            path = path + exp_ext
+
+                        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
                                                      nzbname=nzbname, url=future_nzo.url, keep=False,
-                                                     nzo_id=future_nzo.nzo_id)[0]:
+                                                     nzo_id=future_nzo.nzo_id)
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
                             os.remove(fn)
@@ -316,7 +332,7 @@ def bad_fetch(nzo, url, msg='', content=False):
 
     nzo.fail_msg = msg
 
-    growler.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
     if cfg.email_endjob() > 0:
         emailer.badfetch_mail(msg, url)
 

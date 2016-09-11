@@ -19,12 +19,13 @@
 sabnzbd.articlecache - Article cache handling
 """
 
+import sys
 import logging
 import threading
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI, Status
+from sabnzbd.constants import GIGI, ANFO, Status
 
 
 ARTICLE_LOCK = threading.Lock()
@@ -44,7 +45,7 @@ class ArticleCache(object):
 
     @synchronized(ARTICLE_LOCK)
     def cache_info(self):
-        return (len(self.__article_list), self.__cache_size, self.__cache_limit_org)
+        return ANFO(len(self.__article_list), abs(self.__cache_size), self.__cache_limit_org)
 
     @synchronized(ARTICLE_LOCK)
     def new_limit(self, limit):
@@ -56,11 +57,29 @@ class ArticleCache(object):
             self.__cache_limit = min(limit, GIGI)
 
     @synchronized(ARTICLE_LOCK)
+    def reserve_space(self, data):
+        """ Is there space left in the set limit? """
+        data_size = sys.getsizeof(data)*64
+        self.__cache_size += data_size
+        if self.__cache_size + data_size > self.__cache_limit:
+            return False
+        else:
+            return True
+
+    @synchronized(ARTICLE_LOCK)
+    def free_reserve_space(self, data):
+        """ Remove previously reserved space """
+        data_size = sys.getsizeof(data)*64
+        self.__cache_size -= data_size
+        return self.__cache_size + data_size < self.__cache_limit
+
+
+    @synchronized(ARTICLE_LOCK)
     def save_article(self, article, data):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED):
+        if nzo.is_gone():
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:
@@ -114,7 +133,7 @@ class ArticleCache(object):
                                      do_pickle=False, silent=True)
 
         if article in nzo.saved_articles:
-            nzo.saved_articles.remove(article)
+            nzo.remove_saved_article(article)
 
         return data
 
@@ -142,7 +161,7 @@ class ArticleCache(object):
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.status in (Status.COMPLETED, Status.DELETED):
+        if nzo.is_gone():
             # Do not discard this article because the
             # file might still be processed at this moment!!
             if sabnzbd.LOG_ALL:

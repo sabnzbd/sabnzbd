@@ -2,9 +2,9 @@
 
 import logging
 import sys
+import io
 
 import cherrypy
-from cherrypy._cpcompat import BytesIO
 from cherrypy._cperror import format_exc, bare_error
 from cherrypy.lib import httputil
 from cherrypy import wsgiserver
@@ -73,7 +73,7 @@ class NativeGateway(wsgiserver.Gateway):
                             method = "GET"
                             path = ir.path
                             qs = ir.query_string
-                            rfile = BytesIO()
+                            rfile = io.BytesIO()
 
                     self.send_response(
                         response.output_status, response.header_list,

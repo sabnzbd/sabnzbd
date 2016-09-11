@@ -59,9 +59,9 @@ hello.py::
 
     class HelloWorld:
         \"""Sample request handler class.\"""
+        @cherrypy.expose
         def index(self):
             return "Hello world!"
-        index.exposed = True
 
     cherrypy.tree.mount(HelloWorld())
     # CherryPy autoreload must be disabled for the flup server to work
@@ -183,8 +183,7 @@ class ServerAdapter(object):
         if not self.httpserver:
             return ''
         host, port = self.bind_addr
-        if getattr(self.httpserver, 'ssl_certificate', None) or \
-                getattr(self.httpserver, 'ssl_adapter', None):
+        if getattr(self.httpserver, 'ssl_adapter', None):
             scheme = "https"
             if port != 443:
                 host += ":%s" % port

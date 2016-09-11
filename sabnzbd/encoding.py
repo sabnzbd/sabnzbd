@@ -65,7 +65,7 @@ def platform_encode(p):
         try:
             return p.decode('utf-8')
         except:
-            return p.decode(codepage)
+            return p.decode(codepage, errors='replace').replace('?', '!')
     else:
         return p
 
@@ -81,7 +81,7 @@ def name_fixer(p):
             try:
                 return p.decode(codepage)
             except:
-                return p.decode('cp1252', 'ignore')
+                return p.decode('cp1252', 'replace').replace('?', '!')
     else:
         return p
 
@@ -92,6 +92,14 @@ def yenc_name_fixer(p):
     except:
         return p.decode('cp1252')
     
+
+def yenc_name_fixer(p):
+    """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
+    try:
+        return p.decode('utf-8')
+    except:
+        return p.decode('cp1252', errors='replace').replace('?', '!')
+
 
 def is_utf8(p):
     """ Return True when p is UTF-8 or plain ASCII """
@@ -127,12 +135,14 @@ def special_fixer(p):
         return p.decode(codepage)
 
 
-def unicoder(p):
-    """ Make sure a Unicode string is returned """
+def unicoder(p, force=False):
+    """ Make sure a Unicode string is returned
+        When `force` is True, ignore filesystem encoding
+    """
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if gUTF:
+        if gUTF or force:
             try:
                 return p.decode('utf-8')
             except:
@@ -318,7 +328,7 @@ _HTML_TABLE = {
 def html_escape(txt):
     """ Replace HTML metacharacters with &-constructs """
     # Replacement for inefficient xml.sax.saxutils.escape function
-    if [True for ch in _HTML_TABLE if ch in txt]:
+    if any(ch in txt for ch in _HTML_TABLE):
         return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
     else:
         return txt

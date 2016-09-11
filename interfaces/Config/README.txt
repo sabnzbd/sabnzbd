@@ -2,7 +2,7 @@
 uniConfig for SABnzbd 0.7.x
 zoggy@sabnzbd.org
 
-Changed by Safihre for 0.8.x
+Changed by Safihre for 1.0.x
 
 ========================================================
 LIBRARIES USED

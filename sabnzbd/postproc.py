@@ -23,7 +23,7 @@ import os
 import Queue
 import logging
 import sabnzbd
-import urllib
+import xml.sax.saxutils
 import time
 import re
 
@@ -46,7 +46,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 
 
 class PostProcessor(Thread):
@@ -104,10 +104,13 @@ class PostProcessor(Thread):
         """ Remove a job from the post processor queue """
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
-                self.remove(nzo)
-                nzo.purge_data(keep_basic=True, del_files=del_files)
-                logging.info('Removed job %s from postproc queue', nzo.work_name)
-                nzo.work_name = ''  # Mark as deleted job
+                if nzo.status in (Status.FAILED, Status.COMPLETED):
+                    nzo.to_be_removed = True
+                elif nzo.status in (Status.DOWNLOADING, Status.QUEUED):
+                    self.remove(nzo)
+                    nzo.purge_data(keep_basic=False, del_files=del_files)
+                    logging.info('Removed job %s from postproc queue', nzo.work_name)
+                    nzo.work_name = ''  # Mark as deleted job
                 break
 
     def process(self, nzo):
@@ -116,6 +119,8 @@ class PostProcessor(Thread):
             self.history_queue.append(nzo)
         self.queue.put(nzo)
         self.save()
+        # Update the last check time
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
 
     def remove(self, nzo):
         """ Remove given nzo from the queue """
@@ -123,10 +128,10 @@ class PostProcessor(Thread):
             if nzo in self.history_queue:
                 self.history_queue.remove(nzo)
         except:
-            nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(T('Failed to remove nzo from postproc queue (id)') + ' ' + nzo_id)
-            logging.info('Traceback: ', exc_info=True)
+            pass
         self.save()
+        # Update the last check time
+        sabnzbd.LAST_HISTORY_UPDATE = time.time()
 
     def stop(self):
         """ Stop thread after finishing running job """
@@ -162,6 +167,7 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
+                if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
@@ -187,7 +193,15 @@ class PostProcessor(Thread):
                 sabnzbd.downloader.Downloader.do.wait_for_postproc()
 
             self.__busy = True
+
             process_job(nzo)
+
+            if nzo.to_be_removed:
+                history_db = database.HistoryDB()
+                history_db.remove_history(nzo.nzo_id)
+                history_db.close()
+                nzo.purge_data(keep_basic=False, del_files=True)
+
             self.remove(nzo)
             check_eoq = True
 
@@ -197,7 +211,7 @@ class PostProcessor(Thread):
 
 def process_job(nzo):
     """ Process one job """
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     start = time.time()
 
     # keep track of whether we can continue
@@ -276,7 +290,7 @@ def process_job(nzo):
         script = nzo.script
         cat = nzo.cat
 
-        logging.info('Starting PostProcessing on %s' +
+        logging.info('Starting Post-Processing on %s' +
                      ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s',
                      filename, flag_repair, flag_unpack, flag_delete, script, cat)
 
@@ -480,14 +494,14 @@ def process_job(nzo):
                 script_ret = 'Exit(%s) ' % script_ret
             else:
                 script_ret = ''
-            if script_line:
+            if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, unicoder(script_line), urllib.quote(script_output),
-                                    T('More')), unique=True)
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line), 
+                                    xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
-                nzo.set_unpack_info('Script',
-                                    u'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
-                                    T('View script output')), unique=True)
+                # No '(more)' button needed
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, xml.sax.saxutils.escape(script_line)), unique=True)
+
 
         # Cleanup again, including NZB files
         if all_ok:
@@ -509,10 +523,10 @@ def process_job(nzo):
 
         # Show final status in history
         if all_ok:
-            growler.send_notification(T('Download Completed'), filename, 'complete')
+            notifier.send_notification(T('Download Completed'), filename, 'complete')
             nzo.status = Status.COMPLETED
         else:
-            growler.send_notification(T('Download Failed'), filename, 'failed')
+            notifier.send_notification(T('Download Failed'), filename, 'failed')
             nzo.status = Status.FAILED
 
     except:
@@ -521,7 +535,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info=True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        growler.send_notification(T('Download Failed'), filename, 'failed')
+        notifier.send_notification(T('Download Failed'), filename, 'failed')
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
@@ -539,7 +553,7 @@ def process_job(nzo):
     postproc_time = int(time.time() - start)
 
     # Create the history DB instance
-    history_db = database.get_history_handle()
+    history_db = database.HistoryDB()
     # Add the nzo to the database. Only the path, script and time taken is passed
     # Other information is obtained from the nzo
     history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
@@ -568,15 +582,18 @@ def process_job(nzo):
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
 
+    # Update the last check time
+    sabnzbd.LAST_HISTORY_UPDATE = time.time()
+
     return True
 
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     filename = nzo.final_name
-    growler.send_notification(T('Post-processing'), nzo.final_name, 'pp')
-    logging.info('Par2 check starting on %s', filename)
+    notifier.send_notification(T('Post-processing'), filename, 'pp')
+    logging.info('Starting verification and repair of %s', filename)
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
@@ -597,7 +614,7 @@ def parring(nzo, workdir):
             if cfg.ignore_samples() and 'sample' in setname.lower():
                 continue
             if not verified.get(setname, False):
-                logging.info("Running repair on set %s", setname)
+                logging.info("Running verification and repair on set %s", setname)
                 parfile_nzf = par_table[setname]
                 if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
@@ -624,7 +641,7 @@ def parring(nzo, workdir):
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-    logging.info('Par2 check finished on %s', filename)
+    logging.info('Verification and repair finished for %s', filename)
     return par_error, re_add
 
 
@@ -642,11 +659,14 @@ def try_sfv_check(nzo, workdir, setname):
     for sfv in sfvs:
         if setname.lower() in os.path.basename(sfv).lower():
             found = True
+            nzo.status = Status.VERIFYING
             nzo.set_unpack_info('Repair', T('Trying SFV verification'))
+            nzo.set_action_line(T('Trying SFV verification'), '...')
+
             failed = sfv_check(sfv)
             if failed:
-                msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
-                msg += '; '
+                fail_msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                msg = fail_msg + '; '
                 msg += '; '.join(failed)
                 nzo.set_unpack_info('Repair', msg)
                 par_error = True
@@ -654,6 +674,10 @@ def try_sfv_check(nzo, workdir, setname):
                 nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
             if setname:
                 break
+    # Show error in GUI
+    if found and par_error:
+        nzo.status = Status.FAILED
+        nzo.fail_msg = fail_msg
     return (found or not setname) and not par_error
 
 

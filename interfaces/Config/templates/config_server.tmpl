@@ -1,9 +1,9 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configure-servers-1-0"#-->
+<!--#set global $help_uri="configuration/1.1/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="addServer" method="post" autocomplete="off" novalidate>
+    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();" novalidate>
     <input type="hidden" name="session" value="$session" />
     <div id="addServer">
         <div class="padding alt">
@@ -29,13 +29,14 @@
                     <label class="config" for="port">$T('srv-port')</label>
                     <input type="number" name="port" id="port" size="8" />
                 </div>
+                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
-                    <label class="config" for="username">$T('srv-username')</label>
-                    <input type="text" name="username" id="username" />
+                    <label class="config" for="${pid}_00">$T('srv-username')</label>
+                    <input type="text" name="${pid}_00" id="${pid}_00" data-hide="username" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password">$T('srv-password')</label>
-                    <input type="text" name="password" id="password" />
+                    <label class="config" for="${pid}_01">$T('srv-password')</label>
+                    <input type="text" name="${pid}_01" id="${pid}_01" data-hide="password" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
@@ -115,6 +116,9 @@
                     <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                 </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
@@ -154,13 +158,14 @@
                     <label class="config" for="port$cur">$T('srv-port')</label>
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
+                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
-                    <label class="config" for="username$cur">$T('srv-username')</label>
-                    <input type="text" name="username" id="username$cur" value="$server['username']" />
+                    <label class="config" for="${pid}_${cur}0">$T('srv-username')</label>
+                    <input type="text" name="${pid}_${cur}0" id="${pid}_${cur}0" value="$server['username']" data-hide="username" />
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="password$cur">$T('srv-password')</label>
-                    <input type="text" name="password" id="password$cur" value="$server['password']" />
+                    <label class="config" for="${pid}_${cur}1">$T('srv-password')</label>
+                    <input type="text" name="${pid}_${cur}1" id="${pid}_${cur}1" value="$server['password']" data-hide="password" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
@@ -227,6 +232,10 @@
                     <!--#end for#-->
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
+                    <div class="alert alert-info alert-no-category">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        $T('srv-explain-no-categories')
+                    </div>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
@@ -240,6 +249,9 @@
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -285,6 +297,33 @@
         }
         \$(this).css('background-color', theColor)
     })
+
+    /** 
+        Message on no Default category selected
+    **/
+    function checkServerCats() {
+        // Now we check all of them
+        var hasDefault = false;
+        // Only check the active servers, not the add-server one
+        \$('.section:not(#addServerContent) select[name="categories"]').each(function() {
+            // See if this server is enabled
+            if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
+                // Is there Default?
+                if(\$(this).val().indexOf('Default') > -1) {
+                    // Hide
+                    \$('.alert-no-category').hide()
+                    hasDefault = true 
+                    // All good!
+                    return true
+                }
+            }
+        })
+        // We found nothing.. Let's show a warning
+        if(!hasDefault) \$('.alert-no-category').show()
+    }
+
+    \$('select[name="categories"]').on('change', checkServerCats)
+    checkServerCats()    
     
     /**
         Click events
@@ -306,14 +345,29 @@
         \$('#addServerContent').show();
     });
     \$('.testServer').click(function(event){
-        \$(this).attr("disabled", "disabled")
+        removeObfuscation()
+        var theButton = \$(this)
+        var resultBox = theButton.parents('.col1').find('.result-box .alert');
+        theButton.attr("disabled", "disabled")
+        theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
         \$.ajax({
             type: "POST",
             url: "../../tapi",
-            data: "mode=config&amp;name=test_server&amp;" + \$(this).parents('form:first').serialize(),
-            success: function(msg){
-                alert(msg);
-                \$(event.target).removeAttr("disabled")
+            data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
+        }).then(function(data) {
+            // Fill the box and enable the button
+            resultBox.removeClass('alert-success alert-danger').show()
+            resultBox.text(data.value.message)
+            theButton.removeAttr("disabled")
+            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+
+            // Succes or not?
+            if(data.value.result) {
+                resultBox.addClass('alert-success')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
             }
         });
     });
@@ -323,7 +377,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 100)
+            setTimeout(function() { location.reload(); }, 500)
         }
         return false;
     });
@@ -333,7 +387,7 @@
             // Let us leave!
             formWasSubmitted = true;
             formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 100)
+            setTimeout(function() { location.reload(); }, 500)
         }
         return false;
     });

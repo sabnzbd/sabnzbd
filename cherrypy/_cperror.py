@@ -106,9 +106,9 @@ send an e-mail containing the error::
                  'Error in your web app',
                  _cperror.format_exc())
 
+    @cherrypy.config(**{'request.error_response': handle_error})
     class Root:
-        _cp_config = {'request.error_response': handle_error}
-
+        pass
 
 Note that you have to explicitly set
 :attr:`response.body <cherrypy._cprequest.Response.body>`
@@ -118,7 +118,10 @@ and not simply return an error message as a result.
 from cgi import escape as _escape
 from sys import exc_info as _exc_info
 from traceback import format_exception as _format_exception
-from cherrypy._cpcompat import basestring, bytestr, iteritems, ntob
+
+import six
+
+from cherrypy._cpcompat import basestring, iteritems, ntob
 from cherrypy._cpcompat import tonative, urljoin as _urljoin
 from cherrypy.lib import httputil as _httputil
 
@@ -293,7 +296,7 @@ class HTTPRedirect(CherryPyException):
         elif status == 305:
             # Use Proxy.
             # self.urls[0] should be the URI of the proxy.
-            response.headers['Location'] = self.urls[0]
+            response.headers['Location'] = ntob(self.urls[0], 'utf-8')
             response.body = None
             # Previous code may have set C-L, so we have to reset it.
             response.headers.pop('Content-Length', None)
@@ -509,12 +512,12 @@ def get_error_page(status, **kwargs):
                 if cherrypy.lib.is_iterator(result):
                     from cherrypy.lib.encoding import UTF8StreamEncoder
                     return UTF8StreamEncoder(result)
-                elif isinstance(result, cherrypy._cpcompat.unicodestr):
+                elif isinstance(result, six.text_type):
                     return result.encode('utf-8')
                 else:
-                    if not isinstance(result, cherrypy._cpcompat.bytestr):
+                    if not isinstance(result, bytes):
                         raise ValueError('error page function did not '
-                            'return a bytestring, unicodestring or an '
+                            'return a bytestring, six.text_typeing or an '
                             'iterator - returned object of type %s.'
                             % (type(result).__name__))
                     return result
@@ -599,7 +602,7 @@ def bare_error(extrabody=None):
 
     body = ntob("Unrecoverable error in the server.")
     if extrabody is not None:
-        if not isinstance(extrabody, bytestr):
+        if not isinstance(extrabody, bytes):
             extrabody = extrabody.encode('utf-8')
         body += ntob("\n") + extrabody
 

@@ -42,7 +42,6 @@ PANIC_HOST = 8
 
 
 def MSG_BAD_NEWS():
-    # TODO: do we need Ta / T for this?
     return r'''
     <html>
     <head>

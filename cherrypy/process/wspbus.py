@@ -67,8 +67,7 @@ import threading
 import time
 import traceback as _traceback
 import warnings
-
-from cherrypy._cpcompat import set
+import operator
 
 # Here I save the value of os.getcwd(), which, if I am imported early enough,
 # will be the directory from which the startup script was run.  This is needed
@@ -87,7 +86,7 @@ class ChannelFailures(Exception):
 
     def __init__(self, *args, **kwargs):
         # Don't use 'super' here; Exceptions are old-style in Py2.4
-        # See https://bitbucket.org/cherrypy/cherrypy/issue/959
+        # See https://github.com/cherrypy/cherrypy/issues/959
         Exception.__init__(self, *args, **kwargs)
         self._exceptions = list()
 
@@ -162,9 +161,11 @@ class Bus(object):
     def __init__(self):
         self.execv = False
         self.state = states.STOPPED
+        channels = 'start', 'stop', 'exit', 'graceful', 'log', 'main'
         self.listeners = dict(
-            [(channel, set()) for channel
-             in ('start', 'stop', 'exit', 'graceful', 'log', 'main')])
+            (channel, set())
+            for channel in channels
+        )
         self._priorities = {}
 
     def subscribe(self, channel, callback, priority=None):
@@ -192,14 +193,11 @@ class Bus(object):
         exc = ChannelFailures()
         output = []
 
-        items = [(self._priorities[(channel, listener)], listener)
-                 for listener in self.listeners[channel]]
-        try:
-            items.sort(key=lambda item: item[0])
-        except TypeError:
-            # Python 2.3 had no 'key' arg, but that doesn't matter
-            # since it could sort dissimilar types just fine.
-            items.sort()
+        raw_items = (
+            (self._priorities[(channel, listener)], listener)
+            for listener in self.listeners[channel]
+        )
+        items = sorted(raw_items, key=operator.itemgetter(0))
         for priority, listener in items:
             try:
                 output.append(listener(*args, **kwargs))
@@ -319,10 +317,10 @@ class Bus(object):
             raise
 
         # Waiting for ALL child threads to finish is necessary on OS X.
-        # See https://bitbucket.org/cherrypy/cherrypy/issue/581.
+        # See https://github.com/cherrypy/cherrypy/issues/581.
         # It's also good to let them all shut down before allowing
         # the main thread to call atexit handlers.
-        # See https://bitbucket.org/cherrypy/cherrypy/issue/751.
+        # See https://github.com/cherrypy/cherrypy/issues/751.
         self.log("Waiting for child threads to terminate...")
         for t in threading.enumerate():
             # Validate the we're not trying to join the MainThread

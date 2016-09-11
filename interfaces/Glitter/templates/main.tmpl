@@ -21,7 +21,7 @@
         <meta name="application-name" content="SABnzbd">
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="SABnzbd" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="#000000" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="msapplication-navbutton-color" content="#000000" />
         <meta name="theme-color" content="#000000" />
         
@@ -29,7 +29,8 @@
         <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
-        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico" data-bind="attr: { 'href': SABIcon }" />
+        <link rel="apple-touch-icon" sizes="192x192" href="./staticcfg/ico/android-192x192.png" />
+        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=1.0.0" data-bind="attr: { 'href': SABIcon }" />
 
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?p=$pid" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
@@ -74,8 +75,9 @@
             glitterTranslate.sendThanks = "$T('Glitter-sendThanks')";
             glitterTranslate.chooseFile = "$T('Glitter-chooseFile')";
             glitterTranslate.orphanedJobsMsg = "$T('explain-orphans')";
-            glitterTranslate.useCache = "$T('explain-cache_limitstr')";
+            glitterTranslate.useCache = "$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")";
             glitterTranslate.noLocalStorage = "$T('Glitter-noLocalStorage')";
+            glitterTranslate.glitterTips = "$T('Glitter-glitterTips')";
             glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
             glitterTranslate.defaultText = "$T('default')";
             glitterTranslate.noneText = "$T('None')";
@@ -120,14 +122,14 @@
 
         <!-- Inclusion is faster than external scripts. We load momentJS locale seperatly so failure won't break anything -->
         <script type="text/javascript">
-            <!--#include raw $webdir + "/static/javascripts/jquery-1.11.2.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/moment.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
             <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/glitter.js"#-->
+            <!--#include $webdir + "/static/javascripts/glitter.js"#-->
         </script>
         <!--#if active_lang != 'en'#-->
         <script type="text/javascript" src="./static/javascripts/momentjs_locale/${active_lang}.js"></script>
@@ -139,11 +141,25 @@
         </div>
 
         <div class="container main-content">
+            <div class="history-queue-swicher">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#queue-tab" data-toggle="tab">$T('menu-queue') <span class="badge" data-bind="text: queue.totalItems"></span></a>
+                    </li>
+                    <li>
+                        <a href="#history-tab" data-toggle="tab">$T('menu-history')<span class="badge" data-bind="text: history.totalItems"></span></a>
+                    </li>
+                    <li>
+                        <a href="#queue-messages" data-toggle="tab">$T('warnings')<span class="badge" data-bind="text: hasMessages, css: { 'badge-warning':  hasMessages() }"></span></a>
+                    </li>
+                </ul>
+            </div>
+
             <!--#include $webdir + "/include_queue.tmpl"#-->
             <!--#include $webdir + "/include_messages.tmpl"#-->
             <!--#include $webdir + "/include_history.tmpl"#-->
         </div>
         
-        <!--#include $webdir + "/include_modals.tmpl"#-->
+        <!--#include $webdir + "/include_overlays.tmpl"#-->
     </body>
 </html>

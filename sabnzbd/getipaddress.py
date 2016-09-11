@@ -22,6 +22,38 @@ sabnzbd.getipaddress
 import socket
 import sabnzbd
 import sabnzbd.cfg
+import multiprocessing.pool
+import functools
+import socket
+
+# decorator stuff:
+def timeout(max_timeout):
+    """Timeout decorator, parameter in seconds."""
+    def timeout_decorator(item):
+        """Wrap the original function."""
+        @functools.wraps(item)
+        def func_wrapper(*args, **kwargs):
+            """Closure for function."""
+            pool = multiprocessing.pool.ThreadPool(processes=1)
+            async_result = pool.apply_async(item, args, kwargs)
+            # raises a TimeoutError if execution exceeds max_timeout
+            return async_result.get(max_timeout)
+        return func_wrapper
+    return timeout_decorator
+
+@timeout(3.0)
+def addresslookup(myhost):
+    return socket.getaddrinfo(myhost,80)
+
+@timeout(3.0)
+def addresslookup4(myhost):
+    return socket.getaddrinfo(myhost,80, socket.AF_INET)
+
+@timeout(3.0)
+def addresslookup6(myhost):
+    return socket.getaddrinfo(myhost,80, socket.AF_INET6)
+
+
 
 
 def localipv4():
@@ -32,17 +64,16 @@ def localipv4():
         s_ipv4.close()
     except:
         ipv4 = None
-        pass
     return ipv4
 
 def publicipv4():
-    # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention, 
+    # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention,
     # meaning forcing IPv4 connections, and not allowing IPv6 connections
     try:
         import urllib2
         ipv4_found = False
         # we only want IPv4 resolving, so socket.AF_INET:
-        result = socket.getaddrinfo(sabnzbd.cfg.selftest_host(), 80, socket.AF_INET, 0, socket.IPPROTO_TCP)
+        result = addresslookup4(sabnzbd.cfg.selftest_host())
     except:
 	# something very bad: no urllib2, no resolving of selftest_host, no network at all
         public_ipv4 = None
@@ -55,7 +86,7 @@ def publicipv4():
             req = urllib2.Request("http://" + selftest_ipv4 + "/")
             # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
             req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__ )
-            # specify the Host, because we only provide the IPv4 address in the URL: 
+            # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
             # get the response
             public_ipv4 = urllib2.urlopen(req, timeout=2).read() # timeout 2 seconds, in case website is not accessible

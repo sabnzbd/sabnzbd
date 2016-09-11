@@ -28,7 +28,6 @@ import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import MEBI
 from sabnzbd.misc import to_units
 import os
 import cherrypy
@@ -39,9 +38,9 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 class SABTrayThread(SysTrayIconThread):
     sabicons = {
-        'default': 'icons/sabnzbd16.ico',
-        'green': 'icons/sabnzbd16green.ico',
-        'pause': 'icons/sabnzbd16paused.ico'
+        'default': 'icons/sabnzbd16_32.ico',
+        'green': 'icons/sabnzbd16_32green.ico',
+        'pause': 'icons/sabnzbd16_32paused.ico'
     }
 
     def __init__(self):
@@ -110,8 +109,6 @@ class SABTrayThread(SysTrayIconThread):
 
             self.refresh_icon()
             self.counter = 0
-        if sabnzbd.SABSTOP:
-            self.terminate = True
 
     # menu handler
     def opencomplete(self, icon):

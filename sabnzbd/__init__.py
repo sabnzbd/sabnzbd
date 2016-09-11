@@ -96,8 +96,10 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
-from sabnzbd.decorators import *
-from sabnzbd.constants import *
+from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
+from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
+     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
+import sabnzbd.getipaddress as getipaddress
 
 LINUX_POWER = powersup.HAVE_DBUS
 
@@ -146,23 +148,10 @@ WEBUI_READY = False
 LAST_WARNING = None
 LAST_ERROR = None
 EXTERNAL_IPV6 = False
+LAST_HISTORY_UPDATE = time.time()
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
-
-
-##############################################################################
-# Table to map 0.5.x style language code to new style
-##############################################################################
-LANG_MAP = {
-    'de-de': 'de',
-    'dk-da': 'da',  # Should have been "da-dk"
-    'fr-fr': 'fr',
-    'nl-du': 'nl',  # Should have been "du-nl"
-    'no-no': 'nb',  # Norsk Bokmal
-    'sv-se': 'sv',
-    'us-en': 'en'  # Should have been "en-us"
-}
 
 
 ##############################################################################
@@ -176,7 +165,7 @@ def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logging.warning(T('Signal %s caught, saving and exiting...'), signum)
     try:
-        save_state(flag=True)
+        save_state()
         sabnzbd.zconfig.remove_server()
     finally:
         if sabnzbd.WIN32:
@@ -200,7 +189,7 @@ INIT_LOCK = Lock()
 def connect_db(thread_index=0):
     # Create a connection and store it in the current thread
     if not (hasattr(cherrypy.thread_data, 'history_db') and cherrypy.thread_data.history_db):
-        cherrypy.thread_data.history_db = sabnzbd.database.get_history_handle()
+        cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
     return cherrypy.thread_data.history_db
 
 
@@ -253,6 +242,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.web_dir2.callback(guard_restart)
     cfg.web_color.callback(guard_restart)
     cfg.web_color2.callback(guard_restart)
+    cfg.username.callback(guard_restart)
+    cfg.password.callback(guard_restart)
     cfg.log_dir.callback(guard_restart)
     cfg.https_port.callback(guard_restart)
     cfg.https_cert.callback(guard_restart)
@@ -260,13 +251,13 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.enable_https.callback(guard_restart)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
-    cfg.growl_server.callback(sabnzbd.growler.change_value)
-    cfg.growl_password.callback(sabnzbd.growler.change_value)
+    cfg.growl_server.callback(sabnzbd.notifier.change_value)
+    cfg.growl_password.callback(sabnzbd.notifier.change_value)
     cfg.quota_size.callback(guard_quota_size)
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
     cfg.fsys_type.callback(guard_fsys_type)
-    cfg.language.callback(sabnzbd.growler.reset_growl)
+    cfg.language.callback(sabnzbd.notifier.reset_growl)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
 
@@ -280,9 +271,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     check_incomplete_vs_complete()
-
-    # Handle language upgrade from 0.5.x to 0.6.x
-    cfg.language.set(LANG_MAP.get(cfg.language(), cfg.language()))
 
     # Set language files
     lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
@@ -312,14 +300,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     if check_repair_request():
         repair = 2
         pause_downloader = True
-    else:
-        # Check crash detection file
-        # if load_admin(TERM_FLAG_FILE, remove=True):
-            # Repair mode 2 is a bit over an over-reaction!
-        pass  # repair = 2
-
-    # Set crash detection file
-    # save_admin(1, TERM_FLAG_FILE)
 
     # Initialize threads
     rss.init()
@@ -431,9 +411,13 @@ def halt():
 
         # Save State
         try:
-            save_state(flag=True)
+            save_state()
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
+
+        # Stop the windows tray icon
+        if sabnzbd.WINTRAY:
+            sabnzbd.WINTRAY.terminate = True
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
@@ -525,7 +509,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     return future_nzo.nzo_id
 
 
-def save_state(flag=False):
+def save_state():
     """ Save all internal bookkeeping to disk """
     ArticleCache.do.flush_articles()
     NzbQueue.do.save()
@@ -534,9 +518,6 @@ def save_state(flag=False):
     Rating.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
-    # if flag:
-    #    # Remove crash detector
-    #    load_admin(TERM_FLAG_FILE, remove=True)
 
 
 def pause_all():
@@ -795,11 +776,12 @@ def change_queue_complete_action(action, new=True):
 def run_script(script):
     """ Run a user script (queue complete only) """
     command = [os.path.join(cfg.script_dir.get_path(), script)]
-    stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
-    logging.info('Spawning external command %s', command)
-    subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                     startupinfo=stup, creationflags=creationflags)
+    if os.path.exists(command[0]):
+        stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
+        logging.info('Spawning external command %s', command)
+        subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         startupinfo=stup, creationflags=creationflags)
 
 
 def empty_queues():
@@ -838,7 +820,6 @@ def CheckFreeSpace():
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
-IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
 def get_new_id(prefix, folder, check_list=None):
@@ -1163,7 +1144,7 @@ def test_ipv6():
         # User disabled the test, assume active IPv6
         return True
     try:
-        info = socket.getaddrinfo(cfg.selftest_host(), 443, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+        info = getipaddress.addresslookup6(cfg.selftest_host())
     except:
         logging.debug("Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0] )
         return False

@@ -44,6 +44,7 @@ SKIN_TEXT = {
     'post-QuickCheck'    : TT('Quick Check...'), #: PP status
     'post-Verifying'     : TT('Verifying...'), #: PP status
     'post-Downloading'   : TT('Downloading'), #: Pseudo-PP status, in reality used for Queue-status
+    'post-Propagating'   : TT('Propagation delay'),
     'post-Checking'      : TT('Checking'), #: PP status
 
     'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
@@ -132,6 +133,9 @@ SKIN_TEXT = {
     'audio' : TT('Audio'),
     'notUsed' : TT('Not used'),
     'orLess' : TT('or less'),
+    'login' : TT('Log in'),
+    'logout' : TT('Log out'),
+    'rememberme' : TT('Remember me'),
 
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
@@ -293,13 +297,17 @@ SKIN_TEXT = {
 # Configuration
     'confgFile' : TT('Config File'),
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
-    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
+    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.') + TT('<br />If authentication is enabled, you will need to login again.'),
+    'explain-needNewLogin' : TT('<br />If authentication is enabled, you will need to login again.'),
     'button-restart' : TT('Restart'),
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
+    'explain-sessionExpire': TT('When your IP address changes or SABnzbd is restarted the session will expire.'),
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
+    'opt-enable_unzip' : TT('Enable Unzip'),
+    'opt-enable_7zip' : TT('Enable 7zip'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
@@ -343,8 +351,11 @@ SKIN_TEXT = {
     'opt-cleanup_list' : TT('Cleanup List'),
     'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>'),
     'button-saveChanges' : TT('Save Changes'),
+    'button-restoreDefaults' : TT('Restore Defaults'),
+    'explain-restoreDefaults' : TT('Reset'),
     'opt-language' : TT('Language'),
     'explain-language' : TT('Select a web interface language.'),
+    'explain-ask-language': TT('Help us translate SABnzbd in your language! <br/>Add untranslated texts or improved existing translations here:'), # Link to sabnzbd.org follows this text
     'opt-apikey' : TT('API Key'),
     'explain-apikey' : TT('This key will give 3rd party programs full access to SABnzbd.'),
     'opt-nzbkey' : TT('NZB Key'),
@@ -362,6 +373,7 @@ SKIN_TEXT = {
     'inet-api' : TT('API (no Config)'), # Selection value for external access
     'inet-fullapi' : TT('Full API'), # Selection value for external access
     'inet-ui' : TT('Full Web interface'), # Selection value for external access
+    'inet-external_login' : TT('Only external access requires login'), # Selection value for external access
 
 # Config->Folders
     'explain-folderConfig' : TT('<em>NOTE:</em> Folders will be created automatically when Saving. You may use absolute paths to save outside of the default folders.'),
@@ -401,20 +413,10 @@ SKIN_TEXT = {
     'explain-quick_check' : TT('Skip par2 checking when files are 100% valid.'),
     'opt-enable_all_par' : TT('Download all par2 files'),
     'explain-enable_all_par' : TT('This prevents multiple repair runs. QuickCheck on: download all par2 files when needed. QuickCheck off: always download all par2 files.'),
-    'opt-enable_unrar' : TT('Enable Unrar'),
-    'explain-enable_unrar' : TT('Enable built-in unrar functionality.'),
-    'opt-enable_unzip' : TT('Enable Unzip'),
-    'explain-enable_unzip' : TT('Enable built-in unzip functionality.'),
-    'opt-enable_7zip' : TT('Enable 7zip'),
-    'explain-enable_7zip' : TT('Enable built-in 7zip functionality.'),
     'opt-enable_recursive' : TT('Enable recursive unpacking'),
     'explain-enable_recursive' : TT('Unpack archives (rar, zip, 7z) within archives.'),
     'opt-flat_unpack' : TT('Ignore any folders inside archives'),
     'explain-flat_unpack' : TT('All files will go into a single folder.'),
-    'opt-enable_filejoin' : TT('Enable Filejoin'),
-    'explain-enable_filejoin' : TT('Join files ending in .001, .002 etc. into one file.'),
-    'opt-enable_tsjoin' : TT('Enable TS Joining'),
-    'explain-ts_join' : TT('Join files ending in .001.ts, .002.ts etc. into one file.'),
     'opt-overwrite_files' : TT('When unpacking, overwrite existing files'),
     'explain-overwrite_files' : TT('This will overwrite existing files instead of creating an alternative name.'),
     'opt-top_only' : TT('Only Get Articles for Top of Queue'),
@@ -461,6 +463,8 @@ SKIN_TEXT = {
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
+    'opt-propagation_delay' : TT('Propagation delay'),
+    'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay.'),
     'opt-check_new_rel' : TT('Check for New Release'),
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'also-test' : TT('Also test releases'), #: Pick list for weekly test for new releases
@@ -480,8 +484,8 @@ SKIN_TEXT = {
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
     'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
-    'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
-    'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
+    'opt-enable_https_verification' : TT('HTTPS certificate verification'),
+    'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
     'swtag-general' : TT('General'),
     'swtag-server' : TT('Server'),
     'swtag-queue' : TT('Queue'),
@@ -503,11 +507,12 @@ SKIN_TEXT = {
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
-    'opt-fail_hopeless' : TT('Abort jobs that cannot be completed'),
-    'explain-fail_hopeless' : TT('When during download it becomes clear that too much data is missing, abort the job'),
+    'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
+    'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
     'opt-rating_enable' : TT('Enable OZnzb Integration'),
     'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
-    'opt-rating_api_key' : TT('Site API Key'),
+    'opt-rating_api_key' : TT('API Key'),
+    'opt-rating_host' : TT('Server address'),
     'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
     'opt-rating_feedback' : TT('Automatic Feedback'),
     'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
@@ -556,6 +561,7 @@ SKIN_TEXT = {
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
     'srv-categories' : TT('Categories'),
     'srv-explain-categories' : TT('Only use this server for these categories.'),
+    'srv-explain-no-categories' : TT('None of the enabled servers have the \'Default\' category selected. Jobs in the queue that are not assigned to one of the server\'s categories will not be downloaded.'),
     'srv-notes' : TT('Personal notes'),
 
 # Config->Scheduling
@@ -648,6 +654,13 @@ SKIN_TEXT = {
     'explain-pushbullet_apikey' : TT('Your personal Pushbullet API key (required)'), #: Pushbullet settings
     'opt-pushbullet_device' : TT('Device'), #: Pushbullet settings
     'explain-pushbullet_device' : TT('Device to which message should be sent'), #: Pushbullet settings
+    'section-NScript' : TT('Notification Script'), #: Header for Notification Script notification section
+    'opt-nscript_enable' : TT('Enable notification script'), #: Notification Script settings
+    'opt-nscript_script' : TT('Script'), #: Notification Script settings
+    'opt-nscript_parameters' : TT('Parameters'), #: Notification Script settings
+    'explain-nscript_enable' : TT('Executes a custom script'), #: Notification Scriptsettings
+    'explain-nscript_script' : TT('Which script should we execute for notification?'), #: Notification Scriptsettings
+    'explain-nscript_parameters' : TT('Read the Wiki Help on this!'), #: Notification Script settings
 
 # Config->Cat
     'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
@@ -777,7 +790,8 @@ SKIN_TEXT = {
     'Glitter-queueItemLimit' : TT('Queue item limit'),
     'Glitter-historyItemLimit' : TT('History item limit'),
     'Glitter-dateFormat' : TT('Date format'),
-    'Glitter-showExtraColumn' : TT('Extra queue column'),
+    'Glitter-showExtraQueueColumn' : TT('Extra queue column'),
+    'Glitter-showExtraHistoryColumn' : TT('Extra history column'),
     'Glitter-page' : TT('page'),
     'Glitter-everything' : TT('Everything'),
     'Glitter-loading' : TT('Loading'),
@@ -788,6 +802,7 @@ SKIN_TEXT = {
     'Glitter-orphanedJobs' : TT('Orphaned jobs'),
     'Glitter-backToQueue' : TT('Send back to queue'),
     'Glitter-purgeOrphaned' : TT('Delete All'),
+    'Glitter-retryAllOrphaned' : TT('Retry all'),
     'Glitter-deleteJobAndFolders' : TT('Remove NZB & Delete Files'),
     'Glitter-addFromURL' : TT('Fetch NZB from URL'),
     'Glitter-addFromFile' : TT('Upload NZB'),
@@ -809,7 +824,11 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
+    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'), 
     'Glitter-custom' : TT('Custom'),
+    'Glitter-displayCompact' : TT('Compact layout'),
+    'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
+    'Glitter-speed' : TT('Speed'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
     'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
@@ -821,6 +840,11 @@ SKIN_TEXT = {
     'Glitter-sortNameDesc' : TT('Sort by Name <small>Z&rarr;A</small>'),
     'Glitter-sortSizeAsc' : TT('Sort by Size <small>Smallest&rarr;Largest</small>'),
     'Glitter-sortSizeDesc' : TT('Sort by Size <small>Largest&rarr;Smallest</small>'),
+    'Glitter-notification-uploading' : TT('Uploading'), # Notification window
+    'Glitter-notification-disconnect' : TT('Forcing disconnect'), # Notification window
+    'Glitter-notification-removing1' : TT('Removing job'), # Notification window
+    'Glitter-notification-removing' : TT('Removing jobs'), # Notification window
+    'Glitter-notification-shutdown' : TT('Shutting down'), # Notification window
 
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),

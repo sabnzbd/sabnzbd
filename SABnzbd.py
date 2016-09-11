@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info[:2] < (2, 6) or sys.version_info[:2] >= (3, 0):
-    print "Sorry, requires Python 2.6 or 2.7."
+if sys.version_info[:2] < (2, 7) or sys.version_info[:2] >= (3, 0):
+    print "Sorry, requires Python 2.7."
     sys.exit(1)
 
 # Make sure UTF-8 is default 8bit encoding
@@ -27,7 +27,7 @@ try:
     sys.setdefaultencoding('utf-8')
 except:
     print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
-    print 'or find another way to force Python to use UTF-8 for string encoding.'
+    print 'or find another way to force Python to use UTF-8 for text encoding.'
     sys.exit(1)
 
 import logging
@@ -52,8 +52,8 @@ except:
     sys.exit(1)
 
 import cherrypy
-if [int(n) for n in cherrypy.__version__.split('.')] < [3, 8, 0]:
-    print 'Sorry, requires Python module Cherrypy 3.8.0+ (use the included version)'
+if [int(n) for n in cherrypy.__version__.split('.')] < [6, 0, 2]:
+    print 'Sorry, requires Python module Cherrypy 6.0.2+ (use the included version)'
     sys.exit(1)
 
 from cherrypy import _cpserver
@@ -98,25 +98,12 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, deunicode
-import sabnzbd.growler as growler
+import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
 from threading import Thread
 
 LOG_FLAG = False        # Global for this module, signaling loglevel change
-
-_first_log = True
-
-
-def FORCELOG(txt):
-    global _first_log
-    if _first_log:
-        os.remove('d:/temp/debug.txt')
-        _first_log = False
-    ff = open('d:/temp/debug.txt', 'a+')
-    ff.write(txt)
-    ff.write('\n')
-    ff.close()
 
 
 try:
@@ -504,14 +491,12 @@ def print_modules():
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        if sabnzbd.cfg.enable_unzip():
-            logging.warning(T('unzip binary... NOT found!'))
+        logging.info(T('unzip binary... NOT found!'))
 
     if sabnzbd.newsunpack.SEVEN_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
     else:
-        if sabnzbd.cfg.enable_7zip():
-            logging.info(T('7za binary... NOT found!'))
+        logging.info(T('7za binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -691,7 +676,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if cherryport == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
-        # TODO: Should have a translated message, but that's not available yet
+        # Should have a translated message, but that's not available yet
         logging.error(T('HTTP and HTTPS ports cannot be the same'))
 
     return cherryhost, cherryport, browserhost, https_port
@@ -943,7 +928,7 @@ def main():
                 autobrowser = bool(int(arg))
             except:
                 autobrowser = True
-        elif opt in ('--autorestarted'):
+        elif opt in ('--autorestarted', ):
             autorestarted = True
         elif opt in ('-c', '--clean'):
             clean_up = True
@@ -1003,7 +988,7 @@ def main():
             osx_console = True
         elif opt in ('--ipv6_hosting',):
             ipv6_hosting = arg
-            
+
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
@@ -1125,14 +1110,15 @@ def main():
             else:
                 if not url:
                     url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    newport = find_free_port(browserhost, port)
-                    if newport > 0:
-                        sabnzbd.cfg.https_port.set(newport)
-                        if https_port:
-                            https_port = newport
-                        else:
-                            http_port = newport
+                if not sabnzbd.cfg.fixed_ports():
+                    if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                        newport = find_free_port(browserhost, port)
+                        if newport > 0:
+                            sabnzbd.cfg.https_port.set(newport)
+                            if https_port:
+                                https_port = newport
+                            else:
+                                http_port = newport
         except:
             Bail_Out(browserhost, cherryport, '49')
 
@@ -1145,11 +1131,12 @@ def main():
         else:
             if not url:
                 url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
-            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                port = find_free_port(browserhost, cherryport)
-                if port > 0:
-                    sabnzbd.cfg.cherryport.set(port)
-                    cherryport = port
+            if not sabnzbd.cfg.fixed_ports():
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    port = find_free_port(browserhost, cherryport)
+                    if port > 0:
+                        sabnzbd.cfg.cherryport.set(port)
+                        cherryport = port
     except:
         Bail_Out(browserhost, cherryport, '49')
 
@@ -1342,8 +1329,6 @@ def main():
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
     sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(), web_dir2)
     sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
-
-    logging.debug('Unwanted extensions are ... %s', sabnzbd.cfg.unwanted_extensions())
 
     if fork and not sabnzbd.WIN32:
         daemonize()
@@ -1561,7 +1546,7 @@ def main():
         if sabnzbd.FOUNDATION:
             import sabnzbd.osxmenu
             sabnzbd.osxmenu.notify("SAB_Launched", None)
-        growler.send_notification('SABnzbd%s' % growler.hostname(),
+        notifier.send_notification('SABnzbd%s' % notifier.hostname(),
                                   T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
         # Now's the time to check for a new version
         check_latest_version()
@@ -1610,11 +1595,11 @@ def main():
         if sabnzbd.LAST_WARNING:
             msg = sabnzbd.LAST_WARNING
             sabnzbd.LAST_WARNING = None
-            sabnzbd.growler.send_notification(T('Warning'), msg, 'warning')
+            sabnzbd.notifier.send_notification(T('Warning'), msg, 'warning')
         if sabnzbd.LAST_ERROR:
             msg = sabnzbd.LAST_ERROR
             sabnzbd.LAST_ERROR = None
-            sabnzbd.growler.send_notification(T('Error'), msg, 'error')
+            sabnzbd.notifier.send_notification(T('Error'), msg, 'error')
 
         if sabnzbd.WIN_SERVICE:
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
@@ -1622,7 +1607,7 @@ def main():
             if rc == win32event.WAIT_OBJECT_0:
                 if mail:
                     mail.send('stop')
-                sabnzbd.save_state(flag=True)
+                sabnzbd.save_state()
                 logging.info('Leaving SABnzbd')
                 sabnzbd.SABSTOP = True
                 return
@@ -1684,7 +1669,7 @@ def main():
             sys.argv = re_argv
             os.chdir(org_dir)
             if sabnzbd.DARWIN:
-                # TODO: when executing from sources on osx, after a restart, process is detached from console
+                # When executing from sources on osx, after a restart, process is detached from console
                 # If OSX frozen restart of app instead of embedded python
                 if getattr(sys, 'frozen', None) == 'macosx_app':
                     # [[NSProcessInfo processInfo] processIdentifier]]
@@ -1731,7 +1716,7 @@ def main():
             # Failing AppHelper libary!
             os._exit(0)
     else:
-        growler.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
+        notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
 
 

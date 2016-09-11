@@ -25,8 +25,8 @@ import os
 import re
 import sys
 import gettext
+import subprocess
 
-TOOL = 'msgfmt'
 PO_DIR = 'po/main'
 POE_DIR = 'po/email'
 PON_DIR = 'po/nsis'
@@ -137,12 +137,19 @@ LanguageTable = {
 # Filter for retrieving readable language from PO file
 RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
+def run(cmd):
+    """ Run system command, returns exit-code and stdout """
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    txt = p.stdout.read()
+    return p.wait(), txt
+
 
 def process_po_folder(domain, folder, extra=''):
     """ Process each PO file in folder """
+    result = True
     for fname in glob.glob(os.path.join(folder, '*.po')):
-        podir, basename = os.path.split(fname)
-        name, ext = os.path.splitext(basename)
+        basename = os.path.split(fname)[1]
+        name = os.path.splitext(basename)[0]
         mo_path = os.path.normpath('%s/%s%s' % (MO_DIR, name, MO_LOCALE))
         mo_name = '%s.mo' % domain
         if not os.path.exists(mo_path):
@@ -151,10 +158,14 @@ def process_po_folder(domain, folder, extra=''):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print 'Compile %s' % mo_file
-        ret = os.system('%s %s -o "%s" "%s"' % (TOOL, extra, mo_file, fname))
+        ret, output = run('%s %s -o "%s" "%s"' % (TOOL, extra, mo_file, fname))
         if ret != 0:
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
+        if 'WARNING:' in output:
+            print output
+            result = False
+    return result
 
 
 def remove_mo_files():
@@ -172,7 +183,7 @@ def translate_tmpl(prefix, lng):
     src.close()
     data = _(data).encode('utf-8')
     fp = open('email/%s-%s.tmpl' % (prefix, lng), 'wb')
-    if not (-1 < data.find('UTF-8') < 30):
+    if not -1 < data.find('UTF-8') < 30:
         fp.write('#encoding UTF-8\n')
     fp.write(data)
     fp.close()
@@ -246,6 +257,7 @@ def patch_nsis():
         dst.write(line)
     dst.close()
 
+#----------------------------------------------------------------------------
 
 # Determine location of MsgFmt tool
 path, py = os.path.split(sys.argv[0])
@@ -256,15 +268,16 @@ if os.path.exists(tl):
     else:
         TOOL = '"%s"' % tl
 
+result = True
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
     print 'NSIS MO file'
-    process_po_folder(DOMAIN_N, PON_DIR)
+    result = result and process_po_folder(DOMAIN_N, PON_DIR)
 
     print "Patch NSIS script"
     patch_nsis()
 
 print 'Email MO files'
-process_po_folder(DOMAIN_E, POE_DIR)
+result = result and process_po_folder(DOMAIN_E, POE_DIR)
 
 print "Create email templates from MO files"
 make_templates()
@@ -272,7 +285,14 @@ make_templates()
 
 print 'Main program MO files'
 # -n option added to remove all newlines from the translations
-process_po_folder(DOMAIN, PO_DIR, '-n')
+result = result and process_po_folder(DOMAIN, PO_DIR, '-n')
 
 print "Remove temporary templates"
 remove_mo_files()
+
+print
+if result:
+    exit(0)
+else:
+    print 'WARNINGS present!'
+    exit(1)

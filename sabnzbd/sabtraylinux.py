@@ -19,15 +19,13 @@
 sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 """
 
-import os
 import gtk
 import gobject
 import cherrypy
 from time import sleep
 import subprocess
-import threading
-import logging
 from threading import Thread
+import logging
 
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
@@ -35,16 +33,15 @@ import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import MEBI
 from sabnzbd.misc import to_units
 from sabnzbd.utils.upload import add_local
 
 
 class StatusIcon(Thread):
     sabicons = {
-        'default': 'icons/sabnzbd16.ico',
-        'green': 'icons/sabnzbd16green.ico',
-        'pause': 'icons/sabnzbd16paused.ico'
+        'default': 'icons/sabnzbd16_32.ico',
+        'green': 'icons/sabnzbd16_32green.ico',
+        'pause': 'icons/sabnzbd16_32paused.ico'
     }
 
     updatefreq = 1000  # ms

@@ -75,7 +75,8 @@ __all__ = ['HTTPRequest', 'HTTPConnection', 'HTTPServer',
            'WorkerThread', 'ThreadPool', 'SSLAdapter',
            'CherryPyWSGIServer',
            'Gateway', 'WSGIGateway', 'WSGIGateway_10', 'WSGIGateway_u0',
-           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class']
+           'WSGIPathInfoDispatcher', 'get_ssl_adapter_class',
+           'socket_errors_to_ignore']
 
 import os
 try:
@@ -86,23 +87,42 @@ import re
 import email.utils
 import socket
 import sys
+import threading
+import time
+import traceback as traceback_
+import errno
+import logging
+from urllib.parse import urlparse
+
+try:
+    # prefer slower Python-based io module
+    import _pyio as io
+except ImportError:
+    # Python 2.6
+    import io
+
+try:
+    import pkg_resources
+except ImportError:
+    pass
+
 if 'win' in sys.platform and hasattr(socket, "AF_INET6"):
     if not hasattr(socket, 'IPPROTO_IPV6'):
         socket.IPPROTO_IPV6 = 41
     if not hasattr(socket, 'IPV6_V6ONLY'):
         socket.IPV6_V6ONLY = 27
-if sys.version_info < (3, 1):
-    import io
-else:
-    import _pyio as io
+
+
 DEFAULT_BUFFER_SIZE = io.DEFAULT_BUFFER_SIZE
 
-import threading
-import time
-from traceback import format_exc
+
+try:
+    cp_version = pkg_resources.require('cherrypy')[0].version
+except Exception:
+    cp_version = 'unknown'
+
 
 if sys.version_info >= (3, 0):
-    bytestr = bytes
     unicodestr = str
     basestring = (bytes, str)
 
@@ -113,7 +133,6 @@ if sys.version_info >= (3, 0):
         # In Python 3, the native string type is unicode
         return n.encode(encoding)
 else:
-    bytestr = str
     unicodestr = unicode
     basestring = basestring
 
@@ -138,8 +157,6 @@ QUESTION_MARK = ntob('?')
 ASTERISK = ntob('*')
 FORWARD_SLASH = ntob('/')
 quoted_slash = re.compile(ntob("(?i)%2F"))
-
-import errno
 
 
 def plat_specific_errors(*errnames):
@@ -169,6 +186,8 @@ socket_errors_to_ignore = plat_specific_errors(
 )
 socket_errors_to_ignore.append("timed out")
 socket_errors_to_ignore.append("The read operation timed out")
+if sys.platform == 'darwin':
+    socket_errors_to_ignore.append(plat_specific_errors("EPROTOTYPE"))
 
 socket_errors_nonblocking = plat_specific_errors(
     'EAGAIN', 'EWOULDBLOCK', 'WSAEWOULDBLOCK')
@@ -184,7 +203,6 @@ comma_separated_headers = [
 ]
 
 
-import logging
 if not hasattr(logging, 'statistics'):
     logging.statistics = {}
 
@@ -276,7 +294,7 @@ class SizeCheckWrapper(object):
             self.bytes_read += len(data)
             self._check_length()
             res.append(data)
-            # See https://bitbucket.org/cherrypy/cherrypy/issue/421
+            # See https://github.com/cherrypy/cherrypy/issues/421
             if len(data) < 256 or data[-1:] == LF:
                 return EMPTY.join(res)
 
@@ -650,6 +668,10 @@ class HTTPRequest(object):
 
         # uri may be an abs_path (including "http://host.domain.tld");
         scheme, authority, path = self.parse_request_uri(uri)
+        if path is None:
+            self.simple_response("400 Bad Request",
+                                 "Invalid path in Request-URI.")
+            return False
         if NUMBER_SIGN in path:
             self.simple_response("400 Bad Request",
                                  "Illegal #fragment in Request-URI.")
@@ -775,7 +797,7 @@ class HTTPRequest(object):
         if self.inheaders.get(b"Expect", b"") == b"100-continue":
             # Don't use simple_response here, because it emits headers
             # we don't want. See
-            # https://bitbucket.org/cherrypy/cherrypy/issue/951
+            # https://github.com/cherrypy/cherrypy/issues/951
             msg = self.server.protocol.encode(
                 'ascii') + b" 100 Continue\r\n\r\n"
             try:
@@ -809,14 +831,13 @@ class HTTPRequest(object):
         if uri == ASTERISK:
             return None, None, uri
 
-        scheme, sep, remainder = uri.partition(b'://')
-        if sep and QUESTION_MARK not in scheme:
+        scheme, authority, path, params, query, fragment = urlparse(uri)
+        if scheme and QUESTION_MARK not in scheme:
             # An absoluteURI.
             # If there's a scheme (and it must be http or https), then:
             # http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query
             # ]]
-            authority, path_a, path_b = remainder.partition(FORWARD_SLASH)
-            return scheme.lower(), authority, path_a + path_b
+            return scheme, authority, path
 
         if uri.startswith(FORWARD_SLASH):
             # An abs_path.
@@ -1079,7 +1100,7 @@ class HTTPConnection(object):
                 # Don't error if we're between requests; only error
                 # if 1) no request has been started at all, or 2) we're
                 # in the middle of a request.
-                # See https://bitbucket.org/cherrypy/cherrypy/issue/853
+                # See https://github.com/cherrypy/cherrypy/issues/853
                 if (not request_seen) or (req and req.started_request):
                     # Don't bother writing the 408 if the response
                     # has already started being written.
@@ -1368,7 +1389,7 @@ class ThreadPool(object):
                 except (AssertionError,
                         # Ignore repeated Ctrl-C.
                         # See
-                        # https://bitbucket.org/cherrypy/cherrypy/issue/691.
+                        # https://github.com/cherrypy/cherrypy/issues/691.
                         KeyboardInterrupt):
                     pass
 
@@ -1468,7 +1489,7 @@ class HTTPServer(object):
     timeout = 10
     """The timeout in seconds for accepted connections (default 10)."""
 
-    version = "CherryPy/3.8.0"
+    version = "CherryPy/" + cp_version
     """A version string for the HTTPServer."""
 
     software = None
@@ -1608,7 +1629,7 @@ class HTTPServer(object):
 
             # So everyone can access the socket...
             try:
-                os.chmod(self.bind_addr, 511)  # 0777
+                os.chmod(self.bind_addr, 0o777)
             except:
                 pass
 
@@ -1676,7 +1697,7 @@ class HTTPServer(object):
         sys.stderr.write(msg + '\n')
         sys.stderr.flush()
         if traceback:
-            tblines = format_exc()
+            tblines = traceback_.format_exc()
             sys.stderr.write(tblines)
             sys.stderr.flush()
 
@@ -1693,7 +1714,7 @@ class HTTPServer(object):
 
         # If listening on the IPV6 any address ('::' = IN6ADDR_ANY),
         # activate dual-stack. See
-        # https://bitbucket.org/cherrypy/cherrypy/issue/871.
+        # https://github.com/cherrypy/cherrypy/issues/871.
         if (hasattr(socket, 'AF_INET6') and family == socket.AF_INET6
                 and self.bind_addr[0] in ('::', '::0', '::0.0.0.0')):
             try:
@@ -1787,15 +1808,15 @@ class HTTPServer(object):
                 # the call, and I *think* I'm reading it right that Python
                 # will then go ahead and poll for and handle the signal
                 # elsewhere. See
-                # https://bitbucket.org/cherrypy/cherrypy/issue/707.
+                # https://github.com/cherrypy/cherrypy/issues/707.
                 return
             if x.args[0] in socket_errors_nonblocking:
                 # Just try again. See
-                # https://bitbucket.org/cherrypy/cherrypy/issue/479.
+                # https://github.com/cherrypy/cherrypy/issues/479.
                 return
             if x.args[0] in socket_errors_to_ignore:
                 # Our socket was closed.
-                # See https://bitbucket.org/cherrypy/cherrypy/issue/686.
+                # See https://github.com/cherrypy/cherrypy/issues/686.
                 return
             raise
 
@@ -1828,7 +1849,7 @@ class HTTPServer(object):
                     if x.args[0] not in socket_errors_to_ignore:
                         # Changed to use error code and not message
                         # See
-                        # https://bitbucket.org/cherrypy/cherrypy/issue/860.
+                        # https://github.com/cherrypy/cherrypy/issues/860.
                         raise
                 else:
                     # Note that we're explicitly NOT using AI_PASSIVE,
@@ -1874,6 +1895,7 @@ class Gateway(object):
 # of such classes (in which case they will be lazily loaded).
 ssl_adapters = {
     'builtin': 'cherrypy.wsgiserver.ssl_builtin.BuiltinSSLAdapter',
+    'pyopenssl': 'cherrypy.wsgiserver.ssl_pyopenssl.pyOpenSSLAdapter',
 }
 
 

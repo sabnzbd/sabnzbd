@@ -23,10 +23,13 @@ it will call ``serve()`` for you.
 import re
 import sys
 import cgi
-from cherrypy._cpcompat import quote_plus
 import os
 import os.path
 localFile = os.path.join(os.path.dirname(__file__), "coverage.cache")
+
+from cherrypy._cpcompat import quote_plus
+
+import cherrypy
 
 the_coverage = None
 try:
@@ -290,10 +293,11 @@ class CoverStats(object):
             root = os.path.dirname(cherrypy.__file__)
         self.root = root
 
+    @cherrypy.expose
     def index(self):
         return TEMPLATE_FRAMESET % self.root.lower()
-    index.exposed = True
 
+    @cherrypy.expose
     def menu(self, base="/", pct="50", showpct="",
              exclude=r'python\d\.\d|test|tut\d|tutorial'):
 
@@ -328,7 +332,6 @@ class CoverStats(object):
 
         yield "</div>"
         yield "</body></html>"
-    menu.exposed = True
 
     def annotated_file(self, filename, statements, excluded, missing):
         source = open(filename, 'r')
@@ -352,6 +355,7 @@ class CoverStats(object):
                 buffer = []
                 yield template % (lineno, cgi.escape(line))
 
+    @cherrypy.expose
     def report(self, name):
         filename, statements, excluded, missing, _ = self.coverage.analysis2(
             name)
@@ -366,7 +370,6 @@ class CoverStats(object):
         yield '</table>'
         yield '</body>'
         yield '</html>'
-    report.exposed = True
 
 
 def serve(path=localFile, port=8080, root=None):

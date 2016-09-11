@@ -29,7 +29,7 @@ import binascii
 import shutil
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, \
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
@@ -177,6 +177,31 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     output = p.stdout.read()
     ret = p.wait()
     return output, ret
+
+
+def external_script(script, p1, p2, p3=None, p4=None):
+    """ Run a user script with two parameters, return console output and exit value """
+    command = [script, p1, p2, p3, p4]
+
+    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(script, os.X_OK)):
+        command.insert(0, 'python')
+    stup, need_shell, command, creationflags = build_command(command)
+    env = fix_env()
+
+    logging.info('Running user script %s(%s, %s)', script, p1, p2)
+
+    try:
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            startupinfo=stup, env=env, creationflags=creationflags)
+    except:
+        logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
+        return "Cannot run script %s\r\n" % script, -1
+
+    output = p.stdout.read()
+    ret = p.wait()
+    return output, ret
+
 
 
 def SimpleRarExtract(rarfile, name):
@@ -502,35 +527,40 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     new_files = None
     rars = []
     if nzo.password:
-        logging.info('Got a password set by user: %s', nzo.password)
+        logging.info('Found a password that was set by the user: %s', nzo.password)
         passwords = [nzo.password.strip()]
     else:
         passwords = []
-        pw = nzo.nzo_info.get('password')
-        if pw:
-            passwords.append(pw)
-        # Append meta passwords, to prevent changing the original list
-        passwords.extend(nzo.meta.get('password', []))
-        if passwords:
-            logging.info('Read %s passwords from meta data in NZB', len(passwords))
-        pw_file = cfg.password_file.get_path()
-        if pw_file:
-            try:
-                pwf = open(pw_file, 'r')
-                lines = pwf.read().split('\n')
-                # Remove empty lines and space-only passwords and remove surrounding spaces
-                pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-                logging.debug('Read these passwords from file: %s', pws)
-                passwords.extend(pws)
-                pwf.close()
-                logging.info('Read %s passwords from file %s', len(pws), pw_file)
-            except IOError:
-                logging.info('Failed to read the passwords file %s', pw_file)
+
+    meta_passwords = nzo.meta.get('password', [])
+    pw = nzo.nzo_info.get('password')
+    if pw:
+        meta_passwords.append(pw)
+    if meta_passwords:
+        if nzo.password == meta_passwords[0]:
+            # this nzo.password came from meta, so don't use it twice
+            passwords.extend(meta_passwords[1:])
+        else:
+            passwords.extend(meta_passwords)
+        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+    pw_file = cfg.password_file.get_path()
+    if pw_file:
+        try:
+            pwf = open(pw_file, 'r')
+            lines = pwf.read().split('\n')
+            # Remove empty lines and space-only passwords and remove surrounding spaces
+            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+            logging.debug('Read these passwords from file: %s', pws)
+            passwords.extend(pws)
+            pwf.close()
+            logging.info('Read %s passwords from file %s', len(pws), pw_file)
+        except IOError:
+            logging.info('Failed to read the passwords file %s', pw_file)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
         passwords.append('')
-    elif not passwords or not nzo.encrypted:
+    elif not passwords or nzo.encrypted < 1:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, '')
@@ -693,7 +723,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.01 : "The specified password is incorrect."
-            m = re.search('encrypted file (.+)\. Corrupt file', line)
+            m = re.search(r'encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
                 m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
@@ -943,7 +973,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
         passwords.append('')
-    elif not passwords or not nzo.encrypted:
+    elif not passwords or nzo.encrypted < 1:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, '')
@@ -968,7 +998,6 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single 7Z set 'sevenset' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), message
     """
-    msg = None
     if one_folder:
         method = 'e'  # Unpack without folders
     else:
@@ -984,13 +1013,15 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 
     if len(extensions) > 0:
         name = '%s.001' % sevenset
+        parm = '-tsplit'
     else:
         name = sevenset
+        parm = '-t7z'
 
     if not os.path.exists(name):
         return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
 
-    command = [SEVEN_COMMAND, method, '-y', '-aou', case, password,
+    command = [SEVEN_COMMAND, method, '-y', '-aou', parm, case, password,
                '-o%s' % extraction_path, name]
 
     stup, need_shell, command, creationflags = build_command(command)
@@ -1029,7 +1060,17 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     # set the current nzo status to "Repairing". Used in History
 
+    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+
+    # Check if file exists, otherwise see if another is done
     parfile = os.path.join(workdir, parfile_nzf.filename)
+    if not os.path.exists(parfile) and parfile_nzf.extrapars:
+        for new_par in parfile_nzf.extrapars:
+            test_parfile = os.path.join(workdir, new_par.filename)
+            if os.path.exists(test_parfile):
+                parfile = test_parfile
+                break
+    
     parfile = short_path(parfile)
     workdir = short_path(workdir)
 
@@ -1054,6 +1095,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         readd = False
         for extrapar in parfile_nzf.extrapars[:]:
             parfile_nzf.extrapars.remove(extrapar)
+            parfile_nzf.nzo.remove_extrapar(extrapar)
             if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 readd = True
@@ -1322,7 +1364,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                     # Move from extrapar list to files to be downloaded
                     nzo.add_parfile(nzf)
-                    extrapars.remove(nzf)
                     # Now set new par2 file as primary par2
                     nzo.partable[setname] = nzf
                     nzf.extrapars = extrapars
@@ -1632,13 +1673,23 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
         for root, dirs, files in os.walk(workdir_complete):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    filelist.append(os.path.join(root, _file))
+                    try:
+                        p = os.path.join(root, _file)
+                        filelist.append(p)
+                    except UnicodeDecodeError:
+                        # Just skip failing names
+                        pass
 
     if workdir and not filelist:
         for root, dirs, files in os.walk(workdir):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    filelist.append(os.path.join(root, _file))
+                    try:
+                        p = os.path.join(root, _file)
+                        filelist.append(p)
+                    except UnicodeDecodeError:
+                        # Just skip failing names
+                        pass
 
     sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
     sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
@@ -1896,7 +1947,7 @@ class SevenZip(object):
                              startupinfo=stup, creationflags=creationflags)
 
         output = p.stdout.read()
-        ret = p.wait()
+        _ = p.wait()
         re_path = re.compile('^Path = (.+)')
         for line in output.split('\n'):
             m = re_path.search(line)
@@ -1923,7 +1974,7 @@ class SevenZip(object):
                              startupinfo=stup, creationflags=creationflags)
 
         output = p.stdout.read()
-        ret = p.wait()
+        _ = p.wait()
         stderr.close()
         return output
 

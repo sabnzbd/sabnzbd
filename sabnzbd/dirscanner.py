@@ -28,14 +28,14 @@ import bz2
 import threading
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.encoding import platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-
 
 def name_to_cat(fname, cat=None):
     """ Retrieve category from file name, but only if "cat" is None. """
@@ -62,6 +62,34 @@ def CompareStat(tup1, tup2):
     return True
 
 
+def is_archive(path):
+    """ Check if file in path is an ZIP, RAR or 7z file
+    :param path: path to file
+    :return: (zf, status, expected_extension)
+            status: -1==Error/Retry, 0==OK, 1==Ignore
+    """
+    if zipfile.is_zipfile(path):
+        try:
+            zf = zipfile.ZipFile(path)
+            return 0, zf, '.zip'
+        except:
+            return -1, None, ''
+    elif is_rarfile(path):
+        try:
+            zf = RarFile(path)
+            return 0, zf, '.rar'
+        except:
+            return -1, None, ''
+    elif is_sevenfile(path):
+        try:
+            zf = SevenZip(path)
+            return 0, zf, '.7z'
+        except:
+            return -1, None, ''
+    else:
+        return 1, None, ''
+
+
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                        priority=None, url='', nzbname=None, password=None, nzo_id=None):
     """ Analyse ZIP file and create job(s).
@@ -76,23 +104,10 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
     filename, cat = name_to_cat(filename, catdir)
 
-    if zipfile.is_zipfile(path):
-        try:
-            zf = zipfile.ZipFile(path)
-        except:
-            return -1, []
-    elif is_rarfile(path):
-        try:
-            zf = RarFile(path)
-        except:
-            return -1, []
-    elif is_sevenfile(path):
-        try:
-            zf = SevenZip(path)
-        except:
-            return -1, []
-    else:
-        return 1, []
+    status, zf, extension = is_archive(path)
+
+    if status != 0:
+        return status, []
 
     status = 1
     names = zf.namelist()
@@ -130,6 +145,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                             # Re-use existing nzo_id, when a "future" job gets it payload
                             sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
                             nzo.nzo_id = nzo_id
+                            nzo_id = None
                         nzo_ids.append(add_nzo(nzo))
                         nzo.update_rating()
         zf.close()
@@ -166,11 +182,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         b2 = f.read(1)
         f.close()
 
-        if (b1 == '\x1f' and b2 == '\x8b'):
+        if b1 == '\x1f' and b2 == '\x8b':
             # gzip file or gzip in disguise
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
-        elif (b1 == 'B' and b2 == 'Z'):
+        elif b1 == 'B' and b2 == 'Z':
             # bz2 file or bz2 in disguise
             name = filename.replace('.nzb.bz2', '.nzb')
             f = bz2.BZ2File(path, 'rb')
@@ -295,7 +311,7 @@ class DirScanner(threading.Thread):
 
     def save(self):
         """ Save dir scanner bookkeeping """
-        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
+        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME)
 
     def run(self):
         """ Start the scanner """
@@ -325,7 +341,7 @@ class DirScanner(threading.Thread):
                 files = []
 
             for filename in files:
-                path = os.path.join(folder, filename)
+                path = os.path.join(folder, platform_encode(filename))
                 if os.path.isdir(path) or path in self.ignored or filename[0] == '.':
                     continue
 
@@ -409,7 +425,7 @@ class DirScanner(threading.Thread):
 
                 cats = config.get_categories()
                 for dd in list:
-                    dpath = os.path.join(dirscan_dir, dd)
+                    dpath = os.path.join(dirscan_dir, platform_encode(dd))
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
             self.busy = False

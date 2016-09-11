@@ -12,17 +12,18 @@ body {
 #inner {
     background-color: #fff;
     padding: 4px 32px 20px 32px;
-    /*margin:5px;*/
 }
 #content {
     min-height: 550px;
 }
 #logo {
-    float: center;
-    /*margin-top:30px;*/
-    
     z-index: 40;
-    margin-bottom: -40px;
+    margin-bottom: -39px;
+    margin-top: 20px;
+}
+#logo svg {
+    height: 55px;
+    width: 198px;
 }
 .language {
     min-width: 150px;

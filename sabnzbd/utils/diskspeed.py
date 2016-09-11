@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     try:
         speed = diskspeedmeasure(dirname)
-        print("Disk writing speed: %.2f Mbytes per second" % speed)
+        print "Disk writing speed: %.2f Mbytes per second" % speed
     except IOError, e:
         # print "IOError:", e
         if e.errno == 13:

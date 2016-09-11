@@ -49,12 +49,12 @@ class Option(object):
 
     def __init__(self, section, keyword, default_val=None, add=True, protect=False):
         """ Basic option
-            section     : single section or comma-separated list of sections
-                          a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
-            keyword     : keyword in the (last) section
-            default_val : value returned when no value has been set
-            callback    : procedure to call when value is successfully changed
-            protect     : Do not allow setting via the API (specifically set_dict)
+            `section`     : single section or comma-separated list of sections
+                            a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
+            `keyword`     : keyword in the (last) section
+            `default_val` : value returned when no value has been set
+            `callback`    : procedure to call when value is successfully changed
+            `protect`     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(',')
         self.__keyword = keyword
@@ -103,8 +103,8 @@ class Option(object):
     def __set(self, value):
         """ Set new value, no validation """
         global modified
-        if (value != None):
-            if type(value) == type([]) or type(value) == type({}) or value != self.__value:
+        if value is not None:
+            if isinstance(value, list) or isinstance(value, dict) or value != self.__value:
                 self.__value = value
                 modified = True
                 if self.__callback:
@@ -134,11 +134,11 @@ class OptionNumber(Option):
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
-        self.__int = type(default_val) == type(0)
+        self.__int = isinstance(default_val, int)
 
     def set(self, value):
         """ set new value, limited by range """
-        if value != None:
+        if value is not None:
             try:
                 if self.__int:
                     value = int(value)
@@ -150,9 +150,9 @@ class OptionNumber(Option):
                 error, val = self.__validation(value)
                 self._Option__set(val)
             else:
-                if (self.__maxval != None) and value > self.__maxval:
+                if self.__maxval is not None and value > self.__maxval:
                     value = self.__maxval
-                elif (self.__minval != None) and value < self.__minval:
+                elif self.__minval is not None and value < self.__minval:
                     value = self.__minval
                 self._Option__set(value)
         return None
@@ -187,7 +187,7 @@ class OptionDir(Option):
 
     def get(self):
         """ Return value, corrected for platform """
-        if self._Option__value != None:
+        if self._Option__value is not None:
             p = self._Option__value
         else:
             p = self._Option__default_val
@@ -225,7 +225,7 @@ class OptionDir(Option):
             'create' means try to create (but don't set permanent create flag)
         """
         error = None
-        if value != None and (create or value != self.get()):
+        if value is not None and (create or value != self.get()):
             value = value.strip()
             if self.__validation:
                 error, value = self.__validation(self.__root, value, self._Option__default_val)
@@ -270,15 +270,10 @@ class OptionList(Option):
     def get_string(self):
         """ Return the list as a comma-separated string """
         lst = self.get()
-        if type(lst) == type(""):
+        if isinstance(lst, basestring):
             return lst
-        txt = ''
-        r = len(lst)
-        for n in xrange(r):
-            txt += lst[n]
-            if n < r - 1:
-                txt += ', '
-        return txt
+        else:
+            return ', '.join(lst)
 
 
 class OptionStr(Option):
@@ -338,7 +333,7 @@ class OptionPassword(Option):
 
     def set(self, pw):
         """ Set password, encode it """
-        if (pw != None and pw == '') or (pw and pw.strip('*')):
+        if (pw is not None and pw == '') or (pw and pw.strip('*')):
             self._Option__set(encode_password(pw))
         return None
 
@@ -385,7 +380,7 @@ class ConfigServer(object):
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
-        self.ssl_type = OptionStr(name, 'ssl_type', 't1', add=False)
+        self.ssl_type = OptionStr(name, 'ssl_type', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
@@ -543,7 +538,7 @@ class OptionFilters(Option):
             val = values.get(kw)
             if val is not None:
                 val = values[kw]
-                if type(val) == type([]):
+                if isinstance(val, list):
                     filters.append(val)
                 else:
                     filters.append(listquote.simplelist(val))
@@ -786,7 +781,7 @@ def _read_config(path, try_backup=False):
 def save_config(force=False):
     """ Update Setup file with current option values """
     global CFG, database, modified
-    assert isinstance(CFG, configobj.ConfigObj)
+    if 0: assert isinstance(CFG, configobj.ConfigObj)
 
     if not (modified or force):
         return True

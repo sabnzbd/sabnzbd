@@ -22,11 +22,11 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
+from math import floor
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
 from sabnzbd.encoding import unicoder
-from math import floor
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -146,19 +146,18 @@ class BPSMeter(object):
 
     def save(self):
         """ Save admin to disk """
-        if self.grand_total or self.day_total or self.week_total or self.month_total:
-            data = (self.last_update, self.grand_total,
-                    self.day_total, self.week_total, self.month_total,
-                    self.end_of_day, self.end_of_week, self.end_of_month,
-                    self.quota, self.left, self.q_time
-                    )
-            sabnzbd.save_admin(data, BYTES_FILE_NAME)
+        data = (self.last_update, self.grand_total,
+                self.day_total, self.week_total, self.month_total,
+                self.end_of_day, self.end_of_week, self.end_of_month,
+                self.quota, self.left, self.q_time
+               )
+        sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """
         logging.debug('Setting default BPS meter values')
         import sabnzbd.database
-        history_db = sabnzbd.database.get_history_handle()
+        history_db = sabnzbd.database.HistoryDB()
         grand, month, week = history_db.get_history_size()
         history_db.close()
         self.grand_total = {}
@@ -301,7 +300,7 @@ class BPSMeter(object):
                 sum([v for v in self.month_total.values()]),
                 sum([v for v in self.week_total.values()]),
                 sum([v for v in self.day_total.values()])
-                )
+               )
 
     def amounts(self, server):
         """ Return grand, month, week, day totals for specified server """
@@ -320,6 +319,7 @@ class BPSMeter(object):
             del self.month_total[server]
         if server in self.grand_total:
             del self.grand_total[server]
+        self.save()
 
     def get_bps(self):
         return self.bps
@@ -403,8 +403,8 @@ class BPSMeter(object):
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
-    __re_day = re.compile('^\s*(\d+)[^:]*')
-    __re_hm = re.compile('(\d+):(\d+)\s*$')
+    __re_day = re.compile(r'^\s*(\d+)[^:]*')
+    __re_hm = re.compile(r'(\d+):(\d+)\s*$')
     def get_quota(self):
         """ If quota active, return check-function, hour, minute """
         if self.have_quota:

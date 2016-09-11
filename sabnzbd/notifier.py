@@ -17,7 +17,7 @@
 #
 
 """
-sabnzbd.growler - Send notifications to Growl
+sabnzbd.notifier - Send notifications to any notification services
 """
 
 from __future__ import with_statement
@@ -36,6 +36,8 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import unicoder
 from sabnzbd.constants import NOTIFY_KEYS
+from sabnzbd.misc import split_host, make_script_path
+from sabnzbd.newsunpack import external_script
 
 from gntp import GNTPRegister
 from gntp.notifier import GrowlNotifier
@@ -61,16 +63,17 @@ except:
 ##############################################################################
 TT = lambda x: x
 NOTIFICATION = {
-    'startup': TT('Startup/Shutdown'),        #: Message class for Growl server
-    'download': TT('Added NZB'),               #: Message class for Growl server
-    'pp': TT('Post-processing started'),  # : Message class for Growl server
-    'complete': TT('Job finished'),            #: Message class for Growl server
-    'failed': TT('Job failed'),              #: Message class for Growl server
-    'warning': TT('Warning'),                 #: Message class for Growl server
-    'error': TT('Error'),                   #: Message class for Growl server
-    'disk_full': TT('Disk full'),               #: Message class for Growl server
-    'queue_done': TT('Queue finished'),          #: Message class for Growl server
-    'other': TT('Other Messages')           #: Message class for Growl server
+    'startup': TT('Startup/Shutdown'),        #: Notification
+    'download': TT('Added NZB'),               #: Notification
+    'pp': TT('Post-processing started'),  # : Notification
+    'complete': TT('Job finished'),            #: Notification
+    'failed': TT('Job failed'),              #: Notification
+    'warning': TT('Warning'),                 #: Notification
+    'error': TT('Error'),                   #: Notification
+    'disk_full': TT('Disk full'),               #: Notification
+    'queue_done': TT('Queue finished'),          #: Notification
+    'new_login': TT('User logged in'),          #: Notification
+    'other': TT('Other Messages')           #: Notification
 }
 
 ##############################################################################
@@ -89,7 +92,7 @@ def get_icon():
         if sabnzbd.WIN32 or sabnzbd.DARWIN:
             fp = open(icon, 'rb')
             icon = fp.read()
-            fp.close
+            fp.close()
         else:
             # Due to a bug in GNTP, need this work-around for Linux/Unix
             icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
@@ -115,6 +118,15 @@ def check_classes(gtype, section):
         return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))() > 0
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
+        return False
+
+def get_prio(gtype, section):
+    """ Check if `gtype` is enabled in `section` """
+    try:
+        return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))()
+    except TypeError:
+        logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
+        return -1000
 
 
 def send_notification(title, msg, gtype):
@@ -123,7 +135,7 @@ def send_notification(title, msg, gtype):
     if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
-            
+
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
         if check_classes(gtype, 'acenter'):
@@ -151,8 +163,14 @@ def send_notification(title, msg, gtype):
 
     # Pushbullet
     if sabnzbd.cfg.pushbullet_enable():
-        if sabnzbd.cfg.pushbullet_apikey():
+        if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
+            time.sleep(0.5)
+
+    # Notification script.
+    if sabnzbd.cfg.nscript_enable():
+        if sabnzbd.cfg.nscript_script():
+            Thread(target=send_nscript, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # NTFOSD
@@ -169,7 +187,7 @@ def reset_growl():
 def register_growl(growl_server, growl_password):
     """ Register this app with Growl """
     error = None
-    host, port = sabnzbd.misc.split_host(growl_server or '')
+    host, port = split_host(growl_server or '')
 
     sys_name = hostname(host)
 
@@ -231,7 +249,7 @@ def send_growl(title, msg, gtype, test=None):
         if not _GROWL:
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
-            assert isinstance(_GROWL, GrowlNotifier)
+            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes
             _GROWL_REG = True
             if isinstance(msg, unicode):
                 msg = msg.decode('utf-8')
@@ -377,28 +395,8 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     title = Tx(NOTIFICATION.get(gtype, 'other'))
     title = urllib2.quote(title.encode('utf8'))
     msg = urllib2.quote(msg.encode('utf8'))
-    prio = -3
+    prio = get_prio(gtype, 'prowl')
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.prowl_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.prowl_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.prowl_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.prowl_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.prowl_prio_failed()
-    if gtype == 'disk_full':
-        prio = sabnzbd.cfg.prowl_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.prowl_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.prowl_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.prowl_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.prowl_prio_other()
     if force:
         prio = 0
 
@@ -430,28 +428,8 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = -3
+    prio = get_prio(gtype, 'pushover')
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.pushover_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.pushover_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.pushover_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.pushover_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.pushover_prio_failed()
-    if gtype == 'disk_full':
-        prio = sabnzbd.cfg.pushover_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.pushover_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.pushover_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.pushover_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.pushover_prio_other()
     if force:
         prio = 1
 
@@ -490,52 +468,53 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
         return T('Cannot send, missing required data')
 
     title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
-    prio = 0
 
-    if gtype == 'startup':
-        prio = sabnzbd.cfg.pushbullet_prio_startup()
-    if gtype == 'download':
-        prio = sabnzbd.cfg.pushbullet_prio_download()
-    if gtype == 'pp':
-        prio = sabnzbd.cfg.pushbullet_prio_pp()
-    if gtype == 'complete':
-        prio = sabnzbd.cfg.pushbullet_prio_complete()
-    if gtype == 'failed':
-        prio = sabnzbd.cfg.pushbullet_prio_failed()
-    if gtype == 'disk-full':
-        prio = sabnzbd.cfg.pushbullet_prio_disk_full()
-    if gtype == 'warning':
-        prio = sabnzbd.cfg.pushbullet_prio_warning()
-    if gtype == 'error':
-        prio = sabnzbd.cfg.pushbullet_prio_error()
-    if gtype == 'queue_done':
-        prio = sabnzbd.cfg.pushbullet_prio_queue_done()
-    if gtype == 'other':
-        prio = sabnzbd.cfg.pushbullet_prio_other()
-    if force:
-        prio = 1
+    try:
+        conn = httplib.HTTPSConnection('api.pushbullet.com:443')
+        conn.request('POST', '/v2/pushes',
+            json.dumps({
+                'type': 'note',
+                'device': device,
+                'title': title,
+                'body': msg}),
+            headers={'Authorization': 'Bearer ' + apikey,
+                     'Content-type': 'application/json'})
+        res = conn.getresponse()
+        if res.status != 200:
+            logging.error(T('Bad response from Pushbullet (%s): %s'), res.status, res.read())
+        else:
+            logging.info('Successfully sent to Pushbullet')
 
-    if prio > 0:
-        try:
-            conn = httplib.HTTPSConnection('api.pushbullet.com:443')
-            conn.request('POST', '/v2/pushes',
-                json.dumps({
-                    'type': 'note',
-                    'device': device,
-                    'title': title,
-                    'body': msg}),
-                headers={'Authorization': 'Bearer ' + apikey,
-                         'Content-type': 'application/json'})
-            res = conn.getresponse()
-            if res.status != 200:
-                logging.error(T('Bad response from Pushbullet (%s): %s'), res.status, res.read())
+    except:
+        logging.warning(T('Failed to send pushbullet message'))
+        logging.info('Traceback: ', exc_info=True)
+        return T('Failed to send pushbullet message')
+    return ''
+
+
+def send_nscript(title, msg, gtype, force=False, test=None):
+    """ Run user's notification script """
+    if test:
+        script = test.get('nscript_script')
+        parameters = test.get('nscript_parameters')
+    else:
+        script = sabnzbd.cfg.nscript_script()
+        parameters = sabnzbd.cfg.nscript_parameters()
+    if not script:
+        return T('Cannot send, missing required data')
+    title = u'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+
+    if force or check_classes(gtype, 'nscript'):
+        script_path = make_script_path(script)
+        if script_path:
+            output, ret = external_script(script_path, gtype, title, msg, parameters)
+            if ret:
+                logging.error(T('Script returned exit code %s and output "%s"') % (ret, output))
+                return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
-                logging.info('Successfully sent to Pushbullet')
-
-        except:
-            logging.warning(T('Failed to send pushbullet message'))
-            logging.info('Traceback: ', exc_info=True)
-            return T('Failed to send pushbullet message')
+                logging.info('Successfully executed notification script ' + script_path)
+        else:
+            return T('Notification script "%s" does not exist') % script_path
     return ''
 
 def send_windows(title, msg, gtype):
@@ -547,3 +526,4 @@ def send_windows(title, msg, gtype):
             logging.debug("Traceback: ", exc_info=True)
             return T('Failed to send Windows notification')
     return None
+

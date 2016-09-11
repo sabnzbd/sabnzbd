@@ -210,6 +210,7 @@ def extrapolate_statistics(scope):
 
 # -------------------- CherryPy Applications Statistics --------------------- #
 
+import sys
 import threading
 import time
 
@@ -294,6 +295,11 @@ class ByteCountWrapper(object):
 average_uriset_time = lambda s: s['Count'] and (s['Sum'] / s['Count']) or 0
 
 
+def _get_threading_ident():
+    if sys.version_info >= (3, 3):
+        return threading.get_ident()
+    return threading._get_ident()
+
 class StatsTool(cherrypy.Tool):
 
     """Record various information about the current request."""
@@ -322,7 +328,7 @@ class StatsTool(cherrypy.Tool):
 
         appstats['Current Requests'] += 1
         appstats['Total Requests'] += 1
-        appstats['Requests'][threading._get_ident()] = {
+        appstats['Requests'][_get_threading_ident()] = {
             'Bytes Read': None,
             'Bytes Written': None,
             # Use a lambda so the ip gets updated by tools.proxy later
@@ -339,7 +345,7 @@ class StatsTool(cherrypy.Tool):
             debug=False, **kwargs):
         """Record the end of a request."""
         resp = cherrypy.serving.response
-        w = appstats['Requests'][threading._get_ident()]
+        w = appstats['Requests'][_get_threading_ident()]
 
         r = cherrypy.request.rfile.bytes_read
         w['Bytes Read'] = r
@@ -469,6 +475,7 @@ class StatsPage(object):
         },
     }
 
+    @cherrypy.expose
     def index(self):
         # Transform the raw data into pretty output for HTML
         yield """
@@ -572,7 +579,6 @@ table.stats2 th {
 </body>
 </html>
 """
-    index.exposed = True
 
     def get_namespaces(self):
         """Yield (title, scalars, collections) for each namespace."""
@@ -605,7 +611,13 @@ table.stats2 th {
         """Return ([headers], [rows]) for the given collection."""
         # E.g., the 'Requests' dict.
         headers = []
-        for record in v.itervalues():
+        try:
+            # python2
+            vals = v.itervalues()
+        except AttributeError:
+            # python3
+            vals = v.values()
+        for record in vals:
             for k3 in record:
                 format = formatting.get(k3, missing)
                 if format is None:
@@ -666,22 +678,22 @@ table.stats2 th {
         return headers, subrows
 
     if json is not None:
+        @cherrypy.expose
         def data(self):
             s = extrapolate_statistics(logging.statistics)
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(s, sort_keys=True, indent=4)
-        data.exposed = True
 
+    @cherrypy.expose
     def pause(self, namespace):
         logging.statistics.get(namespace, {})['Enabled'] = False
         raise cherrypy.HTTPRedirect('./')
-    pause.exposed = True
     pause.cp_config = {'tools.allow.on': True,
                        'tools.allow.methods': ['POST']}
 
+    @cherrypy.expose
     def resume(self, namespace):
         logging.statistics.get(namespace, {})['Enabled'] = True
         raise cherrypy.HTTPRedirect('./')
-    resume.exposed = True
     resume.cp_config = {'tools.allow.on': True,
                         'tools.allow.methods': ['POST']}

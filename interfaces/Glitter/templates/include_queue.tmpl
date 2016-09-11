@@ -1,4 +1,4 @@
-<div class="queue">
+<div class="queue active" id="queue-tab">
     <h2>$T('menu-queue')</h2>
 
     <div class="info-container" data-bind="visible: diskSpaceLeft1()" style="display: none;">
@@ -9,6 +9,12 @@
             </a>
         </div>
         <!-- /ko -->
+        <!--#if $loadavg#-->
+        <div class="info-container-box" title="$T('ft-sysload') - $T('menu-config') &#10140; $T('cmenu-special') &#10140; show_sysload">
+            <span class="glyphicon glyphicon-record"></span>
+            <span data-bind="text: systemLoad"></span>
+        </div>
+        <!--#end if#-->
         <!-- ko if: (queueDataLeft() != '')  -->
         <div class="info-container-box">
             <span class="glyphicon glyphicon-save"></span>
@@ -22,14 +28,14 @@
             </span>
         </div>
         <!-- /ko -->
-        <div class="info-container-box" data-bind="css: { 'queue-error-info' : diskSpaceExceeded1 }">
+        <div class="info-container-box" data-bind="css: { 'queue-error-info' : diskSpaceExceeded1() }">
             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span>B $T('Glitter-free')
             <!-- ko if: diskSpaceLeft2()  -->
             <em>($T('Glitter-freeTemp'))</em>
             <!-- /ko -->
         </div>
         <!-- ko if: diskSpaceLeft2()  -->
-        <div class="info-container-box"  data-bind="css: { 'queue-error-info' : diskSpaceExceeded2 }">
+        <div class="info-container-box"  data-bind="css: { 'queue-error-info' : diskSpaceExceeded2() }">
             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span>B $T('Glitter-free')
         </div>
         <!-- /ko -->
@@ -54,10 +60,10 @@
     <table class="table table-striped table-hover queue-table">
         <thead>
             <tr>
-                <th style="width: 33px;"></th>
+                <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraColumn }"></th>
-                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraColumn }"></th>
+                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraQueueColumn }"></th>
+                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumn }"></th>
                 <th style="width: 85px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -82,7 +88,13 @@
                 </td>
                 <td class="name">
                     <div class="row-wrap-text" data-bind="visible: !editingName()">
-                        <span data-bind="html: displayName, attr: { 'title': name() }"></span>
+                        <span data-bind="text: name, attr: { 'title': name() }"></span>
+                        <!-- ko if: password()  -->
+                        <small class="queue-item-password">
+                            <span class="glyphicon glyphicon-lock"></span>
+                            <span data-bind="text: password"></span>
+                        </small>
+                        <!-- /ko -->
                         <!-- ko if: (rating_avg_video() !== false)  -->
                         <div class="name-ratings hover-button">
                             <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
@@ -99,7 +111,7 @@
                         <small data-bind="text: avg_age"></small>
                     </div>
                 </td>
-                <td class="queue-extra-text">
+                <td class="row-extra-text">
                     <div class="row-wrap-text" data-bind="text: extraText">
                     </div>
                 </td>
