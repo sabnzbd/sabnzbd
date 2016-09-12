@@ -219,7 +219,7 @@ class NNTP(object):
             if(sabnzbd.cfg.enable_nntps_verification() == 0):
                 ctx.verify_mode = ssl.CERT_NONE
 
-            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=host)
+            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
         elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
@@ -276,7 +276,7 @@ class NNTP(object):
         
         # Catch certificate errors        
         if type(error) == ssl.CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
-            error = T('Server %s uses an untrusted HTTPS certificate') % self.host
+            error = T('Server %s uses an untrusted certificate') % self.host
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and self.nw.server.id != -1:
                 logging.error(error)
