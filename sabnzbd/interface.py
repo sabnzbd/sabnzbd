@@ -1939,11 +1939,12 @@ class ConfigRss(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        self.__refresh_readout = None  # Set to URL when new readout is needed
-        self.__refresh_download = False
-        self.__refresh_force = False
-        self.__refresh_ignore = False
-        self.__last_msg = ''
+        self.__refresh_readout = None       # Set to URL when new readout is needed
+        self.__refresh_download = False     # True when feed needs to be read
+        self.__refresh_force = False        # True if forced download of all matches is required
+        self.__refresh_ignore = False       # True if first batch of new feed must be ignored
+        self.__evaluate = False             # True if feed needs to be re-filtered
+        self.__last_msg = ''                # Last error message from RSS reader
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1988,8 +1989,12 @@ class ConfigRss(object):
                 self.__refresh_download = False
                 self.__refresh_force = False
                 self.__refresh_ignore = False
-            msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force,
-                                 ignoreFirst=self.__refresh_ignore, readout=readout)
+            if self.__evaluate:
+                msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force,
+                                           ignoreFirst=self.__refresh_ignore, readout=readout)
+            else:
+                msg = ''
+            self.__evaluate = False
             if readout:
                 sabnzbd.rss.save()
                 self.__last_msg = msg
@@ -2109,6 +2114,7 @@ class ConfigRss(object):
                 self.__refresh_download = False
                 self.__refresh_force = False
                 self.__refresh_ignore = True
+                self.__evaluate = True
                 raise rssRaiser(self.__root, kwargs)
             else:
                 raise dcRaiser(self.__root, kwargs)
@@ -2146,6 +2152,7 @@ class ConfigRss(object):
                 cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
+        self.__evaluate = False
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2173,6 +2180,7 @@ class ConfigRss(object):
 
         cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
+        self.__evaluate = False
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2187,6 +2195,7 @@ class ConfigRss(object):
             self.__refresh_download = True
             self.__refresh_force = True
             self.__refresh_ignore = False
+            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2196,6 +2205,7 @@ class ConfigRss(object):
         if msg:
             return msg
         sabnzbd.rss.clear_downloaded(kwargs['feed'])
+        self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2210,6 +2220,22 @@ class ConfigRss(object):
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = True
+            self.__evaluate = True
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def eval_rss_feed(self, *args, **kwargs):
+        """ Re-apply the filters to the feed """
+        msg = check_session(kwargs)
+        if msg:
+            return msg
+        if 'feed' in kwargs:
+            feed = kwargs['feed']
+            self.__refresh_readout = feed
+            self.__refresh_download = False
+            self.__refresh_force = False
+            self.__refresh_ignore = False
+            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2232,6 +2258,7 @@ class ConfigRss(object):
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
+            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
