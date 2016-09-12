@@ -363,6 +363,7 @@
                     <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
                     <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('link-download')</button>
+                    <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-question-sign"></span> $T('button-evalFeed')</button>
                 </div>
             </form>
         </div>
@@ -564,7 +565,12 @@ function urlencode(str) {
         var theForm = \$(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
-
+    
+    \$('.evalFeed').click(function(){
+        var theForm = \$(this).closest("form");
+        theForm.attr("action", "eval_rss_feed").submit();
+    });
+    
     \$('.delFilter').click(function(){
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();

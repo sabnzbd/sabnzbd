@@ -683,6 +683,7 @@ SKIN_TEXT = {
     'opt-tvsort' : TT('Enable TV Sorting'),
     'sort-legenda' : TT('Pattern Key'),
     'button-clear' : TT('Clear'),
+    'button-evalFeed' : TT('Check filters'),
     'presetSort' : TT('Presets'),
     'example' : TT('Example'),
     'movieSort' : TT('Generic Sorting'),
