@@ -479,10 +479,9 @@ class RSSQueue(object):
                                 logging.debug('Filter rejected on rule %d', n)
                                 result = False
                                 break
-                            elif reTypes[n] == 'F' and not ep_match(season, episode, regexes[n]):
-                                # "Starting from SxxEyy", too early episode
-                                logging.debug('Filter requirement match on rule %d', n)
-                                result = False
+                            elif reTypes[n] == 'F' and ep_match(title, season, episode, regexes[n]):
+                                logging.debug('Filter matched on rule %d', n)
+                                result = True
                                 break
                             else:
                                 if regexes[n]:
@@ -729,13 +728,16 @@ def special_rss_site(url):
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
-def ep_match(season, episode, expr):
+def ep_match(title, season, episode, expr):
     """ Return True if season, episode is at or above expected """
     _RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
     m = _RE_SP.search(expr)
     if m:
         req_season = int(m.group(1))
         req_episode = int(m.group(2))
-        return season > req_season or (season == req_season and episode >= req_episode)
+        if season > req_season or (season == req_season and episode >= req_episode):
+            show = expr[:m.start()].replace('.', ' ').replace('_', ' ').strip()
+            show = show.replace(' ', '[._ ]+')
+            return bool(re.search(show, title. re.I))
     else:
         return True
