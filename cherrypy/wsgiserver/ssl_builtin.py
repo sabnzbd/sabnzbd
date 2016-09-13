@@ -33,10 +33,10 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
 
     private_key = None
     """The filename of the server's private key file."""
-    
+
     certificate_chain = None
     """The filename of the certificate chain file."""
-    
+
     """The ssl.SSLContext that will be used to wrap sockets where available
     (on Python > 2.7.9 / 3.3)
     """
@@ -44,7 +44,7 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
 
     def __init__(self, certificate, private_key, certificate_chain=None):
         if ssl is None:
-            raise ImportError("You must install the ssl module to use HTTPS.")
+            raise ImportError('You must install the ssl module to use HTTPS.')
         self.certificate = certificate
         self.private_key = private_key
         self.certificate_chain = certificate_chain
@@ -79,13 +79,18 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                 # the 'ping' isn't SSL.
                 return None, {}
             elif e.errno == ssl.SSL_ERROR_SSL:
-                if e.args[1].endswith('http request'):
+                if 'http request' in e.args[1]:
                     # The client is speaking HTTP to an HTTPS server.
                     raise wsgiserver.NoSSLError
-                elif e.args[1].endswith('unknown protocol'):
+                elif 'unknown protocol' in e.args[1]:
                     # The client is speaking some non-HTTP protocol.
                     # Drop the conn.
                     return None, {}
+            elif 'handshake operation timed out' in e.args[0]:
+                # This error is thrown by builtin SSL after a timeout
+                # when client is speaking HTTP to an HTTPS server.
+                # The connection can safely be dropped.
+                return None, {}
             raise
         return s, self.get_environ(s)
 
@@ -94,8 +99,8 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
         """Create WSGI environ entries to be merged into each request."""
         cipher = sock.cipher()
         ssl_environ = {
-            "wsgi.url_scheme": "https",
-            "HTTPS": "on",
+            'wsgi.url_scheme': 'https',
+            'HTTPS': 'on',
             'SSL_PROTOCOL': cipher[1],
             'SSL_CIPHER': cipher[0]
             # SSL_VERSION_INTERFACE 	string 	The mod_ssl program version
@@ -103,9 +108,5 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
         }
         return ssl_environ
 
-    if sys.version_info >= (3, 0):
-        def makefile(self, sock, mode='r', bufsize=DEFAULT_BUFFER_SIZE):
-            return wsgiserver.CP_makefile(sock, mode, bufsize)
-    else:
-        def makefile(self, sock, mode='r', bufsize=DEFAULT_BUFFER_SIZE):
-            return wsgiserver.CP_fileobject(sock, mode, bufsize)
+    def makefile(self, sock, mode='r', bufsize=DEFAULT_BUFFER_SIZE):
+        return wsgiserver.CP_makefile(sock, mode, bufsize)

@@ -109,9 +109,6 @@ the "log.error_file" config entry, for example).
 
 import datetime
 import logging
-# Silence the no-handlers "warning" (stderr write!) in stdlib logging
-logging.Logger.manager.emittedNoHandlerWarning = 1
-logfmt = logging.Formatter("%(message)s")
 import os
 import sys
 
@@ -120,6 +117,11 @@ import six
 import cherrypy
 from cherrypy import _cperror
 from cherrypy._cpcompat import ntob
+
+
+# Silence the no-handlers "warning" (stderr write!) in stdlib logging
+logging.Logger.manager.emittedNoHandlerWarning = 1
+logfmt = logging.Formatter('%(message)s')
 
 
 class NullHandler(logging.Handler):
@@ -170,17 +172,17 @@ class LogManager(object):
         cherrypy.access.<appid>
     """
 
-    def __init__(self, appid=None, logger_root="cherrypy"):
+    def __init__(self, appid=None, logger_root='cherrypy'):
         self.logger_root = logger_root
         self.appid = appid
         if appid is None:
-            self.error_log = logging.getLogger("%s.error" % logger_root)
-            self.access_log = logging.getLogger("%s.access" % logger_root)
+            self.error_log = logging.getLogger('%s.error' % logger_root)
+            self.access_log = logging.getLogger('%s.access' % logger_root)
         else:
             self.error_log = logging.getLogger(
-                "%s.error.%s" % (logger_root, appid))
+                '%s.error.%s' % (logger_root, appid))
             self.access_log = logging.getLogger(
-                "%s.access.%s" % (logger_root, appid))
+                '%s.access.%s' % (logger_root, appid))
         self.error_log.setLevel(logging.INFO)
         self.access_log.setLevel(logging.INFO)
 
@@ -244,19 +246,19 @@ class LogManager(object):
         outheaders = response.headers
         inheaders = request.headers
         if response.output_status is None:
-            status = "-"
+            status = '-'
         else:
-            status = response.output_status.split(ntob(" "), 1)[0]
+            status = response.output_status.split(ntob(' '), 1)[0]
             if six.PY3:
                 status = status.decode('ISO-8859-1')
 
         atoms = {'h': remote.name or remote.ip,
                  'l': '-',
-                 'u': getattr(request, "login", None) or "-",
+                 'u': getattr(request, 'login', None) or '-',
                  't': self.time(),
                  'r': request.request_line,
                  's': status,
-                 'b': dict.get(outheaders, 'Content-Length', '') or "-",
+                 'b': dict.get(outheaders, 'Content-Length', '') or '-',
                  'f': dict.get(inheaders, 'Referer', ''),
                  'a': dict.get(inheaders, 'User-Agent', ''),
                  'o': dict.get(inheaders, 'Host', '-'),
@@ -312,26 +314,26 @@ class LogManager(object):
 
     def _get_builtin_handler(self, log, key):
         for h in log.handlers:
-            if getattr(h, "_cpbuiltin", None) == key:
+            if getattr(h, '_cpbuiltin', None) == key:
                 return h
 
     # ------------------------- Screen handlers ------------------------- #
     def _set_screen_handler(self, log, enable, stream=None):
-        h = self._get_builtin_handler(log, "screen")
+        h = self._get_builtin_handler(log, 'screen')
         if enable:
             if not h:
                 if stream is None:
                     stream = sys.stderr
                 h = logging.StreamHandler(stream)
                 h.setFormatter(logfmt)
-                h._cpbuiltin = "screen"
+                h._cpbuiltin = 'screen'
                 log.addHandler(h)
         elif h:
             log.handlers.remove(h)
 
     def _get_screen(self):
         h = self._get_builtin_handler
-        has_h = h(self.error_log, "screen") or h(self.access_log, "screen")
+        has_h = h(self.error_log, 'screen') or h(self.access_log, 'screen')
         return bool(has_h)
 
     def _set_screen(self, newvalue):
@@ -349,11 +351,11 @@ class LogManager(object):
     def _add_builtin_file_handler(self, log, fname):
         h = logging.FileHandler(fname)
         h.setFormatter(logfmt)
-        h._cpbuiltin = "file"
+        h._cpbuiltin = 'file'
         log.addHandler(h)
 
     def _set_file_handler(self, log, filename):
-        h = self._get_builtin_handler(log, "file")
+        h = self._get_builtin_handler(log, 'file')
         if filename:
             if h:
                 if h.baseFilename != os.path.abspath(filename):
@@ -368,7 +370,7 @@ class LogManager(object):
                 log.handlers.remove(h)
 
     def _get_error_file(self):
-        h = self._get_builtin_handler(self.error_log, "file")
+        h = self._get_builtin_handler(self.error_log, 'file')
         if h:
             return h.baseFilename
         return ''
@@ -383,7 +385,7 @@ class LogManager(object):
         """)
 
     def _get_access_file(self):
-        h = self._get_builtin_handler(self.access_log, "file")
+        h = self._get_builtin_handler(self.access_log, 'file')
         if h:
             return h.baseFilename
         return ''
@@ -400,18 +402,18 @@ class LogManager(object):
     # ------------------------- WSGI handlers ------------------------- #
 
     def _set_wsgi_handler(self, log, enable):
-        h = self._get_builtin_handler(log, "wsgi")
+        h = self._get_builtin_handler(log, 'wsgi')
         if enable:
             if not h:
                 h = WSGIErrorHandler()
                 h.setFormatter(logfmt)
-                h._cpbuiltin = "wsgi"
+                h._cpbuiltin = 'wsgi'
                 log.addHandler(h)
         elif h:
             log.handlers.remove(h)
 
     def _get_wsgi(self):
-        return bool(self._get_builtin_handler(self.error_log, "wsgi"))
+        return bool(self._get_builtin_handler(self.error_log, 'wsgi'))
 
     def _set_wsgi(self, newvalue):
         self._set_wsgi_handler(self.error_log, newvalue)
@@ -447,16 +449,16 @@ class WSGIErrorHandler(logging.Handler):
         else:
             try:
                 msg = self.format(record)
-                fs = "%s\n"
+                fs = '%s\n'
                 import types
                 # if no unicode support...
-                if not hasattr(types, "UnicodeType"):
+                if not hasattr(types, 'UnicodeType'):
                     stream.write(fs % msg)
                 else:
                     try:
                         stream.write(fs % msg)
                     except UnicodeError:
-                        stream.write(fs % msg.encode("UTF-8"))
+                        stream.write(fs % msg.encode('UTF-8'))
                 self.flush()
             except:
                 self.handleError(record)

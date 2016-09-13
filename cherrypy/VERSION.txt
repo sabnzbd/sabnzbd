@@ -1,4 +1,5 @@
-CherryPy 6.0.2 Official distribution: https://pypi.python.org/packages/source/C/CherryPy/CherryPy-6.0.2.tar.gz
+CherryPy 8.1.0 
+Official distribution: https://github.com/cherrypy/cherrypy/releases
 The folders 'tutorial', 'test' and 'scaffold' have been removed.
 This file has been added.
 

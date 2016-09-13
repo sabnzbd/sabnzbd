@@ -19,19 +19,19 @@ class NativeGateway(wsgiserver.Gateway):
         try:
             # Obtain a Request object from CherryPy
             local = req.server.bind_addr
-            local = httputil.Host(local[0], local[1], "")
+            local = httputil.Host(local[0], local[1], '')
             remote = req.conn.remote_addr, req.conn.remote_port
-            remote = httputil.Host(remote[0], remote[1], "")
+            remote = httputil.Host(remote[0], remote[1], '')
 
             scheme = req.scheme
-            sn = cherrypy.tree.script_name(req.uri or "/")
+            sn = cherrypy.tree.script_name(req.uri or '/')
             if sn is None:
                 self.send_response('404 Not Found', [], [''])
             else:
                 app = cherrypy.tree.apps[sn]
                 method = req.method
                 path = req.path
-                qs = req.qs or ""
+                qs = req.qs or ''
                 headers = req.inheaders.items()
                 rfile = req.rfile
                 prev = None
@@ -40,7 +40,7 @@ class NativeGateway(wsgiserver.Gateway):
                     redirections = []
                     while True:
                         request, response = app.get_serving(
-                            local, remote, scheme, "HTTP/1.1")
+                            local, remote, scheme, 'HTTP/1.1')
                         request.multithread = True
                         request.multiprocess = False
                         request.app = app
@@ -60,17 +60,17 @@ class NativeGateway(wsgiserver.Gateway):
                             if not self.recursive:
                                 if ir.path in redirections:
                                     raise RuntimeError(
-                                        "InternalRedirector visited the same "
-                                        "URL twice: %r" % ir.path)
+                                        'InternalRedirector visited the same '
+                                        'URL twice: %r' % ir.path)
                                 else:
                                     # Add the *previous* path_info + qs to
                                     # redirections.
                                     if qs:
-                                        qs = "?" + qs
+                                        qs = '?' + qs
                                     redirections.append(sn + path + qs)
 
                             # Munge environment and try again.
-                            method = "GET"
+                            method = 'GET'
                             path = ir.path
                             qs = ir.query_string
                             rfile = io.BytesIO()
@@ -91,7 +91,7 @@ class NativeGateway(wsgiserver.Gateway):
         req = self.req
 
         # Set response status
-        req.status = str(status or "500 Server Error")
+        req.status = str(status or '500 Server Error')
 
         # Set response headers
         for header, value in headers:

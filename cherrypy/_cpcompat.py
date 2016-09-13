@@ -1,6 +1,6 @@
 """Compatibility code for using CherryPy with various versions of Python.
 
-CherryPy 3.2 is compatible with Python versions 2.3+. This module provides a
+CherryPy 3.2 is compatible with Python versions 2.6+. This module provides a
 useful abstraction over the differences between Python versions, sometimes by
 preferring a newer idiom, sometimes an older one, and sometimes a custom one.
 
@@ -15,6 +15,8 @@ specifically with bytes, and a 'StringIO' name for dealing with native strings.
 It also provides a 'base64_decode' function with native strings as input and
 output.
 """
+
+import binascii
 import os
 import re
 import sys
@@ -23,8 +25,6 @@ import threading
 import six
 
 if six.PY3:
-    basestring = (bytes, str)
-
     def ntob(n, encoding='ISO-8859-1'):
         """Return the given native string as a byte string in the given
         encoding.
@@ -49,8 +49,6 @@ if six.PY3:
         return n
 else:
     # Python 2
-    basestring = basestring
-
     def ntob(n, encoding='ISO-8859-1'):
         """Return the given native string as a byte string in the given
         encoding.
@@ -90,7 +88,7 @@ else:
 
 def assert_native(n):
     if not isinstance(n, str):
-        raise TypeError("n must be a native str (got %s)" % type(n).__name__)
+        raise TypeError('n must be a native str (got %s)' % type(n).__name__)
 
 try:
     # Python 3.1+
@@ -140,16 +138,11 @@ try:
     from urllib.request import parse_http_list, parse_keqv_list
 except ImportError:
     # Python 2
-    from urlparse import urljoin
-    from urllib import urlencode, urlopen
-    from urllib import quote, quote_plus
-    from urllib import unquote
-    from urllib2 import parse_http_list, parse_keqv_list
-
-try:
-    from threading import local as threadlocal
-except ImportError:
-    from cherrypy._cpthreadinglocal import local as threadlocal
+    from urlparse import urljoin  # noqa
+    from urllib import urlencode, urlopen  # noqa
+    from urllib import quote, quote_plus  # noqa
+    from urllib import unquote  # noqa
+    from urllib2 import parse_http_list, parse_keqv_list  # noqa
 
 try:
     dict.iteritems
@@ -186,7 +179,7 @@ try:
     import builtins
 except ImportError:
     # Python 2
-    import __builtin__ as builtins
+    import __builtin__ as builtins  # noqa
 
 try:
     # Python 2. We try Python 2 first clients on Python 2
@@ -197,10 +190,10 @@ try:
     from BaseHTTPServer import BaseHTTPRequestHandler
 except ImportError:
     # Python 3
-    from http.cookies import SimpleCookie, CookieError
-    from http.client import BadStatusLine, HTTPConnection, IncompleteRead
-    from http.client import NotConnected
-    from http.server import BaseHTTPRequestHandler
+    from http.cookies import SimpleCookie, CookieError  # noqa
+    from http.client import BadStatusLine, HTTPConnection, IncompleteRead  # noqa
+    from http.client import NotConnected  # noqa
+    from http.server import BaseHTTPRequestHandler  # noqa
 
 # Some platforms don't expose HTTPSConnection, so handle it separately
 if six.PY3:
@@ -221,29 +214,6 @@ try:
 except NameError:
     # Python 3
     xrange = range
-
-import threading
-if hasattr(threading.Thread, "daemon"):
-    # Python 2.6+
-    def get_daemon(t):
-        return t.daemon
-
-    def set_daemon(t, val):
-        t.daemon = val
-else:
-    def get_daemon(t):
-        return t.isDaemon()
-
-    def set_daemon(t, val):
-        t.setDaemon(val)
-
-try:
-    from email.utils import formatdate
-
-    def HTTPDate(timeval=None):
-        return formatdate(timeval, usegmt=True)
-except ImportError:
-    from rfc822 import formatdate as HTTPDate
 
 try:
     # Python 3
@@ -291,15 +261,14 @@ finally:
     else:
         json_encode = _json_encode
 
+text_or_bytes = six.text_type, six.binary_type
 
 try:
     import cPickle as pickle
 except ImportError:
     # In Python 2, pickle is a Python version.
     # In Python 3, pickle is the sped-up C version.
-    import pickle
-
-import binascii
+    import pickle  # noqa
 
 def random20():
     return binascii.hexlify(os.urandom(20)).decode('ascii')
@@ -307,7 +276,7 @@ def random20():
 try:
     from _thread import get_ident as get_thread_ident
 except ImportError:
-    from thread import get_ident as get_thread_ident
+    from thread import get_ident as get_thread_ident  # noqa
 
 try:
     # Python 3
@@ -325,17 +294,41 @@ else:
     Timer = threading._Timer
     Event = threading._Event
 
-# Prior to Python 2.6, the Thread class did not have a .daemon property.
-# This mix-in adds that property.
+try:
+    # Python 2.7+
+    from subprocess import _args_from_interpreter_flags
+except ImportError:
+    def _args_from_interpreter_flags():
+        """Tries to reconstruct original interpreter args from sys.flags for Python 2.6
 
+        Backported from Python 3.5. Aims to return a list of
+        command-line arguments reproducing the current
+        settings in sys.flags and sys.warnoptions.
+        """
+        flag_opt_map = {
+            'debug': 'd',
+            # 'inspect': 'i',
+            # 'interactive': 'i',
+            'optimize': 'O',
+            'dont_write_bytecode': 'B',
+            'no_user_site': 's',
+            'no_site': 'S',
+            'ignore_environment': 'E',
+            'verbose': 'v',
+            'bytes_warning': 'b',
+            'quiet': 'q',
+            'hash_randomization': 'R',
+            'py3k_warning': '3',
+        }
 
-class SetDaemonProperty:
+        args = []
+        for flag, opt in flag_opt_map.items():
+            v = getattr(sys.flags, flag)
+            if v > 0:
+                if flag == 'hash_randomization':
+                    v = 1 # Handle specification of an exact seed
+                args.append('-' + opt * v)
+        for opt in sys.warnoptions:
+            args.append('-W' + opt)
 
-    def __get_daemon(self):
-        return self.isDaemon()
-
-    def __set_daemon(self, daemon):
-        self.setDaemon(daemon)
-
-    if sys.version_info < (2, 6):
-        daemon = property(__get_daemon, __set_daemon)
+        return args
