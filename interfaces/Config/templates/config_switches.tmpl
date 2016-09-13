@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configure-switches-1-0"#-->
+<!--#set global $help_uri="configuration/1.1/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -25,13 +25,14 @@
                         </select>
                         <span class="desc">$T('explain-check_new_rel')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_ampm then "disabled" else "" #-->">
-                        <label class="config" for="ampm">$T('opt-ampm')</label>
-                        <input type="checkbox" name="ampm" id="ampm" value="1" <!--#if int($ampm) > 0 then 'checked="checked"' else ""#--> <!--#if not $have_ampm then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-ampm')</span>
+                    <div class="field-pair">
+                        <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
+                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_https_verification')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -68,6 +69,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -92,6 +94,11 @@
                         <span class="desc">$T('explain-pre_script')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="propagation_delay">$T('opt-propagation_delay')</label>
+                        <input type="number" name="propagation_delay" id="propagation_delay" value="$propagation_delay" /> <i>$T('minutes')</i>
+                        <span class="desc">$T('explain-propagation_delay')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="top_only">$T('opt-top_only')</label>
                         <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-top_only')</span>
@@ -102,9 +109,9 @@
                         <span class="desc">$T('explain-pre_check')</span>
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="fail_hopeless">$T('opt-fail_hopeless')</label>
-                        <input type="checkbox" name="fail_hopeless" id="fail_hopeless" value="1" <!--#if int($fail_hopeless) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-fail_hopeless')</span>
+                        <label class="config" for="fail_hopeless_jobs">$T('opt-fail_hopeless_jobs')</label>
+                        <input type="checkbox" name="fail_hopeless_jobs" id="fail_hopeless_jobs" value="1" <!--#if int($fail_hopeless_jobs) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-fail_hopeless_jobs')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
@@ -147,7 +154,6 @@
                         <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                         <span class="desc">$T('explain-unwanted_extensions')</span>
                     </div>
-                    
                     <div class="field-pair">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
@@ -155,6 +161,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -173,7 +180,7 @@
                     <div class="field-pair">
                         <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_all_par')</span>
+                        <span class="desc">$T('explain-enable_all_par').replace('.', '<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="quick_check">$T('opt-quick_check')</label>
@@ -200,21 +207,6 @@
                         <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-safe_postproc')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_unrar then "disabled" else "" #-->">
-                        <label class="config" for="enable_unrar">$T('opt-enable_unrar')</label>
-                        <input type="checkbox" name="enable_unrar" id="enable_unrar" value="1" <!--#if not $have_unrar then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unrar) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_unrar')</span>
-                    </div>
-                    <div class="field-pair <!--#if not $have_unzip then "disabled" else "" #-->">
-                        <label class="config" for="enable_unzip">$T('opt-enable_unzip')</label>
-                        <input type="checkbox" name="enable_unzip" id="enable_unzip" value="1" <!--#if not $have_unzip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_unzip) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_unzip')</span>
-                    </div>
-                    <div class="field-pair <!--#if not $have_7zip then "disabled" else "" #-->">
-                        <label class="config" for="enable_7zip">$T('opt-enable_7zip')</label>
-                        <input type="checkbox" name="enable_7zip" id="enable_7zip" value="1" <!--#if not $have_7zip then 'readonly="readonly" disabled="disabled"' else "" #--> <!--#if int($enable_7zip) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_7zip')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
                         <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
@@ -229,16 +221,6 @@
                         <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
                         <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-overwrite_files')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="enable_filejoin">$T('opt-enable_filejoin')</label>
-                        <input type="checkbox" name="enable_filejoin" id="enable_filejoin" value="1" <!--#if int($enable_filejoin) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_filejoin')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="enable_tsjoin">$T('opt-enable_tsjoin')</label>
-                        <input type="checkbox" name="enable_tsjoin" id="enable_tsjoin" value="1" <!--#if int($enable_tsjoin) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-ts_join')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="unpack_check">$T('opt-unpack_check')</label>
@@ -280,6 +262,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -310,11 +293,13 @@
                         <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_illegal')</span>
                     </div>
+                    <!--#if not $nt#-->
                     <div class="field-pair">
                         <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
                         <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-sanitize_safe')</span>
                     </div>
+                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
                         <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
@@ -322,6 +307,7 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
                 </fieldset>
             </div><!-- /col1 -->
@@ -375,14 +361,18 @@
                         <span class="desc">$T('explain-rating_enable')</span>
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
-                        <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" />
-                        <span class="desc">$T('explain-rating_api_key')</span>
-                    </div>
-                    <div class="field-pair">
                         <label class="config" for="rating_feedback">$T('opt-rating_feedback')</label>
                         <input type="checkbox" name="rating_feedback" id="rating_feedback" value="1" <!--#if int($rating_feedback) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-rating_feedback')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="rating_host">$T('opt-rating_host')</label>
+                        <input type="text" name="rating_host" id="rating_host" value="$rating_host" />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
+                        <input type="text" name="rating_api_key" id="rating_api_key" value="$rating_api_key" />
+                        <span class="desc">$T('explain-rating_api_key')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="rating_filter_enable">$T('opt-rating_filter_enable')</label>
@@ -510,6 +500,30 @@
             \$("#rating_filter_pause").hide();
         }
     });
+
+    \$('.restoreDefaults').click(function(e) {
+        // Get section name
+        var sectionName = \$(this).parents('.section').find('.col2 h3').text().trim()
+
+        // Confirm?
+        if(!confirm("$T('explain-restoreDefaults') \""+sectionName+"\"\n$T('confirm')")) return false
+        e.preventDefault()
+
+        // Need to get all the input values, so same way as saving normally
+        var key_container = {}
+        \$(this).parents('.section').extractFormDataTo(key_container);
+        key_container = Object.keys(key_container)
+
+        // Send request
+        \$.ajax({
+            type: "GET",
+            url: "../../tapi",
+            data: "mode=set_config_default&session=${session}&output=json&keyword=" + key_container.join('&keyword=')
+        }).then(function(data) {
+            // Reload page
+            document.location = document.location
+        })
+    })
 });
 </script>
 

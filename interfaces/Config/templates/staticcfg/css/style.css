@@ -83,8 +83,14 @@ body {
 .example {
     background-color: #fefeee;
 }
+.presets {
+    margin-bottom: -6px;
+}
 .presets input {
     margin: 2px 0;
+}
+.presets input[type="button"] {
+    margin: 0px 2px 6px 0px;
 }
 label.config,
 .field-pair h5 {
@@ -111,6 +117,7 @@ label.wide,
 }
 .field-pair h5 {
     margin-bottom: 5px;
+    line-height: normal;
 }
 .desc {
     display: block;
@@ -222,8 +229,13 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .padding {
     padding: 6px;
 }
-.disabled {
-    color: #aaa;
+.disabled,
+.disabled input,
+.disabled .clearBtn,
+.disabled .patternKey,
+.disabled .show_qrcode,
+.disabled .generate_key {
+    color: #aaa !important;
 }
 .padTable p {
     margin-top: 0;
@@ -398,15 +410,18 @@ tr.separator {
     background-color: #3C3C3C;
     color: white;
     border: 0;
-    padding: 10px 12px;
+    padding:11px 12px 8px;
 }
 .modal-header .close {
-    opacity: 0.7;
+    opacity: 0.5;
     background: transparent;
     color: white;
     text-shadow: none !important;
     font-weight: normal !important;
-    font-size: 28px;
+    font-size: 32px;
+    vertical-align: middle;
+    margin-top: -5px;
+    font-family: arial, sans-serif !important;
 }
 .modal-header .close:hover {
     opacity: 1;
@@ -417,14 +432,20 @@ tr.separator {
     opacity: 0 !important;
     transition: all 0.3s !important;
 }
+#modal_qr .modal-body canvas {
+    padding: 10px;
+    margin-bottom: 10px;
+}
 
 .modal.in .modal-dialog {
     transform: scale(1) !important;
     -webkit-transform: scale(1) !important;
     opacity: 1 !important;
 }
-.fileBrowser {
-    margin-left: -1px!important;
+.btn-default.fileBrowser,
+.btn-default.clearBtn {
+    margin-left: -1px !important;
+    box-shadow: 1px 0px 1px rgba(0,0,0,.1) !important;
 }
 #filebrowser_modal .list-group-item {
     font-weight: bold;
@@ -597,12 +618,7 @@ ul.tabs li.active a {
     color: #000;
     cursor: default;
 }
-.ui-tooltip-qrcode {
-    max-width: 320px;
-}
-.ui-tooltip-qrcode img {
-    margin: 0 auto;
-}
+
 .checkbox-days {
     float:  left;
 }
@@ -788,33 +804,53 @@ input[type="checkbox"] {
     padding-right: 0;
 }
 
+.navbar .nav>li>a {
+    height: 50px;
+}
+
 .navbar-default {
     background-color: #FFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-    
 }
 
 .navbar-fixed-top {
     z-index: 1000;
 }
 
-.navbar-default .navbar-brand {
-    padding: 0 !important;
-    margin: 0 !important;
-    padding-right: 5px !important;
+.navbar-logo {
+    display: inline-block;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    margin-left: 5px;
+    margin-bottom: -1px;
 }
-.navbar-default .navbar-brand-small {
-    padding-right: 10px !important;
+
+
+
+.navbar-logo-small svg {
+    height: 40px;
+    width: 40px;
 }
-.navbar-default .navbar-brand-mobile {
+/*
+.navbar-logo-wide {
     display: none;
 }
+.navbar-logo-wide {
+    padding-top: 9px;
+}
+.navbar-logo-wide svg {
+    height: 36px;
+    width: 130px;
+}
+*/
 .navbar-default .navbar-nav>li>a {
     color: black !important;
 }
 
-.navbar-default .navbar-nav>li>a:hover {
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-logo:hover {
     background-color: #e2e2e2 !important;
 }
 
@@ -872,6 +908,17 @@ input[type="checkbox"] {
 
 .Servers .col2 button:first-of-type {
     margin-bottom: 8px;
+}
+
+.result-box .alert {
+    margin-bottom: 0px;
+    display: none;
+}
+
+.alert-no-category,
+.alert-translate {
+    display: none;
+    margin: 5px 0px 0px;
 }
 
 .server-disabled {
@@ -939,6 +986,15 @@ input[type="checkbox"] {
     0% { opacity: 0; }
     50% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+.spin-glyphicon {
+    animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
 }
 
 @media screen and (min-width: 1200px) { 
@@ -1104,4 +1160,3 @@ input[type="checkbox"] {
         padding-right: 5px;
     }
 }
-

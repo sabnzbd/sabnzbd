@@ -3,7 +3,6 @@
 <div class="centerLinks">
 <a onclick="if(confirm('$T('purgeQueueConf')')){lr('queue/purge','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);}">$T('smpl-purgeQueue')</a> |
 <a onclick="setCookie('queue_details','<!--#if $queue_details =='1' then "0" else "1"#-->',30);lr('queue','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $queue_details == '1' then $T('smpl-hideEdit') else $T('smpl-showEdit')#--></a> |
-<a onclick="lr('queue/tog_verbose','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $isverbose then $T('link-hideFiles') else $T('link-showFiles')#--></a> |
 $T('onQueueFinish'):
 <select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 <option value=""></option>
@@ -39,7 +38,6 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
 
   <thead>
   <tr>
-    <th class="expandColumn center"></th>
     <th class="orderColumn center"></th>
     <th>$T('name') <a class="columnLinks" onclick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onclick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
     <!--#if $queue_details == '1'#-->
@@ -58,9 +56,6 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
       <!--#set $odd = not $odd#-->
       <tbody id="$slot.nzo_id">
         <tr class="$slot.priority">
-          <td class="expand">
-            <a class="expander" onclick="javascript:toggle_verbosity('$slot.nzo_id', 'limit=$limit&start=$start')"><span id="name_$slot.nzo_id"><!--#if $slot.verbosity then '-' else '+'#--></span></a>
-          </td>
           <td>
             <select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
             <!--#for $i in xrange($noofslots)#-->
@@ -70,7 +65,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
             </select>
           </td>
           <td>
-            <span class="filename"><a href="#/nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename</a></span>
+            <span class="filename"><a href="#/nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename<!--#if $slot.password#--> /  $slot.password<!--#end if#--></a></span>
           </td>
           <!--#if $queue_details == '1'#-->
           <td>
@@ -135,20 +130,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
 </td>
 </tr>
 <!--#set $oddLine = False#-->
-<!--#for $line in $slot.finished#-->
-  <!--#set $oddLine = not $oddLine#-->
-  <tr class="finished <!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td>Finished</td><td>$line.filename</td><!--#if $queue_details == '1'#--><td></td><!--#end if#--><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td></tr>
-<!--#end for#-->
-<!--#set $oddLine = False#-->
-<!--#for $line in $slot.active#-->
-  <!--#set $oddLine = not $oddLine#-->
-  <tr id="$line.nzf_id" class="active <!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td>Active</td><td>$line.filename</td><!--#if $queue_details == '1'#--><td></td><!--#end if#--><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td class="center">$line.age</td><td class="center">$line.size</td><td class="right_align"><a onclick="deletenzf('$slot.nzo_id','$line.nzf_id')"><img class="delicon" src="static/images/messagebox_critical.png" /></a></td></tr>
-<!--#end for#-->
-<!--#set $oddLine = False#-->
-<!--#for $line in $slot.queued#-->
-  <!--#set $oddLine = not $oddLine#-->
-  <tr class="waiting <!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td><td>Waiting</td><td>$line.filename (set: $line.set)</td><!--#if $queue_details == '1'#--><td></td><!--#end if#--><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td></tr>
-<!--#end for#-->
+
 </tbody>
 <!--#end for#-->
 <!--#end if#-->

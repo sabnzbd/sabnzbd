@@ -55,8 +55,24 @@ If you want multi-language support, run:
 python tools/make_mo.py
 ```
 
-Our many other command line options are explained in depth [here](http://wiki.sabnzbd.org/command-line-parameters).
+Our many other command line options are explained in depth [here](https://sabnzbd.org/wiki/advanced/command-line-parameters).
 
 ## About Our Repo
 
-We're going to be attempting to follow the [gitflow model](http://nvie.com/posts/a-successful-git-branching-model/), so you can consider "master" to be whatever our present stable release build is (presently 0.6.x) and "develop" to be whatever our next build will be (presently 0.7.x). Once we transition from unstable to stable dev builds we'll create release branches, and encourage you to follow along and help us test.
+The workflow we use, is a simplified form of "GitFlow".
+Basically:
+- "master" contains only stable releases (which have been merged to "master")
+- "develop" is the target for integration
+- "1.0.x" is a release and maintenance branch for 1.0.x: 1.0.0 -> 1.0.1 -> 1.0.2
+- "1.1.x" is a release and maintenance branch for 1.1.x: 1.1.0 -> 1.1.1 -> 1.1.2
+- "feature/my_feature" is a temporary feature branch
+- "hotfix/my_hotfix is an optional temporary branch for bugfix(es)
+
+Condtions:
+- Merging of a stable release into "master" will be simple: the release branch is always right.
+- "master" is not merged back to "develop"
+- "develop" is not re-based on "master".
+- Release branches branch from "develop" only.
+- Bugfixes created specifically for a release branch are done there (because they are specific, they're not cherry-picked to "develop").
+- Bugfixes done on "develop" may be cherry-picked to a release branch.
+- We will not release a 1.0.2 if a 1.1.0 has already been released.

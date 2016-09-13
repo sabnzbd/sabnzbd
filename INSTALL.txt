@@ -1,4 +1,4 @@
-                                SABnzbd 1.0.3
+                                SABnzbd 1.1.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -55,17 +55,14 @@ You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
 Unix/Linux/OSX
-    Python-2.6 or 2.7       http://www.python.org
+    Python-2.7              http://www.python.org (2.7.9+ recommended)
 
-OSX Leopard/SnowLeopard
-    Python 2.6              http://www.activestate.com
-
-OSX Lion/MountainLion
+OSX Mavericks or newer
     Apple Python 2.7        Included in OSX (default)
 
 Windows
     Python-2.7.latest       http://www.python.com
-                            Most versions will work: 2.7.10 recommended
+                            Most versions will work: 2.7.10+ recommended
     PyWin32                 use "pip install pypiwin32"
 
 Essential modules
@@ -74,7 +71,7 @@ Essential modules
     unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
-    unzip >= 5.52           http://www.info-zip.org/
+    unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
@@ -92,7 +89,7 @@ Optional modules Unix/Linux/OSX
                             If not, you cannot use the NotifyOSD feature.
 
 Embedded modules (preferably use the included version)
-    CherryPy-3.8.0 with patches  http://www.cherrypy.org
+    CherryPy-6.0.2 with patches  http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
@@ -129,7 +126,7 @@ may help you solve problems easier.
 -------------------------------------------------------------------------------
 
 Visit the WIKI site:
-    http://wiki.sabnzbd.org/
+    https://sabnzbd.org/wiki/
 
 
 -------------------------------------------------------------------------------

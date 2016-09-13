@@ -21,7 +21,6 @@ sabnzbd.assembler - threaded assembly/decoding of files
 
 import os
 import Queue
-import binascii
 import logging
 import struct
 import re
@@ -37,7 +36,7 @@ except:
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
     set_permissions, flag_file, long_path, clip_path
-from sabnzbd.constants import QCHECK_FILE
+from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -89,7 +88,7 @@ class Assembler(Thread):
                     try:
                         filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
-                        if nzo.deleted:
+                        if nzo.is_gone():
                             # Job was deleted, ignore error
                             pass
                         else:
@@ -167,10 +166,14 @@ def _assemble(nzf, path, dupe):
     else:
         md5 = None
 
-    _type = nzf.type
     decodetable = nzf.decodetable
 
     for articlenum in decodetable:
+        # Break if deleted during writing
+        if nzf.nzo.status is Status.DELETED:
+            break
+
+        # Sleep to allow decoder/assembler switching
         sleep(0.001)
         article = decodetable[articlenum]
 
@@ -180,37 +183,9 @@ def _assemble(nzf, path, dupe):
             logging.info(T('%s missing'), article)
         else:
             # yenc data already decoded, flush it out
-            if _type == 'yenc':
-                fout.write(data)
-                if md5:
-                    md5.update(data)
-            # need to decode uu data now
-            elif _type == 'uu':
-                data = data.split('\r\n')
-
-                chunks = []
-                for line in data:
-                    if not line:
-                        continue
-
-                    if line == '-- ' or line.startswith('Posted via '):
-                        continue
-                    try:
-                        tmpdata = binascii.a2b_uu(line)
-                        chunks.append(tmpdata)
-                    except binascii.Error, msg:
-                        # Workaround for broken uuencoders by
-                        # /Fredrik Lundh
-                        nbytes = (((ord(line[0]) - 32) & 63) * 4 + 5) / 3
-                        try:
-                            tmpdata = binascii.a2b_uu(line[:nbytes])
-                            chunks.append(tmpdata)
-                        except binascii.Error, msg:
-                            logging.info('Decode failed in part %s: %s', article.article, msg)
-                data = ''.join(chunks)
-                fout.write(data)
-                if md5:
-                    md5.update(data)
+            fout.write(data)
+            if md5:
+                md5.update(data)
 
     fout.flush()
     fout.close()
@@ -335,13 +310,15 @@ def is_cloaked(path, names):
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
-    if not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
+    if nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
         try:
             zf = RarFile(filepath, all_names=True)
             encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
-            if encrypted and int(nzo.encrypted) < 2 and not nzo.reuse:
+            if encrypted and not nzo.reuse:
                 nzo.encrypted = 1
             else:
+                # Don't check other files
+                nzo.encrypted = -1
                 encrypted = False
             zf.close()
             del zf
@@ -356,7 +333,7 @@ def rar_contains_unwanted_file(filepath):
     # returns False if no unwanted extensions are found in the rar file
     # returns name of file if unwanted extension is found in the rar file
     unwanted = None
-    if is_rarfile(filepath):
+    if cfg.unwanted_extensions() and is_rarfile(filepath):
         # logging.debug('rar file to check: %s',filepath)
         # logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
         try:

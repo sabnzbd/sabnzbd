@@ -1,11 +1,12 @@
-<div class="history" data-bind="visible: hasHistory()" style="display: none;">
+<div class="history" id="history-tab" data-bind="visible: hasHistory() || displayTabbed()" style="display: none">
     <h2>$T('menu-history')</h2>
     <table class="table table-hover history-table paginated">
         <thead>
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="status-header"></th>
+                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumn }"></th>
+                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraHistoryColumn }"></th>
                 <th style="width: 130px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -136,6 +137,10 @@
                     <!-- /ko -->
                 </td>
                 <td class="status row-wrap-text" data-bind="text: statusText()" onclick="showDetails(this)"></td>
+                <td class="row-extra-text" onclick="showDetails(this)">
+                    <div class="row-wrap-text" data-bind="text: extraText">
+                    </div>
+                </td>
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
                     <div class="dropdown">
@@ -172,7 +177,7 @@
                                 <!-- ko foreach: { data: historyStatus.stage_log, afterRender: addHistoryStatusStuff } -->
                                 <div class="row">
                                     <div class="col-sm-2" data-bind="text: glitterTranslate.status[name()]"></div>
-                                    <div class="col-sm-10 history-status-modallink" data-bind="longText: actions"></div>
+                                    <div class="col-sm-10 history-status-modallink" data-bind="longText: actions, longTextType: name()"></div>
                                 </div>
                                 <!-- /ko -->
                             </div>

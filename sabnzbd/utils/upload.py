@@ -19,7 +19,6 @@
 sabnzbd.utils.upload - File association functions for adding nzb files to sabnzbd
 """
 
-import urllib2
 import urllib
 import logging
 import os

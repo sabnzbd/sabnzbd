@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configure-notifications-1-0"#-->
+<!--#set global $help_uri="configuration/1.1/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -63,8 +63,9 @@
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_email" rel="$T('askTestEmail')"><span class="glyphicon glyphicon-envelope"></span> $T('link-testEmail')</button>
-                    <span id="testmail-result" class="icon path darkred">&nbsp;</span>
-                    <span id="config_err_msg" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -111,6 +112,10 @@
                     <input type="checkbox" name="ncenter_prio_disk_full" id="ncenter_prio_disk_full" value="1" <!--#if int($ncenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="ncenter_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="ncenter_prio_new_login" id="ncenter_prio_new_login" value="1" <!--#if int($ncenter_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="ncenter_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="ncenter_prio_warning" id="ncenter_prio_warning" value="1" <!--#if int($ncenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -123,10 +128,12 @@
                     <input type="checkbox" name="ncenter_prio_other" id="ncenter_prio_other" value="1" <!--#if int($ncenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_notif"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -173,6 +180,10 @@
                     <input type="checkbox" name="acenter_prio_disk_full" id="acenter_prio_disk_full" value="1" <!--#if int($acenter_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="acenter_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="acenter_prio_new_login" id="acenter_prio_new_login" value="1" <!--#if int($acenter_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="acenter_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="acenter_prio_warning" id="acenter_prio_warning" value="1" <!--#if int($acenter_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -185,10 +196,12 @@
                     <input type="checkbox" name="acenter_prio_other" id="acenter_prio_other" value="1" <!--#if int($acenter_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_windows_notification"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testnotice-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_windows"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -235,6 +248,10 @@
                     <input type="checkbox" name="ntfosd_prio_disk_full" id="ntfosd_prio_disk_full" value="1" <!--#if int($ntfosd_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="ntfosd_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="ntfosd_prio_new_login" id="ntfosd_prio_new_login" value="1" <!--#if int($ntfosd_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="ntfosd_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="ntfosd_prio_warning" id="ntfosd_prio_warning" value="1" <!--#if int($ntfosd_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -247,10 +264,12 @@
                     <input type="checkbox" name="ntfosd_prio_other" id="ntfosd_prio_other" value="1" <!--#if int($ntfosd_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testosd-result" class="icon path darkred">&nbsp;</span>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
+               <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -306,6 +325,10 @@
                     <input type="checkbox" name="growl_prio_disk_full" id="growl_prio_disk_full" value="1" <!--#if int($growl_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
+                    <label class="config wide" for="growl_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="growl_prio_new_login" id="growl_prio_new_login" value="1" <!--#if int($growl_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
                     <label class="config wide" for="growl_prio_warning">$T($notify_texts['warning'])</label>
                     <input type="checkbox" name="growl_prio_warning" id="growl_prio_warning" value="1" <!--#if int($growl_prio_warning) > 0 then 'checked="checked"' else ""#--> />
                 </div>
@@ -318,10 +341,12 @@
                     <input type="checkbox" name="growl_prio_other" id="growl_prio_other" value="1" <!--#if int($growl_prio_other) > 0 then 'checked="checked"' else ""#--> />
                 </div>
                 <div class="field-pair">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                   <span id="testgrowl-result" class="icon path darkred">&nbsp;</span>
-               </div>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
            </fieldset>
        </div><!-- /col1 -->
     </div><!-- /section -->
@@ -419,7 +444,18 @@
                         <option value="1"  <!--#if $prowl_prio_disk_full == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
                         <option value="2"  <!--#if $prowl_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                     </select>
-               </div>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="prowl_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <select name="prowl_prio_new_login" id="prowl_prio_new_login">
+                        <option value="-3" <!--#if $prowl_prio_new_login == -3 then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
+                        <option value="-2" <!--#if $prowl_prio_new_login == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                        <option value="-1" <!--#if $prowl_prio_new_login == -1 then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
+                        <option value="0"  <!--#if $prowl_prio_new_login == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                        <option value="1"  <!--#if $prowl_prio_new_login == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
+                        <option value="2"  <!--#if $prowl_prio_new_login == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                    </select>
+                </div>
                 <div class="field-pair">
                     <label class="config" for="prowl_prio_warning">$T($notify_texts['warning'])</label>
                     <select name="prowl_prio_warning" id="prowl_prio_warning">
@@ -452,11 +488,13 @@
                         <option value="1"  <!--#if $prowl_prio_other == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
                         <option value="2"  <!--#if $prowl_prio_other == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                     </select>
-               </div>
-                 <div class="field-pair">
+                </div>
+                <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_prowl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                    <span id="testprowl-result" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -566,7 +604,18 @@
 						<option value="1"  <!--#if $pushover_prio_disk_full == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
 						<option value="2"  <!--#if $pushover_prio_disk_full == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
-			   </div>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <select name="pushover_prio_new_login" id="pushover_prio_new_login">
+                        <option value="-3" <!--#if $pushover_prio_new_login == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+                        <option value="-2" <!--#if $pushover_prio_new_login == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                        <option value="-1" <!--#if $pushover_prio_new_login == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+                        <option value="0"  <!--#if $pushover_prio_new_login == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                        <option value="1"  <!--#if $pushover_prio_new_login == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
+                        <option value="2"  <!--#if $pushover_prio_new_login == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                    </select>
+                </div>
 				<div class="field-pair">
 					<label class="config" for="pushover_prio_warning">$T($notify_texts['warning'])</label>
 					<select name="pushover_prio_warning" id="pushover_prio_warning">
@@ -599,12 +648,14 @@
 						<option value="1"  <!--#if $pushover_prio_other == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
 						<option value="2"  <!--#if $pushover_prio_other == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
 					</select>
-			   </div>
+                </div>
 
-                 <div class="field-pair">
+                <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_pushover"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                    <span id="testpushover-result" class="icon path darkred">&nbsp;</span>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -662,6 +713,10 @@
 					<label class="config wide" for="pushbullet_prio_disk_full">$T($notify_texts['disk_full'])</label>
 					<input type="checkbox" name="pushbullet_prio_disk_full" id="pushbullet_prio_disk_full" value="1" <!--#if int($pushbullet_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
 				</div>
+                <div class="field-pair">
+                    <label class="config wide" for="pushbullet_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="pushbullet_prio_new_login" id="pushbullet_prio_new_login" value="1" <!--#if int($pushbullet_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
 				<div class="field-pair">
 					<label class="config wide" for="pushbullet_prio_warning">$T($notify_texts['warning'])</label>
 					<input type="checkbox" name="pushbullet_prio_warning" id="pushbullet_prio_warning" value="1" <!--#if int($pushbullet_prio_warning) > 0 then 'checked="checked"' else ""#--> />
@@ -677,10 +732,93 @@
 				<div class="field-pair">
 				   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-				   <span id="testpushbullet-result" class="icon path darkred">&nbsp;</span>
-			   </div>
+			    </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
 		   </fieldset>
 	   </div><!-- /col1 -->
+	</div><!-- /section -->
+	<div class="section" id="nscript">
+	    <div class="col2">
+		<h3>$T('section-NScript')</h3>
+		<table>
+		    <tr>
+			<td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+			<td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
+		    </tr>
+		</table>
+		<em>$T('explain-nscript_enable')</em>
+	    </div><!-- /col2 -->
+	    <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
+    		<fieldset>
+                <div class="field-pair">
+                    <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
+                    <select name="nscript_script">
+                        <!--#for $sc in $script_list#-->
+                        <option value="$sc" <!--#if $nscript_script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+                        <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('explain-nscript_script')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="nscript_parameters">$T('opt-nscript_parameters')</label>
+                    <input type="text" name="nscript_parameters" id="nscript_parameters" value="$nscript_parameters" />
+                    <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_startup">$T($notify_texts['startup']).replace('/', ' / ')</label>
+                    <input type="checkbox" name="nscript_prio_startup" id="nscript_prio_startup" value="1" <!--#if int($nscript_prio_startup) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_download">$T($notify_texts['download']) / $T('link-pause') / $T('link-resume')</label>
+                    <input type="checkbox" name="nscript_prio_download" id="nscript_prio_download" value="1" <!--#if int($nscript_prio_download) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_pp">$T($notify_texts['pp'])</label>
+                    <input type="checkbox" name="nscript_prio_pp" id="nscript_prio_pp" value="1" <!--#if int($nscript_prio_pp) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_complete">$T($notify_texts['complete'])</label>
+                    <input type="checkbox" name="nscript_prio_complete" id="nscript_prio_complete" value="1" <!--#if int($nscript_prio_complete) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_failed">$T($notify_texts['failed'])</label>
+                    <input type="checkbox" name="nscript_prio_failed" id="nscript_prio_failed" value="1" <!--#if int($nscript_prio_failed) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_queue_done">$T($notify_texts['queue_done'])</label>
+                    <input type="checkbox" name="nscript_prio_queue_done" id="nscript_prio_queue_done" value="1" <!--#if int($nscript_prio_queue_done) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_disk_full">$T($notify_texts['disk_full'])</label>
+                    <input type="checkbox" name="nscript_prio_disk_full" id="nscript_prio_disk_full" value="1" <!--#if int($nscript_prio_disk_full) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_new_login">$T($notify_texts['new_login'])</label>
+                    <input type="checkbox" name="nscript_prio_new_login" id="nscript_prio_new_login" value="1" <!--#if int($nscript_prio_new_login) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_warning">$T($notify_texts['warning'])</label>
+                    <input type="checkbox" name="nscript_prio_warning" id="nscript_prio_warning" value="1" <!--#if int($nscript_prio_warning) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_error">$T($notify_texts['error'])</label>
+                    <input type="checkbox" name="nscript_prio_error" id="nscript_prio_error" value="1" <!--#if int($nscript_prio_error) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <label class="config wide" for="nscript_prio_other">$T($notify_texts['other'])</label>
+                    <input type="checkbox" name="nscript_prio_other" id="nscript_prio_other" value="1" <!--#if int($nscript_prio_other) > 0 then 'checked="checked"' else ""#--> />
+                </div>
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+            </fieldset>
+	    </div><!-- /col1 -->
 	</div><!-- /section -->
     </form>
 </div><!-- /colmask -->
@@ -703,194 +841,44 @@
     /**
         Testing functions
     **/
-    \$('#test_email').click(function () {
-        if (confirm(\$('#test_email').attr('rel'))) {
-	    var data = { mode: 'test_email', apikey: '$session', output: 'json' };
-	    \$("#email").extractFormDataTo(data);
-            \$.ajax({
-                type: "GET",
-                url: "../../tapi",
-                data: data,
-                beforeSend: function () {
-                    \$('#test_email').attr("disabled", "disabled");
-                    \$('#testmail-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-                },
-                complete: function () {
-                    \$('#test_email').removeAttr("disabled");
-                    \$('#testmail-result').removeClass("loading");
-                },
-                success: function (data) {
-                    if (data.status == true) {
-                      \$('#testmail-result').addClass("success").html('$T('smpl-emailsent')');
-                    } else {
-                      \$('#testmail-result').addClass("failure").html(data.error);
-                    }
-                }
-            });
+    function testNotification(buttonObj) {
+        // Confirm?
+        if(\$(buttonObj).attr('rel')) {
+            if(!confirm(\$(buttonObj).attr('rel'))) return false;
         }
-    });
-    \$('#test_notification').click(function () {
+        // Disable button and get the data
+        \$(buttonObj).attr("disabled", "disabled")
+        \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
+        var data = { mode: buttonObj.id, apikey: '$session', output: 'json' };
+        \$(buttonObj).parents('.section').extractFormDataTo(data);
+
+        // Clear up the box
+        resultBox = \$(buttonObj).parents('.section').find('.result-box .alert');
+
+        // Get the request
         \$.ajax({
             type: "GET",
             url: "../../tapi",
-            data: {mode: 'test_notif', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_notification').attr("disabled", "disabled");
-                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_notification').removeAttr("disabled");
-                \$('#testnotice-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testnotice-result').addClass("failure").html(data.error);
-                }
+            data: data
+        }).then(function(data) {
+            // Remove disabled and make the box
+            \$(buttonObj).removeAttr("disabled")
+            \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
+            resultBox.removeClass('alert-success alert-danger').show()
+            if(data.status) {
+                resultBox.addClass('alert-success')
+                resultBox.text('$T('smpl-notesent')')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.text(data.error)
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
             }
-        });
-    });
-    \$('#test_windows_notification').click(function () {
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: {mode: 'test_windows', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_notification').attr("disabled", "disabled");
-                \$('#testnotice-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_notification').removeAttr("disabled");
-                \$('#testnotice-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testnotice-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testnotice-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_pushbullet').click(function () {
-        var data = { mode: 'test_pushbullet', apikey: '$session', output: 'json' };
-	    \$("#pushbullet").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_pushbullet').attr("disabled", "disabled");
-                \$('#testpushbullet-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_pushbullet').removeAttr("disabled");
-                \$('#testpushbullet-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testpushbullet-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testpushbullet-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_pushover').click(function () {
-        var data = { mode: 'test_pushover', apikey: '$session', output: 'json' };
-	    \$("#pushover").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_pushover').attr("disabled", "disabled");
-                \$('#testpushover-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_pushover').removeAttr("disabled");
-                \$('#testpushover-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testpushover-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testpushover-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_prowl').click(function () {
-        var data = { mode: 'test_prowl', apikey: '$session', output: 'json' };
-	    \$("#prowl").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_prowl').attr("disabled", "disabled");
-                \$('#testprowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_prowl').removeAttr("disabled");
-                \$('#testprowl-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testprowl-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testprowl-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_growl').click(function () {
-        var data = { mode: 'test_growl', apikey: '$session', output: 'json' };
-	    \$("#growl").extractFormDataTo(data);
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: data,
-            beforeSend: function () {
-                \$('#test_growl').attr("disabled", "disabled");
-                \$('#testgrowl-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_growl').removeAttr("disabled");
-                \$('#testgrowl-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testgrowl-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testgrowl-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
-    \$('#test_osd').click(function () {
-        \$.ajax({
-            type: "GET",
-            url: "../../tapi",
-            data: {mode: 'test_osd', apikey: '$session', output: 'json' },
-            beforeSend: function () {
-                \$('#test_osd').attr("disabled", "disabled");
-                \$('#testosd-result').removeClass("success failure").addClass("loading").html('$T('post-Verifying')');
-            },
-            complete: function () {
-                \$('#test_osdl').removeAttr("disabled");
-                \$('#testosd-result').removeClass("loading");
-            },
-            success: function (data) {
-                if (data.status == true) {
-                  \$('#testosd-result').addClass("success").html('$T('smpl-notesent')');
-                } else {
-                  \$('#testosd-result').addClass("failure").html(data.error);
-                }
-            }
-        });
-    });
+        })
+    }
+    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_growl, #test_osd, #test_nscript').click(function () {
+        testNotification(this)
+    })
 });
 </script>
 

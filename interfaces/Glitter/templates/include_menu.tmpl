@@ -5,11 +5,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a href="./">
-            <img src="./static/images/logo.png" width="120" height="45" alt="" id="navbar-logo-big" />
-            <img src="./static/images/logo-small.png" width="45" height="45" alt="" id="navbar-logo-small" />
+        <a class="navbar-logo" href="./">
+            #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
         </a>
-
         <div class="btn-group">
             <div class="btn-group">
                 <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
@@ -91,13 +89,14 @@
                 </a>
                 <ul class="dropdown-menu menu-options">
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
-                    <!--#if $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
+                    <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
+                    <!--#if $have_logout#--><li><a href="./login/?logout=1"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
                     <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
                     <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="./shutdown/?session=$session" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                    <li><a href="./shutdown/?session=$session&amp;pid=$pid" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                     <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>

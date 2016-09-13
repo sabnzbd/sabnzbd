@@ -7,7 +7,7 @@ preferring a newer idiom, sometimes an older one, and sometimes a custom one.
 In particular, Python 2 uses str and '' for byte strings, while Python 3
 uses str and '' for unicode strings. We will call each of these the 'native
 string' type for each version. Because of this major difference, this module
-provides new 'bytestr', 'unicodestr', and 'nativestr' attributes, as well as
+provides
 two functions: 'ntob', which translates native strings (of type 'str') into
 byte strings regardless of Python version, and 'ntou', which translates native
 strings to unicode strings. This also provides a 'BytesIO' name for dealing
@@ -20,11 +20,9 @@ import re
 import sys
 import threading
 
-if sys.version_info >= (3, 0):
-    py3k = True
-    bytestr = bytes
-    unicodestr = str
-    nativestr = unicodestr
+import six
+
+if six.PY3:
     basestring = (bytes, str)
 
     def ntob(n, encoding='ISO-8859-1'):
@@ -49,16 +47,8 @@ if sys.version_info >= (3, 0):
         if isinstance(n, bytes):
             return n.decode(encoding)
         return n
-    # type("")
-    from io import StringIO
-    # bytes:
-    from io import BytesIO as BytesIO
 else:
     # Python 2
-    py3k = False
-    bytestr = str
-    unicodestr = unicode
-    nativestr = bytestr
     basestring = basestring
 
     def ntob(n, encoding='ISO-8859-1'):
@@ -96,24 +86,11 @@ else:
         if isinstance(n, unicode):
             return n.encode(encoding)
         return n
-    try:
-        # type("")
-        from cStringIO import StringIO
-    except ImportError:
-        # type("")
-        from StringIO import StringIO
-    # bytes:
-    BytesIO = StringIO
 
 
 def assert_native(n):
-    if not isinstance(n, nativestr):
+    if not isinstance(n, str):
         raise TypeError("n must be a native str (got %s)" % type(n).__name__)
-
-try:
-    set = set
-except NameError:
-    from sets import Set as set
 
 try:
     # Python 3.1+
@@ -127,27 +104,16 @@ except ImportError:
 
 def base64_decode(n, encoding='ISO-8859-1'):
     """Return the native string base64-decoded (as a native string)."""
-    if isinstance(n, unicodestr):
+    if isinstance(n, six.text_type):
         b = n.encode(encoding)
     else:
         b = n
     b = _base64_decodebytes(b)
-    if nativestr is unicodestr:
+    if str is six.text_type:
         return b.decode(encoding)
     else:
         return b
 
-try:
-    # Python 2.5+
-    from hashlib import md5
-except ImportError:
-    from md5 import new as md5
-
-try:
-    # Python 2.5+
-    from hashlib import sha1 as sha
-except ImportError:
-    from sha import new as sha
 
 try:
     sorted = sorted
@@ -237,7 +203,7 @@ except ImportError:
     from http.server import BaseHTTPRequestHandler
 
 # Some platforms don't expose HTTPSConnection, so handle it separately
-if py3k:
+if six.PY3:
     try:
         from http.client import HTTPSConnection
     except ImportError:
@@ -316,7 +282,7 @@ except ImportError:
         def _json_encode(s):
             raise ValueError('No JSON library is available')
 finally:
-    if json and py3k:
+    if json and six.PY3:
         # The two Python 3 implementations (simplejson/json)
         # outputs str. We need bytes.
         def json_encode(value):
@@ -333,18 +299,10 @@ except ImportError:
     # In Python 3, pickle is the sped-up C version.
     import pickle
 
-try:
-    os.urandom(20)
-    import binascii
+import binascii
 
-    def random20():
-        return binascii.hexlify(os.urandom(20)).decode('ascii')
-except (AttributeError, NotImplementedError):
-    import random
-    # os.urandom not available until Python 2.4. Fall back to random.random.
-
-    def random20():
-        return sha('%s' % random.random()).hexdigest()
+def random20():
+    return binascii.hexlify(os.urandom(20)).decode('ascii')
 
 try:
     from _thread import get_ident as get_thread_ident

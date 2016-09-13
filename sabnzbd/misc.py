@@ -624,13 +624,13 @@ def check_latest_version():
     if testver and current < latest:
         # This is a test version, but user has't seen the
         # "Final" of this one yet, so show the Final
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
+        sabnzbd.NEW_VERSION = (latest_label, url)
     elif current < latest:
         # This one is behind, show latest final
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_label, url)
+        sabnzbd.NEW_VERSION = (latest_label, url)
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
-        sabnzbd.NEW_VERSION = '%s;%s' % (latest_testlabel, url_beta)
+        sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
 
 
 def from_units(val):
@@ -1138,14 +1138,14 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     # Create the CA Certificate
-    cakey = createKeyPair(TYPE_RSA, 1024)
-    careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    cakey = createKeyPair(TYPE_RSA, 2048)
+    careq = createCertRequest(cakey, digest='sha256', CN='Certificate Authority')
+    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
 
     cname = 'SABnzbd'
-    pkey = createKeyPair(TYPE_RSA, 1024)
-    req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    pkey = createKeyPair(TYPE_RSA, 2048)
+    req = createCertRequest(pkey, digest='sha256', CN=cname)
+    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
 
     # Save the key and certificate to disk
     try:
@@ -1399,7 +1399,7 @@ def short_path(path, always=True):
 
 
 def clip_path(path):
-    """ Remove \\?\ or \\?\UNC\ prefix from Windows path """
+    r""" Remove \\?\ or \\?\UNC\ prefix from Windows path """
     if sabnzbd.WIN32 and path and '?' in path:
         path = path.replace(u'\\\\?\\UNC\\', u'\\\\').replace(u'\\\\?\\', u'')
     return path

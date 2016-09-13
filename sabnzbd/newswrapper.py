@@ -131,7 +131,7 @@ def GetServerParms(host, port):
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
-    assert isinstance(nntp, NNTP)
+    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
     try:
         sock.connect((host, port))
         sock.setblocking(0)
@@ -185,7 +185,7 @@ def probablyipv6(ip):
 class NNTP(object):
 
     def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
-        assert isinstance(nw, NewsWrapper)
+        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
         self.host = host
         self.port = port
         self.nw = nw
@@ -396,6 +396,11 @@ class NewsWrapper(object):
             new_lines = self.data.split('\n')
 
         self.data = new_lines.pop()
+
+        # Already remove the starting dots
+        for i in xrange(len(new_lines)):
+            if new_lines[i][:2] == '..':
+                new_lines[i] = new_lines[i][1:]
         self.lines.extend(new_lines)
 
         if self.lines and self.lines[-1] == '.':

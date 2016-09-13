@@ -45,7 +45,7 @@ class TryList:
     @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
         """ Return whether specified server has been tried """
-        return (server in self.__try_list)
+        return server in self.__try_list
 
     @synchronized(TRYLIST_LOCK)
     def add_to_try_list(self, server):
@@ -54,14 +54,6 @@ class TryList:
             if sabnzbd.LOG_ALL:
                 logging.debug("Appending %s to %s.__try_list", server, self)
             self.__try_list.append(server)
-
-    @synchronized(TRYLIST_LOCK)
-    def remove_from_try_list(self, server):
-        """ Server is no longer listed as tried """
-        if server in self.__try_list:
-            if sabnzbd.LOG_ALL:
-                logging.debug("Removing %s from %s.__try_list", server, self)
-            self.__try_list.remove(server)
 
     @synchronized(TRYLIST_LOCK)
     def reset_try_list(self):

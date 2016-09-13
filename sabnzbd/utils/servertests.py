@@ -21,11 +21,11 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 
 import socket
 import sys
+import select
 
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
-from sabnzbd.encoding import xml_name
 from sabnzbd.misc import int_conv
 
 
@@ -41,7 +41,7 @@ def test_nntp_server_dict(kwargs):
     if not connections:
         return False, T('There are no connections set. Please set at least one connection.')
     ssl = int_conv(kwargs.get('ssl', 0))
-    ssl_type = kwargs.get('ssl_type', 't1')
+    ssl_type = kwargs.get('ssl_type')
     port = int_conv(kwargs.get('port', 0))
     if not port:
         if ssl:
@@ -53,7 +53,7 @@ def test_nntp_server_dict(kwargs):
                         password=password, ssl=ssl, ssl_type=ssl_type)
 
 
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type='t1'):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type=None):
     """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
     if '*' in password and not password.strip('*'):
@@ -84,6 +84,10 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.lines = []
             nw.recv_chunk(block=True)
+            #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
+            read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
+            if read_sockets:
+                nw.recv_chunk(block=True)
             nw.finish_connect(nw.lines[0][:3])
 
     except socket.timeout, e:

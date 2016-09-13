@@ -111,3 +111,54 @@ msgstr "Time left"
 #: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
 msgid "Optionally specify a filename"
 msgstr "Optionally specify a name"
+
+#: sabnzbd/skintext.py:819 # sabnzbd/skintext.py:880
+msgid "Confirm Queue Deletions"
+msgstr "Confirm queue deletions"
+
+#: sabnzbd/skintext.py:820 # sabnzbd/skintext.py:881
+msgid "Confirm History Deletions"
+msgstr "Confirm history deletions"
+
+#: sabnzbd/skintext.py:288 [Do not translate Pystone]
+msgid "System Performance (Pystone)"
+msgstr "System performance (Pystone)"
+
+#: sabnzbd/skintext.py:317 # sabnzbd/skintext.py:779
+msgid "Web Interface"
+msgstr "Web interface"
+
+#: sabnzbd/notifier.py
+msgid "Script returned exit code %s and output \"%s\""
+msgstr "Notification script returned exit code %s and output \"%s\""
+
+#: sabnzbd/skintext.py:390
+msgid "Post-Processing Scripts Folder"
+msgstr "Scripts Folder"
+
+#: sabnzbd/skintext.py:391
+msgid "Folder containing user scripts for post-processing."
+msgstr "Folder containing user scripts."
+
+#: sabnzbd/skintext.py:520
+msgid "Enable OZnzb Integration"
+msgstr "Enable Indexer Integration"
+
+#: sabnzbd/skintext.py:521
+msgid ""
+"Enhanced functionality including ratings and extra status information is "
+"available when connected to OZnzb indexer."
+msgstr ""
+"Indexers can supply information when a job is added <strong>or</strong> "
+"using the settings below to provide ratings and extra status information. "
+"<br>The Server address and API key settings can be left blank, depending on your indexer. "
+
+#: sabnzbd/skintext.py:523
+msgid ""
+"This key provides identity to indexer. Refer to "
+"https://www.oznzb.com/profile."
+msgstr ""
+"This key provides identity to indexer. Check "
+"your profile on the indexer's website."
+
+

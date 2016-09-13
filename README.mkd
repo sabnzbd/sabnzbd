@@ -1,59 +1,50 @@
-Release Notes  -  SABnzbd 1.0.3
+Release Notes  -  SABnzbd 1.1.0
 ===============================
 
-## Bugfixes in 1.0.3
-- Fix jobs hanging at 99% or 100%
-- Support X-DNZB-PASSWORD header for inders that use this
-- Prevent fatal "too many connections" issue
-- Show checksum errors reported by unrar
-- Windows: fix coupling of NZB files to SABnzbd, when the name contains non-US-ASCII characters
+## What's new in 1.1.0
+- Login via HTML-form instead of basic authentication
+- Glitter now offers Compact and Tabbed layouts (similar to old Classic skin)
+- Notification scripts for custom notification services
+- Enable upload of multiple NZBs from the UI
+- Performance improvements of download process
+- Added delayed download feature (for when your Usenet is behind the indexers)
+- Repair blocks are added prospectively during download when needed (reducing extra par2 verification runs)
+- Prevent action of password managers on Server page
+- Faster initial connections to servers with multiple IP-addresses (HappyEyeBalls)
+- Support of more Rating headers (for indexers that support it)
+- Glitter shows progress notifications for larger operations
+- Log files are now anonymized automatically, for easier posting on public websites
+- Added censored INI file to log download
+- Can now download zipped NZB files from indexer
 
-## Bugfixes in 1.0.2
-- Fix hangups at 100% when QuickCheck is off and "all-pars" is on
-- Fix handling of "too many connections" for some Usenet servers
+
+## Changes:
+- New SABnzbd logo
+- Job password is now a separate field and not included in the job-title anymore
+- Move some seldom used options to Special
+- Now requires Python 2.7 (2.6 no longer supported)
+- If filename occurs twice in NZB, only larger file is added
+- Display days when ETA is above 24h
+- API information now uses day/hour/min/sec notation when ETA above 24h
+- Bump self-signed certificate to sha256 (only for newly created)
 
 
-## What's new in 1.0.1
-- Prevent creating orphan items in "incomplete" when deleting downloading jobs.
-- Forced item with missing articles caused overflow into paused jobs
-- Do QuickCheck even on files that would be removed by the Cleanup-list (problematic for RAR files).
-- Fix "Download all par2 files" behavior
-- Treat ambiguous numeric values as number of minutes for custom pause time.
-- Accept MIME records that have only LF line endings (error in some third-party utilities)
-- Fix PushOver support.
-- Fix breaking Glitter bug with large script_log
-- Fix issues with deleting jobs via the API
-- Fix issue where Sonarr could not read using the History-API
-- Increase default cache to 450M
-- The pre-queue script can now return an accept value of 2, meaning immediate failure. (Useful for Sonarr.)
-- Add start script for portable Windows installations
+## Bug fixes
+- Fix errors when saving job files to disk
+- Prevent "lock" errors in the History database
+- Restore support for multi-volume 7zip files
+- Restore scanning for passwords after NZB name edit
+- Fix portable.cmd
+- Fix for stalling download at 99% (when using prospective downloading)
+- Fix problem with deleting files in NZB details view
+- Prevent old shutdown-page from stopping a new SABnzbd instance
+- Prevent watched folder scan crash on invalid file names
+- Fix XSS vulnerability on OSX and Unix**
 
-## What's new in 1.0.0
-- Full Unicode support with Chinese and Russian translations
-- New default UI: Glitter
-- Server priorities instead of primary/backup ==> REVIEW YOUR SERVER SETTINGS!
-- Newsserver IPv6 load balancing aka Happy Eyeballs / RFC 6555
-- Duplicate detection for series
-- More filters in RSS
-- 7zip support
-- Option to save repair time by downloading all par2 files
-- Support for long paths in Windows (above 260)
-- Improved security for external access
-- Lots of small improvements and bug fixes
-- Redesign of notifications classes
-- More notification services supported
-- Diagnostic dashboard tab for "Status" page
-- Bonjour/ZeroConfig support
 
-## Remarks
-- SABnzbd's webserver now doesn't listen to IPv6 addresses by default.
-  - Use Config->Special->ipv6_hosting if you want this enabled.
-  - "localhost" will be replaced with "127.0.0.1", check any browser bookmark and third-party tool
-- Classic skin has been removed
-- Support extra parameters for par2 on other platforms than Windows
-- Option to verify HTTPS connections (default off)
-- Auto-negotiates best Usenet ssl protocol (override possible)
-- When upgrading from 0.7.x, a backup server will get priority 1
+** The XSS vulnerability was discovered by Han Sahin from Securify BV.
+Thank you, Han.
+
 
 
 ## About
@@ -66,8 +57,8 @@ Release Notes  -  SABnzbd 1.0.3
   (c) Copyright 2007-2016 by "The SABnzbd-team" \<team@sabnzbd.org\>
 
 
-### IMPORTANT INFORMATION about release 1.0.0
-<http://wiki.sabnzbd.org/introducing-1-0-0>
+### IMPORTANT INFORMATION about release 1.0.0+
+<https://sabnzbd.org/wiki/introducing-1-0>
 
 ### Known problems and solutions
 - Read the file "ISSUES.txt"

@@ -520,7 +520,25 @@ class Entity(object):
             self.file.seek(0)
         else:
             value = self.value
+        value = self.decode_entity(value)
         return value
+
+    def decode_entity(self , value):
+        """Return a given byte encoded value as a string"""
+        for charset in self.attempt_charsets:
+            try:
+                value = value.decode(charset)
+            except UnicodeDecodeError:
+                pass
+            else:
+                self.charset = charset
+                return value
+        else:
+            raise cherrypy.HTTPError(
+                400,
+                "The request entity could not be decoded. The following "
+                "charsets were attempted: %s" % repr(self.attempt_charsets)
+            )
 
     def process(self):
         """Execute the best-match processor for the given media type."""
@@ -683,20 +701,7 @@ class Part(Entity):
 
         if fp_out is None:
             result = ntob('').join(lines)
-            for charset in self.attempt_charsets:
-                try:
-                    result = result.decode(charset)
-                except UnicodeDecodeError:
-                    pass
-                else:
-                    self.charset = charset
-                    return result
-            else:
-                raise cherrypy.HTTPError(
-                    400,
-                    "The request entity could not be decoded. The following "
-                    "charsets were attempted: %s" % repr(self.attempt_charsets)
-                )
+            return result
         else:
             fp_out.seek(0)
             return fp_out
@@ -940,7 +945,7 @@ class RequestBody(Entity):
 
     # Don't parse the request body at all if the client didn't provide
     # a Content-Type header. See
-    # https://bitbucket.org/cherrypy/cherrypy/issue/790
+    # https://github.com/cherrypy/cherrypy/issues/790
     default_content_type = ''
     """This defines a default ``Content-Type`` to use if no Content-Type header
     is given. The empty string is used for RequestBody, which results in the

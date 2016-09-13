@@ -1,8 +1,9 @@
 ko.bindingHandlers.truncatedText = {
     update: function(element, valueAccessor, allBindingsAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor()),
-            length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
-            truncatedValue = value.length > length ? value.substring(0, Math.min(value.length, length)) + "&hellip;" : value;
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        if (!value) return
+        var length = ko.utils.unwrapObservable(allBindingsAccessor().length) || ko.bindingHandlers.truncatedText.defaultLength,
+            truncatedValue = value.length > length ? convertHTMLtoText(value.substring(0, Math.min(value.length, length))) + "&hellip;" : convertHTMLtoText(value);
         ko.bindingHandlers.html.update(element, function() {
             return truncatedValue;
         });
@@ -12,14 +13,15 @@ ko.bindingHandlers.truncatedText = {
 ko.bindingHandlers.truncatedTextCenter = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor())
+        if (!value) return
         var maxLength = 60;
         if(value.length > maxLength) {
             var charsToShow = maxLength - 3,
                 frontChars = Math.ceil(charsToShow/2),
                 backChars = Math.floor(charsToShow/2);
-            var truncatedValue = value.substr(0, frontChars) + '&hellip;' +  value.substr(value.length - backChars);
+            var truncatedValue = convertHTMLtoText(value.substr(0, frontChars)) + '&hellip;' +  convertHTMLtoText(value.substr(value.length - backChars));
         } else {
-            var truncatedValue = value;
+            var truncatedValue = convertHTMLtoText(value);
         }
         ko.bindingHandlers.html.update(element, function() {
             return truncatedValue;
@@ -30,11 +32,17 @@ ko.bindingHandlers.longText = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         // Input is an array
         var value = ko.utils.unwrapObservable(valueAccessor())
-        var outputText = '';
+
+        // Convert HTML entities for all but the Script (because of the (more)-link)
+        if(allBindingsAccessor.get('longTextType') != "Script") {
+            value = value.map(convertHTMLtoText)
+        }
+        
         // Any <br>'s?
+        var outputText = '';
         if(value.length > 4) {
             // Inital 3, then the button, then the closing
-            outputText += value.pop() + '<br />' + value.pop() + '<br />' + value.pop() + ' ';
+            outputText += value.shift() + '<br />' + value.shift() + '<br />' + value.shift() + ' ';
             outputText += '<a href="#" class="history-status-more">(' + glitterTranslate.moreText + ')</a><br />';
             outputText += '<span class="history-status-hidden">';
             outputText += value.join('<br />');
@@ -48,6 +56,7 @@ ko.bindingHandlers.longText = {
         });
     }
 };
+// Adapted for SABnzbd usage
 ko.bindingHandlers.filedrop = {
     init: function(element, valueAccessor) {
         var options = $.extend({}, {
@@ -89,10 +98,9 @@ ko.bindingHandlers.filedrop = {
             e.preventDefault();
             if(options.overlaySelector)
                 $(options.overlaySelector).hide();
-            if(typeof options.onFileDrop === "function")
-                $.each(e.originalEvent.dataTransfer.files, function() {
-                    options.onFileDrop(this);
-                });
+            if(typeof options.onFileDrop === "function") {
+                options.onFileDrop(e.originalEvent.dataTransfer.files)
+            }
         });
     }
 };

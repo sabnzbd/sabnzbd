@@ -12,22 +12,22 @@ Public errors:	SMTPSSLException
 #
 # Copyright (c) 2007 M Butcher
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy 
-# of this software and associated documentation files (the "Software"), to deal 
-# in the Software without restriction, including without limitation the rights 
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-# copies of the Software, and to permit persons to whom the Software is 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in 
+# The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 ##
 ##End License
@@ -43,7 +43,7 @@ SSMTP_PORT = 465
 
 class SMTPSSLException(smtplib.SMTPException):
 	"""Base class for exceptions resulting from SSL negotiation."""
-	
+
 class SMTP_SSL (smtplib.SMTP):
 	"""This class provides SSL access to an SMTP server.
 	SMTP over SSL typical listens on port 465. Unlike StartTLS, SMTP over SSL
@@ -52,7 +52,7 @@ class SMTP_SSL (smtplib.SMTP):
 
 	This class is a simple subclass of the smtplib.SMTP class that comes with
 	Python. It overrides the connect() method to use an SSL socket, and it
-	overrides the starttles() function to throw an error (you can't do 
+	overrides the starttles() function to throw an error (you can't do
 	starttls within an SSL session).
 	"""
 	certfile = None
@@ -66,7 +66,7 @@ class SMTP_SSL (smtplib.SMTP):
 		which this object will connect. `local_hostname' is the name of the
 		localhost. By default, the value of socket.getfqdn() is used.
 
-		An SMTPConnectError is raised if the SMTP host does not respond 
+		An SMTPConnectError is raised if the SMTP host does not respond
 		correctly.
 
 		An SMTPSSLError is raised if SSL negotiation fails.
@@ -84,16 +84,16 @@ class SMTP_SSL (smtplib.SMTP):
 		`host' is localhost by default. Port will be set to 465 (the default
 		SSL SMTP port) if no port is specified.
 
-		If the host name ends with a colon (`:') followed by a number, 
+		If the host name ends with a colon (`:') followed by a number,
 		that suffix will be stripped off and the
-		number interpreted as the port number to use. This will override the 
+		number interpreted as the port number to use. This will override the
 		`port' parameter.
 
 		Note: This method is automatically invoked by __init__, if a host is
 		specified during instantiation.
 		"""
-		# MB: Most of this (Except for the socket connection code) is from 
-		# the SMTP.connect() method. I changed only the bare minimum for the 
+		# MB: Most of this (Except for the socket connection code) is from
+		# the SMTP.connect() method. I changed only the bare minimum for the
 		# sake of compatibility.
 		if not port and (host.find(':') == host.rfind(':')):
 			i = host.rfind(':')
@@ -115,7 +115,7 @@ class SMTP_SSL (smtplib.SMTP):
 				# MB: Make the SSL connection.
 				sslobj = socket.ssl(self.sock, self.keyfile, self.certfile)
 			except socket.error, msg:
-				if self.debuglevel > 0: 
+				if self.debuglevel > 0:
 					print>>stderr, 'connect fail:', (host, port)
 				if self.sock:
 					self.sock.close()
@@ -152,7 +152,7 @@ class SMTP_SSL (smtplib.SMTP):
 		self.certfile = certfile
 
 	def starttls(self, keyfile = None, certfile = None):
-		"""Raises an exception. 
+		"""Raises an exception.
 		You cannot do StartTLS inside of an ssl session. Calling starttls() will
 		return an SMTPSSLException"""
 		raise SMTPSSLException, "Cannot perform StartTLS within SSL session."

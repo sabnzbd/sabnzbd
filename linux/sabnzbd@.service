@@ -12,16 +12,15 @@
 
 [Unit]
 Description=SABnzbd binary newsreader
+Documentation=https://sabnzbd.org/wiki/
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 ExecStart=/opt/sabnzbd/SABnzbd.py --logging 1 --browser 0
 User=%I
-Group=%I
-Type = simple
-Restart = on-failure
-
+Type=simple
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

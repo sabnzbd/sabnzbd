@@ -1,5 +1,5 @@
 <!--#set global $pane="RSS"#-->
-<!--#set global $help_uri="configure-rss-1-0"#-->
+<!--#set global $help_uri="configuration/1.1/rss"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
@@ -520,6 +520,7 @@ function urlencode(str) {
 
     \$('.testFeed').click(function(){
         var whichFeed = \$(this).attr("rel");
+        \$(this).attr('disabled', true)
         \$.ajax({
             type: "POST",
             url: "test_rss_feed",
