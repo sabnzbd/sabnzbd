@@ -17,9 +17,9 @@ except ImportError:
 
 class LockError(Exception):
 
-    "Could not obtain a lock"
+    'Could not obtain a lock'
 
-    msg = "Unable to lock %r"
+    msg = 'Unable to lock %r'
 
     def __init__(self, path):
         super(LockError, self).__init__(self.msg % path)
@@ -27,9 +27,9 @@ class LockError(Exception):
 
 class UnlockError(LockError):
 
-    "Could not release a lock"
+    'Could not release a lock'
 
-    msg = "Unable to unlock %r"
+    msg = 'Unable to unlock %r'
 
 
 # first, a default, naive locking implementation
@@ -82,7 +82,7 @@ class SystemLockFile(object):
             del self.fp
             raise
 
-        self.fp.write(" %s\n" % os.getpid())
+        self.fp.write(' %s\n' % os.getpid())
         self.fp.truncate()
         self.fp.flush()
 
@@ -101,11 +101,6 @@ class SystemLockFile(object):
             os.remove(self.path)
         except:
             pass
-
-    #@abc.abstract_method
-    # def _lock_file(self):
-    #    """Attempt to obtain the lock on self.fp. Raise LockError if not
-    #    acquired."""
 
     def _unlock_file(self):
         """Attempt to obtain the lock on self.fp. Raise UnlockError if not

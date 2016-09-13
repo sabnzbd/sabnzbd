@@ -46,22 +46,22 @@ class Application(object):
 
     relative_urls = False
 
-    def __init__(self, root, script_name="", config=None):
+    def __init__(self, root, script_name='', config=None):
         self.log = _cplogging.LogManager(id(self), cherrypy.log.logger_root)
         self.root = root
         self.script_name = script_name
         self.wsgiapp = _cpwsgi.CPWSGIApp(self)
 
         self.namespaces = self.namespaces.copy()
-        self.namespaces["log"] = lambda k, v: setattr(self.log, k, v)
-        self.namespaces["wsgi"] = self.wsgiapp.namespace_handler
+        self.namespaces['log'] = lambda k, v: setattr(self.log, k, v)
+        self.namespaces['wsgi'] = self.wsgiapp.namespace_handler
 
         self.config = self.__class__.config.copy()
         if config:
             self.merge(config)
 
     def __repr__(self):
-        return "%s.%s(%r, %r)" % (self.__module__, self.__class__.__name__,
+        return '%s.%s(%r, %r)' % (self.__module__, self.__class__.__name__,
                                   self.root, self.script_name)
 
     script_name_doc = """The URI "mount point" for this app. A mount point
@@ -86,11 +86,11 @@ class Application(object):
 
         # A `_script_name` with a value of None signals that the script name
         # should be pulled from WSGI environ.
-        return cherrypy.serving.request.wsgi_environ['SCRIPT_NAME'].rstrip("/")
+        return cherrypy.serving.request.wsgi_environ['SCRIPT_NAME'].rstrip('/')
 
     def _set_script_name(self, value):
         if value:
-            value = value.rstrip("/")
+            value = value.rstrip('/')
         self._script_name = value
     script_name = property(fget=_get_script_name, fset=_set_script_name,
                            doc=script_name_doc)
@@ -100,22 +100,22 @@ class Application(object):
         _cpconfig.merge(self.config, config)
 
         # Handle namespaces specified in config.
-        self.namespaces(self.config.get("/", {}))
+        self.namespaces(self.config.get('/', {}))
 
     def find_config(self, path, key, default=None):
         """Return the most-specific value for key along path, or default."""
-        trail = path or "/"
+        trail = path or '/'
         while trail:
             nodeconf = self.config.get(trail, {})
 
             if key in nodeconf:
                 return nodeconf[key]
 
-            lastslash = trail.rfind("/")
+            lastslash = trail.rfind('/')
             if lastslash == -1:
                 break
-            elif lastslash == 0 and trail != "/":
-                trail = "/"
+            elif lastslash == 0 and trail != '/':
+                trail = '/'
             else:
                 trail = trail[:lastslash]
 
@@ -172,7 +172,7 @@ class Tree(object):
     def __init__(self):
         self.apps = {}
 
-    def mount(self, root, script_name="", config=None):
+    def mount(self, root, script_name='', config=None):
         """Mount a new app from a root object, script_name, and config.
 
         root
@@ -197,29 +197,29 @@ class Tree(object):
         if script_name is None:
             raise TypeError(
                 "The 'script_name' argument may not be None. Application "
-                "objects may, however, possess a script_name of None (in "
-                "order to inpect the WSGI environ for SCRIPT_NAME upon each "
-                "request). You cannot mount such Applications on this Tree; "
-                "you must pass them to a WSGI server interface directly.")
+                'objects may, however, possess a script_name of None (in '
+                'order to inpect the WSGI environ for SCRIPT_NAME upon each '
+                'request). You cannot mount such Applications on this Tree; '
+                'you must pass them to a WSGI server interface directly.')
 
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
-        script_name = script_name.rstrip("/")
+        script_name = script_name.rstrip('/')
 
         if isinstance(root, Application):
             app = root
-            if script_name != "" and script_name != app.script_name:
+            if script_name != '' and script_name != app.script_name:
                 raise ValueError(
-                    "Cannot specify a different script name and pass an "
-                    "Application instance to cherrypy.mount")
+                    'Cannot specify a different script name and pass an '
+                    'Application instance to cherrypy.mount')
             script_name = app.script_name
         else:
             app = Application(root, script_name)
 
             # If mounted at "", add favicon.ico
-            if (script_name == "" and root is not None
-                    and not hasattr(root, "favicon_ico")):
+            if (script_name == '' and root is not None
+                    and not hasattr(root, 'favicon_ico')):
                 favicon = os.path.join(os.getcwd(), os.path.dirname(__file__),
-                                       "favicon.ico")
+                                       'favicon.ico')
                 root.favicon_ico = tools.staticfile.handler(favicon)
 
         if config:
@@ -229,10 +229,10 @@ class Tree(object):
 
         return app
 
-    def graft(self, wsgi_callable, script_name=""):
+    def graft(self, wsgi_callable, script_name=''):
         """Mount a wsgi callable at the given script_name."""
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
-        script_name = script_name.rstrip("/")
+        script_name = script_name.rstrip('/')
         self.apps[script_name] = wsgi_callable
 
     def script_name(self, path=None):
@@ -252,11 +252,11 @@ class Tree(object):
             if path in self.apps:
                 return path
 
-            if path == "":
+            if path == '':
                 return None
 
             # Move one node up the tree and try again.
-            path = path[:path.rfind("/")]
+            path = path[:path.rfind('/')]
 
     def __call__(self, environ, start_response):
         # If you're calling this, then you're probably setting SCRIPT_NAME
@@ -267,7 +267,7 @@ class Tree(object):
             env1x = _cpwsgi.downgrade_wsgi_ux_to_1x(environ)
         path = httputil.urljoin(env1x.get('SCRIPT_NAME', ''),
                                 env1x.get('PATH_INFO', ''))
-        sn = self.script_name(path or "/")
+        sn = self.script_name(path or '/')
         if sn is None:
             start_response('404 Not Found', [])
             return []
@@ -280,8 +280,8 @@ class Tree(object):
             # Python 2/WSGI u.0: all strings MUST be of type unicode
             enc = environ[ntou('wsgi.url_encoding')]
             environ[ntou('SCRIPT_NAME')] = sn.decode(enc)
-            environ[ntou('PATH_INFO')] = path[len(sn.rstrip("/")):].decode(enc)
+            environ[ntou('PATH_INFO')] = path[len(sn.rstrip('/')):].decode(enc)
         else:
             environ['SCRIPT_NAME'] = sn
-            environ['PATH_INFO'] = path[len(sn.rstrip("/")):]
+            environ['PATH_INFO'] = path[len(sn.rstrip('/')):]
         return app(environ, start_response)

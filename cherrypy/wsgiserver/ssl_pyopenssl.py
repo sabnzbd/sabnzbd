@@ -43,7 +43,7 @@ except ImportError:
     SSL = None
 
 
-class SSL_fileobject(wsgiserver.CP_fileobject):
+class SSL_fileobject(wsgiserver.CP_makefile):
 
     """SSL file object attached to a socket object."""
 
@@ -70,15 +70,15 @@ class SSL_fileobject(wsgiserver.CP_fileobject):
                 time.sleep(self.ssl_retry)
             except SSL.SysCallError as e:
                 if is_reader and e.args == (-1, 'Unexpected EOF'):
-                    return ""
+                    return ''
 
                 errnum = e.args[0]
                 if is_reader and errnum in wsgiserver.socket_errors_to_ignore:
-                    return ""
+                    return ''
                 raise socket.error(errnum)
             except SSL.Error as e:
                 if is_reader and e.args == (-1, 'Unexpected EOF'):
-                    return ""
+                    return ''
 
                 thirdarg = None
                 try:
@@ -95,7 +95,7 @@ class SSL_fileobject(wsgiserver.CP_fileobject):
                 raise
 
             if time.time() - start > self.ssl_timeout:
-                raise socket.timeout("timed out")
+                raise socket.timeout('timed out')
 
     def recv(self, size):
         return self._safe_call(True, super(SSL_fileobject, self).recv, size)
@@ -166,7 +166,7 @@ class pyOpenSSLAdapter(wsgiserver.SSLAdapter):
 
     def __init__(self, certificate, private_key, certificate_chain=None):
         if SSL is None:
-            raise ImportError("You must install pyOpenSSL to use HTTPS.")
+            raise ImportError('You must install pyOpenSSL to use HTTPS.')
 
         self.context = None
         self.certificate = certificate
@@ -192,18 +192,14 @@ class pyOpenSSLAdapter(wsgiserver.SSLAdapter):
         c = SSL.Context(SSL.SSLv23_METHOD)
         c.use_privatekey_file(self.private_key)
         if self.certificate_chain:
-            if isinstance(self.certificate_chain, unicode) and self.certificate_chain.encode('cp1252', 'ignore') == self.certificate_chain.encode('cp1252', 'replace'):
-                # Support buggy PyOpenSSL 0.14, which cannot handle Unicode names
-                c.load_verify_locations(self.certificate_chain.encode('cp1252', 'ignore'))
-            else:
-                c.load_verify_locations(self.certificate_chain)
+            c.load_verify_locations(self.certificate_chain)
         c.use_certificate_file(self.certificate)
         return c
 
     def get_environ(self):
         """Return WSGI environ entries to be merged into each request."""
         ssl_environ = {
-            "HTTPS": "on",
+            'HTTPS': 'on',
             # pyOpenSSL doesn't provide access to any of these AFAICT
             # 'SSL_PROTOCOL': 'SSLv2',
             # SSL_CIPHER 	string 	The cipher specification name
@@ -224,8 +220,8 @@ class pyOpenSSLAdapter(wsgiserver.SSLAdapter):
                 #   Validity of server's certificate (end time),
             })
 
-            for prefix, dn in [("I", cert.get_issuer()),
-                               ("S", cert.get_subject())]:
+            for prefix, dn in [('I', cert.get_issuer()),
+                               ('S', cert.get_subject())]:
                 # X509Name objects don't seem to have a way to get the
                 # complete DN string. Use str() and slice it instead,
                 # because str(dn) == "<X509Name object '/C=US/ST=...'>"
@@ -237,9 +233,9 @@ class pyOpenSSLAdapter(wsgiserver.SSLAdapter):
                 # The DN should be of the form: /k1=v1/k2=v2, but we must allow
                 # for any value to contain slashes itself (in a URL).
                 while dnstr:
-                    pos = dnstr.rfind("=")
+                    pos = dnstr.rfind('=')
                     dnstr, value = dnstr[:pos], dnstr[pos + 1:]
-                    pos = dnstr.rfind("/")
+                    pos = dnstr.rfind('/')
                     dnstr, key = dnstr[:pos], dnstr[pos + 1:]
                     if key and value:
                         wsgikey = 'SSL_SERVER_%s_DN_%s' % (prefix, key)

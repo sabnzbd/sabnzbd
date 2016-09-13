@@ -39,7 +39,7 @@ import time
 
 import cherrypy
 from cherrypy.lib import cptools, httputil
-from cherrypy._cpcompat import copyitems, ntob, set_daemon, sorted, Event
+from cherrypy._cpcompat import copyitems, ntob, sorted, Event
 
 
 class Cache(object):
@@ -170,7 +170,7 @@ class MemoryCache(Cache):
         # Run self.expire_cache in a separate daemon thread.
         t = threading.Thread(target=self.expire_cache, name='expire_cache')
         self.expiration_thread = t
-        set_daemon(t, True)
+        t.daemon = True
         t.start()
 
     def clear(self):
@@ -265,7 +265,7 @@ class MemoryCache(Cache):
         self.store.pop(uri, None)
 
 
-def get(invalid_methods=("POST", "PUT", "DELETE"), debug=False, **kwargs):
+def get(invalid_methods=('POST', 'PUT', 'DELETE'), debug=False, **kwargs):
     """Try to obtain cached output. If fresh enough, raise HTTPError(304).
 
     If POST, PUT, or DELETE:
@@ -291,9 +291,9 @@ def get(invalid_methods=("POST", "PUT", "DELETE"), debug=False, **kwargs):
     request = cherrypy.serving.request
     response = cherrypy.serving.response
 
-    if not hasattr(cherrypy, "_cache"):
+    if not hasattr(cherrypy, '_cache'):
         # Make a process-wide Cache object.
-        cherrypy._cache = kwargs.pop("cache_class", MemoryCache)()
+        cherrypy._cache = kwargs.pop('cache_class', MemoryCache)()
 
         # Take all remaining kwargs and set them on the Cache object.
         for k, v in kwargs.items():
@@ -328,7 +328,7 @@ def get(invalid_methods=("POST", "PUT", "DELETE"), debug=False, **kwargs):
             if directive == 'max-age':
                 if len(atoms) != 1 or not atoms[0].isdigit():
                     raise cherrypy.HTTPError(
-                        400, "Invalid Cache-Control header")
+                        400, 'Invalid Cache-Control header')
                 max_age = int(atoms[0])
                 break
             elif directive == 'no-cache':
@@ -359,7 +359,7 @@ def get(invalid_methods=("POST", "PUT", "DELETE"), debug=False, **kwargs):
             dict.__setitem__(rh, k, dict.__getitem__(h, k))
 
         # Add the required Age header
-        response.headers["Age"] = str(age)
+        response.headers['Age'] = str(age)
 
         try:
             # Note that validate_since depends on a Last-Modified header;
@@ -457,14 +457,14 @@ def expires(secs=0, force=False, debug=False):
             secs = (86400 * secs.days) + secs.seconds
 
         if secs == 0:
-            if force or ("Pragma" not in headers):
-                headers["Pragma"] = "no-cache"
+            if force or ('Pragma' not in headers):
+                headers['Pragma'] = 'no-cache'
             if cherrypy.serving.request.protocol >= (1, 1):
-                if force or "Cache-Control" not in headers:
-                    headers["Cache-Control"] = "no-cache, must-revalidate"
+                if force or 'Cache-Control' not in headers:
+                    headers['Cache-Control'] = 'no-cache, must-revalidate'
             # Set an explicit Expires date in the past.
             expiry = httputil.HTTPDate(1169942400.0)
         else:
             expiry = httputil.HTTPDate(response.time + secs)
-        if force or "Expires" not in headers:
-            headers["Expires"] = expiry
+        if force or 'Expires' not in headers:
+            headers['Expires'] = expiry

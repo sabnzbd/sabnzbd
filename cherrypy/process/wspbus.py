@@ -61,13 +61,20 @@ the new state.::
 """
 
 import atexit
+import ctypes
+import operator
 import os
+import subprocess
 import sys
 import threading
 import time
 import traceback as _traceback
 import warnings
-import operator
+
+import six
+
+from cherrypy._cpcompat import _args_from_interpreter_flags
+
 
 # Here I save the value of os.getcwd(), which, if I am imported early enough,
 # will be the directory from which the startup script was run.  This is needed
@@ -85,9 +92,7 @@ class ChannelFailures(Exception):
     delimiter = '\n'
 
     def __init__(self, *args, **kwargs):
-        # Don't use 'super' here; Exceptions are old-style in Py2.4
-        # See https://github.com/cherrypy/cherrypy/issues/959
-        Exception.__init__(self, *args, **kwargs)
+        super(Exception, self).__init__(*args, **kwargs)
         self._exceptions = list()
 
     def handle_exception(self):
@@ -117,7 +122,7 @@ class _StateEnum(object):
         name = None
 
         def __repr__(self):
-            return "states.%s" % self.name
+            return 'states.%s' % self.name
 
     def __setattr__(self, key, value):
         if isinstance(value, self.State):
@@ -170,9 +175,8 @@ class Bus(object):
 
     def subscribe(self, channel, callback, priority=None):
         """Add the given callback at the given channel (if not present)."""
-        if channel not in self.listeners:
-            self.listeners[channel] = set()
-        self.listeners[channel].add(callback)
+        ch_listeners = self.listeners.setdefault(channel, set())
+        ch_listeners.add(callback)
 
         if priority is None:
             priority = getattr(callback, 'priority', 50)
@@ -215,7 +219,7 @@ class Bus(object):
                     # Assume any further messages to 'log' will fail.
                     pass
                 else:
-                    self.log("Error in %r listener %r" % (channel, listener),
+                    self.log('Error in %r listener %r' % (channel, listener),
                              level=40, traceback=True)
         if exc:
             raise exc
@@ -225,10 +229,10 @@ class Bus(object):
         """An atexit handler which asserts the Bus is not running."""
         if self.state != states.EXITING:
             warnings.warn(
-                "The main thread is exiting, but the Bus is in the %r state; "
-                "shutting it down automatically now. You must either call "
-                "bus.block() after start(), or call bus.exit() before the "
-                "main thread exits." % self.state, RuntimeWarning)
+                'The main thread is exiting, but the Bus is in the %r state; '
+                'shutting it down automatically now. You must either call '
+                'bus.block() after start(), or call bus.exit() before the '
+                'main thread exits.' % self.state, RuntimeWarning)
             self.exit()
 
     def start(self):
@@ -244,7 +248,7 @@ class Bus(object):
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
-            self.log("Shutting down due to error in start listener:",
+            self.log('Shutting down due to error in start listener:',
                      level=40, traceback=True)
             e_info = sys.exc_info()[1]
             try:
@@ -321,7 +325,7 @@ class Bus(object):
         # It's also good to let them all shut down before allowing
         # the main thread to call atexit handlers.
         # See https://github.com/cherrypy/cherrypy/issues/751.
-        self.log("Waiting for child threads to terminate...")
+        self.log('Waiting for child threads to terminate...')
         for t in threading.enumerate():
             # Validate the we're not trying to join the MainThread
             # that will cause a deadlock and the case exist when
@@ -333,13 +337,13 @@ class Bus(object):
                     not isinstance(t, threading._MainThread)
             ):
                 # Note that any dummy (external) threads are always daemonic.
-                if hasattr(threading.Thread, "daemon"):
+                if hasattr(threading.Thread, 'daemon'):
                     # Python 2.6+
                     d = t.daemon
                 else:
                     d = t.isDaemon()
                 if not d:
-                    self.log("Waiting for thread %s." % t.getName())
+                    self.log('Waiting for thread %s.' % t.getName())
                     t.join()
 
         if self.execv:
@@ -376,14 +380,20 @@ class Bus(object):
         This must be called from the main thread, because certain platforms
         (OS X) don't allow execv to be called in a child thread very well.
         """
-        args = sys.argv[:]
+        try:
+            args = self._get_true_argv()
+        except NotImplementedError:
+            """It's probably win32"""
+            args = [sys.executable] + _args_from_interpreter_flags() + sys.argv
+
         self.log('Re-spawning %s' % ' '.join(args))
+
+        self._extend_pythonpath(os.environ)
 
         if sys.platform[:4] == 'java':
             from _systemrestart import SystemRestart
             raise SystemRestart
         else:
-            args.insert(0, sys.executable)
             if sys.platform == 'win32':
                 args = ['"%s"' % arg for arg in args]
 
@@ -391,6 +401,58 @@ class Bus(object):
             if self.max_cloexec_files:
                 self._set_cloexec()
             os.execv(sys.executable, args)
+
+    @staticmethod
+    def _get_true_argv():
+        """Retrieves all real arguments of the python interpreter
+
+        ...even those not listed in ``sys.argv``
+
+        :seealso: http://stackoverflow.com/a/28338254/595220
+        :seealso: http://stackoverflow.com/a/6683222/595220
+        :seealso: http://stackoverflow.com/a/28414807/595220
+        """
+
+        try:
+            char_p = ctypes.c_char_p if six.PY2 else ctypes.c_wchar_p
+
+            argv = ctypes.POINTER(char_p)()
+            argc = ctypes.c_int()
+
+            ctypes.pythonapi.Py_GetArgcArgv(ctypes.byref(argc), ctypes.byref(argv))
+        except AttributeError:
+            """It looks Py_GetArgcArgv is completely absent in MS Windows
+
+            :seealso: https://github.com/cherrypy/cherrypy/issues/1506
+            :ref: https://chromium.googlesource.com/infra/infra/+/69eb0279c12bcede5937ce9298020dd4581e38dd%5E!/
+            """
+            raise NotImplementedError
+        else:
+            return argv[:argc.value]
+
+    @staticmethod
+    def _extend_pythonpath(env):
+        """
+        If sys.path[0] is an empty string, the interpreter was likely
+        invoked with -m and the effective path is about to change on
+        re-exec.  Add the current directory to $PYTHONPATH to ensure
+        that the new process sees the same path.
+
+        This issue cannot be addressed in the general case because
+        Python cannot reliably reconstruct the
+        original command line (http://bugs.python.org/issue14208).
+
+        (This idea filched from tornado.autoreload)
+        """
+        path_prefix = '.' + os.pathsep
+        existing_path = env.get('PYTHONPATH', '')
+        needs_patch = (
+            sys.path[0] == '' and
+            not existing_path.startswith(path_prefix)
+        )
+
+        if needs_patch:
+            env['PYTHONPATH'] = path_prefix + existing_path
 
     def _set_cloexec(self):
         """Set the CLOEXEC flag on all open files (except stdin/out/err).
@@ -437,16 +499,10 @@ class Bus(object):
 
         return t
 
-    def log(self, msg="", level=20, traceback=False):
+    def log(self, msg='', level=20, traceback=False):
         """Log the given message. Append the last traceback if requested."""
         if traceback:
-            # Work-around for bug in Python's traceback implementation
-            # which crashes when the error message contains %1, %2 etc.
-            errors = sys.exc_info()
-            if '%' in errors[1].message:
-                errors[1].message = errors[1].message.replace('%', '#')
-                errors[1].args = [item.replace('%', '#') for item in errors[1].args]
-            msg += "\n" + "".join(_traceback.format_exception(*errors))
+            msg += '\n' + ''.join(_traceback.format_exception(*sys.exc_info()))
         self.publish('log', msg, level)
 
 bus = Bus()

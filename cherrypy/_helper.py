@@ -5,7 +5,7 @@ Helper functions for CP apps
 import six
 
 from cherrypy._cpcompat import urljoin as _urljoin, urlencode as _urlencode
-from cherrypy._cpcompat import basestring
+from cherrypy._cpcompat import text_or_bytes
 
 import cherrypy
 
@@ -17,11 +17,11 @@ def expose(func=None, alias=None):
     def expose_(func):
         func.exposed = True
         if alias is not None:
-            if isinstance(alias, basestring):
-                parents[alias.replace(".", "_")] = func
+            if isinstance(alias, text_or_bytes):
+                parents[alias.replace('.', '_')] = func
             else:
                 for a in alias:
-                    parents[a.replace(".", "_")] = func
+                    parents[a.replace('.', '_')] = func
         return func
 
     import sys
@@ -191,7 +191,7 @@ def popargs(*args, **kwargs):
     return decorated
 
 
-def url(path="", qs="", script_name=None, base=None, relative=None):
+def url(path='', qs='', script_name=None, base=None, relative=None):
     """Create an absolute URL for the given path.
 
     If 'path' starts with a slash ('/'), this will return
@@ -224,7 +224,7 @@ def url(path="", qs="", script_name=None, base=None, relative=None):
         qs = '?' + qs
 
     if cherrypy.request.app:
-        if not path.startswith("/"):
+        if not path.startswith('/'):
             # Append/remove trailing slash from path_info as needed
             # (this is to support mistyped URL's without redirecting;
             # if you want to redirect, use tools.trailing_slash).
@@ -236,7 +236,7 @@ def url(path="", qs="", script_name=None, base=None, relative=None):
                 if pi.endswith('/') and pi != '/':
                     pi = pi[:-1]
 
-            if path == "":
+            if path == '':
                 path = pi
             else:
                 path = _urljoin(pi, path)
@@ -255,7 +255,7 @@ def url(path="", qs="", script_name=None, base=None, relative=None):
         if base is None:
             base = cherrypy.server.base()
 
-        path = (script_name or "") + path
+        path = (script_name or '') + path
         newurl = base + path + qs
 
     if './' in newurl:
@@ -273,7 +273,7 @@ def url(path="", qs="", script_name=None, base=None, relative=None):
     # At this point, we should have a fully-qualified absolute URL.
 
     if relative is None:
-        relative = getattr(cherrypy.request.app, "relative_urls", False)
+        relative = getattr(cherrypy.request.app, 'relative_urls', False)
 
     # See http://www.ietf.org/rfc/rfc2396.txt
     if relative == 'server':

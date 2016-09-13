@@ -132,7 +132,7 @@ except ImportError:
         return ntob('').join(atoms)
 
 import cherrypy
-from cherrypy._cpcompat import basestring, ntob, ntou
+from cherrypy._cpcompat import text_or_bytes, ntob, ntou
 from cherrypy.lib import httputil
 
 
@@ -169,8 +169,8 @@ def process_urlencoded(entity):
             break
     else:
         raise cherrypy.HTTPError(
-            400, "The request entity could not be decoded. The following "
-            "charsets were attempted: %s" % repr(entity.attempt_charsets))
+            400, 'The request entity could not be decoded. The following '
+            'charsets were attempted: %s' % repr(entity.attempt_charsets))
 
     # Now that all values have been successfully parsed and decoded,
     # apply them to the entity.params dict.
@@ -185,7 +185,7 @@ def process_urlencoded(entity):
 
 def process_multipart(entity):
     """Read all multipart parts into entity.parts."""
-    ib = ""
+    ib = ''
     if 'boundary' in entity.content_type.params:
         # http://tools.ietf.org/html/rfc2046#section-5.1.1
         # "The grammar for parameters on the Content-type field is such that it
@@ -193,7 +193,7 @@ def process_multipart(entity):
         # on the Content-type line"
         ib = entity.content_type.params['boundary'].strip('"')
 
-    if not re.match("^[ -~]{0,200}[!-~]$", ib):
+    if not re.match('^[ -~]{0,200}[!-~]$', ib):
         raise ValueError('Invalid boundary in multipart form: %r' % (ib,))
 
     ib = ('--' + ib).encode('ascii')
@@ -428,7 +428,7 @@ class Entity(object):
 
         # Copy the class 'attempt_charsets', prepending any Content-Type
         # charset
-        dec = self.content_type.params.get("charset", None)
+        dec = self.content_type.params.get('charset', None)
         if dec:
             self.attempt_charsets = [dec] + [c for c in self.attempt_charsets
                                              if c != dec]
@@ -469,8 +469,8 @@ class Entity(object):
     # The 'type' attribute is deprecated in 3.2; remove it in 3.3.
     type = property(
         lambda self: self.content_type,
-        doc="A deprecated alias for "
-            ":attr:`content_type<cherrypy._cpreqbody.Entity.content_type>`."
+        doc='A deprecated alias for '
+            ':attr:`content_type<cherrypy._cpreqbody.Entity.content_type>`.'
     )
 
     def read(self, size=None, fp_out=None):
@@ -536,8 +536,8 @@ class Entity(object):
         else:
             raise cherrypy.HTTPError(
                 400,
-                "The request entity could not be decoded. The following "
-                "charsets were attempted: %s" % repr(self.attempt_charsets)
+                'The request entity could not be decoded. The following '
+                'charsets were attempted: %s' % repr(self.attempt_charsets)
             )
 
     def process(self):
@@ -613,40 +613,40 @@ class Part(Entity):
         self.file = None
         self.value = None
 
+    @classmethod
     def from_fp(cls, fp, boundary):
         headers = cls.read_headers(fp)
         return cls(fp, headers, boundary)
-    from_fp = classmethod(from_fp)
 
+    @classmethod
     def read_headers(cls, fp):
         headers = httputil.HeaderMap()
         while True:
             line = fp.readline()
             if not line:
                 # No more data--illegal end of headers
-                raise EOFError("Illegal end of headers.")
+                raise EOFError('Illegal end of headers.')
 
-            if line == ntob('\r\n') or line == ntob('\n'):
+            if line == ntob('\r\n'):
                 # Normal end of headers
                 break
-            if not line.endswith(ntob('\n')):
-                raise ValueError("MIME requires CRLF terminators: %r" % line)
+            if not line.endswith(ntob('\r\n')):
+                raise ValueError('MIME requires CRLF terminators: %r' % line)
 
             if line[0] in ntob(' \t'):
                 # It's a continuation line.
                 v = line.strip().decode('ISO-8859-1')
             else:
-                k, v = line.split(ntob(":"), 1)
+                k, v = line.split(ntob(':'), 1)
                 k = k.strip().decode('ISO-8859-1')
                 v = v.strip().decode('ISO-8859-1')
 
             existing = headers.get(k)
             if existing:
-                v = ", ".join((existing, v))
+                v = ', '.join((existing, v))
             headers[k] = v
 
         return headers
-    read_headers = classmethod(read_headers)
 
     def read_lines_to_boundary(self, fp_out=None):
         """Read bytes from self.fp and return or write them to a file.
@@ -658,16 +658,16 @@ class Part(Entity):
         object that supports the 'write' method; all bytes read will be
         written to the fp, and that fp is returned.
         """
-        endmarker = self.boundary + ntob("--")
-        delim = ntob("")
+        endmarker = self.boundary + ntob('--')
+        delim = ntob('')
         prev_lf = True
         lines = []
         seen = 0
         while True:
             line = self.fp.readline(1 << 16)
             if not line:
-                raise EOFError("Illegal end of multipart body.")
-            if line.startswith(ntob("--")) and prev_lf:
+                raise EOFError('Illegal end of multipart body.')
+            if line.startswith(ntob('--')) and prev_lf:
                 strippedline = line.strip()
                 if strippedline == self.boundary:
                     break
@@ -677,16 +677,16 @@ class Part(Entity):
 
             line = delim + line
 
-            if line.endswith(ntob("\r\n")):
-                delim = ntob("\r\n")
+            if line.endswith(ntob('\r\n')):
+                delim = ntob('\r\n')
                 line = line[:-2]
                 prev_lf = True
-            elif line.endswith(ntob("\n")):
-                delim = ntob("\n")
+            elif line.endswith(ntob('\n')):
+                delim = ntob('\n')
                 line = line[:-1]
                 prev_lf = True
             else:
-                delim = ntob("")
+                delim = ntob('')
                 prev_lf = False
 
             if fp_out is None:
@@ -715,7 +715,7 @@ class Part(Entity):
             self.file = self.read_into_file()
         else:
             result = self.read_lines_to_boundary()
-            if isinstance(result, basestring):
+            if isinstance(result, text_or_bytes):
                 self.value = result
             else:
                 self.file = result
@@ -732,19 +732,7 @@ class Part(Entity):
 
 Entity.part_class = Part
 
-try:
-    inf = float('inf')
-except ValueError:
-    # Python 2.4 and lower
-    class Infinity(object):
-
-        def __cmp__(self, other):
-            return 1
-
-        def __sub__(self, other):
-            return self
-    inf = Infinity()
-
+inf = float('inf')
 
 comma_separated_headers = [
     'Accept', 'Accept-Charset', 'Accept-Encoding',
@@ -839,7 +827,7 @@ class SizedReader:
                 if e.__class__.__name__ == 'MaxSizeExceeded':
                     # Post data is too big
                     raise cherrypy.HTTPError(
-                        413, "Maximum request length: %r" % e.args[1])
+                        413, 'Maximum request length: %r' % e.args[1])
                 else:
                     raise
             if not data:
@@ -915,23 +903,23 @@ class SizedReader:
                         v = line.strip()
                     else:
                         try:
-                            k, v = line.split(ntob(":"), 1)
+                            k, v = line.split(ntob(':'), 1)
                         except ValueError:
-                            raise ValueError("Illegal header line.")
+                            raise ValueError('Illegal header line.')
                         k = k.strip().title()
                         v = v.strip()
 
                     if k in comma_separated_headers:
                         existing = self.trailers.get(envname)
                         if existing:
-                            v = ntob(", ").join((existing, v))
+                            v = ntob(', ').join((existing, v))
                     self.trailers[k] = v
             except Exception:
                 e = sys.exc_info()[1]
                 if e.__class__.__name__ == 'MaxSizeExceeded':
                     # Post data is too big
                     raise cherrypy.HTTPError(
-                        413, "Maximum request length: %r" % e.args[1])
+                        413, 'Maximum request length: %r' % e.args[1])
                 else:
                     raise
 
