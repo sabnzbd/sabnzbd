@@ -1,8 +1,8 @@
 # This file will be patched by setup.py
 # The __version__ should be set to the branch name
-# (e.g. "trunk" or "0.4.x")
+# (e.g. "develop" or "1.2.x")
 
 # You MUST use double quotes (so " and not ')
 
-__version__ = "1.1.x"
+__version__ = "develop"
 __baseline__ = "unknown"
