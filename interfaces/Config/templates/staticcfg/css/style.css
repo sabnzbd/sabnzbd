@@ -234,7 +234,8 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .disabled .clearBtn,
 .disabled .patternKey,
 .disabled .show_qrcode,
-.disabled .generate_key {
+.disabled .generate_key,
+.disabled .generate_cert {
     color: #aaa !important;
 }
 .padTable p {

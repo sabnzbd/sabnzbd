@@ -335,6 +335,7 @@ SKIN_TEXT = {
     'explain-https_port' : TT('If empty, the standard port will only listen to HTTPS.'),
     'opt-https_cert' : TT('HTTPS Certificate'),
     'explain-https_cert' : TT('File name or path to HTTPS Certificate.'),
+    'explain-new-cert': TT('Generate new self-signed certificate and key. Requires SABnzbd restart!'),
     'opt-https_key' : TT('HTTPS Key'),
     'explain-https_key' : TT('File name or path to HTTPS Key.'),
     'opt-https_chain' : TT('HTTPS Chain Certifcates'),
