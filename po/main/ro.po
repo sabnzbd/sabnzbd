@@ -61,7 +61,7 @@ msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Inițializare %s-%s eșuată, renunțare"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Dezactivează HTTPS din cauza lipsei fişierelor CERT şi KEY"
 
@@ -1030,7 +1030,7 @@ msgstr "NZB adăugat în coadă"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificare Necunoscută"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Fişierul %s este gol , ignorăm"
 

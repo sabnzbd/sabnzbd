@@ -125,8 +125,7 @@ class PostProcessor(Thread):
     def remove(self, nzo):
         """ Remove given nzo from the queue """
         try:
-            if nzo in self.history_queue:
-                self.history_queue.remove(nzo)
+            self.history_queue.remove(nzo)
         except:
             pass
         self.save()

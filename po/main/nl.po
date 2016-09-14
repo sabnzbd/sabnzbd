@@ -61,7 +61,7 @@ msgstr "HTTP en HTTPS poort kunnen niet gelijk zijn"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Starten van %s-%s niet gelukt, stoppen"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT en KEY-bestanden."
 
@@ -1029,7 +1029,7 @@ msgstr "NZB aan wachtrij toegevoegd"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Onbekende codering"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Bestand %s is leeg, overslaan"
 

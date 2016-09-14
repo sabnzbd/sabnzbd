@@ -59,7 +59,7 @@ msgstr ""
 msgid "Initializing %s-%s failed, aborting"
 msgstr ""
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS отключён, поскольку отсутствуют файлы CERT и KEY"
 
@@ -1017,7 +1017,7 @@ msgstr "NZB-файл добавлен в очередь"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> неизвестная кодировка"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Файл %s пустой: пропущен"
 

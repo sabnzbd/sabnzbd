@@ -904,12 +904,6 @@ class NzbObject(TryList):
             sabnzbd.Assembler.do.process((self, None))
 
 
-        # If accept&fail, fail the job
-        if accept == 2:
-            self.deleted = True
-            sabnzbd.Assembler.do.process((self, None))
-
-
     def check_for_dupe(self, nzf):
         filename = nzf.filename
 

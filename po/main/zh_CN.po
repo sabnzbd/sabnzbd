@@ -59,7 +59,7 @@ msgstr "HTTP 与 HTTPS 端口不能相同"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "初始化 %s-%s 失败，正在中止"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "由于缺少 CERT 及 KEY 文件，已禁用 HTTPS"
 
@@ -1003,7 +1003,7 @@ msgstr "NZB 已添加到队列"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> 未知编码"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "文件 %s 为空，正在跳过"
 

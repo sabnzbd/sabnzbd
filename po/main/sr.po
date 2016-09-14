@@ -60,7 +60,7 @@ msgstr "HTTP i HTTPS portovi ne mogu biti isti"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Inicijalizacija %s-%s neuspešna, prekidam"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS onemogućen zbog nedostajućih CERT i KEY datoteka"
 
@@ -1017,7 +1017,7 @@ msgstr "NZB додат у ред"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Непознато енкодирање"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Датотека %s је празна, прескакање"
 

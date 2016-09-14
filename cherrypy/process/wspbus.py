@@ -440,13 +440,7 @@ class Bus(object):
     def log(self, msg="", level=20, traceback=False):
         """Log the given message. Append the last traceback if requested."""
         if traceback:
-            # Work-around for bug in Python's traceback implementation
-            # which crashes when the error message contains %1, %2 etc.
-            errors = sys.exc_info()
-            if '%' in errors[1].message:
-                errors[1].message = errors[1].message.replace('%', '#')
-                errors[1].args = [item.replace('%', '#') for item in errors[1].args]
-            msg += "\n" + "".join(_traceback.format_exception(*errors))
+            msg += "\n" + "".join(_traceback.format_exception(*sys.exc_info()))
         self.publish('log', msg, level)
 
 bus = Bus()

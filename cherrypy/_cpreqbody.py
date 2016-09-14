@@ -626,10 +626,10 @@ class Part(Entity):
                 # No more data--illegal end of headers
                 raise EOFError("Illegal end of headers.")
 
-            if line == ntob('\r\n') or line == ntob('\n'):
+            if line == ntob('\r\n'):
                 # Normal end of headers
                 break
-            if not line.endswith(ntob('\n')):
+            if not line.endswith(ntob('\r\n')):
                 raise ValueError("MIME requires CRLF terminators: %r" % line)
 
             if line[0] in ntob(' \t'):

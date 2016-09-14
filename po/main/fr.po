@@ -63,7 +63,7 @@ msgstr "Les ports HTTP et HTTPS ne peuvent pas être identiques"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Echec de l'initialisation de %s-%s, abandon"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS désactivé car le certificat et la clé n'ont pas été trouvés"
 
@@ -1046,7 +1046,7 @@ msgstr "NZB ajouté à la file d'attente"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Encodage inconnu"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Fichier %s vide, ignoré"
 

@@ -85,13 +85,6 @@ def name_fixer(p):
     else:
         return p
 
-def yenc_name_fixer(p):
-    """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
-    try:
-        return p.decode('utf-8')
-    except:
-        return p.decode('cp1252')
-    
 
 def yenc_name_fixer(p):
     """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """

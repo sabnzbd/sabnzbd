@@ -54,7 +54,6 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.sslinfo import ssl_protocols
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -3008,6 +3007,7 @@ def rss_history(url, limit=50, search=None):
     rss.channel.pubDate = std_time(time.time())
 
     return rss.write()
+
 
 def rss_warnings():
     """ Return an RSS feed with last warnings/errors """

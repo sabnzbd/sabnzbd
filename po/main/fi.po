@@ -61,7 +61,7 @@ msgstr "HTTP- ja HTTPS-portit eivät voi olla samoja"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Alustus %s-%s epäonnistui, peruutetaan"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS poistettu käytöstä puuttuvien CERT ja KEY tiedostojen vuoksi"
 
@@ -1026,7 +1026,7 @@ msgstr "NZB lisätty jonoon"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Tuntematon koodaus"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Tiedosto %s on tyhjä, ohitetaan"
 

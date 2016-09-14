@@ -59,7 +59,7 @@ msgstr "Porty dla HTTP i HTTPS nie mogą być takie same"
 msgid "Initializing %s-%s failed, aborting"
 msgstr "Inicjalizacja  %s-%s nie powiodła się, przerywam"
 
-#: SABnzbd.py:1403 [Warning message]
+#: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Wyłączono HTTPS z powodu braku plików CERT oraz KEY"
 
@@ -1029,7 +1029,7 @@ msgstr "NZB dodany do kolejki"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Nieznane kodowanie"
 
-#: sabnzbd/nzbstuff.py:470 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Plik %s jest pusty, pomijam"
 
