@@ -1268,10 +1268,12 @@ class ConfigPage(object):
 
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1
+            conf['have_ssl_context'] = sabnzbd.newswrapper.HAVE_SSL_CONTEXT
             conf['ssl_version'] = ssl_version()
             conf['ssl_protocols'] = ', '.join(ssl_protocols_labels())
         else:
             conf['have_ssl'] = 0
+            conf['have_ssl_context'] = 0
 
         new = {}
         for svr in config.get_servers():
@@ -1450,6 +1452,7 @@ class ConfigSwitches(object):
         conf = build_header(self.__prim, self.__web_dir)
 
         conf['have_ssl'] = sabnzbd.newswrapper.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.newswrapper.HAVE_SSL_CONTEXT
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)

@@ -125,7 +125,7 @@
             <h3>$T('httpsSupport') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p><b>$T('restartRequired')</b></p>
         </div><!-- /col2 -->
-        <div class="col1">
+        <div class="col1 <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
             <fieldset>
                 <div class="field-pair">
                     <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
