@@ -276,10 +276,11 @@ class NNTP(object):
         
         # Catch certificate errors        
         if type(error) == ssl.CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
-            error = T('Server %s uses an untrusted certificate') % self.host
+            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and self.nw.server.id != -1:
                 logging.error(error)
+
 
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
