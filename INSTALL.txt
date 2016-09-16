@@ -39,6 +39,7 @@ Start the SABnzbd.exe program.
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
 
+
 -------------------------------------------------------------------------------
 3) INSTALL pre-built OSX binaries
 -------------------------------------------------------------------------------
@@ -55,14 +56,13 @@ You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
 Unix/Linux/OSX
-    Python-2.7              http://www.python.org (2.7.9+ recommended)
+    Python-2.7.latest       http://www.python.org (2.7.9+ recommended)
 
 OSX Mavericks or newer
     Apple Python 2.7        Included in OSX (default)
 
 Windows
-    Python-2.7.latest       http://www.python.com
-                            Most versions will work: 2.7.10+ recommended
+    Python-2.7.latest       http://www.python.org (2.7.9+ recommended)
     PyWin32                 use "pip install pypiwin32"
 
 Essential modules
@@ -72,10 +72,10 @@ Essential modules
 
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
-    cryptography >= 1.5     https://cryptography.io/ use "pip install cryptography"
     7zip >= 9.20            http://www.7zip.org/
-    yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz 
-                            or use "pip install yenc"
+    cryptography >= 1.5     use "pip install cryptography"
+    yenc module >= 0.3      use "pip install yenc"
+                            http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz 
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
 
 Optional modules Unix/Linux/OSX
@@ -84,7 +84,7 @@ Optional modules Unix/Linux/OSX
                             If not, you cannot use the NotifyOSD feature.
 
 Embedded modules (preferably use the included version)
-    CherryPy-6.0.2 with patches  http://www.cherrypy.org
+    CherryPy-8.1.0 with patches http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.

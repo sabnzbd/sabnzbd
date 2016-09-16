@@ -26,22 +26,34 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import re
+import select
 
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
-from sabnzbd.utils.sslinfo import ssl_method
+
+import threading
+_RLock = threading.RLock
+del threading
 
 try:
     import ssl
-    WantReadError = ssl.SSLWantReadError
-
-    # Test availability of SSLContext (python 2.7.9+)
-    ssl.SSLContext
     HAVE_SSL = True
+
+    try: 
+        # Test availability of SSLContext (python 2.7.9+)
+        ssl.SSLContext
+        WantReadError = ssl.SSLWantReadError
+        CertificateError = ssl.CertificateError
+        HAVE_SSL_CONTEXT = True
+    except:
+        WantReadError = ssl.SSLError
+        CertificateError = ssl.SSLError
+        HAVE_SSL_CONTEXT = False
 
 except:
     HAVE_SSL = False
+    HAVE_SSL_CONTEXT = False
 
     # Dummy class so this exception is ignored by clients without ssl installed
     class WantReadError(Exception):
@@ -49,28 +61,18 @@ except:
             self.parameter = value
         def __str__(self):
             return repr(self.parameter)
-
-import threading
-_RLock = threading.RLock
-del threading
-
-import select
+    class CertificateError(Exception):
+        def __init__(self, value):
+            self.parameter = value
+        def __str__(self):
+            return repr(self.parameter)
 
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
-
-def force_bytes(p):
-    """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
-    if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
-        return p.encode('cp1252', 'replace')
-    else:
-        return p
-
 # getaddrinfo() can be very slow. In some situations this can lead
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
-
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
@@ -126,6 +128,15 @@ def GetServerParms(host, port):
         return None
 
 
+def get_ssl_version(sock):
+    # Python <2.7.9 doesn't have SSLConnection.version()
+    try:
+        return sock.version()
+    except:
+        # We can only give an estimation from the cipher
+        return sock.cipher()[1]
+
+
 def con(sock, host, port, sslenabled, write_fds, nntp):
     if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
     try:
@@ -136,12 +147,15 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 try:
                     sock.do_handshake()
                     break
-                except WantReadError:
+                except WantReadError as e:
+                    # Workaround for Python <2.7.9 so we only catch WantReadError's
+                    if not HAVE_SSL_CONTEXT and e.errno != 2:
+                        raise
                     select.select([sock], [], [], 1.0)
 
             # Log SSL/TLS info
             logging.info("%s@%s: Connected using %s (%s)",
-                                              nntp.nw.thrdnum, nntp.nw.server.id, sock.version(), sock.cipher()[0])
+                                              nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
 
         # Now it's safe to add the socket to the list of active sockets.
         # 'write_fds' is an attribute of the Downloader singleton.
@@ -149,7 +163,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         if write_fds is not None:
             write_fds[sock.fileno()] = nntp.nw
     
-    except (ssl.SSLError, ssl.CertificateError) as e:
+    except (ssl.SSLError, CertificateError) as e:
         nntp.error(e)
 
     except socket.error, e:
@@ -209,17 +223,23 @@ class NNTP(object):
             af = socket.AF_INET6
 
         if sslenabled and HAVE_SSL:
-            # Setup the SSL socket
-            ctx = ssl.create_default_context()
+            # Use context or just wrapper
+            if HAVE_SSL_CONTEXT:
+                # Setup the SSL socket
+                ctx = ssl.create_default_context()
 
-            # Only verify hostname when we're strict
-            if(sabnzbd.cfg.enable_nntps_verification() < 2):
-                ctx.check_hostname = False
-            # Certificates optional
-            if(sabnzbd.cfg.enable_nntps_verification() == 0):
-                ctx.verify_mode = ssl.CERT_NONE
+                # Only verify hostname when we're strict
+                if(sabnzbd.cfg.enable_nntps_verification() < 2):
+                    ctx.check_hostname = False
+                # Certificates optional
+                if(sabnzbd.cfg.enable_nntps_verification() == 0):
+                    ctx.verify_mode = ssl.CERT_NONE
 
-            self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
+                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
+            else:
+                # Use a regular wrapper, no certificate validation
+                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
+
         elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
@@ -244,14 +264,17 @@ class NNTP(object):
                         try:
                             self.sock.do_handshake()
                             break
-                        except WantReadError:
+                        except WantReadError as e:
+                            # Workaround for Python <2.7.9 so we only catch WantReadError's
+                            if not HAVE_SSL_CONTEXT and e.errno != 2:
+                                raise
                             select.select([self.sock], [], [], 1.0)
                     
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
-                                              self.nw.thrdnum, self.nw.server.id, self.sock.version(), self.sock.cipher()[0])
+                                              self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])
 
-        except (ssl.SSLError, ssl.CertificateError) as e:
+        except (ssl.SSLError, CertificateError) as e:
             self.error(e)
 
         except socket.error, e:
@@ -275,7 +298,7 @@ class NNTP(object):
             error = T('This server does not allow SSL on this port')
         
         # Catch certificate errors        
-        if type(error) == ssl.CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
+        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
             error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and self.nw.server.id != -1:
@@ -352,7 +375,7 @@ class NewsWrapper(object):
         if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
-            command = 'authinfo user %s\r\n' % force_bytes(self.server.username)
+            command = 'authinfo user %s\r\n' % self.server.username
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
@@ -366,7 +389,7 @@ class NewsWrapper(object):
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = 'authinfo pass %s\r\n' % force_bytes(self.server.password)
+            command = 'authinfo pass %s\r\n' % self.server.password
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
@@ -409,7 +432,10 @@ class NewsWrapper(object):
                     # Get as many bytes as possible
                     chunk = self.recv(1048576)
                 break
-            except WantReadError:
+            except WantReadError as e:
+                # Workaround for Python <2.7.9 so we only catch WantReadError's
+                if not HAVE_SSL_CONTEXT and e.errno != 2:
+                    raise
                 # SSL connections will block until they are ready.
                 # Either ignore the connection until it responds
                 # Or wait in a loop until it responds
