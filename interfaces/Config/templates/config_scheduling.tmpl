@@ -55,8 +55,8 @@ else:
                         </optgroup>
                         <optgroup label="$T('cmenu-servers')">
                             <!--#for $server in $actions_servers.keys()#-->
-                                <option value="$server" data-action="1"data-noarg="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
-                                <option value="$server" data-action="0"data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
+                                <option value="$server" data-action="1" data-noarg="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
+                                <option value="$server" data-action="0" data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
                             <!--#end for#-->
                         </optgroup>
                     </select>
@@ -109,12 +109,22 @@ else:
     \$('#action').on('change', function() {
         // Set the action
         \$('#arguments').val((\$(this).find('option:selected').data('action')))
-        // Arguments
+        
+        // Is it speedlimit?
+        if(\$(this).find('option:selected').val() == 'speedlimit') {
+            \$('#hidden_arguments').show()
+            \$('#hidden_arguments input').attr('placeholder', 'Bytes/s, "1M" = 1 MB/s, "500K" = 500 KB/s')
+        } else {
+            \$('#hidden_arguments').hide()
+            \$('#hidden_arguments input').attr('placeholder', '')
+        }
+
+        /* Arguments - since we only have speedlimit with arguments, disabled for now
         if(\$(this).find('option:selected').data('noarg')) {
             \$('#hidden_arguments').hide()
         } else {
             \$('#hidden_arguments').show()
-        }
+        }*/
     })
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
