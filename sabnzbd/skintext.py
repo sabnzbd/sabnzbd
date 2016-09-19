@@ -308,7 +308,7 @@ SKIN_TEXT = {
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
-    'explain-nosslcontext' : TT('Verification of server certificates not possible (requires Python 2.7.9 or higher)'),
+    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible (requires Python 2.7.9 or above).'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
