@@ -95,7 +95,12 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             return False, T('Timed out: Try enabling SSL or connecting on a different port.')
         else:
             return False, T('Timed out')
+    
     except socket.error, e:
+        # Trying SSL on non-SSL port?
+        if 'unknown protocol' in e[1]:
+            return False, T('Unknown SSL protocol: Try disabling SSL or connecting on a different port.')
+
         return False, unicode(e)
 
     except TypeError, e:
