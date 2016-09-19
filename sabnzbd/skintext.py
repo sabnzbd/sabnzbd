@@ -600,6 +600,7 @@ SKIN_TEXT = {
     'rss-atleast' : TT('At least'), #: Config->RSS filter-type selection menu
     'rss-atmost' : TT('At most'), #: Config->RSS filter-type selection menu
     'rss-from' : TT('From SxxEyy'), #: Config->RSS filter-type selection menu "From Season/Episode"
+    'rss-from-show' : TT('From Show SxxEyy'), #: Config->RSS filter-type selection menu "From Show Season/Episode"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
@@ -683,7 +684,7 @@ SKIN_TEXT = {
     'opt-tvsort' : TT('Enable TV Sorting'),
     'sort-legenda' : TT('Pattern Key'),
     'button-clear' : TT('Clear'),
-    'button-evalFeed' : TT('Check filters'),
+    'button-evalFeed' : TT('Apply filters'),
     'presetSort' : TT('Presets'),
     'example' : TT('Example'),
     'movieSort' : TT('Generic Sorting'),

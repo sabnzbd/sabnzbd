@@ -1119,12 +1119,10 @@ def check_regexs(filename, matchers):
     extras = []
     for expressions in matchers:
         expression, extramatchers = expressions
-        regex = re.compile(expression)
-        match1 = regex.search(filename)
+        match1 = expression.search(filename)
         if match1:
             for m in extramatchers:
-                regex = re.compile(m)
-                match2 = regex.findall(filename, match1.end())
+                match2 = m.findall(filename, match1.end())
                 if match2:
                     for match in match2:
                         if type(match) == type(()) and len(match) > 1:
