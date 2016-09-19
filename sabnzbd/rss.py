@@ -342,7 +342,7 @@ class RSSQueue(object):
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
-            if filter[3] in ('<', '>', 'F'):
+            if filter[3] in ('<', '>', 'F', 'S'):
                 regexes.append(filter[4])
             else:
                 regexes.append(convert_filter(filter[4]))
@@ -452,7 +452,7 @@ class RSSQueue(object):
                     myScript = defScript
                     myPrio = defPrio
                     n = 0
-                    if 'F' in reTypes:
+                    if 'F' in reTypes or 'S' in reTypes:
                         season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
                         season = int_conv(season)
                         episode = int_conv(episode)
@@ -479,7 +479,12 @@ class RSSQueue(object):
                                 logging.debug('Filter rejected on rule %d', n)
                                 result = False
                                 break
-                            elif reTypes[n] == 'F' and ep_match(title, season, episode, regexes[n]):
+                            elif reTypes[n] == 'F' and not ep_match(season, episode, regexes[n]):
+                                # "Starting from SxxEyy", too early episode
+                                logging.debug('Filter requirement match on rule %d', n)
+                                result = False
+                                break
+                            elif reTypes[n] == 'S' and season and episode and ep_match(season, episode, regexes[n], title):
                                 logging.debug('Filter matched on rule %d', n)
                                 result = True
                                 break
@@ -728,16 +733,23 @@ def special_rss_site(url):
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
-def ep_match(title, season, episode, expr):
-    """ Return True if season, episode is at or above expected """
-    _RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
+_RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
+def ep_match(season, episode, expr, title=None):
+    """ Return True if season, episode is at or above expected
+        Optionally `title` can be matched
+    """
     m = _RE_SP.search(expr)
     if m:
         req_season = int(m.group(1))
         req_episode = int(m.group(2))
         if season > req_season or (season == req_season and episode >= req_episode):
-            show = expr[:m.start()].replace('.', ' ').replace('_', ' ').strip()
-            show = show.replace(' ', '[._ ]+')
-            return bool(re.search(show, title. re.I))
+            if title:
+                show = expr[:m.start()].replace('.', ' ').replace('_', ' ').strip()
+                show = show.replace(' ', '[._ ]+')
+                return bool(re.search(show, title, re.I))
+            else:
+                return True
+        else:
+            return False
     else:
         return True

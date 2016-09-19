@@ -154,6 +154,7 @@
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
+                                    <option value="F"> $T('rss-from-show')</option>
                                 </select>
                             </td>
                             <td>
@@ -225,6 +226,7 @@
                                     <option value="C"> $T('rss-mustcat')</option>
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
+                                    <option value="S"> $T('rss-from-show')</option>
                                     <option value="F"> $T('rss-from')</option>
                                 </select>
                             </td>
@@ -300,6 +302,7 @@
                                         <option value="C" <!--#if $filter[3]=="C" then 'selected="selected"' else ""#-->> $T('rss-mustcat')</option>
                                         <option value=">" <!--#if $filter[3]==">" then 'selected="selected"' else ""#-->> $T('rss-atleast')</option>
                                         <option value="<" <!--#if $filter[3]=="<" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
+                                        <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show')</option>
                                         <option value="F" <!--#if $filter[3]=="F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
                                     </select>
                                 </td>
@@ -363,7 +366,9 @@
                     <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
                     <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('link-download')</button>
-                    <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-question-sign"></span> $T('button-evalFeed')</button>
+                    <!--#if $evalButton#-->
+                      <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
+                    <!--#end if#-->
                 </div>
             </form>
         </div>

@@ -1944,6 +1944,7 @@ class ConfigRss(object):
         self.__refresh_force = False        # True if forced download of all matches is required
         self.__refresh_ignore = False       # True if first batch of new feed must be ignored
         self.__evaluate = False             # True if feed needs to be re-filtered
+        self.__show_eval_button = True      # True if the "Apply filers" button should be shown
         self.__last_msg = ''                # Last error message from RSS reader
 
     @cherrypy.expose
@@ -2001,6 +2002,7 @@ class ConfigRss(object):
             else:
                 msg = self.__last_msg
             self.__refresh_readout = None
+            conf['evalButton'] = self.__show_eval_button
             conf['error'] = msg
 
             conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
@@ -2153,6 +2155,7 @@ class ConfigRss(object):
 
             config.save_config()
         self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2181,6 +2184,7 @@ class ConfigRss(object):
         cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
         self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2221,6 +2225,7 @@ class ConfigRss(object):
             self.__refresh_force = False
             self.__refresh_ignore = True
             self.__evaluate = True
+            self.__show_eval_button = False            
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2235,7 +2240,9 @@ class ConfigRss(object):
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = False
+            self.__show_eval_button = False
             self.__evaluate = True
+
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
