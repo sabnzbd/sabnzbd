@@ -1431,7 +1431,7 @@ SWITCH_LIST = \
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
              'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
-             'load_balancing', 'enable_https_verification', 'enable_nntps_verification'
+             'load_balancing', 'enable_https_verification'
      )
 
 
@@ -1799,6 +1799,7 @@ class ConfigServer(object):
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
         conf['have_ssl'] = sabnzbd.newswrapper.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.newswrapper.HAVE_SSL_CONTEXT
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
