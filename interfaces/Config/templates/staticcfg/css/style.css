@@ -234,7 +234,8 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .disabled .clearBtn,
 .disabled .patternKey,
 .disabled .show_qrcode,
-.disabled .generate_key {
+.disabled .generate_key,
+.disabled .generate_cert {
     color: #aaa !important;
 }
 .padTable p {
@@ -500,7 +501,8 @@ h2.activeRSS {
     height: 16px;
     width: 16px;
     float: left;
-    margin-right: 2px;
+    margin: 0 6px 0 2px;
+    text-align: center;
 }
 .feed {
     text-decoration: none;

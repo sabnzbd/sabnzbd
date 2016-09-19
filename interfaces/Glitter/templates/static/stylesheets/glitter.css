@@ -882,6 +882,10 @@ tr.queue-item>td:first-child>a {
     opacity: 1;
 }
 
+.table-messages .table-messages-none td {
+    padding: 10px 15px !important;
+}
+
 .table-messages .label {
     margin-right: 8px;
     min-width: 100px;
