@@ -229,10 +229,10 @@ class NNTP(object):
                 ctx = ssl.create_default_context()
 
                 # Only verify hostname when we're strict
-                if(sabnzbd.cfg.enable_nntps_verification() < 2):
+                if(nw.server.ssl_verify < 2):
                     ctx.check_hostname = False
                 # Certificates optional
-                if(sabnzbd.cfg.enable_nntps_verification() == 0):
+                if(nw.server.ssl_verify == 0):
                     ctx.verify_mode = ssl.CERT_NONE
 
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)

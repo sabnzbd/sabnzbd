@@ -52,15 +52,6 @@
                         </select>
                         <span class="desc">$T('explain-load_balancing')</span>
                     </div>
-                    <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
-                        <label class="config" for="enable_nntps_verification">$T('opt-enable_nntps_verification')</label>
-                        <select name="enable_nntps_verification" id="enable_nntps_verification" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
-                              <option value="0" <!--#if $enable_nntps_verification == 0 then 'selected="selected"' else ""#--> >$T('nntps_verification-disabled')</option>
-                              <option value="1" <!--#if $enable_nntps_verification == 1 then 'selected="selected"' else ""#--> >$T('nntps_verification-normal')</option>
-                              <option value="2" <!--#if $enable_nntps_verification == 2 then 'selected="selected"' else ""#--> >$T('nntps_verification-strict')</option>
-                        </select>
-                        <span class="desc">$T('explain-enable_nntps_verification').replace('. ', '.<br/>')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
                         <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />

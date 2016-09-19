@@ -58,7 +58,7 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, send_group, username=None,
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
 
         self.id = id
@@ -71,6 +71,7 @@ class Server(object):
         self.threads = threads
         self.priority = priority
         self.ssl = ssl
+        self.ssl_verify = ssl_verify
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -198,6 +199,7 @@ class Downloader(Thread):
             threads = srv.connections()
             priority = srv.priority()
             ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
+            ssl_verify = srv.ssl_verify()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
@@ -217,7 +219,7 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl,
+            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
                                             send_group, username, password, optional, retention, categories=categories))
 
         return

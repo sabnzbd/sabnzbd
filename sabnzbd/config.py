@@ -377,6 +377,7 @@ class ConfigServer(object):
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
+        self.ssl_verify = OptionNumber(name, 'ssl_verify', 1, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
@@ -393,7 +394,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'send_group', 'enable', 'optional', 'retention', 'priority', 'categories', 'notes'):
+                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'categories', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -418,6 +419,7 @@ class ConfigServer(object):
             dict['password'] = self.password()
         dict['connections'] = self.connections()
         dict['ssl'] = self.ssl()
+        dict['ssl_verify'] = self.ssl_verify()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()

@@ -505,11 +505,6 @@ SKIN_TEXT = {
     'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
-    'opt-enable_nntps_verification' : TT('Newsserver certificate verification'),
-    'explain-enable_nntps_verification' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
-    'nntps_verification-disabled' : TT('Disabled'),
-    'nntps_verification-normal' : TT('Default'),
-    'nntps_verification-strict' : TT('Strict'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
@@ -552,6 +547,11 @@ SKIN_TEXT = {
     'srv-connections' : TT('Connections'), #: Server: amount of connections
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
+    'opt-ssl_verify' : TT('Certificate verification'),
+    'explain-ssl_verify' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
+    'ssl_verify-disabled' : TT('Disabled'),
+    'ssl_verify-normal' : TT('Default'),
+    'ssl_verify-strict' : TT('Strict'),
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
