@@ -73,13 +73,12 @@ Essential modules
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
-    cryptography >= 1.5     use "pip install cryptography"
     yenc module >= 0.3      use "pip install yenc"
-                            http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz 
-                            http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
+                            https://sabnzbd.org/wiki/installation/yenc-0.4_py2.7.rar (Win32-only)
+    openssl => 1.0.0        http://www.openssl.org/
+    cryptography >= 1.2     use "pip install cryptography"
 
 Optional modules Unix/Linux/OSX
-    openssl => ?            http://www.openssl.org/
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
 
