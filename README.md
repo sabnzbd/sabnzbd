@@ -22,13 +22,13 @@ If you want to know more you can head over to our website: http://sabnzbd.org.
 
 SABnzbd has a good deal of dependencies you'll need before you can get running. If you've previously run SABnzbd from one of the various Linux packages floating around (Ubuntu, Debian, Fedora, etc), then you likely already have all the needed dependencies. If not, here's what you're looking for:
 
-- `python` (only 2.7.9 and higher, but not 3.x.x)
+- `python` (only 2.7.x and higher, but not 3.x.x)
 - `python-cheetah`
 - `python-dbus`
-- `python-openssl`
+- `python-cryptography`
 - `python-support`
 - `python-yenc`
-- `par2` (Multi-threaded par2 installation guide can be found [here](https://forums.sabnzbd.org/viewtopic.php?f=16&t=18793#p99702) )
+- `par2` (Multi-threaded par2 installation guide can be found [here](https://forums.sabnzbd.org/viewtopic.php?f=16&t=18793#p99702))
 - `unrar` (Make sure you get the "official" non-free version of unrar)
 - `unzip`
 - `7zip`
