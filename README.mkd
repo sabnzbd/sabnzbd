@@ -1,14 +1,17 @@
-Release Notes  -  SABnzbd 1.2.0
-===============================
+Release Notes  -  SABnzbd 1.1.1RC1
+==================================
 
-## What's new in 1.2.0
+## What's new in 1.1.1RC1
 
 
 ## Changes:
+- Button to regenerate a self-signed HTTPS certificate (to update to modern standards)
 
 
 ## Bug fixes
-
+- Restored download speed for Unix (and some other) systems
+- Fixed yEnc crash that occurred on some Windows systems
+- Small UI fixes
 
 
 ## About
