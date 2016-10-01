@@ -1070,6 +1070,9 @@ class CP_makefile_PY2(getattr(socket, '_fileobject', object)):
                 self.bytes_read += len(data)
                 return data
             except socket.error as e:
+                # Catch 'unknown ca' errors from builtin SSL-adapter
+                if len(e.args) > 1 and 'unknown ca' in e.args[1]:
+                    return
                 if (e.args[0] not in socket_errors_nonblocking
                         and e.args[0] not in socket_error_eintr):
                     raise

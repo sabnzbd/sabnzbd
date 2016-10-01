@@ -1,4 +1,4 @@
-CherryPy 8.1.0 
+CherryPy 8.1.2 
 Official distribution: https://github.com/cherrypy/cherrypy/releases
 The folders 'tutorial', 'test' and 'scaffold' have been removed.
 This file has been added.
