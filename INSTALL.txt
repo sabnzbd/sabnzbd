@@ -83,7 +83,7 @@ Optional modules Unix/Linux/OSX
                             If not, you cannot use the NotifyOSD feature.
 
 Embedded modules (preferably use the included version)
-    CherryPy-8.1.0 with patches http://www.cherrypy.org
+    CherryPy-8.1.2 with patches http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
