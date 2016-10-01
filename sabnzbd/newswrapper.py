@@ -375,7 +375,13 @@ class NewsWrapper(object):
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
-                chunk = self.recv(32768)
+                if self.nntp.nw.server.ssl:
+                    # SSL chunks come in 16K frames
+                    # Setting higher limits results in slowdown
+                    chunk = self.recv(16384)
+                else:
+                    # Get as many bytes as possible
+                    chunk = self.recv(1048576)
                 break
             except WantReadError:
                 # SSL connections will block until they are ready.
