@@ -31,6 +31,8 @@ import select
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
+from sabnzbd.misc import nntp_to_msg
+from sabnzbd.decoder import HAVE_SABYENC
 
 import threading
 _RLock = threading.RLock
@@ -301,7 +303,7 @@ class NewsWrapper(object):
 
         self.timeout = None
         self.article = None
-        self.data = ''
+        self.data = []
         self.lines = []
 
         self.nntp = None
@@ -317,6 +319,14 @@ class NewsWrapper(object):
         self.user_ok = False
         self.pass_ok = False
         self.force_login = False
+
+    @property
+    def status_code(self):
+        """ Shorthand to get the code """
+        try:
+            return self.data[0][:3]
+        except:
+            return ''
 
     def init_connect(self, write_fds):
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
@@ -337,7 +347,7 @@ class NewsWrapper(object):
         if code in ('501',) and self.user_sent:
             # Change to a sensible text
             code = '481'
-            self.lines[0] = T('Authentication failed, check username/password.')
+            self.data[0] = T('Authentication failed, check username/password.')
             self.user_ok = True
             self.pass_sent = True
 
@@ -350,10 +360,11 @@ class NewsWrapper(object):
             self.pass_ok = False
 
         if code in ('400', '502'):
-            raise NNTPPermanentError(self.lines[0])
+            raise NNTPPermanentError(nntp_to_msg(self.data))
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % self.server.username
             self.nntp.sock.sendall(command)
+            self.data = []
             self.user_sent = True
         elif not self.user_ok:
             if code == '381':
@@ -368,11 +379,12 @@ class NewsWrapper(object):
         if self.user_ok and not self.pass_sent:
             command = 'authinfo pass %s\r\n' % self.server.password
             self.nntp.sock.sendall(command)
+            self.data = []
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != '281':
                 # Assume that login failed (code 481 or other)
-                raise NNTPPermanentError(self.lines[0])
+                raise NNTPPermanentError(nntp_to_msg(self.data))
             else:
                 self.connected = True
 
@@ -390,11 +402,13 @@ class NewsWrapper(object):
         else:
             command = 'ARTICLE <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
+        self.data = []
 
     def send_group(self, group):
         self.timeout = time.time() + self.server.timeout
         command = 'GROUP %s\r\n' % (group)
         self.nntp.sock.sendall(command)
+        self.data = []
 
     def recv_chunk(self, block=False):
         """ Receive data, return #bytes, done, skip """
@@ -422,24 +436,29 @@ class NewsWrapper(object):
                 else:
                     return (0, False, True)
 
-        self.data += chunk
-        new_lines = self.data.split('\r\n')
-        # See if incorrect newline-only was used
-        # Do this as a special case to prevent using extra memory
-        # for normal articles
-        if len(new_lines) == 1 and '\r' not in self.data:
-            new_lines = self.data.split('\n')
+        # Data is processed differently depending on C-yEnc version
+        if HAVE_SABYENC:
+            # Append so we can do 1 join(), much faster than multiple!
+            self.data.append(chunk)
+        else:
+            new_lines = chunk.split('\r\n')
+            # See if incorrect newline-only was used
+            # Do this as a special case to prevent using extra memory
+            # for normal articles
+            if len(new_lines) == 1 and '\r' not in chunk:
+                new_lines = chunk.split('\n')
+            # Already remove the starting dots
+            for i in xrange(len(new_lines)):
+                if new_lines[i][:2] == '..':
+                    new_lines[i] = new_lines[i][1:]
+            self.lines.extend(new_lines)
 
-        self.data = new_lines.pop()
+            # For status purposes
+            if not self.data:
+                self.data.append(chunk)
 
-        # Already remove the starting dots
-        for i in xrange(len(new_lines)):
-            if new_lines[i][:2] == '..':
-                new_lines[i] = new_lines[i][1:]
-        self.lines.extend(new_lines)
-
-        if self.lines and self.lines[-1] == '.':
-            self.lines = self.lines[1:-1]
+        if chunk[-5:] == '\r\n.\r\n':
+            # Return status info
             return (len(chunk), True, False)
         else:
             return (len(chunk), False, False)
@@ -447,7 +466,7 @@ class NewsWrapper(object):
     def soft_reset(self):
         self.timeout = None
         self.article = None
-        self.data = ''
+        self.data = []
         self.lines = []
 
     def hard_reset(self, wait=True, quit=True):
