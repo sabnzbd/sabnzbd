@@ -236,10 +236,15 @@ class NNTP(object):
                 if(nw.server.ssl_verify == 0):
                     ctx.verify_mode = ssl.CERT_NONE
 
+                # Did the user set a custom cipher-string?
+                if(sabnzbd.cfg.ssl_ciphers()):
+                    # At their own risk, socket will error out in case it was invalid
+                    ctx.set_ciphers(sabnzbd.cfg.ssl_ciphers())
+
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
             else:
                 # Use a regular wrapper, no certificate validation
-                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
+                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=sabnzbd.cfg.ssl_ciphers())
 
         elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
