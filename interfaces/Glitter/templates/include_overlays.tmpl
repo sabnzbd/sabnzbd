@@ -192,6 +192,12 @@
                                     <div class="col-sm-6">$T('priority')</div>
                                     <div class="col-sm-6" data-bind="text: serverpriority"></div>
                                 </div>
+                                <div class="row" data-bind="visible: serverssl">
+                                    <div class="col-sm-6">$T('srv-ssl')</div>
+                                    <div class="col-sm-6">
+                                        <span class="glyphicon glyphicon-ok"></span> <span data-bind="text: serversslinfo"></span>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
                                     <div class="col-sm-6">

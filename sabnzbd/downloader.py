@@ -88,6 +88,7 @@ class Server(object):
         self.errormsg = ''
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
+        self.ssl_info = '' # Will hold the type and cipher of SSL connection
         self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True  # Assume server has "STAT", until proven otherwise
@@ -754,6 +755,9 @@ class Downloader(Thread):
             nw.terminate(quit=quit)
         else:
             nw.hard_reset(wait, quit=quit)
+
+        # Empty SSL info, it might change on next connect
+        server.ssl_info = ''
 
     def __request_article(self, nw):
         try:

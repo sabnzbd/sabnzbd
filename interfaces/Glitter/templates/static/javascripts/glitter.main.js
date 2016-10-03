@@ -761,6 +761,8 @@ function ViewModel() {
                         'serveroptional': this.serveroptional,
                         'serverpriority': this.serverpriority,
                         'servertotalconn': this.servertotalconn,
+                        'serverssl': this.serverssl,
+                        'serversslinfo': ko.observable(this.serversslinfo),
                         'serveractiveconn': ko.observable(this.serveractiveconn),
                         'servererror': ko.observable(this.servererror),
                         'serveractive': ko.observable(this.serveractive),
@@ -783,6 +785,7 @@ function ViewModel() {
                     activeServer.servererror(this.servererror)
                     activeServer.serveractive(this.serveractive)
                     activeServer.serverconnections(this.serverconnections)
+                    activeServer.serversslinfo(this.serversslinfo)
                 })
             }
 

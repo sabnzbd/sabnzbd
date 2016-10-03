@@ -1285,6 +1285,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
                             'servertotalconn': server.threads,
                             'serverconnections': serverconnections,
                             'serverssl': server.ssl,
+                            'serversslinfo': server.ssl_info,
                             'serveractive': server.active,
                             'servererror': server.errormsg,
                             'serverpriority': server.priority,

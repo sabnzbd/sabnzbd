@@ -156,6 +156,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
             # Log SSL/TLS info
             logging.info("%s@%s: Connected using %s (%s)",
                                               nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
+            nntp.nw.server.ssl_info = "%s (%s)" % (get_ssl_version(sock), sock.cipher()[0])
 
         # Now it's safe to add the socket to the list of active sockets.
         # 'write_fds' is an attribute of the Downloader singleton.
@@ -273,6 +274,7 @@ class NNTP(object):
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
                                               self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])
+                    self.nw.server.ssl_info = "%s (%s)" % (get_ssl_version(self.sock), self.sock.cipher()[0])
 
         except (ssl.SSLError, CertificateError) as e:
             self.error(e)
