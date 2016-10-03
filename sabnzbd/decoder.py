@@ -25,12 +25,6 @@ import logging
 import re
 from time import sleep
 from threading import Thread
-try:
-    import _yenc
-    HAVE_YENC = True
-
-except ImportError:
-    HAVE_YENC = False
 
 import sabnzbd
 from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
@@ -39,6 +33,18 @@ import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
+
+try:
+    import _yenc
+    HAVE_YENC = True
+except ImportError:
+    HAVE_YENC = False
+
+try:
+    import sabyenc
+    HAVE_SABYENC = True
+except ImportError:
+    HAVE_SABYENC = False
 
 
 class CrcError(Exception):
@@ -64,8 +70,8 @@ class Decoder(Thread):
         self.queue = Queue.Queue()
         self.servers = servers
 
-    def decode(self, article, lines):
-        self.queue.put((article, lines))
+    def decode(self, article, lines, raw_data):
+        self.queue.put((article, lines, raw_data))
         # See if there's space left in cache, pause otherwise
         # But do allow some articles to enter queue, in case of full cache
         qsize = self.queue.qsize()
@@ -84,7 +90,7 @@ class Decoder(Thread):
             if not art_tup:
                 break
 
-            article, lines = art_tup
+            article, lines, raw_data = art_tup
             nzf = article.nzf
             nzo = nzf.nzo
             art_id = article.article
@@ -100,14 +106,14 @@ class Decoder(Thread):
             found = False    # Proper article found
             logme = None
 
-            if lines:
+            if lines or raw_data:
                 try:
                     if nzo.precheck:
                         raise BadYenc
                     register = True
                     logging.debug("Decoding %s", art_id)
 
-                    data = decode(article, lines)
+                    data = decode(article, lines, raw_data)
                     nzf.article_count += 1
                     found = True
 
@@ -176,9 +182,8 @@ class Decoder(Thread):
 
                 except:
                     logme = T('Unknown Error while decoding %s') % art_id
-                    logging.info(logme)
+                    logging.error(logme)
                     logging.info("Traceback: ", exc_info=True)
-
                     new_server_found = self.__search_new_server(article)
                     if new_server_found:
                         register = False
@@ -250,7 +255,28 @@ class Decoder(Thread):
 
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
-def decode(article, data):
+def decode(article, data, raw_data):
+    # Do we have SABYenc? Let it do all the work
+    if HAVE_SABYENC:
+        # Bam
+        decoded_data, output_filename, crc, crc_yenc, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
+        #decoded_data, output_filename, crc, crc_yenc, crc_correct = sabyenc.decode_string_usenet(''.join(raw_data))
+
+        # Assume it is yenc
+        article.nzf.type = 'yenc'
+
+        # CRC check
+        if not crc_correct:
+            crc_yenc = '%08X' % (crc_yenc & 2 ** 32L - 1)
+            crc = '%08X' % (crc & 2 ** 32L - 1)
+            raise CrcError(crc_yenc, crc, decoded_data)
+
+        # Only set the name if it was found
+        if output_filename:
+            article.nzf.filename = output_filename
+
+        return decoded_data
+
     # Filter out empty ones
     data = filter(None, data)
     # No point in continuing if we don't have any data left

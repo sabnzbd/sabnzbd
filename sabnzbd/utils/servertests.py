@@ -24,7 +24,7 @@ import sys
 import select
 
 from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.downloader import Server, clues_login, clues_too_many
+from sabnzbd.downloader import Server, clues_login, clues_too_many, nntp_to_msg
 from sabnzbd.config import get_servers
 from sabnzbd.misc import int_conv
 
@@ -83,12 +83,13 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         nw.init_connect(None)
         while not nw.connected:
             nw.lines = []
+            nw.data = []
             nw.recv_chunk(block=True)
             #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
             read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
             if read_sockets:
                 nw.recv_chunk(block=True)
-            nw.finish_connect(nw.lines[0][:3])
+            nw.finish_connect(nw.status_code)
 
     except socket.timeout, e:
         if port != 119 and not ssl:
@@ -117,31 +118,25 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
         try:
             nw.lines = []
+            nw.data = []
             nw.recv_chunk(block=True)
         except:
             return False, unicode(sys.exc_info()[1])
 
-    # Could do with making a function for return codes to be used by downloader
-    try:
-        code = nw.lines[0][:3]
-    except IndexError:
-        code = ''
-        nw.lines.append('')
-
-    if code == '480':
+    if nw.status_code == '480':
         return False, T('Server requires username and password.')
 
-    elif code == '100' or code.startswith('2') or code.startswith('4'):
+    elif nw.status_code == '100' or nw.status_code.startswith('2') or nw.status_code.startswith('4'):
         return True, T('Connection Successful!')
 
-    elif code == '502' or clues_login(nw.lines[0]):
+    elif nw.status_code == '502' or clues_login(nntp_to_msg(nw.data)):
         return False, T('Authentication failed, check username/password.')
 
     elif clues_too_many(nw.lines[0]):
         return False, T('Too many connections, please pause downloading or try again later')
 
     else:
-        return False, T('Could not determine connection result (%s)') % nw.lines[0]
+        return False, T('Could not determine connection result (%s)') % nntp_to_msg(nw.data)
 
     # Close the connection
     nw.terminate(quit=True)
