@@ -243,8 +243,10 @@ class NNTP(object):
 
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
             else:
+                # Ciphers have to be None, if set to empty-string it will fail on <2.7.9
+                ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
                 # Use a regular wrapper, no certificate validation
-                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=sabnzbd.cfg.ssl_ciphers())
+                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=ciphers)
 
         elif sslenabled and not HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
