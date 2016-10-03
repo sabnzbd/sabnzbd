@@ -1139,6 +1139,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         private_key = generate_key(key_size=2048, output_file=ssl_key)
         cert = generate_local_cert(private_key, days_valid=356*10, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'SABnzbd')
+        logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info=True)
