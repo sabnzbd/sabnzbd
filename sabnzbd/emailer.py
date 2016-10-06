@@ -44,22 +44,25 @@ def errormsg(msg):
 def send(message, email_to, test=None):
     """ Send message if message non-empty and email-parms are set """
 
+    def utf8(p):
+        return p.encode('utf8', 'ignore')
+
     # we should not use CFG if we are testing. we should use values
     # from UI instead.
 
     if test:
-        email_server = test.get('email_server')
-        email_from = test.get('email_from')
-        email_account = test.get('email_account')
-        email_pwd = test.get('email_pwd')
+        email_server = utf8(test.get('email_server'))
+        email_from = utf8(test.get('email_from'))
+        email_account = utf8(test.get('email_account'))
+        email_pwd = utf8(test.get('email_pwd'))
         if email_pwd and not email_pwd.replace('*', ''):
             # If all stars, get stored password instead
-            email_pwd = cfg.email_pwd()
+            email_pwd = utf8(cfg.email_pwd())
     else:
-        email_server = cfg.email_server()
-        email_from = cfg.email_from()
-        email_account = cfg.email_account()
-        email_pwd = cfg.email_pwd()
+        email_server = utf8(cfg.email_server())
+        email_from = utf8(cfg.email_from())
+        email_account = utf8(cfg.email_account())
+        email_pwd = utf8(cfg.email_pwd())
 
     # email_to is replaced at send_with_template, since it can be an array
 
