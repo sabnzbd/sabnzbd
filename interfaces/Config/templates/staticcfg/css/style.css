@@ -1078,6 +1078,10 @@ input[type="checkbox"] {
         display: inline-block;
         margin-right: 0.5em;
     }
+
+    .navbar .nav>li>a {
+        height: auto;
+    }
     
     .section .col2 h3 {
         padding-right: 25px;
