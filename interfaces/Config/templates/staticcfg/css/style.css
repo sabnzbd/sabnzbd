@@ -969,6 +969,12 @@ input[type="checkbox"] {
 .main-restarting small {
     font-size: 3rem !important;
 }
+.value-and-select input {
+    margin-right: -5px;
+}
+.value-and-select select {
+    min-width: 30px;
+}
 
 .dotOne, .dotTwo, .dotThree {
     opacity: 0;
