@@ -170,10 +170,15 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
-                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" class="smaller_input" />
-                    <span class="desc">$T('explain-bandwidth_max')<br />$T('wizard-bandwidth-explain')</span>
+                <div class="field-pair value-and-select">
+                    <label class="config" for="bandwidth_max_value">$T('opt-bandwidth_max')</label>
+                    <input type="number" name="bandwidth_max_value" id="bandwidth_max_value" class="smaller_input" />
+                    <select name="bandwidth_max_dropdown" id="bandwidth_max_dropdown">
+                        <option value="">B/s</option>
+                        <option value="K">KB/s</option>
+                        <option value="M" selected>MB/s</option>
+                    </select>
+                    <input type="hidden" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
@@ -282,6 +287,22 @@
     if(\$('#https_cert').val() != 'server.cert') {
         \$('.generate_cert').attr('disabled', 'disabled')
     }
+
+    // Parse the text
+    var bandwidthLimit = \$('#bandwidth_max').val()
+    if(bandwidthLimit) {
+        var bandwithLimitNumber = parseFloat(bandwidthLimit)
+        var bandwithLimitText = bandwidthLimit.replace(/[^a-zA-Z]+/g, '');
+        \$('#bandwidth_max_value').val(bandwithLimitNumber)
+        \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+    }
+    
+
+    // Update the value
+    \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
+        \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+    })
+
 });
 </script>
 

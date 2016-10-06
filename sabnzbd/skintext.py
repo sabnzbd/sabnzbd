@@ -344,7 +344,6 @@ SKIN_TEXT = {
     'opt-rss_rate' : TT('RSS Checking Interval'),
     'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
     'opt-bandwidth_max' : TT('Maximum line speed'),
-    'explain-bandwidth_max' : TT('Highest possible linespeed in Bytes/second, e.g. 2M.'),
     'opt-bandwidth_perc' : TT('Percentage of line speed'),
     'explain-bandwidth_perc' : TT('Which percentage of the linespeed should SABnzbd use, e.g. 50'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
@@ -972,7 +971,6 @@ SKIN_TEXT = {
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
-    'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
 
 #Special
     'yourRights' : TT('''
