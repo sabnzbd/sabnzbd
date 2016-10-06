@@ -249,8 +249,8 @@
             this.submit()
         })
     })
-    
-    /** 
+
+    /**
         Color the priority labels
     **/
     // They are already sorted
@@ -268,7 +268,7 @@
         \$(this).css('background-color', theColor)
     })
 
-    /** 
+    /**
         Message on no Default category selected
     **/
     function checkServerCats() {
@@ -279,10 +279,10 @@
             // See if this server is enabled
             if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
                 // Is there Default?
-                if(\$(this).val().indexOf('Default') > -1) {
+                if(\$(this).val() && \$(this).val().indexOf('Default') > -1) {
                     // Hide
                     \$('.alert-no-category').hide()
-                    hasDefault = true 
+                    hasDefault = true
                     // All good!
                     return true
                 }
@@ -293,8 +293,8 @@
     }
 
     \$('select[name="categories"]').on('change', checkServerCats)
-    checkServerCats()    
-    
+    checkServerCats()
+
     /**
         Click events
     **/
