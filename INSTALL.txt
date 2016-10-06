@@ -68,12 +68,13 @@ Windows
 Essential modules
     cheetah-2.0.1+          use "pip install cheetah"
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
+                            Note: https://sabnzbd.org/wiki/configuration/1.1/switches#par2cmdline
     unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
-    yenc module >= 0.3      use "pip install yenc"
+    yenc module >= 0.4      use "pip install yenc"
                             https://sabnzbd.org/wiki/installation/yenc-0.4_py2.7.rar (Win32-only)
     openssl => 1.0.0        http://www.openssl.org/
     cryptography >= 1.2     use "pip install cryptography"
@@ -81,6 +82,7 @@ Optional modules
 Optional modules Unix/Linux/OSX
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
+    python-dbus             Enable option to Shutdown/Restart/Standby PC on queue finish.
 
 Embedded modules (preferably use the included version)
     CherryPy-8.1.2 with patches http://www.cherrypy.org
@@ -93,6 +95,7 @@ Start this from a shell terminal (or command prompt):
 
 Start this from a shell terminal (or command prompt):
     python SABnzbd.py
+
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
 

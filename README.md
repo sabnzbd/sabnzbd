@@ -24,14 +24,17 @@ SABnzbd has a good deal of dependencies you'll need before you can get running. 
 
 - `python` (only 2.7.x and higher, but not 3.x.x)
 - `python-cheetah`
-- `python-dbus`
-- `python-cryptography`
 - `python-support`
-- `python-yenc`
 - `par2` (Multi-threaded par2 installation guide can be found [here](https://forums.sabnzbd.org/viewtopic.php?f=16&t=18793#p99702))
 - `unrar` (Make sure you get the "official" non-free version of unrar)
-- `unzip`
+
+Optional:
+
+- `python-cryptography`
+- `python-yenc`
+- `python-dbus` (enable option to Shutdown/Restart/Standby PC on queue finish)
 - `7zip`
+- `unzip`
 
 Your package manager should supply these. If not, we've got links in our more in-depth [installation guide](https://github.com/sabnzbd/sabnzbd/blob/master/INSTALL.txt).
 
