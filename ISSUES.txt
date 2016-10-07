@@ -12,7 +12,7 @@
   Windows-only:
   If you keep having trouble with par2 multicore you can disable it
   in Config->Switches.
-  This will force the use of the old and tried, but slower par2-classic program.
+  This will force the use of the old and tried, but slower par2cmdline program.
 
 - A bug in Windows 7 may cause severe memory leaks when you use SABnzbd in
   combination with some virus scanners and firewalls.
