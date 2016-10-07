@@ -207,7 +207,7 @@ class SeriesSorter(object):
                 # First check if the show matches TV episode regular expressions. Returns regex match object
                 self.match_obj, self.extras = check_regexs(self.original_dirname, series_match)
                 if self.match_obj:
-                    logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname)
+                    logging.debug("Found TV Show (%s)", self.original_dirname)
                     self.matched = True
 
     def is_match(self):
@@ -524,7 +524,7 @@ class GenericSorter(object):
         if force or (cfg.enable_movie_sorting() and self.sort_string):
             # First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname)
+                logging.debug("Found Movie (%s)", self.original_dirname)
                 self.matched = True
 
     def get_final_path(self):
@@ -728,7 +728,7 @@ class DateSorter(object):
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = check_for_date(self.original_dirname, date_match)
                 if self.match_obj:
-                    logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname)
+                    logging.debug("Found date for sorting (%s)", self.original_dirname)
                     self.matched = True
 
     def is_match(self):
