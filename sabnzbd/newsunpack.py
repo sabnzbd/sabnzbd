@@ -122,7 +122,7 @@ def find_programs(curdir):
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
         if not sabnzbd.newsunpack.RAR_COMMAND:
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
+        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2cmdline.exe')
         sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
@@ -1070,7 +1070,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             if os.path.exists(test_parfile):
                 parfile = test_parfile
                 break
-    
+
     parfile = short_path(parfile)
     workdir = short_path(workdir)
 
@@ -1240,7 +1240,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         # Allow options if not classic or when classic and non-classic are the same
         if options and (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
             command.insert(2, options)
-    logging.debug('Par2-classic = %s', classic)
+    logging.debug('Par2-classic/cmdline = %s', classic)
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1572,7 +1572,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         used_joinables.extend(reconstructed)
 
     if retry_classic:
-        logging.debug('Retry PAR2-joining with par2-classic')
+        logging.debug('Retry PAR2-joining with par2-classic/cmdline')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
     else:
         return finished, readd, pars, datafiles, used_joinables, used_par2
