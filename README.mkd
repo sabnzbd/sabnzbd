@@ -1,5 +1,14 @@
-Release Notes  -  SABnzbd 1.1.1RC1
+Release Notes  -  SABnzbd 1.1.1RC2
 ==================================
+
+## What's new in 1.1.1RC2
+
+## Bug fixes
+- Fixed email notifications to smtp2go.com (and possibly others)
+- Replaced par2-classic with par2cmdline (will fix some verification hangups)
+- Fix problem with Config pages on mobile browsers
+- Updated INSTALL.txt
+
 
 ## What's new in 1.1.1RC1
 
