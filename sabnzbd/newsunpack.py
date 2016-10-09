@@ -1240,9 +1240,18 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
+
         # Allow options if not classic or when classic and non-classic are the same
-        if options and (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
-            command.insert(2, options)
+        if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
+            if options:
+                command.insert(2, options)
+            else:
+                # We need to check for the bad par2cmdline that skips blocks
+                par2text = run_simple([str(PAR2_COMMAND), '-h'])
+                if 'No data skipping' in par2text:
+                    logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+                    command.insert(2, '-N')
+
     logging.debug('Par2-classic/cmdline = %s', classic)
 
     # Append the wildcard for this set
@@ -1997,7 +2006,7 @@ class SevenZip(object):
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     txt = p.stdout.read()
     p.wait()
     return txt
