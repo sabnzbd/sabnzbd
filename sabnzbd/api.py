@@ -724,7 +724,7 @@ def _api_rss_now(name, output, kwargs):
 
 def _api_retry_all(name, output, kwargs):
     """ API: Retry all failed items in History """
-    return report(output, keyword='status', data=retry_all_jobs)
+    return report(output, keyword='status', data=retry_all_jobs())
 
 
 def _api_reset_quota(name, output, kwargs):
