@@ -680,15 +680,14 @@ def get_webhost(cherryhost, cherryport, https_port):
 def attach_server(host, port, cert=None, key=None, chain=None):
     """ Define and attach server, optionally HTTPS """
     if sabnzbd.cfg.ipv6_hosting() or '::1' not in host:
-        http_server = _cpwsgi_server.CPWSGIServer()
+        http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
         if cert and key:
             http_server.ssl_provider = 'builtin'
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
             http_server.ssl_certificate_chain = chain
-        adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-        adapter.subscribe()
+        http_server.subscribe()
 
 
 def is_sabnzbd_running(url, timeout=None):
