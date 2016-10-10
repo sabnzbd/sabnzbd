@@ -134,16 +134,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         sock.connect((host, port))
         sock.setblocking(0)
         if sslenabled and sabnzbd.HAVE_SSL:
-            while True:
-                try:
-                    sock.do_handshake()
-                    break
-                except WantReadError as e:
-                    # Workaround for Python <2.7.9 so we only catch WantReadError's
-                    if not sabnzbd.HAVE_SSL_CONTEXT and e.errno != 2:
-                        raise
-                    select.select([sock], [], [], 1.0)
-
             # Log SSL/TLS info
             logging.info("%s@%s: Connected using %s (%s)",
                                               nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
@@ -232,7 +222,7 @@ class NNTP(object):
                     # At their own risk, socket will error out in case it was invalid
                     ctx.set_ciphers(sabnzbd.cfg.ssl_ciphers())
 
-                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=nw.server.host)
+                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=str(nw.server.host))
             else:
                 # Ciphers have to be None, if set to empty-string it will fail on <2.7.9
                 ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
@@ -246,29 +236,16 @@ class NNTP(object):
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            # Windows must do the connection in a separate thread due to non-blocking issues
-            # If the server wants to be blocked (for testing) then use the linux route
+            # Open the connection in a separate thread due to avoid blocking
+            # For server-testing we do want blocking
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
-
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
-                if block:
-                    self.sock.settimeout(10)
+                self.sock.settimeout(4)
                 self.sock.connect((self.host, self.port))
-                if not block:
-                    self.sock.setblocking(0)
-                if sslenabled and sabnzbd.HAVE_SSL:
-                    while True:
-                        try:
-                            self.sock.do_handshake()
-                            break
-                        except WantReadError as e:
-                            # Workaround for Python <2.7.9 so we only catch WantReadError's
-                            if not sabnzbd.HAVE_SSL_CONTEXT and e.errno != 2:
-                                raise
-                            select.select([self.sock], [], [], 1.0)
 
+                if sslenabled and sabnzbd.HAVE_SSL:
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
                                               self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])
