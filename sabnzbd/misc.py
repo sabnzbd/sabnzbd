@@ -31,11 +31,6 @@ import socket
 import time
 import fnmatch
 import stat
-try:
-    socket.ssl
-    _HAVE_SSL = True
-except:
-    _HAVE_SSL = False
 from urlparse import urlparse
 
 import sabnzbd
@@ -1282,7 +1277,7 @@ def is_writable(path):
 
 def format_source_url(url):
     """ Format URL suitable for 'Source' stage """
-    if _HAVE_SSL:
+    if sabnzbd.HAVE_SSL:
         prot = 'https'
     else:
         prot = 'http:'

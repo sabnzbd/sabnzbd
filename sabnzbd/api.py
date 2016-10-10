@@ -1594,7 +1594,7 @@ def options_list(output):
         '7zip': sabnzbd.newsunpack.SEVEN_COMMAND,
         'nice': sabnzbd.newsunpack.NICE_COMMAND,
         'ionice': sabnzbd.newsunpack.IONICE_COMMAND,
-        'ssl': sabnzbd.newswrapper.HAVE_SSL
+        'ssl': sabnzbd.HAVE_SSL
     })
 
 

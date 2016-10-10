@@ -95,7 +95,7 @@ class Wizard(object):
         info['language'] = cfg.language()
         info['active_lang'] = info['language']
         info['T'] = Ttemplate
-        info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
+        info['have_ssl'] = bool(sabnzbd.HAVE_SSL)
 
         servers = config.get_servers()
         if not servers:

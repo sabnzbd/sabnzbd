@@ -148,6 +148,21 @@ class Downloader(Thread):
 
         logging.debug("Initializing downloader/decoder")
 
+        # We first have to check the quality of SSL verification
+        if sabnzbd.HAVE_SSL_CONTEXT:
+            try:
+                import ssl
+                ctx = ssl.create_default_context()
+                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+                ssl_sock.settimeout(2.0)
+                ssl_sock.connect((cfg.selftest_host(), 443))
+                ssl_sock.close()
+            except:
+                # Seems something is still wrong
+                sabnzbd.set_https_verification(0)
+                sabnzbd.HAVE_SSL_CONTEXT = False
+
         # Used for scheduled pausing
         self.paused = paused
 
@@ -199,7 +214,7 @@ class Downloader(Thread):
             timeout = srv.timeout()
             threads = srv.connections()
             priority = srv.priority()
-            ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
+            ssl = srv.ssl() and sabnzbd.HAVE_SSL
             ssl_verify = srv.ssl_verify()
             username = srv.username()
             password = srv.password()
@@ -437,7 +452,7 @@ class Downloader(Thread):
                         try:
                             logging.info("%s@%s: Initiating connection",
                                               nw.thrdnum, server.id)
-                            nw.init_connect(self.write_fds)                            
+                            nw.init_connect(self.write_fds)
                         except:
                             logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.id, sys.exc_info()[1])
                             self.__reset_nw(nw, "failed to initialize")
@@ -476,7 +491,7 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-                
+
                 # Why check so often when so few things happend?
                 if len(readkeys) >= 8 and len(read) <= 2:
                     time.sleep(0.01)
