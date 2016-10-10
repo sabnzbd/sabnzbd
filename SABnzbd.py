@@ -533,7 +533,8 @@ def all_localhosts():
     ips = []
     for item in info:
         item = item[4][0]
-        if item not in ips:
+        # Only return IPv6 when enabled
+        if item not in ips and ('::1' not in item or sabnzbd.cfg.ipv6_hosting()):
             ips.append(item)
     return ips
 
@@ -1400,7 +1401,7 @@ def main():
         hosts[1] = '::1'
 
     # The Windows binary requires numeric localhost as primary address
-    if multilocal and cherryhost == 'localhost':
+    if cherryhost == 'localhost':
         cherryhost = hosts[0]
 
     if enable_https:
