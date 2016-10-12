@@ -1667,7 +1667,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
-    joinables, zips, rars, sevens, filelist = ([], [], [], [], [])
+    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
@@ -1691,19 +1691,28 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
                         # Just skip failing names
                         pass
 
-    sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
-    sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
+    for file in filelist:
+        # Extra check for rar (takes CPU/disk)
+        file_is_rar = False
+        if check_rar:
+            file_is_rar = is_rarfile(file)
 
-    if check_rar:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f) and not is_rarfile(f)]
-    else:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f)]
-
-    zips = [f for f in filelist if ZIP_RE.search(f)]
-
-    rars = [f for f in filelist if RAR_RE.search(f)]
-
-    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables and f not in sevens]
+        # Run through all the checks
+        if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
+            # 7zip
+            sevens.append(file)
+        elif SPLITFILE_RE.search(file) and not file_is_rar:
+            # Joinables, optional with RAR check
+            joinables.append(file)
+        elif ZIP_RE.search(file):
+            # ZIP files
+            zips.append(file)
+        elif RAR_RE.search(file):
+            # RAR files
+            rars.append(file)
+        elif TS_RE.search(file):
+            # TS split files
+            ts.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): zips: %s", zips)
