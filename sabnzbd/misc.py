@@ -114,26 +114,6 @@ def get_files_by_file_size(path, reverse=False):
     return filepaths
 
 
-def replace_extension(filename, newExt):
-    """ Replace the extension with desired extension when applicable
-        >>> replace_extension('foo.avi', 'mkv')
-        'foo.mkv'
-        >>> replace_extension('.vimrc', 'arglebargle')
-        '.vimrc'
-        >>> replace_extension('a.b.c', 'd')
-        'a.b.d'
-        >>> replace_extension('', 'a')
-        ''
-        >>> replace_extension('foo.bar', '')
-        'foo.'
-    """
-    sepFile = filename.rpartition(".")
-    if sepFile[0] == "":
-        return filename
-    else:
-        return sepFile[0] + "." + newExt
-
-
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """ Derive options from category, if options not already defined.
         Specified options have priority over category-options.
