@@ -13,7 +13,7 @@ function Fileslisting(parent) {
         // Update
         self.currentItem = queue_item;
         self.fileItems.removeAll()
-        self.triggerUpdate() 
+        self.triggerUpdate()
 
         // Update name/password
         self.filelist_name(self.currentItem.name())
@@ -22,7 +22,7 @@ function Fileslisting(parent) {
         // Hide ok button and reset
         $('#modal-item-filelist .glyphicon-floppy-saved').hide()
         $('#modal-item-filelist .glyphicon-lock').show()
-        
+
         // Set state of the check-all
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
 
@@ -63,7 +63,7 @@ function Fileslisting(parent) {
                     // They cause problems because they can have the same filename
                     // as files that we do want to be updated.. The slot.id is not unique!
                     if(slot.status == "queued") return false;
-                    
+
                     // Update the rest
                     existingItem.updateFromData(slot);
                 } else {
@@ -89,7 +89,7 @@ function Fileslisting(parent) {
         })
     }
 
-    // Set update         
+    // Set update
     self.setUpdate = function() {
         self.updateTimeout = setTimeout(function() {
             self.triggerUpdate()
@@ -156,17 +156,17 @@ function Fileslisting(parent) {
         })
         return false;
     }
-    
+
     // Check all
     self.checkAllFiles = function(item, event) {
         // Get which ones we care about
         var allChecks = $('#modal-item-files .files-sortable input').filter(':not(:disabled):visible');
-        
+
         // We need to re-evaltuate the state of this check-all
         // Otherwise the 'inderterminate' will be overwritten by the click event!
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
-        
-        // Now we can check what happend    
+
+        // Now we can check what happend
         if(event.target.indeterminate) {
             allChecks.filter(":checked").prop('checked', false)
         } else {
@@ -179,7 +179,7 @@ function Fileslisting(parent) {
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
         return true;
     }
-    
+
     // For selecting range and the check-all button
     self.checkSelectRange = function(data, event) {
         if(event.shiftKey) {
@@ -273,14 +273,23 @@ function paginationModel(parent) {
         if(parent.totalItems() <= parent.paginationLimit()) {
             // Empty it
             self.nrPages(1)
-
-            // Reset all to make sure we see something
-            self.currentPage(1);
             self.currentStart(0);
+
+            // Are we on next page?
+            if(self.currentPage() > 1) {
+                // Force full update
+                parent.parent.refresh(true);
+            }
+
+            // Move to current page
+            self.currentPage(1);
+
+            // Force full update
+            parent.parent.refresh(true);
         } else {
             // Calculate number of pages needed
             var newNrPages = Math.ceil(parent.totalItems() / parent.paginationLimit())
-            
+
             // Make sure the current page still exists
             if(self.currentPage() > newNrPages) {
                 self.moveToPage(newNrPages);
@@ -289,7 +298,7 @@ function paginationModel(parent) {
 
             // All the cases
             if(newNrPages > 7) {
-                // Do we show the first ones 
+                // Do we show the first ones
                 if(self.currentPage() < 5) {
                     // Just add the first 4
                     $.each(new Array(5), function(index) {
@@ -300,7 +309,7 @@ function paginationModel(parent) {
                     // Last one
                     self.allpages.push(self.addPaginationPageLink(newNrPages))
                 } else {
-                    // Always add the first 
+                    // Always add the first
                     self.allpages.push(self.addPaginationPageLink(1))
                         // Dots
                     self.allpages.push(self.addDots())
