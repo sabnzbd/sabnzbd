@@ -34,7 +34,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
     make_script_path, short_path, long_path, clip_path, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
-    sanitize_and_trim_path, get_files_by_file_size, replace_extension
+    sanitize_and_trim_path
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -656,32 +656,31 @@ def parring(nzo, workdir):
                     continue
                 par_error = par_error or not res
     else:
-        # obfuscated par2 check
-        logging.info('No par2 sets found, running obfuscated check on %s', workdir)
-        sorted_files = get_files_by_file_size(workdir, False)
-        for path in sorted_files:
+        # Obfuscated par2 check
+        logging.info('No par2 sets found, running obfuscated check on %s', filename)
+
+        # Get the NZF's and sort them based on size
+        nzfs_sorted = sorted(nzo.finished_files, key=lambda x: x.bytes)
+
+        for nzf_try in nzfs_sorted:
             # run through list of files, looking for par2 signature..
-            logging.debug("Checking par2 signature on %s", path)
-            if(is_parfile(path)):
-                # rename file on first match (should be head par2)
-                newpath = replace_extension(path, 'par2')
-                renamer(path, newpath)
-                # need to update nzf to reflect name change... and that its a par2 so we can repair?
-                # handle_par2(nzf, file_done=True)
-                # remove_nzf(nzf)
+            logging.debug("Checking par2 signature of %s", nzf_try.filename)
+            try:
+                nzf_path = os.path.join(workdir, nzf_try.filename)
+                if(is_parfile(nzf_path)):
+                    # Rename file on first match (should be head par2)
+                    newpath = nzf_path + '.par2'
+                    renamer(nzf_path, newpath)
+                    nzf_try.filename = os.path.split(newpath)[1]
+                    nzo.handle_par2(nzf_try, file_done=True)
 
-                # repair then tell sab to re-process?
-                # parfile_nzf = {}
-                # dummy, parfile_nzf.filename = os.path.split(long_path(newpath))
-                # setname = os.path.split(parfile_nzf.filename)[1]
-                # re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=True)
-
-                # tell sab to readd to re-process once filenames are fixed?
-                re_add = True
-                break
-
-        # if re_add gets set (obfuscated par found), skip next code block
-        if not re_add:
+                    # We do it again
+                    par_error, re_add = parring(nzo, workdir)
+                    break
+            except:
+                pass
+        else:
+            # If for was not broken, we must not have found any par2..
             logging.info("No par2 sets for %s", filename)
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
             if cfg.sfv_check() and not verified.get('', False):
