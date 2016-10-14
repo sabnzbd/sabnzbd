@@ -663,7 +663,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         # Check if we should still continue
         if not nzo.pp_active:
             p.kill()
-            msg = T('PostProcessing was aborted (%s)', T('Unpack'))
+            msg = T('PostProcessing was aborted (%s)') % T('Unpack')
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg, set=setname)
             nzo.status = Status.FAILED
@@ -1325,7 +1325,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             # Check if we should still continue
             if not nzo.pp_active:
                 p.kill()
-                msg = T('PostProcessing was aborted (%s)', T('Repair'))
+                msg = T('PostProcessing was aborted (%s)') % T('Repair')
                 nzo.fail_msg = msg
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 nzo.status = Status.FAILED
