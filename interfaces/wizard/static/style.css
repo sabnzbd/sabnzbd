@@ -196,9 +196,9 @@ label {
 * {
     border-radius: 0 !important;
 }
-#content a, 
-#content a:hover, 
-#content a:active, 
+#content a,
+#content a:hover,
+#content a:active,
 #content a:visited {
     color: #555;
 }

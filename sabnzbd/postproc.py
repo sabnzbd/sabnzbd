@@ -503,7 +503,7 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line), 
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line),
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed

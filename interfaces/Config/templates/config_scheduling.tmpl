@@ -72,7 +72,7 @@ else:
         </div><!-- /col1 -->
         </form>
     </div><!-- /section -->
-    
+
     <div class="section">
         <div class="col2">
             <h3>$T('currentSchedules')</h3>
@@ -109,7 +109,7 @@ else:
     \$('#action').on('change', function() {
         // Set the action
         \$('#arguments').val((\$(this).find('option:selected').data('action')))
-        
+
         // Is it speedlimit?
         if(\$(this).find('option:selected').val() == 'speedlimit') {
             \$('#hidden_arguments').show()

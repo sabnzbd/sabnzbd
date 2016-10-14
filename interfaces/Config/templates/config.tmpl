@@ -34,7 +34,7 @@
                 <tr>
                     <th scope="row">OpenSSL:</th>
                     <td>
-                        <!--#if $have_ssl#--> 
+                        <!--#if $have_ssl#-->
                             $ssl_version &nbsp; [$ssl_protocols]
                         <!--#else#-->
                             <span class="label label-danger">$T('notAvailable')</span>
@@ -42,7 +42,7 @@
                         <!--#end if#-->
                     </td>
                 </tr>
-                <!--#if not $have_ssl_context#--> 
+                <!--#if not $have_ssl_context#-->
                 <tr>
                     <th scope="row"></th>
                     <td>
@@ -53,7 +53,7 @@
                 <tr>
                     <th scope="row">yEnc:</th>
                     <td>
-                        <!--#if $have_yenc#--> 
+                        <!--#if $have_yenc#-->
                             <span class="glyphicon glyphicon-ok"></span>
                         <!--#else#-->
                             <span class="label label-danger">$T('notAvailable')</span>

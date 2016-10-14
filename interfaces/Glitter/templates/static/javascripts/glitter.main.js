@@ -74,16 +74,16 @@ function ViewModel() {
     self.speedLimitText = ko.pureComputed(function() {
         // Set?
         if(!self.bandwithLimit()) return;
-        
-        // The text 
+
+        // The text
         var bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
-        
+
         // Only the number
         var speedLimitNumberFull = (parseFloat(self.bandwithLimit()) * (self.speedLimit() / 100));
 
         // Trick to only get decimal-point when needed
         var speedLimitNumber = Math.round(speedLimitNumberFull*10)/10;
-        
+
         // Fix it for lower than 1MB/s
         if(bandwithLimitText == 'M' && speedLimitNumber < 1) {
             bandwithLimitText = 'K';
@@ -146,7 +146,7 @@ function ViewModel() {
             Possible login failure?
         ***/
         if(response.hasOwnProperty('error') && response.error == 'Missing authentication') {
-            // Restart 
+            // Restart
             document.location = document.location;
         }
 
@@ -171,7 +171,7 @@ function ViewModel() {
         } else {
             self.diskSpaceLeft2('')
         }
-        
+
         // Did we exceed the space?
         self.diskSpaceExceeded1(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace1))
         self.diskSpaceExceeded2(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace2))
@@ -220,7 +220,7 @@ function ViewModel() {
                     // Update internally
                     self.speedHistory = sabSpeedHistory;
                 }
-                
+
                 // Create
                 $('.sparkline').peity("line", {
                     width: 275,
@@ -229,7 +229,7 @@ function ViewModel() {
                     stroke: '#AAFFAA',
                     values: sabSpeedHistory
                 })
-                
+
             } else {
                 // Update
                 $('.sparkline').text(self.speedHistory.join(",")).change()
@@ -272,7 +272,7 @@ function ViewModel() {
                 seconds -= minutes * 60;
                 timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
             }
-            
+
             // Add info about amount of download (if actually downloading)
             if(response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
                 self.title(timeString + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
@@ -310,13 +310,13 @@ function ViewModel() {
     self.refresh = function(forceFullHistory) {
         // Clear previous timeout to prevent double-calls
         clearTimeout(self.interval);
-        
+
         /**
             Limited refresh
         **/
         // Only update the title when page not visible
         if(!pageIsVisible) {
-            // Request new title 
+            // Request new title
             callSpecialAPI('./queue/', { limit: 1, start: 0 }).done(function(data) {
                 // Split title & speed
                 var dataSplit = data.split('|||');
@@ -392,7 +392,7 @@ function ViewModel() {
             limit: parseInt(self.history.paginationLimit()),
             last_history_update: self.history.lastUpdate
         }).done(self.updateHistory);
-        
+
         // We are now done with any loading
         // But we wait a few ms so Knockout has time to update
         setTimeout(function() {
@@ -434,12 +434,12 @@ function ViewModel() {
         }
         // Show modal
         $('#modal_custom_pause').modal('show')
-        
+
         // Focus on the input field
         $('#modal_custom_pause').on('shown.bs.modal', function () {
             $('#customPauseInput').focus()
         })
-        
+
         // Reset on modal close
         $('#modal_custom_pause').on('hide.bs.modal', function () {
             self.pauseCustom('');
@@ -460,10 +460,10 @@ function ViewModel() {
             $('#modal_custom_pause .btn-default').addClass('disabled')
             return;
         }
-        
+
         // Parse
         var pauseParsed = Date.parse(newValue);
-        
+
         // Did we get it?
         if(pauseParsed) {
             // Is it just now?
@@ -471,7 +471,7 @@ function ViewModel() {
                 // Try again with the '+' in front, the parser doesn't get 100min
                 pauseParsed = Date.parse('+' + newValue);
             }
-            
+
             // Calculate difference in minutes and save
             var pauseDuration = Math.round((pauseParsed - Date.parse('now'))/1000/60);
             $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' +glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
@@ -488,7 +488,7 @@ function ViewModel() {
     self.saveCustomPause = function() {
         // Get duration
         var pauseDuration = $('#customPauseOutput').data('time');
-        
+
         // If in the future
         if(pauseDuration > 0) {
             callAPI({
@@ -508,7 +508,7 @@ function ViewModel() {
     self.nrWarnings.subscribe(function(newValue) {
         // Really any change?
         if(newValue == self.allWarnings().length) return;
-        
+
         // Get all warnings
         callAPI({
             mode: 'warnings'
@@ -518,12 +518,12 @@ function ViewModel() {
             if(response) {
                 // Newest first
                 response.warnings.reverse()
-                
+
                 // Go over all warnings and add
                 $.each(response.warnings, function(index, warning) {
                     // Split warning into parts
                     var warningSplit = warning.split(/\n/);
-                    
+
                     // Reformat CSS label and date
                     var warningData = {
                         index: index,
@@ -559,7 +559,7 @@ function ViewModel() {
     self.speedLimit.subscribe(function(newValue) {
         // Only on new load
         if(!self.speedLimitInt()) return;
-        
+
         // Update
         if(self.speedLimitInt() != newValue) {
             callAPI({
@@ -586,7 +586,7 @@ function ViewModel() {
     self.onQueueFinish.subscribe(function(newValue) {
         // Ignore updates before the page is done
         if(!self.hasStatusInfo()) return;
-        
+
         // Something changes
         callAPI({
             mode: 'queue',
@@ -605,7 +605,7 @@ function ViewModel() {
     self.refreshRate.subscribe(function(newValue) {
         // Refresh now
         self.refresh();
-        
+
         // Save in config if global-settings
         if(self.useGlobalOptions()) {
             callAPI({
@@ -652,7 +652,7 @@ function ViewModel() {
             return false;
         }
 
-        // Add 
+        // Add
         callAPI({
             mode: "addurl",
             name: $(form.nzbURL).val(),
@@ -692,7 +692,7 @@ function ViewModel() {
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val()); // Default priority
         data.append("pp", $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()); // Default post-processing options
         data.append("apikey", apiKey);
-        
+
         // Add this one
         $.ajax({
             url: "./tapi",
@@ -729,7 +729,7 @@ function ViewModel() {
         self.hasStatusInfo(false)
 
         // Load the custom status info
-        callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {                
+        callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
             // Update basic
             self.statusInfo.loglevel(data.status.loglevel)
             self.statusInfo.cache_art(data.status.cache_art)
@@ -751,7 +751,7 @@ function ViewModel() {
                 // Loaded disk info
                 self.hasDiskStatusInfo(true)
             }
-            
+
             // Update the servers
             if(self.statusInfo.servers().length == 0) {
                 // Initial add
@@ -791,7 +791,7 @@ function ViewModel() {
 
             // Add tooltips to possible new items
             if(!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
-        
+
             // Stop it spin
             self.hasStatusInfo(true)
         });
@@ -900,7 +900,7 @@ function ViewModel() {
                 hideNotification(true)
                 self.loadStatusInfo(true, true)
             })
-        }     
+        }
     }
 
     // Orphaned folder adding of all
@@ -914,7 +914,7 @@ function ViewModel() {
                 hideNotification(true)
                 self.loadStatusInfo(true, true)
             })
-        }     
+        }
     }
 
     // Toggle Glitter's compact layout dynamically
@@ -996,7 +996,7 @@ function ViewModel() {
     if(localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
     }
-    
+
     // Get the speed-limit, refresh rate and server names
     callAPI({
         mode: 'get_config'
@@ -1006,21 +1006,21 @@ function ViewModel() {
             // Set refreshrate (defaults to 1/s)
             if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
             self.refreshRate(response.config.misc.refresh_rate.toString());
-            
+
             // Set history limit
             self.history.paginationLimit(response.config.misc.history_limit.toString())
-            
+
             // Set queue limit
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
         }
-        
+
         // Set bandwidth limit
         if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
         self.bandwithLimit(response.config.misc.bandwidth_max);
-        
+
         // Save servers (for reporting functionality of OZnzb)
         self.servers = response.config.servers;
-        
+
         // Update message
         if(newRelease) {
             self.allMessages.push({
@@ -1049,7 +1049,7 @@ function ViewModel() {
                 type: glitterTranslate.status['INFO'],
                 text: glitterTranslate.glitterTips + ' <a class="queue-update-sab" href="https://sabnzbd.org/wiki/extra/glitter-tips-and-tricks" target="_blank">Glitter Tips and Tricks <span class="glyphicon glyphicon-new-window"></span></a>',
                 css: 'info',
-                clear: function() { 
+                clear: function() {
                     // Update the config to not show again
                     callAPI({
                         mode: 'set_config',
@@ -1072,11 +1072,11 @@ function ViewModel() {
         setTimeout(self.loadStatusInfo, 200);
     }
 
-    // On any status load we check Orphaned folders 
-    self.hasStatusInfo.subscribe(function(finishedLoading) { 
+    // On any status load we check Orphaned folders
+    self.hasStatusInfo.subscribe(function(finishedLoading) {
         // Loaded or just starting?
         if(!finishedLoading) return;
-        
+
         // Orphaned folders? If user clicked away we check again in 5 days
         if(self.statusInfo.folders().length >= 3 && orphanMsg) {
             // Check if not already there
@@ -1117,7 +1117,7 @@ function ViewModel() {
     $('[name="general-date-format"] option').each(function() {
         $(this).text(displayDateTime('', $(this).val()), '')
     })
-           
+
     // Update the date every minute
     setInterval(function() {
         $('[data-timestamp]').each(function() {

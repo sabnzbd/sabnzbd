@@ -9,13 +9,13 @@ var hasLocalStorage = true;
 function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) { hasLocalStorage = false; } }
 function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  hasLocalStorage = false; } }
 
-// For mobile we disable zoom while a modal is being opened 
+// For mobile we disable zoom while a modal is being opened
 // so it will not zoom unnecessarily on the modal
 if(isMobile) {
     $('.modal').on('show.bs.modal', function() {
         $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
     });
-    
+
     // Restore on modal-close. Need timeout, otherwise it doesn't work
     $('.modal').on('hidden.bs.modal', function() {
         setTimeout(function() {
@@ -58,13 +58,13 @@ function callSpecialAPI(url, data) {
 }
 
 /**
-    Handle visibility changes so we 
+    Handle visibility changes so we
     do only incremental update when not visible
 **/
 var pageIsVisible = true;
 // Set the name of the hidden property and the change event for visibility
 var hidden, visibilityChange;
-if(typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+if(typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
     hidden = "hidden";
     visibilityChange = "visibilitychange";
 } else if(typeof document.mozHidden !== "undefined") {
@@ -78,7 +78,7 @@ if(typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and l
     visibilityChange = "webkitvisibilitychange";
 }
 
-// Set the global visibility  
+// Set the global visibility
 function handleVisibilityChange() {
     if(document[hidden]) {
         pageIsVisible = false;
@@ -89,7 +89,7 @@ function handleVisibilityChange() {
 
 // Add event listener only for supported browsers
 if(typeof document.addEventListener !== "undefined" && typeof document[hidden] !== "undefined") {
-    // Handle page visibility change   
+    // Handle page visibility change
     document.addEventListener(visibilityChange, handleVisibilityChange, false);
 }
 
@@ -183,12 +183,12 @@ function showDetails(thisItem) {
 function checkAllFiles(objCheck, onlyCheck) {
     // Get which ones we care about
     var allChecks = $($(objCheck).data('checkrange')).filter(':not(:disabled):visible');
-    
+
     // We need to re-evaltuate the state of this check-all
     // Otherwise the 'inderterminate' will be overwritten by the click event!
     setCheckAllState('#'+objCheck.id, $(objCheck).data('checkrange'))
-    
-    // Now we can check what happend    
+
+    // Now we can check what happend
     if(objCheck.indeterminate) {
         // Uncheck if we don't need trigger
         if(onlyCheck) {
@@ -203,7 +203,7 @@ function checkAllFiles(objCheck, onlyCheck) {
 }
 
 // To update the check-all button nicely
-function setCheckAllState(checkSelector, rangeSelector) {  
+function setCheckAllState(checkSelector, rangeSelector) {
     // See how many are checked
     var allChecks = $(rangeSelector).filter(':not(:disabled):visible')
     var nrChecks = allChecks.filter(":checked");
@@ -246,7 +246,7 @@ function hideCompletedFiles() {
 
 // Show status modal and switch to orphaned jobs tab
 function showOrphans() {
-    $('a[href="#modal-options"]').click().parent().click(); 
+    $('a[href="#modal-options"]').click().parent().click();
     $('a[href="#options-orphans"]').click()
 }
 
@@ -263,8 +263,8 @@ function showNotification(notiName, notiTimeout, fileCounter) {
 
     // Remove after timeout
     if(notiTimeout) {
-        setTimeout(function() { 
-            hideNotification(true); 
+        setTimeout(function() {
+            hideNotification(true);
         }, notiTimeout)
     }
 }
@@ -277,5 +277,5 @@ function hideNotification(fadeItOut) {
     } else {
         $('.main-notification-box').hide()
     }
-    
+
 }

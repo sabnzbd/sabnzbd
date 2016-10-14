@@ -4,7 +4,7 @@
 <div class="colmask">
     <!--#if not $active_feed#-->
     <div class="section">
-        <div class="padTable"> 
+        <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" autocomplete="off" novalidate>
@@ -47,11 +47,11 @@
                             <!--#set $odd = not $odd#-->
                             <tr class="data-row <!--#if $odd then " alt " else " "#-->">
                                 <td class="chk">
-                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" /> 
+                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" />
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                        <div class="favicon" data-domain="$rss[$feed_item]['baselink']"></div> $feed_item 
+                                        <div class="favicon" data-domain="$rss[$feed_item]['baselink']"></div> $feed_item
                                     </a>
                                 </td>
                                 <td class="controls">
@@ -89,9 +89,9 @@
                     <div class="field-pair">
                         <label class="config narrow" for="rss_rate">$T('opt-rss_rate')</label>
                         <input type="number" name="rss_rate" id="rss_rate" value="$rss_rate" min="15" max="1440" />
-                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button> 
-                        <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span> 
-                        <span class="desc narrow">$T('explain-rss_rate')</span> 
+                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
+                        <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span>
+                        <span class="desc narrow">$T('explain-rss_rate')</span>
                     </div>
                 </fieldset>
             </div>
@@ -105,7 +105,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <h2 class="nomargin activeRSS">
-                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; 
+                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo;
                 <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
             </h2>
             <!--#if $error#-->
@@ -140,10 +140,10 @@
                     <tbody>
                         <tr class="default">
                             <td>
-                                <input type="checkbox" disabled="disabled" class="hidden" /> 
+                                <input type="checkbox" disabled="disabled" class="hidden" />
                             </td>
                             <td>
-                                <input type="text" disabled="disabled" size="1" class="hidden" /> 
+                                <input type="text" disabled="disabled" size="1" class="hidden" />
                             </td>
                             <td>
                                 <select name="filter_type" disabled="disabled" class="hidden">
@@ -157,7 +157,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" disabled="disabled" value="" class="hidden" /> 
+                                <input type="text" disabled="disabled" value="" class="hidden" />
                             </td>
                             <!--#if $rss[$feed]['pick_cat']#-->
                             <td>
@@ -212,10 +212,10 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input type="checkbox" name="enabled" value="1" checked="checked" /> 
+                                <input type="checkbox" name="enabled" value="1" checked="checked" />
                             </td>
                             <td>
-                                <input type="text" name="new_index" size="1" /> 
+                                <input type="text" name="new_index" size="1" />
                             </td>
                             <td>
                                 <select name="filter_type">
@@ -229,7 +229,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="filter_text" value="" /> 
+                                <input type="text" name="filter_text" value="" />
                             </td>
                             <!--#if $rss[$feed]['pick_cat']#-->
                             <td>
@@ -287,10 +287,10 @@
                         <tbody>
                             <tr class="<!--#if $odd then " alt " else " "#-->">
                                 <td>
-                                    <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> /> 
+                                    <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> />
                                 </td>
                                 <td>
-                                    <input type="text" name="new_index" value="$fnum" size="1" /> 
+                                    <input type="text" name="new_index" value="$fnum" size="1" />
                                 </td>
                                 <td>
                                     <select name="filter_type">
@@ -304,7 +304,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" name="filter_text" value="$filter[4]" /> 
+                                    <input type="text" name="filter_text" value="$filter[4]" />
                                 </td>
                                 <!--#if $rss[$feed]['pick_cat']#-->
                                 <td>
@@ -468,7 +468,7 @@
         </div>
         <!--#end if#-->
     </div>
-    
+
 </div>
 <!-- /colmask -->
 
@@ -490,7 +490,7 @@ function urlencode(str) {
             \$(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
         }
     })
-    
+
     \$('.tabs a').click(function (e) {
         e.preventDefault()
         \$(this).tab('show')
@@ -525,7 +525,7 @@ function urlencode(str) {
             }).done(function( msg ) {
                 // Let us leave!
                 formWasSubmitted = true;
-                formHasChanged = false;            
+                formHasChanged = false;
                 location.reload();
             });
         }
@@ -541,7 +541,7 @@ function urlencode(str) {
         }).done(function( msg ) {
             // Let us leave!
             formWasSubmitted = true;
-            formHasChanged = false;            
+            formHasChanged = false;
             location = '?feed=' + urlencode(whichFeed);
         });
     });
@@ -555,7 +555,7 @@ function urlencode(str) {
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;
-            formHasChanged = false;            
+            formHasChanged = false;
             location.reload();
         });
     });
@@ -564,7 +564,7 @@ function urlencode(str) {
         var theForm = \$(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
-    
+
     \$('.delFilter').click(function(){
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();

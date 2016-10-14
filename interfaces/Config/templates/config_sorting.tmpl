@@ -9,7 +9,7 @@
         <div class="section">
             <div class="col2">
                 <h3>$T('seriesSorting') <a href="$helpuri$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                <p> 
+                <p>
                     <b>$T('affectedCat')</b><br/>
                     <select name="tv_cat" multiple="multiple" class="multiple_cats">
                         <!--#for $ct in $cat_list#-->
@@ -22,11 +22,11 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5> 
+                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5>
                     </div>
                     <div class="field-pair">
                         <label class="config wide" for="enable_tv_sorting">$T('opt-tvsort')</label>
-                        <input type="checkbox" name="enable_tv_sorting" id="enable_tv_sorting" value="1" <!--#if int($enable_tv_sorting)> 0 then 'checked="checked"' else ""#--> /> 
+                        <input type="checkbox" name="enable_tv_sorting" id="enable_tv_sorting" value="1" <!--#if int($enable_tv_sorting)> 0 then 'checked="checked"' else ""#--> />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="tvfoldername">$T('sortString')</label>
@@ -39,7 +39,7 @@
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="$T('button-SeasonS01E05')" />
                             <br/>
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')" />
-                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" /> 
+                            <input type="button" class="btn btn-default" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" />
                         </div>
                     </div>
                     <div id="previewtv" class="example">
@@ -48,7 +48,7 @@
                             <input type="text" id="tvsamplename" name="tvsamplename" placeholder="$T('show-name') S01E05 - $T('ep-name') [DTS]" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="field-pair">
-                            <label class="config">$T('sortResult')</label> <span class="desc path" id="previewtv-result">&nbsp;</span> 
+                            <label class="config">$T('sortResult')</label> <span class="desc path" id="previewtv-result">&nbsp;</span>
                         </div>
                     </div>
                     <div class="field-pair">
@@ -162,7 +162,7 @@
         <div class="section">
             <div class="col2">
                 <h3>$T('movieSort') <a href="$helpuri$help_uri#toc6" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                <p> 
+                <p>
                     <b>$T('affectedCat')</b><br/>
                     <select name="movie_cat" multiple="multiple" class="multiple_cats">
                         <!--#for $ct in $cat_list#-->
@@ -175,7 +175,7 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5> 
+                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5>
                     </div>
                     <div class="field-pair">
                         <label class="config wide" for="enable_movie_sorting">$T('opt-movieSort')</label>
@@ -183,7 +183,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config wide" for="movie_extra_folder">$T('opt-movieExtra')</label>
-                        <input type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if int($movie_extra_folder)> 0 then 'checked="checked"' else ""#--> /> 
+                        <input type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if int($movie_extra_folder)> 0 then 'checked="checked"' else ""#--> />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="moviefoldername">$T('sortString')</label>
@@ -198,7 +198,7 @@
                         <div class="presets float-left">
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
-                            <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="Decades 1" /> 
+                            <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="Decades 1" />
                         </div>
                     </div>
                     <div id="previewmovie" class="example">
@@ -313,11 +313,11 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5> 
+                        <h5 class="darkred nomargin">$T('ft-download'): <span class="path">$complete_dir</span></h5>
                     </div>
                     <div class="field-pair">
                         <label class="config wide" for="enable_date_sorting">$T('opt-dateSort')</label>
-                        <input type="checkbox" name="enable_date_sorting" id="enable_date_sorting" value="1" <!--#if int($enable_date_sorting)> 0 then 'checked="checked"' else ""#--> /> 
+                        <input type="checkbox" name="enable_date_sorting" id="enable_date_sorting" value="1" <!--#if int($enable_date_sorting)> 0 then 'checked="checked"' else ""#--> />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="datefoldername">$T('sortString')</label>
@@ -328,7 +328,7 @@
                         <div class="presets float-left">
                             <input type="button" class="btn btn-default" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')" />
                             <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')" />
-                            <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" /> 
+                            <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" />
                         </div>
                     </div>
                     <div id="previewdate" class="example">
@@ -337,7 +337,7 @@
                             <input type="text" id="datesamplename" name="datesamplename" placeholder="$T('show-name') 2009-01-02" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="field-pair">
-                            <label class="config">$T('sortResult')</label> <span class="desc path" id="previewdate-result">&nbsp;</span> 
+                            <label class="config">$T('sortResult')</label> <span class="desc path" id="previewdate-result">&nbsp;</span>
                         </div>
                     </div>
                     <div class="field-pair">
@@ -519,12 +519,12 @@
         else
             \$('#previewdate').hide();
     }
-    
+
     \$(document).ready(function(){
         new_previewtv();
         new_previewmovie();
         new_previewdate();
-    
+
         \$('#tvfoldername, #tvsamplename').bind("keyup focus", new_previewtv);
         \$('#moviefoldername, #movieextra, #moviesamplename').bind("keyup focus", new_previewmovie);
         \$('#datefoldername, #datesamplename').bind("keyup focus", new_previewdate);

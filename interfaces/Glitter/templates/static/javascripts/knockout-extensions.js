@@ -37,7 +37,7 @@ ko.bindingHandlers.longText = {
         if(allBindingsAccessor.get('longTextType') != "Script") {
             value = value.map(convertHTMLtoText)
         }
-        
+
         // Any <br>'s?
         var outputText = '';
         if(value.length > 4) {
@@ -69,7 +69,7 @@ ko.bindingHandlers.filedrop = {
             return;
         }
         // EDITED to prevent drag-and-drop from inside own screen
-        $(element).bind("dragstart", function(e) {        
+        $(element).bind("dragstart", function(e) {
             $(element).data('internal-drag', true)
             // Remove after timeout
             setTimeout(function() {
@@ -110,7 +110,7 @@ $(document).bind('dragover', function(e) {
 
 /*! Knockout Persist - v0.1.0 - 2015-12-28
 * https://github.com/spoike/knockout.persist
-* Copyright (c) 2013 Mikael Brassman; Licensed MIT 
+* Copyright (c) 2013 Mikael Brassman; Licensed MIT
 * Safihre edited to better detect if localStorage is possible */
 (function(ko) {
     // Don't crash on browsers that are missing localStorage

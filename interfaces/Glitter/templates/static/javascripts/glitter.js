@@ -1,8 +1,8 @@
 /******
-        
+
         Glitter V1
         By Safihre (2015) - safihre@sabnzbd.org
-        
+
         Code extended from Shiny-template
         Code examples used from Knockstrap-template
 

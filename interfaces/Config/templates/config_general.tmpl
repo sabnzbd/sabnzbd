@@ -76,7 +76,7 @@
                     <label class="config" for="${pid}_wp">$T('opt-web_password')</label>
                     <input type="text" name="${pid}_wp" id="${pid}_wp" value="$password" data-hide="password" />
                     <span class="desc">$T('explain-web_password')</span>
-                </div>  
+                </div>
                 <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
@@ -223,7 +223,7 @@
     hideOrShowTranslate()
 
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
-    
+
     \$('#generate_new_apikey').click(function () {
       if (confirm("$T('Plush-confirm')")) {
         $.ajax({
@@ -260,9 +260,9 @@
             "text": \$(this).attr('rel')
         });
         \$('#modal_qr').modal('show');
-        
+
         // No save on this button click
-        e.preventDefault();                        
+        e.preventDefault();
     });
 
     \$('.generate_cert').click(function(e) {
@@ -296,7 +296,7 @@
         \$('#bandwidth_max_value').val(bandwithLimitNumber)
         \$('#bandwidth_max_dropdown').val(bandwithLimitText)
     }
-    
+
 
     // Update the value
     \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {

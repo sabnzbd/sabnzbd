@@ -62,7 +62,7 @@
                         <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-max_art_opt')</span>
                     </div>
-                    
+
                     <div class="field-pair">
                         <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>
                         <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if int($auto_disconnect) > 0 then 'checked="checked"' else ""#--> />
@@ -228,7 +228,7 @@
                         <input type="checkbox" name="unpack_check" id="unpack_check" value="1" <!--#if int($unpack_check) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-unpack_check')</span>
                     </div>
-                    
+
                     <div class="field-pair">
                         <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
                         <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
@@ -386,7 +386,7 @@
                             <p>
                                 <label for="rating_filter_abort_video">$T('opt-rating_filter_video')</label>
                                 <select name="rating_filter_abort_video" id="rating_filter_abort_video">
-                                    <option value="0" <!--#if $rating_filter_abort_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>                                
+                                    <option value="0" <!--#if $rating_filter_abort_video == 0 then 'selected="selected"' else ""#--> >$T('notUsed')</option>
                                     <!--#for $val in $range(1, 10)#--><option value="$val" <!--#if $rating_filter_abort_video == $val then 'selected="selected"' else ""#--> >$val $T('orLess')</option><!--#end for#-->
                                 </select>
                             </p>
@@ -406,7 +406,7 @@
                                     <input type="checkbox" value="1" id="rating_filter_abort_encrypted_confirm" name="rating_filter_abort_encrypted_confirm" <!--#if int($rating_filter_abort_encrypted_confirm) > 0 then 'checked="checked"' else ""#--> />
                                     <label for="rating_filter_abort_encrypted_confirm">$T('opt-rating_filter_confirmed')</label>
                                 </span>
-                            </p>                            
+                            </p>
                             <p>
                                 <span>
                                     <input type="checkbox" value="1" id="rating_filter_abort_spam" name="rating_filter_abort_spam" <!--#if int($rating_filter_abort_spam) > 0 then 'checked="checked"' else ""#--> />
@@ -416,7 +416,7 @@
                                     <input type="checkbox" value="1" id="rating_filter_abort_spam_confirm" name="rating_filter_abort_spam_confirm" <!--#if int($rating_filter_abort_spam_confirm) > 0 then 'checked="checked"' else ""#--> />
                                     <label for="rating_filter_abort_spam_confirm">$T('opt-rating_filter_confirmed')</label>
                                 </span>
-                            </p>                            
+                            </p>
                             <p>
                                 <input type="checkbox" value="1" id="rating_filter_abort_downvoted" name="rating_filter_abort_downvoted" <!--#if int($rating_filter_abort_downvoted) > 0 then 'checked="checked"' else ""#--> />
                                 <label for="rating_filter_abort_downvoted">$T('opt-rating_filter_downvoted')</label>
@@ -454,7 +454,7 @@
                                     <input type="checkbox" value="1" id="rating_filter_pause_encrypted_confirm" name="rating_filter_pause_encrypted_confirm" <!--#if int($rating_filter_pause_encrypted_confirm) > 0 then 'checked="checked"' else ""#--> />
                                     <label for="rating_filter_pause_encrypted_confirm">$T('opt-rating_filter_confirmed')</label>
                                 </span>
-                            </p>                            
+                            </p>
                             <p>
                                 <span>
                                     <input type="checkbox" value="1" id="rating_filter_pause_spam" name="rating_filter_pause_spam" <!--#if int($rating_filter_pause_spam) > 0 then 'checked="checked"' else ""#--> />
@@ -464,7 +464,7 @@
                                     <input type="checkbox" value="1" id="rating_filter_pause_spam_confirm" name="rating_filter_pause_spam_confirm" <!--#if int($rating_filter_pause_spam_confirm) > 0 then 'checked="checked"' else ""#--> />
                                     <label for="rating_filter_pause_spam_confirm">$T('opt-rating_filter_confirmed')</label>
                                 </span>
-                            </p>                            
+                            </p>
                             <p>
                                 <input type="checkbox" value="1" id="rating_filter_pause_downvoted" name="rating_filter_pause_downvoted" <!--#if int($rating_filter_pause_downvoted) > 0 then 'checked="checked"' else ""#--> />
                                 <label for="rating_filter_pause_downvoted">$T('opt-rating_filter_downvoted')</label>
@@ -488,16 +488,16 @@
 <script type="text/javascript">
 \$(document).ready(function() {
     if (!\$('#rating_filter_enable').is(":checked")) {
-        \$("#rating_filter_abort").hide();   
-        \$("#rating_filter_pause").hide();    
+        \$("#rating_filter_abort").hide();
+        \$("#rating_filter_pause").hide();
     }
     \$('#rating_filter_enable').change(function () {
         if (\$(this).is(":checked")) {
-            \$("#rating_filter_abort").show();   
-            \$("#rating_filter_pause").show();   
-        }        
+            \$("#rating_filter_abort").show();
+            \$("#rating_filter_pause").show();
+        }
         else {
-            \$("#rating_filter_abort").hide();   
+            \$("#rating_filter_abort").hide();
             \$("#rating_filter_pause").hide();
         }
     });
