@@ -64,7 +64,7 @@ __all__ = ['Article', 'NzbFile', 'NzbObject']
 RE_NORMAL = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
-PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
+PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+|\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
 
@@ -1454,7 +1454,7 @@ class NzbObject(TryList):
                 def _get_first_meta(type):
                     values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
                     return values[0] if values and isinstance(values, list) else values
-                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup', 
+                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup',
                                 'votedown', 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
                 fields = {}
                 for k in rating_types:
