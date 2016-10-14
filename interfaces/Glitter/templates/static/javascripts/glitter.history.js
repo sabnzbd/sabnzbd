@@ -296,7 +296,15 @@ function HistoryModel(parent, data) {
     // Processing or done?
     self.processingDownload = ko.pureComputed(function() {
         var status = self.status();
-        return(status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing')
+        // When we can cancel
+        if (status === 'Extracting' || status === 'Verifying' || status == 'Repairing') {
+            return 2
+        }
+        // These cannot be cancelled
+        if(status === 'Moving' ||  status === 'Running') {
+            return 1
+        }
+        return false;
     })
 
     // Format status text
@@ -392,27 +400,35 @@ function HistoryModel(parent, data) {
 
     // Delete button
     self.deleteSlot = function(item, event) {
-        // Are we not still processing?
-        if(item.processingDownload() || item.processingWaiting()) return false;
-
         // Confirm?
         if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDow1)) {
-            callAPI({
-                mode: 'history',
-                name: 'delete',
-                del_files: 1,
-                value: self.nzo_id
-            }).then(function(response) {
-                if(response.status) {
-                    // Fade and remove
-                    $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                        // Make sure no flickering (if there are more items left) and then remove
-                        self.parent.isLoading(self.parent.totalItems() > 1)
-                        self.parent.historyItems.remove(self);
-                        self.parent.parent.refresh();
-                    })
-                }
-            });
+            // Are we still processing and it can be stopped?
+            if(item.processingDownload() == 2) {
+                callAPI({
+                    mode: 'cancel_pp',
+                    value: self.nzo_id
+                })
+                // All we can do is wait
+            } else {
+                // Delete the item
+                callAPI({
+                    mode: 'history',
+                    name: 'delete',
+                    del_files: 1,
+                    value: self.nzo_id
+                }).then(function(response) {
+                    if(response.status) {
+                        // Fade and remove
+                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            // Make sure no flickering (if there are more items left) and then remove
+                            self.parent.isLoading(self.parent.totalItems() > 1)
+                            self.parent.historyItems.remove(self);
+                            self.parent.parent.refresh();
+                        })
+                    }
+                });
+            }
+
         }
     };
 

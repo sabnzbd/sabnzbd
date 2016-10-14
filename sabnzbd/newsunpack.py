@@ -477,6 +477,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         try:
             fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
                                          one_folder, nzo, rar_set, extraction_path)
+            # Was it aborted?
+            if not nzo.pp_active:
+                fail = 1
+                break
             success = not fail
         except:
             success = False
@@ -655,6 +659,15 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         line = proc.readline()
         if not line:
             break
+
+        # Check if we should still continue
+        if not nzo.pp_active:
+            p.kill()
+            msg = T('PostProcessing was aborted (%s)', T('Unpack'))
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg, set=setname)
+            nzo.status = Status.FAILED
+            return fail, (), ()
 
         line = line.strip()
         lines.append(line)
@@ -1308,6 +1321,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
             line = linebuf.strip()
             linebuf = ''
+
+            # Check if we should still continue
+            if not nzo.pp_active:
+                p.kill()
+                msg = T('PostProcessing was aborted (%s)', T('Repair'))
+                nzo.fail_msg = msg
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+                readd = False
+                break
 
             # Skip empty lines
             if line == '':

@@ -526,7 +526,8 @@ tbody>tr>td:last-child {
     color: inherit;
 }
 
-.hover-button.glyphicon-play {
+.hover-button.glyphicon-play,
+.hover-button.glyphicon-stop {
     opacity: 1;
     color: #474747;
 }

@@ -184,7 +184,9 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <a href="#" class="hover-button" data-bind="click: deleteSlot, css: { disabled : processingDownload() || processingWaiting() }"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" data-bind="click: deleteSlot">
+                        <span class="hover-button glyphicon glyphicon-trash" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
+                    </a>
                 </td>
             </tr>
         </tbody>

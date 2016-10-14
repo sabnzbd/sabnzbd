@@ -383,6 +383,13 @@ def _api_retry(name, output, kwargs):
     else:
         return report(output, _MSG_NO_ITEM)
 
+def _api_cancel_pp(name, output, kwargs):
+    """ API: accepts name, output, value(=nzo_id) """
+    nzo_id = kwargs.get('value')
+    if PostProcessor.do.cancel_pp(nzo_id):
+        return report(output, keyword='', data={'status': True, 'nzo_id': nzo_id})
+    else:
+        return report(output, _MSG_NO_ITEM)
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
@@ -926,6 +933,7 @@ _api_table = {
     'translate': (_api_translate, 2),
     'addfile': (_api_addfile, 1),
     'retry': (_api_retry, 2),
+    'cancel_pp': (_api_cancel_pp, 2),
     'addlocalfile': (_api_addlocalfile, 1),
     'switch': (_api_switch, 2),
     'change_cat': (_api_change_cat, 2),
