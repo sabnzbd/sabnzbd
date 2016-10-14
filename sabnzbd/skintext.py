@@ -247,6 +247,7 @@ SKIN_TEXT = {
     'purgeFailed' : TT('Purge Failed NZBs'), #: Button to delete all failed jobs in History
     'purgeFailed-Files' : TT('Purge Failed NZBs & Delete Files'), #: Button to delete all failed jobs in History, including files
     'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
+    'purgePage' : TT('Purge NZBs on the current page'), #: Button to delete jobs on current page in History
     'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
     'msg-path' : TT('Path'), #: Path as displayed in History details
     'link-retryAll' : TT('Retry all failed'), #: Retry all failed jobs in History

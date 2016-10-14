@@ -85,7 +85,7 @@
                     <li class="active"><a href="#options-status" data-toggle="tab">$T('menu-cons')</a></li>
                     <li><a href="#options_connections" data-toggle="tab">$T('connections')</a></li>
                     <li><a href="#options-orphans" data-toggle="tab">$T('Glitter-orphanedJobs') <!-- ko if: statusInfo.folders().length > 0 --><span class="label label-warning" data-bind="text: statusInfo.folders().length"></span><!-- /ko --></a></li>
-                    <li><a href="#options-interface" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>  
+                    <li><a href="#options-interface" data-toggle="tab">$T('Glitter-interfaceOptions')</a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="options-status">
@@ -144,9 +144,9 @@
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasDiskStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
-                        <hr />   
+                        <hr />
                         <div class="row options-function-box">
-                            <div class="col-sm-6"> 
+                            <div class="col-sm-6">
                                 <a href="#" data-bind="click: forceDisconnect" class="btn btn-default "><span class="glyphicon glyphicon-minus-sign"></span> $T('link-forceDisc')</a>
                             </div>
                             <div class="col-sm-6">
@@ -156,7 +156,7 @@
                             </div>
                         </div>
                         <div class="row options-function-box">
-                            <div class="col-sm-6"> 
+                            <div class="col-sm-6">
                                 <a href="./status/showlog?session=$session" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> $T('link-showLog')</a>
                             </div>
                             <div class="col-sm-6">
@@ -174,13 +174,13 @@
                     <div class="tab-pane fade" id="options_connections">
                         <div class="options-switch">
                             <label>
-                                <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" /> 
+                                <input type="checkbox" value="1" name="showConnections" data-bind="checked: showActiveConnections" />
                                 <span>$T('Glitter-showActiveConnections')</span>
                             </label>
                         </div>
                         <div data-bind="foreach: statusInfo.servers">
                             <div class="options-server-box">
-                                
+
                                 <div class="row">
                                     <div class="col-sm-6">$T('swtag-server')</div>
                                     <div class="col-sm-6">
@@ -195,7 +195,7 @@
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
                                     <div class="col-sm-6">
-                                        <span data-bind="text: serverconnections().length"></span> / 
+                                        <span data-bind="text: serverconnections().length"></span> /
                                         <span data-bind="text: servertotalconn"></span>
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- ko if: serverconnections().length > 0 -->
                                 <table class="table table-hover table-server-connections" data-bind="visible: \$root.showActiveConnections()">
                                     <thead>
@@ -245,8 +245,8 @@
                         <h4>$T('none')</h4>
                         <!-- /ko -->
                         <!-- ko if: statusInfo.folders().length > 0 -->
-                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a> 
-                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: addAllOrphaned">$T('Glitter-retryAllOrphaned') <span class="glyphicon glyphicon-plus-sign"></span></a> 
+                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="#" class="hover-button process-all-orphaned" data-bind="click: addAllOrphaned">$T('Glitter-retryAllOrphaned') <span class="glyphicon glyphicon-plus-sign"></span></a>
                         <div class="clearfix"></div>
                         <table class="table table-hover table-striped">
                             <thead>
@@ -272,7 +272,7 @@
                         <form class="form-horizontal" onsubmit="return false;">
                             <div class="options-switch">
                                 <label>
-                                    <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" /> 
+                                    <input type="checkbox" name="useGlobalOptions" value="true" data-bind="checked: useGlobalOptions" />
                                     <span>$T('Glitter-useGlobalOptions')</span>
                                 </label>
                             </div>
@@ -646,8 +646,8 @@
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purgeremove-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed-Files')</button><hr />
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-completed"><span class="glyphicon glyphicon-floppy-saved"></span> $T('purgeCompl')</button><hr />
-                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-page"><span class="glyphicon glyphicon-check"></span> $T('purgeHist') ($T('Glitter-page')) <span class="label label-default" data-bind="text: history.historyItems().length"></span></button>
-                
+                <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-page"><span class="glyphicon glyphicon-check"></span> $T('purgePage') <span class="label label-default" data-bind="text: history.historyItems().length"></span></button>
+
             </div>
         </div>
     </div>
