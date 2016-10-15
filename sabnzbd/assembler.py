@@ -41,7 +41,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
-from sabnzbd.utils.rarfile import RarFile, is_rarfile
+import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import unicoder, is_utf8
 from sabnzbd.rating import Rating
 
@@ -310,10 +310,10 @@ def is_cloaked(path, names):
 def check_encrypted_rar(nzo, filepath):
     """ Check if file is rar and is encrypted """
     encrypted = False
-    if nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and is_rarfile(filepath):
+    if nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and rarfile.is_rarfile(filepath):
         try:
-            zf = RarFile(filepath, all_names=True)
-            encrypted = zf.encrypted or is_cloaked(filepath, zf.namelist())
+            zf = rarfile.RarFile(filepath, all_names=True)
+            encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
             if encrypted and not nzo.reuse:
                 nzo.encrypted = 1
             else:
@@ -333,11 +333,11 @@ def rar_contains_unwanted_file(filepath):
     # returns False if no unwanted extensions are found in the rar file
     # returns name of file if unwanted extension is found in the rar file
     unwanted = None
-    if cfg.unwanted_extensions() and is_rarfile(filepath):
+    if cfg.unwanted_extensions() and rarfile.is_rarfile(filepath):
         # logging.debug('rar file to check: %s',filepath)
         # logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
         try:
-            zf = RarFile(filepath, all_names=True)
+            zf = rarfile.RarFile(filepath, all_names=True)
             # logging.debug('files in rar file: %s', zf.namelist())
             for somefile in zf.namelist():
                 logging.debug('file in rar file: %s', somefile)
