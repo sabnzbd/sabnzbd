@@ -662,25 +662,35 @@ def parring(nzo, workdir):
         # Get the NZF's and sort them based on size
         nzfs_sorted = sorted(nzo.finished_files, key=lambda x: x.bytes)
 
+        # We will have to make 'fake' par files that are recognized
+        par2_vol = 0
+        par2_filename = None
+
         for nzf_try in nzfs_sorted:
             # run through list of files, looking for par2 signature..
             logging.debug("Checking par2 signature of %s", nzf_try.filename)
             try:
                 nzf_path = os.path.join(workdir, nzf_try.filename)
                 if(is_parfile(nzf_path)):
-                    # Rename file on first match (should be head par2)
-                    newpath = nzf_path + '.par2'
+                    # We need 1 base-name so they are recognized as 1 set
+                    if not par2_filename:
+                        par2_filename = nzf_path
+
+                    # Rename so handle_par2() picks it up
+                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol+1)
                     renamer(nzf_path, newpath)
                     nzf_try.filename = os.path.split(newpath)[1]
-                    nzo.handle_par2(nzf_try, file_done=True)
 
-                    # We do it again
-                    par_error, re_add = parring(nzo, workdir)
-                    break
+                    # Let the magic happen
+                    nzo.handle_par2(nzf_try, file_done=True)
+                    par2_vol += 1
             except:
                 pass
+        if par2_vol > 0:
+            # Pars found, we do it again
+            par_error, re_add = parring(nzo, workdir)
         else:
-            # If for was not broken, we must not have found any par2..
+            # We must not have found any par2..
             logging.info("No par2 sets for %s", filename)
             nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
             if cfg.sfv_check() and not verified.get('', False):
