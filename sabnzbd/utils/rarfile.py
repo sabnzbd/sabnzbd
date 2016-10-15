@@ -212,7 +212,7 @@ ALT_TEST_ARGS = ('-t', '-f')
 ALT_CHECK_ARGS = ('--help',)
 
 #: whether to speed up decompression by using tmp archive
-USE_EXTRACT_HACK = 1
+USE_EXTRACT_HACK = 0
 
 #: limit the filesize for tmp archive usage
 HACK_SIZE_LIMIT = 20 * 1024 * 1024
@@ -397,7 +397,11 @@ def _get_rar_version(xfile):
 def is_rarfile(xfile):
     '''Check quickly whether file is rar archive.
     '''
-    return _get_rar_version(xfile) > 0
+    rar_ver = _get_rar_version(xfile)
+    if rar_ver:
+        return 'RAR%d' % rar_ver
+    else:
+        return None
 
 class Error(Exception):
     """Base class for rarfile errors."""
@@ -623,7 +627,7 @@ class RarFile(object):
     comment = None
 
     def __init__(self, rarfile, mode="r", charset=None, info_callback=None,
-                 crc_check=True, errors="stop"):
+                 crc_check=True, errors="stop", all_names=False):
         """Open and parse a RAR archive.
 
         Parameters:
@@ -648,6 +652,7 @@ class RarFile(object):
         self._crc_check = crc_check
         self._password = None
         self._file_parser = None
+        self._all_names = all_names
 
         if errors == "stop":
             self._strict = False
@@ -838,11 +843,13 @@ class RarFile(object):
         ver = _get_rar_version(self._rarfile)
         if ver == 3:
             p3 = RAR3Parser(self._rarfile, self._password, self._crc_check,
-                            self._charset, self._strict, self._info_callback)
+                            self._charset, self._strict, self._info_callback,
+                            self._all_names)
             self._file_parser = p3  # noqa
         elif ver == 5:
             p5 = RAR5Parser(self._rarfile, self._password, self._crc_check,
-                            self._charset, self._strict, self._info_callback)
+                            self._charset, self._strict, self._info_callback,
+                            self._all_names)
             self._file_parser = p5  # noqa
         else:
             raise BadRarFile("Not a RAR file")
@@ -893,12 +900,13 @@ class CommonParser(object):
     _password = None
     comment = None
 
-    def __init__(self, rarfile, password, crc_check, charset, strict, info_cb):
+    def __init__(self, rarfile, password, crc_check, charset, strict, info_cb, all_names):
         self._rarfile = rarfile
         self._password = password
         self._crc_check = crc_check
         self._charset = charset
         self._strict = strict
+        self._all_names = all_names
         self._info_callback = info_cb
         self._info_list = []
         self._info_map = {}
@@ -1010,7 +1018,7 @@ class CommonParser(object):
                 if h.flags & RAR_MAIN_NEWNUMBERING:
                     # RAR 2.x does not set FIRSTVOLUME,
                     # so check it only if NEWNUMBERING is used
-                    if (h.flags & RAR_MAIN_FIRSTVOLUME) == 0:
+                    if not self._all_names and (h.flags & RAR_MAIN_FIRSTVOLUME) == 0:
                         raise NeedFirstVolume("Need to start from first volume")
                 if h.flags & RAR_MAIN_PASSWORD:
                     self._needs_password = True
@@ -1024,7 +1032,7 @@ class CommonParser(object):
                 if h.flags & RAR_FILE_SPLIT_AFTER:
                     more_vols = True
                 # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
-                if volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
+                if not self._all_names and volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
                     raise NeedFirstVolume("Need to start from first volume")
 
             if h.needs_password():
@@ -1422,9 +1430,14 @@ class RAR3Parser(CommonParser):
     def process_entry(self, fd, item):
         if item.type == RAR_BLOCK_FILE:
             # use only first part
-            if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
+            if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0 :
                 self._info_map[item.filename] = item
                 self._info_list.append(item)
+            elif self._all_names:
+                # Broken rar-files would lead to double file-listings
+                if item.filename not in self._info_map:
+                    self._info_map[item.filename] = item
+                    self._info_list.append(item)
             elif len(self._info_list) > 0:
                 # final crc is in last block
                 old = self._info_list[-1]
@@ -1829,6 +1842,11 @@ class RAR5Parser(CommonParser):
             if (item.block_flags & RAR5_BLOCK_FLAG_SPLIT_BEFORE) == 0:
                 self._info_map[item.filename] = item
                 self._info_list.append(item)
+            elif self._all_names:
+                # Broken rar-files would lead to double file-listings
+                if item.filename not in self._info_map:
+                    self._info_map[item.filename] = item
+                    self._info_list.append(item)
             elif len(self._info_list) > 0:
                 # final crc is in last block
                 old = self._info_list[-1]
@@ -2895,37 +2913,3 @@ class XTempFile(object):
             except OSError:
                 pass
             self._tmpfile = None
-
-#
-# Check if unrar works
-#
-
-ORIG_UNRAR_TOOL = UNRAR_TOOL
-ORIG_OPEN_ARGS = OPEN_ARGS
-ORIG_EXTRACT_ARGS = EXTRACT_ARGS
-ORIG_TEST_ARGS = TEST_ARGS
-
-def _check_unrar_tool():
-    global UNRAR_TOOL, OPEN_ARGS, EXTRACT_ARGS, TEST_ARGS
-    try:
-        # does UNRAR_TOOL work?
-        custom_check([ORIG_UNRAR_TOOL], True)
-
-        UNRAR_TOOL = ORIG_UNRAR_TOOL
-        OPEN_ARGS = ORIG_OPEN_ARGS
-        EXTRACT_ARGS = ORIG_EXTRACT_ARGS
-        TEST_ARGS = ORIG_TEST_ARGS
-    except RarCannotExec:
-        try:
-            # does ALT_TOOL work?
-            custom_check([ALT_TOOL] + list(ALT_CHECK_ARGS), True)
-            # replace config
-            UNRAR_TOOL = ALT_TOOL
-            OPEN_ARGS = ALT_OPEN_ARGS
-            EXTRACT_ARGS = ALT_EXTRACT_ARGS
-            TEST_ARGS = ALT_TEST_ARGS
-        except RarCannotExec:
-            # no usable tool, only uncompressed archives work
-            pass
-
-_check_unrar_tool()

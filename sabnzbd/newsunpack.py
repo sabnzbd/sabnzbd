@@ -31,7 +31,7 @@ import shutil
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
-from sabnzbd.utils.rarfile import RarFile, is_rarfile
+import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     flag_file, real_path, globber, globber_full, short_path
 from sabnzbd.tvsort import SeriesSorter
@@ -521,7 +521,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
     return fail, extracted_files
 
 
-def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
+def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path):
     """ Unpack single rar set 'rarfile' to 'extraction_path',
         with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
@@ -575,17 +575,17 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
             msg = T('Trying unrar with password "%s"') % unicoder(password)
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg)
-        fail, new_files, rars = rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password)
+        fail, new_files, rars = rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password)
         if fail != 2:
             break
 
     if fail == 2:
-        logging.error('%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(rarfile)[1])
+        logging.error('%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(rarfile_path)[1])
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
-    """ Unpack single rar set 'rarfile' to 'extraction_path'
+def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
+    """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time()
@@ -593,11 +593,11 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
     try:
-        zf = RarFile(rarfile)
-        expected_files = zf.unamelist()
+        zf = rarfile.RarFile(rarfile_path)
+        expected_files = zf.namelist()
         zf.close()
     except:
-        logging.info('Archive %s probably has full encryption', rarfile)
+        logging.info('Archive %s probably has full encryption', rarfile_path)
         expected_files = []
 
     if password:
@@ -620,22 +620,22 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     if sabnzbd.WIN32:
         # Use all flags
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
         command.insert(3, '-tsm-')
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    logging.debug("Analyzing rar file ... %s found", is_rarfile(rarfile))
+    logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -743,7 +743,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             if m:
                 filename = TRANS(m.group(1)).strip()
             else:
-                filename = os.path.split(rarfile)[1]
+                filename = os.path.split(rarfile_path)[1]
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
             msg = (u'[%s][%s] ' + T('Unpacking failed, archive requires a password')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
@@ -1727,7 +1727,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
         # Extra check for rar (takes CPU/disk)
         file_is_rar = False
         if check_rar:
-            file_is_rar = is_rarfile(file)
+            file_is_rar = rarfile.is_rarfile(file)
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
