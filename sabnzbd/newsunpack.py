@@ -883,7 +883,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                '-d%s' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
-
+    logging.debug('Starting unzip: %s', command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
@@ -1022,7 +1022,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                '-o%s' % extraction_path, name]
 
     stup, need_shell, command, creationflags = build_command(command)
-
+    logging.debug('Starting 7za: %s', command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
