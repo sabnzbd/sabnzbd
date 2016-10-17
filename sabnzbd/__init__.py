@@ -1038,11 +1038,6 @@ def check_repair_request():
     return False
 
 
-def SimpleRarExtract(rarfile, fn):
-    """ Wrapper for call to newsunpack, required to avoid circular imports """
-    return sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
-
-
 def check_all_tasks():
     """ Check every task and restart safe ones, else restart program
         Return True when everything is under control

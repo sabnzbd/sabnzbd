@@ -203,22 +203,6 @@ def external_script(script, p1, p2, p3=None, p4=None):
     return output, ret
 
 
-
-def SimpleRarExtract(rarfile, name):
-    """ Extract single file from rar archive, returns (retcode, data) """
-    command = [sabnzbd.newsunpack.RAR_COMMAND, "p", "-inul", rarfile, name]
-
-    stup, need_shell, command, creationflags = build_command(command)
-
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
-
-    output = p.stdout.read()
-    ret = p.wait()
-    return ret, output
-
-
 def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete' """
     if depth > 5:

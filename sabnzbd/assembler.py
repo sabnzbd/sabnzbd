@@ -111,7 +111,8 @@ class Assembler(Thread):
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
 
-                    if check_encrypted_rar(nzo, filepath):
+                    rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
+                    if rar_encrypted:
                         if cfg.pause_on_pwrar() == 1:
                             logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file'), nzo.final_name)
                             nzo.pause()
@@ -121,9 +122,8 @@ class Assembler(Thread):
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
-                    unwanted = rar_contains_unwanted_file(filepath)
-                    if unwanted:
-                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted)
+                    if unwanted_file:
+                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted_file)
                         logging.debug(T('Unwanted extension is in rar file %s'), filepath)
                         if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                             logging.debug('Unwanted extension ... pausing')
@@ -307,47 +307,38 @@ def is_cloaked(path, names):
     return False
 
 
-def check_encrypted_rar(nzo, filepath):
-    """ Check if file is rar and is encrypted """
+def check_encrypted_and_unwanted_files(nzo, filepath):
+    """ Combines check for unwanted and encrypted files to save on CPU and IO """
     encrypted = False
-    if nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar() and rarfile.is_rarfile(filepath):
-        try:
-            zf = rarfile.RarFile(filepath, all_names=True)
-            encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
-            if encrypted and not nzo.reuse:
-                nzo.encrypted = 1
-            else:
-                # Don't check other files
-                nzo.encrypted = -1
-                encrypted = False
-            zf.close()
-            del zf
-        except:
-            logging.debug('RAR file %s cannot be inspected', filepath)
-    return encrypted
-
-
-def rar_contains_unwanted_file(filepath):
-    # checks for unwanted extensions in the rar file 'filepath'
-    # ... unwanted extensions are defined in global variable cfg.unwanted_extensions()
-    # returns False if no unwanted extensions are found in the rar file
-    # returns name of file if unwanted extension is found in the rar file
     unwanted = None
-    if cfg.unwanted_extensions() and rarfile.is_rarfile(filepath):
-        # logging.debug('rar file to check: %s',filepath)
-        # logging.debug('unwanted extensions are: %s', cfg.unwanted_extensions())
-        try:
-            zf = rarfile.RarFile(filepath, all_names=True)
-            # logging.debug('files in rar file: %s', zf.namelist())
-            for somefile in zf.namelist():
-                logging.debug('file in rar file: %s', somefile)
-                if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
-                    logging.debug('Unwanted file %s', somefile)
-                    unwanted = somefile
-                    zf.close()
-        except:
-            logging.debug('RAR file %s cannot be inspected.', filepath)
-    return unwanted
+
+    if cfg.unwanted_extensions() or (nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar()):
+        # Is it even a rarfile?
+        if rarfile.is_rarfile(filepath):
+            try:
+                zf = rarfile.RarFile(filepath, all_names=True)
+                # Check for encryption (we do always, takes almost no time anyway)
+                encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
+                if encrypted and not nzo.reuse:
+                    nzo.encrypted = 1
+                else:
+                    # Don't check other files
+                    nzo.encrypted = -1
+                    encrypted = False
+
+                # Check for unwanted extensions
+                if cfg.unwanted_extensions():
+                    for somefile in zf.namelist():
+                        logging.debug('File contains: %s', somefile)
+                        if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
+                            logging.debug('Unwanted file %s', somefile)
+                            unwanted = somefile
+                            zf.close()
+                zf.close()
+                del zf
+            except:
+                logging.debug('RAR file %s cannot be inspected', filepath)
+    return encrypted, unwanted
 
 
 def nzo_filtered_by_rating(nzo):
