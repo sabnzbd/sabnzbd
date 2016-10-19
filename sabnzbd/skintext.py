@@ -313,6 +313,7 @@ SKIN_TEXT = {
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
+    'readwiki': TT('Read the Wiki Help on this!'),
 
 # Config->General
     'restartRequired' : TT('Changes will require a SABnzbd restart!'),
@@ -505,6 +506,8 @@ SKIN_TEXT = {
     'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
+    'opt-ssl_ciphers' : TT('SSL Ciphers'),
+    'explain-ssl_ciphers' : TT('Increase performance by forcing a lower SSL encryption strength.'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),

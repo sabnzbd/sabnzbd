@@ -1415,7 +1415,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only',
+    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
@@ -1507,7 +1507,7 @@ SPECIAL_BOOL_LIST = \
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
-              'ipv6_servers', 'selftest_host', 'ssl_ciphers'
+              'ipv6_servers', 'selftest_host'
      )
 SPECIAL_LIST_LIST = \
     ('rss_odd_titles', 'prio_sort_list'
