@@ -149,11 +149,12 @@ def cat_convert(cat):
         If no match found, but the indexer-cat starts with the user-cat, return user-cat
         If no match found, return None
     """
+
     if cat and cat.lower() != 'none':
-        cats = config.get_categories()
+        cats = config.get_ordered_categories()
         for ucat in cats:
             try:
-                indexer = cats[ucat].newzbin()
+                indexer = ucat['newzbin']
                 if not isinstance(indexer, list):
                     indexer = [indexer]
             except:
@@ -161,24 +162,22 @@ def cat_convert(cat):
             for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' in name:
-                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
+                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat['name'])
                     else:
-                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
-                    return ucat
+                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                    return ucat['name']
 
         # Try to find full match between user category and indexer category
         for ucat in cats:
-            if cat.lower() == ucat.lower():
-                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
-                return ucat
+            if cat.lower() == ucat['name'].lower():
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                return ucat['name']
 
         # Try to find partial match between user category and indexer category
-        # Try longest names first
-        cat_names = sorted(cats.keys(), cmp=lambda x, y: len(y) - len(x))
-        for ucat in cat_names:
-            if cat.lower().startswith(ucat.lower()):
-                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
-                return ucat
+        for ucat in cats:
+            if cat.lower().startswith(ucat['name'].lower()):
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                return ucat['name']
 
     return None
 

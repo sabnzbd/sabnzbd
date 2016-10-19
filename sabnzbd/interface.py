@@ -2428,18 +2428,18 @@ class ConfigCats(object):
         conf = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
-
-        categories = config.get_categories()
-        conf['have_cats'] = len(categories) > 1
         conf['defdir'] = cfg.complete_dir.get_path()
 
-        empty = {'name': '', 'pp': '-1', 'script': '', 'dir': '', 'newzbin': '', 'priority': DEFAULT_PRIORITY}
+        categories = config.get_ordered_categories()
+        conf['have_cats'] = len(categories) > 1
+
         slotinfo = []
-        for cat in sorted(categories.keys()):
-            slot = categories[cat].get_dict()
-            slot['name'] = cat
-            slot['newzbin'] = slot['newzbin'].replace('"', '&quot;')
-            slotinfo.append(slot)
+        for cat in categories:
+            cat['newzbin'] = cat['newzbin'].replace('"', '&quot;')
+            slotinfo.append(cat)
+
+        # Add empty line
+        empty = {'name': '', 'order': '0', 'pp': '-1', 'script': '', 'dir': '', 'newzbin': '', 'priority': DEFAULT_PRIORITY}
         slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
 

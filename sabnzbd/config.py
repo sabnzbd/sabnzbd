@@ -35,8 +35,8 @@ SAVE_CONFIG_LOCK = threading.Lock()
 
 
 CFG = {}                    # Holds INI structure
-                            # uring re-write this variable is global allow
-                            # direct access to INI structure
+                            # during re-write this variable is global
+                            # to allow direct access to INI structure
 
 database = {}               # Holds the option dictionary
 
@@ -448,6 +448,7 @@ class ConfigCat(object):
         self.__name = name
         name = 'categories,' + name
 
+        self.order = OptionNumber(name, 'order', 0, 0, 100, add=False)
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
@@ -459,7 +460,7 @@ class ConfigCat(object):
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('pp', 'script', 'dir', 'newzbin', 'priority'):
+        for kw in ('order', 'pp', 'script', 'dir', 'newzbin', 'priority'):
             try:
                 value = values[kw]
             except KeyError:
@@ -471,6 +472,7 @@ class ConfigCat(object):
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
+        dict['order'] = self.order()
         dict['pp'] = self.pp()
         dict['script'] = self.script()
         dict['dir'] = self.dir()
@@ -921,6 +923,24 @@ def get_categories(cat=0):
             cats = cats['*']
     return cats
 
+
+def get_ordered_categories():
+    """ Return list-copy of categories section that's ordered
+        by user's ordering including Default-category
+    """
+    database_cats = get_categories()
+
+    # Transform to list and sort
+    categories = []
+    for cat in database_cats.keys():
+        if cat != '*':
+            categories.append(database_cats[cat].get_dict())
+
+    # Sort and add default * category
+    categories.sort(key=lambda cat: cat['order'])
+    categories.insert(0, database_cats['*'].get_dict())
+
+    return categories
 
 def define_rss():
     """ Define rss-feeds listed in the Setup file

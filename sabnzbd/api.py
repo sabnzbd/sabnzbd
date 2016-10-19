@@ -2100,8 +2100,10 @@ def list_scripts(default=False, none=True):
 
 
 def list_cats(default=True):
-    """ Return list of categories, when default==False use '*' for Default category """
-    lst = sorted(config.get_categories().keys())
+    """ Return list of (ordered) categories,
+        when default==False use '*' for Default category
+    """
+    lst = [cat['name'] for cat in config.get_ordered_categories()]
     if default:
         lst.remove('*')
         lst.insert(0, 'Default')
