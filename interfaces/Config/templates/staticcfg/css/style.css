@@ -284,6 +284,24 @@ tr.separator {
 .catTable th {
     text-align: center;
 }
+.catTable .glyphicon-option-vertical {
+    color: #808080;
+    display: block;
+    margin-right: -5px;
+    cursor: move;
+}
+.Categories form:not(.sorting-row) .glyphicon-option-vertical {
+    visibility: hidden;
+}
+
+.Categories form.sorting-row:nth-child(even) tr,
+.Categories form:first-of-type tr:last-of-type  {
+    background-color: #F8F8F8;
+}
+
+.Categories hr {
+    margin: 5px;
+}
 
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
