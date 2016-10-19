@@ -652,16 +652,22 @@ function ViewModel() {
             return false;
         }
 
-        // Add
-        callAPI({
+        // Build request
+        var theCall = {
             mode: "addurl",
             name: $(form.nzbURL).val(),
             nzbname: $('#nzbname').val(),
-            cat: $('#modal-add-nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Category"]').val(),
-            script: $('#modal-add-nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Post-processing"]').val(),
-            priority: $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val(),
-            pp: $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()
-        }).then(function(r) {
+            script: $('#modal-add-nzb select[name="Post-processing"]').val(),
+            priority: $('#modal-add-nzb select[name="Priority"]').val(),
+            pp: $('#modal-add-nzb select[name="Processing"]').val()
+        }
+
+        // Optional, otherwise they get mis-labeled if left empty
+        if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
+        if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
+
+        // Add
+        callAPI(theCall).then(function(r) {
             // Hide and reset/refresh
             self.refresh()
             $("#modal-add-nzb").modal("hide");
@@ -687,11 +693,13 @@ function ViewModel() {
         data.append("name", file);
         data.append("mode", "addfile");
         data.append("nzbname", $('#nzbname').val());
-        data.append("cat", $('#modal-add-nzb select[name="Category"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Category"]').val()); // Default category
-        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val() == '' ? 'Default' : $('#modal-add-nzb select[name="Post-processing"]').val()); // Default script
-        data.append("priority", $('#modal-add-nzb select[name="Priority"]').val() == '' ? -100 : $('#modal-add-nzb select[name="Priority"]').val()); // Default priority
-        data.append("pp", $('#modal-add-nzb select[name="Processing"]').val() == '' ? -1 : $('#modal-add-nzb select[name="Processing"]').val()); // Default post-processing options
+        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
+        data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
         data.append("apikey", apiKey);
+
+        // Optional, otherwise they get mis-labeled if left empty
+        if($('#modal-add-nzb select[name="Category"]').val() != '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
+        if($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
 
         // Add this one
         $.ajax({
