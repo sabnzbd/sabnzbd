@@ -64,7 +64,7 @@ __all__ = ['Article', 'NzbFile', 'NzbObject']
 RE_NORMAL = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
-PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+|\-](\d*)\.par2', re.I)
+PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
 
