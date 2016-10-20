@@ -27,7 +27,8 @@ import xml.sax.saxutils
 import time
 import re
 
-from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
+from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
+    sfv_check, build_filelists, rar_sort
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
     make_script_path, short_path, long_path, clip_path, \
@@ -47,6 +48,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
+import sabnzbd.utils.rarfile as rarfile
 
 
 class PostProcessor(Thread):
@@ -635,6 +637,8 @@ def parring(nzo, workdir):
                     re_add = re_add or need_re_add
                     if not res and not need_re_add and cfg.sfv_check():
                         res = try_sfv_check(nzo, workdir, setname)
+                    if not res and not need_re_add and cfg.enable_unrar():
+                        res = try_rar_check(nzo, workdir, setname)
                     verified[setname] = res
                 else:
                     continue
@@ -642,9 +646,16 @@ def parring(nzo, workdir):
     else:
         logging.info("No par2 sets for %s", filename)
         nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-        if cfg.sfv_check() and not verified.get('', False):
-            par_error = not try_sfv_check(nzo, workdir, '')
-            verified[''] = not par_error
+
+        if not verified.get('', False):
+            # Try SFV
+            if cfg.sfv_check():
+                par_error = not try_sfv_check(nzo, workdir, '')
+                verified[''] = not par_error
+            # If still no success, do RAR-check
+            if not par_error and cfg.enable_unrar():
+                par_error = not try_rar_check(nzo, workdir, '')
+                verified[''] = not par_error
 
     if re_add:
         logging.info('Readded %s to queue', filename)
@@ -693,6 +704,48 @@ def try_sfv_check(nzo, workdir, setname):
         nzo.status = Status.FAILED
         nzo.fail_msg = fail_msg
     return (found or not setname) and not par_error
+
+
+def try_rar_check(nzo, workdir, setname):
+    """ Attempt to verify set using the RARs
+        Return True if verified, False when failed
+        When setname is '', all RAR files will be used, otherwise only the matching one
+        If no RAR's are found, returns True
+    """
+    _, _, rars, _, _ = build_filelists(short_path(workdir), None)
+
+    if setname:
+        # Filter based on set
+        rars = [rar for rar in rars if os.path.basename(rar).startswith(setname)]
+
+    # Sort
+    rars.sort(rar_sort)
+
+    # Test
+    if rars:
+        nzo.status = Status.VERIFYING
+        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'), set=setname)
+        nzo.set_action_line(T('Trying RAR-based verification'), '...')
+        try:
+            # Set path to unrar and open the file
+            rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
+            zf = rarfile.RarFile(rars[0])
+            # Will throw exception if something is wrong
+            zf.testrar()
+            # Success!
+            msg = T('RAR files verified successfully')
+            nzo.set_unpack_info('Repair', msg, set=setname)
+            logging.info(msg)
+            return True
+        except rarfile.Error as e:
+            nzo.fail_msg = T('RAR files failed to verify')
+            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), e.message.replace('\r\n',''))
+            nzo.set_unpack_info('Repair', msg, set=setname)
+            logging.info(msg)
+            return False
+    else:
+        # No rar-files, so just continue
+        return True
 
 
 def addPrefixes(path, dirprefix):
