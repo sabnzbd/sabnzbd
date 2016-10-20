@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, flag_file, long_path, clip_path
+    set_permissions, flag_file, long_path, clip_path, get_all_passwords, short_path
 from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -312,19 +312,47 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
     encrypted = False
     unwanted = None
 
-    if cfg.unwanted_extensions() or (nzo.encrypted == 0 and not nzo.password and not nzo.meta.get('password') and cfg.pause_on_pwrar()):
+    if cfg.unwanted_extensions() or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
         # Is it even a rarfile?
         if rarfile.is_rarfile(filepath):
             try:
-                zf = rarfile.RarFile(filepath, all_names=True)
-                # Check for encryption (we do always, takes almost no time anyway)
-                encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
-                if encrypted and not nzo.reuse:
-                    nzo.encrypted = 1
-                else:
-                    # Don't check other files
-                    nzo.encrypted = -1
-                    encrypted = False
+                zf = rarfile.RarFile(short_path(filepath), all_names=True)
+                # Check for encryption
+                if (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
+                    encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
+                    if encrypted and not nzo.reuse:
+                        # Lets test if any of the password work
+                        passwords = get_all_passwords(nzo)
+                        password_hit = False
+                        rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
+
+                        for password in passwords:
+                            if password:
+                                logging.debug('Trying password "%s" on job "%s"', password, nzo.final_name)
+                                try:
+                                    zf.setpassword(password)
+                                    zf.testrar()
+                                    password_hit = True
+                                    break
+                                except rarfile.RarCRCError:
+                                    # On CRC error we can continue!
+                                    password_hit = True
+                                    break
+                                except:
+                                    pass
+
+                        # Did any work?
+                        if password_hit:
+                            # Don't check other files
+                            nzo.encrypted = -1
+                            encrypted = False
+                        else:
+                            # Encrypted and none of them worked
+                            nzo.encrypted = 1
+                    else:
+                        # Don't check other files
+                        nzo.encrypted = -1
+                        encrypted = False
 
                 # Check for unwanted extensions
                 if cfg.unwanted_extensions():
@@ -338,6 +366,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 del zf
             except:
                 logging.debug('RAR file %s cannot be inspected', filepath)
+
     return encrypted, unwanted
 
 

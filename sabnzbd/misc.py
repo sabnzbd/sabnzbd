@@ -1143,6 +1143,49 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
+def get_all_passwords(nzo):
+    """ Get all passwords, from the NZB, meta and password file """
+    if nzo.password:
+        logging.info('Found a password that was set by the user: %s', nzo.password)
+        passwords = [nzo.password.strip()]
+    else:
+        passwords = []
+
+    meta_passwords = nzo.meta.get('password', [])
+    pw = nzo.nzo_info.get('password')
+    if pw:
+        meta_passwords.append(pw)
+    if meta_passwords:
+        if nzo.password == meta_passwords[0]:
+            # this nzo.password came from meta, so don't use it twice
+            passwords.extend(meta_passwords[1:])
+        else:
+            passwords.extend(meta_passwords)
+        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+    pw_file = cfg.password_file.get_path()
+    if pw_file:
+        try:
+            pwf = open(pw_file, 'r')
+            lines = pwf.read().split('\n')
+            # Remove empty lines and space-only passwords and remove surrounding spaces
+            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+            logging.debug('Read these passwords from file: %s', pws)
+            passwords.extend(pws)
+            pwf.close()
+            logging.info('Read %s passwords from file %s', len(pws), pw_file)
+        except IOError:
+            logging.info('Failed to read the passwords file %s', pw_file)
+
+    if nzo.password:
+        # If an explicit password was set, add a retry without password, just in case.
+        passwords.append('')
+    elif not passwords or nzo.encrypted < 1:
+        # If we're not sure about encryption, start with empty password
+        # and make sure we have at least the empty password
+        passwords.insert(0, '')
+    return passwords
+
+
 def find_on_path(targets):
     """ Search the PATH for a program and return full path """
     if sabnzbd.WIN32:
