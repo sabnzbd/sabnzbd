@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, short_path
+    flag_file, real_path, globber, globber_full, short_path, get_all_passwords
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -514,44 +514,7 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
     fail = 0
     new_files = None
     rars = []
-    if nzo.password:
-        logging.info('Found a password that was set by the user: %s', nzo.password)
-        passwords = [nzo.password.strip()]
-    else:
-        passwords = []
-
-    meta_passwords = nzo.meta.get('password', [])
-    pw = nzo.nzo_info.get('password')
-    if pw:
-        meta_passwords.append(pw)
-    if meta_passwords:
-        if nzo.password == meta_passwords[0]:
-            # this nzo.password came from meta, so don't use it twice
-            passwords.extend(meta_passwords[1:])
-        else:
-            passwords.extend(meta_passwords)
-        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
-    pw_file = cfg.password_file.get_path()
-    if pw_file:
-        try:
-            pwf = open(pw_file, 'r')
-            lines = pwf.read().split('\n')
-            # Remove empty lines and space-only passwords and remove surrounding spaces
-            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-            logging.debug('Read these passwords from file: %s', pws)
-            passwords.extend(pws)
-            pwf.close()
-            logging.info('Read %s passwords from file %s', len(pws), pw_file)
-        except IOError:
-            logging.info('Failed to read the passwords file %s', pw_file)
-
-    if nzo.password:
-        # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
-    elif not passwords or nzo.encrypted < 1:
-        # If we're not sure about encryption, start with empty password
-        # and make sure we have at least the empty password
-        passwords.insert(0, '')
+    passwords = get_all_passwords(nzo)
 
     for password in passwords:
         if password:
@@ -949,31 +912,8 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single set 'sevenset' to 'extraction_path', with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
-
     fail = 0
-    if nzo.password:
-        passwords = [nzo.password]
-    else:
-        passwords = []
-        pw_file = cfg.password_file.get_path()
-        if pw_file:
-            try:
-                pwf = open(pw_file, 'r')
-                passwords = pwf.read().split('\n')
-                # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
-                pwf.close()
-                logging.info('Read the passwords file %s', pw_file)
-            except IOError:
-                logging.info('Failed to read the passwords file %s', pw_file)
-
-    if nzo.password:
-        # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
-    elif not passwords or nzo.encrypted < 1:
-        # If we're not sure about encryption, start with empty password
-        # and make sure we have at least the empty password
-        passwords.insert(0, '')
+    passwords = get_all_passwords(nzo)
 
     for password in passwords:
         if password:

@@ -161,4 +161,10 @@ msgstr ""
 "This key provides identity to indexer. Check "
 "your profile on the indexer's website."
 
+#: sabnzbd/assembler.py:117 [Warning message]
+msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
+msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 
+#: sabnzbd/assembler.py:120 [Warning message]
+msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
+msgstr "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
