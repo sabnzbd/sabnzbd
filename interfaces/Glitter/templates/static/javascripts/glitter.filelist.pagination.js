@@ -143,10 +143,13 @@ function Fileslisting(parent) {
 
     // For changing the passwords
     self.setNzbPassword = function() {
-        // Activate with this weird URL "API"
-        callSpecialAPI("./nzb/" + self.currentItem.id + "/save/", {
-            name: self.currentItem.name(),
-            password: $('#nzb_password').val()
+        // Have to also send the current name for it to work
+        callAPI({
+                mode: 'queue',
+                name: 'rename',
+                value: self.currentItem.id,
+                value2: self.currentItem.name(),
+                value3: $('#nzb_password').val()
         }).then(function() {
             // Refresh, reset and close
             parent.refresh()
