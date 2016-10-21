@@ -30,7 +30,7 @@ SABnzbd has a good deal of dependencies you'll need before you can get running. 
 
 Optional:
 
-- `python-cryptography`
+- `python-cryptography` (enables certificate generation and detection of encrypted RAR-files during download)
 - `python-yenc`
 - `python-dbus` (enable option to Shutdown/Restart/Standby PC on queue finish)
 - `7zip`
