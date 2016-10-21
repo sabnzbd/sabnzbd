@@ -26,11 +26,6 @@ import time
 import logging
 import copy
 import socket
-try:
-    socket.ssl
-    _HAVE_SSL = True
-except:
-    _HAVE_SSL = False
 from threading import RLock, Thread
 
 import sabnzbd
@@ -128,7 +123,7 @@ class Rating(Thread):
             self.ratings = {}
             self.nzo_indexer_map = {}
         Thread.__init__(self)
-        if not _HAVE_SSL:
+        if not sabnzbd.HAVE_SSL:
             logging.warning(T('Ratings server requires secure connection'))
             self.stop()
 

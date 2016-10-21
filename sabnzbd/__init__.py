@@ -75,6 +75,25 @@ if DARWIN:
 else:
     DARWIN_VERSION = 0
 
+##############################################################################
+# SSL CHECKS
+##############################################################################
+HAVE_SSL_CONTEXT = None
+HAVE_SSL = None
+try:
+    import ssl
+    HAVE_SSL = True
+    try:
+        # Test availability of SSLContext (python 2.7.9+)
+        ssl.SSLContext
+        HAVE_SSL_CONTEXT = True
+    except:
+        HAVE_SSL_CONTEXT = False
+except:
+    HAVE_SSL = False
+    HAVE_SSL_CONTEXT = False
+
+# Now we can import safely
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader

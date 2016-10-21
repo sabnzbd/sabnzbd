@@ -383,6 +383,13 @@ def _api_retry(name, output, kwargs):
     else:
         return report(output, _MSG_NO_ITEM)
 
+def _api_cancel_pp(name, output, kwargs):
+    """ API: accepts name, output, value(=nzo_id) """
+    nzo_id = kwargs.get('value')
+    if PostProcessor.do.cancel_pp(nzo_id):
+        return report(output, keyword='', data={'status': True, 'nzo_id': nzo_id})
+    else:
+        return report(output, _MSG_NO_ITEM)
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
@@ -724,7 +731,7 @@ def _api_rss_now(name, output, kwargs):
 
 def _api_retry_all(name, output, kwargs):
     """ API: Retry all failed items in History """
-    return report(output, keyword='status', data=retry_all_jobs)
+    return report(output, keyword='status', data=retry_all_jobs())
 
 
 def _api_reset_quota(name, output, kwargs):
@@ -926,6 +933,7 @@ _api_table = {
     'translate': (_api_translate, 2),
     'addfile': (_api_addfile, 1),
     'retry': (_api_retry, 2),
+    'cancel_pp': (_api_cancel_pp, 2),
     'addlocalfile': (_api_addlocalfile, 1),
     'switch': (_api_switch, 2),
     'change_cat': (_api_change_cat, 2),
@@ -1594,7 +1602,7 @@ def options_list(output):
         '7zip': sabnzbd.newsunpack.SEVEN_COMMAND,
         'nice': sabnzbd.newsunpack.NICE_COMMAND,
         'ionice': sabnzbd.newsunpack.IONICE_COMMAND,
-        'ssl': sabnzbd.newswrapper.HAVE_SSL
+        'ssl': sabnzbd.HAVE_SSL
     })
 
 

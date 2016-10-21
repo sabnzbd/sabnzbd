@@ -1,19 +1,19 @@
 <html lang="$active_lang">
 <head>
     <title>SABnzbd</title>
-    
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
-    
+
     <link rel="apple-touch-icon" sizes="76x76" href="../staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
     <link rel="apple-touch-icon" sizes="120x120" href="../staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="../staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="../staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="../staticcfg/ico/android-192x192.png" />
-    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico?v=1.1.0" />      
+    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico?v=1.1.0" />
 
-    <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?p=$pid" />
 
     <script type="text/javascript" src="../staticcfg/js/jquery-1.11.2.min.js"></script>
@@ -32,10 +32,10 @@
                 <!--#if $error#-->
                 <div class="alert alert-danger" role="alert">$error</div>
                 <!--#end if#-->
-                
+
                 <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" required autofocus>
                 <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" required>
-                
+
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
                 <div class="checkbox text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">

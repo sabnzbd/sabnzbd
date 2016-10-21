@@ -477,6 +477,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         try:
             fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
                                          one_folder, nzo, rar_set, extraction_path)
+            # Was it aborted?
+            if not nzo.pp_active:
+                fail = 1
+                break
             success = not fail
         except:
             success = False
@@ -655,6 +659,15 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         line = proc.readline()
         if not line:
             break
+
+        # Check if we should still continue
+        if not nzo.pp_active:
+            p.kill()
+            msg = T('PostProcessing was aborted (%s)') % T('Unpack')
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg, set=setname)
+            nzo.status = Status.FAILED
+            return fail, (), ()
 
         line = line.strip()
         lines.append(line)
@@ -1237,9 +1250,18 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
+
         # Allow options if not classic or when classic and non-classic are the same
-        if options and (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
-            command.insert(2, options)
+        if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
+            if options:
+                command.insert(2, options)
+            else:
+                # We need to check for the bad par2cmdline that skips blocks
+                par2text = run_simple([str(PAR2_COMMAND), '-h'])
+                if 'No data skipping' in par2text:
+                    logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+                    command.insert(2, '-N')
+
     logging.debug('Par2-classic/cmdline = %s', classic)
 
     # Append the wildcard for this set
@@ -1299,6 +1321,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
             line = linebuf.strip()
             linebuf = ''
+
+            # Check if we should still continue
+            if not nzo.pp_active:
+                p.kill()
+                msg = T('PostProcessing was aborted (%s)') % T('Repair')
+                nzo.fail_msg = msg
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+                readd = False
+                break
 
             # Skip empty lines
             if line == '':
@@ -1667,7 +1699,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
-    joinables, zips, rars, sevens, filelist = ([], [], [], [], [])
+    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
@@ -1691,19 +1723,28 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
                         # Just skip failing names
                         pass
 
-    sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
-    sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
+    for file in filelist:
+        # Extra check for rar (takes CPU/disk)
+        file_is_rar = False
+        if check_rar:
+            file_is_rar = is_rarfile(file)
 
-    if check_rar:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f) and not is_rarfile(f)]
-    else:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f)]
-
-    zips = [f for f in filelist if ZIP_RE.search(f)]
-
-    rars = [f for f in filelist if RAR_RE.search(f)]
-
-    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables and f not in sevens]
+        # Run through all the checks
+        if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
+            # 7zip
+            sevens.append(file)
+        elif SPLITFILE_RE.search(file) and not file_is_rar:
+            # Joinables, optional with RAR check
+            joinables.append(file)
+        elif ZIP_RE.search(file):
+            # ZIP files
+            zips.append(file)
+        elif RAR_RE.search(file):
+            # RAR files
+            rars.append(file)
+        elif TS_RE.search(file):
+            # TS split files
+            ts.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): zips: %s", zips)
@@ -1985,7 +2026,7 @@ class SevenZip(object):
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     txt = p.stdout.read()
     p.wait()
     return txt

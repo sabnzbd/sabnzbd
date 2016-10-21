@@ -138,6 +138,14 @@ class PostProcessor(Thread):
         self.queue.put(None)
         self.save()
 
+    def cancel_pp(self, nzo_id):
+        """ Change the status, so that the PP is canceled """
+        for nzo in self.history_queue:
+            if nzo.nzo_id == nzo_id and nzo.pp_active:
+                nzo.pp_active = False
+                return True
+        return None
+
     def empty(self):
         """ Return True if pp queue is empty """
         return self.queue.empty() and not self.__busy
@@ -495,7 +503,7 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line), 
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line),
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
@@ -617,6 +625,13 @@ def parring(nzo, workdir):
                 parfile_nzf = par_table[setname]
                 if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
+
+                    # Was it aborted?
+                    if not nzo.pp_active:
+                        re_add = False
+                        par_error = True
+                        break
+
                     re_add = re_add or need_re_add
                     if not res and not need_re_add and cfg.sfv_check():
                         res = try_sfv_check(nzo, workdir, setname)

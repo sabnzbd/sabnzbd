@@ -238,8 +238,8 @@ li.dropdown {
     fill: transparent;
 }
 
-.rss-symbol { 
-    stroke: none; 
+.rss-symbol {
+    stroke: none;
     fill: white;
 }
 
@@ -526,7 +526,8 @@ tbody>tr>td:last-child {
     color: inherit;
 }
 
-.hover-button.glyphicon-play {
+.hover-button.glyphicon-play,
+.hover-button.glyphicon-stop {
     opacity: 1;
     color: #474747;
 }
@@ -1507,7 +1508,7 @@ tr.queue-item>td:first-child>a {
     max-width: 100px;
 }
 
-.btn-file, 
+.btn-file,
 input[name="nzbURL"] {
     transition : border 500ms ease-out;
 }
@@ -1767,16 +1768,16 @@ input[name="nzbURL"] {
     margin-top: 0.5em;
 }
 
-.container-compact .pagination>li>a, 
+.container-compact .pagination>li>a,
 .container-compact .pagination>li>span,
 .container-compact #history-options .hover-button {
     padding: 4px 10px;
 }
 
 .container-compact .info-container,
-.container-compact .progress>span, 
+.container-compact .progress>span,
 .container-compact .progress-bar>span,
-.container-compact .progress strong, 
+.container-compact .progress strong,
 .container-compact .progress i {
     font-size: 12px;
 }
@@ -1797,12 +1798,12 @@ input[name="nzbURL"] {
     .history-table .table-extra-header-visible {
         width: 10%;
     }
-    
+
     .queue-table .table-header-progress-smaller,
     .history-table .table-header-progress-smaller {
         width: 35%;
     }
-    
+
     #options-interface .label {
         display: none;
     }
@@ -1814,11 +1815,11 @@ input[name="nzbURL"] {
         margin-right: -5px;
         display: block;
     }
-    
+
     td.name .row-wrap-text {
         margin-right: 4px;
     }
-    
+
     /* Need to reduce sparkline width when RSS button is added */
     .navbar-have-rss .sparkline-container svg {
         width: 220px !important;
@@ -1851,8 +1852,8 @@ input[name="nzbURL"] {
     .queue .multioperations-selector {
         min-width: 715px;
     }
-    
-    
+
+
     .queue .sortable-placeholder td {
         padding: 9px 0px 8px !important;
     }
@@ -1867,7 +1868,7 @@ input[name="nzbURL"] {
     #modal-retry-job .modal-dialog {
         margin-top: 80px;
     }
-    
+
     #history-script-log .modal-dialog {
         margin-top: 30px;
     }
@@ -1890,11 +1891,11 @@ input[name="nzbURL"] {
     .history-table .table-status-header {
         width: 25% !important;
     }
-    
+
     #feedback-slider {
         display: none;
     }
-    
+
     .glyphicon-facetime-video {
         top: 2px;
     }
@@ -1932,33 +1933,33 @@ input[name="nzbURL"] {
         animation: none !important;
         transition: none !important;
     }
-    
+
     @keyframes stretchdelay {
         0%, 60% {
             transform: scaleY(0.4);
         }
-    
+
         61%, 100% {
             transform: scaleY(1.0);
         }
     }
-    
+
     .processing-download > div {
         animation: stretchdelay 2s infinite linear;
     }
-    
+
     .processing-download .loader-bar-two {
         animation-delay: 0.2s;
     }
-    
+
     .processing-download .loader-bar-three {
         animation-delay: 0.4s;
     }
-    
+
     .processing-download .loader-bar-four {
         animation-delay: 0.6s;
     }
-    
+
     .queue-table td.name input {
         margin-left: -2px;
     }
@@ -2015,11 +2016,11 @@ a:focus {
     visibility: hidden;
     opacity: 0;
     transform-origin: top;
-    animation-fill-mode: forwards; 
+    animation-fill-mode: forwards;
     transform: scale(1, 0.8);
     transition: all 0.15s ease;
     -webkit-transform-origin: top;
-    -webkit-animation-fill-mode: forwards; 
+    -webkit-animation-fill-mode: forwards;
     -webkit-transform: scale(1, 0.8);
 }
 
@@ -2097,7 +2098,7 @@ legend {
     opacity: 0.7;
 }
 
-.nav-tabs>li.active>a, 
+.nav-tabs>li.active>a,
 .nav-tabs>li.active>a:hover {
     box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.08);
     color: black;
@@ -2125,7 +2126,7 @@ legend {
     border: 1px solid #8F8F8F;
 }
 
-.pagination>li>a, 
+.pagination>li>a,
 .pagination>li>span,
 .pagination>li>span:hover {
     color: #333;

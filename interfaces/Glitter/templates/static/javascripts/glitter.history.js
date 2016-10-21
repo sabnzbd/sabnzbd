@@ -35,16 +35,16 @@ function HistoryListModel(parent) {
         var itemIds = $.map(self.historyItems(), function(i) {
             return i.historyStatus.nzo_id();
         });
-        
+
         // For new items
-        var newItems = [];                                    
+        var newItems = [];
         $.each(data.slots, function(index, slot) {
             var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
                 return i.historyStatus.nzo_id() == slot.nzo_id;
             });
             // Set index in the results
             slot.index = index
-            
+
             // Update or add?
             if(existingItem) {
                 existingItem.updateFromData(slot);
@@ -54,7 +54,7 @@ function HistoryListModel(parent) {
                 newItems.push(new HistoryModel(self, slot));
             }
         });
-        
+
         // Remove all items
         if(itemIds.length == self.paginationLimit()) {
             // Replace it, so only 1 Knockout DOM-update!
@@ -69,7 +69,7 @@ function HistoryListModel(parent) {
                 }));
             });
         }
-        
+
         // Add new ones
         if(newItems.length > 0) {
             ko.utils.arrayPushAll(self.historyItems, newItems);
@@ -100,7 +100,7 @@ function HistoryListModel(parent) {
     };
 
     // Save pagination state
-    self.paginationLimit.subscribe(function(newValue) {         
+    self.paginationLimit.subscribe(function(newValue) {
         // Save in config if global config
         if(self.parent.useGlobalOptions()) {
             callAPI({
@@ -121,7 +121,7 @@ function HistoryListModel(parent) {
         data.append("password", $('#retry_job_password').val());
         data.append("session", apiKey);
 
-        // Add 
+        // Add
         $.ajax({
             url: "./retry_pp",
             type: "POST",
@@ -137,7 +137,7 @@ function HistoryListModel(parent) {
         $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
         form.reset()
     }
-          
+
     // Searching in history (rate-limited in decleration)
     self.searchTerm.subscribe(function() {
         // Make sure we refresh
@@ -148,7 +148,7 @@ function HistoryListModel(parent) {
             self.pagination.moveToPage(1);
         }
     })
-    
+
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
@@ -166,9 +166,10 @@ function HistoryListModel(parent) {
         // Need to return true to allow typing
         return true;
     }
-    
+
     // Toggle showing failed
     self.toggleShowFailed = function(data, event) {
+
         // Set the loader so it doesn't flicker and then switch
         self.isLoading(true)
         self.showFailed(!self.showFailed())
@@ -176,17 +177,18 @@ function HistoryListModel(parent) {
         $('#history-options a').tooltip('hide')
         // Force refresh
         self.parent.refresh(true)
+
     }
 
     // Empty history options
     self.emptyHistory = function(data, event) {
         // Make sure no flickering
         self.isLoading(true)
-        
+
         // What event?
         var whatToRemove = $(event.target).data('action');
         var del_files, value;
-        
+
         // Purge failed
         if(whatToRemove == 'history-purge-failed') {
             del_files = 0;
@@ -294,7 +296,15 @@ function HistoryModel(parent, data) {
     // Processing or done?
     self.processingDownload = ko.pureComputed(function() {
         var status = self.status();
-        return(status === 'Extracting' || status === 'Moving' || status === 'Verifying' || status === 'Running' || status == 'Repairing')
+        // When we can cancel
+        if (status === 'Extracting' || status === 'Verifying' || status == 'Repairing') {
+            return 2
+        }
+        // These cannot be cancelled
+        if(status === 'Moving' ||  status === 'Running') {
+            return 1
+        }
+        return false;
     })
 
     // Format status text
@@ -332,8 +342,8 @@ function HistoryModel(parent, data) {
                 return;
             case 'category':
                 // Exception for *
-                if(self.historyStatus.category() == "*") 
-                    return glitterTranslate.defaultText 
+                if(self.historyStatus.category() == "*")
+                    return glitterTranslate.defaultText
                 return self.historyStatus.category();
             case 'size':
                 return self.historyStatus.size();
@@ -358,7 +368,7 @@ function HistoryModel(parent, data) {
     self.updateAllHistoryInfo = function(data, event) {
         // Show
         self.hasDropdown(true);
-        
+
         // Update all info
         self.updateAllHistory = true;
         parent.parent.refresh(true);
@@ -366,7 +376,7 @@ function HistoryModel(parent, data) {
         // Try to keep open
         keepOpen(event.target)
     }
-    
+
     // Use KO-afterRender to add the click-functionality always
     self.addHistoryStatusStuff = function(item) {
         $(item).find('.history-status-modallink a').click(function(e) {
@@ -382,7 +392,7 @@ function HistoryModel(parent, data) {
                     $('#history-script-log .modal-title').text($(this).find("h3").text())
                     $(this).find("h3, title").remove()
                     $('#history-script-log').modal('show');
-                }); 
+                });
             }
             return false;
         })
@@ -390,27 +400,35 @@ function HistoryModel(parent, data) {
 
     // Delete button
     self.deleteSlot = function(item, event) {
-        // Are we not still processing?
-        if(item.processingDownload() || item.processingWaiting()) return false;
-        
         // Confirm?
         if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDow1)) {
-            callAPI({
-                mode: 'history',
-                name: 'delete',
-                del_files: 1,
-                value: self.nzo_id
-            }).then(function(response) {
-                if(response.status) {
-                    // Fade and remove
-                    $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                        // Make sure no flickering (if there are more items left) and then remove
-                        self.parent.isLoading(self.parent.totalItems() > 1)
-                        self.parent.historyItems.remove(self);
-                        self.parent.parent.refresh();
-                    })
-                }
-            });
+            // Are we still processing and it can be stopped?
+            if(item.processingDownload() == 2) {
+                callAPI({
+                    mode: 'cancel_pp',
+                    value: self.nzo_id
+                })
+                // All we can do is wait
+            } else {
+                // Delete the item
+                callAPI({
+                    mode: 'history',
+                    name: 'delete',
+                    del_files: 1,
+                    value: self.nzo_id
+                }).then(function(response) {
+                    if(response.status) {
+                        // Fade and remove
+                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
+                            // Make sure no flickering (if there are more items left) and then remove
+                            self.parent.isLoading(self.parent.totalItems() > 1)
+                            self.parent.historyItems.remove(self);
+                            self.parent.parent.refresh();
+                        })
+                    }
+                });
+            }
+
         }
     };
 
@@ -493,12 +511,12 @@ function HistoryModel(parent, data) {
         } else {
             submitUserReport(userDetail)
         }
-        
+
         // After all, close it
         form.reset();
         $(form).parent().parent().dropdown('toggle');
         alert(glitterTranslate.sendThanks)
-        
+
         function submitUserReport(theDetail) {
             // Send note
             callAPI({

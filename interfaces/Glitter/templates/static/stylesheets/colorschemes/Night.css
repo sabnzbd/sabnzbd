@@ -23,20 +23,21 @@ nav .btn {
 
 a, a:active, a:hover, a:focus,
 .hover-button.glyphicon-play,
+.hover-button.glyphicon-stop,
 .dropdown-menu>li>a,
-legend, 
-#modal-options legend label, 
+legend,
+#modal-options legend label,
 #modal-options legend a,
 #modal-item-files .item-files-table .progress small,
-#modal-options .options-switch label, 
+#modal-options .options-switch label,
 #modal-options #options-orphans .process-all-orphaned,
 .text-muted {
     color: #EBEBEB;
 }
 
-.dropdown-menu>li>a:hover, 
+.dropdown-menu>li>a:hover,
 .dropdown-menu>li>a:focus,
-.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover, 
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover,
 .navbar-inverse .navbar-nav .open .dropdown-menu>li>a:focus,
 #feedback-slider {
     background-color: #555555;
@@ -84,8 +85,8 @@ legend,
     color: black;
 }
 
-.nav-tabs>li.active>a, 
-.nav-tabs>li.active>a:focus, 
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:focus,
 .nav-tabs>li.active>a:hover,
 .nav-tabs>li>a:hover {
     background-color: #ddd;
@@ -181,7 +182,7 @@ pre {
     opacity: 1 !important;
 }
 
-legend, 
+legend,
 hr {
     border-color: #C6C6C6 !important;
 }
@@ -206,8 +207,8 @@ hr {
     margin-bottom: 1px;
 }
 
-.queue-item .dropdown-menu:after, 
-.history-item .dropdown-menu:after, 
+.queue-item .dropdown-menu:after,
+.history-item .dropdown-menu:after,
 .info-container-box-sorting .dropdown-menu:after {
     border-bottom-color: #666;
 }
@@ -222,11 +223,11 @@ hr {
    color: #EBEBEB !important;
 }
 
-::-moz-placeholder {  
-   color: #EBEBEB !important;  
+::-moz-placeholder {
+   color: #EBEBEB !important;
    opacity: 1 !important;
 }
 
-:-ms-input-placeholder {  
-   color: #EBEBEB !important;  
+:-ms-input-placeholder {
+   color: #EBEBEB !important;
 }

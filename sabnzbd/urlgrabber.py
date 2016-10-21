@@ -40,7 +40,7 @@ import sabnzbd.notifier as notifier
 
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
-_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt', 
+_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt',
                     'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
 
 
@@ -112,7 +112,7 @@ class URLGrabber(Thread):
                 fn = None
                 try:
                     fn = urllib2.urlopen(req)
-                except:
+                except Exception, e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
@@ -129,6 +129,9 @@ class URLGrabber(Thread):
                     elif '404' in error1:
                         msg = T('File not on server')
                         retry = False
+                    elif hasattr(e, 'headers') and 'retry-after' in e.headers:
+                        # Catch if the server send retry (e.headers is case-INsensitive)
+                        wait = misc.int_conv(e.headers['retry-after'])
 
                 new_url = dereferring(url, fn)
                 if new_url:

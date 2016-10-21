@@ -30,10 +30,10 @@ body {
 }
 
 .text-center a {
-	position: absolute; 
-	right: 13px; 
-	top: 12px; 
-	color: #636363; 
+	position: absolute;
+	right: 13px;
+	top: 12px;
+	color: #636363;
 	font-size: 1.2em
 }
 
@@ -57,7 +57,7 @@ body {
 }
 
 .btn .glyphicon {
-	margin-left: 3px;	
+	margin-left: 3px;
 	float: right;
 	top: 1px;
 	font-size: 1.2em;

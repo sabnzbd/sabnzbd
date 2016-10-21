@@ -20,18 +20,18 @@
         #if $pane == "Special" then $T('cmenu-special') else ""#
         #if $pane == "RSS" then $T('cmenu-rss') else ""#
     </title>
-    
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
-    
+
     <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
     <link rel="apple-touch-icon" sizes="120x120" href="${root}staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="${root}staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="${root}staticcfg/ico/android-192x192.png" />
 
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
     <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=1.1.0" />
 
@@ -39,12 +39,12 @@
         // Keeping track of the form state
         var formHasChanged = false;
         var formWasSubmitted = false;
-        
+
         // Information we need
         var sabSession = '$session';
-        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session'; 
+        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session';
         var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
-        
+
         // Translations
         var configTranslate = new Object();
         configTranslate.browseText = "$T('browse-folder')";

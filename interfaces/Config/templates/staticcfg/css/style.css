@@ -106,7 +106,7 @@ label.config,
 }
 label.config-hover {
     cursor: pointer;
-    
+
 }
 label.narrow {
     width: 200px!important;
@@ -131,7 +131,7 @@ label.wide,
 }
 input[type="checkbox"]+.desc {
     padding-top: 6px;
-} 
+}
 .desc-check {
     font-size: 12px;
     font-style: italic;
@@ -174,8 +174,8 @@ input[type="checkbox"]+.desc {
     padding-left: 12px;
     font-size: 13px;
 }
-.typeahead.dropdown-menu>.active>a, 
-.typeahead.dropdown-menu>.active>a:focus, 
+.typeahead.dropdown-menu>.active>a,
+.typeahead.dropdown-menu>.active>a:focus,
 .typeahead.dropdown-menu>.active>a:hover {
     color: black;
     background-color: #E5E5E5;
@@ -681,7 +681,7 @@ ul.tabs li.active a {
     transition: none;
 }
 
-input[type=checkbox], 
+input[type=checkbox],
 input[type=radio] {
     margin-top: 2px;
 }
@@ -725,10 +725,10 @@ select {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     display:inline-block;
     vertical-align:middle;
-    max-width: 100%;  
+    max-width: 100%;
     min-height: 34px;
     font-size: 13px;
-    background-color: white;    
+    background-color: white;
 }
 
 input[type="text"]:not([size]),
@@ -876,8 +876,8 @@ input[type="checkbox"] {
     width: 1em;
     height: 1em;
 }
-.rss-symbol { 
-    stroke: none; 
+.rss-symbol {
+    stroke: none;
     fill: white;
 }
 
@@ -1005,28 +1005,28 @@ input[type="checkbox"] {
   100% { transform: rotate(359deg); }
 }
 
-@media screen and (min-width: 1200px) { 
+@media screen and (min-width: 1200px) {
     .Categories input[name="dir"] {
         max-width: 240px !important;
     }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1200px) { 
+@media screen and (min-width: 768px) and (max-width: 1200px) {
     .navbar-default .navbar-nav>li>a>span,
     .navbar-default .navbar-nav>li>a:hover>strong,
     .navbar-default .navbar-nav>li>a.active>strong {
-        display: inline;   
+        display: inline;
     }
-    
+
     .navbar-default .navbar-nav>li>a>svg {
         display: inline-block;
     }
-    
+
     .navbar-default .navbar-nav>li>a>strong,
     .navbar-default .navbar-nav:hover>li>a.active>strong {
         display: none;
     }
-        
+
     .RSS #content,
     .Categories #content {
         width: 100%;
@@ -1038,20 +1038,20 @@ input[type="checkbox"] {
         float: right;
         padding: 5px 0px;
     }
-    
+
     .col1 h5 {
         margin-left: 20px;
     }
-    
+
     .col2 {
         width: 100%;
         padding: 10px;
     }
-    
+
     .col2 p {
         margin-left:  20px;
     }
-        
+
     .Servers .col2 button:first-of-type {
         margin-bottom: 0;
     }
@@ -1069,10 +1069,10 @@ input[type="checkbox"] {
     }
     .navbar-collapse.in .navbar-nav>li>a>span,
     .navbar-collapse.collapsing .navbar-nav>li>a>span {
-        display: inline-block;  
-        width: 1.5em; 
+        display: inline-block;
+        width: 1.5em;
     }
-    
+
     .navbar-collapse.in .navbar-nav>li>a>svg,
     .navbar-collapse.collapsing .navbar-nav>li>a>svg {
         display: inline-block;
@@ -1082,24 +1082,24 @@ input[type="checkbox"] {
     .navbar .nav>li>a {
         height: auto;
     }
-    
+
     .section .col2 h3 {
         padding-right: 25px;
     }
-    
+
     .section .col2 h3 a {
         display: inline-block;
     }
-    
+
     .main-restarting.in strong {
         font-size: 2em;
         font-weight: bold;
     }
-    
+
     .main-restarting.in span {
         top: 2px;
     }
-    
+
     .main-restarting.in small {
         font-size: 2rem !important;
     }
@@ -1109,55 +1109,55 @@ input[type="checkbox"] {
         padding: 0 !important;
         padding-top: 55px !important;
     }
-    
+
     #content fieldset {
         min-width: 0;
         padding: 0 !important;
     }
-    
+
     .colmask {
         border: none !important;
     }
-    
+
     .col2 {
         padding: 10px;
     }
-    
+
     .col2 h3 {
         margin: -10px -10px 0px;
         padding-left: 10px;
     }
-    
+
     .col2 p {
         margin-left:  0px;
         margin-bottom: 0;
     }
-    
+
     .col1 h5 {
         margin-left:  0px;
-    }        
-    
+    }
+
     label.config {
         margin-left: 0px;
         margin-bottom: 2px;
         width: 100%;
         float: none;
     }
-    
+
     .desc {
         margin: 0;
         margin-left: 3px;
         margin-top: 2px;
         padding: 0 !important;
     }
-    
+
     .col1 input[type="checkbox"] {
         position: inherit;
         float: left;
         margin-right: 5px;
         margin-top: 0px;
     }
-    
+
     div.field-pair{
         min-width: 0;
         padding: 5px 10px;
@@ -1165,8 +1165,8 @@ input[type="checkbox"] {
 
     .fileBrowserField {
         max-width: 65% !important;
-    } 
-    
+    }
+
     ul.tabs a {
         padding-left: 5px;
         padding-right: 5px;

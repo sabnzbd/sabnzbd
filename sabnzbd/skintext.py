@@ -247,6 +247,7 @@ SKIN_TEXT = {
     'purgeFailed' : TT('Purge Failed NZBs'), #: Button to delete all failed jobs in History
     'purgeFailed-Files' : TT('Purge Failed NZBs & Delete Files'), #: Button to delete all failed jobs in History, including files
     'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
+    'purgePage' : TT('Purge NZBs on the current page'), #: Button to delete jobs on current page in History
     'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
     'msg-path' : TT('Path'), #: Path as displayed in History details
     'link-retryAll' : TT('Retry all failed'), #: Retry all failed jobs in History
@@ -308,10 +309,11 @@ SKIN_TEXT = {
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
-    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible (requires Python 2.7.9 or above).'),
+    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
+    'readwiki': TT('Read the Wiki Help on this!'),
 
 # Config->General
     'restartRequired' : TT('Changes will require a SABnzbd restart!'),
@@ -504,6 +506,8 @@ SKIN_TEXT = {
     'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
+    'opt-ssl_ciphers' : TT('SSL Ciphers'),
+    'explain-ssl_ciphers' : TT('Increase performance by forcing a lower SSL encryption strength.'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
@@ -828,7 +832,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
-    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'), 
+    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'),
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
     'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
