@@ -77,7 +77,9 @@ Optional modules
     yenc module >= 0.4      use "pip install yenc"
                             https://sabnzbd.org/wiki/installation/yenc-0.4_py2.7.rar (Win32-only)
     openssl => 1.0.0        http://www.openssl.org/
+                            v0.9.8 will work, but limits certificate validation
     cryptography >= 1.2     use "pip install cryptography"
+                            Enables certificate generation and detection of encrypted RAR-files
 
 Optional modules Unix/Linux/OSX
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
