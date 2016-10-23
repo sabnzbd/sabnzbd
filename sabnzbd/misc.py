@@ -149,7 +149,6 @@ def cat_convert(cat):
         If no match found, but the indexer-cat starts with the user-cat, return user-cat
         If no match found, return None
     """
-
     if cat and cat.lower() != 'none':
         cats = config.get_ordered_categories()
         for ucat in cats:
