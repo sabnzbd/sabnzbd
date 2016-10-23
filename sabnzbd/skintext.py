@@ -671,11 +671,11 @@ SKIN_TEXT = {
     'explain-nscript_parameters' : TT('Read the Wiki Help on this!'), #: Notification Script settings
 
 # Config->Cat
-    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
+    'explain-catTags' : TT('Indexers can supply a category inside the NZB which SABnzbd will try to match to the categories defined below. Additionally, you can add terms to "Indexer Categories / Groups" to match more categories. Use commas to separate terms. Wildcards in the terms are supported. <br>More information can be found on the Wiki.'),
     'explain-catTags2' : TT('Ending the path with an asterisk * will prevent creation of job folders.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
-    'catTags' : TT('Groups / Indexer tags'),
+    'catTags' : TT('Indexer Categories / Groups'),
     'button-delCat' : TT('X'), #: Small delete button
 
 # Config->Sorting

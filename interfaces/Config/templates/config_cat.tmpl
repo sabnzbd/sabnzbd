@@ -4,17 +4,14 @@
 <div class="colmask">
     <div class="section">
         <div class="padTable"> <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-            <p> $T('explain-catTags') $T('explain-catTags2')<br/> </p>
+            <p>$T('explain-catTags2')<br/>$T('explain-catTags')</p>
+            <hr>
             <h5 class="darkred"><strong>$T('explain-relFolder'):</strong> <span class="path">$defdir</span></h5>
-
-            <!--#set $cur = 0#-->
-            <!--#for $slot in $slotinfo#-->
-                <!--#set $cur = $cur+1#-->
+            <!--#for $cur, $slot in enumerate($slotinfo)#-->
                 <!--#set $cansort = $slot.name != '*' and $slot.name != ''#-->
-
                 <form action="save" method="get" <!--#if $cansort#-->class="sorting-row"<!--#end if#-->>
                     <table class="catTable">
-                        <!--#if $cur == 1#-->
+                        <!--#if $cur == 0#-->
                         <tr>
                             <th></th>
                             <th>$T('category')</th>
@@ -24,8 +21,7 @@
                             <th>$T('script')</th>
                             <!--#end if#-->
                             <th>$T('catFolderPath')</th>
-                            <th>$T('catTags')</th>
-                            <th>&nbsp;</th>
+                            <th colspan="2">$T('catTags')</th>
                         </tr>
                         <!--#end if#-->
                         <tr>
@@ -69,26 +65,28 @@
                             <td>
                                 <select name="script">
                                     <!--#for $sc in $script_list#-->
-                                    <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
-                                    <option value="$sc" <!--#if $slot.script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
-                                    <!--#end if#-->
+                                        <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
+                                        <option value="$sc" <!--#if $slot.script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+                                        <!--#end if#-->
                                     <!--#end for#-->
                                 </select>
                             </td>
                             <!--#end if#-->
                             <td class="nowrap">
-                                <input type="text" name="dir" class="fileBrowserSmall" value="$slot.dir" size="20" data-initialdir="$defdir" data-title="$T('catFolderPath')" />
+                                <input type="text" name="dir" class="fileBrowserSmall" value="$slot.dir" size="20" data-initialdir="$defdir" data-title="$T('catFolderPath')" title="$T('explain-catTags2')" />
                             </td>
                             <td>
                                 <input type="text" name="newzbin" value="$slot.newzbin" size="20" />
                             </td>
                             <td class="nowrap">
                                 <button class="btn btn-default">
-                                    <!--#if $cur == 2#--><span class="glyphicon glyphicon-plus"></span> $T('button-add')
-                                    <!--#else#--><span class="glyphicon glyphicon-ok"></span> $T('button-save')
+                                    <!--#if $cur == 1#-->
+                                        <span class="glyphicon glyphicon-plus"></span> $T('button-add')
+                                    <!--#else#-->
+                                        <span class="glyphicon glyphicon-ok"></span> $T('button-save')
                                     <!--#end if#-->
                                 </button>
-                                <!--#if $slot.name and $slot.name != '*'#-->
+                                <!--#if $cansort#-->
                                 <button class="btn btn-default delCat" type="button"><span class="glyphicon glyphicon-trash"></span></button>
                                 <!--#end if#-->
                             </td>

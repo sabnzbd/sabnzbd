@@ -294,9 +294,12 @@ tr.separator {
     visibility: hidden;
 }
 
-.Categories form.sorting-row:nth-child(even) tr,
-.Categories form:first-of-type tr:last-of-type  {
+.Categories form.sorting-row:nth-child(even) tr {
     background-color: #F8F8F8;
+}
+
+.Categories form:first-of-type tr:last-of-type {
+    background-color: #FFFFE0;
 }
 
 .Categories hr {
