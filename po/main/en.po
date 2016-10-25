@@ -165,6 +165,18 @@ msgstr ""
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 
+#: sabnzbd/skintext.py:333
+msgid "If empty, the standard port will only listen to HTTPS."
+msgstr "If empty, the SABnzbd Port set above will only listen to HTTPS."
+
+#: sabnzbd/skintext.py:439
+msgid "Detect identical episodes in series (based on \"name/season/episode\")"
+msgstr "Detect identical episodes in series (based on \"name/season/episode\" of items in your History)"
+
+#: sabnzbd/skintext.py:436
+msgid "Detect identical NZB files (based on NZB content)"
+msgstr "Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)"
+
 #: sabnzbd/assembler.py:120 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 msgstr "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
