@@ -2,6 +2,17 @@
 <!--#set global $help_uri="configuration/1.1/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
+<!--#def show_notify_checkboxes($section_label)#-->
+    <!--#for $type in $notify_keys#-->
+        <div class="field-pair">
+            <label class="config wide" for="${section_label}_prio_$type">
+                $T($notify_texts[$type]).replace('/', ' / ')  <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
+            </label>
+            <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
+        </div>
+    <!--#end for#-->
+<!--#end def#-->
+
 <div class="colmask">
     <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off" novalidate>
     <input type="hidden" id="session" name="session" value="$session" />
@@ -83,15 +94,7 @@
         </div><!-- /col2 -->
         <div class="col1" <!--#if int($ncenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
-                <!--#set $section_label = 'ncenter'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('ncenter')
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_notif"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
@@ -116,15 +119,7 @@
         </div><!-- /col2 -->
         <div class="col1" <!--#if int($acenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
-                <!--#set $section_label = 'acenter'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ')  <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('acenter')
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_windows"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
@@ -149,15 +144,7 @@
         </div><!-- /col2 -->
         <div class="col1" <!--#if int($ntfosd_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
-                <!--#set $section_label = 'ntfosd'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('ntfosd')
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
@@ -191,15 +178,7 @@
                     <input type="text" name="growl_password" id="growl_password" value="$growl_password" />
                     <span class="desc">$T('explain-growl_password')</span>
                 </div>
-                <!--#set $section_label = 'growl'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('growl')
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
@@ -334,15 +313,7 @@
 					<span class="desc">$T('explain-pushbullet_device')</span>
 				</div>
 				<!--#end if#-->
-                <!--#set $section_label = 'pushbullet'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('pushbullet')
 				<div class="field-pair">
 				   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
@@ -380,15 +351,7 @@
                     <input type="text" name="nscript_parameters" id="nscript_parameters" value="$nscript_parameters" />
                     <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
                 </div>
-                <!--#set $section_label = 'nscript'#-->
-                <!--#for $type in $notify_keys#-->
-                    <div class="field-pair">
-                        <label class="config wide" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
-                        </label>
-                        <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                <!--#end for#-->
+                $show_notify_checkboxes('nscript')
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
