@@ -146,4 +146,4 @@ class Status():
     DELETED = 'Deleted'             # Q:  Job has been deleted (and is almost gone)
     PROP = 'Propagating'            # Q:  Delayed download
 
-NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')
+NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'new_login', 'warning', 'error', 'other')

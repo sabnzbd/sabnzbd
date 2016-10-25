@@ -2890,6 +2890,7 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('ntfosd', kw)()
         for kw in LIST_NSCRIPT:
             conf[kw] = config.get_config('nscript', kw)()
+        conf['notify_keys'] = sabnzbd.constants.NOTIFY_KEYS
         conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),
