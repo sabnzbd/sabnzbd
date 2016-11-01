@@ -1243,16 +1243,17 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
         # Allow options if not classic or when classic and non-classic are the same
         if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
-            if options:
-                command.insert(2, options)
-            else:
-                # We need to check for the bad par2cmdline that skips blocks
-                par2text = run_simple([str(PAR2_COMMAND), '-h'])
-                if 'No data skipping' in par2text:
-                    logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
-                    command.insert(2, '-N')
+            command.insert(2, options)
 
     logging.debug('Par2-classic/cmdline = %s', classic)
+
+    # We need to check for the bad par2cmdline that skips blocks
+    # Only if we're not doing multicore and user hasn't set options
+    if not tbb and not options:
+        par2text = run_simple([command[0], '-h'])
+        if 'No data skipping' in par2text:
+            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+            command.insert(2, '-N')
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
