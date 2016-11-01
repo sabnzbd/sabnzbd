@@ -42,7 +42,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder, is_utf8
+from sabnzbd.encoding import unicoder, deunicode, is_utf8
 from sabnzbd.rating import Rating
 
 
@@ -313,10 +313,16 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
     unwanted = None
 
     if cfg.unwanted_extensions() or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
+        # Safe-format for Windows
+        # RarFile requires de-unicoded filenames for zf.testrar()
+        filepath_split = os.path.split(filepath)
+        workdir_short = short_path(filepath_split[0])
+        filepath = deunicode(os.path.join(workdir_short, filepath_split[1]))
+
         # Is it even a rarfile?
         if rarfile.is_rarfile(filepath):
             try:
-                zf = rarfile.RarFile(short_path(filepath), all_names=True)
+                zf = rarfile.RarFile(filepath, all_names=True)
                 # Check for encryption
                 if (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
                     encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
