@@ -1738,7 +1738,7 @@ def QuickCheck(set, nzo):
     for file in md5pack:
         found = False
         for nzf in nzf_list:
-            if file == nzf.filename:
+            if platform_encode(file) == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
