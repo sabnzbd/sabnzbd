@@ -38,7 +38,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
-from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.encoding import TRANS, unicoder, deunicode
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
@@ -771,8 +771,9 @@ def try_rar_check(nzo, workdir, setname):
         nzo.set_action_line(T('Trying RAR-based verification'), '...')
         try:
             # Set path to unrar and open the file
+            # Requires de-unicode for RarFile to work!
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-            zf = rarfile.RarFile(rars[0])
+            zf = rarfile.RarFile(deunicode(rars[0]))
             # Will throw exception if something is wrong
             zf.testrar()
             # Success!
@@ -782,7 +783,7 @@ def try_rar_check(nzo, workdir, setname):
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), e.message.replace('\r\n',''))
+            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n',' ')))
             nzo.set_unpack_info('Repair', msg, set=setname)
             logging.info(msg)
             return False
