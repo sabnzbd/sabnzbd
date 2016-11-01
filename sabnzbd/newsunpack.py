@@ -1117,11 +1117,13 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                     logging.warning(T('Deleting %s failed!'), parfile)
 
             deletables = []
-            for f in pars:
-                if f in setpars:
-                    deletables.append(os.path.join(workdir, f))
             deletables.extend(used_joinables)
             deletables.extend(used_par2)
+
+            # Delete pars of the set and maybe extra ones that par2 found
+            deletables.extend([os.path.join(workdir, f) for f in setpars])
+            deletables.extend([os.path.join(workdir, f) for f in pars])
+
             for filepath in deletables:
                 if filepath in joinables:
                     joinables.remove(filepath)
