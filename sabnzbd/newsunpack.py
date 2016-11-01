@@ -1000,16 +1000,17 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
 
     # Check if file exists, otherwise see if another is done
-    parfile = os.path.join(workdir, parfile_nzf.filename)
-    if not os.path.exists(parfile) and parfile_nzf.extrapars:
+    parfile_path = os.path.join(workdir, parfile_nzf.filename)
+    if not os.path.exists(parfile_path) and parfile_nzf.extrapars:
         for new_par in parfile_nzf.extrapars:
             test_parfile = os.path.join(workdir, new_par.filename)
             if os.path.exists(test_parfile):
-                parfile = test_parfile
+                parfile_nzf = new_par
                 break
 
-    parfile = short_path(parfile)
+    # Shorten just the workdir on Windows
     workdir = short_path(workdir)
+    parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
