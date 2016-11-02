@@ -120,7 +120,7 @@
         // Show hidden folders
         $('#show_hidden_folders').off('change')
         $('#show_hidden_folders').on('change', function() {
-        	self.browse(self.currentBrowserPath , folderBrowseUrl);
+            self.browse(self.currentBrowserPath , folderBrowseUrl);
         })
 
         // Use custom title instead of default and open modal

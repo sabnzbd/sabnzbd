@@ -234,9 +234,9 @@
         </div><!-- /col1 -->
     </div><!-- /section -->
 
-	<div class="section" id="pushover">
-		<div class="col2">
-			<h3>$T('section-Pushover')</h3>
+    <div class="section" id="pushover">
+        <div class="col2">
+            <h3>$T('section-Pushover')</h3>
             <table>
                 <tr>
                     <td><input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if int($pushover_enable) > 0 then 'checked="checked"' else ""#--> /></td>
@@ -246,22 +246,22 @@
             <em>$T('explain-pushover_enable')</em>
         </div><!-- /col2 -->
         <div class="col1" <!--#if int($pushover_enable) > 0 then '' else 'style="display:none"'#-->>
-			<fieldset>
-				<div class="field-pair">
-					<label class="config" for="pushover_token">$T('opt-pushover_token')</label>
-					<input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" />
-					<span class="desc">$T('explain-pushover_token')</span>
-				</div>
-				<div class="field-pair">
-					<label class="config" for="pushover_userkey">$T('opt-pushover_userkey')</label>
-					<input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" />
-					<span class="desc">$T('explain-pushover_userkey')</span>
-				</div>
-				<div class="field-pair">
-					<label class="config" for="pushover_device">$T('opt-pushover_device')</label>
-					<input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" />
-					<span class="desc">$T('explain-pushover_device')</span>
-				</div>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="pushover_token">$T('opt-pushover_token')</label>
+                    <input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" />
+                    <span class="desc">$T('explain-pushover_token')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_userkey">$T('opt-pushover_userkey')</label>
+                    <input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" />
+                    <span class="desc">$T('explain-pushover_userkey')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_device">$T('opt-pushover_device')</label>
+                    <input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" />
+                    <span class="desc">$T('explain-pushover_device')</span>
+                </div>
                 <!--#set $section_label = 'pushover'#-->
                 <!--#for $type in $notify_keys#-->
                     <div class="field-pair">
@@ -288,9 +288,9 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-	<div class="section" id="pushbullet">
-		<div class="col2">
-			<h3>$T('section-Pushbullet')</h3>
+    <div class="section" id="pushbullet">
+        <div class="col2">
+            <h3>$T('section-Pushbullet')</h3>
             <table>
                 <tr>
                     <td><input type="checkbox" name="pushbullet_enable" id="pushbullet_enable" value="1" <!--#if int($pushbullet_enable) > 0 then 'checked="checked"' else ""#--> /></td>
@@ -300,43 +300,43 @@
             <em>$T('explain-pushbullet_enable')</em>
         </div><!-- /col2 -->
         <div class="col1" <!--#if int($pushbullet_enable) > 0 then '' else 'style="display:none"'#-->>
-			<fieldset>
-				<div class="field-pair">
-					<label class="config" for="pushbullet_apikey">$T('opt-pushbullet_apikey')</label>
-					<input type="text" name="pushbullet_apikey" id="pushbullet_apikey" value="$pushbullet_apikey" />
-					<span class="desc">$T('explain-pushbullet_apikey')</span>
-				</div>
-				<!--#if 0#-->
-				<div class="field-pair">
-					<label class="config" for="pushbullet_device">$T('opt-pushbullet_device')</label>
-					<input type="text" name="pushbullet_device" id="pushbullet_device" value="$pushbullet_device" />
-					<span class="desc">$T('explain-pushbullet_device')</span>
-				</div>
-				<!--#end if#-->
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="pushbullet_apikey">$T('opt-pushbullet_apikey')</label>
+                    <input type="text" name="pushbullet_apikey" id="pushbullet_apikey" value="$pushbullet_apikey" />
+                    <span class="desc">$T('explain-pushbullet_apikey')</span>
+                </div>
+                <!--#if 0#-->
+                <div class="field-pair">
+                    <label class="config" for="pushbullet_device">$T('opt-pushbullet_device')</label>
+                    <input type="text" name="pushbullet_device" id="pushbullet_device" value="$pushbullet_device" />
+                    <span class="desc">$T('explain-pushbullet_device')</span>
+                </div>
+                <!--#end if#-->
                 $show_notify_checkboxes('pushbullet')
-				<div class="field-pair">
-				   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                <div class="field-pair">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-			    </div>
+                </div>
                 <div class="field-pair result-box">
                     <div class="alert"></div>
                 </div>
-		   </fieldset>
-	   </div><!-- /col1 -->
-	</div><!-- /section -->
-	<div class="section" id="nscript">
-	    <div class="col2">
-		<h3>$T('section-NScript')</h3>
-		<table>
-		    <tr>
-			    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
-		        <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
-		    </tr>
-		</table>
-		<em>$T('explain-nscript_enable')</em>
-	    </div><!-- /col2 -->
-	    <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
-    		<fieldset>
+           </fieldset>
+       </div><!-- /col1 -->
+    </div><!-- /section -->
+    <div class="section" id="nscript">
+        <div class="col2">
+        <h3>$T('section-NScript')</h3>
+        <table>
+            <tr>
+                <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
+            </tr>
+        </table>
+        <em>$T('explain-nscript_enable')</em>
+        </div><!-- /col2 -->
+        <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
                 <div class="field-pair">
                     <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
                     <select name="nscript_script">
@@ -360,8 +360,8 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-	    </div><!-- /col1 -->
-	</div><!-- /section -->
+        </div><!-- /col1 -->
+    </div><!-- /section -->
     </form>
 </div><!-- /colmask -->
 
