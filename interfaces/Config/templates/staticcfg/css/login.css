@@ -13,62 +13,62 @@ body {
 }
 
 .logo-header {
-	padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .logo-header svg {
-	height: 55px;
-	width: 198px;
+    height: 55px;
+    width: 198px;
 }
 
 .account-wall {
-	width: 300px;
-	position: absolute;
-	top: 30%;
-	left: 50%;
-  	transform: translate(-50%, -30%);
+    width: 300px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+      transform: translate(-50%, -30%);
 }
 
 .text-center a {
-	position: absolute;
-	right: 13px;
-	top: 12px;
-	color: #636363;
-	font-size: 1.2em
+    position: absolute;
+    right: 13px;
+    top: 12px;
+    color: #636363;
+    font-size: 1.2em
 }
 
 .text-center a:hover {
-	color: black !important;
+    color: black !important;
 }
 
 .form-signin .alert {
-	margin: 5px 0px;
+    margin: 5px 0px;
 }
 
 
 .form-signin input {
-	margin-top: 5px
+    margin-top: 5px
 }
 
 .form-signin .btn {
-	width: 100%;
-	margin-top: 10px;
-	font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
 .btn .glyphicon {
-	margin-left: 3px;
-	float: right;
-	top: 1px;
-	font-size: 1.2em;
+    margin-left: 3px;
+    float: right;
+    top: 1px;
+    font-size: 1.2em;
 }
 
 input[type="checkbox"] {
-	width: 16px;
-	height: 16px;
-	margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
 }
 
 label {
-	color: #636363;
+    color: #636363;
 }

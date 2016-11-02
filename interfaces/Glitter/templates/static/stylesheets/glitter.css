@@ -359,7 +359,7 @@ li.dropdown {
 }
 
 #feedback-slider:hover {
-	left: 0px;
+    left: 0px;
     height: 340px;
     opacity: 1;
 }
