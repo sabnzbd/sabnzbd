@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-08-08 19:21+0000\n"
-"PO-Revision-Date: 2016-08-18 20:33+0000\n"
-"Last-Translator: Michael Arlt <info@michael-arlt.de>\n"
+"PO-Revision-Date: 2016-09-19 08:22+0000\n"
+"Last-Translator: JobbeDeluxe <cjobbe@web.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-08-19 05:42+0000\n"
-"X-Generator: Launchpad (build 18176)\n"
+"X-Launchpad-Export-Date: 2016-09-20 07:57+0000\n"
+"X-Generator: Launchpad (build 18200)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -57,11 +57,11 @@ msgstr ""
 
 #: SABnzbd.py:682 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
-msgstr "HTTP- und HTTPS-Ports dürfen nicht übereinstimmen"
+msgstr "HTTP und HTTPS Ports dürfen nicht Identisch sein!"
 
 #: SABnzbd.py:1312 [Error message]
 msgid "Initializing %s-%s failed, aborting"
-msgstr "Konnte %s-%s nicht initialisieren, abgebrochen"
+msgstr "Initialisierung von %s-%s ist Fehlgeschlagen, abbruch"
 
 #: SABnzbd.py:1393 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
@@ -355,7 +355,7 @@ msgstr "%s wurde auf keinem Server gefunden und daher übersprungen"
 
 #: sabnzbd/decoder.py:261
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "UUencode gefunden, nur yEnc Codierung wir unterstützt [%s]"
 
 #: sabnzbd/dirscanner.py:140 [Error message] # sabnzbd/dirscanner.py:225 [Error message]
 msgid "Error removing %s"
@@ -807,7 +807,7 @@ msgstr "RAR-Datei beschädigt"
 
 #: sabnzbd/newsunpack.py:759 # sabnzbd/newsunpack.py:760
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "Defekte RAR Datei"
 
 #: sabnzbd/newsunpack.py:799
 msgid "Missing expected file: %s => unrar error?"
@@ -1104,7 +1104,7 @@ msgstr "WARTE %s Sek"
 
 #: sabnzbd/nzbstuff.py:1131
 msgid "PROPAGATING %s min"
-msgstr ""
+msgstr "AUSBREITUNG %s min"
 
 #: sabnzbd/nzbstuff.py:1276
 msgid "Downloaded in %s at an average of %sB/s"
@@ -1713,7 +1713,7 @@ msgstr "Am herunterladen"
 
 #: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:474
 msgid "Propagation delay"
-msgstr ""
+msgstr "Ausbreitungsverzögerung"
 
 #: sabnzbd/skintext.py:48 [PP status]
 msgid "Checking"
@@ -2486,6 +2486,7 @@ msgstr ""
 #: sabnzbd/skintext.py:300 # sabnzbd/skintext.py:301
 msgid "<br />If authentication is enabled, you will need to login again."
 msgstr ""
+"<br />Wenn Anmeldung aktiviert ist, müssen sie sich danach noch mal anmelden."
 
 #: sabnzbd/skintext.py:303
 msgid ""
@@ -2575,7 +2576,7 @@ msgstr "SABnzbd-Benutzername"
 
 #: sabnzbd/skintext.py:325
 msgid "Optional authentication username."
-msgstr "Optionaler Benutzername für Authentifizierung."
+msgstr "Optionale Anmeldung mit Benutzername"
 
 #: sabnzbd/skintext.py:326
 msgid "SABnzbd Password"
@@ -2583,7 +2584,7 @@ msgstr "SABnzbd-Passwort"
 
 #: sabnzbd/skintext.py:327
 msgid "Optional authentication password."
-msgstr "Optionales Passwort für Authentifizierung."
+msgstr "Optionale Anmeldung mit Passwort"
 
 #: sabnzbd/skintext.py:328
 msgid "HTTPS Support"
@@ -2627,11 +2628,11 @@ msgstr "Dateiname oder Pfad des HTTPS-Schlüssels."
 
 #: sabnzbd/skintext.py:338
 msgid "HTTPS Chain Certifcates"
-msgstr "Download-Ordner Geschwindigkeit"
+msgstr "HTTPS-Kette Zertifikat"
 
 #: sabnzbd/skintext.py:339
 msgid "File name or path to HTTPS Chain."
-msgstr "Dateiname oder Pfad zu HTTPS-Kette."
+msgstr "Dateiname oder Pfad zur HTTPS-Kette."
 
 #: sabnzbd/skintext.py:340
 msgid "Tuning"
@@ -2698,7 +2699,7 @@ msgstr "Änderungen speichern"
 
 #: sabnzbd/skintext.py:352
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Werkseinstellung wiederherstellen"
 
 #: sabnzbd/skintext.py:353 # sabnzbd/skintext.py:893
 msgid "Reset"
@@ -2717,6 +2718,8 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+"Hilf uns beim Übersetzen von SABnzbd in deiner Sprache! <br/>Neue "
+"Übersetzungen hinzufügen oder bestehende verbessern kannst du hier:"
 
 #: sabnzbd/skintext.py:357
 msgid "API Key"
@@ -3248,6 +3251,9 @@ msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
+"Artikel werden angehalten bis sie mindestens das gewählte alter erreicht "
+"haben. Ändern der Job Priorität auf Erzwingen wird die Verzögerung "
+"überspringen."
 
 #: sabnzbd/skintext.py:476
 msgid "Check for New Release"
@@ -3330,12 +3336,14 @@ msgstr "Nach dem Download löschen"
 
 #: sabnzbd/skintext.py:495
 msgid "HTTPS certificate verification"
-msgstr ""
+msgstr "HTTPS Zertifikat Überprüfung"
 
 #: sabnzbd/skintext.py:496
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
+"Überprüfe Zertifikate bei Verbindungen zu Indexern und RSS-Quellen über "
+"HTTPS."
 
 #: sabnzbd/skintext.py:498
 msgid "Server"
@@ -3620,6 +3628,9 @@ msgid ""
 "the queue that are not assigned to one of the server's categories will not "
 "be downloaded."
 msgstr ""
+"Keiner der aktivierten Server hat die \"Standard\" Kategorie ausgewählt. "
+"Jobs in der Warteschlange die nicht mit einer Server Kategorie verbunden "
+"sind werden nicht Heruntergeladen."
 
 #: sabnzbd/skintext.py:572
 msgid "Personal notes"
@@ -4428,10 +4439,12 @@ msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
 msgstr ""
+"Lokale Speicherung (cookies) sind in ihrem Browser Deaktiviert, Oberflächen "
+"Einstellungen gehen Verloren wenn sie den Browser schließen."
 
 #: sabnzbd/skintext.py:834
 msgid "Glitter has some (new) features you might like!"
-msgstr ""
+msgstr "Glitter hat ein paar (neue) Feature die du bestimmt magst!"
 
 #: sabnzbd/skintext.py:835 # sabnzbd/skintext.py:947
 msgid "Custom"
@@ -4443,7 +4456,7 @@ msgstr "Kompaktes Layout"
 
 #: sabnzbd/skintext.py:837
 msgid "Tabbed layout <br/>(separate queue and history)"
-msgstr ""
+msgstr "Tab Layout <br/>(separate Warteschlange und Verlauf)"
 
 #: sabnzbd/skintext.py:838 # sabnzbd/skintext.py:942
 msgid "Speed"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-08-08 19:21+0000\n"
-"PO-Revision-Date: 2016-05-21 05:13+0000\n"
-"Last-Translator: XsLiDian <xslidian@gmail.com>\n"
+"PO-Revision-Date: 2016-09-19 08:23+0000\n"
+"Last-Translator: ninjai <ninjai.us@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-08-09 05:46+0000\n"
-"X-Generator: Launchpad (build 18169)\n"
+"X-Launchpad-Export-Date: 2016-09-20 07:58+0000\n"
+"X-Generator: Launchpad (build 18200)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -345,7 +345,7 @@ msgstr "%s => 所有服务器均缺失，正在舍弃"
 
 #: sabnzbd/decoder.py:261
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "检测到 UUencode，但是仅有 yEnc 编码受支持 [%s]"
 
 #: sabnzbd/dirscanner.py:140 [Error message] # sabnzbd/dirscanner.py:225 [Error message]
 msgid "Error removing %s"
@@ -778,7 +778,7 @@ msgstr "无法使用的 RAR 文件"
 
 #: sabnzbd/newsunpack.py:759 # sabnzbd/newsunpack.py:760
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "损坏的 RAR 文件"
 
 #: sabnzbd/newsunpack.py:799
 msgid "Missing expected file: %s => unrar error?"
@@ -2621,7 +2621,7 @@ msgstr "保存更改"
 
 #: sabnzbd/skintext.py:352
 msgid "Restore Defaults"
-msgstr ""
+msgstr "恢复默认值"
 
 #: sabnzbd/skintext.py:353 # sabnzbd/skintext.py:893
 msgid "Reset"
@@ -2639,7 +2639,7 @@ msgstr "选择 web 界面的语言。"
 msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
-msgstr ""
+msgstr "帮助我们来本地化 SABnzbd ！<br/>你可以在这里来添加未被翻译的文字或者改进现有的翻译："
 
 #: sabnzbd/skintext.py:357
 msgid "API Key"
@@ -3188,12 +3188,12 @@ msgstr "下载后删除"
 
 #: sabnzbd/skintext.py:495
 msgid "HTTPS certificate verification"
-msgstr ""
+msgstr "HTTPS 证书核实"
 
 #: sabnzbd/skintext.py:496
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
-msgstr ""
+msgstr "当用 HTTPS 方式连接索引和RSS源时核实证书。"
 
 #: sabnzbd/skintext.py:498
 msgid "Server"
@@ -4262,7 +4262,7 @@ msgstr "您的浏览器已禁用 LocalStorage (cookies)。界面设置将在您�
 
 #: sabnzbd/skintext.py:834
 msgid "Glitter has some (new) features you might like!"
-msgstr ""
+msgstr "你可能会喜欢一些 Glitter 的(新)功能！"
 
 #: sabnzbd/skintext.py:835 # sabnzbd/skintext.py:947
 msgid "Custom"

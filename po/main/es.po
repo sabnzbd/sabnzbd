@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-08-08 19:21+0000\n"
-"PO-Revision-Date: 2015-12-28 10:26+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
+"PO-Revision-Date: 2016-09-26 12:51+0000\n"
+"Last-Translator: David Calvo <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-08-09 05:45+0000\n"
-"X-Generator: Launchpad (build 18169)\n"
+"X-Launchpad-Export-Date: 2016-09-27 07:02+0000\n"
+"X-Generator: Launchpad (build 18204)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -356,7 +356,7 @@ msgstr "%s => faltando de todos servidores, desechando"
 
 #: sabnzbd/decoder.py:261
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "UUencode detectada, la única codificación válida es Enc [%s]"
 
 #: sabnzbd/dirscanner.py:140 [Error message] # sabnzbd/dirscanner.py:225 [Error message]
 msgid "Error removing %s"
@@ -514,11 +514,11 @@ msgstr "La dirección del servidor «%s:%s» no es válida."
 
 #: sabnzbd/interface.py:193
 msgid "User logged in to the web interface"
-msgstr ""
+msgstr "Usuario conectado a la interfaz web"
 
 #: sabnzbd/interface.py:193 # sabnzbd/notifier.py:75 [Notification]
 msgid "User logged in"
-msgstr ""
+msgstr "Usuario conectado"
 
 #: sabnzbd/interface.py:237 [Warning message]
 msgid "Missing Session key"
@@ -806,7 +806,7 @@ msgstr "Archivo RAR inutilizable"
 
 #: sabnzbd/newsunpack.py:759 # sabnzbd/newsunpack.py:760
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "Fichero RAR corrupto"
 
 #: sabnzbd/newsunpack.py:799
 msgid "Missing expected file: %s => unrar error?"
@@ -1005,11 +1005,11 @@ msgstr ""
 
 #: sabnzbd/notifier.py:517
 msgid "Notification script \"%s\" does not exist"
-msgstr ""
+msgstr "El script de notificación \"%s\" no existe"
 
 #: sabnzbd/notifier.py:525 # sabnzbd/notifier.py:527
 msgid "Failed to send Windows notification"
-msgstr ""
+msgstr "Fallo al mandar la notificación de Windows"
 
 #: sabnzbd/nzbqueue.py:82 [Warning message] # sabnzbd/postproc.py:96 [Warning message]
 msgid "Old queue detected, use Status->Repair to convert the queue"
@@ -1104,7 +1104,7 @@ msgstr "ESPERAR %s seg"
 
 #: sabnzbd/nzbstuff.py:1131
 msgid "PROPAGATING %s min"
-msgstr ""
+msgstr "PROPAGANDO %s min"
 
 #: sabnzbd/nzbstuff.py:1276
 msgid "Downloaded in %s at an average of %sB/s"
@@ -1713,7 +1713,7 @@ msgstr "Descargando"
 
 #: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:474
 msgid "Propagation delay"
-msgstr ""
+msgstr "Demora de la propagación"
 
 #: sabnzbd/skintext.py:48 [PP status]
 msgid "Checking"
@@ -1970,15 +1970,15 @@ msgstr "o menos"
 
 #: sabnzbd/skintext.py:136
 msgid "Log in"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: sabnzbd/skintext.py:137
 msgid "Log out"
-msgstr ""
+msgstr "Cerrar sesión"
 
 #: sabnzbd/skintext.py:138
 msgid "Remember me"
-msgstr ""
+msgstr "Mantenerme conectado"
 
 #: sabnzbd/skintext.py:141 [SABnzbd's theme line]
 msgid "The automatic usenet download tool"
@@ -2031,7 +2031,7 @@ msgstr "IRC"
 
 #: sabnzbd/skintext.py:157 [Main menu item]
 msgid "Issues"
-msgstr ""
+msgstr "Problemas"
 
 #: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:497
 msgid "General"
@@ -2488,7 +2488,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:300 # sabnzbd/skintext.py:301
 msgid "<br />If authentication is enabled, you will need to login again."
-msgstr ""
+msgstr "Si la autenticación esta activada, tendrás que conectarte de nuevo."
 
 #: sabnzbd/skintext.py:303
 msgid ""
@@ -2515,7 +2515,7 @@ msgstr "No se han guardado los cambios, y se perderán."
 #: sabnzbd/skintext.py:307
 msgid ""
 "When your IP address changes or SABnzbd is restarted the session will expire."
-msgstr ""
+msgstr "Cuando tu dirección IP cambie o reinicies SABnzbd, la sesión caduca."
 
 #: sabnzbd/skintext.py:309
 msgid "Version"
@@ -2697,7 +2697,7 @@ msgstr "Guardar cambios"
 
 #: sabnzbd/skintext.py:352
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Restaurar valores por defecto"
 
 #: sabnzbd/skintext.py:353 # sabnzbd/skintext.py:893
 msgid "Reset"
@@ -2716,6 +2716,8 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+"¡Ayúdanos a traducir SABnzbd en tu idioma!<br/>Traduce textos que aun no "
+"tienen ninguna traducción o mejora los que ya lo están traducidos aquí:"
 
 #: sabnzbd/skintext.py:357
 msgid "API Key"
@@ -2794,7 +2796,7 @@ msgstr "Interfaz web completa"
 
 #: sabnzbd/skintext.py:374
 msgid "Only external access requires login"
-msgstr ""
+msgstr "Solo acceso externo requieren conexión de usuario"
 
 #: sabnzbd/skintext.py:377
 msgid ""
@@ -3238,6 +3240,9 @@ msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
+"Los mensajes serán pausados hasta que alcancen al menos esta edad.  Esta "
+"espera puede evitarse si se le da el valor Forzar a la prioridad  de la "
+"tarea."
 
 #: sabnzbd/skintext.py:476
 msgid "Check for New Release"
@@ -3321,12 +3326,14 @@ msgstr "Eliminar tras descargar"
 
 #: sabnzbd/skintext.py:495
 msgid "HTTPS certificate verification"
-msgstr ""
+msgstr "Validación del certificado HTTPS"
 
 #: sabnzbd/skintext.py:496
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
+"Verificar certificados al conectarse a indexadores y fuentes RSS usando "
+"HTTPS."
 
 #: sabnzbd/skintext.py:498
 msgid "Server"
@@ -3610,6 +3617,9 @@ msgid ""
 "the queue that are not assigned to one of the server's categories will not "
 "be downloaded."
 msgstr ""
+"Ninguno de los servidores activos tiene la categoría \"por defecto\" "
+"seleccionada. Las tareas en espera que no estén asignadas a una categoría "
+"del servidor no serán descargadas."
 
 #: sabnzbd/skintext.py:572
 msgid "Personal notes"
@@ -3912,19 +3922,19 @@ msgstr "Dispositivo al que enviar el mensaje"
 
 #: sabnzbd/skintext.py:664 [Header for Notification Script notification section]
 msgid "Notification Script"
-msgstr ""
+msgstr "Script de notificación"
 
 #: sabnzbd/skintext.py:665 [Notification Script settings]
 msgid "Enable notification script"
-msgstr ""
+msgstr "Activar script de notificación"
 
 #: sabnzbd/skintext.py:668 [Notification Scriptsettings]
 msgid "Executes a custom script"
-msgstr ""
+msgstr "Ejecutar un script personalizado"
 
 #: sabnzbd/skintext.py:669 [Notification Scriptsettings]
 msgid "Which script should we execute for notification?"
-msgstr ""
+msgstr "¿Que script deberíamos ejecutar para notificaciones?"
 
 #: sabnzbd/skintext.py:673
 msgid ""
@@ -4324,7 +4334,7 @@ msgstr "Columna de cola extra"
 
 #: sabnzbd/skintext.py:801
 msgid "Extra history column"
-msgstr ""
+msgstr "Columna de historia adicional"
 
 #: sabnzbd/skintext.py:802 # sabnzbd/skintext.py:895
 msgid "page"
@@ -4419,10 +4429,12 @@ msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
 msgstr ""
+"Tu buscador de internet tiene las cookies desactivadas, la configuración de "
+"la interfaz se perderá si cierras el explorador."
 
 #: sabnzbd/skintext.py:834
 msgid "Glitter has some (new) features you might like!"
-msgstr ""
+msgstr "¡Glitter tiene alguna nueva funcionalidad que puede gustarte!"
 
 #: sabnzbd/skintext.py:835 # sabnzbd/skintext.py:947
 msgid "Custom"
@@ -4430,11 +4442,11 @@ msgstr "Personalizar"
 
 #: sabnzbd/skintext.py:836
 msgid "Compact layout"
-msgstr ""
+msgstr "Diseño compacto"
 
 #: sabnzbd/skintext.py:837
 msgid "Tabbed layout <br/>(separate queue and history)"
-msgstr ""
+msgstr "Diseño de pestañas<br/>(separa la cola de espera y la historia)"
 
 #: sabnzbd/skintext.py:838 # sabnzbd/skintext.py:942
 msgid "Speed"
@@ -4487,19 +4499,19 @@ msgstr "Ordenar por Tamaño <small>Más grande&rarr;Más pequeño</small>"
 
 #: sabnzbd/skintext.py:850
 msgid "Uploading"
-msgstr ""
+msgstr "Subiendo"
 
 #: sabnzbd/skintext.py:851
 msgid "Forcing disconnect"
-msgstr ""
+msgstr "Forzar la desconexión"
 
 #: sabnzbd/skintext.py:852
 msgid "Removing job"
-msgstr ""
+msgstr "Eliminar tarea"
 
 #: sabnzbd/skintext.py:853
 msgid "Removing jobs"
-msgstr ""
+msgstr "Eliminar tareas"
 
 #: sabnzbd/skintext.py:861 # sabnzbd/skintext.py:930
 msgid "Prev"
@@ -4860,7 +4872,7 @@ msgstr "Acceso no autorizado"
 
 #: sabnzbd/urlgrabber.py:128
 msgid "File not on server"
-msgstr ""
+msgstr "El fichero no se encuentra en el servidor"
 
 #: sabnzbd/urlgrabber.py:250 [Error message]
 msgid "URLGRABBER CRASHED"
