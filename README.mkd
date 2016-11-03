@@ -1,5 +1,19 @@
-Release Notes  -  SABnzbd 1.1.1RC2
+Release Notes  -  SABnzbd 1.1.1RC3
 ==================================
+
+## What's new in 1.1.1RC3
+
+## Buf fixes
+- 8th parameter for user-script wasn't passed correctly.
+- Fix broken HTTPS port binding
+- Only allow binding to IPv6 when ipv6_hosting enabled
+- Allow also "vol01-03.par" on top of "vol01+03.par"
+- Glitter didn't allow removal of a set job-password
+- Unicode failed downloads were seen as orphaned jobs
+- QuickCheck would fail unicode files
+- Clean-up all par2 of a set
+- Fix retry_all API-call
+- Make sure we show results when less than 1 page
 
 ## What's new in 1.1.1RC2
 
