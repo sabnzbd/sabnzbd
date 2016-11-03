@@ -156,7 +156,7 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
                str(nicename), '', str(cat), str(group), str(status)]
 
     if failure_url:
-        command.extend(str(failure_url))
+        command.append(str(failure_url))
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
