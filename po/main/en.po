@@ -180,3 +180,9 @@ msgstr "Detect identical NZB files (based on items in your History or files in .
 #: sabnzbd/assembler.py:120 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 msgstr "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
+
+#: sabnzbd/skintext.py:368
+msgid "You can set access rights for systems outside your local network"
+msgstr "You can set access rights for systems outside your local network. Requires List of local network ranges to be defined."
+
+

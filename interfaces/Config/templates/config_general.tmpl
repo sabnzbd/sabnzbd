@@ -80,14 +80,18 @@
                 <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
-                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
-                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
-                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
-                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
-                            <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
-                            <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
+                            <optgroup label="API">
+                                <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
+                                <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
+                                <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
+                                <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
+                            </optgroup>
+                            <optgroup label="$T('inet-fullapi') &amp; $T('opt-web_dir')">
+                                <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
+                                <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
+                            </optgroup>
                         </select>
-                    <span class="desc">$T('explain-inet_exposure')</span>
+                    <span class="desc">$T('explain-inet_exposure').replace('.','.<br>')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
