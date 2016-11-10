@@ -1,7 +1,7 @@
-Release Notes  -  SABnzbd 1.1.1RC3
-==================================
+Release Notes  -  SABnzbd 1.1.1
+===============================
 
-## What's new in 1.1.1RC3
+## What's new in 1.1.1
 
 ## Buf fixes
 - 8th parameter for user-script wasn't passed correctly.
@@ -14,24 +14,11 @@ Release Notes  -  SABnzbd 1.1.1RC3
 - Clean-up all par2 of a set
 - Fix retry_all API-call
 - Make sure we show results when less than 1 page
-
-## What's new in 1.1.1RC2
-
-## Bug fixes
 - Fixed email notifications to smtp2go.com (and possibly others)
 - Replaced par2-classic with par2cmdline (will fix some verification hangups)
 - Fix problem with Config pages on mobile browsers
 - Updated INSTALL.txt
-
-
-## What's new in 1.1.1RC1
-
-
-## Changes:
 - Button to regenerate a self-signed HTTPS certificate (to update to modern standards)
-
-
-## Bug fixes
 - Restored download speed for Unix (and some other) systems
 - Fixed yEnc crash that occurred on some Windows systems
 - Small UI fixes
