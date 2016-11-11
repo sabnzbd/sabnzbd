@@ -234,7 +234,8 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
 .disabled .clearBtn,
 .disabled .patternKey,
 .disabled .show_qrcode,
-.disabled .generate_key {
+.disabled .generate_key,
+.disabled .generate_cert {
     color: #aaa !important;
 }
 .padTable p {
@@ -500,7 +501,8 @@ h2.activeRSS {
     height: 16px;
     width: 16px;
     float: left;
-    margin-right: 2px;
+    margin: 0 6px 0 2px;
+    text-align: center;
 }
 .feed {
     text-decoration: none;
@@ -967,6 +969,12 @@ input[type="checkbox"] {
 .main-restarting small {
     font-size: 3rem !important;
 }
+.value-and-select input {
+    margin-right: -5px;
+}
+.value-and-select select {
+    min-width: 30px;
+}
 
 .dotOne, .dotTwo, .dotThree {
     opacity: 0;
@@ -1069,6 +1077,10 @@ input[type="checkbox"] {
     .navbar-collapse.collapsing .navbar-nav>li>a>svg {
         display: inline-block;
         margin-right: 0.5em;
+    }
+
+    .navbar .nav>li>a {
+        height: auto;
     }
     
     .section .col2 h3 {

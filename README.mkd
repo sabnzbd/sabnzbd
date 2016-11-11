@@ -1,50 +1,27 @@
-Release Notes  -  SABnzbd 1.1.0
+Release Notes  -  SABnzbd 1.1.1
 ===============================
 
-## What's new in 1.1.0
-- Login via HTML-form instead of basic authentication
-- Glitter now offers Compact and Tabbed layouts (similar to old Classic skin)
-- Notification scripts for custom notification services
-- Enable upload of multiple NZBs from the UI
-- Performance improvements of download process
-- Added delayed download feature (for when your Usenet is behind the indexers)
-- Repair blocks are added prospectively during download when needed (reducing extra par2 verification runs)
-- Prevent action of password managers on Server page
-- Faster initial connections to servers with multiple IP-addresses (HappyEyeBalls)
-- Support of more Rating headers (for indexers that support it)
-- Glitter shows progress notifications for larger operations
-- Log files are now anonymized automatically, for easier posting on public websites
-- Added censored INI file to log download
-- Can now download zipped NZB files from indexer
+## What's new in 1.1.1
 
-
-## Changes:
-- New SABnzbd logo
-- Job password is now a separate field and not included in the job-title anymore
-- Move some seldom used options to Special
-- Now requires Python 2.7 (2.6 no longer supported)
-- If filename occurs twice in NZB, only larger file is added
-- Display days when ETA is above 24h
-- API information now uses day/hour/min/sec notation when ETA above 24h
-- Bump self-signed certificate to sha256 (only for newly created)
-
-
-## Bug fixes
-- Fix errors when saving job files to disk
-- Prevent "lock" errors in the History database
-- Restore support for multi-volume 7zip files
-- Restore scanning for passwords after NZB name edit
-- Fix portable.cmd
-- Fix for stalling download at 99% (when using prospective downloading)
-- Fix problem with deleting files in NZB details view
-- Prevent old shutdown-page from stopping a new SABnzbd instance
-- Prevent watched folder scan crash on invalid file names
-- Fix XSS vulnerability on OSX and Unix**
-
-
-** The XSS vulnerability was discovered by Han Sahin from Securify BV.
-Thank you, Han.
-
+## Buf fixes
+- 8th parameter for user-script wasn't passed correctly.
+- Fix broken HTTPS port binding
+- Only allow binding to IPv6 when ipv6_hosting enabled
+- Allow also "vol01-03.par" on top of "vol01+03.par"
+- Glitter didn't allow removal of a set job-password
+- Unicode failed downloads were seen as orphaned jobs
+- QuickCheck would fail unicode files
+- Clean-up all par2 of a set
+- Fix retry_all API-call
+- Make sure we show results when less than 1 page
+- Fixed email notifications to smtp2go.com (and possibly others)
+- Replaced par2-classic with par2cmdline (will fix some verification hangups)
+- Fix problem with Config pages on mobile browsers
+- Updated INSTALL.txt
+- Button to regenerate a self-signed HTTPS certificate (to update to modern standards)
+- Restored download speed for Unix (and some other) systems
+- Fixed yEnc crash that occurred on some Windows systems
+- Small UI fixes
 
 
 ## About

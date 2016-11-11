@@ -22,7 +22,7 @@ If you want to know more you can head over to our website: http://sabnzbd.org.
 
 SABnzbd has a good deal of dependencies you'll need before you can get running. If you've previously run SABnzbd from one of the various Linux packages floating around (Ubuntu, Debian, Fedora, etc), then you likely already have all the needed dependencies. If not, here's what you're looking for:
 
-- `python` (We support Python 2.6 and 2.7)
+- `python` (only 2.7.9 and higher, but not 3.x.x)
 - `python-cheetah`
 - `python-dbus`
 - `python-openssl`

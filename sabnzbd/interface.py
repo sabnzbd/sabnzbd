@@ -66,7 +66,7 @@ from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
-    _api_test_email, _api_test_notif
+    build_queue_header, _api_test_email, _api_test_notif
 
 ##############################################################################
 # Global constants
@@ -647,8 +647,7 @@ class NzoPage(object):
 
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo_id and nzo:
-            info = build_header(self.__prim, self.__web_dir)
-            pnfo_list = [nzo.gather_info(full=True)]
+            info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(self.__prim, self.__web_dir)
 
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:

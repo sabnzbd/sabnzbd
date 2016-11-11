@@ -56,7 +56,7 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-    starts_with_path, cat_convert, clip_path
+    starts_with_path, cat_convert, clip_path, create_https_certificates
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -724,7 +724,7 @@ def _api_rss_now(name, output, kwargs):
 
 def _api_retry_all(name, output, kwargs):
     """ API: Retry all failed items in History """
-    return report(output, keyword='status', data=retry_all_jobs)
+    return report(output, keyword='status', data=retry_all_jobs())
 
 
 def _api_reset_quota(name, output, kwargs):
@@ -874,6 +874,17 @@ def _api_config_set_nzbkey(output, kwargs):
     return report(output, keyword='nzbkey', data=cfg.nzb_key())
 
 
+def _api_config_regenerate_certs(output, kwargs):
+    # Make sure we only over-write default locations
+    result = False
+    if sabnzbd.cfg.https_cert() is sabnzbd.cfg.https_cert.default() and sabnzbd.cfg.https_key() is sabnzbd.cfg.https_key.default():
+        https_cert = sabnzbd.cfg.https_cert.get_path()
+        https_key = sabnzbd.cfg.https_key.get_path()
+        result = create_https_certificates(https_cert, https_key)
+        sabnzbd.RESTART_REQ = True
+    return report(output, data=result)
+
+
 def _api_config_test_server(output, kwargs):
     """ API: accepts output, server-params """
     result, msg = test_nntp_server_dict(kwargs)
@@ -979,6 +990,7 @@ _api_config_table = {
     'set_pause': (_api_config_set_pause, 2),
     'set_apikey': (_api_config_set_apikey, 3),
     'set_nzbkey': (_api_config_set_nzbkey, 3),
+    'regenerate_certs': (_api_config_regenerate_certs, 3),
     'test_server': (_api_config_test_server, 2)
 }
 

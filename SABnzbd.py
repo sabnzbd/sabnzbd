@@ -480,7 +480,7 @@ def print_modules():
         logging.error(T('par2 binary... NOT found!'))
 
     if sabnzbd.newsunpack.PAR2C_COMMAND:
-        logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
+        logging.info("par2cmdline binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -533,7 +533,8 @@ def all_localhosts():
     ips = []
     for item in info:
         item = item[4][0]
-        if item not in ips:
+        # Only return IPv6 when enabled
+        if item not in ips and ('::1' not in item or sabnzbd.cfg.ipv6_hosting()):
             ips.append(item)
     return ips
 
@@ -685,14 +686,13 @@ def get_webhost(cherryhost, cherryport, https_port):
 def attach_server(host, port, cert=None, key=None, chain=None):
     """ Define and attach server, optionally HTTPS """
     if sabnzbd.cfg.ipv6_hosting() or '::1' not in host:
-        http_server = _cpwsgi_server.CPWSGIServer()
+        http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
         if cert and key:
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
             http_server.ssl_certificate_chain = chain
-        adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
-        adapter.subscribe()
+        http_server.subscribe()
 
 
 def is_sabnzbd_running(url, timeout=None):
@@ -1400,7 +1400,7 @@ def main():
         hosts[1] = '::1'
 
     # The Windows binary requires numeric localhost as primary address
-    if multilocal and cherryhost == 'localhost':
+    if cherryhost == 'localhost':
         cherryhost = hosts[0]
 
     if enable_https:
