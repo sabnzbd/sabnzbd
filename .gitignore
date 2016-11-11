@@ -10,17 +10,14 @@ srcdist/
 # Generated email templates
 email/*.tmpl
 
-# Romanian ro.po is generated from ro.px, due to mapping to latin-1
-ro.po
-
 # Build results
 SABnzbd*.zip
 SABnzbd*.exe
 SABnzbd*.gz
 SABnzbd*.dmg
 
-# WingIDE project file
-*.wpr
+# WingIDE project files
+*.wp[ru]
 
 # General junk
 *.keep

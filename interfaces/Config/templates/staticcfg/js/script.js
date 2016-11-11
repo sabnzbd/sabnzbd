@@ -221,7 +221,7 @@ function do_restart() {
         if($('#enable_https').is(':checked') && window.location.protocol == 'https:') {
             // Https on and we visited this page from HTTPS
             var urlProtocol = 'https:';
-            var urlPort = $('#https_port').val();
+            var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
         } else {
             // Regular
             var urlProtocol = 'http:';

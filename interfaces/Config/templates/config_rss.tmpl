@@ -51,7 +51,7 @@
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                        <div class="favicon" style="background-image: url(https://www.google.com/s2/favicons?domain=$rss[$feed_item]['baselink']&amp;alt=feed);"></div> $feed_item 
+                                        <div class="favicon" data-domain="$rss[$feed_item]['baselink']"></div> $feed_item 
                                     </a>
                                 </td>
                                 <td class="controls">
@@ -478,6 +478,19 @@ function urlencode(str) {
 }
 
 \$(document).ready(function(){
+    \$('.favicon').each(function(i, theContainer) {
+        // Easy favicon grabber
+        var favUrl = '//' + \$(theContainer).data('domain') + '/favicon.ico'
+        \$(theContainer).css({'background': 'url('+favUrl+')', 'background-size': '16px 16px'})
+
+        // Does the image exist? Otherwise place a glyphicon
+        var testFavImg= new Image();
+        testFavImg.src = favUrl;
+        testFavImg.onerror = function (evt){
+            \$(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
+        }
+    })
+    
     \$('.tabs a').click(function (e) {
         e.preventDefault()
         \$(this).tab('show')

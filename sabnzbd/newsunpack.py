@@ -122,7 +122,7 @@ def find_programs(curdir):
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
         if not sabnzbd.newsunpack.RAR_COMMAND:
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
+        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2cmdline.exe')
         sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
@@ -156,7 +156,7 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
                str(nicename), '', str(cat), str(group), str(status)]
 
     if failure_url:
-        command.extend(str(failure_url))
+        command.append(str(failure_url))
 
     if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
@@ -886,7 +886,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                '-d%s' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
-
+    logging.debug('Starting unzip: %s', command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
@@ -1025,7 +1025,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                '-o%s' % extraction_path, name]
 
     stup, need_shell, command, creationflags = build_command(command)
-
+    logging.debug('Starting 7za: %s', command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
@@ -1063,16 +1063,17 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
 
     # Check if file exists, otherwise see if another is done
-    parfile = os.path.join(workdir, parfile_nzf.filename)
-    if not os.path.exists(parfile) and parfile_nzf.extrapars:
+    parfile_path = os.path.join(workdir, parfile_nzf.filename)
+    if not os.path.exists(parfile_path) and parfile_nzf.extrapars:
         for new_par in parfile_nzf.extrapars:
             test_parfile = os.path.join(workdir, new_par.filename)
             if os.path.exists(test_parfile):
-                parfile = test_parfile
+                parfile_nzf = new_par
                 break
-    
-    parfile = short_path(parfile)
+
+    # Shorten just the workdir on Windows
     workdir = short_path(workdir)
+    parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
@@ -1179,11 +1180,13 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                     logging.warning(T('Deleting %s failed!'), parfile)
 
             deletables = []
-            for f in pars:
-                if f in setpars:
-                    deletables.append(os.path.join(workdir, f))
             deletables.extend(used_joinables)
             deletables.extend(used_par2)
+
+            # Delete pars of the set and maybe extra ones that par2 found
+            deletables.extend([os.path.join(workdir, f) for f in setpars])
+            deletables.extend([os.path.join(workdir, f) for f in pars])
+
             for filepath in deletables:
                 if filepath in joinables:
                     joinables.remove(filepath)
@@ -1237,10 +1240,20 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             command = [str(PAR2C_COMMAND), cmd, parfile]
         else:
             command = [str(PAR2_COMMAND), cmd, parfile]
+
         # Allow options if not classic or when classic and non-classic are the same
-        if options and (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
+        if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
             command.insert(2, options)
-    logging.debug('Par2-classic = %s', classic)
+
+    logging.debug('Par2-classic/cmdline = %s', classic)
+
+    # We need to check for the bad par2cmdline that skips blocks
+    # Only if we're not doing multicore and user hasn't set options
+    if not tbb and not options:
+        par2text = run_simple([command[0], '-h'])
+        if 'No data skipping' in par2text:
+            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+            command.insert(2, '-N')
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1572,7 +1585,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         used_joinables.extend(reconstructed)
 
     if retry_classic:
-        logging.debug('Retry PAR2-joining with par2-classic')
+        logging.debug('Retry PAR2-joining with par2-classic/cmdline')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
     else:
         return finished, readd, pars, datafiles, used_joinables, used_par2
@@ -1667,7 +1680,7 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
-    joinables, zips, rars, sevens, filelist = ([], [], [], [], [])
+    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
@@ -1691,19 +1704,28 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
                         # Just skip failing names
                         pass
 
-    sevens = [f for f in filelist if SEVENZIP_RE.search(f)]
-    sevens.extend([f for f in filelist if SEVENMULTI_RE.search(f)])
+    for file in filelist:
+        # Extra check for rar (takes CPU/disk)
+        file_is_rar = False
+        if check_rar:
+            file_is_rar = is_rarfile(file)
 
-    if check_rar:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f) and not is_rarfile(f)]
-    else:
-        joinables = [f for f in filelist if f not in sevens and SPLITFILE_RE.search(f)]
-
-    zips = [f for f in filelist if ZIP_RE.search(f)]
-
-    rars = [f for f in filelist if RAR_RE.search(f)]
-
-    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables and f not in sevens]
+        # Run through all the checks
+        if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
+            # 7zip
+            sevens.append(file)
+        elif SPLITFILE_RE.search(file) and not file_is_rar:
+            # Joinables, optional with RAR check
+            joinables.append(file)
+        elif ZIP_RE.search(file):
+            # ZIP files
+            zips.append(file)
+        elif RAR_RE.search(file):
+            # RAR files
+            rars.append(file)
+        elif TS_RE.search(file):
+            # TS split files
+            ts.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): zips: %s", zips)
@@ -1727,7 +1749,7 @@ def QuickCheck(set, nzo):
     for file in md5pack:
         found = False
         for nzf in nzf_list:
-            if file == nzf.filename:
+            if platform_encode(file) == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -1985,7 +2007,7 @@ class SevenZip(object):
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     txt = p.stdout.read()
     p.wait()
     return txt

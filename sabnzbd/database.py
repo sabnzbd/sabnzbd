@@ -397,7 +397,7 @@ class HistoryDB(object):
                 pp = items.get('pp')
                 script = items.get('script')
                 cat = items.get('category')
-            except AttributeError:
+            except (AttributeError, IndexError):
                 return '', '', '', '', ''
         return dtype, url, pp, script, cat
 

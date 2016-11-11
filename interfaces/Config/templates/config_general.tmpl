@@ -80,14 +80,18 @@
                 <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
-                            <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
-                            <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
-                            <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
-                            <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
-                            <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
-                            <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
+                            <optgroup label="API">
+                                <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
+                                <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
+                                <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
+                                <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
+                            </optgroup>
+                            <optgroup label="$T('inet-fullapi') &amp; $T('opt-web_dir')">
+                                <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
+                                <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
+                            </optgroup>
                         </select>
-                    <span class="desc">$T('explain-inet_exposure')</span>
+                    <span class="desc">$T('explain-inet_exposure').replace('.','.<br>')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
@@ -143,11 +147,13 @@
                 <div class="field-pair">
                     <label class="config" for="https_cert">$T('opt-https_cert')</label>
                     <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-https_cert')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="https_key">$T('opt-https_key')</label>
                     <input type="text" name="https_key" id="https_key" value="$https_key" />
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
                     <span class="desc">$T('explain-https_key')</span>
                 </div>
                 <div class="field-pair">
@@ -168,10 +174,15 @@
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="bandwidth_max">$T('opt-bandwidth_max')</label>
-                    <input type="text" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" class="smaller_input" />
-                    <span class="desc">$T('explain-bandwidth_max')<br />$T('wizard-bandwidth-explain')</span>
+                <div class="field-pair value-and-select">
+                    <label class="config" for="bandwidth_max_value">$T('opt-bandwidth_max')</label>
+                    <input type="number" name="bandwidth_max_value" id="bandwidth_max_value" class="smaller_input" />
+                    <select name="bandwidth_max_dropdown" id="bandwidth_max_dropdown">
+                        <option value="">B/s</option>
+                        <option value="K">KB/s</option>
+                        <option value="M" selected>MB/s</option>
+                    </select>
+                    <input type="hidden" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
@@ -257,6 +268,45 @@
         // No save on this button click
         e.preventDefault();                        
     });
+
+    \$('.generate_cert').click(function(e) {
+        if(!confirm('$T('explain-new-cert')')) {
+            return;
+        }
+
+        // Submit request and then restart
+        $.ajax({
+            type: "POST",
+            url: "../../tapi",
+            data: { mode: 'config', name: 'regenerate_certs', apikey: \$('#apikey').val() },
+            success: function(msg) {
+                do_restart()
+            }
+        });
+
+        e.preventDefault();
+    })
+
+    // Only allow re-generate if default certs
+    if(\$('#https_cert').val() != 'server.cert') {
+        \$('.generate_cert').attr('disabled', 'disabled')
+    }
+
+    // Parse the text
+    var bandwidthLimit = \$('#bandwidth_max').val()
+    if(bandwidthLimit) {
+        var bandwithLimitNumber = parseFloat(bandwidthLimit)
+        var bandwithLimitText = bandwidthLimit.replace(/[^a-zA-Z]+/g, '');
+        \$('#bandwidth_max_value').val(bandwithLimitNumber)
+        \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+    }
+    
+
+    // Update the value
+    \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
+        \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+    })
+
 });
 </script>
 

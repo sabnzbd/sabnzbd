@@ -247,6 +247,7 @@ SKIN_TEXT = {
     'purgeFailed' : TT('Purge Failed NZBs'), #: Button to delete all failed jobs in History
     'purgeFailed-Files' : TT('Purge Failed NZBs & Delete Files'), #: Button to delete all failed jobs in History, including files
     'purgeCompl' : TT('Purge Completed NZBs'), #: Button to delete all completed jobs in History
+    'purgePage' : TT('Purge NZBs on the current page'), #: Button to delete jobs on current page in History
     'opt-extra-NZB' : TT('Optional Supplemental NZB'), #: Button to add NZB to failed job in History
     'msg-path' : TT('Path'), #: Path as displayed in History details
     'link-retryAll' : TT('Retry all failed'), #: Retry all failed jobs in History
@@ -335,6 +336,7 @@ SKIN_TEXT = {
     'explain-https_port' : TT('If empty, the standard port will only listen to HTTPS.'),
     'opt-https_cert' : TT('HTTPS Certificate'),
     'explain-https_cert' : TT('File name or path to HTTPS Certificate.'),
+    'explain-new-cert': TT('Generate new self-signed certificate and key. Requires SABnzbd restart!'),
     'opt-https_key' : TT('HTTPS Key'),
     'explain-https_key' : TT('File name or path to HTTPS Key.'),
     'opt-https_chain' : TT('HTTPS Chain Certifcates'),
@@ -343,7 +345,6 @@ SKIN_TEXT = {
     'opt-rss_rate' : TT('RSS Checking Interval'),
     'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
     'opt-bandwidth_max' : TT('Maximum line speed'),
-    'explain-bandwidth_max' : TT('Highest possible linespeed in Bytes/second, e.g. 2M.'),
     'opt-bandwidth_perc' : TT('Percentage of line speed'),
     'explain-bandwidth_perc' : TT('Which percentage of the linespeed should SABnzbd use, e.g. 50'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
@@ -971,7 +972,6 @@ SKIN_TEXT = {
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
     'wizard-exit' : TT('Exit SABnzbd'), #: Wizard EXIT button on first page
     'wizard-start' : TT('Start Wizard'), #: Wizard START button on first page
-    'wizard-bandwidth-explain' : TT('When your ISP speed is 10 Mbits/sec, enter here 1M'), #: Wizard explain relation bits/sec bytes/sec
 
 #Special
     'yourRights' : TT('''
