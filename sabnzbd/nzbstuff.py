@@ -61,7 +61,6 @@ from sabnzbd.rating import Rating
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name patterns
-RE_NORMAL = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
@@ -679,8 +678,8 @@ class NzbObject(TryList):
 
         self.create_group_folder = cfg.create_group_folders()
 
-        # Remove trailing .nzb
-        self.work_name = split_filename(self.work_name)
+        # Remove trailing .nzb and .par(2)
+        self.work_name = create_work_name(self.work_name)
 
         if nzb is None:
             # This is a slot for a future NZB, ready now
@@ -1777,16 +1776,17 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
         return cmp(nzf1.date, nzf2.date)
 
 
-def split_filename(name):
-    """ Remove ".nzb" """
+def create_work_name(name):
+    """ Remove ".nzb" and ".par(2)" """
+    strip_ext = ['.nzb', '.par', '.par2']
     name = name.strip()
     if name.find('://') < 0:
-        m = RE_NORMAL.match(name)
-        if m:
-            return m.group(1).rstrip('.').strip()
-        else:
-            return name.strip()
-        return ''
+        name_base, ext = os.path.splitext(name)
+        # In case it was one of these, there might be more
+        while ext.lower() in strip_ext:
+            name = name_base
+            name_base, ext = os.path.splitext(name)
+        return name.strip()
     else:
         return name.strip()
 
