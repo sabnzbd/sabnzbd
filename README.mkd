@@ -3,7 +3,7 @@ Release Notes  -  SABnzbd 1.1.1
 
 ## What's new in 1.1.1
 
-## Buf fixes
+## Bug fixes
 - 8th parameter for user-script wasn't passed correctly.
 - Fix broken HTTPS port binding
 - Only allow binding to IPv6 when ipv6_hosting enabled
