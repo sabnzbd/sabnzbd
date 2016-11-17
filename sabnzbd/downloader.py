@@ -638,10 +638,7 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
-                                    if (not server.optional) and cfg.no_penalties():
-                                        penalty = _PENALTY_SHORT
                                     if penalty and (block or server.optional):
-                                        logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
                                     NzbQueue.do.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False, quit=True)
@@ -808,6 +805,10 @@ class Downloader(Thread):
     @synchronized(TIMER_LOCK)
     def plan_server(self, server_id, interval):
         """ Plan the restart of a server in 'interval' minutes """
+        if cfg.no_penalties() and interval > _PENALTY_SHORT:
+            # Overwrite in case of no_penalties
+            interval = _PENALTY_SHORT
+
         logging.debug('Set planned server resume %s in %s mins', server_id, interval)
         if server_id not in self._timers:
             self._timers[server_id] = []
