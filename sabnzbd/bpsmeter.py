@@ -270,10 +270,9 @@ class BPSMeter(object):
             logging.debug("bps: %s", self.bps)
             self.log_time = t
 
-        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0
-        if self.speed_log_time < (t - float(refresh_rate)):
+        if self.speed_log_time < (t - 1.0):
             self.add_empty_time()
-            self.bps_list.append("%i" % (self.bps / KIBI))
+            self.bps_list.append(int(self.bps / KIBI))
             self.speed_log_time = t
 
     def reset(self):
@@ -284,12 +283,9 @@ class BPSMeter(object):
         self.bps = 0.0
 
     def add_empty_time(self):
-        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0
-        time_diff = time.time() - self.speed_log_time
-        nr_diffs = int(floor(time_diff / refresh_rate))
-
+        nr_diffs = int(time.time() - self.speed_log_time)
         if nr_diffs > 1:
-            self.bps_list.extend(['0.0'] * nr_diffs)
+            self.bps_list.extend([0] * nr_diffs)
 
         if len(self.bps_list) > self.bps_list_max:
             self.bps_list = self.bps_list[len(self.bps_list) - self.bps_list_max:]
@@ -325,8 +321,10 @@ class BPSMeter(object):
         return self.bps
 
     def get_bps_list(self):
+        refresh_rate = int(cfg.refresh_rate()) if cfg.refresh_rate() else 1
         self.add_empty_time()
-        return self.bps_list
+        # We record every second, but display at the user's refresh-rate
+        return self.bps_list[::refresh_rate]
 
     def reset_quota(self, force=False):
         """ Check if it's time to reset the quota, optionally resuming
