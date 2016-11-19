@@ -188,6 +188,10 @@ class Downloader(Thread):
         # Used for reducing speed
         self.delayed = False
 
+        # Used to see if we can add a slowdown to the Downloader-loop
+        self.can_be_slowed = None
+        self.can_be_slowed_timer = 0
+
         self.postproc = False
 
         self.shutdown = False
@@ -272,6 +276,7 @@ class Downloader(Thread):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
+            self.can_be_slowed = None
             logging.info("Pausing")
             notifier.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
@@ -328,6 +333,7 @@ class Downloader(Thread):
         else:
             self.speed_set()
         logging.info("Speed limit set to %s B/s", self.bandwidth_limit)
+        self.can_be_slowed = None
 
     def get_limit(self):
         return self.bandwidth_perc
@@ -507,8 +513,21 @@ class Downloader(Thread):
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
 
                 # Why check so often when so few things happend?
-                if len(readkeys) >= 8 and len(read) <= 2:
+                if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
                     time.sleep(0.01)
+
+                # Need to initalize the check during first 20 seconds
+                if self.can_be_slowed is None or self.can_be_slowed_timer:
+                    # Wait for stable speed to start testing
+                    if not self.can_be_slowed_timer and BPSMeter.do.get_stable_speed(timespan=10):
+                        self.can_be_slowed_timer = time.time()
+
+                    # Check 5 seconds after enabeling slowdown
+                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 5:
+                        # Now let's check if it was stable in the last 10 seconds
+                        self.can_be_slowed = BPSMeter.do.get_stable_speed(timespan=10)
+                        self.can_be_slowed_timer = 0
+                        logging.debug('Downloader-slowdown: %r', self.can_be_slowed > 0)
 
             else:
                 read, write, error = ([], [], [])
