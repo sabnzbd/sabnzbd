@@ -365,7 +365,7 @@ class MainPage(object):
             info['have_logout'] = cfg.username() and cfg.password() and (cfg.html_login() and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6))))
 
             bytespersec_list = BPSMeter.do.get_bps_list()
-            info['bytespersec_list'] = ','.join(bytespersec_list)
+            info['bytespersec_list'] = ','.join([str(bps) for bps in bytespersec_list])
 
             info['warning'] = ''
             if cfg.enable_unrar():
