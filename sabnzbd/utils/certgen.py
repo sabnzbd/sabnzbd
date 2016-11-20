@@ -1,7 +1,29 @@
 #!/usr/bin/env python
 
-# Adapted from the docs of cryptography
-# Creates a key and self-signed certificate for local use
+"""
+Adapted from the docs of cryptography
+Creates a key and self-signed certificate for local use
+"""
+
+def patch_crypto_backend_discovery():
+    """
+    Monkey patches cryptography's backend detection.
+    Objective: support py2exe/pyinstaller freezing.
+    https://github.com/pyca/cryptography/issues/2039#issuecomment-115432291
+    """
+    from cryptography.hazmat import backends
+    try:
+        from cryptography.hazmat.backends.commoncrypto.backend import backend as backend_cc
+    except ImportError:
+        backend_cc = None
+    try:
+        from cryptography.hazmat.backends.openssl.backend import backend as backend_ossl
+    except ImportError:
+        backend_ossl = None
+    backends._available_backends_list = [
+        backend for backend in (backend_cc, backend_ossl) if backend is not None
+    ]
+patch_crypto_backend_discovery()
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
@@ -52,7 +74,7 @@ def generate_key(key_size=2048, output_file='key.pem'):
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption()
         ))
-    
+
     return private_key
 
 
@@ -84,7 +106,7 @@ def generate_local_cert(private_key, days_valid=356, output_file='cert.cert', LN
     # Write our certificate out to disk.
     with open(output_file, "wb") as f:
         f.write(cert.public_bytes(serialization.Encoding.PEM))
-    
+
     return cert
 
 if __name__ == '__main__':
