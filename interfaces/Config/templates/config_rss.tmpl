@@ -458,12 +458,16 @@
                 <table class="catTable">
                     <thead>
                         <tr>
+                            <th>$T('rss-done')</th>
+                            <th>$T('size')</th>
                             <th>$T('sort-title')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
                         <tr class="infoTableSeperator">
-                            <td>$job</td>
+                            <td>$job[6]</td>
+                            <td>$job[5]</td>
+                            <td>$job[1]</td>
                         </tr>
                     <!--#end for#-->
                 </table>
@@ -570,12 +574,12 @@ function urlencode(str) {
         var theForm = \$(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
-    
+
     \$('.evalFeed').click(function(){
         var theForm = \$(this).closest("form");
         theForm.attr("action", "eval_rss_feed").submit();
     });
-    
+
     \$('.delFilter').click(function(){
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();

@@ -585,6 +585,9 @@ h2.activeRSS {
 .tab-content .catTable {
     width: 100%;
 }
+.tab-content .catTable th {
+    text-align: left;
+}
 .tab-content .catTable tbody {
     border: 1px solid #ddd;
 }
