@@ -29,6 +29,7 @@ import threading
 import subprocess
 import socket
 import time
+import datetime
 import fnmatch
 import stat
 from urlparse import urlparse
@@ -54,6 +55,40 @@ def time_format(fmt):
         return fmt.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
     else:
         return fmt
+
+
+def calc_age(date, trans=False):
+    """ Calculate the age difference between now and date.
+        Value is returned as either days, hours, or minutes.
+        When 'trans' is True, time symbols will be translated.
+    """
+    if trans:
+        d = T('d')  # : Single letter abbreviation of day
+        h = T('h')  # : Single letter abbreviation of hour
+        m = T('m')  # : Single letter abbreviation of minute
+    else:
+        d = 'd'
+        h = 'h'
+        m = 'm'
+    try:
+        now = datetime.datetime.now()
+        # age = str(now - date).split(".")[0] #old calc_age
+
+        # time difference
+        dage = now - date
+        seconds = dage.seconds
+        # only one value should be returned
+        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
+        if dage.days:
+            age = '%s%s' % (dage.days, d)
+        elif seconds / 3600:
+            age = '%s%s' % (seconds / 3600, h)
+        else:
+            age = '%s%s' % (seconds / 60, m)
+    except:
+        age = "-"
+
+    return age
 
 
 def safe_lower(txt):

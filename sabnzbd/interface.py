@@ -21,6 +21,7 @@ sabnzbd.interface - webinterface
 
 import os
 import time
+import datetime
 import cherrypy
 import logging
 import urllib
@@ -37,7 +38,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, \
+    time_format, long_path, calc_age, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
@@ -66,7 +67,7 @@ from sabnzbd.lang import list_languages, set_language
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
+    format_bytes, std_time, report, del_hist_job, Ttemplate, \
     build_queue_header, _api_test_email, _api_test_notif
 
 ##############################################################################
@@ -2805,12 +2806,12 @@ def ShowString(name, string):
 
 def GetRssLog(feed):
     def make_item(job):
-        import pdb; pdb.set_trace()  # breakpoint cbaffa7f //
-
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
         size = job.get('size')
-        date = job.get('time', 0)
+        age = job.get('age', 0)
+        time_downloaded = job.get('time_downloaded')
+
         if size:
             size = to_units(size).replace(' ', '&nbsp;')
         else:
@@ -2819,13 +2820,17 @@ def GetRssLog(feed):
             nzbname = ""
         else:
             nzbname = xml_name(job.get('title', ''))
+        if time_downloaded:
+            time_downloaded = time.strftime(time_format('%H:%M %a %d %b'), time_downloaded).decode(codepage)
+
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
                nzbname, \
                size, \
-               time.strftime(time_format('%H:%M %a %d %b'), time.localtime(date)).decode(codepage)
+               time_downloaded, \
+               calc_age(age, True)
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
