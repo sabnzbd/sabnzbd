@@ -2225,7 +2225,7 @@ class ConfigRss(object):
             self.__refresh_force = False
             self.__refresh_ignore = True
             self.__evaluate = True
-            self.__show_eval_button = False            
+            self.__show_eval_button = False
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2808,6 +2808,7 @@ def GetRssLog(feed):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
         size = job.get('size')
+        date = job.get('time', 0)
         if size:
             size = to_units(size).replace(' ', '&nbsp;')
         else:
@@ -2821,7 +2822,8 @@ def GetRssLog(feed):
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
                nzbname, \
-               size
+               size, \
+               time.strftime(time_format('%H:%M %a %d %b'), time.localtime(date)).decode(codepage)
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
@@ -2832,9 +2834,8 @@ def GetRssLog(feed):
     bad = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
 
     # Sort in reverse order of time stamp for 'Done'
-    dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
-    dnames.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
-    done = [xml_name(jobs[job]['title']) for job in dnames]
+    names.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
+    done = [make_item(jobs[job]) for job in names if jobs[job]['status'] == 'D']
 
     return done, good, bad
 
