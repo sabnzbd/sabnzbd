@@ -2,14 +2,33 @@ Release Notes  -  SABnzbd 1.2.0
 ===============================
 
 ## What's new in 1.2.0
-
+- New SSL engine:
+  * SSL connections will always negotiate strongest encryption available
+  * Strict verification of certificates (optional)
+  * Set custom SSL-Ciphers to increase performance (lowers encryption strength)
+  * Detail information in Status window on type of encryption used
+  * Webserver can use stronger encryption for HTTPS connections
+- New RAR-file processing with full support for RAR5:
+  * All passwords are now tried on the first complete RAR-file during download
+  * RAR-based verification when no par2-files or SFV-files are available
+- Categories can now be ordered to customize matching to categories in NZB's
+- Detection of par2-files in completely obfuscated NZB's
+- Verification (par2) and UnRAR can now be aborted from Glitter
 
 ## Changes:
-
+- Dropped dependency on PyOpenSSL, now only requires cryptography package
+- Update 7zip to 16.04 and UnRar to 5.40 for Windows/macOS
+- Python post/pre/notification-scripts require execute permissions
 
 ## Bug fixes
+- Re-use IP-address for new connections when a server has open connections
+- Auto-disables CPU-usage optimizations if they result in slowdown
+- no_penalties now applies to all types of penalties
+- par2cmdline would fail jobs in folders ending on ".par2"
+- MemoryError (no more memory available) now stops downloading
 
-
+## Translations
+- Many translations updated, thanks to our translators!
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
@@ -19,7 +38,6 @@ Release Notes  -  SABnzbd 1.2.0
   extract and clean up posts downloaded from Usenet.
 
   (c) Copyright 2007-2016 by "The SABnzbd-team" \<team@sabnzbd.org\>
-
 
 ### IMPORTANT INFORMATION about release 1.x.x
 <https://sabnzbd.org/wiki/new-features-and-changes>
