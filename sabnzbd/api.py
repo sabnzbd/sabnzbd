@@ -56,7 +56,7 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-    starts_with_path, cat_convert, clip_path, create_https_certificates
+    starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -2037,40 +2037,6 @@ def calc_timeleft(bytesleft, bps):
             return '%s:%s:%s' % (hours, minutes, seconds)
     except:
         return '0:00:00'
-
-
-def calc_age(date, trans=False):
-    """ Calculate the age difference between now and date.
-        Value is returned as either days, hours, or minutes.
-        When 'trans' is True, time symbols will be translated.
-    """
-    if trans:
-        d = T('d')  # : Single letter abbreviation of day
-        h = T('h')  # : Single letter abbreviation of hour
-        m = T('m')  # : Single letter abbreviation of minute
-    else:
-        d = 'd'
-        h = 'h'
-        m = 'm'
-    try:
-        now = datetime.datetime.now()
-        # age = str(now - date).split(".")[0] #old calc_age
-
-        # time difference
-        dage = now - date
-        seconds = dage.seconds
-        # only one value should be returned
-        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
-        if dage.days:
-            age = '%s%s' % (dage.days, d)
-        elif seconds / 3600:
-            age = '%s%s' % (seconds / 3600, h)
-        else:
-            age = '%s%s' % (seconds / 60, m)
-    except:
-        age = "-"
-
-    return age
 
 
 def std_time(when):

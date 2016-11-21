@@ -22,6 +22,7 @@ sabnzbd.rss - rss client functionality
 import re
 import logging
 import time
+import datetime
 import threading
 
 import sabnzbd
@@ -273,6 +274,7 @@ class RSSQueue(object):
         #           time : timestamp (used for time-based clean-up)
         #           order : order in the RSS feed
         #           size : size in bytes
+        #           age : age in datetime format as specified by feed
 
         self.shutdown = False
 
@@ -416,11 +418,12 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size = _get_link(uri, entry)
+                    link, category, size, age = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
                     category = u''
                     size = 0L
+                    age = None
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
                     return T('Incompatible feed')
@@ -432,6 +435,7 @@ class RSSQueue(object):
                     category = None
                 title = jobs[link].get('title', '')
                 size = jobs[link].get('size', 0L)
+                age = jobs[link].get('age')
 
             if link:
                 # Make sure spaces are quoted in the URL
@@ -543,12 +547,12 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, size, 'G', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, 'G', category, myCat, myPP, myScript,
                                     act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, size, 'B', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, 'B', category, myCat, myPP, myScript,
                                     False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
@@ -611,6 +615,7 @@ class RSSQueue(object):
             for link in lst:
                 if lst[link].get('url', '') == fid:
                     lst[link]['status'] = 'D'
+                    lst[link]['time_downloaded'] = time.localtime()
 
     @synchronized(LOCK)
     def lookup_url(self, feed, url):
@@ -636,8 +641,8 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download, star, order,
-                priority=NORMAL_PRIORITY, rule=0):
+def _HandleLink(jobs, link, title, size, age, flag, orgcat, cat, pp, script, download, star,
+                order, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
         script = None
@@ -648,6 +653,7 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
+    jobs[link]['age'] = age
     if special_rss_site(link):
         nzbname = None
     else:
@@ -656,6 +662,7 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     if download:
         jobs[link]['status'] = 'D'
         jobs[link]['title'] = title
+        jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
         sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
@@ -682,6 +689,7 @@ def _get_link(uri, entry):
     category = ''
     size = 0L
     uri = uri.lower()
+    age = datetime.datetime.now()
 
     # Try standard link and enclosures first
     link = entry.link
@@ -708,6 +716,12 @@ def _get_link(uri, entry):
         except:
             pass
 
+    try:
+        # Convert it to format that calc_age understands
+        age = datetime.datetime(*entry.published_parsed[:6])
+    except:
+        pass
+
     if link and 'http' in link.lower():
         try:
             category = entry.cattext
@@ -722,10 +736,11 @@ def _get_link(uri, entry):
                         category = entry.description
                     except:
                         category = ''
-        return link, category, size
+
+        return link, category, size, age
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0L
+        return None, '', 0L, None
 
 
 def special_rss_site(url):
