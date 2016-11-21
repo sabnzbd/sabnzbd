@@ -108,17 +108,27 @@ class Decoder(Thread):
                     data = decode(article, lines)
                     nzf.article_count += 1
                     found = True
+
                 except IOError, e:
                     logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-
                     article.fetcher = None
-
                     NzbQueue.do.reset_try_lists(nzf, nzo)
+                    register = False
 
+                except MemoryError, e:
+                    logme = T('Decoder failure: Out of memory')
+                    logging.warning(logme)
+                    anfo = sabnzbd.articlecache.ArticleCache.do.cache_info()
+                    logging.info("Decoder-Queue: %d, Cache: %d, %d, %d", self.queue.qsize(), anfo.article_sum, anfo.cache_size, anfo.cache_limit)
+                    logging.info("Traceback: ", exc_info=True)
+
+                    sabnzbd.downloader.Downloader.do.pause()
+                    article.fetcher = None
+                    NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except CrcError, e:
