@@ -158,7 +158,7 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     if failure_url:
         command.append(str(failure_url))
 
-    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
+    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or os.access(extern_proc, os.X_OK)):
         command.insert(0, 'python')
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
@@ -183,7 +183,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
     """ Run a user script with two parameters, return console output and exit value """
     command = [script, p1, p2, p3, p4]
 
-    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(script, os.X_OK)):
+    if script.endswith('.py') and (sabnzbd.WIN32 or os.access(script, os.X_OK)):
         command.insert(0, 'python')
     stup, need_shell, command, creationflags = build_command(command)
     env = fix_env()
