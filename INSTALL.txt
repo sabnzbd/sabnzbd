@@ -1,4 +1,4 @@
-                                SABnzbd 1.1.0
+                                SABnzbd 1.2.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -68,7 +68,7 @@ Windows
 Essential modules
     cheetah-2.0.1+          use "pip install cheetah"
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
-                            Note: https://sabnzbd.org/wiki/configuration/1.1/switches#par2cmdline
+                            Note: https://sabnzbd.org/wiki/configuration/1.2/switches#par2cmdline
     unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
