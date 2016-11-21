@@ -604,6 +604,7 @@ SKIN_TEXT = {
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
+    'rss-added' : TT('Added NZB'), #: Config->RSS after adding to queue
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
 

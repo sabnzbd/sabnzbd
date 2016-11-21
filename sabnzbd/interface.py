@@ -2805,6 +2805,8 @@ def ShowString(name, string):
 
 def GetRssLog(feed):
     def make_item(job):
+        import pdb; pdb.set_trace()  # breakpoint cbaffa7f //
+
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
         size = job.get('size')

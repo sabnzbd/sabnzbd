@@ -365,7 +365,7 @@
                 <div class="padding">
                     <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
-                    <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('link-download')</button>
+                    <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('rss-done')</button>
                     <!--#if $evalButton#-->
                       <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
                     <!--#end if#-->
@@ -541,21 +541,6 @@ function urlencode(str) {
         }
     });
 
-    \$('.testFeed').click(function(){
-        var whichFeed = \$(this).attr("rel");
-        \$(this).attr('disabled', true)
-        \$.ajax({
-            type: "POST",
-            url: "test_rss_feed",
-            data: {feed: whichFeed, session: "$session" }
-        }).done(function( msg ) {
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;
-            location = '?feed=' + urlencode(whichFeed);
-        });
-    });
-
     \$('.toggleFeedCheckbox').click(function(){
         var whichFeed = \$(this).attr("rel");
         \$.ajax({
@@ -570,12 +555,36 @@ function urlencode(str) {
         });
     });
 
+    function setActiveIcon(objButton) {
+        // Let's make it look like things are happening!
+        \$(objButton).attr('disabled', true)
+        \$(objButton).find('span').remove()
+        \$(objButton).prepend('<span class="glyphicon glyphicon-transfer"></span>')
+    }
+
+    \$('.testFeed').click(function(){
+        setActiveIcon(this)
+        var whichFeed = \$(this).attr("rel");
+        \$.ajax({
+            type: "POST",
+            url: "test_rss_feed",
+            data: {feed: whichFeed, session: "$session" }
+        }).done(function( msg ) {
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location = '?feed=' + urlencode(whichFeed);
+        });
+    });
+
     \$('.cleanFeed').click(function(){
+        setActiveIcon(this)
         var theForm = \$(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
 
     \$('.evalFeed').click(function(){
+        setActiveIcon(this)
         var theForm = \$(this).closest("form");
         theForm.attr("action", "eval_rss_feed").submit();
     });
@@ -584,6 +593,21 @@ function urlencode(str) {
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();
     });
+
+    \$('form[action="download"]').ajaxForm({
+        datatype: 'json',
+        beforeSubmit: function (_, form) {
+            \$(form).find('button').attr("disabled", "disabled")
+            // Remove icon and add new one
+            \$(form).find('button span').remove()
+            \$(form).find('button').prepend('<span class="glyphicon glyphicon-transfer"></span>')
+        },
+        success: function (_, _, _, form) {
+            // Set success
+            \$(form).find('button').html('<span class="glyphicon glyphicon-ok"></span> $T('rss-added')')
+        }
+    });
+
 });
 </script>
 
