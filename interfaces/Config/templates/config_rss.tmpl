@@ -391,8 +391,9 @@
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th class="default-sort">$T('nzo-age')</th>
                         <th>$T('sort-title')</th>
+                        <th>$T('category')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $matched#-->
@@ -409,8 +410,9 @@
                         <td>$job[2]</td>
                         <td>$job[3]</td>
                         <td data-sort-value="$job[6]">$job[5]</td>
-                        <td data-sort-value="$job[8]">$job[7]</td>
                         <td>$job[1]</td>
+                        <td>$job[11]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -427,8 +429,9 @@
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th class="default-sort">$T('nzo-age')</th>
                         <th>$T('sort-title')</th>
+                        <th>$T('category')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $unmatched#-->
@@ -445,8 +448,9 @@
                         <td>$job[2]</td>
                         <td>$job[3]</td>
                         <td data-sort-value="$job[6]">$job[5]</td>
-                        <td data-sort-value="$job[8]">$job[7]</td>
                         <td>$job[1]</td>
+                        <td>$job[11]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -465,6 +469,7 @@
                             <th class="default-sort">$T('rss-added')</th>
                             <th>$T('size')</th>
                             <th>$T('sort-title')</th>
+                            <th>$T('category')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
@@ -472,6 +477,7 @@
                             <td data-sort-value="$job[10]">$job[9]</td>
                             <td data-sort-value="$job[6]">$job[5]</td>
                             <td>$job[1]</td>
+                            <td>$job[11]</td>
                         </tr>
                     <!--#end for#-->
                 </table>
