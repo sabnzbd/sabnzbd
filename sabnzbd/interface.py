@@ -2841,7 +2841,8 @@ def GetRssLog(feed):
                age, \
                age_ms, \
                time_downloaded, \
-               time_downloaded_ms
+               time_downloaded_ms,\
+               job.get('cat')
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
