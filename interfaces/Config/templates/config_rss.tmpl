@@ -387,11 +387,11 @@
             <table class="catTable">
                 <thead>
                     <tr>
-                        <th>$T('link-download')</th>
+                        <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('nzo-age')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                         <th>$T('sort-title')</th>
                     </tr>
                 </thead>
@@ -408,8 +408,8 @@
                         </td>
                         <td>$job[2]</td>
                         <td>$job[3]</td>
-                        <td>$job[5]</td>
-                        <td>$job[7]</td>
+                        <td data-sort-value="$job[6]">$job[5]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                         <td>$job[1]</td>
                     </tr>
                 <!--#end for#-->
@@ -423,11 +423,11 @@
             <table class="catTable">
                 <thead>
                     <tr>
-                        <th>$T('link-download')</th>
+                        <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('nzo-age')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                         <th>$T('sort-title')</th>
                     </tr>
                 </thead>
@@ -444,8 +444,8 @@
                         </td>
                         <td>$job[2]</td>
                         <td>$job[3]</td>
-                        <td>$job[5]</td>
-                        <td>$job[7]</td>
+                        <td data-sort-value="$job[6]">$job[5]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                         <td>$job[1]</td>
                     </tr>
                 <!--#end for#-->
@@ -462,15 +462,15 @@
                 <table class="catTable">
                     <thead>
                         <tr>
-                            <th>$T('rss-added')</th>
+                            <th class="default-sort">$T('rss-added')</th>
                             <th>$T('size')</th>
                             <th>$T('sort-title')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
                         <tr class="infoTableSeperator">
-                            <td>$job[6]</td>
-                            <td>$job[5]</td>
+                            <td data-sort-value="$job[10]">$job[9]</td>
+                            <td data-sort-value="$job[6]">$job[5]</td>
                             <td>$job[1]</td>
                         </tr>
                     <!--#end for#-->
@@ -485,10 +485,10 @@
 
 </div>
 <!-- /colmask -->
-
+<script type="text/javascript" src="${root}staticcfg/js/jquery.tablesort.min.js"></script>
 <script type="text/javascript">
 function urlencode(str) {
-  return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+    return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
 
 \$(document).ready(function(){
@@ -564,6 +564,17 @@ function urlencode(str) {
         \$(objButton).attr('disabled', true)
         \$(objButton).find('span').remove()
         \$(objButton).prepend('<span class="glyphicon glyphicon-transfer"></span>')
+    }
+
+    // Enable sorting and set default
+    if (\$('#rss-tab-matched table').length) {
+        \$('#rss-tab-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-matched th.default-sort'), 'desc');
+    }
+    if (\$('#rss-tab-not-matched table').length) {
+        \$('#rss-tab-not-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-not-matched th.default-sort'), 'desc');
+    }
+    if (\$('#rss-tab-done table').length) {
+        \$('#rss-tab-done table').tablesort().data('tablesort').sort(\$('#rss-tab-done th.default-sort'), 'desc');
     }
 
     \$('.testFeed').click(function(){

@@ -2810,27 +2810,38 @@ def GetRssLog(feed):
         title = xml_name(job.get('title', ''))
         size = job.get('size')
         age = job.get('age', 0)
+        age_ms = job.get('age', 0)
         time_downloaded = job.get('time_downloaded')
+        time_downloaded_ms = job.get('time_downloaded')
 
-        if size:
-            size = to_units(size).replace(' ', '&nbsp;')
-        else:
-            size = '?'
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
             nzbname = xml_name(job.get('title', ''))
+
+        if size:
+            size = to_units(size)
+
+        if age:
+            age = calc_age(age, True)
+            age_ms = time.mktime(age_ms.timetuple())
+
         if time_downloaded:
             time_downloaded = time.strftime(time_format('%H:%M %a %d %b'), time_downloaded).decode(codepage)
+            time_downloaded_ms = time.mktime(time_downloaded_ms)
 
+        # Also return extra fields for sorting
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
                nzbname, \
                size, \
+               job.get('size'), \
+               age, \
+               age_ms, \
                time_downloaded, \
-               calc_age(age, True)
+               time_downloaded_ms
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()

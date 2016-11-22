@@ -321,6 +321,37 @@ tr.separator {
 .RSS form[action="add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #E5E5E5;
 }
+.RSS .tab-pane table th:not(.no-sort) {
+    cursor: pointer;
+}
+.RSS .tab-pane table th:not(.sorted) {
+    padding-right: 12px;
+}
+.RSS .tab-pane table th.sorted {
+    padding-right: 0px;
+}
+.RSS .tab-pane table th.sorted.ascending:after {
+    content:'';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    vertical-align: middle;
+    border-bottom: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+.RSS .tab-pane table th.sorted.descending:after {
+    content:'';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
 .Config .table {
     margin: 0;
     border: 1px solid #ddd
