@@ -98,11 +98,6 @@ class URLGrabber(Thread):
                         logging.debug('Dropping URL %s, job entry missing', url)
                         continue
 
-                logging.info('Grabbing URL %s', url)
-                req = urllib2.Request(url)
-                req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                if not any(item in url for item in _BAD_GZ_HOSTS):
-                    req.add_header('Accept-encoding', 'gzip')
                 filename = None
                 category = None
                 gzipped = False
@@ -110,8 +105,10 @@ class URLGrabber(Thread):
                 wait = 0
                 retry = True
                 fn = None
+
+                logging.info('Grabbing URL %s', url)
                 try:
-                    fn = urllib2.urlopen(req)
+                    fn = _build_request(url)
                 except Exception, e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
@@ -268,6 +265,28 @@ class URLGrabber(Thread):
             except:
                 logging.error(T('URLGRABBER CRASHED'), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
+
+
+def _build_request(url):
+    # Detect basic auth
+    # Adapted from python-feedparser
+    urltype, rest = urllib2.splittype(url)
+    realhost, rest = urllib2.splithost(rest)
+    if realhost:
+        user_passwd, realhost = urllib2.splituser(realhost)
+        if user_passwd:
+            url = '%s://%s%s' % (urltype, realhost, rest)
+
+    # Start request
+    req = urllib2.Request(url)
+
+    # Add headers
+    req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+    if not any(item in url for item in _BAD_GZ_HOSTS):
+        req.add_header('Accept-encoding', 'gzip')
+    if user_passwd:
+        req.add_header('Authorization', 'Basic ' + user_passwd.encode('base64').strip())
+    return urllib2.urlopen(req)
 
 
 def _analyse(fn, url):
