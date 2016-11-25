@@ -565,6 +565,20 @@ function urlencode(str) {
         });
     });
 
+    // Only the Accept filter needs all the options
+    \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
+        var add_options = \$(this).parent().parent().find('select:not([name="filter_type"])')
+        if(\$(this).val() != "A") {
+            // Disable the options and add class for extra effects
+            add_options.attr('disabled', true).parent().addClass('disabled')
+        } else {
+            add_options.attr('disabled', false).parent().removeClass('disabled')
+        }
+    })
+    // Trigger on-load for all
+    \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').trigger('change')
+    formHasChanged = false
+
     function setActiveIcon(objButton) {
         // Let's make it look like things are happening!
         \$(objButton).attr('disabled', true)
