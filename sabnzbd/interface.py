@@ -1610,6 +1610,7 @@ class ConfigGeneral(object):
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
         conf['have_ssl'] = sabnzbd.HAVE_SSL
+        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)

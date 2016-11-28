@@ -93,6 +93,12 @@ except:
     HAVE_SSL = False
     HAVE_SSL_CONTEXT = False
 
+try:
+    import cryptography
+    HAVE_CRYPTOGRAPHY = True
+except:
+    HAVE_CRYPTOGRAPHY = False
+
 # Now we can import safely
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor

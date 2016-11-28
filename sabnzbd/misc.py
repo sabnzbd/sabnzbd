@@ -1156,14 +1156,13 @@ else:
 
 def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
-    try:
-        from sabnzbd.utils.certgen import generate_key, generate_local_cert
-    except:
-        logging.warning(T('%s missing'), 'Python Cryptography')
+    if not sabnzbd.HAVE_CRYPTOGRAPHY:
+        logging.error(T('%s missing'), 'Python Cryptography')
         return False
 
     # Save the key and certificate to disk
     try:
+        from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
         cert = generate_local_cert(private_key, days_valid=356*10, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'SABnzbd')
         logging.info('Self-signed certificates generated successfully')
