@@ -324,25 +324,32 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
             try:
                 zf = rarfile.RarFile(filepath, all_names=True)
                 # Check for encryption
-                if (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
-                    encrypted = zf.needs_password() or is_cloaked(filepath, zf.namelist())
-                    if encrypted and not nzo.reuse:
+                if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(filepath, zf.namelist())):
+                    # Load all passwords
+                    passwords = get_all_passwords(nzo)
+
+                    # if no cryptography installed, only error when no password was set
+                    if not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
+                        logging.info(T('%s missing'), 'Python Cryptography')
+                        nzo.encrypted = 1
+                        encrypted = True
+
+                    elif sabnzbd.HAVE_CRYPTOGRAPHY:
                         # Lets test if any of the password work
-                        passwords = get_all_passwords(nzo)
                         password_hit = False
                         rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
 
                         for password in passwords:
                             if password:
-                                logging.debug('Trying password "%s" on job "%s"', password, nzo.final_name)
+                                logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
                                     zf.testrar()
-                                    password_hit = True
+                                    password_hit = password
                                     break
                                 except rarfile.RarCRCError:
                                     # On CRC error we can continue!
-                                    password_hit = True
+                                    password_hit = password
                                     break
                                 except:
                                     pass
@@ -350,11 +357,13 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                         # Did any work?
                         if password_hit:
                             # Don't check other files
+                            logging.info('Password "%s" matches for job "%s"', password_hit, nzo.final_name)
                             nzo.encrypted = -1
                             encrypted = False
                         else:
                             # Encrypted and none of them worked
                             nzo.encrypted = 1
+                            encrypted = True
                     else:
                         # Don't check other files
                         nzo.encrypted = -1

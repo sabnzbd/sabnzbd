@@ -147,13 +147,17 @@
                 <div class="field-pair">
                     <label class="config" for="https_cert">$T('opt-https_cert')</label>
                     <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                        <span class="glyphicon glyphicon-repeat"></span>
+                    </button>
                     <span class="desc">$T('explain-https_cert')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="https_key">$T('opt-https_key')</label>
                     <input type="text" name="https_key" id="https_key" value="$https_key" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                        <span class="glyphicon glyphicon-repeat"></span>
+                    </button>
                     <span class="desc">$T('explain-https_key')</span>
                 </div>
                 <div class="field-pair">
