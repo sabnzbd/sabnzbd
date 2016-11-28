@@ -11,7 +11,13 @@ Release Notes  -  SABnzbd 1.2.0
 - New RAR-file processing with full support for RAR5:
   * All passwords are now tried on the first complete RAR-file during download
   * RAR-based verification when no par2-files or SFV-files are available
-- Categories can now be ordered to customize matching to categories in NZB's
+- Improvements to Categories processing:
+  * Matching of start of category inside NZB with user-categories
+    For example 'Movies > HD' will match a 'movies' category
+  * Categories can now be ordered to customize matching to categories in NZB's
+- Improvements to RSS:
+  * Added 'From Show SxxEyy' filter
+  * RSS feeds now show the category, age and when the NZB was added to the queue
 - Detection of par2-files in completely obfuscated NZB's
 - Verification (par2) and UnRAR can now be aborted from Glitter
 
@@ -52,7 +58,7 @@ Release Notes  -  SABnzbd 1.2.0
 - Start SABnzbd
 
 The organization of the download queue is different from older versions.
-1.0.x will not see the existing queue, but you can go to
+1.x.x will not see the existing queue, but you can go to
 Status->QueueRepair and "Repair" the old queue.
 Also, your sabnzbd.ini file will be upgraded, making it
 incompatible with releases older than 0.7.9
