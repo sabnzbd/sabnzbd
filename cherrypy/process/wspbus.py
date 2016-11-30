@@ -384,7 +384,12 @@ class Bus(object):
             args = self._get_true_argv()
         except NotImplementedError:
             """It's probably win32"""
-            args = [sys.executable] + _args_from_interpreter_flags() + sys.argv
+            # For the SABnzbd.exe binary we don't want interpreter flags
+            # https://github.com/cherrypy/cherrypy/issues/1526
+            if getattr(sys, 'frozen', False):
+                args = [sys.executable] + sys.argv
+            else:
+                args = [sys.executable] + _args_from_interpreter_flags() + sys.argv
 
         self.log('Re-spawning %s' % ' '.join(args))
 
