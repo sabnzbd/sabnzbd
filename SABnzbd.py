@@ -1094,6 +1094,7 @@ def main():
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
+    notify_port_change = False
 
     # SSL
     if enable_https:
@@ -1111,6 +1112,7 @@ def main():
                         newport = find_free_port(browserhost, port)
                         if newport > 0:
                             sabnzbd.cfg.https_port.set(newport)
+                            notify_port_change = True
                             if https_port:
                                 https_port = newport
                             else:
@@ -1132,6 +1134,7 @@ def main():
                     port = find_free_port(browserhost, cherryport)
                     if port > 0:
                         sabnzbd.cfg.cherryport.set(port)
+                        notify_port_change = True
                         cherryport = port
     except:
         Bail_Out(browserhost, cherryport, '49')
@@ -1498,6 +1501,10 @@ def main():
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
+
+    # Notify if port was changed
+    if notify_port_change:
+        logging.warning(T('Could not bind to configured port. Port changed to %s') % cherryport)
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
