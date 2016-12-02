@@ -64,18 +64,17 @@ Our many other command line options are explained in depth [here](https://sabnzb
 
 The workflow we use, is a simplified form of "GitFlow".
 Basically:
-- "master" contains only stable releases (which have been merged to "master")
-- "develop" is the target for integration
-- "1.0.x" is a release and maintenance branch for 1.0.x: 1.0.0 -> 1.0.1 -> 1.0.2
-- "1.1.x" is a release and maintenance branch for 1.1.x: 1.1.0 -> 1.1.1 -> 1.1.2
-- "feature/my_feature" is a temporary feature branch
-- "hotfix/my_hotfix is an optional temporary branch for bugfix(es)
+- `master` contains only stable releases (which have been merged to `master`) and is intended for end-users.
+- `develop` is the target for integration and is **not** intended for end-users.
+- `1.1.x` is a release and maintenance branch for 1.1.x (1.1.0 -> 1.1.1 -> 1.1.2) and is **not** intended for end-users.
+- `feature/my_feature` is a temporary feature branch based on `develop`.
+- `hotfix/my_hotfix` is an optional temporary branch for bugfix(es) based on `develop`.
 
 Condtions:
-- Merging of a stable release into "master" will be simple: the release branch is always right.
-- "master" is not merged back to "develop"
-- "develop" is not re-based on "master".
-- Release branches branch from "develop" only.
-- Bugfixes created specifically for a release branch are done there (because they are specific, they're not cherry-picked to "develop").
-- Bugfixes done on "develop" may be cherry-picked to a release branch.
+- Merging of a stable release into `master` will be simple: the release branch is always right.
+- `master` is not merged back to `develop`.
+- `develop` is not re-based on `master`.
+- Release branches branch from `develop` only.
+- Bugfixes created specifically for a release branch are done there (because they are specific, they're not cherry-picked to `develop`).
+- Bugfixes done on `develop` may be cherry-picked to a release branch.
 - We will not release a 1.0.2 if a 1.1.0 has already been released.
