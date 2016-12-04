@@ -158,15 +158,11 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     if failure_url:
         command.append(str(failure_url))
 
-    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or os.access(extern_proc, os.X_OK)):
-        command.insert(0, 'python')
-    stup, need_shell, command, creationflags = build_command(command)
-    env = fix_env()
-
-    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
-                 extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
-
     try:
+        stup, need_shell, command, creationflags = build_command(command)
+        env = fix_env()
+        logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
+                     extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -183,14 +179,10 @@ def external_script(script, p1, p2, p3=None, p4=None):
     """ Run a user script with two parameters, return console output and exit value """
     command = [script, p1, p2, p3, p4]
 
-    if script.endswith('.py') and (sabnzbd.WIN32 or os.access(script, os.X_OK)):
-        command.insert(0, 'python')
-    stup, need_shell, command, creationflags = build_command(command)
-    env = fix_env()
-
-    logging.info('Running user script %s(%s, %s)', script, p1, p2)
-
     try:
+        stup, need_shell, command, creationflags = build_command(command)
+        env = fix_env()
+        logging.info('Running user script %s(%s, %s)', script, p1, p2)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -1560,6 +1552,16 @@ def build_command(command):
             command[n] = deunicode(command[n])
 
     if not sabnzbd.WIN32:
+        if command[0].endswith('.py'):
+            with open(command[0], 'r') as script_file:
+                if not os.access(command[0], os.X_OK):
+                    # Inform user that Python scripts need x-bit and then stop
+                    logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
+                    raise IOError
+                elif script_file.read(2) != '#!':
+                    # No shebang (#!) defined, add default python
+                    command.insert(0, 'python')
+
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
             lst.reverse()
@@ -1577,6 +1579,10 @@ def build_command(command):
         creationflags = 0
 
     else:
+        # For Windows we always need to add python interpreter
+        if command[0].endswith('.py'):
+            command.insert(0, 'python')
+
         need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com')
         stup = subprocess.STARTUPINFO()
         stup.dwFlags = STARTF_USESHOWWINDOW
@@ -1830,12 +1836,10 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
         command = [script_path, name, fix(pp), fix(cat), fix(script), fix(priority), str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
 
-        stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
-
-        logging.info('Running pre-queue script %s', command)
-
         try:
+            stup, need_shell, command, creationflags = build_command(command)
+            env = fix_env()
+            logging.info('Running pre-queue script %s', command)
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
