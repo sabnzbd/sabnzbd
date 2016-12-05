@@ -1510,21 +1510,7 @@ def main():
     sabnzbd.cfg.log_level.callback(guard_loglevel)
 
     try:
-        # Use internal cherrypy check first to prevent ugly tracebacks
-        cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.1)
         cherrypy.engine.start()
-    except IOError, error:
-        if str(error) == 'Port not bound.':
-            if not force_web:
-                panic_fwall(vista_plus)
-                sabnzbd.halt()
-                exit_sab(2)
-        else:
-            logging.error(T('Failed to start web-interface: '), exc_info=True)
-            Bail_Out(browserhost, cherryport, str(error))
-    except socket.error, error:
-        logging.error(T('Failed to start web-interface: '), exc_info=True)
-        Bail_Out(browserhost, cherryport)
     except:
         logging.error(T('Failed to start web-interface: '), exc_info=True)
         Bail_Out(browserhost, cherryport)
