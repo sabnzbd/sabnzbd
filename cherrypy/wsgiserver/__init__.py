@@ -1698,7 +1698,7 @@ class ThreadPool(object):
 
         # Don't join currentThread (when stop is called inside a request).
         current = threading.currentThread()
-        if timeout and timeout >= 0:
+        if timeout is not None and timeout >= 0:
             endtime = time.time() + timeout
         while self._threads:
             worker = self._threads.pop()

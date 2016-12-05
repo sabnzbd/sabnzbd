@@ -1445,6 +1445,7 @@ def main():
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
+                            'server.shutdown_timeout':  0,
                             'log.screen': cherrylogtoscreen,
                             'engine.autoreload.frequency': 100,
                             'engine.autoreload.on': False,
