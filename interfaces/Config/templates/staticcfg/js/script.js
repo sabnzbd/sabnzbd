@@ -259,15 +259,15 @@ function do_restart() {
                         }
                     }
                 })
-            }, 5000)
+            }, 3000)
 
             // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)
             if(window.location.protocol != urlProtocol) {
-                // Saftey redirect after 40 sec
+                // Saftey redirect after 20 sec
                 setTimeout(function() {
                     location.href = urlTotal;
-                }, 40*1000)
+                }, 20*1000)
             }
         }
     });
