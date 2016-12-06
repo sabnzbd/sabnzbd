@@ -304,7 +304,6 @@ class DirScanner(threading.Thread):
 
     def stop(self):
         """ Stop the dir scanner """
-        self.save()
         logging.info('Dirscanner shutting down')
         self.shutdown = True
 
