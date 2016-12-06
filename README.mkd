@@ -26,6 +26,7 @@ Release Notes  -  SABnzbd 1.2.0
 - Dropped dependency on PyOpenSSL, now only requires cryptography package
 - Update 7zip to 16.04 and UnRar to 5.40 for Windows/macOS
 - Python post/pre/notification-scripts require execute permissions
+- Removed web_watchdog
 
 ## Bug fixes
 - Re-use IP-address for new connections when a server has open connections

@@ -1881,20 +1881,15 @@ def list2cmdline(lst):
     return ' '.join(nlst)
 
 
-def get_from_url(url, timeout=None):
+def get_from_url(url):
     """ Retrieve URL and return content
         `timeout` sets non-standard timeout
     """
     import urllib2
     try:
-        if timeout:
-            s = urllib2.urlopen(url, timeout=timeout)
-        else:
-            s = urllib2.urlopen(url)
-        output = s.read()
+        return urllib2.urlopen(url).read()
     except:
-        output = None
-    return output
+        return None
 
 
 def is_sevenfile(path):

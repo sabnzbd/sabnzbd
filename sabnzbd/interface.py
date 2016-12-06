@@ -518,10 +518,9 @@ class MainPage(object):
     @cherrypy.expose
     def api(self, **kwargs):
         """ Handler for API over http, with explicit authentication parameters """
-        if not kwargs.get('tickleme') or not cfg.web_watchdog():
-            if cfg.api_logging():
-                logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
-                              cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+        if cfg.api_logging():
+            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
+                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         mode = kwargs.get('mode', '')
         if isinstance(mode, list):
             mode = mode[0]
@@ -1501,9 +1500,9 @@ SPECIAL_BOOL_LIST = \
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
-              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
-              'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
-              'api_logging', 'fixed_ports'
+              'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
+              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'api_logging',
+              'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
