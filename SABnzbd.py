@@ -690,13 +690,13 @@ def attach_server(host, port, cert=None, key=None, chain=None):
         http_server.subscribe()
 
 
-def is_sabnzbd_running(url, timeout=None):
+def is_sabnzbd_running(url):
     """ Return True when there's already a SABnzbd instance running. """
     try:
         url = '%s&mode=version' % (url)
         # Do this without certificate verification, few installations will have that
         prev = sabnzbd.set_https_verification(False)
-        ver = sabnzbd.newsunpack.get_from_url(url, timeout=timeout)
+        ver = sabnzbd.newsunpack.get_from_url(url)
         sabnzbd.set_https_verification(prev)
         return bool(ver and re.search(r'\d+\.\d+\.', ver))
     except:
@@ -1573,7 +1573,7 @@ def main():
             add_local(f)
 
     # Have to keep this running, otherwise logging will terminate
-    timer = timer5 = 0
+    timer = 0
     while not sabnzbd.SABSTOP:
         if sabnzbd.LAST_WARNING:
             msg = sabnzbd.LAST_WARNING
@@ -1621,16 +1621,6 @@ def main():
             # Notify guardian
             if sabnzbd.WIN_SERVICE and mail:
                 mail.send('active')
-
-            if timer5 > 9:
-                # 5 minute polling tasks
-                timer5 = 0
-                if sabnzbd.cfg.web_watchdog() and not is_sabnzbd_running('%s/api?tickleme=1' % sabnzbd.BROWSER_URL, 120):
-                    autorestarted = True
-                    cherrypy.engine.execv = True
-            else:
-                timer5 += 1
-
         else:
             timer += 1
 
