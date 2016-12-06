@@ -48,6 +48,7 @@ KERNEL32 = None
 
 if os.name == 'nt':
     WIN32 = True
+    from util.apireg import del_connection_info
     try:
         import ctypes
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
@@ -132,6 +133,7 @@ START = datetime.datetime.now()
 
 MY_NAME = None
 MY_FULLNAME = None
+RESTART_ARGS = []
 NEW_VERSION = None
 DIR_HOME = None
 DIR_APPDATA = None
@@ -167,7 +169,7 @@ SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
 OLD_QUEUE = False
-SCHED_RESTART = False  # Set when restarted through scheduler
+TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
 LAST_WARNING = None
@@ -388,6 +390,10 @@ def halt():
         logging.info('SABnzbd shutting down...')
         __SHUTTING_DOWN__ = True
 
+        # Stop the windows tray icon
+        if sabnzbd.WINTRAY:
+            sabnzbd.WINTRAY.terminate = True
+
         sabnzbd.zconfig.remove_server()
 
         rss.stop()
@@ -437,9 +443,6 @@ def halt():
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
 
-        # Stop the windows tray icon
-        if sabnzbd.WINTRAY:
-            sabnzbd.WINTRAY.terminate = True
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
@@ -450,6 +453,28 @@ def halt():
         logging.info('All processes stopped')
 
         __INITIALIZED__ = False
+
+
+def trigger_restart():
+    """ Trigger a restart by setting a flag an shutting down CP """
+    if sabnzbd.downloader.Downloader.do.paused:
+        sabnzbd.RESTART_ARGS.append('-p')
+    sys.argv = sabnzbd.RESTART_ARGS
+
+    # Stop all services
+    sabnzbd.halt()
+    cherrypy.engine.exit()
+
+    if sabnzbd.WIN32:
+        # Remove connection info for faster restart
+        del_connection_info()
+
+    # Leave the harder restarts to the polling in SABnzbd.py
+    if sabnzbd.WIN_SERVICE or sabnzbd.DARWIN:
+        sabnzbd.TRIGGER_RESTART = True
+    else:
+        # Do the restart right now
+        cherrypy.engine._do_execv()
 
 
 ##############################################################################
@@ -742,19 +767,17 @@ def system_standby():
 def shutdown_program():
     """ Stop program after halting and saving """
     logging.info("Performing sabnzbd shutdown")
-    Thread(target=halt).start()
-    while __INITIALIZED__:
-        time.sleep(1.0)
-    os._exit(0)
+    sabnzbd.halt()
+    cherrypy.engine.exit()
+    sabnzbd.SABSTOP = True
 
 
 def restart_program():
     """ Restart program (used by scheduler) """
-    global SCHED_RESTART
     logging.info("Scheduled restart request")
     # Just set the stop flag, because stopping CherryPy from
     # the scheduler is not reliable
-    cherrypy.engine.execv = SCHED_RESTART = True
+    sabnzbd.TRIGGER_RESTART = True
 
 
 def change_queue_complete_action(action, new=True):

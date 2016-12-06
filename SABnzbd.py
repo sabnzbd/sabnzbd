@@ -884,7 +884,7 @@ def main():
     repair = 0
     api_url = None
     no_login = False
-    re_argv = [sys.argv[0]]
+    sabnzbd.RESTART_ARGS = [sys.argv[0]]
     pid_path = None
     pid_file = None
     new_instance = False
@@ -902,11 +902,11 @@ def main():
                 fork = True
             autobrowser = False
             sabnzbd.DAEMON = True
-            re_argv.append(opt)
+            sabnzbd.RESTART_ARGS.append(opt)
         elif opt in ('-f', '--config-file'):
             inifile = arg
-            re_argv.append(opt)
-            re_argv.append(arg)
+            sabnzbd.RESTART_ARGS.append(opt)
+            sabnzbd.RESTART_ARGS.append(arg)
         elif opt in ('-h', '--help'):
             print_help()
             exit_sab(0)
@@ -950,11 +950,11 @@ def main():
             pause = True
         elif opt in ('--force',):
             force_web = True
-            re_argv.append(opt)
+            sabnzbd.RESTART_ARGS.append(opt)
         elif opt in ('--https',):
             https_port = int(arg)
-            re_argv.append(opt)
-            re_argv.append(arg)
+            sabnzbd.RESTART_ARGS.append(opt)
+            sabnzbd.RESTART_ARGS.append(arg)
         elif opt in ('--repair',):
             repair = 1
             pause = True
@@ -967,19 +967,19 @@ def main():
             no_login = True
         elif opt in ('--pid',):
             pid_path = arg
-            re_argv.append(opt)
-            re_argv.append(arg)
+            sabnzbd.RESTART_ARGS.append(opt)
+            sabnzbd.RESTART_ARGS.append(arg)
         elif opt in ('--pidfile',):
             pid_file = arg
-            re_argv.append(opt)
-            re_argv.append(arg)
+            sabnzbd.RESTART_ARGS.append(opt)
+            sabnzbd.RESTART_ARGS.append(arg)
         elif opt in ('--new',):
             new_instance = True
         elif opt in ('--sessions',):
-            re_argv.append(opt)
+            sabnzbd.RESTART_ARGS.append(opt)
             force_sessions = True
         elif opt in ('--console',):
-            re_argv.append(opt)
+            sabnzbd.RESTART_ARGS.append(opt)
             osx_console = True
         elif opt in ('--ipv6_hosting',):
             ipv6_hosting = arg
@@ -1617,7 +1617,7 @@ def main():
             # Check the threads
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
-                cherrypy.engine.execv = True
+                sabnzbd.TRIGGER_RESTART = True
             # Notify guardian
             if sabnzbd.WIN_SERVICE and mail:
                 mail.send('active')
@@ -1626,20 +1626,19 @@ def main():
 
         # 3 sec polling tasks
         # Check for auto-restart request
-        if cherrypy.engine.execv:
-            if sabnzbd.SCHED_RESTART:
-                scheduler.abort()
-                sabnzbd.halt()
-            else:
-                scheduler.stop()
-                sabnzbd.halt()
-                cherrypy.engine.exit()
+        # Or special restart cases like Mac and WindowsService
+        if sabnzbd.TRIGGER_RESTART:
+            # Shutdown
+            cherrypy.engine.exit()
+            sabnzbd.halt()
             sabnzbd.SABSTOP = True
+
             if sabnzbd.downloader.Downloader.do.paused:
-                re_argv.append('-p')
+                sabnzbd.RESTART_ARGS.append('-p')
             if autorestarted:
-                re_argv.append('--autorestarted')
-            sys.argv = re_argv
+                sabnzbd.RESTART_ARGS.append('--autorestarted')
+            sys.argv = sabnzbd.RESTART_ARGS
+
             os.chdir(org_dir)
             if sabnzbd.DARWIN:
                 # When executing from sources on osx, after a restart, process is detached from console

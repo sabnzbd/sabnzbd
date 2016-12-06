@@ -165,8 +165,7 @@ class StatusIcon(Thread):
 
     def restart(self, icon):
         self.hover_text = T('Restart')
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
 
     def shutdown(self, icon):
         self.hover_text = T('Shutdown')
