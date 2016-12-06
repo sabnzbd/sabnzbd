@@ -306,9 +306,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    sabnzbd.EXTERNAL_IPV6 = test_ipv6()
-    logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
-
     # One time conversion "speedlimit" in schedules.
     if not cfg.sched_converted():
         schedules = cfg.schedules()
