@@ -138,7 +138,6 @@ class PostProcessor(Thread):
         """ Stop thread after finishing running job """
         self.__stop = True
         self.queue.put(None)
-        self.save()
 
     def cancel_pp(self, nzo_id):
         """ Change the status, so that the PP is canceled """
