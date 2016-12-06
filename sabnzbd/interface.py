@@ -942,8 +942,8 @@ class QueuePage(object):
         else:
             yield "Initiating shutdown..."
             sabnzbd.halt()
-            cherrypy.engine.exit()
             yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
+            cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
 
     @cherrypy.expose
@@ -1293,9 +1293,8 @@ class ConfigPage(object):
             yield msg
         else:
             yield T('Initiating restart...<br />')
-            sabnzbd.halt()
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            cherrypy.engine.restart()
+            sabnzbd.trigger_restart()
 
     @cherrypy.expose
     def repair(self, **kwargs):
@@ -1305,9 +1304,8 @@ class ConfigPage(object):
         else:
             sabnzbd.request_repair()
             yield T('Initiating restart...<br />')
-            sabnzbd.halt()
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            cherrypy.engine.restart()
+            sabnzbd.trigger_restart()
 
     @cherrypy.expose
     def delete(self, **kwargs):

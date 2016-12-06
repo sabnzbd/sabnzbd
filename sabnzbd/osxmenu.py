@@ -721,8 +721,7 @@ class SABnzbdDelegate(NSObject):
 
     def restartAction_(self, sender):
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
 
     def restartSafeHost_(self, sender):
@@ -732,8 +731,7 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
 
     def restartNoLogin_(self, sender):
@@ -741,8 +739,7 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
         self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
 
     def application_openFiles_(self, nsapp, filenames):
