@@ -1302,12 +1302,7 @@ def main():
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
         signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
-    init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
-
-    if not init_ok:
-        logging.error(T('Initializing %s-%s failed, aborting'),
-                      sabnzbd.MY_NAME, sabnzbd.__version__)
-        exit_sab(2)
+    sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
 
     os.chdir(sabnzbd.DIR_PROG)
 

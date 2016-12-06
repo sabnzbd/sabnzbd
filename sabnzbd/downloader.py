@@ -162,21 +162,6 @@ class Downloader(Thread):
 
         logging.debug("Initializing downloader/decoder")
 
-        # We first have to check the quality of SSL verification
-        if sabnzbd.HAVE_SSL_CONTEXT:
-            try:
-                import ssl
-                ctx = ssl.create_default_context()
-                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-                ssl_sock.settimeout(2.0)
-                ssl_sock.connect((cfg.selftest_host(), 443))
-                ssl_sock.close()
-            except:
-                # Seems something is still wrong
-                sabnzbd.set_https_verification(0)
-                sabnzbd.HAVE_SSL_CONTEXT = False
-
         # Used for scheduled pausing
         self.paused = paused
 
@@ -352,11 +337,10 @@ class Downloader(Thread):
             self.bandwidth_limit = 0
 
     def is_paused(self):
-        from sabnzbd.nzbqueue import NzbQueue
         if not self.paused:
             return False
         else:
-            if NzbQueue.do.has_forced_items():
+            if sabnzbd.nzbqueue.NzbQueue.do.has_forced_items():
                 return False
             else:
                 return True
@@ -375,7 +359,6 @@ class Downloader(Thread):
         return filter(nzo.server_in_try_list, self.servers)
 
     def maybe_block_server(self, server):
-        from sabnzbd.nzbqueue import NzbQueue
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             # Optional and active server had too many problems,
             # disable it now and send a re-enable plan to the scheduler
@@ -391,10 +374,29 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-            NzbQueue.do.reset_all_try_lists()
+            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
     def run(self):
-        from sabnzbd.nzbqueue import NzbQueue
+        # First check IPv6 connectivity
+        sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
+        logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
+
+        # Then have to check the quality of SSL verification
+        if sabnzbd.HAVE_SSL_CONTEXT:
+            try:
+                import ssl
+                ctx = ssl.create_default_context()
+                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+                ssl_sock.settimeout(2.0)
+                ssl_sock.connect((cfg.selftest_host(), 443))
+                ssl_sock.close()
+            except:
+                # Seems something is still wrong
+                sabnzbd.set_https_verification(0)
+                sabnzbd.HAVE_SSL_CONTEXT = False
+
+        # Start decoder
         self.decoder.start()
 
         # Kick BPS-Meter to check quota
@@ -419,7 +421,7 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
-                        NzbQueue.do.reset_all_try_lists()
+                        sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -430,7 +432,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not (server.active and NzbQueue.do.has_articles_for(server)):
+                if not (server.active and sabnzbd.nzbqueue.NzbQueue.do.has_articles_for(server)):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -449,7 +451,7 @@ class Downloader(Thread):
                         request_server_info(server)
                         break
 
-                    article = NzbQueue.do.get_article(server, self.servers)
+                    article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
 
                     if not article:
                         break
@@ -525,9 +527,9 @@ class Downloader(Thread):
                     # Check 10 seconds after enabeling slowdown
                     if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = (BPSMeter.do.get_stable_speed(timespan=10) == True)
+                        self.can_be_slowed = (BPSMeter.do.get_stable_speed(timespan=10) > 0)
                         self.can_be_slowed_timer = 0
-                        logging.debug('Downloader-slowdown: %r', self.can_be_slowed > 0)
+                        logging.debug('Downloader-slowdown: %r', self.can_be_slowed)
 
             else:
                 read, write, error = ([], [], [])
@@ -537,7 +539,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 CV.acquire()
-                while (NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
+                while (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
                     CV.wait()
                 CV.release()
@@ -673,7 +675,7 @@ class Downloader(Thread):
                                     server.active = False
                                     if penalty and (block or server.optional):
                                         self.plan_server(server.id, penalty)
-                                    NzbQueue.do.reset_all_try_lists()
+                                    sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
@@ -714,7 +716,7 @@ class Downloader(Thread):
                             server.active = False
                             server.errormsg = T('Server %s requires user/password') % ''
                             self.plan_server(server.id, 0)
-                            NzbQueue.do.reset_all_try_lists()
+                            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                         msg = T('Server %s requires user/password') % nw.server.id
                         self.__reset_nw(nw, msg, quit=True)
 
@@ -753,7 +755,6 @@ class Downloader(Thread):
         return None
 
     def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False, quit=False):
-        from sabnzbd.nzbqueue import NzbQueue
         server = nw.server
         article = nw.article
         fileno = None
@@ -794,7 +795,7 @@ class Downloader(Thread):
                 nzo = nzf.nzo
 
                 # Allow all servers to iterate over each nzo/nzf again ##
-                NzbQueue.do.reset_try_lists(nzf, nzo)
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
             nw.terminate(quit=quit)
