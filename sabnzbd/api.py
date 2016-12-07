@@ -193,7 +193,7 @@ def _api_queue_delete_nzf(output, value, kwargs):
     """ API: accepts value(=nzo_id), value2(=nzf_id) """
     value2 = kwargs.get('value2')
     if value and value2:
-        removed = NzbQueue.do.remove_nzf(value, value2)
+        removed = NzbQueue.do.remove_nzf(value, value2, force_delete=True)
         return report(output, keyword='', data={'status': bool(removed), 'nzf_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE2)

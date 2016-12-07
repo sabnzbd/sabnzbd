@@ -788,7 +788,7 @@ class NzoPage(object):
         if kwargs['action_key'] == 'Delete':
             for key in kwargs:
                 if kwargs[key] == 'on':
-                    NzbQueue.do.remove_nzf(nzo_id, key)
+                    NzbQueue.do.remove_nzf(nzo_id, key, force_delete=True)
 
         elif kwargs['action_key'] in ('Top', 'Up', 'Down', 'Bottom'):
             nzf_ids = []
@@ -866,7 +866,7 @@ class QueuePage(object):
         nzo_id = kwargs.get('nzo_id')
         nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
-            NzbQueue.do.remove_nzf(nzo_id, nzf_id)
+            NzbQueue.do.remove_nzf(nzo_id, nzf_id, delete=True)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
