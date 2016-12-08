@@ -972,11 +972,9 @@ SKIN_TEXT = {
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
-    'wizard-restarting' :  TT('Restarting SABnzbd...'), #: Wizard step
     'wizard-complete' :  TT('Setup is now complete!'), #: Wizard step
     'wizard-tip1' :  TT('SABnzbd will now be running in the background.'), #: Wizard tip
     'wizard-tip2' :  TT('Closing any browser windows/tabs will NOT close SABnzbd.'), #: Wizard tip
-    'wizard-tip3' :  TT('After SABnzbd has finished restarting you will be able to access it at the following location: %s'), #: Wizard tip
     'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'), #: Wizard tip
     'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step
