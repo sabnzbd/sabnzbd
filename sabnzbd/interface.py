@@ -1264,6 +1264,7 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
         conf['have_yenc'] = HAVE_YENC
 
         if sabnzbd.HAVE_SSL:

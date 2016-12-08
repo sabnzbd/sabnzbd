@@ -395,6 +395,7 @@ class Downloader(Thread):
                 # Seems something is still wrong
                 sabnzbd.set_https_verification(0)
                 sabnzbd.HAVE_SSL_CONTEXT = False
+        logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
 
         # Start decoder
         self.decoder.start()
