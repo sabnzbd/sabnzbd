@@ -658,16 +658,14 @@ def _api_auth(name, output, kwargs):
 
 def _api_restart(name, output, kwargs):
     """ API: accepts output """
-    sabnzbd.halt()
-    cherrypy.engine.restart()
+    sabnzbd.trigger_restart()
     return report(output)
 
 
 def _api_restart_repair(name, output, kwargs):
     """ API: accepts output """
     sabnzbd.request_repair()
-    sabnzbd.halt()
-    cherrypy.engine.restart()
+    sabnzbd.trigger_restart()
     return report(output)
 
 
