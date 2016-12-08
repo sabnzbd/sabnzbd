@@ -50,17 +50,24 @@
                     </td>
                 </tr>
                 <!--#end if#-->
+                <!--#if not $have_cryptography #-->
+                <tr>
+                    <th scope="row">Python Cryptography:</th>
+                    <td>
+                        <span class="label label-warning">$T('notAvailable')</span>
+                        <a href="$helpuri$help_uri#no_cryptography" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    </td>
+                </tr>
+                <!--#end if#-->
+                <!--#if not $have_yenc#-->
                 <tr>
                     <th scope="row">yEnc:</th>
                     <td>
-                        <!--#if $have_yenc#-->
-                            <span class="glyphicon glyphicon-ok"></span>
-                        <!--#else#-->
-                            <span class="label label-danger">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
+                        <span class="label label-danger">$T('notAvailable')</span>
+                        <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
                     </td>
                 </tr>
+                <!--#end if#-->
                 <!--#if not $have_unzip #-->
                 <tr>
                     <th scope="row">$T('opt-enable_unzip'):</th>

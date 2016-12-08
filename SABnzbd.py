@@ -473,6 +473,11 @@ def print_modules():
         else:
             logging.info("_yenc module... NOT found!")
 
+    if sabnzbd.HAVE_CRYPTOGRAPHY:
+        logging.info('Cryptography module... found!')
+    else:
+        logging.info('Cryptography module... NOT found!')
+
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
