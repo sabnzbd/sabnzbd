@@ -818,6 +818,8 @@ class NzbObject(TryList):
                 self.set_final_name_pw(name)
             if group:
                 self.groups = [str(group)]
+            if accept == 2:
+                self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
             self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
@@ -897,10 +899,16 @@ class NzbObject(TryList):
         # Set nzo save-delay to minimum 30 seconds
         self.save_timeout = max(30, min(6.0 * float(self.bytes) / GIGI, 300.0))
 
-        # If accept&fail, fail the job
+        # In case pre-queue script or duplicate check want to move
+        # to history we first need an nzo_id by entering the NzbQueue
         if accept == 2:
             self.deleted = True
-            sabnzbd.Assembler.do.process((self, None))
+            self.status = Status.FAILED
+            nzo_id = sabnzbd.NzbQueue.do.add(self, quiet=True)
+            sabnzbd.NzbQueue.do.remove(nzo_id)
+            self.purge_data(keep_basic=True)
+            # Raise error, so it's not added
+            raise TypeError
 
 
     def check_for_dupe(self, nzf):
