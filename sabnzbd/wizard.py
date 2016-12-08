@@ -42,7 +42,8 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps': 2, 'version': sabnzbd.__version__,
+                     'steps': 2,
+                     'version': sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
@@ -140,6 +141,9 @@ class Wizard(object):
         info['access_url'], info['urls'] = self.get_access_info()
         info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
+
+        info['download_dir'] = cfg.download_dir.get_path()
+        info['complete_dir'] = cfg.complete_dir.get_path()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
