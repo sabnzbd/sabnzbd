@@ -314,6 +314,7 @@ SKIN_TEXT = {
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
     'readwiki': TT('Read the Wiki Help on this!'),
+    'restarting-sab': TT('Restarting SABnzbd...'),
 
 # Config->General
     'restartRequired' : TT('Changes will require a SABnzbd restart!'),

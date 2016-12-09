@@ -142,6 +142,7 @@ input,
 input.form-control,
 .input-group-addon,
 select.form-control,
+#modal-options .table-server-connections th,
 .main-content .btn-default,
 .modal-body .btn-default,
 .modal-footer .btn-default,
@@ -177,6 +178,7 @@ tbody .caret {
 td.name .name-ratings span,
 .navbar-nav .open .dropdown-menu>li>a,
 .dropdown-header,
+#modal-help small,
 pre {
     color: #EBEBEB !important;
     opacity: 1 !important;
