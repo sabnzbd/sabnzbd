@@ -783,7 +783,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
-                                    'log-all', 'no-login', 'pid=', 'new', 'sessions', 'console', 'pidfile=',
+                                    'log-all', 'no-login', 'pid=', 'new', 'console', 'pidfile=',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -856,7 +856,6 @@ def main():
     pid_path = None
     pid_file = None
     new_instance = False
-    force_sessions = False
     osx_console = False
     ipv6_hosting = None
 
@@ -943,9 +942,6 @@ def main():
             sabnzbd.RESTART_ARGS.append(arg)
         elif opt in ('--new',):
             new_instance = True
-        elif opt in ('--sessions',):
-            sabnzbd.RESTART_ARGS.append(opt)
-            force_sessions = True
         elif opt in ('--console',):
             sabnzbd.RESTART_ARGS.append(opt)
             osx_console = True
@@ -1380,14 +1376,6 @@ def main():
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
 
-    # Fix leakage in memory-based CherryPy session support by using file-based.
-    # However, we don't really need session support.
-    if force_sessions:
-        sessions = sabnzbd.misc.create_real_path('sessions', sabnzbd.cfg.admin_dir.get_path(), 'sessions')[1]
-        sabnzbd.misc.remove_all(sessions, 'session-*.lock', keep_folder=True)
-    else:
-        sessions = None
-
     mime_gzip = ('text/*',
                  'application/javascript',
                  'application/x-javascript',
@@ -1400,18 +1388,12 @@ def main():
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
-                            'server.shutdown_timeout':  0,
+                            'server.shutdown_timeout': 0,
                             'log.screen': cherrylogtoscreen,
-                            'engine.autoreload.frequency': 100,
                             'engine.autoreload.on': False,
-                            'engine.reexec_retry': 100,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
                             'tools.gzip.mime_types': mime_gzip,
-                            'tools.sessions.on': bool(sessions),
-                            'tools.sessions.storage_type': 'file',
-                            'tools.sessions.storage_path': sessions,
-                            'tools.sessions.timeout': 60,
                             'request.show_tracebacks': True,
                             'checker.check_localhost': bool(consoleLogging),
                             'error_page.401': sabnzbd.panic.error_page_401,
