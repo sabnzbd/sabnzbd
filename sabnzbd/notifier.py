@@ -518,7 +518,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     return ''
 
 def send_windows(title, msg, gtype):
-    if sabnzbd.WINTRAY:
+    if sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
         try:
             sabnzbd.WINTRAY.sendnotification(title, msg)
         except:
