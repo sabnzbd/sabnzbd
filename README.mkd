@@ -22,6 +22,7 @@ Release Notes  -  SABnzbd 1.2.0
 - Detection of par2-files in completely obfuscated NZB's
 - Verification (par2) and UnRAR can now be aborted from Glitter
 - Faster startup and restart of SABnzbd
+- Duplicates can now be marked as Failed (to notify external tools)
 
 ## Changes:
 - Dropped dependency on PyOpenSSL, now only requires cryptography package
@@ -36,6 +37,7 @@ Release Notes  -  SABnzbd 1.2.0
 - par2cmdline would fail jobs in folders ending on ".par2"
 - MemoryError (no more memory available) now pauses downloading
 - Removing files from active download was not working correctly
+- Accept & fail for pre-queue script was not working correctly
 
 ## Translations
 - Many translations updated, thanks to our translators!
