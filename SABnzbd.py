@@ -99,6 +99,7 @@ import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
+import sabnzbd.utils.sslinfo
 
 from threading import Thread
 
@@ -127,44 +128,6 @@ def guard_loglevel():
     """ Callback function for guarding loglevel """
     global LOG_FLAG
     LOG_FLAG = True
-
-
-# Improved RotatingFileHandler
-# See: http://www.mail-archive.com/python-bugs-list@python.org/msg53913.html
-# http://bugs.python.org/file14420/NTSafeLogging.py
-# Thanks Erik Antelman
-#
-if sabnzbd.WIN32:
-
-    import msvcrt
-    import _subprocess
-    import codecs
-
-    def duplicate(handle, inheritable=False):
-        target_process = _subprocess.GetCurrentProcess()
-        return _subprocess.DuplicateHandle(
-            _subprocess.GetCurrentProcess(), handle, target_process,
-            0, inheritable, _subprocess.DUPLICATE_SAME_ACCESS).Detach()
-
-    class NewRotatingFileHandler(logging.handlers.RotatingFileHandler):
-
-        def _open(self):
-            """ Open the current base file with the (original) mode and encoding.
-                Return the resulting stream.
-            """
-            if self.encoding is None:
-                stream = open(self.baseFilename, self.mode)
-                newosf = duplicate(msvcrt.get_osfhandle(stream.fileno()), inheritable=False)
-                newFD = msvcrt.open_osfhandle(newosf, os.O_APPEND)
-                newstream = os.fdopen(newFD, self.mode)
-                stream.close()
-                return newstream
-            else:
-                stream = codecs.open(self.baseFilename, self.mode, self.encoding)
-            return stream
-
-else:
-    NewRotatingFileHandler = logging.handlers.RotatingFileHandler
 
 
 class FilterCP3:
@@ -1171,19 +1134,12 @@ def main():
     # Prevent the logger from raising exceptions
     # primarily to reduce the fallout of Python issue 4749
     logging.raiseExceptions = 0
-
-    log_new = sabnzbd.cfg.log_new()
-    if log_new:
-        log_handler = NewRotatingFileHandler
-    else:
-        log_handler = logging.handlers.RotatingFileHandler
     sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
-    logsize = sabnzbd.cfg.log_size.get_int()
 
     try:
-        rollover_log = log_handler(
+        rollover_log = logging.handlers.RotatingFileHandler(
             sabnzbd.LOGFILE, 'a+',
-            logsize,
+            sabnzbd.cfg.log_size.get_int(),
             sabnzbd.cfg.log_backups())
 
         logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
@@ -1351,7 +1307,6 @@ def main():
 
     print_modules()
 
-    import sabnzbd.utils.sslinfo
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
     logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
@@ -1520,26 +1475,6 @@ def main():
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
     sabnzbd.zconfig.set_bonjour(cherryhost, cherryport)
 
-    if enable_https:
-        browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
-    else:
-        browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
-    sabnzbd.BROWSER_URL = browser_url
-
-    if hasattr(cherrypy.wsgiserver, 'redirect_url'):
-        cherrypy.wsgiserver.redirect_url('https://%%s:%s/sabnzbd' % cherryport)
-
-    if not autorestarted:
-        launch_a_browser(browser_url)
-        if sabnzbd.FOUNDATION:
-            import sabnzbd.osxmenu
-            sabnzbd.osxmenu.notify("SAB_Launched", None)
-        notifier.send_notification('SABnzbd%s' % notifier.hostname(),
-                                  T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
-        # Now's the time to check for a new version
-        check_latest_version()
-    autorestarted = False
-
     mail = None
     if sabnzbd.WIN32:
         if enable_https:
@@ -1576,6 +1511,24 @@ def main():
         from sabnzbd.utils.upload import add_local
         for f in upload_nzbs:
             add_local(f)
+
+    # Set URL for browser
+    if enable_https:
+        browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
+    else:
+        browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
+    sabnzbd.BROWSER_URL = browser_url
+
+    if not autorestarted:
+        launch_a_browser(browser_url)
+        if sabnzbd.FOUNDATION:
+            import sabnzbd.osxmenu
+            sabnzbd.osxmenu.notify("SAB_Launched", None)
+        notifier.send_notification('SABnzbd%s' % notifier.hostname(),
+                                  T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
+        # Now's the time to check for a new version
+        check_latest_version()
+    autorestarted = False
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
