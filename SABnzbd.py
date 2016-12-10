@@ -666,7 +666,7 @@ def is_sabnzbd_running(url):
         prev = sabnzbd.set_https_verification(False)
         ver = sabnzbd.newsunpack.get_from_url(url)
         sabnzbd.set_https_verification(prev)
-        return bool(ver and re.search(r'\d+\.\d+\.', ver))
+        return (ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__))
     except:
         return False
 
