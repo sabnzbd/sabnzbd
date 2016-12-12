@@ -445,7 +445,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         if workdir_complete and rarpath.startswith(workdir):
             extraction_path = workdir_complete
         else:
-            extraction_path = os.path.split(rarpath)[0]
+            # Make sure that path is not too long
+            extraction_path = short_path(os.path.split(rarpath)[0])
 
         logging.info("Extracting rarfile %s (belonging to %s) to %s",
                      rarpath, rar_set, extraction_path)
@@ -1661,7 +1662,11 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
         # Extra check for rar (takes CPU/disk)
         file_is_rar = False
         if check_rar:
-            file_is_rar = rarfile.is_rarfile(file)
+            try:
+                # Can fail on Windows due to long-path after recursive-unpack
+                file_is_rar = rarfile.is_rarfile(file)
+            except:
+                pass
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
