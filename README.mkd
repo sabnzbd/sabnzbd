@@ -38,6 +38,7 @@ Release Notes  -  SABnzbd 1.2.0
 - MemoryError (no more memory available) now pauses downloading
 - Removing files from active download was not working correctly
 - Accept & fail for pre-queue script was not working correctly
+- Recursive unpack failed on Windows with very long paths
 
 ## Translations
 - Many translations updated, thanks to our translators!
