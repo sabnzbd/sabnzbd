@@ -86,6 +86,11 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                     # The client is speaking some non-HTTP protocol.
                     # Drop the conn.
                     return None, {}
+                elif 'unknown ca' in e.args[1]:
+                    # This error is thrown by builtin SSL if Safari connects
+                    # when self-signed certificates are used. The connection
+                    # can be dropped until the users adds the exception
+                    return None, {}
             elif 'handshake operation timed out' in e.args[0]:
                 # This error is thrown by builtin SSL after a timeout
                 # when client is speaking HTTP to an HTTPS server.
