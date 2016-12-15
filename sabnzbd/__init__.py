@@ -470,7 +470,7 @@ def trigger_restart():
         del_connection_info()
 
     # Leave the harder restarts to the polling in SABnzbd.py
-    if sabnzbd.WIN_SERVICE or sabnzbd.DARWIN:
+    if sabnzbd.WIN_SERVICE or getattr(sys, 'frozen', None) == 'macosx_app':
         sabnzbd.TRIGGER_RESTART = True
     else:
         # Do the restart right now
