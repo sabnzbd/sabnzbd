@@ -1580,24 +1580,17 @@ def main():
             sys.argv = sabnzbd.RESTART_ARGS
 
             os.chdir(org_dir)
-            if sabnzbd.DARWIN:
-                # When executing from sources on osx, after a restart, process is detached from console
-                # If OSX frozen restart of app instead of embedded python
-                if getattr(sys, 'frozen', None) == 'macosx_app':
-                    # [[NSProcessInfo processInfo] processIdentifier]]
-                    # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
-                    my_pid = os.getpid()
-                    my_name = sabnzbd.MY_FULLNAME.replace('/Contents/MacOS/SABnzbd', '')
-                    my_args = ' '.join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
-                    logging.info('Launching: ', cmd)
-                    os.system(cmd)
-                else:
-                    args = sys.argv[:]
-                    args.insert(0, sys.executable)
-                    pid = os.fork()
-                    if pid == 0:
-                        os.execv(sys.executable, args)
+            # If OSX frozen restart of app instead of embedded python
+            if getattr(sys, 'frozen', None) == 'macosx_app':
+                # [[NSProcessInfo processInfo] processIdentifier]]
+                # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
+                my_pid = os.getpid()
+                my_name = sabnzbd.MY_FULLNAME.replace('/Contents/MacOS/SABnzbd', '')
+                my_args = ' '.join(sys.argv[1:])
+                cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
+                logging.info('Launching: ', cmd)
+                os.system(cmd)
+
             elif sabnzbd.WIN_SERVICE and mail:
                 logging.info('Asking the SABHelper service for a restart')
                 mail.send('restart')
