@@ -552,6 +552,7 @@ SKIN_TEXT = {
     'srv-connections' : TT('Connections'), #: Server: amount of connections
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
+    'explain-ssl' : TT('Secure connection to server'), #: Server SSL tickbox
     'opt-ssl_verify' : TT('Certificate verification'),
     'explain-ssl_verify' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
     'ssl_verify-disabled' : TT('Disabled'),
@@ -560,6 +561,7 @@ SKIN_TEXT = {
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
+    'explain-optional' : TT('For unreliable servers, will be ignored longer in case of failures'), #: Explain erver optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server

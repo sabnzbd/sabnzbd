@@ -57,7 +57,7 @@
                 <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl">$T('srv-ssl')</label>
                     <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
-                    <span class="desc">$T('srv-ssl')</span>
+                    <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
@@ -76,7 +76,7 @@
                 <div class="field-pair">
                     <label class="config" for="optional">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional" value="1" />
-                    <span class="desc">$T('srv-optional')</span>
+                    <span class="desc">$T('explain-optional')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="categories">$T('srv-categories')</label>
@@ -171,7 +171,7 @@
                 <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
                     <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
-                    <span class="desc">$T('srv-ssl')</span>
+                    <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
                     <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
@@ -185,7 +185,7 @@
                 <div class="field-pair">
                     <label class="config" for="optional$cur">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('srv-optional')</span>
+                    <span class="desc">$T('explain-optional')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="send_group$cur">$T('srv-send_group')</label>
