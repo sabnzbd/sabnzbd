@@ -561,7 +561,7 @@ SKIN_TEXT = {
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
-    'explain-optional' : TT('For unreliable servers, will be ignored longer in case of failures'), #: Explain erver optional tickbox
+    'explain-optional' : TT('For unreliable servers, will be ignored longer in case of failures'), #: Explain server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server
