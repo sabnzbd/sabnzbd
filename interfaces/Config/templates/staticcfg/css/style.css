@@ -955,6 +955,14 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
+.Servers .advanced-settings {
+    display: none;
+}
+
+.Servers .port-highlight {
+    animation: highlight-fade 1s ease-in 1;
+}
+
 .Servers .col2 label,
 .Email .col2 label {
     margin: 0;
@@ -1049,6 +1057,11 @@ input[type="checkbox"] {
     0% { opacity: 0; }
     50% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+@keyframes highlight-fade {
+   0% { background: #FEFEDA; }
+   100% { background: none; }
 }
 
 .spin-glyphicon {
