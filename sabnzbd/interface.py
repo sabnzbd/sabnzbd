@@ -1500,8 +1500,8 @@ SPECIAL_BOOL_LIST = \
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
               'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
-              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'api_logging',
-              'fixed_ports'
+              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'disable_api_key',
+              'api_logging', 'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
@@ -1558,9 +1558,9 @@ class ConfigSpecial(object):
 
 ##############################################################################
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit', 'local_ranges', 'inet_exposure',
-    'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
+    'host', 'port', 'username', 'password', 'refresh_rate', 'cache_limit',
+    'local_ranges', 'inet_exposure', 'enable_https', 'https_port',
+    'https_cert', 'https_key', 'https_chain'
 )
 
 
@@ -1640,7 +1640,6 @@ class ConfigGeneral(object):
             lang_list = []
         conf['lang_list'] = lang_list
 
-        conf['disable_api_key'] = cfg.disable_key()
         conf['host'] = cfg.cherryhost()
         conf['port'] = cfg.cherryport()
         conf['https_port'] = cfg.https_port()

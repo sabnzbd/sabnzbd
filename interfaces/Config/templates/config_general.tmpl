@@ -99,11 +99,6 @@
                     <span class="desc">$T('explain-local_ranges')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>
-                    <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if int($disable_api_key) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-disableApikey')</span>
-                </div>
-                <div class="field-pair">
                     <label class="config" for="apikey">$T('opt-apikey')</label>
                     <input type="text" id="apikey" class="fileBrowserField" value="$session" readonly />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$session" ><span class="glyphicon glyphicon-qrcode"></span></button>
