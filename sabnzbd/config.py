@@ -912,9 +912,18 @@ def get_categories(cat=0):
     if 'categories' not in database:
         database['categories'] = {}
     cats = database['categories']
+
+    # Add Default categories
     if '*' not in cats:
         ConfigCat('*', {'pp': old_def('dirscan_opts', '3'), 'script': old_def('dirscan_script', 'None'),
                         'priority': old_def('dirscan_priority', NORMAL_PRIORITY)})
+        # Add some categorie suggestions
+        ConfigCat('movies', {})
+        ConfigCat('tv', {})
+        ConfigCat('audio', {})
+        ConfigCat('software', {})
+
+        # Save config for future use
         save_config(True)
     if not isinstance(cat, int):
         try:
