@@ -370,16 +370,12 @@ $(document).ready(function () {
 
     // Disable sections
     var checkDisabled = '#enable_https, #rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
-    var checkEnabled = '#disable_api_key'
 
-    $(checkDisabled + ','+ checkEnabled).on('change', function() {
+    $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
     })
     if(!$(checkDisabled).is(':checked')) {
         $(checkDisabled).parent().nextAll().addClass('disabled')
-    }
-    if($(checkEnabled).is(':checked')) {
-        $(checkEnabled).parent().nextAll().addClass('disabled')
     }
 });
 

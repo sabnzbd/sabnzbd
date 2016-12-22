@@ -365,8 +365,6 @@ SKIN_TEXT = {
     'opt-nzbkey' : TT('NZB Key'),
     'explain-nzbkey' : TT('This key will allow 3rd party programs to add NZBs to SABnzbd.'),
     'button-apikey' : TT('Generate New Key'),
-    'opt-disableApikey' : TT('Disable API-key'),
-    'explain-disableApikey' : TT('Do not require the API key.'),
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
     'opt-local_ranges' : TT('List of local network ranges'),
     'explain-local_ranges' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
