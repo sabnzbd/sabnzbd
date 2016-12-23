@@ -332,6 +332,7 @@ SKIN_TEXT = {
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
+    'security' : TT('Security'),
     'httpsSupport' : TT('HTTPS Support'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
