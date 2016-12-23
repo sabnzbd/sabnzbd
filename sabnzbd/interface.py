@@ -1415,10 +1415,10 @@ class ConfigFolders(object):
 ##############################################################################
 SWITCH_LIST = \
     ('par2_multicore', 'par_option', 'overwrite_files', 'top_only', 'ssl_ciphers',
-             'auto_sort', 'propagation_delay', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
-             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
+             'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-             'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename',
+             'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
@@ -1429,8 +1429,7 @@ SWITCH_LIST = \
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
-             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
-             'load_balancing', 'enable_https_verification'
+             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords'
      )
 
 
@@ -1560,7 +1559,8 @@ class ConfigSpecial(object):
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'refresh_rate', 'cache_limit',
     'local_ranges', 'inet_exposure', 'enable_https', 'https_port',
-    'https_cert', 'https_key', 'https_chain'
+    'https_cert', 'https_key', 'https_chain', 'enable_https_verification',
+    'auto_browser', 'check_new_rel'
 )
 
 
@@ -1608,6 +1608,7 @@ class ConfigGeneral(object):
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
         conf['have_ssl'] = sabnzbd.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
         conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
 
         wlist = []
@@ -1640,24 +1641,13 @@ class ConfigGeneral(object):
             lang_list = []
         conf['lang_list'] = lang_list
 
-        conf['host'] = cfg.cherryhost()
-        conf['port'] = cfg.cherryport()
-        conf['https_port'] = cfg.https_port()
-        conf['https_cert'] = cfg.https_cert()
-        conf['https_key'] = cfg.https_key()
-        conf['https_chain'] = cfg.https_chain()
-        conf['enable_https'] = cfg.enable_https()
-        conf['username'] = cfg.username()
-        conf['password'] = cfg.password.get_stars()
-        conf['html_login'] = cfg.html_login()
+        for kw in GENERAL_LIST:
+            conf[kw] = config.get_config('misc', kw)()
+
         conf['bandwidth_max'] = cfg.bandwidth_max()
         conf['bandwidth_perc'] = cfg.bandwidth_perc()
-        conf['refresh_rate'] = cfg.refresh_rate()
-        conf['cache_limit'] = cfg.cache_limit()
-        conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
-        conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
         conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
