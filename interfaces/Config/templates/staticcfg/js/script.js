@@ -207,18 +207,19 @@ function do_restart() {
     // What template
     var arrPath = window.location.pathname.split('/');
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
+    var switchedHTTPS = !$('#enable_https').is(':checked') && window.location.protocol == 'https:'
 
     // Are we on settings page?
     if(!$('body').hasClass('General')) {
         // Same as before, with fall-back in case location.origin is not supported (<IE9)
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
-    } else if (($('#port').val() == $('#port').data('original')) && ($('#https_port ').val() == $('#https_port ').data('original'))) {
+    } else if (!switchedHTTPS && ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))) {
         // If the http/https port config didn't change, don't try and guess the URL/port to redirect to
         // This solves some incorrect behavior if running behind a reverse proxy
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
     } else {
         // Protocol and port depend on http(s) setting
-        if($('#enable_https').is(':checked') && window.location.protocol == 'https:') {
+        if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
             // Https on and we visited this page from HTTPS
             var urlProtocol = 'https:';
             var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
@@ -369,7 +370,7 @@ $(document).ready(function () {
     $('input[type="checkbox"]').parents('label').addClass('config-hover')
 
     // Disable sections
-    var checkDisabled = '#enable_https, #rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
+    var checkDisabled = '#rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
 
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
