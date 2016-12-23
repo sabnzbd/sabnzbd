@@ -377,6 +377,11 @@ $(document).ready(function () {
     if(!$(checkDisabled).is(':checked')) {
         $(checkDisabled).parent().nextAll().addClass('disabled')
     }
+
+    // Hide or show HTTPS
+    $('#enable_https').on('change', function() {
+        $('#enable_https_options').toggle()
+    })
 });
 
 /*
