@@ -26,6 +26,7 @@ import re
 import logging
 import Queue
 import urllib2
+from httplib import IncompleteRead
 from threading import Thread
 
 import sabnzbd
@@ -209,7 +210,10 @@ class URLGrabber(Thread):
                 if gzipped:
                     filename += '.gz'
                 if not data:
-                    data = fn.read()
+                    try:
+                        data = fn.read()
+                    except IncompleteRead, e:
+                        bad_fetch(future_nzo, url, T('Server could not complete request'))
                 fn.close()
 
                 if '<nzb' in data and misc.get_ext(filename) != '.nzb':
