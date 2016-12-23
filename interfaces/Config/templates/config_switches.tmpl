@@ -7,38 +7,6 @@
         <input type="hidden" id="session" name="session" value="$session" />
         <div class="section">
             <div class="col2">
-                <h3>$T('swtag-general') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            </div><!-- /col2 -->
-            <div class="col1">
-                <fieldset>
-                    <div class="field-pair">
-                        <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
-                        <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-auto_browser')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
-                        <select name="check_new_rel" id="check_new_rel">
-                            <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
-                            <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
-                            <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
-                        </select>
-                        <span class="desc">$T('explain-check_new_rel')</span>
-                    </div>
-                    <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
-                        <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
-                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#--> />
-                        <span class="desc">$T('explain-enable_https_verification')</span>
-                    </div>
-                    <div class="field-pair">
-                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                        <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
-                    </div>
-                </fieldset>
-            </div><!-- /col1 -->
-        </div><!-- /section -->
-        <div class="section">
-            <div class="col2">
                 <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             </div><!-- /col2 -->
             <div class="col1">
