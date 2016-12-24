@@ -543,7 +543,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on a URL, attributes optional """
     if 'http' not in url:
         return
-    if pp and pp == "-1":
+    if not pp or pp == "-1":
         pp = None
     if script and script.lower() == 'default':
         script = None
