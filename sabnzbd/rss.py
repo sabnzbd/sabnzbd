@@ -418,7 +418,7 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size, age = _get_link(uri, entry)
+                    link, category, size, age, season, episode = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
                     category = u''
@@ -436,6 +436,8 @@ class RSSQueue(object):
                 title = jobs[link].get('title', '')
                 size = jobs[link].get('size', 0L)
                 age = jobs[link].get('age')
+                season = jobs[link].get('season', 0)
+                episode = jobs[link].get('episode', 0)
 
             if link:
                 # Make sure spaces are quoted in the URL
@@ -456,12 +458,10 @@ class RSSQueue(object):
                     myScript = defScript
                     myPrio = defPrio
                     n = 0
-                    if 'F' in reTypes or 'S' in reTypes:
+                    if ('F' in reTypes or 'S' in reTypes) and (not season or not episode):
                         season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
                         season = int_conv(season)
                         episode = int_conv(episode)
-                    else:
-                        season = episode = 0
 
                     # Match against all filters until an positive or negative match
                     logging.debug('Size %s for %s', size, title)
@@ -547,12 +547,12 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, size, age, 'G', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, season, episode, 'G', category, myCat, myPP, myScript,
                                     act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, size, age, 'B', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, season, episode, 'B', category, myCat, myPP, myScript,
                                     False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
@@ -641,7 +641,7 @@ class RSSQueue(object):
                     self.jobs[feed][item]['status'] = 'D-'
 
 
-def _HandleLink(jobs, link, title, size, age, flag, orgcat, cat, pp, script, download, star,
+def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat, pp, script, download, star,
                 order, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
@@ -654,6 +654,8 @@ def _HandleLink(jobs, link, title, size, age, flag, orgcat, cat, pp, script, dow
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
     jobs[link]['age'] = age
+    jobs[link]['season'] = season
+    jobs[link]['episode'] = episode
     if special_rss_site(link):
         nzbname = None
     else:
@@ -685,7 +687,7 @@ def _get_link(uri, entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    link = None  # @UnusedVariable -- pep8 bug?
+    link = None
     category = ''
     size = 0L
     uri = uri.lower()
@@ -731,6 +733,13 @@ def _get_link(uri, entry):
         # We need to convert it to local timezone, feedparser always returns UTC
         age = age - datetime.timedelta(seconds=time.timezone)
 
+    # Maybe the newznab also provided SxxExx info
+    try:
+        season = re.findall('\d+', entry['newznab']['season'])[0]
+        episode = re.findall('\d+', entry['newznab']['episode'])[0]
+    except:
+        season = episode = 0
+
     if link and 'http' in link.lower():
         try:
             category = entry.cattext
@@ -746,10 +755,10 @@ def _get_link(uri, entry):
                     except:
                         category = ''
 
-        return link, category, size, age
+        return link, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0L, None
+        return None, '', 0L, None, 0, 0
 
 
 def special_rss_site(url):
