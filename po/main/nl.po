@@ -8,54 +8,54 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-08-09 21:56+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2016-12-23 23:39+0000\n"
+"Last-Translator: At Voogt <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 06:09+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
+"X-Launchpad-Export-Date: 2016-12-24 04:59+0000\n"
+"X-Generator: Launchpad (build 18298)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
-msgstr "Kan web interface niet starten"
+msgstr "Webinterface kan niet gestart worden"
 
 #: SABnzbd.py:349 [Warning message]
 msgid "Cannot find web template: %s, trying standard template"
-msgstr "Kan web sjabloon %s niet vinden, standaard sjabloon wordt gebruikt"
+msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
 #: SABnzbd.py:473 [Error message]
 msgid "_yenc module... NOT found!"
-msgstr "_yenc module niet gevonden!"
+msgstr "_yenc-module niet gevonden."
 
 #: SABnzbd.py:480 [Error message]
 msgid "par2 binary... NOT found!"
-msgstr "par2 programma niet gevonden!"
+msgstr "par2-programma niet gevonden."
 
 #: SABnzbd.py:489 [Warning message]
 msgid "unrar binary... NOT found"
-msgstr "unrar programma niet gevonden!"
+msgstr "unrar-programma niet gevonden."
 
 #: SABnzbd.py:494
 msgid "unzip binary... NOT found!"
-msgstr "unzip programma niet gevonden!"
+msgstr "unzip-programma niet gevonden."
 
 #: SABnzbd.py:499
 msgid "7za binary... NOT found!"
-msgstr "7za programma niet gevonden!"
+msgstr "7za-programma niet gevonden."
 
 #: SABnzbd.py:646 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
 msgstr ""
-"Let op, wanneer je 0.0.0.0 als hostnaam gebruikt, heb je voor externe "
-"toegang een IPv6-adres nodig"
+"Let op: als je 0.0.0.0 als hostnaam gebruikt, heb je voor externe toegang "
+"een IPv6-adres nodig"
 
 #: SABnzbd.py:676 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
-msgstr "HTTP en HTTPS poort kunnen niet gelijk zijn"
+msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
 #: SABnzbd.py:1306 [Error message]
 msgid "Initializing %s-%s failed, aborting"
@@ -63,7 +63,7 @@ msgstr "Starten van %s-%s niet gelukt, stoppen"
 
 #: SABnzbd.py:1385 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
-msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT en KEY-bestanden."
+msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 
 #: SABnzbd.py:1517 [Error message] # SABnzbd.py:1520 [Error message] # SABnzbd.py:1523 [Error message]
 msgid "Failed to start web-interface: "
@@ -75,7 +75,7 @@ msgstr "SABnzbd %s is gestart"
 
 #: SABnzbd.py:1564 [Error message]
 msgid "Cannot reach the SABHelper service"
-msgstr "Kan niet verbinden met de SABHelper service"
+msgstr "Geen verbinding mogelijk met de SABHelper-service"
 
 #: SABnzbd.py:1593 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:278 [Status page, table column header, actual message]
 msgid "Warning"
@@ -95,7 +95,7 @@ msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
 
 #: sabnzbd/__init__.py:435 [Error message]
 msgid "Fatal error at saving state"
-msgstr "Onherstelbare fout bij het opslaan status"
+msgstr "Onherstelbare fout bij opslaan status"
 
 #: sabnzbd/__init__.py:525
 msgid "Trying to fetch NZB from %s"
@@ -111,7 +111,7 @@ msgstr "Kan geen tijdelijk bestand maken voor %s"
 
 #: sabnzbd/__init__.py:684 [Warning message] # sabnzbd/__init__.py:695 [Warning message]
 msgid "Trying to set status of non-existing server %s"
-msgstr "Poging om status van niet bestaande server %s te wijzigen"
+msgstr "Poging de status van niet-bestaande server %s in te stellen"
 
 #: sabnzbd/__init__.py:833 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
@@ -123,7 +123,7 @@ msgstr "Probleem met tempfile.mkstemp"
 
 #: sabnzbd/__init__.py:918 [Error message]
 msgid "Loading %s failed"
-msgstr "Inlezen van %s lukt niet"
+msgstr "Inlezen van %s mislukt"
 
 #: sabnzbd/__init__.py:984 [Error message]
 msgid "Loading %s failed with error %s"
@@ -133,7 +133,7 @@ msgstr "Inlezen %s mislukt (foutmelding %s)"
 #: sabnzbd/api.py:786 # sabnzbd/api.py:793 # sabnzbd/api.py:800 # sabnzbd/api.py:806
 #: sabnzbd/skintext.py:640
 msgid "Test Notification"
-msgstr "Test Melding"
+msgstr "Aankondiging test"
 
 #: sabnzbd/api.py:1286
 msgid "&nbsp;Resolving address"
@@ -163,7 +163,7 @@ msgstr "onbekend"
 
 #: sabnzbd/api.py:1828 [Error message]
 msgid "Failed to compile regex for search term: %s"
-msgstr "Samenstellen van reguliere expressie lukt niet: %s"
+msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
 #: sabnzbd/api.py:2048
 msgid "d"
@@ -179,11 +179,11 @@ msgstr "m"
 
 #: sabnzbd/assembler.py:97 [Error message]
 msgid "Disk full! Forcing Pause"
-msgstr "Schijf is vol! Forceer Pauze"
+msgstr "Schijf is vol; gedwongen pauze"
 
 #: sabnzbd/assembler.py:99 [Error message]
 msgid "Disk error on creating file %s"
-msgstr "Schrijf fout bij opslaan van bestand %s"
+msgstr "Schrijffout bij opslaan van bestand %s"
 
 #: sabnzbd/assembler.py:103 [Error message]
 msgid "Fatal error in Assembler"
@@ -192,12 +192,12 @@ msgstr "Onherstelbare fout in de Assembler"
 #: sabnzbd/assembler.py:117 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 msgstr ""
-"WAARSCHUWING: Item \"%s\" gepauzeerd vanwege een versleuteld RAR-bestand"
+"WAARSCHUWING: Taak '%s' gepauzeerd vanwege een versleuteld RAR-bestand"
 
 #: sabnzbd/assembler.py:120 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 msgstr ""
-"Waarschuwing: \"%s\" is afgebroken vanwege een versleuteld RAR-bestand"
+"WAARSCHUWING: Taak '%s' is afgebroken vanwege een versleuteld RAR-bestand"
 
 #: sabnzbd/assembler.py:121
 msgid "Aborted, encryption detected"
@@ -212,23 +212,23 @@ msgstr ""
 
 #: sabnzbd/assembler.py:127
 msgid "Unwanted extension is in rar file %s"
-msgstr "Ongewenste extensie zit in RAR file %s"
+msgstr "De ongewenste extensie zit in RAR-bestand %s"
 
 #: sabnzbd/assembler.py:134
 msgid "Aborted, unwanted extension detected"
-msgstr "Afgebroken: ongewenste extensie ontdekt"
+msgstr "Afgebroken, ongewenste extensie ontdekt"
 
 #: sabnzbd/assembler.py:140 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "WAARSCHUWING: Opdracht (%s) gepauseerd vanwege rating (%s)"
+msgstr "WAARSCHUWING: Taak '%s' gepauzeerd vanwege rating (%s)"
 
 #: sabnzbd/assembler.py:143 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "WAARSCHUWING: Opdracht (%s) afgebroken vanwege rating (%s)"
+msgstr "WAARSCHUWING: Taak '%s' afgebroken vanwege rating (%s)"
 
 #: sabnzbd/assembler.py:144
 msgid "Aborted, rating filter matched (%s)"
-msgstr "Afgebroken, rating filter komt overeen (%s)"
+msgstr "Afgebroken, ratingfilter komt overeen (%s)"
 
 #: sabnzbd/assembler.py:183 # sabnzbd/misc.py:1127 [Warning message]
 msgid "%s missing"
@@ -248,11 +248,11 @@ msgstr "spam"
 
 #: sabnzbd/assembler.py:412
 msgid "passworded"
-msgstr "Wachtwoord nodig"
+msgstr "van wachtwoord voorzien"
 
 #: sabnzbd/assembler.py:414
 msgid "downvoted"
-msgstr "Afkeurend gestemd"
+msgstr "negatief beoordeeld"
 
 #: sabnzbd/assembler.py:416
 msgid "keywords"
@@ -260,7 +260,7 @@ msgstr "trefwoorden"
 
 #: sabnzbd/bpsmeter.py:251 [Warning message]
 msgid "Quota spent, pausing downloading"
-msgstr "Quotum verbruikt, downloaded is gestopt"
+msgstr "Quotum verbruikt, download is gestopt"
 
 #: sabnzbd/cfg.py:46
 msgid "%s is not a valid email address"
@@ -268,11 +268,11 @@ msgstr "%s is geen geldig e-mailadres"
 
 #: sabnzbd/cfg.py:54 # sabnzbd/interface.py:1879
 msgid "Server address required"
-msgstr "Server adres verplicht"
+msgstr "Serveradres verplicht"
 
 #: sabnzbd/config.py:236
 msgid "Cannot create %s folder %s"
-msgstr "Kan %s map %s  niet aanmaken"
+msgstr "Niet mogelijk %s map %s aan te maken"
 
 #: sabnzbd/config.py:829 [Error message] # sabnzbd/config.py:849 [Error message]
 msgid "Cannot write to INI file %s"
@@ -280,7 +280,7 @@ msgstr "Schrijven naar het INI-bestand %s lukt niet"
 
 #: sabnzbd/config.py:838 [Error message]
 msgid "Cannot create backup file for %s"
-msgstr "Kan geen backup bestand voor %s maken"
+msgstr "Backupbestand maken voor %s niet mogelijk"
 
 #: sabnzbd/config.py:999 [Error message]
 msgid "Incorrectly encoded password %s"
@@ -292,15 +292,15 @@ msgstr "%s is geen correct octaal getal"
 
 #: sabnzbd/config.py:1032
 msgid "UNC path \"%s\" not allowed here"
-msgstr "Het UNC pad \"%s\" mag hier niet."
+msgstr "UNC-pad '%s' hier niet toegestaan."
 
 #: sabnzbd/config.py:1040
 msgid "Error: Path length should be below %s."
-msgstr "Fout: lengte van het opgegeven pad mag niet langer zijn dan %s"
+msgstr "Fout: het opgegeven pad mag niet langer zijn dan %s."
 
 #: sabnzbd/config.py:1044
 msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fout: Wachtrij is niet leeg, kan geen andere map kiezen."
+msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #: sabnzbd/config.py:1053
 msgid "Folder \"%s\" does not exist"
@@ -309,21 +309,21 @@ msgstr "Map \"%s\" bestaat niet."
 #: sabnzbd/database.py:133 [Error message]
 msgid "Cannot write to History database, check access rights!"
 msgstr ""
-"Kan niet naar de Geschiedenis database schrijven, controleer de "
-"toegangsrechten!"
+"Naar de geschiedenis-database schrijven niet mogelijk, controleer de "
+"toegangsrechten."
 
 #: sabnzbd/database.py:137 [Error message]
 msgid "Damaged History database, created empty replacement"
 msgstr ""
-"Beschadigde Geschiedenis database, vervangen door nieuwe en lege database"
+"Beschadigde geschiedenis-database, is vervangen door een lege database"
 
 #: sabnzbd/database.py:149 [Error message]
 msgid "SQL Command Failed, see log"
-msgstr "SQL opdracht mislukt, zie log"
+msgstr "SQL-commando mislukt, zie logbestand"
 
 #: sabnzbd/database.py:197 [Error message]
 msgid "SQL Commit Failed, see log"
-msgstr "SQL opslag opdracht mislukt, zie log"
+msgstr "SQL-opslagopdracht mislukt, zie logbestand"
 
 #: sabnzbd/database.py:206 [Error message]
 msgid "Failed to close database, see log"
@@ -331,7 +331,7 @@ msgstr "Het lukt niet om de database te sluiten, zie log"
 
 #: sabnzbd/database.py:488 [Error message] # sabnzbd/database.py:505 [Error message]
 msgid "Invalid stage logging in history for %s"
-msgstr "Foutieve fase logging in geschiedenis voor %s"
+msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
 
 #: sabnzbd/decoder.py:112
 msgid "Decoding %s failed"
@@ -339,11 +339,11 @@ msgstr "Decoderen van %s mislukt"
 
 #: sabnzbd/decoder.py:125
 msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC fout in %s (%s -> %s)"
+msgstr "CRC-fout in %s (%s -> %s)"
 
 #: sabnzbd/decoder.py:156
 msgid "Badly formed yEnc article in %s"
-msgstr "Foutief gevormd yEnc artikel in %s"
+msgstr "Slecht opgemaakt yEnc-artikel in %s"
 
 #: sabnzbd/decoder.py:166
 msgid "Unknown Error while decoding %s"
@@ -355,8 +355,7 @@ msgstr "%s => ontbreekt op alle servers, overslaan"
 
 #: sabnzbd/decoder.py:262
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
-"UUencode codering gevonden, SABnzbd verwerkt alleen yEnc codering [%s]"
+msgstr "UUencode gevonden, SABnzbd verwerkt alleen yEnc-codering [%s]"
 
 #: sabnzbd/dirscanner.py:155 [Error message] # sabnzbd/dirscanner.py:240 [Error message]
 msgid "Error removing %s"
@@ -364,26 +363,26 @@ msgstr "Fout bij verwijderen van %s"
 
 #: sabnzbd/dirscanner.py:198 [Warning message]
 msgid "Cannot read %s"
-msgstr "Kan %s niet lezen"
+msgstr "%s kan niet gelezen worden"
 
 #: sabnzbd/dirscanner.py:338 [Error message] # sabnzbd/dirscanner.py:421 [Error message]
 msgid "Cannot read Watched Folder %s"
-msgstr "Kan Bewaakte Map %s niet lezen"
+msgstr "Bewaakte map %s kan niet gelezen worden"
 
 #: sabnzbd/downloader.py:253
 msgid "Resuming"
-msgstr "Hervat"
+msgstr "Hervatten"
 
 #: sabnzbd/downloader.py:262 # sabnzbd/osxmenu.py:457 # sabnzbd/sabtray.py:87
 #: sabnzbd/sabtraylinux.py:85 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:201 [Priority pick list]
 #: sabnzbd/skintext.py:935
 msgid "Paused"
-msgstr "Pauze"
+msgstr "Gepauzeerd"
 
 #: sabnzbd/downloader.py:307 [Warning message] # sabnzbd/interface.py:1722 [Warning message] # sabnzbd/skintext.py:768
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
-"Je moet eerst een maximum bandbreedte instellen voordat je een limiet kunt "
+"Je moet eerst een maximumbandbreedte instellen voordat je een limiet kunt "
 "instellen"
 
 #: sabnzbd/downloader.py:364 # sabnzbd/downloader.py:365 [Warning message]
@@ -392,7 +391,7 @@ msgstr "Server %s wordt gedurende %s minuten genegeerd"
 
 #: sabnzbd/downloader.py:457 [Error message]
 msgid "Failed to initialize %s@%s with reason: %s"
-msgstr "Geen initialisatie van %s@%s omdat: %s"
+msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 
 #: sabnzbd/downloader.py:587 # sabnzbd/downloader.py:590 [Warning message]
 msgid "Too many connections to server %s"
@@ -404,12 +403,12 @@ msgstr "Mogelijk delen van account"
 
 #: sabnzbd/downloader.py:606 # sabnzbd/downloader.py:609 [Error message]
 msgid "Failed login for server %s"
-msgstr "Kan niet aanmelden bij server %s"
+msgstr "Aanmelden bij server %s mislukt"
 
 #: sabnzbd/downloader.py:615 # sabnzbd/downloader.py:618 [Warning message]
 #: sabnzbd/downloader.py:633 # sabnzbd/downloader.py:636 [Warning message]
 msgid "Cannot connect to server %s [%s]"
-msgstr "Kan geen verbinding maken met server %s [%s]"
+msgstr "Verbinding maken met server %s [%s] niet mogelijk"
 
 #: sabnzbd/downloader.py:650 [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -421,7 +420,7 @@ msgstr "Server %s heeft gebruikersnaam/wachtwoord nodig"
 
 #: sabnzbd/downloader.py:797 [Error message]
 msgid "Suspect error in downloader"
-msgstr "Fout in downloader"
+msgstr "Vedachte fout in downloader"
 
 #: sabnzbd/downloader.py:878 # sabnzbd/skintext.py:855
 msgid "Shutting down"
@@ -429,27 +428,27 @@ msgstr "Afsluiten"
 
 #: sabnzbd/emailer.py:99 # sabnzbd/emailer.py:101
 msgid "Failed to connect to mail server"
-msgstr "Kan geen verbinding maken met e-mailserver"
+msgstr "Verbinding met e-mailserver mislukt"
 
 #: sabnzbd/emailer.py:113
 msgid "Failed to initiate TLS connection"
-msgstr "Kan geen TLS verbinding maken"
+msgstr "TLS-verbinding mislukt"
 
 #: sabnzbd/emailer.py:120
 msgid "The server didn't reply properly to the helo greeting"
-msgstr "De server reageerde niet op de \"helo\" opening"
+msgstr "De server reageerde niet op de 'helo'-begroeting"
 
 #: sabnzbd/emailer.py:122
 msgid "Failed to authenticate to mail server"
-msgstr "Kan niet aanmelden bij e-mailserver"
+msgstr "Aanmelden bij e-mailserver mislukt"
 
 #: sabnzbd/emailer.py:124
 msgid "No suitable authentication method was found"
-msgstr "Geen geschikte authenticatie methode gevonden"
+msgstr "Geen geschikte authenticatiemethode gevonden"
 
 #: sabnzbd/emailer.py:126
 msgid "Unknown authentication failure in mail server"
-msgstr "Onbekende authenticatie fout bij de e-mailserver"
+msgstr "Onbekende authenticatiefout bij de e-mailserver"
 
 #: sabnzbd/emailer.py:140
 msgid "Failed to send e-mail"
@@ -457,7 +456,7 @@ msgstr "Verzenden van e-mail is mislukt"
 
 #: sabnzbd/emailer.py:145
 msgid "Failed to close mail connection"
-msgstr "Afsluiten e-mailverbinding lukt niet"
+msgstr "Beëindigen e-mailverbinding mislukt"
 
 #: sabnzbd/emailer.py:151
 msgid "Email succeeded"
@@ -465,11 +464,11 @@ msgstr "E-mail verzonden"
 
 #: sabnzbd/emailer.py:177 [Error message]
 msgid "Cannot find email templates in %s"
-msgstr "Kan geen e-mailsjablonen vinden in %s"
+msgstr "Geen e-mailsjablonen te vinden in %s"
 
 #: sabnzbd/emailer.py:208
 msgid "No recipients given, no email sent"
-msgstr "Geen geadresseerden gegeven, geen e-mail gestuurd"
+msgstr "Geen geadresseerden opgegeven, e-mail niet verstuurd"
 
 #: sabnzbd/emailer.py:210
 msgid "Invalid encoding of email template %s"
@@ -509,7 +508,7 @@ msgstr "Let op: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres."
 
 #: sabnzbd/interface.py:92
 msgid "Server address \"%s:%s\" is not valid."
-msgstr "Server adres \"%s:%s\" is niet geldig."
+msgstr "Serveradres \"%s:%s\" is niet geldig."
 
 #: sabnzbd/interface.py:194
 msgid "User logged in to the web interface"
@@ -521,7 +520,7 @@ msgstr "Gebruiker ingelogd"
 
 #: sabnzbd/interface.py:238 [Warning message]
 msgid "Missing Session key"
-msgstr "Sessie sleutel ontbreekt"
+msgstr "Sessiesleutel ontbreekt"
 
 #: sabnzbd/interface.py:239
 msgid "Error: Session Key Required"
@@ -529,31 +528,31 @@ msgstr "Fout: Sessie sleutel nodig"
 
 #: sabnzbd/interface.py:241 [Warning message] # sabnzbd/interface.py:242
 msgid "Error: Session Key Incorrect"
-msgstr "Fout: Sessie sleutel niet geldig"
+msgstr "Fout: Sessiesleutel niet geldig"
 
 #: sabnzbd/interface.py:280
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
 msgstr ""
-"API-sleutel ontbreekt: Vul de API-sleutel van \"Algemene instellingen\" in "
-"bij je externe programma:"
+"API-sleutel ontbreekt; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
+"in bij het externe programma:"
 
 #: sabnzbd/interface.py:287
 msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr ""
-"API-sleutel is incorrect, vul de API-sleutel van \"Algemene instellingen\" "
-"in bij je externe programma:"
+"API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
+"in bij het externe programma:"
 
 #: sabnzbd/interface.py:296
 msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
 msgstr ""
-"Authenticatie ontbreekt: Vul gebruikersnaam en wachtwoord van \"Algememe "
-"instellingen\" in bij je hulp programma:"
+"Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
+"=> 'Algemeen' in bij het externe programma:"
 
 #: sabnzbd/interface.py:308
 msgid "Error: No secondary interface defined."
@@ -564,25 +563,24 @@ msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
 msgstr ""
-"Probeer onze nieuwe skin Glitter! Compleet nieuw design geoptimaliseerd voor "
-"desktops en mobiele apparaten. Ga naar configuratie -> Algemeen om uw "
+"Probeer onze nieuwe skin Glitter. Compleet nieuw design, geoptimaliseerd "
+"voor desktops en mobiele apparaten. Ga naar Configuratie => Algemeen om de "
 "huidige skin te vervangen."
 
 #: sabnzbd/interface.py:376
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
-"Je UNRAR versie is %s, we bevelen aan om versie %s of hoger te gebruiken.<br "
-"/>"
+"De UNRAR-versie is %s, we adviseren versie %s of hoger te gebruiken.<br />"
 
 #: sabnzbd/interface.py:379
 msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 msgstr ""
-"Geen UNRAR programma gevonden, uitpakken van RAR-bestanden niet mogelijk<br "
+"Geen UNRAR-programma gevonden, uitpakken van RAR-bestanden niet mogelijk<br "
 "/>"
 
 #: sabnzbd/interface.py:381
 msgid "No PAR2 program found, repairs not possible<br />"
-msgstr "Geen PAR2 programma, kan geen reparaties uitvoeren<br />"
+msgstr "Geen PAR2-programma gevonden, reparaties niet mogelijk<br />"
 
 #: sabnzbd/interface.py:613 # sabnzbd/newswrapper.py:339
 #: sabnzbd/utils/servertests.py:138

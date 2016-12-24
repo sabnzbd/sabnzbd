@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-09-19 08:22+0000\n"
-"Last-Translator: JobbeDeluxe <cjobbe@web.de>\n"
+"PO-Revision-Date: 2016-11-09 15:38+0000\n"
+"Last-Translator: Walter <sausack3@mail.ru>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 06:09+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
+"X-Launchpad-Export-Date: 2016-11-11 06:29+0000\n"
+"X-Generator: Launchpad (build 18255)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -946,7 +946,7 @@ msgstr "Dieser Server erlaubt kein SSL auf diesem Port"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "Der Server %s verwendet ein nicht vertrauenswürdiges Zertifikat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
@@ -1553,19 +1553,19 @@ msgstr "Überprüfung mit SFV-Datei(en) erfolgreich"
 
 #: sabnzbd/postproc.py:770 # sabnzbd/postproc.py:771
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "RAR-basierte Überprüfung versuchen"
 
 #: sabnzbd/postproc.py:780
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "RAR-Datei erfolgreich überprüft"
 
 #: sabnzbd/postproc.py:785
 msgid "RAR files failed to verify"
-msgstr ""
+msgstr "RAR-Datei konnten nicht überprüft werden"
 
 #: sabnzbd/postproc.py:786
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] RAR-basierte Überprüfung ist fehlgeschlagen: %s"
 
 #: sabnzbd/postproc.py:843 [Error message] # sabnzbd/postproc.py:919 [Error message]
 msgid "Removing %s failed"
@@ -2551,6 +2551,11 @@ msgid ""
 "is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
 "date local CA certificates are required."
 msgstr ""
+"Sichere (SSL) Verbindungen von SABnzbd zu den Newsservern und HTTPS-"
+"Webseiten werden verschlüsselt, allerdings ist es nicht möglich die "
+"Identität eines Servers mittels Zertifikat zu bestätigen. Python 2.7.9 oder "
+"höher, OpenSSL 1.0.2 oder höher und aktuelle lokale CA certificate werden "
+"benötigt."
 
 #: sabnzbd/skintext.py:313
 msgid "Version"
@@ -2661,6 +2666,8 @@ msgstr "Dateiname oder Pfad des HTTPS-Zertifikats."
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
+"Neues selbstzertifiziertes Zertifikat und Schlüssel generieren. SABnzbd muss "
+"neugestartet werden!"
 
 #: sabnzbd/skintext.py:342
 msgid "HTTPS Key"
@@ -3410,6 +3417,8 @@ msgstr ""
 #: sabnzbd/skintext.py:510
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
+"Die Performanz verbessern, indem eine schwächere SSL-Verschlüsselung "
+"erzwungen wird."
 
 #: sabnzbd/skintext.py:511
 msgid "Maximum retries"
@@ -3572,13 +3581,16 @@ msgstr "SSL"
 
 #: sabnzbd/skintext.py:553
 msgid "Certificate verification"
-msgstr ""
+msgstr "Zertifikat überprüfung"
 
 #: sabnzbd/skintext.py:554
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
+"Standart: Wenn SSL aktiviert ist, wird die Server-Identität mittels "
+"Zertifikat überprüft. Strikt: Übereinstimmende Hostnamen überprüfen und "
+"erzwingen."
 
 #: sabnzbd/skintext.py:555 # sabnzbd/skintext.py:785 # sabnzbd/skintext.py:898
 msgid "Disabled"
@@ -3586,7 +3598,7 @@ msgstr "Deaktiviert"
 
 #: sabnzbd/skintext.py:557
 msgid "Strict"
-msgstr ""
+msgstr "Strikt"
 
 #: sabnzbd/skintext.py:559 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
@@ -3977,7 +3989,7 @@ msgstr "Ordner/Pfad"
 
 #: sabnzbd/skintext.py:678
 msgid "Indexer Categories / Groups"
-msgstr ""
+msgstr "Indexer Kategorien/Gruppen"
 
 #: sabnzbd/skintext.py:679 [Small delete button]
 msgid "X"
@@ -4925,6 +4937,7 @@ msgstr "Zeitüberschreitung"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
+"Unbekanntes SSL-Protokoll: SSL deaktivieren oder alternativen Port versuchen."
 
 #: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-07-28 10:24+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2016-11-21 20:54+0000\n"
+"Last-Translator: Rene <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 06:09+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
+"X-Launchpad-Export-Date: 2016-11-22 06:05+0000\n"
+"X-Generator: Launchpad (build 18269)\n"
 
 #: SABnzbd.py:313 [Error message]
 msgid "Failed to start web-interface"
@@ -351,7 +351,7 @@ msgstr "%s => mangler fra alle servere, afviser"
 
 #: sabnzbd/decoder.py:262
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "UUENCODE detekteret, kun yEnc kodning understøttes [%s]"
 
 #: sabnzbd/dirscanner.py:155 [Error message] # sabnzbd/dirscanner.py:240 [Error message]
 msgid "Error removing %s"
@@ -801,7 +801,7 @@ msgstr "Ubrugelig RAR fil"
 
 #: sabnzbd/newsunpack.py:719 # sabnzbd/newsunpack.py:720
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "Ødelagt RAR fil"
 
 #: sabnzbd/newsunpack.py:759
 msgid "Missing expected file: %s => unrar error?"
@@ -929,7 +929,7 @@ msgstr "Denne server tillader ikke SSL på denne port"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "Server %s bruger et upålidelig certifikat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
@@ -1520,19 +1520,19 @@ msgstr "Kontrolleret korrekt ved hjælp af SFV filer"
 
 #: sabnzbd/postproc.py:770 # sabnzbd/postproc.py:771
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "Forsøger RAR-baseret kontrol"
 
 #: sabnzbd/postproc.py:780
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "RAR filer kontrolleres med succes"
 
 #: sabnzbd/postproc.py:785
 msgid "RAR files failed to verify"
-msgstr ""
+msgstr "RAR filer kunne ikke bekræfte"
 
 #: sabnzbd/postproc.py:786
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] RAR-baserede kontrollen mislykkedes: %s"
 
 #: sabnzbd/postproc.py:843 [Error message] # sabnzbd/postproc.py:919 [Error message]
 msgid "Removing %s failed"
@@ -2288,7 +2288,7 @@ msgstr "Rens komplette NZB'er"
 
 #: sabnzbd/skintext.py:250 [Button to delete jobs on current page in History]
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "Rens NZBs på den aktuelle side"
 
 #: sabnzbd/skintext.py:251 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
@@ -2516,6 +2516,10 @@ msgid ""
 "is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
 "date local CA certificates are required."
 msgstr ""
+"Sikker (SSL) forbindelser fra SABnzbd til nyhedsserverne og HTTPS "
+"hjemmesider vil blive krypteret, dog validering af en servers identitet ved "
+"hjælp af sine certifikater er ikke mulig. Python 2.7.9 eller derover, "
+"OpenSSL 1.0.2 eller derover og op-to-date kræves lokale CA certifikater."
 
 #: sabnzbd/skintext.py:313
 msgid "Version"
@@ -2626,6 +2630,7 @@ msgstr "Filnavn eller sti til HTTPS Certifikat."
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
+"Generer ny selvsigneret certifikat og nøgle. Kræver SABnzbd genstart!"
 
 #: sabnzbd/skintext.py:342
 msgid "HTTPS Key"
@@ -2701,7 +2706,7 @@ msgstr "Gem ændringer"
 
 #: sabnzbd/skintext.py:357
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Gendan standardværdier"
 
 #: sabnzbd/skintext.py:358 # sabnzbd/skintext.py:894
 msgid "Reset"
@@ -2720,6 +2725,8 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+"Hjælp os med at oversætte SABnzbd på dit sprog! <br/> Tilføj uoversatte "
+"tekster eller forbedrede eksisterende oversættelser her:"
 
 #: sabnzbd/skintext.py:362 # sabnzbd/skintext.py:519
 msgid "API Key"
@@ -3263,12 +3270,14 @@ msgstr "Fjern efter download"
 
 #: sabnzbd/skintext.py:490
 msgid "HTTPS certificate verification"
-msgstr ""
+msgstr "verifikation HTTPS certifikat"
 
 #: sabnzbd/skintext.py:491
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
+"Kontroller certifikater, når du opretter forbindelse til indeksører og RSS-"
+"kilder ved hjælp HTTPS."
 
 #: sabnzbd/skintext.py:493
 msgid "Server"
@@ -3333,11 +3342,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py:509
 msgid "SSL Ciphers"
-msgstr ""
+msgstr "SSL-chifre"
 
 #: sabnzbd/skintext.py:510
 msgid "Increase performance by forcing a lower SSL encryption strength."
-msgstr ""
+msgstr "Øge ydeevnen ved at tvinge en lavere SSL-kryptering styrke."
 
 #: sabnzbd/skintext.py:511
 msgid "Maximum retries"
@@ -3499,13 +3508,16 @@ msgstr "SSL"
 
 #: sabnzbd/skintext.py:553
 msgid "Certificate verification"
-msgstr ""
+msgstr "Certifikatkontrol"
 
 #: sabnzbd/skintext.py:554
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
+"Standard: når SSL er aktiveret, skal du kontrollere identiteten på serveren "
+"ved hjælp af dets certifikater. Strenge: kontrollere og håndhæve tilsvarende "
+"værtsnavn."
 
 #: sabnzbd/skintext.py:555 # sabnzbd/skintext.py:785 # sabnzbd/skintext.py:898
 msgid "Disabled"
@@ -3513,7 +3525,7 @@ msgstr "Deaktiveret"
 
 #: sabnzbd/skintext.py:557
 msgid "Strict"
-msgstr ""
+msgstr "Streng"
 
 #: sabnzbd/skintext.py:559 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
@@ -3884,6 +3896,10 @@ msgid ""
 "separate terms. Wildcards in the terms are supported. <br>More information "
 "can be found on the Wiki."
 msgstr ""
+"Indeksatorer kan levere en kategori inde NZB som SABnzbd vil forsøge at "
+"matche de kategorier defineret nedenfor. Derudover kan du føje betingelser "
+"til ' indekseringen kategorier / grupper til at matche flere kategorier. "
+"Brug kommaer til at adskille vilkår. Jokertegn i vilkårene er understøttet."
 
 #: sabnzbd/skintext.py:675
 msgid ""
@@ -3901,7 +3917,7 @@ msgstr "Mappe/Søgesti"
 
 #: sabnzbd/skintext.py:678
 msgid "Indexer Categories / Groups"
-msgstr ""
+msgstr "Indekseringen kategorier / grupper"
 
 #: sabnzbd/skintext.py:679 [Small delete button]
 msgid "X"
@@ -4369,7 +4385,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:835
 msgid "Glitter has some (new) features you might like!"
-msgstr ""
+msgstr "Glitter har nogle (nye) egenskaber, du kan lide!"
 
 #: sabnzbd/skintext.py:836 # sabnzbd/skintext.py:948
 msgid "Custom"
@@ -4844,6 +4860,7 @@ msgstr "Timeout"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
+"Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden port."
 
 #: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."
