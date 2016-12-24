@@ -716,11 +716,20 @@ def _get_link(uri, entry):
         except:
             pass
 
+    # Try newznab attribute first, this is the correct one
     try:
         # Convert it to format that calc_age understands
-        age = datetime.datetime(*entry.published_parsed[:6])
+        age = datetime.datetime(*entry['newznab']['usenetdate_parsed'][:6])
     except:
-        pass
+        # Date from feed (usually lags behind)
+        try:
+            # Convert it to format that calc_age understands
+            age = datetime.datetime(*entry.published_parsed[:6])
+        except:
+            pass
+    finally:
+        # We need to convert it to local timezone, feedparser always returns UTC
+        age = age - datetime.timedelta(seconds=time.timezone)
 
     if link and 'http' in link.lower():
         try:
