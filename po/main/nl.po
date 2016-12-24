@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-12-23 23:39+0000\n"
-"Last-Translator: At Voogt <Unknown>\n"
+"PO-Revision-Date: 2016-12-24 17:52+0000\n"
+"Last-Translator: shypike <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-12-24 04:59+0000\n"
+"X-Launchpad-Export-Date: 2016-12-24 17:56+0000\n"
 "X-Generator: Launchpad (build 18298)\n"
 
 #: SABnzbd.py:313 [Error message]
@@ -934,7 +934,7 @@ msgstr "De server staat geen SSL toe op deze poort"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "De server gebruikt een onbetrouwbaar certificaat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
@@ -1530,19 +1530,19 @@ msgstr "Verificatie m.b.v. SFV-bestanden is gelukt"
 
 #: sabnzbd/postproc.py:770 # sabnzbd/postproc.py:771
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "Probeer RAR verificatie"
 
 #: sabnzbd/postproc.py:780
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "RAR bestanden zijn succesvol geverifieerd"
 
 #: sabnzbd/postproc.py:785
 msgid "RAR files failed to verify"
-msgstr ""
+msgstr "RAR bestanden zijn niet verifieerbaar"
 
 #: sabnzbd/postproc.py:786
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] RAR verificatie niet gelukt: %s"
 
 #: sabnzbd/postproc.py:843 [Error message] # sabnzbd/postproc.py:919 [Error message]
 msgid "Removing %s failed"
@@ -2298,7 +2298,7 @@ msgstr "Verwijder geslaagde opdrachten"
 
 #: sabnzbd/skintext.py:250 [Button to delete jobs on current page in History]
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "Verwijder NZB bestanden getoond op deze pagina"
 
 #: sabnzbd/skintext.py:251 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
@@ -2528,6 +2528,10 @@ msgid ""
 "is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
 "date local CA certificates are required."
 msgstr ""
+"Beveiligde (SSL) verbindingen van SABnzbd naar nieuws servers en naar HTTPS "
+"websites worden versleuteld. Maar verificatie van de server identiteit is "
+"niet mogelijk. Python 2.7.9 of hoger en OpenSSL 1.0.2 of hoger en actuele "
+"lokale CA certificaten zijn nodig."
 
 #: sabnzbd/skintext.py:313
 msgid "Version"
@@ -2638,6 +2642,8 @@ msgstr "Naam of pad van het HTTPS-Certificaatbestand."
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
+"Maak een nieuw zelf-ondertekend certificaat en sleutel. SABnzbd moet dan "
+"opnieuw gestart worden."
 
 #: sabnzbd/skintext.py:342
 msgid "HTTPS Key"
@@ -3357,11 +3363,12 @@ msgstr ""
 
 #: sabnzbd/skintext.py:509
 msgid "SSL Ciphers"
-msgstr ""
+msgstr "SSL-sleutels"
 
 #: sabnzbd/skintext.py:510
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
+"Verhoog de prestaties door een eenvoudigere SSL versleuteling toe te passen."
 
 #: sabnzbd/skintext.py:511
 msgid "Maximum retries"
@@ -3522,13 +3529,16 @@ msgstr "SSL"
 
 #: sabnzbd/skintext.py:553
 msgid "Certificate verification"
-msgstr ""
+msgstr "Certificaat verificatie"
 
 #: sabnzbd/skintext.py:554
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
+"Standaard: wanneer SSL aktief is, verifieer de identiteit van de server "
+"m.b.v. diens certificaten. Strikt: verifieer ook of de server naam "
+"overeenkomt met het certificaat."
 
 #: sabnzbd/skintext.py:555 # sabnzbd/skintext.py:785 # sabnzbd/skintext.py:898
 msgid "Disabled"
@@ -3536,7 +3546,7 @@ msgstr "Uit"
 
 #: sabnzbd/skintext.py:557
 msgid "Strict"
-msgstr ""
+msgstr "Strikt"
 
 #: sabnzbd/skintext.py:559 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
@@ -3912,6 +3922,11 @@ msgid ""
 "separate terms. Wildcards in the terms are supported. <br>More information "
 "can be found on the Wiki."
 msgstr ""
+"Indexers kunnen een categorie in de NZB plaatsen en SABnzbd zal die proberen "
+"te passen op onderstaande categorieën. Daarnaast kun je patronen invullen in "
+"de kolom \"Indexer Categorieën/Groepen\". Gebruik komma's om patronen te "
+"scheiden. Joker tekens (? en *) zijn toegestaan.<br>Meer informatie op de "
+"Wiki."
 
 #: sabnzbd/skintext.py:675
 msgid ""
@@ -3930,7 +3945,7 @@ msgstr "Map/Pad"
 
 #: sabnzbd/skintext.py:678
 msgid "Indexer Categories / Groups"
-msgstr ""
+msgstr "Indexer Categorieën / Groepen"
 
 #: sabnzbd/skintext.py:679 [Small delete button]
 msgid "X"
@@ -4874,6 +4889,7 @@ msgstr "Tijdslimiet overschreden"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
 
 #: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."
