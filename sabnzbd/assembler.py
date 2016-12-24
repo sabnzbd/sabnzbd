@@ -114,10 +114,10 @@ class Assembler(Thread):
                     rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                     if rar_encrypted:
                         if cfg.pause_on_pwrar() == 1:
-                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file'), nzo.final_name)
+                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
                             nzo.pause()
                         else:
-                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file'), nzo.final_name)
+                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
                             import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
