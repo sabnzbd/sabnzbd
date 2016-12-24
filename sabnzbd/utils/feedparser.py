@@ -527,6 +527,8 @@ class _FeedParserMixin:
         'http://www.w3.org/1999/xhtml':                          'xhtml',
         'http://www.w3.org/1999/xlink':                          'xlink',
         'http://www.w3.org/XML/1998/namespace':                  'xml',
+        'http://www.newznab.com/DTD/2010/feeds/attributes/':     'nZEDb',
+        'http://www.newznab.com/DTD/2010/feeds/attributes/':     'newznab',
     }
     _matchnamespaces = {}
 
@@ -1766,6 +1768,19 @@ class _FeedParserMixin:
         if context is not self.feeddata:
             return
         context['newlocation'] = _makeSafeAbsoluteURI(self.baseuri, url.strip())
+
+    def _start_newznab_attr(self, attrsD):
+        context = self._getContext()
+        # Add the dict
+        if 'newznab' not in context:
+            context['newznab'] = {}
+        # Add keys
+        context['newznab'][attrsD['name']] = attrsD['value']
+        # Try to get date-object
+        if attrsD['name'] == 'usenetdate':
+            context['newznab'][attrsD['name'] + '_parsed'] = _parse_date(attrsD['value'])
+    _start_nZEDb_attr = _start_newznab_attr
+    _start_nzedb_attr = _start_nZEDb_attr
 
 if _XML_AVAILABLE:
     class _StrictFeedParser(_FeedParserMixin, xml.sax.handler.ContentHandler):
