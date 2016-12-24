@@ -371,7 +371,7 @@ SKIN_TEXT = {
     'opt-local_ranges' : TT('List of local network ranges'),
     'explain-local_ranges' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
     'opt-inet_exposure' : TT('External internet access'),
-    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network'),
+    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network. Requires List of local network ranges to be defined.'),
     'inet-local' : TT('No access'), # Selection value for external access
     'inet-nzb' : TT('Add NZB files '), # Selection value for external access
     'inet-api' : TT('API (no Config)'), # Selection value for external access
@@ -396,8 +396,8 @@ SKIN_TEXT = {
     'explain-dirscan_dir' : TT('Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz archives for .nzb files.</i>'),
     'opt-dirscan_speed' : TT('Watched Folder Scan Speed'),
     'explain-dirscan_speed' : TT('Number of seconds between scans for .nzb files.'),
-    'opt-script_dir' : TT('Post-Processing Scripts Folder'),
-    'explain-script_dir' : TT('Folder containing user scripts for post-processing.'),
+    'opt-script_dir' : TT('Scripts Folder'),
+    'explain-script_dir' : TT('Folder containing user scripts.'),
     'opt-email_dir' : TT('Email Templates Folder'),
     'explain-email_dir' : TT('Folder containing user-defined email templates.'),
     'opt-password_file' : TT('Password file'),
@@ -430,9 +430,9 @@ SKIN_TEXT = {
     'opt-pause_on_pwrar' : TT('Action when encrypted RAR is downloaded'),
     'explain-pause_on_pwrar' : TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Detect Duplicate Downloads'),
-    'explain-no_dupes' : TT('Detect identical NZB files (based on NZB content)'),
+    'explain-no_dupes' : TT('Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)'),
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
-    'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode")'),
+    'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
@@ -516,11 +516,11 @@ SKIN_TEXT = {
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
-    'opt-rating_enable' : TT('Enable OZnzb Integration'),
+    'opt-rating_enable' : TT('Enable Indexer Integration'),
     'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
     'opt-rating_api_key' : TT('API Key'),
     'opt-rating_host' : TT('Server address'),
-    'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
+    'explain-rating_api_key' : TT('This key provides identity to indexer. Check your profile on the indexer\'s website.'),
     'opt-rating_feedback' : TT('Automatic Feedback'),
     'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),

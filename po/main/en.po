@@ -80,14 +80,6 @@ msgstr "API key incorrect, Use the API key from Config->General in your 3rd part
 msgid "HTTPS Chain Certifcates"
 msgstr "HTTPS Chain Certificates"
 
-#: sabnzbd/skintext.py:336
-msgid "Highest possible linespeed in Bytes/second, e.g. 2M."
-msgstr "Highest possible line speed in Bytes/second, e.g. 2M."
-
-#: sabnzbd/skintext.py:338
-msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
-msgstr "Which percentage of the line speed should SABnzbd use, e.g. 50"
-
 #: sabnzbd/skintext.py:465
 msgid "Replace Spaces in Foldername"
 msgstr "Replace spaces in folder name"
@@ -132,18 +124,6 @@ msgstr "Web interface"
 msgid "Script returned exit code %s and output \"%s\""
 msgstr "Notification script returned exit code %s and output \"%s\""
 
-#: sabnzbd/skintext.py:390
-msgid "Post-Processing Scripts Folder"
-msgstr "Scripts Folder"
-
-#: sabnzbd/skintext.py:391
-msgid "Folder containing user scripts for post-processing."
-msgstr "Folder containing user scripts."
-
-#: sabnzbd/skintext.py:520
-msgid "Enable OZnzb Integration"
-msgstr "Enable Indexer Integration"
-
 #: sabnzbd/skintext.py:521
 msgid ""
 "Enhanced functionality including ratings and extra status information is "
@@ -153,36 +133,8 @@ msgstr ""
 "using the settings below to provide ratings and extra status information. "
 "<br>The Server address and API key settings can be left blank, depending on your indexer. "
 
-#: sabnzbd/skintext.py:523
-msgid ""
-"This key provides identity to indexer. Refer to "
-"https://www.oznzb.com/profile."
-msgstr ""
-"This key provides identity to indexer. Check "
-"your profile on the indexer's website."
-
-#: sabnzbd/assembler.py:117 [Warning message]
-msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
-msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
-
 #: sabnzbd/skintext.py:333
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "If empty, the SABnzbd Port set above will only listen to HTTPS."
-
-#: sabnzbd/skintext.py:439
-msgid "Detect identical episodes in series (based on \"name/season/episode\")"
-msgstr "Detect identical episodes in series (based on \"name/season/episode\" of items in your History)"
-
-#: sabnzbd/skintext.py:436
-msgid "Detect identical NZB files (based on NZB content)"
-msgstr "Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)"
-
-#: sabnzbd/assembler.py:120 [Warning message]
-msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
-msgstr "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
-
-#: sabnzbd/skintext.py:368
-msgid "You can set access rights for systems outside your local network"
-msgstr "You can set access rights for systems outside your local network. Requires List of local network ranges to be defined."
 
 
