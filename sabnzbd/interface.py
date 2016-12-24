@@ -2224,8 +2224,6 @@ class ConfigRss(object):
         if msg:
             return msg
         if 'feed' in kwargs:
-            feed = kwargs['feed']
-            self.__refresh_readout = feed
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = False
