@@ -83,6 +83,13 @@
                 return item
             }
         })
+
+        // to top right away
+        if(window.location.hash) {
+            scroll(0,0);
+            // void some browsers issue
+            setTimeout(function() { scroll(0,0); }, 1);
+        }
     </script>
 </head>
 
