@@ -591,6 +591,7 @@ SKIN_TEXT = {
 # Config->RSS
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
+    'addMultipleFeeds' : TT('Seperate multiple URLs by a comma'), #: Config->RSS, placeholder (cannot be too long)
     'button-preFeed' : TT('Read Feed'),#: Config->RSS button
     'button-forceFeed' : TT('Force Download'),#: Config->RSS button
     'rss-order' : TT('Order'), #: Config->RSS table column header

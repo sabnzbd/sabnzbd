@@ -559,7 +559,7 @@ class ConfigRSS(object):
         self.__name = name
         name = 'rss,' + name
 
-        self.uri = OptionStr(name, 'uri', add=False)
+        self.uri = OptionList(name, 'uri', add=False)
         self.cat = OptionStr(name, 'cat', add=False)
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
