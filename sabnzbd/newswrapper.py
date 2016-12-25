@@ -406,7 +406,7 @@ class NewsWrapper(object):
                     chunk = self.recv(16384)
                 else:
                     # Get as many bytes as possible
-                    chunk = self.recv(1048576)
+                    chunk = self.recv(262144)
                 break
             except WantReadError as e:
                 # Workaround for Python <2.7.9 so we only catch WantReadError's
