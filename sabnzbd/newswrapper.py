@@ -457,11 +457,14 @@ class NewsWrapper(object):
             if not self.data:
                 self.data.append(chunk)
 
-        if chunk[-5:] == '\r\n.\r\n':
+        chunk_len = len(chunk)
+        # Offical end-of-article is ".\r\n" but that can also occur mid-article
+        if (chunk_len >= 5 and chunk[-5:] == '\r\n.\r\n') or \
+           (chunk_len == 3 and chunk == '.\r\n'):
             # Return status info
-            return (len(chunk), True, False)
+            return (chunk_len, True, False)
         else:
-            return (len(chunk), False, False)
+            return (chunk_len, False, False)
 
     def soft_reset(self):
         self.timeout = None
