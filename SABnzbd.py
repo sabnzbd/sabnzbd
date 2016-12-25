@@ -1314,7 +1314,7 @@ def main():
         if logdir:
             sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
         # Define our custom logger for cherrypy errors
-        cherrypy_logging(sabnzbd.WEBLOGFILE, log_handler)
+        cherrypy_logging(sabnzbd.WEBLOGFILE, logging.handlers.RotatingFileHandler)
         if not fork:
             try:
                 x = sys.stderr.fileno
