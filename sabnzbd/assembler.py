@@ -172,7 +172,7 @@ def _assemble(nzf, path, dupe):
             break
 
         # Sleep to allow decoder/assembler switching
-        sleep(0.001)
+        sleep(0.0001)
         article = decodetable[articlenum]
 
         data = ArticleCache.do.load_article(article)
