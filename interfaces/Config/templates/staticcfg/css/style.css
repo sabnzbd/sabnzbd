@@ -585,6 +585,9 @@ h2.activeRSS {
     padding-right: .3em;
     width: auto;
 }
+#subscriptions .favicon {
+    margin-left: 8px;
+}
 .ie6 .subscription-title {
     width: 20em;
 }

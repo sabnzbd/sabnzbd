@@ -24,7 +24,7 @@
                             <input type="text" name="feed" class="smaller_input" value="$feed" />
                         </td>
                         <td>
-                            <input type="text" name="uri" />
+                            <input type="text" name="uri" placeholder="$T('addMultipleFeeds')" />
                         </td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
@@ -51,22 +51,22 @@
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                        <div class="favicon" data-domain="$rss[$feed_item]['baselink']"></div> $feed_item
+                                         $feed_item
                                     </a>
                                 </td>
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
-                                    <input type="hidden" name="uri" value="$rss[$feed_item]['uri']" />
+                                    <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
                                     <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
                                     <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>
                                 </td>
                             </tr>
-                            <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
-                                <td></td>
-                                <td colspan="2">
-                                    <div>$rss[$feed_item]['uri']</div>
-                                </td>
-                            </tr>
+                            <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
+                                <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
+                                    <td><div class="favicon" data-domain="$rss[$feed_item]['baselink'][$uri_index]"></div></td>
+                                    <td colspan="2"><div>$uri</div></td>
+                                </tr>
+                            <!--#end for#-->
                         <!--#end for#-->
                     </tbody>
                 </table>
@@ -391,7 +391,7 @@
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
+                        <th width="60%">$T('sort-title')</th>
                         <th>$T('category')</th>
                         <th class="default-sort">$T('nzo-age')</th>
                     </tr>
@@ -429,7 +429,7 @@
                         <th>$T('rss-skip')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
+                        <th width="60%">$T('sort-title')</th>
                         <th>$T('category')</th>
                         <th class="default-sort">$T('nzo-age')</th>
                     </tr>
@@ -468,7 +468,7 @@
                         <tr>
                             <th class="default-sort">$T('rss-added')</th>
                             <th>$T('size')</th>
-                            <th>$T('sort-title')</th>
+                            <th width="60%">$T('sort-title')</th>
                             <th>$T('category')</th>
                         </tr>
                     </thead>
@@ -518,7 +518,7 @@ function urlencode(str) {
 
     \$('.editFeed').click(function(){
         var oldURI = \$(this).prev().val();
-        var newURI = prompt("$T('feed') URL", oldURI );
+        var newURI = prompt("$T('feed') URL. \n$T('addMultipleFeeds').", oldURI );
         if(newURI != "" && newURI !== null) {
             var whichFeed = \$(this).attr("rel");
             var isEnabled = \$('.toggleFeedCheckbox[rel="'+whichFeed+'"]').attr('checked') == "checked"? 1 : 0;
