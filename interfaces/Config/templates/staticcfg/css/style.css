@@ -887,7 +887,26 @@ input[type="checkbox"] {
     margin-bottom: -1px;
 }
 
+#search-menu .glyphicon {
+    top: 3px;
+}
 
+#search-dropdown {
+    right: 0;
+    left: auto;
+    width: 300px;
+    padding: 5px;
+}
+
+#search-dropdown .dropdown-header {
+    font-weight: bold;
+    color: black;
+}
+
+#search-dropdown a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .navbar-logo-small svg {
     height: 40px;
@@ -1063,8 +1082,8 @@ input[type="checkbox"] {
 }
 
 @keyframes highlight-fade {
-   0% { background: #FEFEDA; }
-   100% { background: none; }
+    0% { background: #FEFEDA; }
+    100% { background: none; }
 }
 
 .spin-glyphicon {
@@ -1072,13 +1091,18 @@ input[type="checkbox"] {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(359deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
 }
 
 @media screen and (min-width: 1200px) {
     .Categories input[name="dir"] {
         max-width: 240px !important;
+    }
+
+    .navbar-nav {
+        /* For extra wide languages like Polish */
+        margin-right: -50px;
     }
 }
 
@@ -1095,6 +1119,10 @@ input[type="checkbox"] {
 
     .navbar-default .navbar-nav>li>a>strong,
     .navbar-default .navbar-nav:hover>li>a.active>strong {
+        display: none;
+    }
+
+    #search-menu>a>strong {
         display: none;
     }
 
@@ -1152,6 +1180,10 @@ input[type="checkbox"] {
 
     .navbar .nav>li>a {
         height: auto;
+    }
+
+    #search-menu {
+        display: none;
     }
 
     .section .col2 h3 {
