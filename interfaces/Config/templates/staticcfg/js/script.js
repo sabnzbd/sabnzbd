@@ -346,7 +346,7 @@ $(document).ready(function () {
         formWasSubmitted = true;
         formHasChanged = false;
     });
-    $(document).on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
+    $('#content').on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
         formHasChanged = true;
         formWasSubmitted = false;
     });
@@ -386,6 +386,67 @@ $(document).ready(function () {
 });
 
 /*
+* SEARCH FUNCTIONALITY
+*/
+// Make :contains() case-insensitive
+$.expr[":"].contains = $.expr.createPseudo(function(arg) {
+    return function( elem ) {
+        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+});
+
+// Create list of pages to check and empty contain for results
+var arrPages = ['general', 'folders', 'switches', 'sorting', 'notify', 'special']
+var pagesContainer = new Array(arrPages.length);
+
+// Add trigger to focus on the field and load the results
+$(document).ready(function() {
+    $('#search-menu').on('shown.bs.dropdown', function(event) {
+        // Focus so easy typing
+        $('#search-box').focus()
+        // Load things to search if we haven't yet
+        if(!pagesContainer[0]) {
+            $.each(arrPages, function(index, page) {
+                $.get(rootURL + 'config/' + page, function(data) {
+                    pagesContainer[index] = $(data).find('label')
+                });
+            });
+        }
+    });
+})
+
+// Don't go too fast
+var searchTimeout
+function doConfigSearch(value) {
+    // Cancel previous
+    clearTimeout(searchTimeout)
+    // Build new search
+    var searchTerm = $(value).val().replace('"', '\"')
+    var searchOutput = $('#search-dropdown')
+
+    // Build new search
+    searchTimeout = setTimeout(function() {
+        // Clear the output
+        searchOutput.find('li:not(:first)').remove()
+        // Anything to search for?
+        if (searchTerm.length < 2) return
+        // Find some results!
+        $.each(pagesContainer, function(page_index, results) {
+            // Get the matches
+            var subResults = results.filter(':contains("'+searchTerm+'")')
+            if(subResults.length > 0) {
+                // Add the section
+                searchOutput.append('<li class="divider"></li>')
+                searchOutput.append('<li class="dropdown-header">'+configTranslate.searchPages[page_index]+'</li>')
+                $.each(subResults, function(index, result) {
+                    searchOutput.append('<li><a href="'+rootURL + 'config/' + arrPages[page_index] +  '#' + $(result).attr('for') +'">'+$(result).text()+'</a></li>')
+                })
+            }
+        })
+    }, 200)
+}
+
+/*
  * Takes the inputs-elements found in the current selector
  * and extracts the values into the provided data-object.
  */
@@ -405,4 +466,3 @@ $.fn.extractFormDataTo = function(target) {
 
     return this;
 }
-
