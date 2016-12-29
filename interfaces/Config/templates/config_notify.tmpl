@@ -49,7 +49,7 @@
                 <div class="field-pair">
                     <label class="config" for="email_server">$T('opt-email_server')</label>
                     <input type="text" name="email_server" id="email_server" value="$email_server" />
-                    <span class="desc">$T('explain-email_server') ($T('host').lower():$T('srv-port').lower())</span>
+                    <span class="desc">$T('explain-email_server') ($T('host'):$T('srv-port'))</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="email_to">$T('opt-email_to')</label>
@@ -341,7 +341,7 @@
                     <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
                     <select name="nscript_script">
                         <!--#for $sc in $script_list#-->
-                        <option value="$sc" <!--#if $nscript_script.lower()==$sc.lower() then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+                        <option value="$sc" <!--#if $nscript_script == $sc then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
                         <!--#end for#-->
                     </select>
                     <span class="desc">$T('explain-nscript_script')</span>
