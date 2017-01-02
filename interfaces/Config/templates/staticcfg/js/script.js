@@ -180,6 +180,27 @@
     }
 })(jQuery);
 
+/*
+ * Takes the inputs-elements found in the current selector
+ * and extracts the values into the provided data-object.
+ */
+$.fn.extractFormDataTo = function(target) {
+    var inputs = $("input[type != 'submit'][type != 'button']", this);
+
+    // could use .serializeArray() but that omits unchecked items
+    inputs.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
+
+    var selects = $("select", this);
+
+    selects.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
+
+    return this;
+}
+
 /*!
  * Config JS
  *
@@ -413,6 +434,21 @@ $(document).ready(function() {
             });
         }
     });
+
+    // For the scrolling
+    // *only* if we have anchor on the url
+    if(window.location.hash) {
+        // Sometimes the ID is non-existing
+        try {
+            // smooth scroll to the anchor id
+            $('html, body').animate({
+                scrollTop: $(window.location.hash).offset().top -100 + 'px'
+            }, 750, 'swing');
+            setTimeout(function() {
+                $(window.location.hash).focus()
+            }, 750)
+        } catch(err) {}
+    }
 })
 
 // Don't go too fast
@@ -446,23 +482,5 @@ function doConfigSearch(value) {
     }, 200)
 }
 
-/*
- * Takes the inputs-elements found in the current selector
- * and extracts the values into the provided data-object.
- */
-$.fn.extractFormDataTo = function(target) {
-    var inputs = $("input[type != 'submit'][type != 'button']", this);
 
-    // could use .serializeArray() but that omits unchecked items
-    inputs.each(function (i,elem) {
-        target[elem.name] = elem.value;
-    });
 
-    var selects = $("select", this);
-
-    selects.each(function (i,elem) {
-        target[elem.name] = elem.value;
-    });
-
-    return this;
-}
