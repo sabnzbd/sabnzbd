@@ -674,7 +674,7 @@ def _get_link(uri, entry):
         _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         # Try to find size in Description
         try:
-            desc = entry.description.replace('\n', ' ')
+            desc = entry.description.replace('\n', ' ').replace('&nbsp;', ' ')
             m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
             if m:
                 size = from_units(m.group(1))
