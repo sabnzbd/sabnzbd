@@ -1103,11 +1103,6 @@ def main():
         except:
             Bail_Out(browserhost, cherryport, '49')
 
-    if cherrypylogging is None:
-        cherrypylogging = sabnzbd.cfg.log_web()
-    else:
-        sabnzbd.cfg.log_web.set(cherrypylogging)
-
     if logging_level is None:
         logging_level = sabnzbd.cfg.log_level()
     else:
