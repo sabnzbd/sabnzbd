@@ -166,6 +166,7 @@ SKIN_TEXT = {
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
     'cmenu-special' : TT('Special'), #: Main menu item
+    'cmenu-search' : TT('Search'), #: Main menu item
 
 # Footer
     'ft-download' : TT('Download Dir'), # Used in Footer
