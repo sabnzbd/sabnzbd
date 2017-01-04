@@ -16,6 +16,7 @@ Release Notes  -  SABnzbd 1.2.0Beta1
     For example 'Movies > HD' will match a 'movies' category
   * Categories can now be ordered to customize matching to categories in NZB's
 - Improvements to RSS:
+  * Multiple feeds can now share the same set of filters
   * Added 'From Show SxxEyy' filter
   * RSS feeds now show the category, age and when the NZB was added to the queue
   * RSS feeds will only re-evaluate after clicking 'Apply Filters' or 'Read Feed'
@@ -23,6 +24,7 @@ Release Notes  -  SABnzbd 1.2.0Beta1
 - Verification (par2) and UnRAR can now be aborted from Glitter
 - Faster startup and restart of SABnzbd
 - Duplicates can now be marked as Failed (to notify external tools)
+- Config Search function
 
 ## Changes:
 - Python post/pre/notification-scripts now require execute (+x) permissions
@@ -30,6 +32,7 @@ Release Notes  -  SABnzbd 1.2.0Beta1
 - Update 7zip to 16.04 and UnRar to 5.40 for Windows/macOS
 - Update Python to 2.7.13 on Windows and macOS binaries
 - Dropped support for macOS 10.9 (Mavericks)
+- CherryPy logging only enabled when forced via command line
 
 ## Bug fixes
 - Re-use IP-address for new connections when a server has open connections
@@ -40,6 +43,7 @@ Release Notes  -  SABnzbd 1.2.0Beta1
 - Removing files from active download was not working correctly
 - Accept & fail for pre-queue script was not working correctly
 - Recursive unpack failed on Windows with very long paths
+- Problems loading Notifications page with Scripts Folder set
 
 ## Translations
 - Many translations updated, thanks to our translators!
