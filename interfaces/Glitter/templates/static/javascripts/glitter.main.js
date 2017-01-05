@@ -270,6 +270,12 @@ function ViewModel() {
                 var hours = Math.floor(seconds / 3600);
                 var minutes = Math.floor((seconds -= hours * 3600) / 60);
                 seconds -= minutes * 60;
+
+                // Add leading zeros
+                if(minutes < 10) minutes = '0' + minutes;
+                if(seconds < 10) seconds = '0' + seconds;
+
+                // Final formating
                 timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
             }
 
