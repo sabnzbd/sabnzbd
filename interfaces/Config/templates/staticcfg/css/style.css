@@ -851,7 +851,7 @@ input[type="checkbox"] {
     max-width: 150px;
 }
 
-.Categories input {
+.Categories #content input {
     max-width: 150px !important;
 }
 
