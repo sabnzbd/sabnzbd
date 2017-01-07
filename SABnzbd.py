@@ -428,6 +428,11 @@ def GetProfileInfo(vista_plus):
 
 def print_modules():
     """ Log all detected optional or external modules """
+    if sabnzbd.decoder.HAVE_SABYENC:
+        logging.info("SABYenc module... found!")
+    else:
+        logging.info("SABYenc module... NOT found!")
+
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")
     else:
