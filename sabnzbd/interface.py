@@ -54,7 +54,7 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.decoder import HAVE_YENC
+from sabnzbd.decoder import HAVE_YENC, HAVE_SABYENC
 from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 
 from sabnzbd.constants import \
@@ -1266,6 +1266,7 @@ class ConfigPage(object):
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
         conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
         conf['have_yenc'] = HAVE_YENC
+        conf['have_sabyenc'] = HAVE_SABYENC
 
         if sabnzbd.HAVE_SSL:
             conf['have_ssl'] = 1
