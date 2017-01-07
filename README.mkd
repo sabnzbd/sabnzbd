@@ -1,5 +1,16 @@
-Release Notes  -  SABnzbd 1.2.0Beta1
+Release Notes  -  SABnzbd 1.2.0RC1
 ====================================
+
+## New since Beta 1
+- Multiple RSS feeds can now share the same set of filters
+- Config Search function
+- CherryPy logging only enabled when forced via command line
+
+## Fixes since Beta 1
+- Fix LogHandler error on startup
+- Fix CherryPy error for some pages
+- Fix JavaScript hang-ups on RSS pages
+- Fix problems loading Notifications page with Scripts Folder set
 
 ## What's new in 1.2.0
 - New SSL engine:
@@ -31,7 +42,6 @@ Release Notes  -  SABnzbd 1.2.0Beta1
 - Dropped dependency on PyOpenSSL, now only requires cryptography package
 - Update 7zip to 16.04 and UnRar to 5.40 for Windows/macOS
 - Update Python to 2.7.13 on Windows and macOS binaries
-- Dropped support for macOS 10.9 (Mavericks)
 - CherryPy logging only enabled when forced via command line
 
 ## Bug fixes
