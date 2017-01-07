@@ -691,6 +691,9 @@ function ViewModel() {
         var file = files[fileindex]
         fileindex++
 
+        // Check if it's maybe a folder, we can't handle those
+        if(!file.type && file.size % 4096 == 0) return;
+
         // Add notification
         showNotification('.main-notification-box-uploading', 0, fileindex)
 
