@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-12-24 17:52+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"PO-Revision-Date: 2016-12-26 13:21+0000\n"
+"Last-Translator: At Voogt <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-12-24 17:56+0000\n"
+"X-Launchpad-Export-Date: 2016-12-27 05:03+0000\n"
 "X-Generator: Launchpad (build 18298)\n"
 
 #: SABnzbd.py:313 [Error message]
@@ -615,7 +615,7 @@ msgstr "dagelijks"
 
 #: sabnzbd/interface.py:2268 # sabnzbd/skintext.py:106
 msgid "Monday"
-msgstr "Maandag"
+msgstr "maandag"
 
 #: sabnzbd/interface.py:2269 # sabnzbd/skintext.py:107
 msgid "Tuesday"
@@ -647,11 +647,11 @@ msgstr "uit"
 
 #: sabnzbd/interface.py:2317
 msgid "Undefined server!"
-msgstr "Onbekende server!"
+msgstr "Onbekende server."
 
 #: sabnzbd/interface.py:2747
 msgid "Incorrect parameter"
-msgstr "Foute instelling"
+msgstr "Incorrecte parameter"
 
 #: sabnzbd/interface.py:2747 # sabnzbd/interface.py:2769
 msgid "Back"
@@ -667,15 +667,15 @@ msgstr "Foute waarde voor %s: %s"
 
 #: sabnzbd/misc.py:428 [Error message] # sabnzbd/tvsort.py:170 [Error message]
 msgid "Cannot create directory %s"
-msgstr "Kan map %s niet aanmaken"
+msgstr "Niet mogelijk directory %s aan te maken"
 
 #: sabnzbd/misc.py:435 [Error message]
 msgid "%s directory: %s error accessing"
-msgstr "%s map: fout %s bij toegang"
+msgstr "%s directory: fout %s bij toegang"
 
 #: sabnzbd/misc.py:800 [Error message]
 msgid "Failed making (%s)"
-msgstr "Aanmaken %s mislukt"
+msgstr "Aanmaken (%s) mislukt"
 
 #: sabnzbd/misc.py:836 [Error message] # sabnzbd/postproc.py:400
 msgid "Failed moving %s to %s"
@@ -683,11 +683,11 @@ msgstr "Verplaatsen van %s naar %s mislukt"
 
 #: sabnzbd/misc.py:1136 [Error message]
 msgid "Error creating SSL key and certificate"
-msgstr "Fout bij aanmaken van SSL-sleutel en certificaat"
+msgstr "Fout bij aanmaken SSL-sleutel en -certificaat"
 
 #: sabnzbd/misc.py:1369 [Error message]
 msgid "Cannot change permissions of %s"
-msgstr "Kan beveiliging van %s niet aanpassen"
+msgstr "Toegangsrechten van %s niet aan te passen"
 
 #: sabnzbd/newsunpack.py:209 [Warning message]
 msgid "Unpack nesting too deep [%s]"
@@ -711,7 +711,7 @@ msgstr "[%s] Fout \"%s\" bij samenvoegen van bestanden"
 
 #: sabnzbd/newsunpack.py:411 [Error message] # sabnzbd/newsunpack.py:419 [Error message]
 msgid "Error \"%s\" while running file_join on %s"
-msgstr "Fout %s bij samenvoegen van %s"
+msgstr "Fout %s bij 'file_join' op %s"
 
 #: sabnzbd/newsunpack.py:413
 msgid "[%s] Joined %s files"
@@ -727,7 +727,7 @@ msgstr "[%s] Fout \"%s\" bij het uitpakken van RAR-bestanden"
 
 #: sabnzbd/newsunpack.py:477 [Error message]
 msgid "Error \"%s\" while running rar_unpack on %s"
-msgstr "Fout \"%s\" bij uitvoeren van rar_unpack op %s"
+msgstr "Fout \"%s\" bij uitvoeren van 'rar_unpack' op %s"
 
 #: sabnzbd/newsunpack.py:493 [Warning message] # sabnzbd/newsunpack.py:503 [Warning message]
 #: sabnzbd/newsunpack.py:819 [Warning message] # sabnzbd/newsunpack.py:829 [Warning message]
@@ -736,16 +736,16 @@ msgstr "Fout \"%s\" bij uitvoeren van rar_unpack op %s"
 #: sabnzbd/newsunpack.py:1110 [Warning message] # sabnzbd/newsunpack.py:1117 [Warning message]
 #: sabnzbd/newsunpack.py:1135 [Warning message]
 msgid "Deleting %s failed!"
-msgstr "Verwijderen van %s mislukt!"
+msgstr "Verwijderen van %s mislukt."
 
 #: sabnzbd/newsunpack.py:522
 msgid "Trying unrar with password \"%s\""
-msgstr "Probeer unrar met wachtwoord \"%s\""
+msgstr "Unrar proberen met wachtwoord \"%s\""
 
 #: sabnzbd/newsunpack.py:530 [Error message] # sabnzbd/newsunpack.py:694
 #: sabnzbd/newsunpack.py:695 # sabnzbd/newsunpack.py:930 [Error message]
 msgid "Unpacking failed, archive requires a password"
-msgstr "Uitpakken mislukt, archief heeft wachtwoord nodig"
+msgstr "Uitpakken mislukt, archief vereist wachtwoord"
 
 #: sabnzbd/newsunpack.py:595 # sabnzbd/newsunpack.py:627
 #: sabnzbd/newsunpack.py:794 # sabnzbd/newsunpack.py:890
@@ -767,15 +767,15 @@ msgstr "Uitpakken mislukt, kan %s niet vinden"
 
 #: sabnzbd/newsunpack.py:642 [Warning message]
 msgid "ERROR: unable to find \"%s\""
-msgstr "FOUT\" kan \"%s\" niet vinden"
+msgstr "FOUT: \"%s\" niet te vinden"
 
 #: sabnzbd/newsunpack.py:647
 msgid "Unpacking failed, CRC error"
-msgstr "Uitpakken mislukt, CRC fout"
+msgstr "Uitpakken mislukt, CRC-fout"
 
 #: sabnzbd/newsunpack.py:648 # sabnzbd/newsunpack.py:650 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
-msgstr "FOUT: Foutieve CRC  \"%s\""
+msgstr "FOUT: onjuiste CRC in \"%s\""
 
 #: sabnzbd/newsunpack.py:654 # sabnzbd/newsunpack.py:655
 #: sabnzbd/newsunpack.py:667 # sabnzbd/newsunpack.py:668
@@ -934,7 +934,7 @@ msgstr "De server staat geen SSL toe op deze poort"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr "De server gebruikt een onbetrouwbaar certificaat [%s]"
+msgstr "De server %s gebruikt een onbetrouwbaar certificaat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
