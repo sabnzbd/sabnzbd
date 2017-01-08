@@ -934,7 +934,7 @@ msgstr "De server staat geen SSL toe op deze poort"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr "De server gebruikt een onbetrouwbaar certificaat [%s]"
+msgstr "De server %s gebruikt een onbetrouwbaar certificaat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
