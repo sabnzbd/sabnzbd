@@ -36,7 +36,8 @@ from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, MEBI
+from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
+     GIGI, MEBI, DEF_CACHE_LIMIT
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
@@ -787,6 +788,28 @@ def check_mount(path):
             logging.debug('Waiting for %s to come online', m.group(1))
             time.sleep(1)
     return not m
+
+
+def get_cache_limit():
+    """ Depending on OS, calculate cache limit """
+    # OSX/Windows use Default value
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        return DEF_CACHE_LIMIT
+
+    # Calculate, if possible
+    try:
+        # Use 1/4th of available memory
+        mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))/4
+        # Not more than the maximum we think is reasonable
+        if mem_bytes > from_units(DEF_CACHE_LIMIT):
+            return DEF_CACHE_LIMIT
+        elif mem_bytes > from_units('32M'):
+            # We make sure it's at least a valid value
+            return to_units(mem_bytes)
+    except:
+        pass
+    # If failed, leave empty so user needs to decide
+    return ''
 
 
 ##############################################################################
