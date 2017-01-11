@@ -285,6 +285,7 @@ def process_job(nzo):
             else:
                 emsg = T('Download failed - Not on your server(s)')
                 empty = True
+            emsg += ' - https://sabnzbd.org/not-complete'
             nzo.fail_msg = emsg
             nzo.set_unpack_info('Fail', emsg)
             nzo.status = Status.FAILED
