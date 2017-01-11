@@ -381,7 +381,10 @@ function HistoryModel(parent, data) {
     self.addHistoryStatusStuff = function(item) {
         $(item).find('.history-status-modallink a').click(function(e) {
             // Modal or 'More' click?
-            if($(this).is('.history-status-more')) {
+            if($(this).is('.history-status-dmca')) {
+                // Pass
+                return true;
+            } else if($(this).is('.history-status-more')) {
                 // Expand the rest of the text and hide the button
                 $(this).siblings('.history-status-hidden').slideDown()
                 $(this).hide()

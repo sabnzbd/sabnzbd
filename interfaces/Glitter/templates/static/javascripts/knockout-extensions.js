@@ -51,6 +51,10 @@ ko.bindingHandlers.longText = {
             // Nothing special
             outputText += value.join('<br />');
         }
+
+        // Replace link to our website
+        outputText = outputText.replace('https://sabnzbd.org/not-complete', '<a href="https://sabnzbd.org/not-complete" class="history-status-dmca" target="_blank">https://sabnzbd.org/not-complete</a>')
+
         ko.bindingHandlers.html.update(element, function() {
             return outputText;
         });
