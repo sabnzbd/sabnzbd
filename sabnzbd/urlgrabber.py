@@ -228,6 +228,10 @@ class URLGrabber(Thread):
                 f = open(path, 'wb')
                 f.write(data)
                 f.close()
+                # make sure file exists after writing to avoid crashing
+                # the URL grabber
+                if not os.path.exists(path):
+                    raise IOError('Unable to create temp file: ' + path)
                 del data
 
                 # Check if nzb file
