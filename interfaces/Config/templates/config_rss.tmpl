@@ -63,7 +63,7 @@
                             </tr>
                             <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
                                 <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
-                                    <td><div class="favicon" data-domain="$rss[$feed_item]['baselink'][$uri_index]"></div></td>
+                                    <td><div class="favicon" style="background-image: url(//$rss[$feed_item]['baselink'][$uri_index]/favicon.ico);" data-domain="$rss[$feed_item]['baselink'][$uri_index]"></div></td>
                                     <td colspan="2"><div>$uri</div></td>
                                 </tr>
                             <!--#end for#-->
@@ -497,10 +497,9 @@ function urlencode(str) {
     \$('.favicon').each(function(i, theContainer) {
         // Easy favicon grabber
         var favUrl = '//' + \$(theContainer).data('domain') + '/favicon.ico'
-        \$(theContainer).css({'background': 'url('+favUrl+')', 'background-size': '16px 16px'})
 
         // Does the image exist? Otherwise place a glyphicon
-        var testFavImg= new Image();
+        var testFavImg = new Image();
         testFavImg.src = favUrl;
         testFavImg.onerror = function (evt){
             \$(theContainer).append('<span class="glyphicon glyphicon-list"></span>')

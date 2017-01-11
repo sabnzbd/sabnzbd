@@ -548,6 +548,7 @@ h2.activeRSS {
 }
 .favicon {
     background-position: center center!important;
+    background-size: 16px 16px;
     opacity: 1;
     top: -1px;
     height: 16px;
