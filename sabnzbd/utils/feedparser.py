@@ -529,6 +529,7 @@ class _FeedParserMixin:
         'http://www.w3.org/XML/1998/namespace':                  'xml',
         'http://www.newznab.com/DTD/2010/feeds/attributes/':     'nZEDb',
         'http://www.newznab.com/DTD/2010/feeds/attributes/':     'newznab',
+        'http://www.newznab.com/DTD/2010/feeds/attributes/':     'nntmux',
     }
     _matchnamespaces = {}
 
@@ -1780,7 +1781,8 @@ class _FeedParserMixin:
         if attrsD['name'] == 'usenetdate':
             context['newznab'][attrsD['name'] + '_parsed'] = _parse_date(attrsD['value'])
     _start_nZEDb_attr = _start_newznab_attr
-    _start_nzedb_attr = _start_nZEDb_attr
+    _start_nzedb_attr = _start_newznab_attr
+    _start_nntmux_attr = _start_newznab_attr
 
 if _XML_AVAILABLE:
     class _StrictFeedParser(_FeedParserMixin, xml.sax.handler.ContentHandler):
