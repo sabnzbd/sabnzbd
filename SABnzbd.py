@@ -431,10 +431,7 @@ def print_modules():
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")
     else:
-        if hasattr(sys, "frozen"):
-            logging.error(T('_yenc module... NOT found!'))
-        else:
-            logging.info("_yenc module... NOT found!")
+        logging.warning(T('_yenc module... NOT found!'))
 
     if sabnzbd.HAVE_CRYPTOGRAPHY:
         logging.info('Cryptography module... found!')
