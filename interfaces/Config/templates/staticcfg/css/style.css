@@ -628,6 +628,9 @@ h2.activeRSS {
 .tab-content .catTable td {
     line-height: 2em;
 }
+.tab-content .catTable td:nth-child(4) {
+    word-break: break-all;
+}
 .tab-content .catTable tr:hover td {
     background-color: #F2F2F2;
 }
