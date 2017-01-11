@@ -110,10 +110,10 @@
     </div><!-- /section -->
 </form>
 
-<!--#set $cur = 0#-->
-<!--#for $server in $servers#-->
-    <!--#set $cur = $cur + 1#-->
-
+<!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
+<!--#set $cur_prio_color = -1 #-->
+<!--#set $last_prio = -1 #-->
+<!--#for $cur, $server in enumerate($servers) #-->
     <form action="saveServer" method="post" class="fullform" autocomplete="off" novalidate>
     <input type="hidden" name="session" value="$session" />
     <input type="hidden" name="server" value="$server['name']" />
@@ -121,9 +121,14 @@
     <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
         <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
             <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <!--#if int($server['enable']) != 0#-->
-            <span class="label label-primary" data-priority="$server['priority']#-->">$server['priority']</span>
-            <span class="label label-primary" data-priority="$server['priority']#-->">$T('srv-priority'):</span>
+
+            <!--#if int($server['enable']) != 0 #-->
+                <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
+                    <!--#set $cur_prio_color = $cur_prio_color+1 #-->
+                    <!--#set $last_prio = $server['priority'] #-->
+                <!--#end if#-->
+                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$server['priority']</span>
+                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$T('srv-priority'):</span>
             <!--#end if#-->
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" name="$server['name']" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
@@ -251,24 +256,6 @@
             // Skip the fancy stuff, just submit
             this.submit()
         })
-    })
-
-    /**
-        Color the priority labels
-    **/
-    // They are already sorted
-    var colorList = ["#cc3333", "#cc33a6", "#7f33cc", "#3366cc",  "#59cc33"];
-    var lastColor = colorList[0];
-    var lastPrio = '-1';
-    var theColor = '';
-    \$('[data-priority]').each(function() {
-        // New one?
-        if(\$(this).data('priority') != lastPrio) {
-            // Update
-            theColor = colorList.pop() || lastColor;
-            lastPrio = \$(this).data('priority');
-        }
-        \$(this).css('background-color', theColor)
     })
 
     /**
