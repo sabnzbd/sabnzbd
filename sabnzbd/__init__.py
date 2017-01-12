@@ -608,7 +608,7 @@ def save_compressed(folder, filename, data):
     # Need to go to the save folder to
     # prevent the pathname being embedded in the GZ file
     here = os.getcwd()
-    os.chdir(misc.short_path(folder))
+    os.chdir(folder)
 
     if filename.endswith('.nzb'):
         filename += '.gz'

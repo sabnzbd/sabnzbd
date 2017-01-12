@@ -220,7 +220,7 @@ class URLGrabber(Thread):
                 if '<nzb' in data and misc.get_ext(filename) != '.nzb':
                     filename += '.nzb'
 
-                # Sanatize filename first
+                # Sanitize filename first (also removing forbidden Windows-names)
                 filename = misc.sanitize_filename(filename)
 
                 # Write data to temp file

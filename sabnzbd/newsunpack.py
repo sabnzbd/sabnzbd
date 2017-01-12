@@ -33,7 +33,8 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, short_path, get_all_passwords, renamer
+    flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
+    has_win_device
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -204,7 +205,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, None)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir)
     else:
         xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
 
@@ -445,8 +446,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         if workdir_complete and rarpath.startswith(workdir):
             extraction_path = workdir_complete
         else:
-            # Make sure that path is not too long
-            extraction_path = short_path(os.path.split(rarpath)[0])
+            extraction_path = os.path.split(rarpath)[0]
 
         logging.info("Extracting rarfile %s (belonging to %s) to %s",
                      rarpath, rar_set, extraction_path)
@@ -524,6 +524,28 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
     return fail, new_files, rars
 
 
+
+def adjust_path(rar_path, dest_path):
+    r""" Return adjusted dest_path for unrar
+        Windows-only:
+        when the rar-file contains forbidden device names, use \\.\ notation
+        otherwise keep the \\?\
+        This is only needed because windows-unrar contains a serious bug in this area
+    """
+    try:
+        zf = rarfile.RarFile(rar_path, all_names=True)
+        names = zf.filelist()
+        zf.close()
+        for name in names:
+            if has_win_device(name):
+                return dest_path.replace('\\\\?\\', '\\\\.\\', 1)
+    except:
+        # Something went wrong with reading the RAR file
+        pass
+    return clip_path(dest_path)
+
+
+
 def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
@@ -552,7 +574,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if sabnzbd.WIN32:
         # Use all flags
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
-                   '%s' % rarfile_path, '%s/' % extraction_path]
+                   '%s' % clip_path(rarfile_path), '%s/' % adjust_path(rarfile_path, extraction_path)]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
@@ -964,7 +986,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 break
 
     # Shorten just the workdir on Windows
-    workdir = short_path(workdir)
     parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
@@ -1004,7 +1025,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             nzo.set_action_line(T('Repair'), T('Starting Repair'))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, sevens, ts = build_filelists(workdir, None, check_rar=False)
+            joinables, zips, rars, sevens, ts = build_filelists(workdir, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables, used_par2 = PAR_Verify(parfile, parfile_nzf, nzo,
                                                                                      setname, joinables, single=single)
@@ -1169,8 +1190,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             command.insert(3, parfolder)
 
     stup, need_shell, command, creationflags = build_command(command)
-    logging.debug('Starting par2: %s', command)
 
+    # par2 wants to see \\.\ paths on Windows
+    if sabnzbd.WIN32:
+        command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
+
+    # Run the external command
+    logging.debug('Starting par2: %s', command)
     lines = []
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1582,6 +1608,7 @@ def build_command(command):
         # scripts with spaces in the path don't work.
         if need_shell and ' ' in command[0]:
             command[0] = win32api.GetShortPathName(command[0])
+
         if need_shell:
             command = list2cmdline(command)
 
@@ -1618,7 +1645,7 @@ def par_sort(a, b):
         return 1
 
 
-def build_filelists(workdir, workdir_complete, check_rar=True):
+def build_filelists(workdir, workdir_complete=None, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """

@@ -32,10 +32,10 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, short_path, long_path, clip_path, \
+    make_script_path, long_path, clip_path, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
-    sanitize_and_trim_path
+    sanitize_and_trim_path, sanitize_files_in_folder
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -311,13 +311,14 @@ def process_job(nzo):
 
         # Par processing, if enabled
         if all_ok and flag_repair:
-            if not check_win_maxpath(workdir):
-                crash_msg = T('Path exceeds 260, repair by "par2" is not possible')
-                raise WindowsError
             par_error, re_add = parring(nzo, workdir)
             if re_add:
                 # Try to get more par files
                 return False
+
+        # Sanitize the resulting files
+        if sabnzbd.WIN32:
+            sanitize_files_in_folder(workdir)
 
         # Check if user allows unsafe post-processing
         if flag_repair and cfg.safe_postproc():
@@ -375,10 +376,10 @@ def process_job(nzo):
                     # set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    short_complete = short_path(tmp_workdir_complete)
-                    unpack_error, newfiles = unpack_magic(nzo, short_path(workdir), short_complete, flag_delete, one_folder, (), (), (), (), ())
-                    if short_complete != tmp_workdir_complete:
-                        newfiles = [f.replace(short_complete, tmp_workdir_complete) for f in newfiles]
+                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                    if sabnzbd.WIN32:
+                        # Sanitize the resulting files
+                        newfiles = sanitize_files_in_folder(tmp_workdir_complete)
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
@@ -470,7 +471,7 @@ def process_job(nzo):
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(short_path(script_path, False), short_path(workdir_complete, False), nzo.filename,
+                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
                                                              dirname, cat, nzo.group, job_result,
                                                              nzo.nzo_info.get('failure', ''))
                 script_line = get_last_line(script_log)
@@ -757,7 +758,7 @@ def try_rar_check(nzo, workdir, setname):
         When setname is '', all RAR files will be used, otherwise only the matching one
         If no RAR's are found, returns True
     """
-    _, _, rars, _, _ = build_filelists(short_path(workdir), None)
+    _, _, rars, _, _ = build_filelists(workdir)
 
     if setname:
         # Filter based on set
