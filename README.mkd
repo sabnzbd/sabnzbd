@@ -40,7 +40,7 @@ Release Notes  -  SABnzbd 1.2.0
 - Auto-disables CPU-usage optimizations if they result in slowdown
 - no_penalties now applies to all types of penalties
 - par2cmdline would fail jobs in folders ending on ".par2"
-- MemoryError (no more memory available) now pauses downloading
+- Fix problem where memory usage wasn't correctly limited, causing MemoryError's
 - Removing files from active download was not working correctly
 - Accept & fail for pre-queue script was not working correctly
 - Recursive unpack failed on Windows with very long paths
