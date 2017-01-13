@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ sabnzbd.rss - rss client functionality
 import re
 import logging
 import time
+import datetime
 import threading
 
 import sabnzbd
@@ -132,14 +133,6 @@ def notdefault(item):
     return bool(item) and str(item).lower() not in ('default', '*', '', str(DEFAULT_PRIORITY))
 
 
-def ListUris():
-    """ Return list of all RSS uris """
-    uris = []
-    for uri in config.get_rss():
-        uris.append(uri)
-    return uris
-
-
 def convert_filter(text):
     """ Return compiled regex.
         If string starts with re: it's a real regex
@@ -192,6 +185,7 @@ class RSSQueue(object):
 
         self.jobs = {}
         self.next_run = time.time()
+        self.shutdown = False
 
         try:
             defined = config.get_rss().keys()
@@ -204,56 +198,15 @@ class RSSQueue(object):
                     self.jobs[feed] = {}
                     for link in feeds[feed]:
                         data = feeds[feed][link]
-                        if type(data) == type([]):
-                            # Convert previous list-based store to dictionary
-                            new = {}
-                            try:
-                                new['status'] = data[0]
-                                new['title'] = data[1]
-                                new['url'] = data[2]
-                                new['cat'] = data[3]
-                                new['pp'] = data[4]
-                                new['script'] = data[5]
-                                new['time'] = data[6]
-                                new['prio'] = str(NORMAL_PRIORITY)
-                                new['rule'] = 0
-                                self.jobs[feed][link] = new
-                            except IndexError:
-                                del new
-                        else:
-                            # Consistency check on data
-                            try:
-                                item = feeds[feed][link]
-                                if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
-                                    raise IndexError
-                                if item.get('status', ' ')[0] not in ('D', 'G', 'B', 'X'):
-                                    item['status'] = 'X'
-                                if not isinstance(item.get('url'), unicode):
-                                    item['url'] = ''
-                                if not check_str(item.get('cat')):
-                                    item['cat'] = ''
-                                if not check_str(item.get('orgcat')):
-                                    item['orgcat'] = ''
-                                if not check_str(item.get('pp')):
-                                    item['pp'] = '3'
-                                if not check_str(item.get('script')):
-                                    item['script'] = 'None'
-                                if not check_str(item.get('prio')):
-                                    item['prio'] = '-100'
-                                if not check_int(item.get('rule', 0)):
-                                    item['rule'] = 0
-                                if not check_int(item.get('size', 0L)):
-                                    item['size'] = 0L
-                                if not isinstance(item.get('time'), float):
-                                    item['time'] = time.time()
-                                if not check_int(item.get('order', 0)):
-                                    item.get['order'] = 0
-                                self.jobs[feed][link] = item
-                            except (KeyError, IndexError):
-                                logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
-
+                        # Consistency check on data
+                        try:
+                            item = feeds[feed][link]
+                            if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
+                                raise IndexError
+                            self.jobs[feed][link] = item
+                        except (KeyError, IndexError):
+                            logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
                     remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
-
         except IOError:
             logging.debug('Cannot read file %s', RSS_FILE_NAME)
 
@@ -273,8 +226,9 @@ class RSSQueue(object):
         #           time : timestamp (used for time-based clean-up)
         #           order : order in the RSS feed
         #           size : size in bytes
-
-        self.shutdown = False
+        #           age : age in datetime format as specified by feed
+        #           season : season number (if applicable)
+        #           episode : episode number (if applicable)
 
     def stop(self):
         self.shutdown = True
@@ -283,19 +237,6 @@ class RSSQueue(object):
     def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False, readout=True):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
-
-        def dup_title(title):
-            """ Check if this title was in this or other feeds
-                Return matching feed name
-            """
-            title = title.lower()
-            for fd in self.jobs:
-                for lk in self.jobs[fd]:
-                    item = self.jobs[fd][lk]
-                    if item.get('status', ' ')[0] == 'D' and \
-                       item.get('title', '').lower() == title:
-                        return fd
-            return ''
 
         if not feed:
             return 'No such feed'
@@ -311,7 +252,7 @@ class RSSQueue(object):
             logging.info("Traceback: ", exc_info=True)
             return T('Incorrect RSS feed description "%s"') % feed
 
-        uri = feeds.uri()
+        uris = feeds.uri()
         defCat = feeds.cat()
         import sabnzbd.api
         if not notdefault(defCat) or defCat not in sabnzbd.api.list_cats(default=False):
@@ -342,7 +283,7 @@ class RSSQueue(object):
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
-            if filter[3] in ('<', '>', 'F'):
+            if filter[3] in ('<', '>', 'F', 'S'):
                 regexes.append(filter[4])
             else:
                 regexes.append(convert_filter(filter[4]))
@@ -356,46 +297,46 @@ class RSSQueue(object):
         # Add sabnzbd's custom User Agent
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
 
-        # Check for nzbs.org
-        if 'nzbs.org/' in uri and '&dl=1' not in uri:
-            uri += '&dl=1'
-
         # Read the RSS feed
         msg = None
         entries = None
         if readout:
-            uri = uri.replace(' ', '%20')
-            logging.debug("Running feedparser on %s", uri)
-            d = feedparser.parse(uri.replace('feed://', 'http://'))
-            logging.debug("Done parsing %s", uri)
-            if not d:
-                msg = T('Failed to retrieve RSS from %s: %s') % (uri, '?')
-                logging.info(msg)
-                return unicoder(msg)
+            all_entries = []
+            for uri in uris:
+                uri = uri.replace(' ', '%20')
+                logging.debug("Running feedparser on %s", uri)
+                feed_parsed = feedparser.parse(uri.replace('feed://', 'http://'))
+                logging.debug("Done parsing %s", uri)
+                if not feed_parsed:
+                    msg = T('Failed to retrieve RSS from %s: %s') % (uri, '?')
+                    logging.info(msg)
+                    return unicoder(msg)
 
-            status = d.get('status', 999)
-            if status in (401, 402, 403):
-                msg = T('Do not have valid authentication for feed %s') % feed
-                logging.info(msg)
-                return unicoder(msg)
-            if status >= 500 and status <= 599:
-                msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
-                logging.info(msg)
-                return unicoder(msg)
+                status = feed_parsed.get('status', 999)
+                if status in (401, 402, 403):
+                    msg = T('Do not have valid authentication for feed %s') % feed
+                    logging.info(msg)
+                    return unicoder(msg)
+                if status >= 500 and status <= 599:
+                    msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
+                    logging.info(msg)
+                    return unicoder(msg)
 
-            entries = d.get('entries')
-            if 'bozo_exception' in d and not entries:
-                msg = str(d['bozo_exception'])
-                if 'CERTIFICATE_VERIFY_FAILED' in msg:
-                    msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
-                    logging.error(msg)
-                else:
-                    msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
-                logging.info(msg)
-                return unicoder(msg)
-            if not entries:
-                msg = T('RSS Feed %s was empty') % uri
-                logging.info(msg)
+                entries = feed_parsed.get('entries')
+                if 'bozo_exception' in feed_parsed and not entries:
+                    msg = str(feed_parsed['bozo_exception'])
+                    if 'CERTIFICATE_VERIFY_FAILED' in msg:
+                        msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
+                        logging.error(msg)
+                    else:
+                        msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
+                    logging.info(msg)
+                    return unicoder(msg)
+                if not entries:
+                    msg = T('RSS Feed %s was empty') % uri
+                    logging.info(msg)
+                all_entries.extend(entries)
+            entries = all_entries
 
         if feed not in self.jobs:
             self.jobs[feed] = {}
@@ -416,15 +357,28 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size = _get_link(uri, entry)
+                    link, category, size, age, season, episode = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
                     category = u''
                     size = 0L
+                    age = None
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
                     return T('Incompatible feed')
                 title = entry.title
+
+                # If there's multiple feeds, remove the duplicates based on title and size
+                if len(uris) > 1:
+                    skip_job = False
+                    for job_link, job in jobs.items():
+                        # Allow 5% size deviation because indexers might have small differences for same release
+                        if job.get('title') == title and link != job_link and (job.get('size')*0.95) < size < (job.get('size')*1.05):
+                            logging.info("Ignoring job %s from other feed", title)
+                            skip_job = True
+                            break
+                    if skip_job:
+                        continue
             else:
                 link = entry
                 category = jobs[link].get('orgcat', '')
@@ -432,6 +386,9 @@ class RSSQueue(object):
                     category = None
                 title = jobs[link].get('title', '')
                 size = jobs[link].get('size', 0L)
+                age = jobs[link].get('age')
+                season = jobs[link].get('season', 0)
+                episode = jobs[link].get('episode', 0)
 
             if link:
                 # Make sure spaces are quoted in the URL
@@ -452,12 +409,10 @@ class RSSQueue(object):
                     myScript = defScript
                     myPrio = defPrio
                     n = 0
-                    if 'F' in reTypes:
+                    if ('F' in reTypes or 'S' in reTypes) and (not season or not episode):
                         season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
                         season = int_conv(season)
                         episode = int_conv(episode)
-                    else:
-                        season = episode = 0
 
                     # Match against all filters until an positive or negative match
                     logging.debug('Size %s for %s', size, title)
@@ -484,6 +439,10 @@ class RSSQueue(object):
                                 logging.debug('Filter requirement match on rule %d', n)
                                 result = False
                                 break
+                            elif reTypes[n] == 'S' and season and episode and ep_match(season, episode, regexes[n], title):
+                                logging.debug('Filter matched on rule %d', n)
+                                result = True
+                                break
                             else:
                                 if regexes[n]:
                                     found = re.search(regexes[n], title)
@@ -503,10 +462,16 @@ class RSSQueue(object):
                                     break
 
                     if len(reCats):
-                        if notdefault(reCats[n]):
+                        if not result and defCat:
+                            # Apply Feed-category on non-matched items
+                            myCat = defCat
+                        elif result and notdefault(reCats[n]):
+                            # Use the matched info
                             myCat = reCats[n]
                         elif category and not defCat:
+                            # No result and no Feed-category
                             myCat = cat_convert(category)
+
                         if myCat:
                             myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         else:
@@ -524,7 +489,8 @@ class RSSQueue(object):
                         elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
-                    if cfg.no_dupes() and dup_title(title):
+
+                    if cfg.no_dupes() and self.check_duplicate(title):
                         if cfg.no_dupes() == 1:
                             logging.info("Ignoring duplicate job %s", title)
                             continue
@@ -539,12 +505,12 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, size, 'G', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, season, episode, 'G', category, myCat, myPP, myScript,
                                     act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, size, 'B', category, myCat, myPP, myScript,
+                        _HandleLink(jobs, link, title, size, age, season, episode, 'B', category, myCat, myPP, myScript,
                                     False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
@@ -607,6 +573,7 @@ class RSSQueue(object):
             for link in lst:
                 if lst[link].get('url', '') == fid:
                     lst[link]['status'] = 'D'
+                    lst[link]['time_downloaded'] = time.localtime()
 
     @synchronized(LOCK)
     def lookup_url(self, feed, url):
@@ -631,9 +598,22 @@ class RSSQueue(object):
                 if self.jobs[feed][item]['status'] == 'D':
                     self.jobs[feed][item]['status'] = 'D-'
 
+    def check_duplicate(self, title):
+        """ Check if this title was in this or other feeds
+            Return matching feed name
+        """
+        title = title.lower()
+        for fd in self.jobs:
+            for lk in self.jobs[fd]:
+                item = self.jobs[fd][lk]
+                if item.get('status', ' ')[0] == 'D' and \
+                   item.get('title', '').lower() == title:
+                    return fd
+        return ''
 
-def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download, star, order,
-                priority=NORMAL_PRIORITY, rule=0):
+
+def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat, pp, script, download, star,
+                order, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
         script = None
@@ -644,6 +624,9 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
+    jobs[link]['age'] = age
+    jobs[link]['season'] = season
+    jobs[link]['episode'] = episode
     if special_rss_site(link):
         nzbname = None
     else:
@@ -652,6 +635,7 @@ def _HandleLink(jobs, link, title, size, flag, orgcat, cat, pp, script, download
     if download:
         jobs[link]['status'] = 'D'
         jobs[link]['title'] = title
+        jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
         sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
@@ -674,10 +658,11 @@ def _get_link(uri, entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    link = None  # @UnusedVariable -- pep8 bug?
+    link = None
     category = ''
     size = 0L
     uri = uri.lower()
+    age = datetime.datetime.now()
 
     # Try standard link and enclosures first
     link = entry.link
@@ -687,7 +672,6 @@ def _get_link(uri, entry):
         try:
             link = entry.enclosures[0]['href']
             size = int(entry.enclosures[0]['length'])
-            logging.debug('Found size %s for %s', size, uri)
         except:
             pass
 
@@ -696,13 +680,34 @@ def _get_link(uri, entry):
         _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         # Try to find size in Description
         try:
-            desc = entry.description.replace('\n', ' ')
+            desc = entry.description.replace('\n', ' ').replace('&nbsp;', ' ')
             m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
             if m:
                 size = from_units(m.group(1))
-                logging.debug('Found size %s for %s', size, uri)
         except:
             pass
+
+    # Try newznab attribute first, this is the correct one
+    try:
+        # Convert it to format that calc_age understands
+        age = datetime.datetime(*entry['newznab']['usenetdate_parsed'][:6])
+    except:
+        # Date from feed (usually lags behind)
+        try:
+            # Convert it to format that calc_age understands
+            age = datetime.datetime(*entry.published_parsed[:6])
+        except:
+            pass
+    finally:
+        # We need to convert it to local timezone, feedparser always returns UTC
+        age = age - datetime.timedelta(seconds=time.timezone)
+
+    # Maybe the newznab also provided SxxExx info
+    try:
+        season = re.findall('\d+', entry['newznab']['season'])[0]
+        episode = re.findall('\d+', entry['newznab']['episode'])[0]
+    except:
+        season = episode = 0
 
     if link and 'http' in link.lower():
         try:
@@ -718,10 +723,11 @@ def _get_link(uri, entry):
                         category = entry.description
                     except:
                         category = ''
-        return link, category, size
+
+        return link, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0L
+        return None, '', 0L, None, 0, 0
 
 
 def special_rss_site(url):
@@ -729,13 +735,23 @@ def special_rss_site(url):
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 
-def ep_match(season, episode, expr):
-    """ Return True if season, episode is at or above expected """
-    _RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
+_RE_SP = re.compile(r's*(\d+)[ex](\d+)', re.I)
+def ep_match(season, episode, expr, title=None):
+    """ Return True if season, episode is at or above expected
+        Optionally `title` can be matched
+    """
     m = _RE_SP.search(expr)
     if m:
         req_season = int(m.group(1))
         req_episode = int(m.group(2))
-        return season > req_season or (season == req_season and episode >= req_episode)
+        if season > req_season or (season == req_season and episode >= req_episode):
+            if title:
+                show = expr[:m.start()].replace('.', ' ').replace('_', ' ').strip()
+                show = show.replace(' ', '[._ ]+')
+                return bool(re.search(show, title, re.I))
+            else:
+                return True
+        else:
+            return False
     else:
         return True

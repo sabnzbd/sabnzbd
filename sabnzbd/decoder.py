@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ except ImportError:
     HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import Status, MAX_DECODE_QUEUE
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
@@ -68,7 +68,8 @@ class Decoder(Thread):
         self.queue.put((article, lines))
         # See if there's space left in cache, pause otherwise
         # But do allow some articles to enter queue, in case of full cache
-        if not ArticleCache.do.reserve_space(lines) and self.queue.qsize() > MAX_DECODE_QUEUE:
+        qsize = self.queue.qsize()
+        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
             sabnzbd.downloader.Downloader.do.delay()
 
     def stop(self):
@@ -90,7 +91,8 @@ class Decoder(Thread):
             killed = False
 
             # Check if the space that's now free can let us continue the queue?
-            if (ArticleCache.do.free_reserve_space(lines) or self.queue.qsize() < MAX_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
+            qsize = self.queue.qsize()
+            if (ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
                 sabnzbd.downloader.Downloader.do.undelay()
 
             data = None
@@ -108,17 +110,27 @@ class Decoder(Thread):
                     data = decode(article, lines)
                     nzf.article_count += 1
                     found = True
+
                 except IOError, e:
                     logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-
                     article.fetcher = None
-
                     NzbQueue.do.reset_try_lists(nzf, nzo)
+                    register = False
 
+                except MemoryError, e:
+                    logme = T('Decoder failure: Out of memory')
+                    logging.warning(logme)
+                    anfo = sabnzbd.articlecache.ArticleCache.do.cache_info()
+                    logging.info("Decoder-Queue: %d, Cache: %d, %d, %d", self.queue.qsize(), anfo.article_sum, anfo.cache_size, anfo.cache_limit)
+                    logging.info("Traceback: ", exc_info=True)
+
+                    sabnzbd.downloader.Downloader.do.pause()
+                    article.fetcher = None
+                    NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except CrcError, e:

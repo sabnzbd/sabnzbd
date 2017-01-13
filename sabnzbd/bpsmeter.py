@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -270,10 +270,9 @@ class BPSMeter(object):
             logging.debug("bps: %s", self.bps)
             self.log_time = t
 
-        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0
-        if self.speed_log_time < (t - float(refresh_rate)):
+        if self.speed_log_time < (t - 1.0):
             self.add_empty_time()
-            self.bps_list.append("%i" % (self.bps / KIBI))
+            self.bps_list.append(int(self.bps / KIBI))
             self.speed_log_time = t
 
     def reset(self):
@@ -284,12 +283,9 @@ class BPSMeter(object):
         self.bps = 0.0
 
     def add_empty_time(self):
-        refresh_rate = cfg.refresh_rate() if cfg.refresh_rate() else 1.0
-        time_diff = time.time() - self.speed_log_time
-        nr_diffs = int(floor(time_diff / refresh_rate))
-
+        nr_diffs = int(time.time() - self.speed_log_time)
         if nr_diffs > 1:
-            self.bps_list.extend(['0.0'] * nr_diffs)
+            self.bps_list.extend([0] * nr_diffs)
 
         if len(self.bps_list) > self.bps_list_max:
             self.bps_list = self.bps_list[len(self.bps_list) - self.bps_list_max:]
@@ -325,8 +321,37 @@ class BPSMeter(object):
         return self.bps
 
     def get_bps_list(self):
+        refresh_rate = int(cfg.refresh_rate()) if cfg.refresh_rate() else 1
         self.add_empty_time()
-        return self.bps_list
+        # We record every second, but display at the user's refresh-rate
+        return self.bps_list[::refresh_rate]
+
+    def get_stable_speed(self, timespan=10):
+        """ See if there is a stable speed the last <timespan> seconds
+            None: indicates it can't determine yet
+            False: the speed was not stable during <timespan>
+        """
+        if len(self.bps_list) < timespan:
+            return None
+
+        # Calculate the variance in the speed
+        avg = sum(self.bps_list[-timespan:])/timespan
+        vari = 0
+        for bps in self.bps_list[-timespan:]:
+            vari += abs(bps - avg)
+        vari = vari/timespan
+
+        try:
+            # See if the variance is less than 5%
+            if (vari / (self.bps/KIBI)) < 0.05:
+                return avg
+            else:
+                return False
+        except:
+            # Probably one of the values was 0
+            pass
+        return None
+
 
     def reset_quota(self, force=False):
         """ Check if it's time to reset the quota, optionally resuming

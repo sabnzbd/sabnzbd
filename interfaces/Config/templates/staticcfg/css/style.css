@@ -106,7 +106,7 @@ label.config,
 }
 label.config-hover {
     cursor: pointer;
-    
+
 }
 label.narrow {
     width: 200px!important;
@@ -131,7 +131,7 @@ label.wide,
 }
 input[type="checkbox"]+.desc {
     padding-top: 6px;
-} 
+}
 .desc-check {
     font-size: 12px;
     font-style: italic;
@@ -174,8 +174,8 @@ input[type="checkbox"]+.desc {
     padding-left: 12px;
     font-size: 13px;
 }
-.typeahead.dropdown-menu>.active>a, 
-.typeahead.dropdown-menu>.active>a:focus, 
+.typeahead.dropdown-menu>.active>a,
+.typeahead.dropdown-menu>.active>a:focus,
 .typeahead.dropdown-menu>.active>a:hover {
     color: black;
     background-color: #E5E5E5;
@@ -284,6 +284,27 @@ tr.separator {
 .catTable th {
     text-align: center;
 }
+.catTable .glyphicon-option-vertical {
+    color: #808080;
+    display: block;
+    margin-right: -5px;
+    cursor: move;
+}
+.Categories form:not(.sorting-row) .glyphicon-option-vertical {
+    visibility: hidden;
+}
+
+.Categories form.sorting-row:nth-child(even) tr {
+    background-color: #F8F8F8;
+}
+
+.Categories form:first-of-type tr:last-of-type {
+    background-color: #FFFFE0;
+}
+
+.Categories hr {
+    margin: 5px;
+}
 
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
@@ -299,6 +320,37 @@ tr.separator {
 }
 .RSS form[action="add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #E5E5E5;
+}
+.RSS .tab-pane table th:not(.no-sort) {
+    cursor: pointer;
+}
+.RSS .tab-pane table th:not(.sorted) {
+    padding-right: 12px;
+}
+.RSS .tab-pane table th.sorted {
+    padding-right: 0px;
+}
+.RSS .tab-pane table th.sorted.ascending:after {
+    content:'';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    vertical-align: middle;
+    border-bottom: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+.RSS .tab-pane table th.sorted.descending:after {
+    content:'';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
 }
 .Config .table {
     margin: 0;
@@ -496,6 +548,7 @@ h2.activeRSS {
 }
 .favicon {
     background-position: center center!important;
+    background-size: 16px 16px;
     opacity: 1;
     top: -1px;
     height: 16px;
@@ -533,6 +586,9 @@ h2.activeRSS {
     padding-right: .3em;
     width: auto;
 }
+#subscriptions .favicon {
+    margin-left: 8px;
+}
 .ie6 .subscription-title {
     width: 20em;
 }
@@ -564,11 +620,17 @@ h2.activeRSS {
 .tab-content .catTable {
     width: 100%;
 }
+.tab-content .catTable th {
+    text-align: left;
+}
 .tab-content .catTable tbody {
     border: 1px solid #ddd;
 }
 .tab-content .catTable td {
     line-height: 2em;
+}
+.tab-content .catTable td:nth-child(4) {
+    word-break: break-all;
 }
 .tab-content .catTable tr:hover td {
     background-color: #F2F2F2;
@@ -681,7 +743,7 @@ ul.tabs li.active a {
     transition: none;
 }
 
-input[type=checkbox], 
+input[type=checkbox],
 input[type=radio] {
     margin-top: 2px;
 }
@@ -725,10 +787,10 @@ select {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     display:inline-block;
     vertical-align:middle;
-    max-width: 100%;  
+    max-width: 100%;
     min-height: 34px;
     font-size: 13px;
-    background-color: white;    
+    background-color: white;
 }
 
 input[type="text"]:not([size]),
@@ -793,7 +855,7 @@ input[type="checkbox"] {
     max-width: 150px;
 }
 
-.Categories input {
+.Categories #content input {
     max-width: 150px !important;
 }
 
@@ -829,7 +891,26 @@ input[type="checkbox"] {
     margin-bottom: -1px;
 }
 
+#search-menu .glyphicon {
+    top: 3px;
+}
 
+#search-dropdown {
+    right: 0;
+    left: auto;
+    width: 300px;
+    padding: 5px;
+}
+
+#search-dropdown .dropdown-header {
+    font-weight: bold;
+    color: black;
+}
+
+#search-dropdown a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .navbar-logo-small svg {
     height: 40px;
@@ -876,8 +957,8 @@ input[type="checkbox"] {
     width: 1em;
     height: 1em;
 }
-.rss-symbol { 
-    stroke: none; 
+.rss-symbol {
+    stroke: none;
     fill: white;
 }
 
@@ -898,6 +979,14 @@ input[type="checkbox"] {
 
 .Servers .col2 .label:nth-child(2) {
     opacity: 0.7;
+}
+
+.Servers .advanced-settings {
+    display: none;
+}
+
+.Servers .port-highlight {
+    animation: highlight-fade 1s ease-in 1;
 }
 
 .Servers .col2 label,
@@ -996,37 +1085,51 @@ input[type="checkbox"] {
     100% { opacity: 1; }
 }
 
+@keyframes highlight-fade {
+    0% { background: #FEFEDA; }
+    100% { background: none; }
+}
+
 .spin-glyphicon {
     animation: spin 2s infinite linear;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(359deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
 }
 
-@media screen and (min-width: 1200px) { 
+@media screen and (min-width: 1200px) {
     .Categories input[name="dir"] {
         max-width: 240px !important;
     }
+
+    .navbar-nav {
+        /* For extra wide languages like Polish */
+        margin-right: -50px;
+    }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1200px) { 
+@media screen and (min-width: 768px) and (max-width: 1200px) {
     .navbar-default .navbar-nav>li>a>span,
     .navbar-default .navbar-nav>li>a:hover>strong,
     .navbar-default .navbar-nav>li>a.active>strong {
-        display: inline;   
+        display: inline;
     }
-    
+
     .navbar-default .navbar-nav>li>a>svg {
         display: inline-block;
     }
-    
+
     .navbar-default .navbar-nav>li>a>strong,
     .navbar-default .navbar-nav:hover>li>a.active>strong {
         display: none;
     }
-        
+
+    #search-menu>a>strong {
+        display: none;
+    }
+
     .RSS #content,
     .Categories #content {
         width: 100%;
@@ -1038,20 +1141,20 @@ input[type="checkbox"] {
         float: right;
         padding: 5px 0px;
     }
-    
+
     .col1 h5 {
         margin-left: 20px;
     }
-    
+
     .col2 {
         width: 100%;
         padding: 10px;
     }
-    
+
     .col2 p {
         margin-left:  20px;
     }
-        
+
     .Servers .col2 button:first-of-type {
         margin-bottom: 0;
     }
@@ -1069,10 +1172,10 @@ input[type="checkbox"] {
     }
     .navbar-collapse.in .navbar-nav>li>a>span,
     .navbar-collapse.collapsing .navbar-nav>li>a>span {
-        display: inline-block;  
-        width: 1.5em; 
+        display: inline-block;
+        width: 1.5em;
     }
-    
+
     .navbar-collapse.in .navbar-nav>li>a>svg,
     .navbar-collapse.collapsing .navbar-nav>li>a>svg {
         display: inline-block;
@@ -1082,24 +1185,28 @@ input[type="checkbox"] {
     .navbar .nav>li>a {
         height: auto;
     }
-    
+
+    #search-menu {
+        display: none;
+    }
+
     .section .col2 h3 {
         padding-right: 25px;
     }
-    
+
     .section .col2 h3 a {
         display: inline-block;
     }
-    
+
     .main-restarting.in strong {
         font-size: 2em;
         font-weight: bold;
     }
-    
+
     .main-restarting.in span {
         top: 2px;
     }
-    
+
     .main-restarting.in small {
         font-size: 2rem !important;
     }
@@ -1109,55 +1216,55 @@ input[type="checkbox"] {
         padding: 0 !important;
         padding-top: 55px !important;
     }
-    
+
     #content fieldset {
         min-width: 0;
         padding: 0 !important;
     }
-    
+
     .colmask {
         border: none !important;
     }
-    
+
     .col2 {
         padding: 10px;
     }
-    
+
     .col2 h3 {
         margin: -10px -10px 0px;
         padding-left: 10px;
     }
-    
+
     .col2 p {
         margin-left:  0px;
         margin-bottom: 0;
     }
-    
+
     .col1 h5 {
         margin-left:  0px;
-    }        
-    
+    }
+
     label.config {
         margin-left: 0px;
         margin-bottom: 2px;
         width: 100%;
         float: none;
     }
-    
+
     .desc {
         margin: 0;
         margin-left: 3px;
         margin-top: 2px;
         padding: 0 !important;
     }
-    
+
     .col1 input[type="checkbox"] {
         position: inherit;
         float: left;
         margin-right: 5px;
         margin-top: 0px;
     }
-    
+
     div.field-pair{
         min-width: 0;
         padding: 5px 10px;
@@ -1165,8 +1272,8 @@ input[type="checkbox"] {
 
     .fileBrowserField {
         max-width: 65% !important;
-    } 
-    
+    }
+
     ul.tabs a {
         padding-left: 5px;
         padding-right: 5px;

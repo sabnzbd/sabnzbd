@@ -187,9 +187,17 @@ To format statistics reports::
 
 """
 
+import logging
+import os
+import sys
+import threading
+import time
+
+import cherrypy
+from cherrypy._cpcompat import json
+
 # ------------------------------- Statistics -------------------------------- #
 
-import logging
 if not hasattr(logging, 'statistics'):
     logging.statistics = {}
 
@@ -209,12 +217,6 @@ def extrapolate_statistics(scope):
 
 
 # -------------------- CherryPy Applications Statistics --------------------- #
-
-import sys
-import threading
-import time
-
-import cherrypy
 
 appstats = logging.statistics.setdefault('CherryPy Applications', {})
 appstats.update({
@@ -390,23 +392,12 @@ class StatsTool(cherrypy.Tool):
                 sq.pop(0)
 
 
-import cherrypy
 cherrypy.tools.cpstats = StatsTool()
 
 
 # ---------------------- CherryPy Statistics Reporting ---------------------- #
 
-import os
 thisdir = os.path.abspath(os.path.dirname(__file__))
-
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        json = None
-
 
 missing = object()
 

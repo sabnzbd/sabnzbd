@@ -1,11 +1,8 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/1.1/configure"#-->
+<!--#set global $help_uri="configuration/1.2/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<!--#from sabnzbd.newswrapper import HAVE_SSL#-->
 <!--#from locale import getpreferredencoding#-->
-<!--#import sabnzbd.utils.sslinfo#-->
-<!--#from sabnzbd.decoder import HAVE_YENC#-->
 <div class="colmask">
     <div class="section padTable">
         <table class="table table-striped">
@@ -37,37 +34,40 @@
                 <tr>
                     <th scope="row">OpenSSL:</th>
                     <td>
-                        <!--#if HAVE_SSL#--> 
-                            <!--#set $sslversions = ', '.join(sabnzbd.utils.sslinfo.ssl_protocols_labels())#-->
-                            $sabnzbd.utils.sslinfo.ssl_version() &nbsp; [$sslversions]
+                        <!--#if $have_ssl#-->
+                            $ssl_version &nbsp; [$ssl_protocols]
                         <!--#else#-->
-                            <span class="label label-warning">$T('notAvailable')</span>
+                            <span class="label label-danger">$T('notAvailable')</span>
                             <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
                         <!--#end if#-->
                     </td>
                 </tr>
+                <!--#if not $have_ssl_context#-->
                 <tr>
-                    <th scope="row">pyOpenSSL:</th>
+                    <th scope="row"></th>
                     <td>
-                        <!--#if HAVE_SSL#--> 
-                            $sabnzbd.utils.sslinfo.pyopenssl_version()
-                        <!--#else#-->
-                            <span class="label label-warning">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
+                        <span class="label label-danger">$T('warning')</span> $T('explain-nosslcontext')
                     </td>
                 </tr>
+                <!--#end if#-->
+                <!--#if not $have_cryptography #-->
+                <tr>
+                    <th scope="row">Python Cryptography:</th>
+                    <td>
+                        <span class="label label-warning">$T('notAvailable')</span>
+                        <a href="$helpuri$help_uri#no_cryptography" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    </td>
+                </tr>
+                <!--#end if#-->
+                <!--#if not $have_yenc#-->
                 <tr>
                     <th scope="row">yEnc:</th>
                     <td>
-                        <!--#if HAVE_YENC#--> 
-                            <span class="glyphicon glyphicon-ok"></span>
-                        <!--#else#-->
-                            <span class="label label-warning">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
+                        <span class="label label-danger">$T('notAvailable')</span>
+                        <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
                     </td>
                 </tr>
+                <!--#end if#-->
                 <!--#if not $have_unzip #-->
                 <tr>
                     <th scope="row">$T('opt-enable_unzip'):</th>
@@ -125,7 +125,7 @@
 
 <div class="colmask">
     <div class="padding alt">
-        <h5 class="copyright">Copyright &copy; 2008-2016 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
+        <h5 class="copyright">Copyright &copy; 2008-2017 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
         <p class="copyright"><small>$T('yourRights')</small></p>
     </div>
 

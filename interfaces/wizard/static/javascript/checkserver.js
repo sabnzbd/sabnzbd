@@ -11,7 +11,7 @@ function checkRequired() {
 $(document).ready(function() {
     // Add tooltips
     $('[data-toggle="tooltip"]').tooltip()
-    
+
     // On form-submit
     $("#serverTest").click(function() {
         $('#serverResponse').html(txtChecking);
@@ -24,7 +24,7 @@ $(document).ready(function() {
                 } else {
                     r = '<span class="failed"><span class="glyphicon glyphicon-minus-sign"></span> ' + result.value.message + '</span>';
                 }
-                
+
                 $('#serverResponse').html(r);
             }
         );
@@ -52,7 +52,7 @@ $(document).ready(function() {
         }
         checkRequired();
     });
-    
+
     $('#ssl').click(function() {
         if(this.checked) {
             // Enabled SSL change port when not already a custom port
@@ -66,13 +66,13 @@ $(document).ready(function() {
             }
         }
     })
-    
-    checkRequired() 
-    
+
+    checkRequired()
+
     $('form').submit(function(event) {
         // Double check
         if(!checkRequired()) {
             event.preventDefault();
         }
-    })  
+    })
 });

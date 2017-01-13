@@ -19,7 +19,7 @@
  * limitations under the License.
  * ============================================================ */
  !function(root,factory){"use strict";"undefined"!=typeof module&&module.exports?module.exports=factory(require("jquery")):"function"==typeof define&&define.amd?define(["jquery"],function($){return factory($)}):factory(root.jQuery)}(this,function($){"use strict";var Typeahead=function(element,options){this.$element=$(element),this.options=$.extend({},$.fn.typeahead.defaults,options),this.matcher=this.options.matcher||this.matcher,this.sorter=this.options.sorter||this.sorter,this.select=this.options.select||this.select,this.autoSelect="boolean"==typeof this.options.autoSelect?this.options.autoSelect:!0,this.highlighter=this.options.highlighter||this.highlighter,this.render=this.options.render||this.render,this.updater=this.options.updater||this.updater,this.displayText=this.options.displayText||this.displayText,this.source=this.options.source,this.delay=this.options.delay,this.$menu=$(this.options.menu),this.$appendTo=this.options.appendTo?$(this.options.appendTo):null,this.shown=!1,this.listen(),this.showHintOnFocus="boolean"==typeof this.options.showHintOnFocus?this.options.showHintOnFocus:!1,this.afterSelect=this.options.afterSelect,this.addItem=!1};Typeahead.prototype={constructor:Typeahead,select:function(){var val=this.$menu.find(".active").data("value");if(this.$element.data("active",val),this.autoSelect||val){var newVal=this.updater(val);newVal||(newVal=""),this.$element.val(this.displayText(newVal)||newVal).change(),this.afterSelect(newVal)}return this.hide()},updater:function(item){return item},setSource:function(source){this.source=source},show:function(){var scrollHeight,pos=$.extend({},this.$element.position(),{height:this.$element[0].offsetHeight});scrollHeight="function"==typeof this.options.scrollHeight?this.options.scrollHeight.call():this.options.scrollHeight;var element;return element=this.shown?this.$menu:this.$appendTo?this.$menu.appendTo(this.$appendTo):this.$menu.insertAfter(this.$element),element.css({top:pos.top+pos.height+scrollHeight,left:pos.left}).show(),this.shown=!0,this},hide:function(){return this.$menu.hide(),this.shown=!1,this},lookup:function(query){if("undefined"!=typeof query&&null!==query?this.query=query:this.query=this.$element.val()||"",this.query.length<this.options.minLength)return this.shown?this.hide():this;var worker=$.proxy(function(){$.isFunction(this.source)?this.source(this.query,$.proxy(this.process,this)):this.source&&this.process(this.source)},this);clearTimeout(this.lookupWorker),this.lookupWorker=setTimeout(worker,this.delay)},process:function(items){var that=this;return items=$.grep(items,function(item){return that.matcher(item)}),items=this.sorter(items),items.length||this.options.addItem?(items.length>0?this.$element.data("active",items[0]):this.$element.data("active",null),this.options.addItem&&items.push(this.options.addItem),"all"==this.options.items?this.render(items).show():this.render(items.slice(0,this.options.items)).show()):this.shown?this.hide():this},matcher:function(item){var it=this.displayText(item);return~it.toLowerCase().indexOf(this.query.toLowerCase())},sorter:function(items){for(var item,beginswith=[],caseSensitive=[],caseInsensitive=[];item=items.shift();){var it=this.displayText(item);it.toLowerCase().indexOf(this.query.toLowerCase())?~it.indexOf(this.query)?caseSensitive.push(item):caseInsensitive.push(item):beginswith.push(item)}return beginswith.concat(caseSensitive,caseInsensitive)},highlighter:function(item){var len,leftPart,middlePart,rightPart,strong,html=$("<div></div>"),query=this.query,i=item.toLowerCase().indexOf(query.toLowerCase());if(len=query.length,0===len)return html.text(item).html();for(;i>-1;)leftPart=item.substr(0,i),middlePart=item.substr(i,len),rightPart=item.substr(i+len),strong=$("<strong></strong>").text(middlePart),html.append(document.createTextNode(leftPart)).append(strong),item=rightPart,i=item.toLowerCase().indexOf(query.toLowerCase());return html.append(document.createTextNode(item)).html()},render:function(items){var that=this,self=this,activeFound=!1;return items=$(items).map(function(i,item){var text=self.displayText(item);return i=$(that.options.item).data("value",item),i.find("a").html(that.highlighter(text)),text==self.$element.val()&&(i.addClass("active"),self.$element.data("active",item),activeFound=!0),i[0]}),this.autoSelect&&!activeFound&&(items.first().addClass("active"),this.$element.data("active",items.first().data("value"))),this.$menu.html(items),this},displayText:function(item){return"undefined"!=typeof item&&"undefined"!=typeof item.name&&item.name||item},next:function(event){var active=this.$menu.find(".active").removeClass("active"),next=active.next();next.length||(next=$(this.$menu.find("li")[0])),next.addClass("active")},prev:function(event){var active=this.$menu.find(".active").removeClass("active"),prev=active.prev();prev.length||(prev=this.$menu.find("li").last()),prev.addClass("active")},listen:function(){this.$element.on("focus",$.proxy(this.focus,this)).on("blur",$.proxy(this.blur,this)).on("keypress",$.proxy(this.keypress,this)).on("keyup",$.proxy(this.keyup,this)),this.eventSupported("keydown")&&this.$element.on("keydown",$.proxy(this.keydown,this)),this.$menu.on("click",$.proxy(this.click,this)).on("mouseenter","li",$.proxy(this.mouseenter,this)).on("mouseleave","li",$.proxy(this.mouseleave,this))},destroy:function(){this.$element.data("typeahead",null),this.$element.data("active",null),this.$element.off("focus").off("blur").off("keypress").off("keyup"),this.eventSupported("keydown")&&this.$element.off("keydown"),this.$menu.remove()},eventSupported:function(eventName){var isSupported=eventName in this.$element;return isSupported||(this.$element.setAttribute(eventName,"return;"),isSupported="function"==typeof this.$element[eventName]),isSupported},move:function(e){if(this.shown)switch(e.keyCode){case 9:case 13:case 27:e.preventDefault();break;case 38:if(e.shiftKey)return;e.preventDefault(),this.prev();break;case 40:if(e.shiftKey)return;e.preventDefault(),this.next()}},keydown:function(e){this.suppressKeyPressRepeat=~$.inArray(e.keyCode,[40,38,9,13,27]),this.shown||40!=e.keyCode?this.move(e):this.lookup()},keypress:function(e){this.suppressKeyPressRepeat||this.move(e)},keyup:function(e){switch(e.keyCode){case 40:case 38:case 16:case 17:case 18:break;case 9:case 13:if(!this.shown)return;this.select();break;case 27:if(!this.shown)return;this.hide();break;default:this.lookup()}e.preventDefault()},focus:function(e){this.focused||(this.focused=!0,this.options.showHintOnFocus&&this.lookup(""))},blur:function(e){this.focused=!1,!this.mousedover&&this.shown&&this.hide()},click:function(e){e.preventDefault(),this.select(),this.$element.focus()},mouseenter:function(e){this.mousedover=!0,this.$menu.find(".active").removeClass("active"),$(e.currentTarget).addClass("active")},mouseleave:function(e){this.mousedover=!1,!this.focused&&this.shown&&this.hide()}};var old=$.fn.typeahead;$.fn.typeahead=function(option){var arg=arguments;return"string"==typeof option&&"getActive"==option?this.data("active"):this.each(function(){var $this=$(this),data=$this.data("typeahead"),options="object"==typeof option&&option;data||$this.data("typeahead",data=new Typeahead(this,options)),"string"==typeof option&&(arg.length>1?data[option].apply(data,Array.prototype.slice.call(arg,1)):data[option]())})},$.fn.typeahead.defaults={source:[],items:8,menu:'<ul class="typeahead dropdown-menu" role="listbox"></ul>',item:'<li><a class="dropdown-item" href="#" role="option"></a></li>',minLength:1,scrollHeight:0,autoSelect:!0,afterSelect:$.noop,addItem:!1,delay:0},$.fn.typeahead.Constructor=Typeahead,$.fn.typeahead.noConflict=function(){return $.fn.typeahead=old,this},$(document).on("focus.typeahead.data-api",'[data-provide="typeahead"]',function(e){var $this=$(this);$this.data("typeahead")||$this.typeahead($this.data())})});
- 
+
  /*!
  * jQuery Form Plugin
  * version: 3.51.0-2014.06.20
@@ -56,36 +56,36 @@
         this.currentRequest = null;
         this.fileBrowserDialog = $('#filebrowser_modal .modal-body');
         this.fileBrowserTitle = this.element.data('title') || $('label[for="'+this.element.attr('id')+'"]').text() || '';
-        
+
         // Start
         this.init()
     };
-    
+
     // Adding button
     FileBrowser.prototype.init = function () {
         // Self-reference
         var self = this;
-        
+
         // Small or big button
         buttonText = this.element.hasClass('fileBrowserSmall') ? '' : configTranslate.browseText;
-        
+
         // Add button
         this.element.addClass('fileBrowserField').after(
             $('<button class="btn btn-default fileBrowser" type="button"><span class="glyphicon glyphicon-folder-open"></span> '+buttonText+'</button>').click(function () {
                 self.openBrowser();
             })
-        )   
+        )
     }
-    
+
     // Open browser-window
     FileBrowser.prototype.openBrowser = function() {
         // Self-reference
         var self = this;
-        
+
         // set up the browser and launch the dialog
         // textbox (not saved) path > textbox (saved) path > none
         this.initialDir = this.element.val() || this.element.data('initialdir') ||  '';
-        
+
         // If there's no seperator, it must be a relative path
         if(this.initialDir.split(folderSeperator).length < 2 && this.element.data('initialdir')) {
             this.initialDir = this.element.data('initialdir') + folderSeperator + this.element.val();
@@ -93,7 +93,7 @@
 
         // Browse
         this.browse(this.initialDir , folderBrowseUrl);
-        
+
         // Choose path and close modal
         $('#filebrowser_modal_accept').click(function() {
             // Is it a relative path?
@@ -105,13 +105,13 @@
                     self.currentBrowserPath = '';
                 }
             }
-            
+
             // Changed?
             if(self.element.val() != self.currentBrowserPath) {
                 self.element.val(self.currentBrowserPath);
                 formHasChanged = true;
             }
-            
+
             // Hide and stop default action
             $('#filebrowser_modal').modal('hide');
             return false;
@@ -120,31 +120,31 @@
         // Show hidden folders
         $('#show_hidden_folders').off('change')
         $('#show_hidden_folders').on('change', function() {
-        	self.browse(self.currentBrowserPath , folderBrowseUrl);
+            self.browse(self.currentBrowserPath , folderBrowseUrl);
         })
-        
+
         // Use custom title instead of default and open modal
         $('#filebrowser_modal .modal-header h4').text(this.fileBrowserTitle);
         $('#filebrowser_modal').modal('show');
         return false;
     }
-    
+
     FileBrowser.prototype.browse = function(path, endpoint) {
         // Self-reference
         var self = this;
-        
+
         // Still loading
         if (this.currentRequest) this.currentRequest.abort();
 
         // Show hidden folders on Linux?
         var extraHidden = $('#show_hidden_folders').is(':checked') ? '&show_hidden_folders=1' : '';
-        
+
         // Get current folders
         this.currentBrowserPath = path;
         this.currentRequest = $.getJSON(endpoint + extraHidden, { name: path }, function (data) {
             // Clean
             self.fileBrowserDialog.empty();
-            
+
             // Make list
             var list = $('<div class="list-group">').appendTo(self.fileBrowserDialog);
             $.each(data.paths, function (i, entry) {
@@ -154,7 +154,7 @@
                     return
                 }
                 // Regular link
-                link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function () { 
+                link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function () {
                     self.browse(entry.path, endpoint); }
                 ).text(entry.name);
                 // Back image
@@ -166,10 +166,10 @@
                 // Add to list
                 link.appendTo(list);
             });
-            
+
         });
     }
-    
+
     // Make sure we have unique instances
     $.fn.fileBrowser = function () {
         return this.each(function () {
@@ -179,6 +179,27 @@
         });
     }
 })(jQuery);
+
+/*
+ * Takes the inputs-elements found in the current selector
+ * and extracts the values into the provided data-object.
+ */
+$.fn.extractFormDataTo = function(target) {
+    var inputs = $("input[type != 'submit'][type != 'button']", this);
+
+    // could use .serializeArray() but that omits unchecked items
+    inputs.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
+
+    var selects = $("select", this);
+
+    selects.each(function (i,elem) {
+        target[elem.name] = elem.value;
+    });
+
+    return this;
+}
 
 /*!
  * Config JS
@@ -203,22 +224,23 @@ function config_failure() {
 function do_restart() {
     // Show overlay
     $('.main-restarting').show()
-    
+
     // What template
     var arrPath = window.location.pathname.split('/');
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
+    var switchedHTTPS = !$('#enable_https').is(':checked') && window.location.protocol == 'https:'
 
     // Are we on settings page?
     if(!$('body').hasClass('General')) {
         // Same as before, with fall-back in case location.origin is not supported (<IE9)
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
-    } else if (($('#port').val() == $('#port').data('original')) && ($('#https_port ').val() == $('#https_port ').data('original'))) {
+    } else if (!switchedHTTPS && ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))) {
         // If the http/https port config didn't change, don't try and guess the URL/port to redirect to
         // This solves some incorrect behavior if running behind a reverse proxy
         var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
     } else {
         // Protocol and port depend on http(s) setting
-        if($('#enable_https').is(':checked') && window.location.protocol == 'https:') {
+        if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
             // Https on and we visited this page from HTTPS
             var urlProtocol = 'https:';
             var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
@@ -227,23 +249,23 @@ function do_restart() {
             var urlProtocol = 'http:';
             var urlPort = $('#port').val();
         }
-        
+
         // We cannot make a good guess for the IP, so at least we assume that stays the same
         var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
     }
-    
+
     // Show where we are going to connect
     $('.main-restarting .restarting-url').text(urlTotal)
-    
+
     // Initiate restart
-    $.ajax({ url: '../../config/restart?session=' + sabSession, 
+    $.ajax({ url: '../../config/restart?session=' + sabSession,
         complete: function() {
             // Keep counter of failures
             var failureCounter = 0;
-    
+
             // Now we try untill we can connect
             var refreshInterval = setInterval(function() {
-                $.ajax({ url: urlTotal, 
+                $.ajax({ url: urlTotal,
                     success: function() {
                         // Back to base
                         location.href = urlTotal;
@@ -259,15 +281,15 @@ function do_restart() {
                         }
                     }
                 })
-            }, 5000)
-            
-            // Exception if we go from HTTPS to HTTP 
+            }, 3000)
+
+            // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)
             if(window.location.protocol != urlProtocol) {
-                // Saftey redirect after 40 sec
+                // Saftey redirect after 20 sec
                 setTimeout(function() {
                     location.href = urlTotal;
-                }, 40*1000)
+                }, 20*1000)
             }
         }
     });
@@ -345,7 +367,7 @@ $(document).ready(function () {
         formWasSubmitted = true;
         formHasChanged = false;
     });
-    $(document).on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
+    $('#content').on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
         formHasChanged = true;
         formWasSubmitted = false;
     });
@@ -358,49 +380,107 @@ $(document).ready(function () {
             return message;
         }
     }
-    
+
     // Fix for touch devices needing double click on the menu
     $('.navbar-nav li a').on('touchstart', function(e) {
         $(this).click()
     })
-    
+
     // Add hover to checkboxes (can't do it with CSS)
     $('input[type="checkbox"]').siblings('label').addClass('config-hover')
     $('input[type="checkbox"]').parents('label').addClass('config-hover')
 
     // Disable sections
-    var checkDisabled = '#enable_https, #rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
-    var checkEnabled = '#disable_api_key'
+    var checkDisabled = '#rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
 
-    $(checkDisabled + ','+ checkEnabled).on('change', function() {
+    $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
     })
     if(!$(checkDisabled).is(':checked')) {
         $(checkDisabled).parent().nextAll().addClass('disabled')
     }
-    if($(checkEnabled).is(':checked')) {
-        $(checkEnabled).parent().nextAll().addClass('disabled')
-    }
+
+    // Hide or show HTTPS
+    $('#enable_https').on('change', function() {
+        $('#enable_https_options').toggle()
+    })
 });
 
 /*
- * Takes the inputs-elements found in the current selector
- * and extracts the values into the provided data-object.
- */
-$.fn.extractFormDataTo = function(target) {
-    var inputs = $("input[type != 'submit'][type != 'button']", this);
+* SEARCH FUNCTIONALITY
+*/
+// Make :contains() case-insensitive
+$.expr[":"].contains = $.expr.createPseudo(function(arg) {
+    return function( elem ) {
+        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+});
 
-    // could use .serializeArray() but that omits unchecked items
-    inputs.each(function (i,elem) {
-        target[elem.name] = elem.value;
+// Create list of pages to check and empty contain for results
+var arrPages = ['general', 'folders', 'switches', 'sorting', 'notify', 'special']
+var pagesContainer = new Array(arrPages.length);
+
+// Add trigger to focus on the field and load the results
+$(document).ready(function() {
+    $('#search-menu').on('shown.bs.dropdown', function(event) {
+        // Focus so easy typing
+        $('#search-box').focus()
+        // Load things to search if we haven't yet
+        if(!pagesContainer[0]) {
+            $.each(arrPages, function(index, page) {
+                $.get(rootURL + 'config/' + page + '/', function(data) {
+                    pagesContainer[index] = $(data).find('label')
+                });
+            });
+        }
     });
 
-    var selects = $("select", this);
+    // For the scrolling
+    // *only* if we have anchor on the url
+    if(window.location.hash) {
+        // Sometimes the ID is non-existing
+        try {
+            // smooth scroll to the anchor id
+            $('html, body').animate({
+                scrollTop: $(window.location.hash).offset().top -100 + 'px'
+            }, 750, 'swing');
+            setTimeout(function() {
+                $(window.location.hash).focus()
+            }, 750)
+        } catch(err) {}
+    }
+})
 
-    selects.each(function (i,elem) {
-        target[elem.name] = elem.value;
-    });
+// Don't go too fast
+var searchTimeout
+function doConfigSearch(value) {
+    // Cancel previous
+    clearTimeout(searchTimeout)
+    // Build new search
+    var searchTerm = $(value).val().replace('"', '\"')
+    var searchOutput = $('#search-dropdown')
 
-    return this;
+    // Build new search
+    searchTimeout = setTimeout(function() {
+        // Clear the output
+        searchOutput.find('li:not(:first)').remove()
+        // Anything to search for?
+        if (searchTerm.length < 2) return
+        // Find some results!
+        $.each(pagesContainer, function(page_index, results) {
+            // Get the matches
+            var subResults = results.filter(':contains("'+searchTerm+'")')
+            if(subResults.length > 0) {
+                // Add the section
+                searchOutput.append('<li class="divider"></li>')
+                searchOutput.append('<li class="dropdown-header">'+configTranslate.searchPages[page_index]+'</li>')
+                $.each(subResults, function(index, result) {
+                    searchOutput.append('<li><a href="'+rootURL + 'config/' + arrPages[page_index] +  '/#' + $(result).attr('for') +'">'+$(result).text()+'</a></li>')
+                })
+            }
+        })
+    }, 200)
 }
+
+
 

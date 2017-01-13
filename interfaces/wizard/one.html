@@ -12,9 +12,9 @@
                 </script>
                 <h3>$T('wizard-server')</h3>
                 $T('wizard-explain-server')<br />
-                
+
                 <br /><br />
-                
+
                 <div class="row">
                     <div class="col-md-7 form-horizontal">
                         <div class="form-group">
@@ -41,7 +41,7 @@
                             </label>
                             <div class="col-sm-8 input-checkbox">
                                 <input type="checkbox" id="ssl" name="ssl" value="1" <!--#if $have_ssl then '' else 'disabled'#--><!--#if $ssl == 1 then 'checked' else ''#--> data-toggle="tooltip" data-placement="right" title="$T('wizard-server-ssl-explain')"/>
-                                <!--#if not $have_ssl then '<span class="label label-warning">pyopenssl (python-openssl) '+$T('opt-notInstalled')+'</span>' else ''#-->
+                                <!--#if not $have_ssl then '<span class="label label-warning">OpenSSL  '+$T('opt-notInstalled')+'</span>' else ''#-->
                                 <small></small>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-8">
                                 <a href="#" onclick="\$('#server-hidden-settings').removeClass('hidden');\$(this).parent().parent().hide()">
-                                    <span class="glyphicon glyphicon-cog"></span> $T('showAllHis')
+                                    <span class="glyphicon glyphicon-cog"></span> $T('button-advanced')
                                 </a>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                             <div class="form-group">
                                 <label for="connections" class="col-sm-4 control-label">$T('srv-connections')</label>
                                 <div class="col-sm-8">
-                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '6'#-->" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" />
+                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '8'#-->" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" />
                                 </div>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                                 <div id="serverQuote" class="btn btn-default disabled"><span id="serverResponse">$T('wizard-server-text')</span></div>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="col-md-5">
                         <div class="clearfix"></div>

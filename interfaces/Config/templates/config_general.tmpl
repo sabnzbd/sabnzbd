@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configuration/1.1/general"#-->
+<!--#set global $help_uri="configuration/1.2/general"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -66,6 +66,57 @@
                        $T('explain-ask-language') <a href="https://sabnzbd.org/wiki/translate" target="_blank" class="alert-link">https://sabnzbd.org/wiki/translate</a>
                     </div>
                 </div>
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="enable_https">$T('opt-enable_https')</label>
+                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+                    <span class="desc">$T('explain-enable_https')</span>
+                </div>
+                <div id="enable_https_options" <!--#if int($enable_https) < 1 then 'style="display:none"' else ""#-->>
+                    <div class="field-pair">
+                        <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="https_port">$T('opt-https_port')</label>
+                        <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" />
+                        <span class="desc">$T('explain-https_port')</span>
+                    </div>
+
+                    <div class="field-pair">
+                        <label class="config" for="https_cert">$T('opt-https_cert')</label>
+                        <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
+                        <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                            <span class="glyphicon glyphicon-repeat"></span>
+                        </button>
+                        <span class="desc">$T('explain-https_cert')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="https_key">$T('opt-https_key')</label>
+                        <input type="text" name="https_key" id="https_key" value="$https_key" />
+                        <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                            <span class="glyphicon glyphicon-repeat"></span>
+                        </button>
+                        <span class="desc">$T('explain-https_key')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="https_chain">$T('opt-https_chain')</label>
+                        <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
+                        <span class="desc">$T('explain-https_chain')</span>
+                    </div>
+                </div>
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="section">
+        <div class="col2">
+            <h3>$T('security') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <p><b>$T('restartRequired')</b></p>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
                     <label class="config" for="${pid}_wu">$T('opt-web_username')</label>
@@ -76,7 +127,7 @@
                     <label class="config" for="${pid}_wp">$T('opt-web_password')</label>
                     <input type="text" name="${pid}_wp" id="${pid}_wp" value="$password" data-hide="password" />
                     <span class="desc">$T('explain-web_password')</span>
-                </div>  
+                </div>
                 <div class="field-pair">
                     <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
                         <select name="inet_exposure" id="inet_exposure" class="select">
@@ -99,11 +150,6 @@
                     <span class="desc">$T('explain-local_ranges')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="disable_api_key">$T('opt-disableApikey')</label>
-                    <input type="checkbox" name="disable_api_key" id="disable_api_key" value="1" <!--#if int($disable_api_key) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-disableApikey')</span>
-                </div>
-                <div class="field-pair">
                     <label class="config" for="apikey">$T('opt-apikey')</label>
                     <input type="text" id="apikey" class="fileBrowserField" value="$session" readonly />
                     <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$session" ><span class="glyphicon glyphicon-qrcode"></span></button>
@@ -119,51 +165,37 @@
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
     <div class="section">
         <div class="col2">
-            <h3>$T('httpsSupport') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <p><b>$T('restartRequired')</b></p>
+            <h3>$T('cmenu-switches') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
-                    <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
-                </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="enable_https">$T('opt-enable_https')</label>
-                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-                    <span class="desc">$T('explain-enable_https')</span>
+                    <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
+                    <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-auto_browser')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="https_port">$T('opt-https_port')</label>
-                    <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" />
-                    <span class="desc">$T('explain-https_port')</span>
+                    <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
+                    <select name="check_new_rel" id="check_new_rel">
+                        <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
+                        <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
+                        <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
+                    </select>
+                    <span class="desc">$T('explain-check_new_rel')</span>
                 </div>
-                <div class="field-pair">
-                    <label class="config" for="https_cert">$T('opt-https_cert')</label>
-                    <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
-                    <span class="desc">$T('explain-https_cert')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="https_key">$T('opt-https_key')</label>
-                    <input type="text" name="https_key" id="https_key" value="$https_key" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')"><span class="glyphicon glyphicon-repeat"></span></button>
-                    <span class="desc">$T('explain-https_key')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="https_chain">$T('opt-https_chain')</label>
-                    <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
-                    <span class="desc">$T('explain-https_chain')</span>
+                <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
+                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <span class="desc">$T('explain-enable_https_verification')</span>
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
                 </div>
             </fieldset>
         </div><!-- /col1 -->
@@ -200,6 +232,7 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+
     </form>
 </div><!-- /colmask -->
 
@@ -227,7 +260,7 @@
     hideOrShowTranslate()
 
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
-    
+
     \$('#generate_new_apikey').click(function () {
       if (confirm("$T('Plush-confirm')")) {
         $.ajax({
@@ -264,9 +297,9 @@
             "text": \$(this).attr('rel')
         });
         \$('#modal_qr').modal('show');
-        
+
         // No save on this button click
-        e.preventDefault();                        
+        e.preventDefault();
     });
 
     \$('.generate_cert').click(function(e) {
@@ -300,7 +333,7 @@
         \$('#bandwidth_max_value').val(bandwithLimitNumber)
         \$('#bandwidth_max_dropdown').val(bandwithLimitText)
     }
-    
+
 
     // Update the value
     \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {

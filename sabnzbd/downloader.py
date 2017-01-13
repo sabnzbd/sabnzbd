@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,6 @@ import sys
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
-from sabnzbd.utils.sslinfo import ssl_protocols
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.notifier as notifier
@@ -59,7 +58,7 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
 
         self.id = id
@@ -72,7 +71,7 @@ class Server(object):
         self.threads = threads
         self.priority = priority
         self.ssl = ssl
-        self.ssl_type = None
+        self.ssl_verify = ssl_verify
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -89,40 +88,50 @@ class Server(object):
         self.errormsg = ''
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
+        self.ssl_info = '' # Will hold the type and cipher of SSL connection
         self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True  # Assume server has "STAT", until proven otherwise
-
-        if ssl:
-            # When the user has set a supported protocol, use it
-            if ssl_type and ssl_type in ssl_protocols():
-                self.ssl_type = ssl_type
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
 
     @property
     def hostip(self):
-        """ based on value of load_balancing() and self.info:
-            0: return the host name itself (so: do nothing)
-            1 and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
-            2 and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
+        """ In case a server still has active connections, we use the same IP again
+            If new connection then based on value of load_balancing() and self.info:
+            0 - return the first entry, so all threads use the same IP
+            1 - and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
+            2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
             In case of problems: return the host name itself
         """
-        if cfg.load_balancing() == 1 and self.info and len(self.info) > 1:
+        # Check if already a succesfull ongoing connection
+        if self.busy_threads and self.busy_threads[0].nntp:
+            # Re-use that IP
+            logging.debug('%s: Re-using address %s', self.host, self.busy_threads[0].nntp.host)
+            return self.busy_threads[0].nntp.host
+
+        # Determine new IP
+        if cfg.load_balancing() == 0 and self.info:
+            # Just return the first one, so all next threads use the same IP
+            ip = self.info[0][4][0]
+            logging.debug('%s: Connecting to address %s', self.host, ip)
+
+        elif cfg.load_balancing() == 1 and self.info and len(self.info) > 1:
             # Return a random entry from the possible IPs
             rnd = random.randint(0, len(self.info) - 1)
             ip = self.info[rnd][4][0]
-            logging.debug('For server %s, using IP %s', self.host, ip)
+            logging.debug('%s: Connecting to address %s', self.host, ip)
+
         elif cfg.load_balancing() == 2 and self.info and len(self.info) > 1:
             # RFC6555 / Happy Eyeballs:
             ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
             if ip:
-                logging.debug('For server %s, using IP %s as server', self.host, ip)
+                logging.debug('%s: Connecting to address %s', self.host, ip)
             else:
                 # nothing returned, so there was a connection problem
                 ip = self.host
-                logging.debug('For server %s, no successful IP connection possible', self.host)
+                logging.debug('%s: No successful IP connection was possible', self.host)
         else:
             ip = self.host
         return ip
@@ -164,6 +173,10 @@ class Downloader(Thread):
         # Used for reducing speed
         self.delayed = False
 
+        # Used to see if we can add a slowdown to the Downloader-loop
+        self.can_be_slowed = None
+        self.can_be_slowed_timer = 0
+
         self.postproc = False
 
         self.shutdown = False
@@ -204,8 +217,8 @@ class Downloader(Thread):
             timeout = srv.timeout()
             threads = srv.connections()
             priority = srv.priority()
-            ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
-            ssl_type = srv.ssl_type()
+            ssl = srv.ssl() and sabnzbd.HAVE_SSL
+            ssl_verify = srv.ssl_verify()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
@@ -225,9 +238,8 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl,
-                                            ssl_type, send_group,
-                                            username, password, optional, retention, categories=categories))
+            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
+                                            send_group, username, password, optional, retention, categories=categories))
 
         return
 
@@ -249,6 +261,7 @@ class Downloader(Thread):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
+            self.can_be_slowed = None
             logging.info("Pausing")
             notifier.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
@@ -305,6 +318,7 @@ class Downloader(Thread):
         else:
             self.speed_set()
         logging.info("Speed limit set to %s B/s", self.bandwidth_limit)
+        self.can_be_slowed = None
 
     def get_limit(self):
         return self.bandwidth_perc
@@ -323,11 +337,10 @@ class Downloader(Thread):
             self.bandwidth_limit = 0
 
     def is_paused(self):
-        from sabnzbd.nzbqueue import NzbQueue
         if not self.paused:
             return False
         else:
-            if NzbQueue.do.has_forced_items():
+            if sabnzbd.nzbqueue.NzbQueue.do.has_forced_items():
                 return False
             else:
                 return True
@@ -346,7 +359,6 @@ class Downloader(Thread):
         return filter(nzo.server_in_try_list, self.servers)
 
     def maybe_block_server(self, server):
-        from sabnzbd.nzbqueue import NzbQueue
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             # Optional and active server had too many problems,
             # disable it now and send a re-enable plan to the scheduler
@@ -362,10 +374,30 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-            NzbQueue.do.reset_all_try_lists()
+            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
     def run(self):
-        from sabnzbd.nzbqueue import NzbQueue
+        # First check IPv6 connectivity
+        sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
+        logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
+
+        # Then have to check the quality of SSL verification
+        if sabnzbd.HAVE_SSL_CONTEXT:
+            try:
+                import ssl
+                ctx = ssl.create_default_context()
+                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+                ssl_sock.settimeout(2.0)
+                ssl_sock.connect((cfg.selftest_host(), 443))
+                ssl_sock.close()
+            except:
+                # Seems something is still wrong
+                sabnzbd.set_https_verification(0)
+                sabnzbd.HAVE_SSL_CONTEXT = False
+        logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
+
+        # Start decoder
         self.decoder.start()
 
         # Kick BPS-Meter to check quota
@@ -390,7 +422,7 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
-                        NzbQueue.do.reset_all_try_lists()
+                        sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -401,7 +433,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not (server.active and NzbQueue.do.has_articles_for(server)):
+                if not (server.active and sabnzbd.nzbqueue.NzbQueue.do.has_articles_for(server)):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -420,7 +452,7 @@ class Downloader(Thread):
                         request_server_info(server)
                         break
 
-                    article = NzbQueue.do.get_article(server, self.servers)
+                    article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
 
                     if not article:
                         break
@@ -482,10 +514,23 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-                
+
                 # Why check so often when so few things happend?
-                if len(readkeys) >= 8 and len(read) <= 2:
+                if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
                     time.sleep(0.01)
+
+                # Need to initalize the check during first 20 seconds
+                if self.can_be_slowed is None or self.can_be_slowed_timer:
+                    # Wait for stable speed to start testing
+                    if not self.can_be_slowed_timer and BPSMeter.do.get_stable_speed(timespan=10):
+                        self.can_be_slowed_timer = time.time()
+
+                    # Check 10 seconds after enabeling slowdown
+                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
+                        # Now let's check if it was stable in the last 10 seconds
+                        self.can_be_slowed = (BPSMeter.do.get_stable_speed(timespan=10) > 0)
+                        self.can_be_slowed_timer = 0
+                        logging.debug('Downloader-slowdown: %r', self.can_be_slowed)
 
             else:
                 read, write, error = ([], [], [])
@@ -495,7 +540,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 CV.acquire()
-                while (NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
+                while (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
                     CV.wait()
                 CV.release()
@@ -629,12 +674,9 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
-                                    if (not server.optional) and cfg.no_penalties():
-                                        penalty = _PENALTY_SHORT
                                     if penalty and (block or server.optional):
-                                        logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
-                                    NzbQueue.do.reset_all_try_lists()
+                                    sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
@@ -675,7 +717,7 @@ class Downloader(Thread):
                             server.active = False
                             server.errormsg = T('Server %s requires user/password') % ''
                             self.plan_server(server.id, 0)
-                            NzbQueue.do.reset_all_try_lists()
+                            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
                         msg = T('Server %s requires user/password') % nw.server.id
                         self.__reset_nw(nw, msg, quit=True)
 
@@ -714,7 +756,6 @@ class Downloader(Thread):
         return None
 
     def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False, quit=False):
-        from sabnzbd.nzbqueue import NzbQueue
         server = nw.server
         article = nw.article
         fileno = None
@@ -755,12 +796,15 @@ class Downloader(Thread):
                 nzo = nzf.nzo
 
                 # Allow all servers to iterate over each nzo/nzf again ##
-                NzbQueue.do.reset_try_lists(nzf, nzo)
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
 
         if destroy:
             nw.terminate(quit=quit)
         else:
             nw.hard_reset(wait, quit=quit)
+
+        # Empty SSL info, it might change on next connect
+        server.ssl_info = ''
 
     def __request_article(self, nw):
         try:
@@ -796,6 +840,10 @@ class Downloader(Thread):
     @synchronized(TIMER_LOCK)
     def plan_server(self, server_id, interval):
         """ Plan the restart of a server in 'interval' minutes """
+        if cfg.no_penalties() and interval > _PENALTY_SHORT:
+            # Overwrite in case of no_penalties
+            interval = _PENALTY_SHORT
+
         logging.debug('Set planned server resume %s in %s mins', server_id, interval)
         if server_id not in self._timers:
             self._timers[server_id] = []

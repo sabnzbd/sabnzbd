@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ import threading
 
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
-from sabnzbd.utils.rarfile import is_rarfile, RarFile
+import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
@@ -74,9 +74,11 @@ def is_archive(path):
             return 0, zf, '.zip'
         except:
             return -1, None, ''
-    elif is_rarfile(path):
+    elif rarfile.is_rarfile(path):
         try:
-            zf = RarFile(path)
+            zf = rarfile.RarFile(path)
+            # Set path to tool to open it
+            rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
             return 0, zf, '.rar'
         except:
             return -1, None, ''
@@ -111,16 +113,13 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
     status = 1
     names = zf.namelist()
-    names.sort()
     nzbcount = 0
     for name in names:
         name = name.lower()
-        if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
-            status = 1
-            break
-        elif name.endswith('.nzb'):
+        if name.endswith('.nzb'):
             status = 0
             nzbcount += 1
+
     if status == 0:
         if nzbcount != 1:
             nzbname = None
@@ -305,7 +304,6 @@ class DirScanner(threading.Thread):
 
     def stop(self):
         """ Stop the dir scanner """
-        self.save()
         logging.info('Dirscanner shutting down')
         self.shutdown = True
 

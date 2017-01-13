@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/1.1/servers"#-->
+<!--#set global $help_uri="configuration/1.2/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -27,7 +27,12 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="port">$T('srv-port')</label>
-                    <input type="number" name="port" id="port" size="8" />
+                    <input type="number" name="port" id="port" size="8" value="119" />
+                </div>
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl">$T('srv-ssl')</label>
+                    <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
@@ -40,60 +45,40 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections" min="0" max="100" />
+                    <input type="number" name="connections" id="connections" min="0" max="100" value="8" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="priority">$T('srv-priority')</label>
                     <input type="number" name="priority" id="priority" min="0" max="100" /> <i>$T('explain-svrprio')</i>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="retention">$T('srv-retention')</label>
                     <input type="number" name="retention" id="retention" min="0" /> <i>$T('days')</i>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="timeout">$T('srv-timeout')</label>
                     <input type="number" name="timeout" id="timeout" min="30" /> <i>$T('seconds')</i>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
-                    <span class="desc">$T('srv-ssl')</span>
+                <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                    <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
+                    <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                          <option value="0">$T('ssl_verify-disabled')</option>
+                          <option value="1" selected>$T('ssl_verify-normal')</option>
+                          <option value="2">$T('ssl_verify-strict')</option>
+                    </select>
+                    <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl_type">$T('srv-ssl_type')</label>
-                    <!--#if int($have_ssl) == 1#-->
-                        <select name="ssl_type" id="ssl_type">
-                                <option value="">$T('Default')</option>
-                            <!--#if 't12' in $ssl_protocols#-->
-                                <option value="t12">TLS v1.2</option>
-                            <!--#end if#-->
-                            <!--#if 't11' in $ssl_protocols#-->
-                                <option value="t11">TLS v1.1</option>
-                            <!--#end if#-->
-                            <!--#if 't1' in $ssl_protocols#-->
-                                <option value="t1">TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v3' in $ssl_protocols#-->
-                                <option value="v3">SSL v3</option>
-                            <!--#end if#-->
-                            <!--#if 'v2' in $ssl_protocols#-->
-                                <option value="v2">SSL v2</option>
-                            <!--#end if#-->
-                        </select>
-                    <!--#end if#-->
-                    <span class="desc">$T('srv-explain-ssl_type')</span>
-                </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="send_group">$T('srv-send_group')</label>
                     <input type="checkbox" name="send_group" id="send_group" value="1" />
                     <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="optional">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional" value="1" />
-                    <span class="desc">$T('srv-optional')</span>
+                    <span class="desc">$T('explain-optional')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="categories">$T('srv-categories')</label>
                     <select name="categories" id="categories" multiple>
                     <!--#for $cat in $cats#-->
@@ -104,16 +89,17 @@
                     </select>
                     <span class="desc">$T('srv-explain-categories')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="displayname">$T('srv-displayname')</label>
                     <input type="text" name="displayname" id="displayname" />
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="notes">$T('srv-notes')</label>
                     <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+                    <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                 </div>
                 <div class="field-pair result-box">
@@ -124,10 +110,10 @@
     </div><!-- /section -->
 </form>
 
-<!--#set $cur = 0#-->
-<!--#for $server in $servers#-->
-    <!--#set $cur = $cur + 1#-->
-
+<!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
+<!--#set $cur_prio_color = -1 #-->
+<!--#set $last_prio = -1 #-->
+<!--#for $cur, $server in enumerate($servers) #-->
     <form action="saveServer" method="post" class="fullform" autocomplete="off" novalidate>
     <input type="hidden" name="session" value="$session" />
     <input type="hidden" name="server" value="$server['name']" />
@@ -135,9 +121,14 @@
     <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
         <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
             <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <!--#if int($server['enable']) != 0#-->
-            <span class="label label-primary" data-priority="$server['priority']#-->">$server['priority']</span>
-            <span class="label label-primary" data-priority="$server['priority']#-->">$T('srv-priority'):</span>
+
+            <!--#if int($server['enable']) != 0 #-->
+                <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
+                    <!--#set $cur_prio_color = $cur_prio_color+1 #-->
+                    <!--#set $last_prio = $server['priority'] #-->
+                <!--#end if#-->
+                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$server['priority']</span>
+                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$T('srv-priority'):</span>
             <!--#end if#-->
             <table><tr>
               <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" name="$server['name']" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
@@ -158,6 +149,11 @@
                     <label class="config" for="port$cur">$T('srv-port')</label>
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
+                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <label class="config" for="ssl$cur">$T('srv-ssl')</label>
+                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <span class="desc">$T('explain-ssl')</span>
+                </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                 <div class="field-pair">
                     <label class="config" for="${pid}_${cur}0">$T('srv-username')</label>
@@ -175,54 +171,35 @@
                     <label class="config" for="priority$cur">$T('srv-priority')</label>
                     <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="100" /> <i>$T('explain-svrprio')</i>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="retention$cur">$T('srv-retention')</label>
                     <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" /> <i>$T('days')</i>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>
                     <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="30" /> <i>$T('seconds')</i>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl$cur">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
-                    <span class="desc">$T('srv-ssl')</span>
+
+                <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                    <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
+                    <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                          <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
+                          <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
+                          <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
+                    </select>
+                    <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="ssl_type$cur">$T('srv-ssl_type')</label>
-                    <!--#if int($have_ssl) == 1#-->
-                        <select name="ssl_type" id="ssl_type$cur">
-                                <option value=""  <!--#if $server['ssl_type'] == ""  then 'selected="selected"' else ""#--> >$T('Default')</option>
-                            <!--#if 't12' in $ssl_protocols#-->
-                                <option value="t12"  <!--#if $server['ssl_type'] == "t12"  then 'selected="selected"' else ""#--> >TLS v1.2</option>
-                            <!--#end if#-->
-                            <!--#if 't11' in $ssl_protocols#-->
-                                <option value="t11"  <!--#if $server['ssl_type'] == "t11"  then 'selected="selected"' else ""#--> >TLS v1.1</option>
-                            <!--#end if#-->
-                            <!--#if 't1' in $ssl_protocols#-->
-                                <option value="t1"  <!--#if $server['ssl_type'] == "t1"  then 'selected="selected"' else ""#--> >TLS v1</option>
-                            <!--#end if#-->
-                            <!--#if 'v3' in $ssl_protocols#-->
-                                <option value="v3"  <!--#if $server['ssl_type'] == "v3"  then 'selected="selected"' else ""#--> >SSL v3</option>
-                            <!--#end if#-->
-                            <!--#if 'v2' in $ssl_protocols#-->
-                                <option value="v2"  <!--#if $server['ssl_type'] == "v2"  then 'selected="selected"' else ""#--> >SSL v2</option>
-                            <!--#end if#-->
-                        </select>
-                    <!--#end if#-->
-                    <span class="desc">$T('srv-explain-ssl_type')</span>
-                </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="optional$cur">$T('srv-optional')</label>
                     <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('srv-optional')</span>
+                    <span class="desc">$T('explain-optional')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="send_group$cur">$T('srv-send_group')</label>
                     <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="categories$cur">$T('srv-categories')</label>
                     <select name="categories" id="categories$cur" multiple>
                     <!--#for $cat in $cats#-->
@@ -237,16 +214,17 @@
                         $T('srv-explain-no-categories')
                     </div>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
                     <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="notes$cur">$T('srv-notes')</label>
                     <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
                 </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
                     <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
                 </div>
@@ -278,24 +256,6 @@
             // Skip the fancy stuff, just submit
             this.submit()
         })
-    })
-
-    /**
-        Color the priority labels
-    **/
-    // They are already sorted
-    var colorList = ["#cc3333", "#cc33a6", "#7f33cc", "#3366cc",  "#59cc33"];
-    var lastColor = colorList[0];
-    var lastPrio = '-1';
-    var theColor = '';
-    \$('[data-priority]').each(function() {
-        // New one?
-        if(\$(this).data('priority') != lastPrio) {
-            // Update
-            theColor = colorList.pop() || lastColor;
-            lastPrio = \$(this).data('priority');
-        }
-        \$(this).css('background-color', theColor)
     })
 
     /**
@@ -340,10 +300,36 @@
             \$(this).attr("value", "$T('showDetails')");
         }
     });
+
     \$('#addServerButton').click(function(){
         \$('#addServer').hide();
         \$('#addServerContent').show();
     });
+
+    \$('[name="ssl"]').click(function() {
+        // Use CSS transitions to do some highlighting
+        var portBox = \$(this).parent().parent().find('[name="port"]')
+        if(this.checked) {
+            // Enabled SSL change port when not already a custom port
+            if(portBox.val() == '119') {
+                portBox.val('563')
+                portBox.addClass('port-highlight')
+            }
+        } else {
+            // Remove SSL port
+            if(portBox.val() == '563') {
+                portBox.val('119')
+                portBox.addClass('port-highlight')
+            }
+        }
+        setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
+    })
+
+    \$('.advancedButton').click(function(event){
+        \$('.advanced-settings').toggle()
+        return false;
+    })
+
     \$('.testServer').click(function(event){
         removeObfuscation()
         var theButton = \$(this)
@@ -371,6 +357,7 @@
             }
         });
     });
+
     \$('.delServer').click(function(){
         if( confirm("$T('Plush-confirm')") ) {
             \$(this).parents('form:first').attr('action','delServer').submit();
@@ -381,6 +368,7 @@
         }
         return false;
     });
+
     \$('.clrServer').click(function(){
         if( confirm("$T('Plush-confirm')") ) {
             \$(this).parents('form:first').attr('action','clrServer').submit();
@@ -391,6 +379,7 @@
         }
         return false;
     });
+
     \$('.toggleServerCheckbox').click(function(){
         var whichServer = \$(this).attr("name");
         \$.ajax({

@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -166,6 +166,7 @@ SKIN_TEXT = {
     'cmenu-cat' : TT('Categories'), #: Main menu item
     'cmenu-sorting' : TT('Sorting'), #: Main menu item
     'cmenu-special' : TT('Special'), #: Main menu item
+    'cmenu-search' : TT('Search'), #: Main menu item
 
 # Footer
     'ft-download' : TT('Download Dir'), # Used in Footer
@@ -300,6 +301,7 @@ SKIN_TEXT = {
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
     'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.') + TT('<br />If authentication is enabled, you will need to login again.'),
     'explain-needNewLogin' : TT('<br />If authentication is enabled, you will need to login again.'),
+    'button-advanced' : TT('Advanced'),
     'button-restart' : TT('Restart'),
     'explain-orphans' : TT('There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
@@ -309,9 +311,12 @@ SKIN_TEXT = {
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
+    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
+    'readwiki': TT('Read the Wiki Help on this!'),
+    'restarting-sab': TT('Restarting SABnzbd...'),
 
 # Config->General
     'restartRequired' : TT('Changes will require a SABnzbd restart!'),
@@ -328,6 +333,7 @@ SKIN_TEXT = {
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
+    'security' : TT('Security'),
     'httpsSupport' : TT('HTTPS Support'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
@@ -362,13 +368,11 @@ SKIN_TEXT = {
     'opt-nzbkey' : TT('NZB Key'),
     'explain-nzbkey' : TT('This key will allow 3rd party programs to add NZBs to SABnzbd.'),
     'button-apikey' : TT('Generate New Key'),
-    'opt-disableApikey' : TT('Disable API-key'),
-    'explain-disableApikey' : TT('Do not require the API key.'),
     'explain-qr-code' : TT('API Key QR Code'), #: Explanation for QR code of APIKEY
     'opt-local_ranges' : TT('List of local network ranges'),
     'explain-local_ranges' : TT('All local network addresses start with these prefixes (often "192.168.1.")'),
     'opt-inet_exposure' : TT('External internet access'),
-    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network'),
+    'explain-inet_exposure' : TT('You can set access rights for systems outside your local network. Requires List of local network ranges to be defined.'),
     'inet-local' : TT('No access'), # Selection value for external access
     'inet-nzb' : TT('Add NZB files '), # Selection value for external access
     'inet-api' : TT('API (no Config)'), # Selection value for external access
@@ -393,8 +397,8 @@ SKIN_TEXT = {
     'explain-dirscan_dir' : TT('Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz archives for .nzb files.</i>'),
     'opt-dirscan_speed' : TT('Watched Folder Scan Speed'),
     'explain-dirscan_speed' : TT('Number of seconds between scans for .nzb files.'),
-    'opt-script_dir' : TT('Post-Processing Scripts Folder'),
-    'explain-script_dir' : TT('Folder containing user scripts for post-processing.'),
+    'opt-script_dir' : TT('Scripts Folder'),
+    'explain-script_dir' : TT('Folder containing user scripts.'),
     'opt-email_dir' : TT('Email Templates Folder'),
     'explain-email_dir' : TT('Folder containing user-defined email templates.'),
     'opt-password_file' : TT('Password file'),
@@ -427,12 +431,13 @@ SKIN_TEXT = {
     'opt-pause_on_pwrar' : TT('Action when encrypted RAR is downloaded'),
     'explain-pause_on_pwrar' : TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Detect Duplicate Downloads'),
-    'explain-no_dupes' : TT('Detect identical NZB files (based on NZB content)'),
+    'explain-no_dupes' : TT('Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)'),
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
-    'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode")'),
+    'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
+    'nodupes-fail' : TT('Fail job (move to History)'), #: Three way switch for duplicates
     'abort' : TT('Abort'), #: Three way switch for encrypted posts
     'opt-action_on_unwanted_extensions' : TT('Action when unwanted extension detected'),
     'explain-action_on_unwanted_extensions' : TT('Action when an unwanted extension is detected in RAR files'),
@@ -504,17 +509,19 @@ SKIN_TEXT = {
     'explain-quota_period' : TT('Does the quota get reset each day, week or month?'),
     'opt-pre_check' : TT('Check before download'),
     'explain-pre_check' : TT('Try to predict successful completion before actual download (slower!)'),
+    'opt-ssl_ciphers' : TT('SSL Ciphers'),
+    'explain-ssl_ciphers' : TT('Increase performance by forcing a lower SSL encryption strength.'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
     'opt-max_art_opt' : TT('Only for optional servers'),
     'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
-    'opt-rating_enable' : TT('Enable OZnzb Integration'),
+    'opt-rating_enable' : TT('Enable Indexer Integration'),
     'explain-rating_enable' : TT('Enhanced functionality including ratings and extra status information is available when connected to OZnzb indexer.'),
     'opt-rating_api_key' : TT('API Key'),
     'opt-rating_host' : TT('Server address'),
-    'explain-rating_api_key' : TT('This key provides identity to indexer. Refer to https://www.oznzb.com/profile.'),
+    'explain-rating_api_key' : TT('This key provides identity to indexer. Check your profile on the indexer\'s website.'),
     'opt-rating_feedback' : TT('Automatic Feedback'),
     'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),
@@ -546,12 +553,17 @@ SKIN_TEXT = {
     'srv-connections' : TT('Connections'), #: Server: amount of connections
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
+    'explain-ssl' : TT('Secure connection to server'), #: Server SSL tickbox
+    'opt-ssl_verify' : TT('Certificate verification'),
+    'explain-ssl_verify' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
+    'ssl_verify-disabled' : TT('Disabled'),
+    'ssl_verify-normal' : TT('Default'),
+    'ssl_verify-strict' : TT('Strict'),
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
     'srv-optional' : TT('Optional'), #: Server optional tickbox
+    'explain-optional' : TT('For unreliable servers, will be ignored longer in case of failures'), #: Explain server optional tickbox
     'srv-enable' : TT('Enable'), #: Enable server tickbox
-    'srv-ssl_type' : TT('SSL type'),
-    'srv-explain-ssl_type' : TT('Use the top value, unless your Usenet provider requires otherwise!'),
     'button-addServer' : TT('Add Server'), #: Button: Add server
     'button-delServer' : TT('Remove Server'), #: Button: Remove server
     'button-testServer' : TT('Test Server'), #: Button: Test server
@@ -580,6 +592,7 @@ SKIN_TEXT = {
 # Config->RSS
     'explain-RSS' : TT('The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'),
     'feed' : TT('Feed'), #: Config->RSS, tab header
+    'addMultipleFeeds' : TT('Seperate multiple URLs by a comma'), #: Config->RSS, placeholder (cannot be too long)
     'button-preFeed' : TT('Read Feed'),#: Config->RSS button
     'button-forceFeed' : TT('Force Download'),#: Config->RSS button
     'rss-order' : TT('Order'), #: Config->RSS table column header
@@ -593,9 +606,11 @@ SKIN_TEXT = {
     'rss-atleast' : TT('At least'), #: Config->RSS filter-type selection menu
     'rss-atmost' : TT('At most'), #: Config->RSS filter-type selection menu
     'rss-from' : TT('From SxxEyy'), #: Config->RSS filter-type selection menu "From Season/Episode"
+    'rss-from-show' : TT('From Show SxxEyy'), #: Config->RSS filter-type selection menu "From Show Season/Episode"
     'rss-matched' : TT('Matched'), #: Config->RSS section header
     'rss-notMatched' : TT('Not Matched'), #: Config->RSS section header
     'rss-done' : TT('Downloaded'), #: Config->RSS section header
+    'rss-added' : TT('Added NZB'), #: Config->RSS after adding to queue
     'link-download' : TT('Download'), #: Config->RSS button "download item"
     'button-rssNow' : TT('Read All Feeds Now'), #: Config->RSS button
 
@@ -664,11 +679,11 @@ SKIN_TEXT = {
     'explain-nscript_parameters' : TT('Read the Wiki Help on this!'), #: Notification Script settings
 
 # Config->Cat
-    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use commas to separate terms.'),
+    'explain-catTags' : TT('Indexers can supply a category inside the NZB which SABnzbd will try to match to the categories defined below. Additionally, you can add terms to "Indexer Categories / Groups" to match more categories. Use commas to separate terms. Wildcards in the terms are supported. <br>More information can be found on the Wiki.'),
     'explain-catTags2' : TT('Ending the path with an asterisk * will prevent creation of job folders.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
-    'catTags' : TT('Groups / Indexer tags'),
+    'catTags' : TT('Indexer Categories / Groups'),
     'button-delCat' : TT('X'), #: Small delete button
 
 # Config->Sorting
@@ -676,6 +691,7 @@ SKIN_TEXT = {
     'opt-tvsort' : TT('Enable TV Sorting'),
     'sort-legenda' : TT('Pattern Key'),
     'button-clear' : TT('Clear'),
+    'button-evalFeed' : TT('Apply filters'),
     'presetSort' : TT('Presets'),
     'example' : TT('Example'),
     'movieSort' : TT('Generic Sorting'),
@@ -825,7 +841,7 @@ SKIN_TEXT = {
     'Glitter-confirmClear1Download' : TT('Are you sure?'),
     'Glitter-updateAvailable' : TT('Update Available!'),
     'Glitter-noLocalStorage' : TT('LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!'), #: Don't translate LocalStorage
-    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'), 
+    'Glitter-glitterTips' : TT('Glitter has some (new) features you might like!'),
     'Glitter-custom' : TT('Custom'),
     'Glitter-displayCompact' : TT('Compact layout'),
     'Glitter-displayTabbed' : TT('Tabbed layout <br/>(separate queue and history)'),
@@ -962,11 +978,9 @@ SKIN_TEXT = {
     'wizard-server-text' :  TT('Click to test the entered details.'),
     'wizard-example' :  TT('E.g.'), #: Abbreviation for "for example"
     'wizard-button-testServer' :  TT('Test Server'), #: Wizard step
-    'wizard-restarting' :  TT('Restarting SABnzbd...'), #: Wizard step
     'wizard-complete' :  TT('Setup is now complete!'), #: Wizard step
     'wizard-tip1' :  TT('SABnzbd will now be running in the background.'), #: Wizard tip
     'wizard-tip2' :  TT('Closing any browser windows/tabs will NOT close SABnzbd.'), #: Wizard tip
-    'wizard-tip3' :  TT('After SABnzbd has finished restarting you will be able to access it at the following location: %s'), #: Wizard tip
     'wizard-tip4' :  TT('It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.'), #: Wizard tip
     'wizard-tip-wiki' :  TT('Further help can be found on our'), #: Will be appended with a wiki-link, adjust word order accordingly
     'wizard-goto' :  TT('Go to SABnzbd'), #: Wizard step

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@ KERNEL32 = None
 
 if os.name == 'nt':
     WIN32 = True
+    from util.apireg import del_connection_info
     try:
         import ctypes
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
@@ -75,6 +76,31 @@ if DARWIN:
 else:
     DARWIN_VERSION = 0
 
+##############################################################################
+# SSL CHECKS
+##############################################################################
+HAVE_SSL_CONTEXT = None
+HAVE_SSL = None
+try:
+    import ssl
+    HAVE_SSL = True
+    try:
+        # Test availability of SSLContext (python 2.7.9+)
+        ssl.SSLContext
+        HAVE_SSL_CONTEXT = True
+    except:
+        HAVE_SSL_CONTEXT = False
+except:
+    HAVE_SSL = False
+    HAVE_SSL_CONTEXT = False
+
+try:
+    import cryptography
+    HAVE_CRYPTOGRAPHY = True
+except:
+    HAVE_CRYPTOGRAPHY = False
+
+# Now we can import safely
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader
@@ -107,6 +133,7 @@ START = datetime.datetime.now()
 
 MY_NAME = None
 MY_FULLNAME = None
+RESTART_ARGS = []
 NEW_VERSION = None
 DIR_HOME = None
 DIR_APPDATA = None
@@ -142,7 +169,7 @@ SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
 OLD_QUEUE = False
-SCHED_RESTART = False  # Set when restarted through scheduler
+TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
 LAST_WARNING = None
@@ -281,9 +308,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    sabnzbd.EXTERNAL_IPV6 = test_ipv6()
-    logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
-
     # One time conversion "speedlimit" in schedules.
     if not cfg.sched_converted():
         schedules = cfg.schedules()
@@ -366,6 +390,10 @@ def halt():
         logging.info('SABnzbd shutting down...')
         __SHUTTING_DOWN__ = True
 
+        # Stop the windows tray icon
+        if sabnzbd.WINTRAY:
+            sabnzbd.WINTRAY.terminate = True
+
         sabnzbd.zconfig.remove_server()
 
         rss.stop()
@@ -415,9 +443,6 @@ def halt():
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
 
-        # Stop the windows tray icon
-        if sabnzbd.WINTRAY:
-            sabnzbd.WINTRAY.terminate = True
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
@@ -428,6 +453,28 @@ def halt():
         logging.info('All processes stopped')
 
         __INITIALIZED__ = False
+
+
+def trigger_restart():
+    """ Trigger a restart by setting a flag an shutting down CP """
+    if sabnzbd.downloader.Downloader.do.paused:
+        sabnzbd.RESTART_ARGS.append('-p')
+    sys.argv = sabnzbd.RESTART_ARGS
+
+    # Stop all services
+    sabnzbd.halt()
+    cherrypy.engine.exit()
+
+    if sabnzbd.WIN32:
+        # Remove connection info for faster restart
+        del_connection_info()
+
+    # Leave the harder restarts to the polling in SABnzbd.py
+    if sabnzbd.WIN_SERVICE or getattr(sys, 'frozen', None) == 'macosx_app':
+        sabnzbd.TRIGGER_RESTART = True
+    else:
+        # Do the restart right now
+        cherrypy.engine._do_execv()
 
 
 ##############################################################################
@@ -496,7 +543,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on a URL, attributes optional """
     if 'http' not in url:
         return
-    if pp and pp == "-1":
+    if not pp or pp == "-1":
         pp = None
     if script and script.lower() == 'default':
         script = None
@@ -720,19 +767,17 @@ def system_standby():
 def shutdown_program():
     """ Stop program after halting and saving """
     logging.info("Performing sabnzbd shutdown")
-    Thread(target=halt).start()
-    while __INITIALIZED__:
-        time.sleep(1.0)
-    os._exit(0)
+    sabnzbd.halt()
+    cherrypy.engine.exit()
+    sabnzbd.SABSTOP = True
 
 
 def restart_program():
     """ Restart program (used by scheduler) """
-    global SCHED_RESTART
     logging.info("Scheduled restart request")
     # Just set the stop flag, because stopping CherryPy from
     # the scheduler is not reliable
-    cherrypy.engine.execv = SCHED_RESTART = True
+    sabnzbd.TRIGGER_RESTART = True
 
 
 def change_queue_complete_action(action, new=True):
@@ -777,11 +822,14 @@ def run_script(script):
     """ Run a user script (queue complete only) """
     command = [os.path.join(cfg.script_dir.get_path(), script)]
     if os.path.exists(command[0]):
-        stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
-        logging.info('Spawning external command %s', command)
-        subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
+        try:
+            stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
+            logging.info('Spawning external command %s', command)
+            subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             startupinfo=stup, creationflags=creationflags)
+        except:
+            logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
 
 
 def empty_queues():
@@ -1017,11 +1065,6 @@ def check_repair_request():
             pass
         return True
     return False
-
-
-def SimpleRarExtract(rarfile, fn):
-    """ Wrapper for call to newsunpack, required to avoid circular imports """
-    return sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
 
 
 def check_all_tasks():

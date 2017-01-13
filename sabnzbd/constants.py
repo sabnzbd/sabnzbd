@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from collections import namedtuple
+from re import compile
 
 CONFIG_VERSION = 19
 
@@ -87,6 +88,7 @@ DEF_LOGLEVEL = 1
 DEF_SCANRATE = 5
 DEF_QRATE = 0
 MAX_DECODE_QUEUE = 10
+LIMIT_DECODE_QUEUE = 100
 MAX_WARNINGS = 20
 MAX_WIN_DFOLDER = 60
 
@@ -107,16 +109,16 @@ VALID_ARCHIVES = ('.zip', '.rar', '.7z')
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 
 # (MATCHER, [EXTRA, MATCHERS])
-series_match = [(r'( [sS]|[\d]+)x(\d+)',  # 1x01
-                [r'^[-\.]+([sS]|[\d])+x(\d+)', r'^[-\.](\d+)']),
+series_match = [(compile(r'( [sS]|[\d]+)x(\d+)'),  # 1x01
+                [compile(r'^[-\.]+([sS]|[\d])+x(\d+)'), compile(r'^[-\.](\d+)')]),
 
-                (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                [r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', r'^[-\.](\d+)']),
+                (compile(r'[Ss](\d+)[\.\-]?[Ee](\d+)'),  # S01E01
+                [compile(r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)'), compile(r'^[-\.](\d+)')]),
 
-                (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]',  # .101. / _101_ / etc.
+                (compile(r'[ \-_\.](\d)(\d{2,2})[ \-_\.]'),  # .101. / _101_ / etc.
                 []),
 
-                (r'[ \-_\.](\d)(\d{2,2})$',  # .101 at end of title
+                (compile(r'[ \-_\.](\d)(\d{2,2})$'),  # .101 at end of title
                 [])
                ]
 
@@ -146,4 +148,4 @@ class Status():
     DELETED = 'Deleted'             # Q:  Job has been deleted (and is almost gone)
     PROP = 'Propagating'            # Q:  Delayed download
 
-NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'warning', 'error', 'other')
+NOTIFY_KEYS = ('startup', 'download', 'pp', 'complete', 'failed', 'queue_done', 'disk_full', 'new_login', 'warning', 'error', 'other')

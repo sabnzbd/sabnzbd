@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ def test_nntp_server_dict(kwargs):
     if not connections:
         return False, T('There are no connections set. Please set at least one connection.')
     ssl = int_conv(kwargs.get('ssl', 0))
-    ssl_type = kwargs.get('ssl_type')
+    ssl_verify = int_conv(kwargs.get('ssl_verify', 1))
     port = int_conv(kwargs.get('port', 0))
     if not port:
         if ssl:
@@ -50,10 +50,10 @@ def test_nntp_server_dict(kwargs):
             port = 119
 
     return test_nntp_server(host, port, server, username=username,
-                        password=password, ssl=ssl, ssl_type=ssl_type)
+                        password=password, ssl=ssl, ssl_verify=ssl_verify)
 
 
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_type=None):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1):
     """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
     if '*' in password and not password.strip('*'):
@@ -74,7 +74,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         if not got_pass:
             return False, T('Password masked in ******, please re-enter')
     try:
-        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_type, False, username, password)
+        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_verify, False, username, password)
     except:
         return False, T('Invalid server details')
 
@@ -95,7 +95,12 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             return False, T('Timed out: Try enabling SSL or connecting on a different port.')
         else:
             return False, T('Timed out')
+
     except socket.error, e:
+        # Trying SSL on non-SSL port?
+        if 'unknown protocol' in str(e).lower():
+            return False, T('Unknown SSL protocol: Try disabling SSL or connecting on a different port.')
+
         return False, unicode(e)
 
     except TypeError, e:

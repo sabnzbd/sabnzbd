@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,9 +31,9 @@ import shutil
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
-from sabnzbd.utils.rarfile import RarFile, is_rarfile
+import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, short_path
+    flag_file, real_path, globber, globber_full, short_path, get_all_passwords
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -158,15 +158,11 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     if failure_url:
         command.append(str(failure_url))
 
-    if extern_proc.endswith('.py') and (sabnzbd.WIN32 or not os.access(extern_proc, os.X_OK)):
-        command.insert(0, 'python')
-    stup, need_shell, command, creationflags = build_command(command)
-    env = fix_env()
-
-    logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
-                 extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
-
     try:
+        stup, need_shell, command, creationflags = build_command(command)
+        env = fix_env()
+        logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
+                     extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -183,14 +179,10 @@ def external_script(script, p1, p2, p3=None, p4=None):
     """ Run a user script with two parameters, return console output and exit value """
     command = [script, p1, p2, p3, p4]
 
-    if script.endswith('.py') and (sabnzbd.WIN32 or not os.access(script, os.X_OK)):
-        command.insert(0, 'python')
-    stup, need_shell, command, creationflags = build_command(command)
-    env = fix_env()
-
-    logging.info('Running user script %s(%s, %s)', script, p1, p2)
-
     try:
+        stup, need_shell, command, creationflags = build_command(command)
+        env = fix_env()
+        logging.info('Running user script %s(%s, %s)', script, p1, p2)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -201,22 +193,6 @@ def external_script(script, p1, p2, p3=None, p4=None):
     output = p.stdout.read()
     ret = p.wait()
     return output, ret
-
-
-
-def SimpleRarExtract(rarfile, name):
-    """ Extract single file from rar archive, returns (retcode, data) """
-    command = [sabnzbd.newsunpack.RAR_COMMAND, "p", "-inul", rarfile, name]
-
-    stup, need_shell, command, creationflags = build_command(command)
-
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
-
-    output = p.stdout.read()
-    ret = p.wait()
-    return ret, output
 
 
 def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
@@ -469,7 +445,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         if workdir_complete and rarpath.startswith(workdir):
             extraction_path = workdir_complete
         else:
-            extraction_path = os.path.split(rarpath)[0]
+            # Make sure that path is not too long
+            extraction_path = short_path(os.path.split(rarpath)[0])
 
         logging.info("Extracting rarfile %s (belonging to %s) to %s",
                      rarpath, rar_set, extraction_path)
@@ -477,6 +454,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         try:
             fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
                                          one_folder, nzo, rar_set, extraction_path)
+            # Was it aborted?
+            if not nzo.pp_active:
+                fail = 1
+                break
             success = not fail
         except:
             success = False
@@ -517,7 +498,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
     return fail, extracted_files
 
 
-def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
+def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path):
     """ Unpack single rar set 'rarfile' to 'extraction_path',
         with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
@@ -526,44 +507,7 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
     fail = 0
     new_files = None
     rars = []
-    if nzo.password:
-        logging.info('Found a password that was set by the user: %s', nzo.password)
-        passwords = [nzo.password.strip()]
-    else:
-        passwords = []
-
-    meta_passwords = nzo.meta.get('password', [])
-    pw = nzo.nzo_info.get('password')
-    if pw:
-        meta_passwords.append(pw)
-    if meta_passwords:
-        if nzo.password == meta_passwords[0]:
-            # this nzo.password came from meta, so don't use it twice
-            passwords.extend(meta_passwords[1:])
-        else:
-            passwords.extend(meta_passwords)
-        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
-    pw_file = cfg.password_file.get_path()
-    if pw_file:
-        try:
-            pwf = open(pw_file, 'r')
-            lines = pwf.read().split('\n')
-            # Remove empty lines and space-only passwords and remove surrounding spaces
-            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-            logging.debug('Read these passwords from file: %s', pws)
-            passwords.extend(pws)
-            pwf.close()
-            logging.info('Read %s passwords from file %s', len(pws), pw_file)
-        except IOError:
-            logging.info('Failed to read the passwords file %s', pw_file)
-
-    if nzo.password:
-        # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
-    elif not passwords or nzo.encrypted < 1:
-        # If we're not sure about encryption, start with empty password
-        # and make sure we have at least the empty password
-        passwords.insert(0, '')
+    passwords = get_all_passwords(nzo)
 
     for password in passwords:
         if password:
@@ -571,17 +515,17 @@ def rar_extract(rarfile, numrars, one_folder, nzo, setname, extraction_path):
             msg = T('Trying unrar with password "%s"') % unicoder(password)
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg)
-        fail, new_files, rars = rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password)
+        fail, new_files, rars = rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password)
         if fail != 2:
             break
 
     if fail == 2:
-        logging.error('%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(rarfile)[1])
+        logging.error('%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(rarfile_path)[1])
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path, password):
-    """ Unpack single rar set 'rarfile' to 'extraction_path'
+def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
+    """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time()
@@ -589,11 +533,11 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
     try:
-        zf = RarFile(rarfile)
-        expected_files = zf.unamelist()
+        zf = rarfile.RarFile(rarfile_path)
+        expected_files = zf.namelist()
         zf.close()
     except:
-        logging.info('Archive %s probably has full encryption', rarfile)
+        logging.info('Archive %s probably has full encryption', rarfile_path)
         expected_files = []
 
     if password:
@@ -616,22 +560,22 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
     if sabnzbd.WIN32:
         # Use all flags
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
-                   '%s' % rarfile, '%s/' % extraction_path]
+                   '%s' % rarfile_path, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
         command.insert(3, '-tsm-')
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    logging.debug("Analyzing rar file ... %s found", is_rarfile(rarfile))
+    logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -655,6 +599,15 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
         line = proc.readline()
         if not line:
             break
+
+        # Check if we should still continue
+        if not nzo.pp_active:
+            p.kill()
+            msg = T('PostProcessing was aborted (%s)') % T('Unpack')
+            nzo.fail_msg = msg
+            nzo.set_unpack_info('Unpack', msg, set=setname)
+            nzo.status = Status.FAILED
+            return fail, (), ()
 
         line = line.strip()
         lines.append(line)
@@ -730,7 +683,7 @@ def rar_extract_core(rarfile, numrars, one_folder, nzo, setname, extraction_path
             if m:
                 filename = TRANS(m.group(1)).strip()
             else:
-                filename = os.path.split(rarfile)[1]
+                filename = os.path.split(rarfile_path)[1]
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
             msg = (u'[%s][%s] ' + T('Unpacking failed, archive requires a password')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
@@ -952,31 +905,8 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single set 'sevenset' to 'extraction_path', with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
-
     fail = 0
-    if nzo.password:
-        passwords = [nzo.password]
-    else:
-        passwords = []
-        pw_file = cfg.password_file.get_path()
-        if pw_file:
-            try:
-                pwf = open(pw_file, 'r')
-                passwords = pwf.read().split('\n')
-                # Remove empty lines and space-only passwords and remove surrounding spaces
-                passwords = [pw.strip('\r\n ') for pw in passwords if pw.strip('\r\n ')]
-                pwf.close()
-                logging.info('Read the passwords file %s', pw_file)
-            except IOError:
-                logging.info('Failed to read the passwords file %s', pw_file)
-
-    if nzo.password:
-        # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
-    elif not passwords or nzo.encrypted < 1:
-        # If we're not sure about encryption, start with empty password
-        # and make sure we have at least the empty password
-        passwords.insert(0, '')
+    passwords = get_all_passwords(nzo)
 
     for password in passwords:
         if password:
@@ -1313,6 +1243,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             line = linebuf.strip()
             linebuf = ''
 
+            # Check if we should still continue
+            if not nzo.pp_active:
+                p.kill()
+                msg = T('PostProcessing was aborted (%s)') % T('Repair')
+                nzo.fail_msg = msg
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = Status.FAILED
+                readd = False
+                break
+
             # Skip empty lines
             if line == '':
                 continue
@@ -1613,6 +1553,16 @@ def build_command(command):
             command[n] = deunicode(command[n])
 
     if not sabnzbd.WIN32:
+        if command[0].endswith('.py'):
+            with open(command[0], 'r') as script_file:
+                if not os.access(command[0], os.X_OK):
+                    # Inform user that Python scripts need x-bit and then stop
+                    logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
+                    raise IOError
+                elif script_file.read(2) != '#!':
+                    # No shebang (#!) defined, add default python
+                    command.insert(0, 'python')
+
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
             lst.reverse()
@@ -1630,6 +1580,10 @@ def build_command(command):
         creationflags = 0
 
     else:
+        # For Windows we always need to add python interpreter
+        if command[0].endswith('.py'):
+            command.insert(0, 'python')
+
         need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com')
         stup = subprocess.STARTUPINFO()
         stup.dwFlags = STARTF_USESHOWWINDOW
@@ -1708,7 +1662,11 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
         # Extra check for rar (takes CPU/disk)
         file_is_rar = False
         if check_rar:
-            file_is_rar = is_rarfile(file)
+            try:
+                # Can fail on Windows due to long-path after recursive-unpack
+                file_is_rar = rarfile.is_rarfile(file)
+            except:
+                pass
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
@@ -1883,12 +1841,10 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
         command = [script_path, name, fix(pp), fix(cat), fix(script), fix(priority), str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
 
-        stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
-
-        logging.info('Running pre-queue script %s', command)
-
         try:
+            stup, need_shell, command, creationflags = build_command(command)
+            env = fix_env()
+            logging.info('Running pre-queue script %s', command)
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
@@ -1930,20 +1886,15 @@ def list2cmdline(lst):
     return ' '.join(nlst)
 
 
-def get_from_url(url, timeout=None):
+def get_from_url(url):
     """ Retrieve URL and return content
         `timeout` sets non-standard timeout
     """
     import urllib2
     try:
-        if timeout:
-            s = urllib2.urlopen(url, timeout=timeout)
-        else:
-            s = urllib2.urlopen(url)
-        output = s.read()
+        return urllib2.urlopen(url).read()
     except:
-        output = None
-    return output
+        return None
 
 
 def is_sevenfile(path):

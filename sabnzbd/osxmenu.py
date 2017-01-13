@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -366,7 +366,7 @@ class SABnzbdDelegate(NSObject):
                     bytesleftprogess += pnfo.bytes_left
                     bytes = pnfo.bytes / MEBI
                     nzo_id = pnfo.nzo_id
-                    timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
+                    timeleft = self.calc_timeleft_(bytesleftprogess, bpsnow)
 
                     job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
@@ -456,9 +456,9 @@ class SABnzbdDelegate(NSObject):
             if paused:
                 self.state = T('Paused')
                 if sabnzbd.scheduler.pause_int() != "0":
-                    self.setMenuTitle("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
+                    self.setMenuTitle_("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
                 else:
-                    self.setMenuTitle("")
+                    self.setMenuTitle_("")
             elif bytes_left > 0:
                 self.state = ""
                 speed = to_units(bpsnow, dec_limit=1)
@@ -475,10 +475,10 @@ class SABnzbdDelegate(NSObject):
                 if not sabnzbd.cfg.osx_speed():
                     statusbarText = ""
 
-                self.setMenuTitle(statusbarText)
+                self.setMenuTitle_(statusbarText)
             else:
                 self.state = T('Idle')
-                self.setMenuTitle("")
+                self.setMenuTitle_("")
 
             if self.state != "" and self.info != "":
                 self.state_menu_item.setTitle_("%s - %s" % (self.state, self.info))
@@ -623,7 +623,7 @@ class SABnzbdDelegate(NSObject):
         except:
             logging.info("[osx] diskspaceUpdate Exception %s" % (sys.exc_info()[0]))
 
-    def setMenuTitle(self, text):
+    def setMenuTitle_(self, text):
         try:
             style = NSMutableParagraphStyle.new()
             style.setParagraphStyle_(NSParagraphStyle.defaultParagraphStyle())
@@ -652,7 +652,7 @@ class SABnzbdDelegate(NSObject):
         except:
             logging.info("[osx] setMenuTitle Exception %s" % (sys.exc_info()[0]))
 
-    def calc_timeleft(self, bytesleft, bps):
+    def calc_timeleft_(self, bytesleft, bps):
         """ Calculate the time left in the format HH:MM:SS """
         try:
             totalseconds = int(bytesleft / bps)
@@ -720,10 +720,9 @@ class SABnzbdDelegate(NSObject):
 #        app.orderFrontStandardAboutPanel_(nil)
 
     def restartAction_(self, sender):
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
+        sabnzbd.trigger_restart()
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
 
     def restartSafeHost_(self, sender):
         sabnzbd.cfg.cherryhost.set('127.0.0.1')
@@ -731,19 +730,17 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.cfg.https_port.set('8090')
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
+        sabnzbd.trigger_restart()
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
 
     def restartNoLogin_(self, sender):
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
-        sabnzbd.halt()
-        cherrypy.engine.restart()
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
+        sabnzbd.trigger_restart()
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
 
     def application_openFiles_(self, nsapp, filenames):
         # logging.info('[osx] file open')
@@ -764,7 +761,7 @@ class SABnzbdDelegate(NSObject):
 
     def applicationShouldTerminate_(self, sender):
         logging.info('[osx] application terminating')
-        self.setMenuTitle("\n\n%s\n" % (T('Stopping...')))
+        self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
         self.status_item.setHighlightMode_(NO)
         self.osx_icon = False
         logging.info('[osx] application stopping daemon')

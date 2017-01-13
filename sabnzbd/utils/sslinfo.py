@@ -12,46 +12,34 @@ def ssl_potential():
     return [p[9:] for p in dir(ssl) if p.startswith('PROTOCOL_')]
 
 try:
-    from OpenSSL import SSL
+    import ssl
 
-    _potential = ssl_potential()
-    try:
-        if 'SSLv23' in _potential:
-            _SSL_PROTOCOLS['v23'] = SSL.SSLv23_METHOD
-    except AttributeError:
-        pass
-    try:
-        if 'TLSv1_2' in _potential:
-            _SSL_PROTOCOLS['t12'] = SSL.TLSv1_2_METHOD
-            _SSL_PROTOCOLS_LABELS.append('TLS v1.2')
-    except AttributeError:
-        pass
-    try:
-        if 'TLSv1_1' in _potential:
-            _SSL_PROTOCOLS['t11'] = SSL.TLSv1_1_METHOD
-            _SSL_PROTOCOLS_LABELS.append('TLS v1.1')
-    except AttributeError:
-        pass
-    try:
-        if 'TLSv1' in _potential:
-            _SSL_PROTOCOLS['t1'] = SSL.TLSv1_METHOD
-            _SSL_PROTOCOLS_LABELS.append('TLS v1')
-    except AttributeError:
-        pass
-    try:
-        if 'SSLv3' in _potential:
-            _SSL_PROTOCOLS['v3'] = SSL.SSLv3_METHOD
-            _SSL_PROTOCOLS_LABELS.append('SSL v3')
-    except AttributeError:
-        pass
-    try:
-        if 'SSLv2' in _potential:
-            _SSL_PROTOCOLS['v2'] = SSL.SSLv2_METHOD
-            _SSL_PROTOCOLS_LABELS.append('SSL v2')
-    except AttributeError:
-        pass
-except ImportError:
-    SSL = None
+    # Basic
+    _SSL_PROTOCOLS['v23'] = ssl.PROTOCOL_SSLv23
+
+    # Loop through supported versions
+    for ssl_prop in dir(ssl):
+        if ssl_prop.startswith('PROTOCOL_'):
+            if ssl_prop.endswith('SSLv2'):
+                _SSL_PROTOCOLS['v2'] = ssl.PROTOCOL_SSLv2
+                _SSL_PROTOCOLS_LABELS.append('SSL v2')
+            elif ssl_prop.endswith('SSLv3'):
+                _SSL_PROTOCOLS['v3'] = ssl.PROTOCOL_SSLv3
+                _SSL_PROTOCOLS_LABELS.append('SSL v3')
+            elif ssl_prop.endswith('TLSv1'):
+                _SSL_PROTOCOLS['t1'] = ssl.PROTOCOL_TLSv1
+                _SSL_PROTOCOLS_LABELS.append('TLS v1')
+            elif ssl_prop.endswith('TLSv1_1'):
+                _SSL_PROTOCOLS['t11'] = ssl.PROTOCOL_TLSv1_1
+                _SSL_PROTOCOLS_LABELS.append('TLS v1.1')
+            elif ssl_prop.endswith('TLSv1_2'):
+                _SSL_PROTOCOLS['t12'] = ssl.PROTOCOL_TLSv1_2
+                _SSL_PROTOCOLS_LABELS.append('TLS v1.2')
+
+    # Reverse the labels, SSL's always come first in the dir()
+    _SSL_PROTOCOLS_LABELS.reverse()
+except:
+    pass
 
 
 def ssl_method(method):
@@ -61,14 +49,14 @@ def ssl_method(method):
     else:
         # The default is "negotiate a protocol"
         try:
-            return SSL.SSLv23_METHOD
+            return ssl.PROTOCOL_SSLv23
         except AttributeError:
             return _SSL_PROTOCOLS[0]
 
 
 def ssl_protocols():
-    ''' Return acronyms for SSL protocols, highest quality first '''
-    return [p for p in _ALL_PROTOCOLS if p in _SSL_PROTOCOLS]
+    ''' Return acronyms for SSL protocols '''
+    return _SSL_PROTOCOLS.keys()
 
 
 def ssl_protocols_labels():
@@ -77,32 +65,13 @@ def ssl_protocols_labels():
 
 
 def ssl_version():
-    if SSL:
-        try:
-            return SSL.SSLeay_version(SSL.SSLEAY_VERSION)
-        except AttributeError:
-            try:
-                import ssl
-                return ssl.OPENSSL_VERSION
-            except (ImportError, AttributeError):
-                return 'No OpenSSL installed'
-    else:
+    try:
+        import ssl
+        return ssl.OPENSSL_VERSION
+    except (ImportError, AttributeError):
         return None
 
-
-def pyopenssl_version():
-    if SSL:
-        try:
-            import OpenSSL
-            return OpenSSL.__version__
-        except ImportError:
-            return 'No pyOpenSSL installed'
-    else:
-        return None
 
 if __name__ == '__main__':
-
     print 'SSL version: %s' % ssl_version()
-    print 'pyOpenSSL version: %s' % pyopenssl_version()
-    print 'Potentials: %s' % ssl_potential()
-    print 'Actuals: %s' % ssl_protocols()
+    print 'Supported protocols: %s' % ssl_protocols()

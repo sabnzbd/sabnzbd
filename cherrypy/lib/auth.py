@@ -22,25 +22,25 @@ def check_auth(users, encrypt=None, realm=None):
 
                 if not isinstance(users, dict):
                     raise ValueError(
-                        "Authentication users must be a dictionary")
+                        'Authentication users must be a dictionary')
 
                 # fetch the user password
-                password = users.get(ah["username"], None)
+                password = users.get(ah['username'], None)
             except TypeError:
                 # returns a password (encrypted or clear text)
-                password = users(ah["username"])
+                password = users(ah['username'])
         else:
             if not isinstance(users, dict):
-                raise ValueError("Authentication users must be a dictionary")
+                raise ValueError('Authentication users must be a dictionary')
 
             # fetch the user password
-            password = users.get(ah["username"], None)
+            password = users.get(ah['username'], None)
 
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
         if httpauth.checkResponse(ah, password, method=request.method,
                                   encrypt=encrypt, realm=realm):
-            request.login = ah["username"]
+            request.login = ah['username']
             return True
 
         request.login = False
@@ -72,7 +72,7 @@ def basic_auth(realm, users, encrypt=None, debug=False):
         'www-authenticate'] = httpauth.basicAuth(realm)
 
     raise cherrypy.HTTPError(
-        401, "You are not authorized to access that resource")
+        401, 'You are not authorized to access that resource')
 
 
 def digest_auth(realm, users, debug=False):
@@ -94,4 +94,4 @@ def digest_auth(realm, users, debug=False):
         'www-authenticate'] = httpauth.digestAuth(realm)
 
     raise cherrypy.HTTPError(
-        401, "You are not authorized to access that resource")
+        401, 'You are not authorized to access that resource')

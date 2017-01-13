@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,7 +56,7 @@ from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-    starts_with_path, cat_convert, clip_path, create_https_certificates
+    starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -193,7 +193,7 @@ def _api_queue_delete_nzf(output, value, kwargs):
     """ API: accepts value(=nzo_id), value2(=nzf_id) """
     value2 = kwargs.get('value2')
     if value and value2:
-        removed = NzbQueue.do.remove_nzf(value, value2)
+        removed = NzbQueue.do.remove_nzf(value, value2, force_delete=True)
         return report(output, keyword='', data={'status': bool(removed), 'nzf_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -383,6 +383,13 @@ def _api_retry(name, output, kwargs):
     else:
         return report(output, _MSG_NO_ITEM)
 
+def _api_cancel_pp(name, output, kwargs):
+    """ API: accepts name, output, value(=nzo_id) """
+    nzo_id = kwargs.get('value')
+    if PostProcessor.do.cancel_pp(nzo_id):
+        return report(output, keyword='', data={'status': True, 'nzo_id': nzo_id})
+    else:
+        return report(output, _MSG_NO_ITEM)
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
@@ -651,16 +658,14 @@ def _api_auth(name, output, kwargs):
 
 def _api_restart(name, output, kwargs):
     """ API: accepts output """
-    sabnzbd.halt()
-    cherrypy.engine.restart()
+    sabnzbd.trigger_restart()
     return report(output)
 
 
 def _api_restart_repair(name, output, kwargs):
     """ API: accepts output """
     sabnzbd.request_repair()
-    sabnzbd.halt()
-    cherrypy.engine.restart()
+    sabnzbd.trigger_restart()
     return report(output)
 
 
@@ -926,6 +931,7 @@ _api_table = {
     'translate': (_api_translate, 2),
     'addfile': (_api_addfile, 1),
     'retry': (_api_retry, 2),
+    'cancel_pp': (_api_cancel_pp, 2),
     'addlocalfile': (_api_addlocalfile, 1),
     'switch': (_api_switch, 2),
     'change_cat': (_api_change_cat, 2),
@@ -1285,6 +1291,7 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
                             'servertotalconn': server.threads,
                             'serverconnections': serverconnections,
                             'serverssl': server.ssl,
+                            'serversslinfo': server.ssl_info,
                             'serveractive': server.active,
                             'servererror': server.errormsg,
                             'serverpriority': server.priority,
@@ -1593,7 +1600,7 @@ def options_list(output):
         '7zip': sabnzbd.newsunpack.SEVEN_COMMAND,
         'nice': sabnzbd.newsunpack.NICE_COMMAND,
         'ionice': sabnzbd.newsunpack.IONICE_COMMAND,
-        'ssl': sabnzbd.newswrapper.HAVE_SSL
+        'ssl': sabnzbd.HAVE_SSL
     })
 
 
@@ -2030,40 +2037,6 @@ def calc_timeleft(bytesleft, bps):
         return '0:00:00'
 
 
-def calc_age(date, trans=False):
-    """ Calculate the age difference between now and date.
-        Value is returned as either days, hours, or minutes.
-        When 'trans' is True, time symbols will be translated.
-    """
-    if trans:
-        d = T('d')  # : Single letter abbreviation of day
-        h = T('h')  # : Single letter abbreviation of hour
-        m = T('m')  # : Single letter abbreviation of minute
-    else:
-        d = 'd'
-        h = 'h'
-        m = 'm'
-    try:
-        now = datetime.datetime.now()
-        # age = str(now - date).split(".")[0] #old calc_age
-
-        # time difference
-        dage = now - date
-        seconds = dage.seconds
-        # only one value should be returned
-        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
-        if dage.days:
-            age = '%s%s' % (dage.days, d)
-        elif seconds / 3600:
-            age = '%s%s' % (seconds / 3600, h)
-        else:
-            age = '%s%s' % (seconds / 60, m)
-    except:
-        age = "-"
-
-    return age
-
-
 def std_time(when):
     # Fri, 16 Nov 2007 16:42:01 GMT +0100
     item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when)).decode(codepage)
@@ -2091,8 +2064,10 @@ def list_scripts(default=False, none=True):
 
 
 def list_cats(default=True):
-    """ Return list of categories, when default==False use '*' for Default category """
-    lst = sorted(config.get_categories().keys())
+    """ Return list of (ordered) categories,
+        when default==False use '*' for Default category
+    """
+    lst = [cat['name'] for cat in config.get_ordered_categories()]
     if default:
         lst.remove('*')
         lst.insert(0, 'Default')
