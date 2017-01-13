@@ -2041,6 +2041,8 @@ class ConfigRss(object):
             cf.set_dict(kwargs)
             config.save_config()
 
+        self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose

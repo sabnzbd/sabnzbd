@@ -462,10 +462,16 @@ class RSSQueue(object):
                                     break
 
                     if len(reCats):
-                        if notdefault(reCats[n]):
+                        if not result and defCat:
+                            # Apply Feed-category on non-matched items
+                            myCat = defCat
+                        elif result and notdefault(reCats[n]):
+                            # Use the matched info
                             myCat = reCats[n]
                         elif category and not defCat:
+                            # No result and no Feed-category
                             myCat = cat_convert(category)
+
                         if myCat:
                             myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         else:
