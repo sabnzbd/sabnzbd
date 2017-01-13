@@ -328,8 +328,12 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     # Load all passwords
                     passwords = get_all_passwords(nzo)
 
-                    # if no cryptography installed, only error when no password was set
-                    if not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
+                    # Cloaked job?
+                    if is_cloaked(filepath, zf.namelist()):
+                        nzo.encrypted = 1
+                        encrypted = True
+                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
+                        # if no cryptography installed, only error when no password was set
                         logging.info(T('%s missing'), 'Python Cryptography')
                         nzo.encrypted = 1
                         encrypted = True
