@@ -60,10 +60,6 @@ msgstr "Disable server:"
 msgid "enable server"
 msgstr "Enable server:"
 
-#: sabnzbd/skintext.py:661
-msgid "Generic Sorting"
-msgstr "Movie Sorting"
-
 #: sabnzbd/emailer.py:117
 msgid "The server didn't reply properly to the helo greeting"
 msgstr "The server didn't reply properly to the hello greeting"

@@ -694,7 +694,7 @@ SKIN_TEXT = {
     'button-evalFeed' : TT('Apply filters'),
     'presetSort' : TT('Presets'),
     'example' : TT('Example'),
-    'movieSort' : TT('Generic Sorting'),
+    'movieSort' : TT('Movie Sorting'),
     'opt-movieSort' : TT('Enable Movie Sorting'),
     'opt-movieExtra' : TT('Keep loose downloads in extra folders'),
     'affectedCat' : TT('Affected Categories'),
