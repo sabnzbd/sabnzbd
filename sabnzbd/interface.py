@@ -2833,17 +2833,23 @@ def GetRssLog(feed):
                time_downloaded_ms,\
                job.get('cat')
 
-    jobs = sabnzbd.rss.show_result(feed)
-    names = jobs.keys()
-    # Sort in the order the jobs came from the feed
-    names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
+    jobs = sabnzbd.rss.show_result(feed).values()
+    good, bad, done = ([], [], [])
+    for job in jobs:
+        if job['status'][0] == 'G':
+            good.append(make_item(job))
+        elif job['status'][0] == 'B':
+            bad.append(make_item(job))
+        elif job['status'] == 'D':
+            done.append(make_item(job))
 
-    good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
-    bad = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
-
-    # Sort in reverse order of time stamp for 'Done'
-    names.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
-    done = [make_item(jobs[job]) for job in names if jobs[job]['status'] == 'D']
+    try:
+        # Sort based on actual age, in try-catch just to be sure
+        good.sort(key=lambda job: job[8], reverse=True)
+        bad.sort(key=lambda job: job[8], reverse=True)
+        done.sort(key=lambda job: job[10], reverse=True)
+    except:
+        pass
 
     return done, good, bad
 
