@@ -2795,43 +2795,39 @@ def ShowString(name, string):
 
 def GetRssLog(feed):
     def make_item(job):
-        url = job.get('url', '')
-        title = xml_name(job.get('title', ''))
-        size = job.get('size')
-        age = job.get('age', 0)
-        age_ms = job.get('age', 0)
-        time_downloaded = job.get('time_downloaded')
-        time_downloaded_ms = job.get('time_downloaded')
+        # Make a copy
+        job = job.copy()
 
-        if sabnzbd.rss.special_rss_site(url):
-            nzbname = ""
+        # Now we apply some formatting
+        job['title'] = xml_name(job['title'])
+        job['skip'] = '*' * int(job.get('status', '').endswith('*'))
+
+        if sabnzbd.rss.special_rss_site(job['url']):
+            job['nzbname'] = ""
         else:
-            nzbname = xml_name(job.get('title', ''))
+            job['nzbname'] = xml_name(job['title'])
 
-        if size:
-            size = to_units(size)
+        if job.get('size', 0):
+            job['size_units'] = to_units(job['size'])
+        else:
+            job['size_units'] = '-'
 
-        if age:
-            age = calc_age(age, True)
-            age_ms = time.mktime(age_ms.timetuple())
+        # And we add extra fields for sorting
+        if job.get('age', 0):
+            job['age_ms'] = time.mktime(job['age'].timetuple())
+            job['age'] = calc_age(job['age'], True)
+        else:
+            job['age_ms'] = ''
+            job['age'] = ''
 
-        if time_downloaded:
-            time_downloaded = time.strftime(time_format('%H:%M %a %d %b'), time_downloaded).decode(codepage)
-            time_downloaded_ms = time.mktime(time_downloaded_ms)
+        if job.get('time_downloaded'):
+            job['time_downloaded_ms'] = time.mktime(job['time_downloaded'])
+            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded']).decode(codepage)
+        else:
+            job['time_downloaded_ms'] = ''
+            job['time_downloaded'] = ''
 
-        # Also return extra fields for sorting
-        return url, \
-               title, \
-               '*' * int(job.get('status', '').endswith('*')), \
-               job.get('rule', 0), \
-               nzbname, \
-               size, \
-               job.get('size'), \
-               age, \
-               age_ms, \
-               time_downloaded, \
-               time_downloaded_ms,\
-               job.get('cat')
+        return job
 
     jobs = sabnzbd.rss.show_result(feed).values()
     good, bad, done = ([], [], [])
@@ -2845,10 +2841,11 @@ def GetRssLog(feed):
 
     try:
         # Sort based on actual age, in try-catch just to be sure
-        good.sort(key=lambda job: job[8], reverse=True)
-        bad.sort(key=lambda job: job[8], reverse=True)
-        done.sort(key=lambda job: job[10], reverse=True)
+        good.sort(key=lambda job: job['age_ms'], reverse=True)
+        bad.sort(key=lambda job: job['age_ms'], reverse=True)
+        done.sort(key=lambda job: job['time_downloaded_ms'], reverse=True)
     except:
+        # Let the javascript do it then..
         pass
 
     return done, good, bad

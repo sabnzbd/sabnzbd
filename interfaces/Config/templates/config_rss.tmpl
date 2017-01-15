@@ -401,16 +401,16 @@
                             <form action="download" method="get">
                                 <input type="hidden" value="$feed" name="feed" />
                                 <input type="hidden" name="session" value="$session" />
-                                <input type="hidden" name="url" value="$job[0]" />
-                                <input type="hidden" name="nzbname" value="$job[4]" />
+                                <input type="hidden" name="url" value="$job['url']" />
+                                <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                             </form>
                         </td>
-                        <td>$job[3] $job[2]</td>
-                        <td data-sort-value="$job[6]">$job[5]</td>
-                        <td>$job[1]</td>
-                        <td>$job[11]</td>
-                        <td data-sort-value="$job[8]">$job[7]</td>
+                        <td>$job['rule'] $job['skip']</td>
+                        <td data-sort-value="$job['size']">$job['size_units']</td>
+                        <td>$job['title']</td>
+                        <td>$job['cat']</td>
+                        <td data-sort-value="$job['age_ms']">$job['age']</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -437,16 +437,16 @@
                             <form action="download" method="get">
                                 <input type="hidden" value="$feed" name="feed" />
                                 <input type="hidden" name="session" value="$session" />
-                                <input type="hidden" name="url" value="$job[0]" />
-                                <input type="hidden" name="nzbname" value="$job[4]" />
+                                <input type="hidden" name="url" value="$job['url']" />
+                                <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                             </form>
                         </td>
-                        <td>$job[3] $job[2]</td>
-                        <td data-sort-value="$job[6]">$job[5]</td>
-                        <td>$job[1]</td>
-                        <td>$job[11]</td>
-                        <td data-sort-value="$job[8]">$job[7]</td>
+                        <td>$job['rule'] $job['skip']</td>
+                        <td data-sort-value="$job['size']">$job['size_units']</td>
+                        <td>$job['title']</td>
+                        <td>$job['cat']</td>
+                        <td data-sort-value="$job['age_ms']">$job['age']</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -470,10 +470,10 @@
                     </thead>
                     <!--#for $job in $downloaded#-->
                         <tr class="infoTableSeperator">
-                            <td data-sort-value="$job[10]">$job[9]</td>
-                            <td data-sort-value="$job[6]">$job[5]</td>
-                            <td>$job[1]</td>
-                            <td>$job[11]</td>
+                            <td data-sort-value="$job['time_downloaded_ms']">$job['time_downloaded']</td>
+                            <td data-sort-value="$job['size']">$job['size_units']</td>
+                            <td>$job['title']</td>
+                            <td>$job['cat']</td>
                         </tr>
                     <!--#end for#-->
                 </table>
