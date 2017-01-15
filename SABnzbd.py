@@ -1071,12 +1071,15 @@ def main():
                     if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                         newport = find_free_port(browserhost, port)
                         if newport > 0:
-                            sabnzbd.cfg.https_port.set(newport)
                             notify_port_change = True
+                            # Save the new port
                             if https_port:
                                 https_port = newport
+                                sabnzbd.cfg.https_port.set(newport)
                             else:
+                                # In case HTTPS == HTTP port
                                 http_port = newport
+                                sabnzbd.cfg.port.set(newport)
         except:
             Bail_Out(browserhost, cherryport, '49')
 
