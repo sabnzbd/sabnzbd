@@ -131,6 +131,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py:333
 msgid "If empty, the standard port will only listen to HTTPS."
-msgstr "If empty, the SABnzbd Port set above will only listen to HTTPS."
+msgstr "If empty, the SABnzbd Port set above will listen to HTTPS."
 
 
