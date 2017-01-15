@@ -1501,12 +1501,12 @@ SPECIAL_BOOL_LIST = \
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
               'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
               'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'disable_api_key',
-              'api_logging', 'fixed_ports'
+              'api_logging', 'fixed_ports', 'enable_sabyenc'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
-              'ipv6_servers', 'selftest_host'
+              'ipv6_servers', 'selftest_host', 'nr_decoders'
      )
 SPECIAL_LIST_LIST = \
     ('rss_odd_titles', 'prio_sort_list'
