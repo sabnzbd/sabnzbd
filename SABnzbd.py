@@ -431,7 +431,7 @@ def print_modules():
     if sabnzbd.decoder.HAVE_SABYENC:
         logging.info("SABYenc module... found!")
     else:
-        logging.info("SABYenc module... NOT found!")
+        logging.error("SABYenc module... NOT found! Expecting v%s", sabnzbd.constants.SABYENC_VERSION)
 
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")

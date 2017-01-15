@@ -27,7 +27,7 @@ from time import sleep
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
@@ -43,6 +43,9 @@ except ImportError:
 try:
     import sabyenc
     HAVE_SABYENC = True
+    # Verify version
+    if sabyenc.__version__ != SABYENC_VERSION:
+        raise ImportError
 except ImportError:
     HAVE_SABYENC = False
 if not cfg.enable_sabyenc():
