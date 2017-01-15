@@ -21,10 +21,9 @@ sabnzbd.cfg - Configuration Parameters
 import re
 
 import sabnzbd
-from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
-    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
-    DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-    DEF_ADMIN_DIR
+from sabnzbd.constants import DEF_HOST, DEF_PORT, DEF_STDINTF, DEF_ADMIN_DIR, \
+    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_SCANRATE, DEF_COMPLETE_DIR
+
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
     OptionDir, OptionStr, OptionList, no_nonsense, \
     validate_octal, validate_safedir, \
@@ -201,14 +200,8 @@ sanitize_safe = OptionBool('misc', 'sanitize_safe', False)
 api_logging = OptionBool('misc', 'api_logging', True)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
-if sabnzbd.WIN32:
-    cherryport = OptionStr('misc', 'port', DEF_PORT_WIN)
-else:
-    cherryport = OptionStr('misc', 'port', DEF_PORT_UNIX)
-if sabnzbd.WIN32:
-    https_port = OptionStr('misc', 'https_port', DEF_PORT_WIN_SSL)
-else:
-    https_port = OptionStr('misc', 'https_port', DEF_PORT_UNIX_SSL)
+cherryport = OptionStr('misc', 'port', DEF_PORT)
+https_port = OptionStr('misc', 'https_port')
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
