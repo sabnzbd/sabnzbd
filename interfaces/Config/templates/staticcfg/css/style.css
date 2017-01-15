@@ -557,6 +557,9 @@ h2.activeRSS {
     margin: 0 6px 0 2px;
     text-align: center;
 }
+.source-icon span {
+    top: -3px;
+}
 .feed {
     text-decoration: none;
 }

@@ -466,6 +466,7 @@
                             <th>$T('size')</th>
                             <th width="60%">$T('sort-title')</th>
                             <th>$T('category')</th>
+                            <th>$T('source')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
@@ -474,6 +475,7 @@
                             <td data-sort-value="$job['size']">$job['size_units']</td>
                             <td>$job['title']</td>
                             <td>$job['cat']</td>
+                            <td data-sort-value="$job['baselink']" title="$job['baselink']"><div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div></td>
                         </tr>
                     <!--#end for#-->
                 </table>

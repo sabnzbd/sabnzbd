@@ -2801,6 +2801,7 @@ def GetRssLog(feed):
         # Now we apply some formatting
         job['title'] = xml_name(job['title'])
         job['skip'] = '*' * int(job.get('status', '').endswith('*'))
+        job['baselink'] = get_base_url(job['url'])
 
         if sabnzbd.rss.special_rss_site(job['url']):
             job['nzbname'] = ""
