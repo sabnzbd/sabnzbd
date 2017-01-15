@@ -673,7 +673,7 @@ def find_free_port(host, currentport):
     n = 0
     while n < 10 and currentport <= 49151:
         try:
-            cherrypy.process.servers.check_port(host, currentport, timeout=0.1)
+            cherrypy.process.servers.check_port(host, currentport, timeout=0.025)
             return currentport
         except:
             currentport += 5
@@ -1032,13 +1032,13 @@ def main():
     if sabnzbd.DAEMON:
         if enable_https and https_port:
             try:
-                cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.1)
+                cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.025)
             except IOError, error:
                 Bail_Out(browserhost, cherryport)
             except:
                 Bail_Out(browserhost, cherryport, '49')
         try:
-            cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.1)
+            cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.025)
         except IOError, error:
             Bail_Out(browserhost, cherryport)
         except:
@@ -1060,7 +1060,7 @@ def main():
     if enable_https:
         port = https_port or cherryport
         try:
-            cherrypy.process.servers.check_port(browserhost, port, timeout=0.1)
+            cherrypy.process.servers.check_port(browserhost, port, timeout=0.025)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
@@ -1086,7 +1086,7 @@ def main():
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
         try:
-            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.1)
+            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.025)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
