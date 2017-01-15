@@ -45,7 +45,8 @@ try:
     HAVE_SABYENC = True
 except ImportError:
     HAVE_SABYENC = False
-
+if not cfg.enable_sabyenc():
+    HAVE_SABYENC = False
 
 class CrcError(Exception):
 
@@ -64,19 +65,13 @@ class BadYenc(Exception):
 
 class Decoder(Thread):
 
-    def __init__(self, servers):
+    def __init__(self, servers, queue, dec_nr):
         Thread.__init__(self)
 
-        self.queue = Queue.Queue()
+        self.queue = queue
         self.servers = servers
-
-    def decode(self, article, lines, raw_data):
-        self.queue.put((article, lines, raw_data))
-        # See if there's space left in cache, pause otherwise
-        # But do allow some articles to enter queue, in case of full cache
-        qsize = self.queue.qsize()
-        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
-            sabnzbd.downloader.Downloader.do.delay()
+        self.shutdown = False
+        self.dec_nr = dec_nr
 
     def stop(self):
         self.queue.put(None)
@@ -111,7 +106,7 @@ class Decoder(Thread):
                     if nzo.precheck:
                         raise BadYenc
                     register = True
-                    logging.debug("Decoding %s", art_id)
+                    logging.debug("%d - Decoding %s", self.dec_nr, art_id)
 
                     data = decode(article, lines, raw_data)
                     nzf.article_count += 1

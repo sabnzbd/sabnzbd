@@ -393,6 +393,10 @@ allow_duplicate_files = OptionBool('misc', 'allow_duplicate_files', False)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
 
+# TEMP
+enable_sabyenc = OptionBool('misc', 'enable_sabyenc', True)
+nr_decoders = OptionNumber('misc', 'nr_decoders', 2)
+
 
 ##############################################################################
 # Set root folders for Folder config-items

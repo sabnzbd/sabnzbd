@@ -27,9 +27,11 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
+import Queue
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, synchronized_CV, CV
+from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.articlecache import ArticleCache
@@ -196,7 +198,13 @@ class Downloader(Thread):
         for server in config.get_servers():
             self.init_server(None, server)
 
-        self.decoder = Decoder(self.servers)
+        self.decoder_queue = Queue.Queue()
+
+        # Initialize decoders
+        self.decoder_workers = []
+        for i in range(cfg.nr_decoders()):
+            self.decoder_workers.append(Decoder(self.servers, self.decoder_queue, i))
+
         Downloader.do = self
 
     def init_server(self, oldserver, newserver):
@@ -376,6 +384,14 @@ class Downloader(Thread):
 
             sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
+    def decode(self, article, lines, raw_data):
+        self.decoder_queue.put((article, lines, raw_data))
+        # See if there's space left in cache, pause otherwise
+        # But do allow some articles to enter queue, in case of full cache
+        qsize = self.decoder_queue.qsize()
+        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
+            sabnzbd.downloader.Downloader.do.delay()
+
     def run(self):
         # First check IPv6 connectivity
         sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
@@ -397,8 +413,9 @@ class Downloader(Thread):
                 sabnzbd.HAVE_SSL_CONTEXT = False
         logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
 
-        # Start decoder
-        self.decoder.start()
+        # Start decoders
+        for decoder in self.decoder_workers:
+            decoder.start()
 
         # Kick BPS-Meter to check quota
         BPSMeter.do.update()
@@ -458,7 +475,7 @@ class Downloader(Thread):
                         # Article too old for the server, treat as missing
                         if sabnzbd.LOG_ALL:
                             logging.debug('Article %s too old for %s', article.article, server.id)
-                        self.decoder.decode(article, None, None)
+                        self.decode(article, None, None)
                         break
 
                     server.idle_threads.remove(nw)
@@ -486,8 +503,10 @@ class Downloader(Thread):
                         break
 
                 if empty:
-                    self.decoder.stop()
-                    self.decoder.join()
+                    # Start decoders
+                    for decoder in self.decoder_workers:
+                        decoder.stop()
+                        decoder.join()
 
                     for server in self.servers:
                         server.stop(self.read_fds, self.write_fds)
@@ -688,7 +707,7 @@ class Downloader(Thread):
                     elif nw.status_code == '223':
                         done = True
                         logging.debug('Article <%s> is present', article.article)
-                        self.decoder.decode(article, nw.lines, nw.data)
+                        self.decode(article, nw.lines, nw.data)
 
                     elif nw.status_code == '211':
                         done = False
@@ -736,7 +755,7 @@ class Downloader(Thread):
                     server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.id, article.article)
-                    self.decoder.decode(article, nw.lines, nw.data)
+                    self.decode(article, nw.lines, nw.data)
 
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
@@ -784,7 +803,7 @@ class Downloader(Thread):
         if article:
             if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_art_opt()):
                 # Too many tries on this server, consider article missing
-                self.decoder.decode(article, None, None)
+                self.decode(article, None, None)
             else:
                 # Remove this server from try_list
                 article.fetcher = None
