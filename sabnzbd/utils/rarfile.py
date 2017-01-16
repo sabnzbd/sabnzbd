@@ -688,8 +688,12 @@ class RarFile(object):
         return self._file_parser.needs_password()
 
     def namelist(self):
-        '''Return list of filenames in archive.'''
+        '''Return list of file and foldernames in archive.'''
         return [f.filename for f in self.infolist()]
+
+    def filelist(self):
+        '''Return list of file and foldernames in archive.'''
+        return [f.filename for f in self.infolist() if not f.isdir()]
 
     def infolist(self):
         '''Return RarInfo objects for all files/directories in archive.'''
