@@ -312,7 +312,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
     encrypted = False
     unwanted = None
 
-    if cfg.unwanted_extensions() or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
+    if (cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions()) or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
         # Safe-format for Windows
         # RarFile requires de-unicoded filenames for zf.testrar()
         filepath_split = os.path.split(filepath)
@@ -374,13 +374,12 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                         encrypted = False
 
                 # Check for unwanted extensions
-                if cfg.unwanted_extensions():
+                if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():
                     for somefile in zf.namelist():
                         logging.debug('File contains: %s', somefile)
                         if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
                             logging.debug('Unwanted file %s', somefile)
                             unwanted = somefile
-                            zf.close()
                 zf.close()
                 del zf
             except:
