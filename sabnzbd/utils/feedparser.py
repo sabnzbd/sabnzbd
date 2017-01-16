@@ -1775,11 +1775,15 @@ class _FeedParserMixin:
         # Add the dict
         if 'newznab' not in context:
             context['newznab'] = {}
-        # Add keys
-        context['newznab'][attrsD['name']] = attrsD['value']
-        # Try to get date-object
-        if attrsD['name'] == 'usenetdate':
-            context['newznab'][attrsD['name'] + '_parsed'] = _parse_date(attrsD['value'])
+        # Don't crash when it fails
+        try:
+            # Add keys
+            context['newznab'][attrsD['name']] = attrsD['value']
+            # Try to get date-object
+            if attrsD['name'] == 'usenetdate':
+                context['newznab'][attrsD['name'] + '_parsed'] = _parse_date(attrsD['value'])
+        except KeyError:
+            pass
     _start_nZEDb_attr = _start_newznab_attr
     _start_nzedb_attr = _start_newznab_attr
     _start_nntmux_attr = _start_newznab_attr
