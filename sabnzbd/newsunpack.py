@@ -534,7 +534,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     try:
         zf = rarfile.RarFile(rarfile_path)
-        expected_files = zf.namelist()
+        expected_files = zf.filelist()
         zf.close()
     except:
         logging.info('Archive %s probably has full encryption', rarfile_path)
@@ -743,9 +743,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                     continue
                 fullpath = os.path.join(extraction_path, path)
                 logging.debug("Checking existence of %s", fullpath)
-                if path.endswith('/'):
-                    # Folder
-                    continue
                 if not os.path.exists(fullpath):
                     # There was a missing file, show a warning
                     missing.append(path)
