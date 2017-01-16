@@ -5,7 +5,7 @@
         <!--
                 Glitter V2
                 By Safihre (2016) - safihre@sabnzbd.org
-                
+
                 Code extended from Shiny-template
                 Code examples used from Knockstrap-template
 
@@ -24,7 +24,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="msapplication-navbutton-color" content="#000000" />
         <meta name="theme-color" content="#000000" />
-        
+
         <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
         <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
@@ -49,7 +49,7 @@
             var glitterIsBeta = ("$version".search(/Alpa|Beta|x/)) > 0;
             var glitterPreLoadQueue = $preload_queue;
             var glitterPreLoadHistory = $preload_history;
-        
+
             var glitterTranslate = new Object();
             glitterTranslate.paused = "$T('post-Paused')";
             glitterTranslate.left = "$T('Glitter-left')";
@@ -82,7 +82,7 @@
             glitterTranslate.defaultText = "$T('default')";
             glitterTranslate.noneText = "$T('None')";
             glitterTranslate.moreText = "$T('Glitter-more')";
-            
+
             glitterTranslate.status = [];
             glitterTranslate.status['Completed'] = "$T('post-Completed')";
             glitterTranslate.status['Failed'] = "$T('post-Failed')";
@@ -159,7 +159,7 @@
             <!--#include $webdir + "/include_messages.tmpl"#-->
             <!--#include $webdir + "/include_history.tmpl"#-->
         </div>
-        
+
         <!--#include $webdir + "/include_overlays.tmpl"#-->
     </body>
 </html>

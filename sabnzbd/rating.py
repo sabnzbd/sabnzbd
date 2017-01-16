@@ -26,17 +26,22 @@ import time
 import logging
 import copy
 import socket
-try:
-    socket.ssl
-    _HAVE_SSL = True
-except:
-    _HAVE_SSL = False
+import Queue
+import collections
 from threading import RLock, Thread
-
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.utils.ordered import OrderedSetQueue
 import sabnzbd.cfg as cfg
+
+# A queue which ignores duplicates but maintains ordering
+class OrderedSetQueue(Queue.Queue):
+    def _init(self, maxsize):
+        self.maxsize = maxsize
+        self.queue = collections.OrderedDict()
+    def _put(self, item):
+        self.queue[item] = None
+    def _get(self):
+        return self.queue.popitem()[0]
 
 _RATING_URL = "/releaseRatings/releaseRatings.php"
 RATING_LOCK = RLock()
@@ -128,7 +133,7 @@ class Rating(Thread):
             self.ratings = {}
             self.nzo_indexer_map = {}
         Thread.__init__(self)
-        if not _HAVE_SSL:
+        if not sabnzbd.HAVE_SSL:
             logging.warning(T('Ratings server requires secure connection'))
             self.stop()
 

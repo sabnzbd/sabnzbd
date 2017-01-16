@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     get_unique_path, get_admin_path, remove_all, format_source_url, \
     sanitize_filename, globber_full, sanitize_foldername, int_conv, \
     set_permissions, format_time_string, long_path, trim_win_path, \
-    fix_unix_encoding
+    fix_unix_encoding, calc_age
 from sabnzbd.decorators import synchronized, IO_LOCK
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -61,7 +61,6 @@ from sabnzbd.rating import Rating
 __all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name patterns
-RE_NORMAL = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
@@ -619,7 +618,7 @@ class NzbObject(TryList):
         self.files = []             # List of all NZFs
         self.files_table = {}       # Dictionary of NZFs indexed using NZF_ID
 
-        self.finished_files = []    # List of al finished NZFs
+        self.finished_files = []    # List of all finished NZFs
 
         # the current status of the nzo eg:
         # Queued, Downloading, Repairing, Unpacking, Failed, Complete
@@ -679,8 +678,8 @@ class NzbObject(TryList):
 
         self.create_group_folder = cfg.create_group_folders()
 
-        # Remove trailing .nzb
-        self.work_name = split_filename(self.work_name)
+        # Remove trailing .nzb and .par(2)
+        self.work_name = create_work_name(self.work_name)
 
         if nzb is None:
             # This is a slot for a future NZB, ready now
@@ -819,6 +818,8 @@ class NzbObject(TryList):
                 self.set_final_name_pw(name)
             if group:
                 self.groups = [str(group)]
+            if accept == 2:
+                self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
             self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
@@ -839,6 +840,14 @@ class NzbObject(TryList):
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data(keep_basic=False)
             raise TypeError
+
+        if duplicate and ((not series and cfg.no_dupes() == 3) or (series and cfg.no_series_dupes() == 3)):
+            if cfg.warn_dupl_jobs():
+                logging.warning(T('Failing duplicate NZB "%s"'), filename)
+            # Move to history, utlizing the same code as accept&fail from pre-queue script
+            self.fail_msg = T('Duplicate NZB')
+            accept = 2
+            duplicate = False
 
         if duplicate or self.priority == DUP_PRIORITY:
             if cfg.warn_dupl_jobs():
@@ -898,10 +907,16 @@ class NzbObject(TryList):
         # Set nzo save-delay to minimum 30 seconds
         self.save_timeout = max(30, min(6.0 * float(self.bytes) / GIGI, 300.0))
 
-        # If accept&fail, fail the job
+        # In case pre-queue script or duplicate check want to move
+        # to history we first need an nzo_id by entering the NzbQueue
         if accept == 2:
             self.deleted = True
-            sabnzbd.Assembler.do.process((self, None))
+            self.status = Status.FAILED
+            nzo_id = sabnzbd.NzbQueue.do.add(self, quiet=True)
+            sabnzbd.NzbQueue.do.remove(nzo_id)
+            self.purge_data(keep_basic=True)
+            # Raise error, so it's not added
+            raise TypeError
 
 
     def check_for_dupe(self, nzf):
@@ -1028,7 +1043,7 @@ class NzbObject(TryList):
                 # set the nzo status to return "Queued"
                 self.status = Status.QUEUED
                 self.set_download_report()
-                self.fail_msg = T('Aborted, cannot be completed')
+                self.fail_msg = T('Aborted, cannot be completed') +  ' - https://sabnzbd.org/not-complete'
                 self.set_unpack_info('Download', self.fail_msg, unique=False)
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 # Update the last check time
@@ -1293,7 +1308,7 @@ class NzbObject(TryList):
             complete_time = format_time_string(seconds, timecompleted.days)
 
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024, dec_limit=1))
-            msg1 += u'<br/>' + T('Age') + ': ' + sabnzbd.api.calc_age(self.avg_date, True)
+            msg1 += u'<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
 
             bad = self.nzo_info.get('bad_art_log', [])
             miss = self.nzo_info.get('missing_art_log', [])
@@ -1454,7 +1469,7 @@ class NzbObject(TryList):
                 def _get_first_meta(type):
                     values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
                     return values[0] if values and isinstance(values, list) else values
-                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup', 
+                rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup',
                                 'votedown', 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']
                 fields = {}
                 for k in rating_types:
@@ -1746,7 +1761,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     if is_par2 and not is_par1:
         return -1
 
-    # Anything with a priority extention goes first
+    # Anything with a priority extension goes first
     ext_list = get_ext_list()
     if ext_list:
         onlist1 = ext_on_list(name1, ext_list)
@@ -1757,7 +1772,7 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
             return 1
 
     if name:
-        # Prioritise .rar files above any other type of file (other than vol-par)
+        # Prioritize .rar files above any other type of file (other than vol-par)
         # Useful for nzb streaming
         RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
         m1 = RE_RAR.search(name1)
@@ -1773,20 +1788,21 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
             name2 = name2.replace('.rar', '.r//')
         return cmp(name1, name2)
     else:
-        # Do date comparision
+        # Do date comparison
         return cmp(nzf1.date, nzf2.date)
 
 
-def split_filename(name):
-    """ Remove ".nzb" """
+def create_work_name(name):
+    """ Remove ".nzb" and ".par(2)" """
+    strip_ext = ['.nzb', '.par', '.par2']
     name = name.strip()
     if name.find('://') < 0:
-        m = RE_NORMAL.match(name)
-        if m:
-            return m.group(1).rstrip('.').strip()
-        else:
-            return name.strip()
-        return ''
+        name_base, ext = os.path.splitext(name)
+        # In case it was one of these, there might be more
+        while ext.lower() in strip_ext:
+            name = name_base
+            name_base, ext = os.path.splitext(name)
+        return name.strip()
     else:
         return name.strip()
 

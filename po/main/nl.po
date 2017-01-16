@@ -7,197 +7,187 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-11-02 22:21+0000\n"
-"PO-Revision-Date: 2016-08-09 21:56+0000\n"
-"Last-Translator: shypike <Unknown>\n"
+"POT-Creation-Date: 2017-01-08 11:51+0000\n"
+"PO-Revision-Date: 2017-01-09 01:11+0000\n"
+"Last-Translator: At Voogt <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 06:09+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
+"X-Launchpad-Export-Date: 2017-01-10 05:46+0000\n"
+"X-Generator: Launchpad (build 18302)\n"
 
-#: SABnzbd.py:313 [Error message]
+#: SABnzbd.py:275 [Error message]
 msgid "Failed to start web-interface"
-msgstr "Kan web interface niet starten"
+msgstr "Webinterface kan niet gestart worden"
 
-#: SABnzbd.py:349 [Warning message]
+#: SABnzbd.py:311 [Warning message]
 msgid "Cannot find web template: %s, trying standard template"
-msgstr "Kan web sjabloon %s niet vinden, standaard sjabloon wordt gebruikt"
+msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
-#: SABnzbd.py:473 [Error message]
+#: SABnzbd.py:435 [Error message]
 msgid "_yenc module... NOT found!"
-msgstr "_yenc module niet gevonden!"
+msgstr "_yenc-module niet gevonden."
 
-#: SABnzbd.py:480 [Error message]
+#: SABnzbd.py:447 [Error message]
 msgid "par2 binary... NOT found!"
-msgstr "par2 programma niet gevonden!"
+msgstr "par2-programma niet gevonden."
 
-#: SABnzbd.py:489 [Warning message]
+#: SABnzbd.py:456 [Warning message]
 msgid "unrar binary... NOT found"
-msgstr "unrar programma niet gevonden!"
+msgstr "unrar-programma niet gevonden."
 
-#: SABnzbd.py:494
+#: SABnzbd.py:461
 msgid "unzip binary... NOT found!"
-msgstr "unzip programma niet gevonden!"
+msgstr "unzip-programma niet gevonden."
 
-#: SABnzbd.py:499
+#: SABnzbd.py:466
 msgid "7za binary... NOT found!"
-msgstr "7za programma niet gevonden!"
+msgstr "7za-programma niet gevonden."
 
-#: SABnzbd.py:646 [Warning message]
+#: SABnzbd.py:613 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
 msgstr ""
-"Let op, wanneer je 0.0.0.0 als hostnaam gebruikt, heb je voor externe "
-"toegang een IPv6-adres nodig"
+"Let op: als je 0.0.0.0 als hostnaam gebruikt, heb je voor externe toegang "
+"een IPv6-adres nodig"
 
-#: SABnzbd.py:676 [Error message]
+#: SABnzbd.py:643 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
-msgstr "HTTP en HTTPS poort kunnen niet gelijk zijn"
+msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
-#: SABnzbd.py:1306 [Error message]
-msgid "Initializing %s-%s failed, aborting"
-msgstr "Starten van %s-%s niet gelukt, stoppen"
-
-#: SABnzbd.py:1385 [Warning message]
+#: SABnzbd.py:1334 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
-msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT en KEY-bestanden."
+msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 
-#: SABnzbd.py:1517 [Error message] # SABnzbd.py:1520 [Error message] # SABnzbd.py:1523 [Error message]
+#: SABnzbd.py:1440 [Warning message]
+msgid "Could not bind to configured port. Port changed to %s"
+msgstr ""
+
+#: SABnzbd.py:1449 [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Gebruikersinterface kon niet gestart worden: "
 
-#: SABnzbd.py:1545
+#: SABnzbd.py:1470 [Error message]
+msgid "Cannot reach the SABHelper service"
+msgstr "Geen verbinding mogelijk met de SABHelper-service"
+
+#: SABnzbd.py:1506
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s is gestart"
 
-#: SABnzbd.py:1564 [Error message]
-msgid "Cannot reach the SABHelper service"
-msgstr "Kan niet verbinden met de SABHelper service"
-
-#: SABnzbd.py:1593 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:278 [Status page, table column header, actual message]
+#: SABnzbd.py:1517 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: SABnzbd.py:1597 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1521 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr "Fout"
 
-#: SABnzbd.py:1714 # sabnzbd/osxmenu.py:775
+#: SABnzbd.py:1620 # sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd is afgesloten"
 
-#: sabnzbd/__init__.py:185 [Warning message]
+#: sabnzbd/__init__.py:193 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
 
-#: sabnzbd/__init__.py:435 [Error message]
+#: sabnzbd/__init__.py:444 [Error message]
 msgid "Fatal error at saving state"
-msgstr "Onherstelbare fout bij het opslaan status"
+msgstr "Onherstelbare fout bij opslaan status"
 
-#: sabnzbd/__init__.py:525
+#: sabnzbd/__init__.py:553
 msgid "Trying to fetch NZB from %s"
 msgstr "Probeer NZB op te halen van %s"
 
-#: sabnzbd/__init__.py:597 [Error message] # sabnzbd/__init__.py:888 [Error message] # sabnzbd/__init__.py:957 [Error message]
+#: sabnzbd/__init__.py:625 [Error message] # sabnzbd/__init__.py:917 [Error message] # sabnzbd/__init__.py:986 [Error message]
 msgid "Saving %s failed"
 msgstr "Opslaan van %s lukt niet"
 
-#: sabnzbd/__init__.py:665 [Error message]
+#: sabnzbd/__init__.py:693 [Error message]
 msgid "Cannot create temp file for %s"
 msgstr "Kan geen tijdelijk bestand maken voor %s"
 
-#: sabnzbd/__init__.py:684 [Warning message] # sabnzbd/__init__.py:695 [Warning message]
+#: sabnzbd/__init__.py:712 [Warning message] # sabnzbd/__init__.py:723 [Warning message]
 msgid "Trying to set status of non-existing server %s"
-msgstr "Poging om status van niet bestaande server %s te wijzigen"
+msgstr "Poging de status van niet-bestaande server %s in te stellen"
 
-#: sabnzbd/__init__.py:833 [Warning message]
+#: sabnzbd/__init__.py:862 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Te weinig schijfruimte, pauze geforceerd"
 
-#: sabnzbd/__init__.py:858 [Error message]
+#: sabnzbd/__init__.py:887 [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Probleem met tempfile.mkstemp"
 
-#: sabnzbd/__init__.py:918 [Error message]
+#: sabnzbd/__init__.py:947 [Error message]
 msgid "Loading %s failed"
-msgstr "Inlezen van %s lukt niet"
+msgstr "Inlezen van %s mislukt"
 
-#: sabnzbd/__init__.py:984 [Error message]
+#: sabnzbd/__init__.py:1013 [Error message]
 msgid "Loading %s failed with error %s"
 msgstr "Inlezen %s mislukt (foutmelding %s)"
 
-#: sabnzbd/api.py:759 # sabnzbd/api.py:765 # sabnzbd/api.py:772 # sabnzbd/api.py:779
-#: sabnzbd/api.py:786 # sabnzbd/api.py:793 # sabnzbd/api.py:800 # sabnzbd/api.py:806
-#: sabnzbd/skintext.py:640
+#: sabnzbd/api.py:757 # sabnzbd/api.py:763 # sabnzbd/api.py:770 # sabnzbd/api.py:777
+#: sabnzbd/api.py:784 # sabnzbd/api.py:791 # sabnzbd/api.py:798 # sabnzbd/api.py:804
+#: sabnzbd/skintext.py:648
 msgid "Test Notification"
-msgstr "Test Melding"
+msgstr "Aankondiging test"
 
-#: sabnzbd/api.py:1286
+#: sabnzbd/api.py:1284
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adres opzoeken"
 
-#: sabnzbd/api.py:1308 # sabnzbd/api.py:1729 # sabnzbd/interface.py:2747
-#: sabnzbd/skintext.py:794
+#: sabnzbd/api.py:1306 # sabnzbd/api.py:1727 # sabnzbd/interface.py:2769
+#: sabnzbd/skintext.py:803
 msgid "ERROR:"
 msgstr "FOUT:"
 
-#: sabnzbd/api.py:1308 # sabnzbd/skintext.py:786
+#: sabnzbd/api.py:1306 # sabnzbd/skintext.py:795
 msgid "WARNING:"
 msgstr "WAARSCHUWING:"
 
-#: sabnzbd/api.py:1659 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:752 [Job details page, select no files]
+#: sabnzbd/api.py:1657 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:761 [Job details page, select no files]
 msgid "None"
 msgstr "Geen"
 
-#: sabnzbd/api.py:1661 # sabnzbd/interface.py:114 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
-#: sabnzbd/skintext.py:556
+#: sabnzbd/api.py:1659 # sabnzbd/interface.py:115 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
+#: sabnzbd/skintext.py:560
 msgid "Default"
 msgstr "Standaard"
 
-#: sabnzbd/api.py:1800
+#: sabnzbd/api.py:1798
 msgid "unknown"
 msgstr "onbekend"
 
-#: sabnzbd/api.py:1828 [Error message]
+#: sabnzbd/api.py:1826 [Error message]
 msgid "Failed to compile regex for search term: %s"
-msgstr "Samenstellen van reguliere expressie lukt niet: %s"
-
-#: sabnzbd/api.py:2048
-msgid "d"
-msgstr "d"
-
-#: sabnzbd/api.py:2049
-msgid "h"
-msgstr "h"
-
-#: sabnzbd/api.py:2050
-msgid "m"
-msgstr "m"
+msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
 #: sabnzbd/assembler.py:97 [Error message]
 msgid "Disk full! Forcing Pause"
-msgstr "Schijf is vol! Forceer Pauze"
+msgstr "Schijf is vol; gedwongen pauze"
 
 #: sabnzbd/assembler.py:99 [Error message]
 msgid "Disk error on creating file %s"
-msgstr "Schrijf fout bij opslaan van bestand %s"
+msgstr "Schrijffout bij opslaan van bestand %s"
 
 #: sabnzbd/assembler.py:103 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Onherstelbare fout in de Assembler"
 
 #: sabnzbd/assembler.py:117 [Warning message]
-msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
+msgid ""
+"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
+"passwords were tried)"
 msgstr ""
-"WAARSCHUWING: Item \"%s\" gepauzeerd vanwege een versleuteld RAR-bestand"
 
 #: sabnzbd/assembler.py:120 [Warning message]
-msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
+msgid ""
+"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
+"passwords were tried)"
 msgstr ""
-"Waarschuwing: \"%s\" is afgebroken vanwege een versleuteld RAR-bestand"
 
 #: sabnzbd/assembler.py:121
 msgid "Aborted, encryption detected"
@@ -212,67 +202,67 @@ msgstr ""
 
 #: sabnzbd/assembler.py:127
 msgid "Unwanted extension is in rar file %s"
-msgstr "Ongewenste extensie zit in RAR file %s"
+msgstr "De ongewenste extensie zit in RAR-bestand %s"
 
 #: sabnzbd/assembler.py:134
 msgid "Aborted, unwanted extension detected"
-msgstr "Afgebroken: ongewenste extensie ontdekt"
+msgstr "Afgebroken, ongewenste extensie ontdekt"
 
 #: sabnzbd/assembler.py:140 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "WAARSCHUWING: Opdracht (%s) gepauseerd vanwege rating (%s)"
+msgstr "WAARSCHUWING: Taak '%s' gepauzeerd vanwege rating (%s)"
 
 #: sabnzbd/assembler.py:143 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "WAARSCHUWING: Opdracht (%s) afgebroken vanwege rating (%s)"
+msgstr "WAARSCHUWING: Taak '%s' afgebroken vanwege rating (%s)"
 
 #: sabnzbd/assembler.py:144
 msgid "Aborted, rating filter matched (%s)"
-msgstr "Afgebroken, rating filter komt overeen (%s)"
+msgstr "Afgebroken, ratingfilter komt overeen (%s)"
 
-#: sabnzbd/assembler.py:183 # sabnzbd/misc.py:1127 [Warning message]
+#: sabnzbd/assembler.py:183 # sabnzbd/assembler.py:333 # sabnzbd/misc.py:1160 [Error message]
 msgid "%s missing"
 msgstr "%s ontbreekt"
 
-#: sabnzbd/assembler.py:406
+#: sabnzbd/assembler.py:415
 msgid "video"
 msgstr "video"
 
-#: sabnzbd/assembler.py:408
+#: sabnzbd/assembler.py:417
 msgid "audio"
 msgstr "audio"
 
-#: sabnzbd/assembler.py:410
+#: sabnzbd/assembler.py:419
 msgid "spam"
 msgstr "spam"
 
-#: sabnzbd/assembler.py:412
+#: sabnzbd/assembler.py:421
 msgid "passworded"
-msgstr "Wachtwoord nodig"
+msgstr "van wachtwoord voorzien"
 
-#: sabnzbd/assembler.py:414
+#: sabnzbd/assembler.py:423
 msgid "downvoted"
-msgstr "Afkeurend gestemd"
+msgstr "negatief beoordeeld"
 
-#: sabnzbd/assembler.py:416
+#: sabnzbd/assembler.py:425
 msgid "keywords"
 msgstr "trefwoorden"
 
 #: sabnzbd/bpsmeter.py:251 [Warning message]
 msgid "Quota spent, pausing downloading"
-msgstr "Quotum verbruikt, downloaded is gestopt"
+msgstr "Quotum verbruikt, download is gestopt"
 
 #: sabnzbd/cfg.py:46
 msgid "%s is not a valid email address"
 msgstr "%s is geen geldig e-mailadres"
 
-#: sabnzbd/cfg.py:54 # sabnzbd/interface.py:1879
+#: sabnzbd/cfg.py:54 # sabnzbd/interface.py:1868
 msgid "Server address required"
-msgstr "Server adres verplicht"
+msgstr "Serveradres verplicht"
 
 #: sabnzbd/config.py:236
 msgid "Cannot create %s folder %s"
-msgstr "Kan %s map %s  niet aanmaken"
+msgstr "Niet mogelijk %s map %s aan te maken"
 
 #: sabnzbd/config.py:829 [Error message] # sabnzbd/config.py:849 [Error message]
 msgid "Cannot write to INI file %s"
@@ -280,50 +270,50 @@ msgstr "Schrijven naar het INI-bestand %s lukt niet"
 
 #: sabnzbd/config.py:838 [Error message]
 msgid "Cannot create backup file for %s"
-msgstr "Kan geen backup bestand voor %s maken"
+msgstr "Backupbestand maken voor %s niet mogelijk"
 
-#: sabnzbd/config.py:999 [Error message]
+#: sabnzbd/config.py:1008 [Error message]
 msgid "Incorrectly encoded password %s"
 msgstr "Foutief gecodeerd wachtwoord %s"
 
-#: sabnzbd/config.py:1023
+#: sabnzbd/config.py:1032
 msgid "%s is not a correct octal value"
 msgstr "%s is geen correct octaal getal"
 
-#: sabnzbd/config.py:1032
+#: sabnzbd/config.py:1041
 msgid "UNC path \"%s\" not allowed here"
-msgstr "Het UNC pad \"%s\" mag hier niet."
+msgstr "UNC-pad '%s' hier niet toegestaan."
 
-#: sabnzbd/config.py:1040
+#: sabnzbd/config.py:1049
 msgid "Error: Path length should be below %s."
-msgstr "Fout: lengte van het opgegeven pad mag niet langer zijn dan %s"
-
-#: sabnzbd/config.py:1044
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fout: Wachtrij is niet leeg, kan geen andere map kiezen."
+msgstr "Fout: het opgegeven pad mag niet langer zijn dan %s."
 
 #: sabnzbd/config.py:1053
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
+
+#: sabnzbd/config.py:1062
 msgid "Folder \"%s\" does not exist"
 msgstr "Map \"%s\" bestaat niet."
 
 #: sabnzbd/database.py:133 [Error message]
 msgid "Cannot write to History database, check access rights!"
 msgstr ""
-"Kan niet naar de Geschiedenis database schrijven, controleer de "
-"toegangsrechten!"
+"Naar de geschiedenis-database schrijven niet mogelijk, controleer de "
+"toegangsrechten."
 
 #: sabnzbd/database.py:137 [Error message]
 msgid "Damaged History database, created empty replacement"
 msgstr ""
-"Beschadigde Geschiedenis database, vervangen door nieuwe en lege database"
+"Beschadigde geschiedenis-database, is vervangen door een lege database"
 
 #: sabnzbd/database.py:149 [Error message]
 msgid "SQL Command Failed, see log"
-msgstr "SQL opdracht mislukt, zie log"
+msgstr "SQL-commando mislukt, zie logbestand"
 
 #: sabnzbd/database.py:197 [Error message]
 msgid "SQL Commit Failed, see log"
-msgstr "SQL opslag opdracht mislukt, zie log"
+msgstr "SQL-opslagopdracht mislukt, zie logbestand"
 
 #: sabnzbd/database.py:206 [Error message]
 msgid "Failed to close database, see log"
@@ -331,32 +321,35 @@ msgstr "Het lukt niet om de database te sluiten, zie log"
 
 #: sabnzbd/database.py:488 [Error message] # sabnzbd/database.py:505 [Error message]
 msgid "Invalid stage logging in history for %s"
-msgstr "Foutieve fase logging in geschiedenis voor %s"
+msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
 
-#: sabnzbd/decoder.py:112
+#: sabnzbd/decoder.py:113
 msgid "Decoding %s failed"
 msgstr "Decoderen van %s mislukt"
 
-#: sabnzbd/decoder.py:125
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC fout in %s (%s -> %s)"
+#: sabnzbd/decoder.py:123
+msgid "Decoder failure: Out of memory"
+msgstr ""
 
-#: sabnzbd/decoder.py:156
-msgid "Badly formed yEnc article in %s"
-msgstr "Foutief gevormd yEnc artikel in %s"
+#: sabnzbd/decoder.py:135
+msgid "CRC Error in %s (%s -> %s)"
+msgstr "CRC-fout in %s (%s -> %s)"
 
 #: sabnzbd/decoder.py:166
+msgid "Badly formed yEnc article in %s"
+msgstr "Slecht opgemaakt yEnc-artikel in %s"
+
+#: sabnzbd/decoder.py:176
 msgid "Unknown Error while decoding %s"
 msgstr "Onbekende fout tijdens het decoderen van %s"
 
-#: sabnzbd/decoder.py:233
+#: sabnzbd/decoder.py:243
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => ontbreekt op alle servers, overslaan"
 
-#: sabnzbd/decoder.py:262
+#: sabnzbd/decoder.py:272
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
-"UUencode codering gevonden, SABnzbd verwerkt alleen yEnc codering [%s]"
+msgstr "UUencode gevonden, SABnzbd verwerkt alleen yEnc-codering [%s]"
 
 #: sabnzbd/dirscanner.py:155 [Error message] # sabnzbd/dirscanner.py:240 [Error message]
 msgid "Error removing %s"
@@ -364,122 +357,122 @@ msgstr "Fout bij verwijderen van %s"
 
 #: sabnzbd/dirscanner.py:198 [Warning message]
 msgid "Cannot read %s"
-msgstr "Kan %s niet lezen"
+msgstr "%s kan niet gelezen worden"
 
-#: sabnzbd/dirscanner.py:338 [Error message] # sabnzbd/dirscanner.py:421 [Error message]
+#: sabnzbd/dirscanner.py:337 [Error message] # sabnzbd/dirscanner.py:420 [Error message]
 msgid "Cannot read Watched Folder %s"
-msgstr "Kan Bewaakte Map %s niet lezen"
+msgstr "Bewaakte map %s kan niet gelezen worden"
 
-#: sabnzbd/downloader.py:253
+#: sabnzbd/downloader.py:256
 msgid "Resuming"
-msgstr "Hervat"
+msgstr "Hervatten"
 
-#: sabnzbd/downloader.py:262 # sabnzbd/osxmenu.py:457 # sabnzbd/sabtray.py:87
-#: sabnzbd/sabtraylinux.py:85 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:201 [Priority pick list]
-#: sabnzbd/skintext.py:935
+#: sabnzbd/downloader.py:266 # sabnzbd/osxmenu.py:457 # sabnzbd/sabtray.py:87
+#: sabnzbd/sabtraylinux.py:85 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:202 [Priority pick list]
+#: sabnzbd/skintext.py:944
 msgid "Paused"
-msgstr "Pauze"
+msgstr "Gepauzeerd"
 
-#: sabnzbd/downloader.py:307 [Warning message] # sabnzbd/interface.py:1722 [Warning message] # sabnzbd/skintext.py:768
+#: sabnzbd/downloader.py:311 [Warning message] # sabnzbd/interface.py:1711 [Warning message] # sabnzbd/skintext.py:777
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
-"Je moet eerst een maximum bandbreedte instellen voordat je een limiet kunt "
+"Je moet eerst een maximumbandbreedte instellen voordat je een limiet kunt "
 "instellen"
 
-#: sabnzbd/downloader.py:364 # sabnzbd/downloader.py:365 [Warning message]
+#: sabnzbd/downloader.py:367 # sabnzbd/downloader.py:368 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s wordt gedurende %s minuten genegeerd"
 
-#: sabnzbd/downloader.py:457 [Error message]
+#: sabnzbd/downloader.py:480 [Error message]
 msgid "Failed to initialize %s@%s with reason: %s"
-msgstr "Geen initialisatie van %s@%s omdat: %s"
+msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 
-#: sabnzbd/downloader.py:587 # sabnzbd/downloader.py:590 [Warning message]
+#: sabnzbd/downloader.py:623 # sabnzbd/downloader.py:626 [Warning message]
 msgid "Too many connections to server %s"
 msgstr "Te veel verbindingen met server %s"
 
-#: sabnzbd/downloader.py:597 # sabnzbd/downloader.py:601 [Warning message]
+#: sabnzbd/downloader.py:633 # sabnzbd/downloader.py:637 [Warning message]
 msgid "Probable account sharing"
 msgstr "Mogelijk delen van account"
 
-#: sabnzbd/downloader.py:606 # sabnzbd/downloader.py:609 [Error message]
+#: sabnzbd/downloader.py:642 # sabnzbd/downloader.py:645 [Error message]
 msgid "Failed login for server %s"
-msgstr "Kan niet aanmelden bij server %s"
+msgstr "Aanmelden bij server %s mislukt"
 
-#: sabnzbd/downloader.py:615 # sabnzbd/downloader.py:618 [Warning message]
-#: sabnzbd/downloader.py:633 # sabnzbd/downloader.py:636 [Warning message]
+#: sabnzbd/downloader.py:651 # sabnzbd/downloader.py:654 [Warning message]
+#: sabnzbd/downloader.py:669 # sabnzbd/downloader.py:672 [Warning message]
 msgid "Cannot connect to server %s [%s]"
-msgstr "Kan geen verbinding maken met server %s [%s]"
+msgstr "Verbinding maken met server %s [%s] niet mogelijk"
 
-#: sabnzbd/downloader.py:650 [Error message]
+#: sabnzbd/downloader.py:683 [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Verbinding %s@%s mislukt, bericht=%s"
 
-#: sabnzbd/downloader.py:685 # sabnzbd/downloader.py:688
+#: sabnzbd/downloader.py:718 # sabnzbd/downloader.py:721
 msgid "Server %s requires user/password"
 msgstr "Server %s heeft gebruikersnaam/wachtwoord nodig"
 
-#: sabnzbd/downloader.py:797 [Error message]
+#: sabnzbd/downloader.py:829 [Error message]
 msgid "Suspect error in downloader"
-msgstr "Fout in downloader"
+msgstr "Vedachte fout in downloader"
 
-#: sabnzbd/downloader.py:878 # sabnzbd/skintext.py:855
+#: sabnzbd/downloader.py:914 # sabnzbd/skintext.py:864
 msgid "Shutting down"
 msgstr "Afsluiten"
 
-#: sabnzbd/emailer.py:99 # sabnzbd/emailer.py:101
+#: sabnzbd/emailer.py:98 # sabnzbd/emailer.py:100
 msgid "Failed to connect to mail server"
-msgstr "Kan geen verbinding maken met e-mailserver"
+msgstr "Verbinding met e-mailserver mislukt"
 
-#: sabnzbd/emailer.py:113
+#: sabnzbd/emailer.py:112
 msgid "Failed to initiate TLS connection"
-msgstr "Kan geen TLS verbinding maken"
+msgstr "TLS-verbinding mislukt"
 
-#: sabnzbd/emailer.py:120
+#: sabnzbd/emailer.py:119
 msgid "The server didn't reply properly to the helo greeting"
-msgstr "De server reageerde niet op de \"helo\" opening"
+msgstr "De server reageerde niet op de 'helo'-begroeting"
 
-#: sabnzbd/emailer.py:122
+#: sabnzbd/emailer.py:121
 msgid "Failed to authenticate to mail server"
-msgstr "Kan niet aanmelden bij e-mailserver"
+msgstr "Aanmelden bij e-mailserver mislukt"
 
-#: sabnzbd/emailer.py:124
+#: sabnzbd/emailer.py:123
 msgid "No suitable authentication method was found"
-msgstr "Geen geschikte authenticatie methode gevonden"
+msgstr "Geen geschikte authenticatiemethode gevonden"
 
-#: sabnzbd/emailer.py:126
+#: sabnzbd/emailer.py:125
 msgid "Unknown authentication failure in mail server"
-msgstr "Onbekende authenticatie fout bij de e-mailserver"
+msgstr "Onbekende authenticatiefout bij de e-mailserver"
 
-#: sabnzbd/emailer.py:140
+#: sabnzbd/emailer.py:139
 msgid "Failed to send e-mail"
 msgstr "Verzenden van e-mail is mislukt"
 
-#: sabnzbd/emailer.py:145
+#: sabnzbd/emailer.py:144
 msgid "Failed to close mail connection"
-msgstr "Afsluiten e-mailverbinding lukt niet"
+msgstr "Beëindigen e-mailverbinding mislukt"
 
-#: sabnzbd/emailer.py:151
+#: sabnzbd/emailer.py:150
 msgid "Email succeeded"
 msgstr "E-mail verzonden"
 
-#: sabnzbd/emailer.py:177 [Error message]
+#: sabnzbd/emailer.py:176 [Error message]
 msgid "Cannot find email templates in %s"
-msgstr "Kan geen e-mailsjablonen vinden in %s"
+msgstr "Geen e-mailsjablonen te vinden in %s"
 
-#: sabnzbd/emailer.py:208
+#: sabnzbd/emailer.py:207
 msgid "No recipients given, no email sent"
-msgstr "Geen geadresseerden gegeven, geen e-mail gestuurd"
+msgstr "Geen geadresseerden opgegeven, e-mail niet verstuurd"
 
-#: sabnzbd/emailer.py:210
+#: sabnzbd/emailer.py:209
 msgid "Invalid encoding of email template %s"
 msgstr "Foutieve codering van e-mailsjabloon %s"
 
-#: sabnzbd/emailer.py:213
+#: sabnzbd/emailer.py:212
 msgid "No email templates found"
 msgstr "Geen e-mailsjablonen gevonden"
 
-#: sabnzbd/emailer.py:274
+#: sabnzbd/emailer.py:273
 msgid ""
 "To: %s\n"
 "From: %s\n"
@@ -503,86 +496,85 @@ msgstr ""
 "Maak ruimte vrij en laat SABnzbd weer doorgaan.\n"
 "\n"
 
-#: sabnzbd/interface.py:87
+#: sabnzbd/interface.py:88
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Let op: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres."
 
-#: sabnzbd/interface.py:92
+#: sabnzbd/interface.py:93
 msgid "Server address \"%s:%s\" is not valid."
-msgstr "Server adres \"%s:%s\" is niet geldig."
+msgstr "Serveradres \"%s:%s\" is niet geldig."
 
-#: sabnzbd/interface.py:194
+#: sabnzbd/interface.py:195
 msgid "User logged in to the web interface"
 msgstr "Gebruiker heeft ingelogd"
 
-#: sabnzbd/interface.py:194 # sabnzbd/notifier.py:75 [Notification]
+#: sabnzbd/interface.py:195 # sabnzbd/notifier.py:75 [Notification]
 msgid "User logged in"
 msgstr "Gebruiker ingelogd"
 
-#: sabnzbd/interface.py:238 [Warning message]
+#: sabnzbd/interface.py:239 [Warning message]
 msgid "Missing Session key"
-msgstr "Sessie sleutel ontbreekt"
+msgstr "Sessiesleutel ontbreekt"
 
-#: sabnzbd/interface.py:239
+#: sabnzbd/interface.py:240
 msgid "Error: Session Key Required"
 msgstr "Fout: Sessie sleutel nodig"
 
-#: sabnzbd/interface.py:241 [Warning message] # sabnzbd/interface.py:242
+#: sabnzbd/interface.py:242 [Warning message] # sabnzbd/interface.py:243
 msgid "Error: Session Key Incorrect"
-msgstr "Fout: Sessie sleutel niet geldig"
+msgstr "Fout: Sessiesleutel niet geldig"
 
-#: sabnzbd/interface.py:280
+#: sabnzbd/interface.py:281
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
 msgstr ""
-"API-sleutel ontbreekt: Vul de API-sleutel van \"Algemene instellingen\" in "
-"bij je externe programma:"
+"API-sleutel ontbreekt; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
+"in bij het externe programma:"
 
-#: sabnzbd/interface.py:287
+#: sabnzbd/interface.py:288
 msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr ""
-"API-sleutel is incorrect, vul de API-sleutel van \"Algemene instellingen\" "
-"in bij je externe programma:"
+"API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
+"in bij het externe programma:"
 
-#: sabnzbd/interface.py:296
+#: sabnzbd/interface.py:297
 msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
 msgstr ""
-"Authenticatie ontbreekt: Vul gebruikersnaam en wachtwoord van \"Algememe "
-"instellingen\" in bij je hulp programma:"
+"Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
+"=> 'Algemeen' in bij het externe programma:"
 
-#: sabnzbd/interface.py:308
+#: sabnzbd/interface.py:309
 msgid "Error: No secondary interface defined."
 msgstr "Fout: geen secundaire interface ingesteld."
 
-#: sabnzbd/interface.py:348 [Warning message]
+#: sabnzbd/interface.py:349 [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
 msgstr ""
-"Probeer onze nieuwe skin Glitter! Compleet nieuw design geoptimaliseerd voor "
-"desktops en mobiele apparaten. Ga naar configuratie -> Algemeen om uw "
+"Probeer onze nieuwe skin Glitter. Compleet nieuw design, geoptimaliseerd "
+"voor desktops en mobiele apparaten. Ga naar Configuratie => Algemeen om de "
 "huidige skin te vervangen."
 
-#: sabnzbd/interface.py:376
+#: sabnzbd/interface.py:377
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
-"Je UNRAR versie is %s, we bevelen aan om versie %s of hoger te gebruiken.<br "
-"/>"
+"De UNRAR-versie is %s, we adviseren versie %s of hoger te gebruiken.<br />"
 
-#: sabnzbd/interface.py:379
+#: sabnzbd/interface.py:380
 msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 msgstr ""
-"Geen UNRAR programma gevonden, uitpakken van RAR-bestanden niet mogelijk<br "
+"Geen UNRAR-programma gevonden, uitpakken van RAR-bestanden niet mogelijk<br "
 "/>"
 
-#: sabnzbd/interface.py:381
+#: sabnzbd/interface.py:382
 msgid "No PAR2 program found, repairs not possible<br />"
-msgstr "Geen PAR2 programma, kan geen reparaties uitvoeren<br />"
+msgstr "Geen PAR2-programma gevonden, reparaties niet mogelijk<br />"
 
 #: sabnzbd/interface.py:613 # sabnzbd/newswrapper.py:339
 #: sabnzbd/utils/servertests.py:138
@@ -593,11 +585,11 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 msgid "B"
 msgstr "B"
 
-#: sabnzbd/interface.py:1295 # sabnzbd/interface.py:1307
+#: sabnzbd/interface.py:1296 # sabnzbd/interface.py:1307
 msgid "Initiating restart...<br />"
 msgstr "Begin met herstart...<br />"
 
-#: sabnzbd/interface.py:1297 # sabnzbd/interface.py:1309
+#: sabnzbd/interface.py:1297 # sabnzbd/interface.py:1308
 msgid ""
 "&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
 "click the button below.<br /><br /><strong><a "
@@ -607,324 +599,340 @@ msgstr ""
 "dan op onderstaande knop.<br /><br /><strong><a "
 "href=\"..\">Verversen</a></strong><br />"
 
-#: sabnzbd/interface.py:2007 # sabnzbd/skintext.py:589 [Config->RSS, tab header]
+#: sabnzbd/interface.py:2004 # sabnzbd/skintext.py:594 [Config->RSS, tab header]
 msgid "Feed"
 msgstr "Feed"
 
-#: sabnzbd/interface.py:2267
+#: sabnzbd/interface.py:2289
 msgid "Daily"
 msgstr "dagelijks"
 
-#: sabnzbd/interface.py:2268 # sabnzbd/skintext.py:106
+#: sabnzbd/interface.py:2290 # sabnzbd/skintext.py:106
 msgid "Monday"
-msgstr "Maandag"
+msgstr "maandag"
 
-#: sabnzbd/interface.py:2269 # sabnzbd/skintext.py:107
+#: sabnzbd/interface.py:2291 # sabnzbd/skintext.py:107
 msgid "Tuesday"
 msgstr "Dinsdag"
 
-#: sabnzbd/interface.py:2270 # sabnzbd/skintext.py:108
+#: sabnzbd/interface.py:2292 # sabnzbd/skintext.py:108
 msgid "Wednesday"
 msgstr "Woensdag"
 
-#: sabnzbd/interface.py:2271 # sabnzbd/skintext.py:109
+#: sabnzbd/interface.py:2293 # sabnzbd/skintext.py:109
 msgid "Thursday"
 msgstr "Donderdag"
 
-#: sabnzbd/interface.py:2272 # sabnzbd/skintext.py:110
+#: sabnzbd/interface.py:2294 # sabnzbd/skintext.py:110
 msgid "Friday"
 msgstr "Vrijdag"
 
-#: sabnzbd/interface.py:2273 # sabnzbd/skintext.py:111
+#: sabnzbd/interface.py:2295 # sabnzbd/skintext.py:111
 msgid "Saturday"
 msgstr "Zaterdag"
 
-#: sabnzbd/interface.py:2274 # sabnzbd/skintext.py:112
+#: sabnzbd/interface.py:2296 # sabnzbd/skintext.py:112
 msgid "Sunday"
 msgstr "Zondag"
 
-#: sabnzbd/interface.py:2305 # sabnzbd/skintext.py:119
+#: sabnzbd/interface.py:2327 # sabnzbd/skintext.py:119
 msgid "off"
 msgstr "uit"
 
-#: sabnzbd/interface.py:2317
+#: sabnzbd/interface.py:2339
 msgid "Undefined server!"
-msgstr "Onbekende server!"
+msgstr "Onbekende server."
 
-#: sabnzbd/interface.py:2747
+#: sabnzbd/interface.py:2769
 msgid "Incorrect parameter"
-msgstr "Foute instelling"
+msgstr "Incorrecte parameter"
 
-#: sabnzbd/interface.py:2747 # sabnzbd/interface.py:2769
+#: sabnzbd/interface.py:2769 # sabnzbd/interface.py:2791
 msgid "Back"
 msgstr "Terug"
 
-#: sabnzbd/interface.py:2910 # sabnzbd/interface.py:2914
-#: sabnzbd/interface.py:2918 # sabnzbd/interface.py:2922
-#: sabnzbd/interface.py:2926 # sabnzbd/interface.py:2930
-#: sabnzbd/interface.py:2934 # sabnzbd/interface.py:2938
-#: sabnzbd/interface.py:2942
+#: sabnzbd/interface.py:2951 # sabnzbd/interface.py:2955
+#: sabnzbd/interface.py:2959 # sabnzbd/interface.py:2963
+#: sabnzbd/interface.py:2967 # sabnzbd/interface.py:2971
+#: sabnzbd/interface.py:2975 # sabnzbd/interface.py:2979
+#: sabnzbd/interface.py:2983
 msgid "Incorrect value for %s: %s"
 msgstr "Foute waarde voor %s: %s"
 
-#: sabnzbd/misc.py:428 [Error message] # sabnzbd/tvsort.py:170 [Error message]
+#: sabnzbd/misc.py:66
+msgid "d"
+msgstr "d"
+
+#: sabnzbd/misc.py:67
+msgid "h"
+msgstr "h"
+
+#: sabnzbd/misc.py:68
+msgid "m"
+msgstr "m"
+
+#: sabnzbd/misc.py:463 [Error message] # sabnzbd/tvsort.py:170 [Error message]
 msgid "Cannot create directory %s"
-msgstr "Kan map %s niet aanmaken"
+msgstr "Niet mogelijk directory %s aan te maken"
 
-#: sabnzbd/misc.py:435 [Error message]
+#: sabnzbd/misc.py:470 [Error message]
 msgid "%s directory: %s error accessing"
-msgstr "%s map: fout %s bij toegang"
+msgstr "%s directory: fout %s bij toegang"
 
-#: sabnzbd/misc.py:800 [Error message]
+#: sabnzbd/misc.py:835 [Error message]
 msgid "Failed making (%s)"
-msgstr "Aanmaken %s mislukt"
+msgstr "Aanmaken (%s) mislukt"
 
-#: sabnzbd/misc.py:836 [Error message] # sabnzbd/postproc.py:400
+#: sabnzbd/misc.py:871 [Error message] # sabnzbd/postproc.py:399
 msgid "Failed moving %s to %s"
 msgstr "Verplaatsen van %s naar %s mislukt"
 
-#: sabnzbd/misc.py:1136 [Error message]
+#: sabnzbd/misc.py:1170 [Error message]
 msgid "Error creating SSL key and certificate"
-msgstr "Fout bij aanmaken van SSL-sleutel en certificaat"
+msgstr "Fout bij aanmaken SSL-sleutel en -certificaat"
 
-#: sabnzbd/misc.py:1369 [Error message]
+#: sabnzbd/misc.py:1403 [Error message]
 msgid "Cannot change permissions of %s"
-msgstr "Kan beveiliging van %s niet aanpassen"
+msgstr "Toegangsrechten van %s niet aan te passen"
 
-#: sabnzbd/newsunpack.py:209 [Warning message]
+#: sabnzbd/newsunpack.py:201 [Warning message]
 msgid "Unpack nesting too deep [%s]"
 msgstr "Teveel niveaus om uit te pakken [%s]"
 
-#: sabnzbd/newsunpack.py:390
+#: sabnzbd/newsunpack.py:382
 msgid "Joining"
 msgstr "Samenvoegen"
 
-#: sabnzbd/newsunpack.py:408
+#: sabnzbd/newsunpack.py:400
 msgid "Incomplete sequence of joinable files"
 msgstr "Onvolledige reeks van samenvoegbare bestanden"
 
-#: sabnzbd/newsunpack.py:409 # sabnzbd/newsunpack.py:417
+#: sabnzbd/newsunpack.py:401 # sabnzbd/newsunpack.py:409
 msgid "File join of %s failed"
 msgstr "Samenvoegen van bestanden %s is mislukt"
 
-#: sabnzbd/newsunpack.py:410 # sabnzbd/newsunpack.py:418
+#: sabnzbd/newsunpack.py:402 # sabnzbd/newsunpack.py:410
 msgid "[%s] Error \"%s\" while joining files"
 msgstr "[%s] Fout \"%s\" bij samenvoegen van bestanden"
 
-#: sabnzbd/newsunpack.py:411 [Error message] # sabnzbd/newsunpack.py:419 [Error message]
+#: sabnzbd/newsunpack.py:403 [Error message] # sabnzbd/newsunpack.py:411 [Error message]
 msgid "Error \"%s\" while running file_join on %s"
-msgstr "Fout %s bij samenvoegen van %s"
+msgstr "Fout %s bij 'file_join' op %s"
 
-#: sabnzbd/newsunpack.py:413
+#: sabnzbd/newsunpack.py:405
 msgid "[%s] Joined %s files"
 msgstr "[%s] %s bestanden samengevoegd"
 
-#: sabnzbd/newsunpack.py:473 # sabnzbd/newsunpack.py:834
+#: sabnzbd/newsunpack.py:466 # sabnzbd/newsunpack.py:827
 msgid "Unpacking failed, %s"
 msgstr "Uitpakken mislukt, %s"
 
-#: sabnzbd/newsunpack.py:475
+#: sabnzbd/newsunpack.py:468
 msgid "[%s] Error \"%s\" while unpacking RAR files"
 msgstr "[%s] Fout \"%s\" bij het uitpakken van RAR-bestanden"
 
-#: sabnzbd/newsunpack.py:477 [Error message]
+#: sabnzbd/newsunpack.py:470 [Error message]
 msgid "Error \"%s\" while running rar_unpack on %s"
-msgstr "Fout \"%s\" bij uitvoeren van rar_unpack op %s"
+msgstr "Fout \"%s\" bij uitvoeren van 'rar_unpack' op %s"
 
-#: sabnzbd/newsunpack.py:493 [Warning message] # sabnzbd/newsunpack.py:503 [Warning message]
-#: sabnzbd/newsunpack.py:819 [Warning message] # sabnzbd/newsunpack.py:829 [Warning message]
-#: sabnzbd/newsunpack.py:982 [Warning message] # sabnzbd/newsunpack.py:987 [Warning message]
-#: sabnzbd/newsunpack.py:1093 [Warning message] # sabnzbd/newsunpack.py:1103 [Warning message]
-#: sabnzbd/newsunpack.py:1110 [Warning message] # sabnzbd/newsunpack.py:1117 [Warning message]
-#: sabnzbd/newsunpack.py:1135 [Warning message]
+#: sabnzbd/newsunpack.py:486 [Warning message] # sabnzbd/newsunpack.py:496 [Warning message]
+#: sabnzbd/newsunpack.py:812 [Warning message] # sabnzbd/newsunpack.py:822 [Warning message]
+#: sabnzbd/newsunpack.py:975 [Warning message] # sabnzbd/newsunpack.py:980 [Warning message]
+#: sabnzbd/newsunpack.py:1086 [Warning message] # sabnzbd/newsunpack.py:1096 [Warning message]
+#: sabnzbd/newsunpack.py:1103 [Warning message] # sabnzbd/newsunpack.py:1110 [Warning message]
+#: sabnzbd/newsunpack.py:1128 [Warning message]
 msgid "Deleting %s failed!"
-msgstr "Verwijderen van %s mislukt!"
+msgstr "Verwijderen van %s mislukt."
 
-#: sabnzbd/newsunpack.py:522
+#: sabnzbd/newsunpack.py:515
 msgid "Trying unrar with password \"%s\""
-msgstr "Probeer unrar met wachtwoord \"%s\""
+msgstr "Unrar proberen met wachtwoord \"%s\""
 
-#: sabnzbd/newsunpack.py:530 [Error message] # sabnzbd/newsunpack.py:694
-#: sabnzbd/newsunpack.py:695 # sabnzbd/newsunpack.py:930 [Error message]
+#: sabnzbd/newsunpack.py:523 [Error message] # sabnzbd/newsunpack.py:687
+#: sabnzbd/newsunpack.py:688 # sabnzbd/newsunpack.py:923 [Error message]
 msgid "Unpacking failed, archive requires a password"
-msgstr "Uitpakken mislukt, archief heeft wachtwoord nodig"
+msgstr "Uitpakken mislukt, archief vereist wachtwoord"
 
-#: sabnzbd/newsunpack.py:595 # sabnzbd/newsunpack.py:627
-#: sabnzbd/newsunpack.py:794 # sabnzbd/newsunpack.py:890
+#: sabnzbd/newsunpack.py:588 # sabnzbd/newsunpack.py:620
+#: sabnzbd/newsunpack.py:787 # sabnzbd/newsunpack.py:883
 msgid "Unpacking"
 msgstr "Uitpakken"
 
-#: sabnzbd/newsunpack.py:613 # sabnzbd/newsunpack.py:1256
-#: sabnzbd/postproc.py:546
+#: sabnzbd/newsunpack.py:606 # sabnzbd/newsunpack.py:1249
+#: sabnzbd/postproc.py:545
 msgid "PostProcessing was aborted (%s)"
 msgstr "Nabewerking is afgebroken (%s)"
 
-#: sabnzbd/newsunpack.py:613 # sabnzbd/skintext.py:29 [PP phase "unpack"]
+#: sabnzbd/newsunpack.py:606 # sabnzbd/skintext.py:29 [PP phase "unpack"]
 msgid "Unpack"
 msgstr "Uitpakken"
 
-#: sabnzbd/newsunpack.py:639 # sabnzbd/newsunpack.py:640
+#: sabnzbd/newsunpack.py:632 # sabnzbd/newsunpack.py:633
 msgid "Unpacking failed, unable to find %s"
 msgstr "Uitpakken mislukt, kan %s niet vinden"
 
-#: sabnzbd/newsunpack.py:642 [Warning message]
+#: sabnzbd/newsunpack.py:635 [Warning message]
 msgid "ERROR: unable to find \"%s\""
-msgstr "FOUT\" kan \"%s\" niet vinden"
+msgstr "FOUT: \"%s\" niet te vinden"
 
-#: sabnzbd/newsunpack.py:647
+#: sabnzbd/newsunpack.py:640
 msgid "Unpacking failed, CRC error"
-msgstr "Uitpakken mislukt, CRC fout"
+msgstr "Uitpakken mislukt, CRC-fout"
 
-#: sabnzbd/newsunpack.py:648 # sabnzbd/newsunpack.py:650 [Warning message]
+#: sabnzbd/newsunpack.py:641 # sabnzbd/newsunpack.py:643 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
-msgstr "FOUT: Foutieve CRC  \"%s\""
+msgstr "FOUT: onjuiste CRC in \"%s\""
 
-#: sabnzbd/newsunpack.py:654 # sabnzbd/newsunpack.py:655
-#: sabnzbd/newsunpack.py:667 # sabnzbd/newsunpack.py:668
+#: sabnzbd/newsunpack.py:647 # sabnzbd/newsunpack.py:648
+#: sabnzbd/newsunpack.py:660 # sabnzbd/newsunpack.py:661
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Uitpakken mislukt,  schrijffout of schijf vol?"
 
-#: sabnzbd/newsunpack.py:657 [Error message] # sabnzbd/newsunpack.py:669 [Error message]
+#: sabnzbd/newsunpack.py:650 [Error message] # sabnzbd/newsunpack.py:662 [Error message]
 msgid "ERROR: write error (%s)"
-msgstr "ERROR: schrijf fout (%s)"
+msgstr "FOUT: schrijffout (%s)"
 
-#: sabnzbd/newsunpack.py:663 # sabnzbd/newsunpack.py:664
+#: sabnzbd/newsunpack.py:656 # sabnzbd/newsunpack.py:657
 msgid "Unpacking failed, path is too long"
 msgstr "Uitpakken mislukt, bestandspad is te lang"
 
-#: sabnzbd/newsunpack.py:665 [Error message]
+#: sabnzbd/newsunpack.py:658 [Error message]
 msgid "ERROR: path too long (%s)"
 msgstr "FOUT: bestandspad is te lang (%s)"
 
-#: sabnzbd/newsunpack.py:674
+#: sabnzbd/newsunpack.py:667
 msgid "Unpacking failed, see log"
 msgstr "Uitpakken mislukt,  zie log"
 
-#: sabnzbd/newsunpack.py:675 [Warning message] # sabnzbd/newsunpack.py:676
+#: sabnzbd/newsunpack.py:668 [Warning message] # sabnzbd/newsunpack.py:669
 msgid "ERROR: %s"
 msgstr "FOUT: %s"
 
-#: sabnzbd/newsunpack.py:706 # sabnzbd/newsunpack.py:707
+#: sabnzbd/newsunpack.py:699 # sabnzbd/newsunpack.py:700
 msgid "Unusable RAR file"
 msgstr "Onbruikbaar RAR-bestand"
 
-#: sabnzbd/newsunpack.py:719 # sabnzbd/newsunpack.py:720
+#: sabnzbd/newsunpack.py:712 # sabnzbd/newsunpack.py:713
 msgid "Corrupt RAR file"
-msgstr "Beschadigd RAR bestand"
+msgstr "Beschadigd RAR-bestand"
 
-#: sabnzbd/newsunpack.py:759
+#: sabnzbd/newsunpack.py:752
 msgid "Missing expected file: %s => unrar error?"
-msgstr "Bestand %s ontbreekt => UNRAR fout?"
+msgstr "Bestand %s ontbreekt => UNRAR-fout?"
 
-#: sabnzbd/newsunpack.py:762
+#: sabnzbd/newsunpack.py:755
 msgid "Unpacking failed, an expected file was not unpacked"
 msgstr "Uitpakken mislukt, er zijn te weinig bestanden uitgepakt"
 
-#: sabnzbd/newsunpack.py:764
+#: sabnzbd/newsunpack.py:757
 msgid "Unpacking failed, these file(s) are missing:"
 msgstr "Uitpakken is mislukt, deze bestand(en) ontbreken:"
 
-#: sabnzbd/newsunpack.py:772
+#: sabnzbd/newsunpack.py:765
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s bestanden/mappen uitgepakt in %s"
 
-#: sabnzbd/newsunpack.py:806 # sabnzbd/newsunpack.py:905
+#: sabnzbd/newsunpack.py:799 # sabnzbd/newsunpack.py:898
 msgid "%s files in %s"
 msgstr "%s bestanden in %s"
 
-#: sabnzbd/newsunpack.py:835 [Error message]
+#: sabnzbd/newsunpack.py:828 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Fout \"%s\" bij uitvoeren van unzip() op %s"
 
-#: sabnzbd/newsunpack.py:921
+#: sabnzbd/newsunpack.py:914
 msgid "Trying 7zip with password \"%s\""
 msgstr "Decryptie poging met 7zip en wachtwoord \"%s\""
 
-#: sabnzbd/newsunpack.py:959
+#: sabnzbd/newsunpack.py:952
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "De 7Zip set \"%s\" is niet compleet, uitpakken is niet mogelijk"
 
-#: sabnzbd/newsunpack.py:990
+#: sabnzbd/newsunpack.py:983
 msgid "Could not unpack %s"
 msgstr "Kan %s niet uitpakken"
 
-#: sabnzbd/newsunpack.py:1023
+#: sabnzbd/newsunpack.py:1016
 msgid "Quick Checking"
 msgstr "Snelle Controle uitvoeren"
 
-#: sabnzbd/newsunpack.py:1023 # sabnzbd/newsunpack.py:1049
-#: sabnzbd/newsunpack.py:1256 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:305
+#: sabnzbd/newsunpack.py:1016 # sabnzbd/newsunpack.py:1042
+#: sabnzbd/newsunpack.py:1249 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
 msgid "Repair"
 msgstr "Repareren"
 
-#: sabnzbd/newsunpack.py:1027
+#: sabnzbd/newsunpack.py:1020
 msgid "[%s] Quick Check OK"
 msgstr "[%s] Snelle Controle OK"
 
-#: sabnzbd/newsunpack.py:1049
+#: sabnzbd/newsunpack.py:1042
 msgid "Starting Repair"
 msgstr "Start reparatie"
 
-#: sabnzbd/newsunpack.py:1066 [Warning message]
+#: sabnzbd/newsunpack.py:1059 [Warning message]
 msgid "Par verify failed on %s, while QuickCheck succeeded!"
 msgstr "Par verificatie van %s niet gelukt, maar QuickCheck wel gelukt!"
 
-#: sabnzbd/newsunpack.py:1076 # sabnzbd/newsunpack.py:1138
+#: sabnzbd/newsunpack.py:1069 # sabnzbd/newsunpack.py:1131
 msgid "Repairing failed, %s"
 msgstr "Reparatie mislukt, %s"
 
-#: sabnzbd/newsunpack.py:1077 [Error message]
+#: sabnzbd/newsunpack.py:1070 [Error message]
 msgid "Error %s while running par2_repair on set %s"
 msgstr "Fout %s bij uitvoeren van par2 reparatie op verzameling %s"
 
-#: sabnzbd/newsunpack.py:1139 [Error message]
+#: sabnzbd/newsunpack.py:1132 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Fout \"%s\" bij reparatie van groep %s"
 
-#: sabnzbd/newsunpack.py:1281
+#: sabnzbd/newsunpack.py:1274
 msgid ""
 "[%s] PAR2 received incorrect options, check your Config->Switches settings"
 msgstr "[%s] De PAR2 opties zijn niet goed, controleer Instellen->Opties"
 
-#: sabnzbd/newsunpack.py:1286
+#: sabnzbd/newsunpack.py:1279
 msgid "[%s] Verified in %s, all files correct"
 msgstr "[%s] %s geverifieerd, alle bestanden zijn goed"
 
-#: sabnzbd/newsunpack.py:1293
+#: sabnzbd/newsunpack.py:1286
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verificatie in %s, reparatie is nodig"
 
-#: sabnzbd/newsunpack.py:1308
+#: sabnzbd/newsunpack.py:1301
 msgid "Main packet not found..."
 msgstr "Hoofdpakket niet gevonden..."
 
-#: sabnzbd/newsunpack.py:1334
+#: sabnzbd/newsunpack.py:1327
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Ongeldige par2 bestanden, verificatie en reparatie is niet mogelijk"
 
-#: sabnzbd/newsunpack.py:1373 # sabnzbd/newsunpack.py:1408
+#: sabnzbd/newsunpack.py:1366 # sabnzbd/newsunpack.py:1401
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Reparatie mislukt, te weinig herstelblokken (%s te weinig)"
 
-#: sabnzbd/newsunpack.py:1403
+#: sabnzbd/newsunpack.py:1396
 msgid "Fetching %s blocks..."
 msgstr "Ophalen van %s blokken..."
 
-#: sabnzbd/newsunpack.py:1405
+#: sabnzbd/newsunpack.py:1398
 msgid "Fetching"
 msgstr "Ophalen"
 
-#: sabnzbd/newsunpack.py:1416 # sabnzbd/newsunpack.py:1421
+#: sabnzbd/newsunpack.py:1409 # sabnzbd/newsunpack.py:1414
 msgid "Repairing"
 msgstr "Repareren"
 
-#: sabnzbd/newsunpack.py:1425
+#: sabnzbd/newsunpack.py:1418
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparatie in %s"
 
-#: sabnzbd/newsunpack.py:1484 # sabnzbd/newsunpack.py:1502
+#: sabnzbd/newsunpack.py:1477 # sabnzbd/newsunpack.py:1495
 msgid "Verifying"
 msgstr "Verifiëren"
+
+#: sabnzbd/newsunpack.py:1560 [Error message]
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr ""
 
 #: sabnzbd/newswrapper.py:233 [Error message]
 msgid "Error importing OpenSSL module. Connecting with NON-SSL"
@@ -936,13 +944,13 @@ msgstr "De server staat geen SSL toe op deze poort"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "De server %s gebruikt een onbetrouwbaar certificaat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
 msgstr "Start/Stop"
 
-#: sabnzbd/notifier.py:67 [Notification]
+#: sabnzbd/notifier.py:67 [Notification] # sabnzbd/skintext.py:613 [Config->RSS after adding to queue]
 msgid "Added NZB"
 msgstr "NZB toegevoegd"
 
@@ -1035,109 +1043,121 @@ msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
 msgid "NZB added to queue"
 msgstr "NZB aan wachtrij toegevoegd"
 
-#: sabnzbd/nzbqueue.py:843 [Warning message]
+#: sabnzbd/nzbqueue.py:850 [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Onbekende codering"
 
-#: sabnzbd/nzbstuff.py:472 [Warning message]
+#: sabnzbd/nzbstuff.py:471 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Bestand %s is leeg, overslaan"
 
-#: sabnzbd/nzbstuff.py:537 [Warning message]
+#: sabnzbd/nzbstuff.py:536 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Importeren van %s bestanden van %s mislukt"
 
-#: sabnzbd/nzbstuff.py:741 [Warning message]
+#: sabnzbd/nzbstuff.py:740 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "Onvolledig NZB-bestand %s"
 
-#: sabnzbd/nzbstuff.py:743 [Warning message] # sabnzbd/nzbstuff.py:747 [Warning message]
+#: sabnzbd/nzbstuff.py:742 [Warning message] # sabnzbd/nzbstuff.py:746 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Foutief NZB-bestand %s, overslaan (reden=%s, regel=%s)"
 
-#: sabnzbd/nzbstuff.py:766 # sabnzbd/nzbstuff.py:768
+#: sabnzbd/nzbstuff.py:765 # sabnzbd/nzbstuff.py:767
 msgid "Empty NZB file %s"
 msgstr "NZB-bestand %s is leeg"
 
-#: sabnzbd/nzbstuff.py:839 [Warning message]
+#: sabnzbd/nzbstuff.py:822
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:840 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Dubbele NZB \"%s\" overgeslagen"
 
-#: sabnzbd/nzbstuff.py:845 [Warning message]
+#: sabnzbd/nzbstuff.py:846 [Warning message]
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:848
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:854 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pauzeer dubbele NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:1031
+#: sabnzbd/nzbstuff.py:1046
 msgid "Aborted, cannot be completed"
 msgstr "Afgebroken, kan niet voltooid worden"
 
-#: sabnzbd/nzbstuff.py:1129 # sabnzbd/skintext.py:789
+#: sabnzbd/nzbstuff.py:1144 # sabnzbd/skintext.py:798
 msgid "DUPLICATE"
 msgstr "DUBBEL"
 
-#: sabnzbd/nzbstuff.py:1131 [Queue indicator for encrypted job] # sabnzbd/skintext.py:787
+#: sabnzbd/nzbstuff.py:1146 [Queue indicator for encrypted job] # sabnzbd/skintext.py:796
 msgid "ENCRYPTED"
 msgstr "VERSLEUTELD"
 
-#: sabnzbd/nzbstuff.py:1133 # sabnzbd/skintext.py:791
+#: sabnzbd/nzbstuff.py:1148 # sabnzbd/skintext.py:800
 msgid "TOO LARGE"
 msgstr "TE GROOT"
 
-#: sabnzbd/nzbstuff.py:1135 # sabnzbd/skintext.py:788
+#: sabnzbd/nzbstuff.py:1150 # sabnzbd/skintext.py:797
 msgid "INCOMPLETE"
 msgstr "ONVOLLEDIG"
 
-#: sabnzbd/nzbstuff.py:1137 # sabnzbd/skintext.py:790
+#: sabnzbd/nzbstuff.py:1152 # sabnzbd/skintext.py:799
 msgid "UNWANTED"
 msgstr "ONGEWENST"
 
-#: sabnzbd/nzbstuff.py:1139 # sabnzbd/skintext.py:792
+#: sabnzbd/nzbstuff.py:1154 # sabnzbd/skintext.py:801
 msgid "FILTERED"
 msgstr "GEFILTERD"
 
-#: sabnzbd/nzbstuff.py:1143 # sabnzbd/skintext.py:793
+#: sabnzbd/nzbstuff.py:1158 # sabnzbd/skintext.py:802
 msgid "WAIT %s sec"
 msgstr "WACHT %s sec"
 
-#: sabnzbd/nzbstuff.py:1146
+#: sabnzbd/nzbstuff.py:1161
 msgid "PROPAGATING %s min"
 msgstr "VERSPREIDINGSWACHTTIJD %s min"
 
-#: sabnzbd/nzbstuff.py:1295
+#: sabnzbd/nzbstuff.py:1310
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Gedownload in %s met een gemiddelde van %sB/sec"
 
-#: sabnzbd/nzbstuff.py:1296 # sabnzbd/skintext.py:756 [Job details page, file age column header] # sabnzbd/skintext.py:957
+#: sabnzbd/nzbstuff.py:1311 # sabnzbd/skintext.py:765 [Job details page, file age column header] # sabnzbd/skintext.py:966
 msgid "Age"
 msgstr "Leeftijd"
 
-#: sabnzbd/nzbstuff.py:1304
+#: sabnzbd/nzbstuff.py:1319
 msgid "%s articles were malformed"
 msgstr "%s artikelen zijn misvormd"
 
-#: sabnzbd/nzbstuff.py:1306
+#: sabnzbd/nzbstuff.py:1321
 msgid "%s articles were missing"
 msgstr "%s artikelen ontbreken"
 
-#: sabnzbd/nzbstuff.py:1308
+#: sabnzbd/nzbstuff.py:1323
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikelen hadden afwijkende duplicaten"
 
-#: sabnzbd/nzbstuff.py:1310
+#: sabnzbd/nzbstuff.py:1325
 msgid "%s articles were removed"
 msgstr "%s artikelen zijn verwijderd"
 
-#: sabnzbd/nzbstuff.py:1356 [Error message]
+#: sabnzbd/nzbstuff.py:1371 [Error message]
 msgid "Error importing %s"
 msgstr "Fout bij importeren van %s"
 
 #: sabnzbd/osxmenu.py:132 # sabnzbd/osxmenu.py:436 # sabnzbd/osxmenu.py:444
-#: sabnzbd/skintext.py:279 [Footer: indicator of warnings] # sabnzbd/skintext.py:947
+#: sabnzbd/skintext.py:280 [Footer: indicator of warnings] # sabnzbd/skintext.py:956
 msgid "Warnings"
 msgstr "Meldingen"
 
 #: sabnzbd/osxmenu.py:144 # sabnzbd/osxmenu.py:480 # sabnzbd/sabtray.py:86
-#: sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:937
+#: sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:946
 msgid "Idle"
 msgstr "Rust"
 
@@ -1145,11 +1165,11 @@ msgstr "Rust"
 msgid "Configuration"
 msgstr "Instellingen"
 
-#: sabnzbd/osxmenu.py:162 # sabnzbd/skintext.py:149 [Main menu item] # sabnzbd/skintext.py:494
+#: sabnzbd/osxmenu.py:162 # sabnzbd/skintext.py:149 [Main menu item] # sabnzbd/skintext.py:497
 msgid "Queue"
 msgstr "Wachtrij"
 
-#: sabnzbd/osxmenu.py:170 # sabnzbd/skintext.py:224 [Queue page button]
+#: sabnzbd/osxmenu.py:170 # sabnzbd/skintext.py:225 [Queue page button]
 msgid "Purge Queue"
 msgstr "Wis wachtrij"
 
@@ -1157,7 +1177,7 @@ msgstr "Wis wachtrij"
 msgid "History"
 msgstr "Geschiedenis"
 
-#: sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:238 [History page button] # sabnzbd/skintext.py:829
+#: sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:239 [History page button] # sabnzbd/skintext.py:838
 msgid "Purge History"
 msgstr "Wis de volledige geschiedenis"
 
@@ -1166,8 +1186,8 @@ msgid "Limit Speed"
 msgstr "Beperk snelheid"
 
 #: sabnzbd/osxmenu.py:221 # sabnzbd/sabtray.py:81 # sabnzbd/sabtraylinux.py:110
-#: sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:181 [Pause downloading] # sabnzbd/skintext.py:437 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:583 [Config->Scheduling]
+#: sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:182 [Pause downloading] # sabnzbd/skintext.py:439 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:588 [Config->Scheduling]
 msgid "Pause"
 msgstr "Pauze"
 
@@ -1176,7 +1196,7 @@ msgid "min."
 msgstr "min."
 
 #: sabnzbd/osxmenu.py:238 # sabnzbd/sabtray.py:83 # sabnzbd/sabtraylinux.py:108
-#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:182 [Resume downloading] # sabnzbd/skintext.py:582 [Config->Scheduling]
+#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:183 [Resume downloading] # sabnzbd/skintext.py:587 [Config->Scheduling]
 msgid "Resume"
 msgstr "Doorgaan"
 
@@ -1202,7 +1222,7 @@ msgstr "Probleemoplosser"
 
 #: sabnzbd/osxmenu.py:288 # sabnzbd/osxmenu.py:289 # sabnzbd/sabtray.py:84
 #: sabnzbd/sabtraylinux.py:111 # sabnzbd/sabtraylinux.py:167
-#: sabnzbd/skintext.py:59 [#: Config->Scheduler] # sabnzbd/skintext.py:303 # sabnzbd/skintext.py:585 [Config->Scheduling]
+#: sabnzbd/skintext.py:59 [#: Config->Scheduler] # sabnzbd/skintext.py:305 # sabnzbd/skintext.py:590 [Config->Scheduling]
 msgid "Restart"
 msgstr "Herstarten"
 
@@ -1234,9 +1254,9 @@ msgstr "Nieuwe versie beschikbaar"
 msgid "Go to wizard"
 msgstr "Ga naar Wizard"
 
-#: sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:726 # sabnzbd/osxmenu.py:734
-#: sabnzbd/osxmenu.py:737 # sabnzbd/osxmenu.py:743 # sabnzbd/osxmenu.py:746
-#: sabnzbd/osxmenu.py:767
+#: sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:725 # sabnzbd/osxmenu.py:733
+#: sabnzbd/osxmenu.py:735 # sabnzbd/osxmenu.py:741 # sabnzbd/osxmenu.py:743
+#: sabnzbd/osxmenu.py:764
 msgid "Stopping..."
 msgstr "Afsluiten..."
 
@@ -1428,125 +1448,125 @@ msgstr "Toegang geweigerd"
 msgid "Error %s: You need to provide a valid username and password."
 msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 
-#: sabnzbd/postproc.py:285
+#: sabnzbd/postproc.py:284
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
 "Download mislukt waarschijnlijk, slechts %s van de benodigde %s beschikbaar"
 
-#: sabnzbd/postproc.py:287
+#: sabnzbd/postproc.py:286
 msgid "Download failed - Not on your server(s)"
 msgstr "Download mislukt - Niet meer op je server(s)"
 
-#: sabnzbd/postproc.py:314
+#: sabnzbd/postproc.py:313
 msgid "Path exceeds 260, repair by \"par2\" is not possible"
 msgstr ""
 "Pad bevat meer dan 260 tekens, reparatie door \"par2\" is niet mogelijk"
 
-#: sabnzbd/postproc.py:358
+#: sabnzbd/postproc.py:357
 msgid "Cannot create final folder %s"
 msgstr "Kan bestemmingsmap %s niet maken"
 
-#: sabnzbd/postproc.py:383
+#: sabnzbd/postproc.py:382
 msgid "No post-processing because of failed verification"
 msgstr "Geen nabewerking vanwege mislukte verificatie"
 
-#: sabnzbd/postproc.py:391
+#: sabnzbd/postproc.py:390
 msgid "Moving"
 msgstr "Verplaatsen"
 
-#: sabnzbd/postproc.py:422
+#: sabnzbd/postproc.py:421
 msgid "Sent %s to queue"
 msgstr "%s naar de wachtrij gestuurd"
 
-#: sabnzbd/postproc.py:436 [Error message]
+#: sabnzbd/postproc.py:435 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Fout bij hernoemen van \"%s\" tot \"%s\""
 
-#: sabnzbd/postproc.py:461
+#: sabnzbd/postproc.py:460
 msgid "Failed to move files"
 msgstr "Verplaatsen van bestanden mislukt"
 
-#: sabnzbd/postproc.py:469
+#: sabnzbd/postproc.py:468
 msgid "Running script"
 msgstr "Script uitvoeren"
 
-#: sabnzbd/postproc.py:470
+#: sabnzbd/postproc.py:469
 msgid "Running user script %s"
 msgstr "Gebruiker script %s loopt"
 
-#: sabnzbd/postproc.py:480
+#: sabnzbd/postproc.py:479
 msgid "Ran %s"
 msgstr "%s is klaar"
 
-#: sabnzbd/postproc.py:490
+#: sabnzbd/postproc.py:489
 msgid "Script exit code is %s"
 msgstr "Exit code van het script is %s"
 
-#: sabnzbd/postproc.py:509 # sabnzbd/skintext.py:827
+#: sabnzbd/postproc.py:508 # sabnzbd/skintext.py:836
 msgid "More"
 msgstr "Meer"
 
-#: sabnzbd/postproc.py:535
+#: sabnzbd/postproc.py:534
 msgid "Download Completed"
 msgstr "Download voltooid"
 
-#: sabnzbd/postproc.py:538 # sabnzbd/postproc.py:547
+#: sabnzbd/postproc.py:537 # sabnzbd/postproc.py:546
 msgid "Download Failed"
 msgstr "Download mislukt"
 
-#: sabnzbd/postproc.py:542 [Error message]
+#: sabnzbd/postproc.py:541 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nabewerking van %s mislukt (%s)"
 
-#: sabnzbd/postproc.py:545
+#: sabnzbd/postproc.py:544
 msgid "see logfile"
 msgstr "zie logbestand"
 
-#: sabnzbd/postproc.py:577 [Error message]
+#: sabnzbd/postproc.py:576 [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Opschonen van %s mislukt"
 
-#: sabnzbd/postproc.py:587 [Error message]
+#: sabnzbd/postproc.py:586 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Fout bij verwijderen van werkmap %s"
 
-#: sabnzbd/postproc.py:616
+#: sabnzbd/postproc.py:615
 msgid "Post-processing"
 msgstr "Nabewerking"
 
-#: sabnzbd/postproc.py:695
+#: sabnzbd/postproc.py:694
 msgid "[%s] No par2 sets"
 msgstr "[%s] Geen par2 groepen"
 
-#: sabnzbd/postproc.py:731 # sabnzbd/postproc.py:732
+#: sabnzbd/postproc.py:730 # sabnzbd/postproc.py:731
 msgid "Trying SFV verification"
 msgstr "Probeer SFV verificatie"
 
-#: sabnzbd/postproc.py:736
+#: sabnzbd/postproc.py:735
 msgid "Some files failed to verify against \"%s\""
 msgstr "Sommige bestanden konden niet geverifieerd worden met \"%s\""
 
-#: sabnzbd/postproc.py:742
+#: sabnzbd/postproc.py:741
 msgid "Verified successfully using SFV files"
 msgstr "Verificatie m.b.v. SFV-bestanden is gelukt"
 
-#: sabnzbd/postproc.py:770 # sabnzbd/postproc.py:771
+#: sabnzbd/postproc.py:769 # sabnzbd/postproc.py:770
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "Probeer RAR verificatie"
 
-#: sabnzbd/postproc.py:780
+#: sabnzbd/postproc.py:779
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "RAR bestanden zijn succesvol geverifieerd"
+
+#: sabnzbd/postproc.py:784
+msgid "RAR files failed to verify"
+msgstr "RAR bestanden zijn niet verifieerbaar"
 
 #: sabnzbd/postproc.py:785
-msgid "RAR files failed to verify"
-msgstr ""
-
-#: sabnzbd/postproc.py:786
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] RAR verificatie niet gelukt: %s"
 
-#: sabnzbd/postproc.py:843 [Error message] # sabnzbd/postproc.py:919 [Error message]
+#: sabnzbd/postproc.py:842 [Error message] # sabnzbd/postproc.py:918 [Error message]
 msgid "Removing %s failed"
 msgstr "Verwijderen van %s mislukt"
 
@@ -1562,39 +1582,39 @@ msgstr "Kan het systeem niet in standby krijgen"
 msgid "Error while shutting down system"
 msgstr "Fout bij het afsluiten van het systeem"
 
-#: sabnzbd/rating.py:127 [Warning message]
+#: sabnzbd/rating.py:137 [Warning message]
 msgid "Ratings server requires secure connection"
 msgstr "Beoordelingen vereisen een beveiligde verbinding"
 
-#: sabnzbd/rating.py:196 [Warning message]
+#: sabnzbd/rating.py:206 [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indexer id (%s) niet gevonden in het bestand met beoordelingen"
 
-#: sabnzbd/rss.py:310 [Error message] # sabnzbd/rss.py:312
+#: sabnzbd/rss.py:251 [Error message] # sabnzbd/rss.py:253
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Foutieve RSS-feed definitie \"%s\""
 
-#: sabnzbd/rss.py:372 # sabnzbd/rss.py:393
+#: sabnzbd/rss.py:311 # sabnzbd/rss.py:332
 msgid "Failed to retrieve RSS from %s: %s"
 msgstr "Kan RSS-feed \"%s\" niet lezen vanwege: \"%s\""
 
-#: sabnzbd/rss.py:378
+#: sabnzbd/rss.py:317
 msgid "Do not have valid authentication for feed %s"
 msgstr "Geen geldige inlog gegevens beschikbaar voor feed %s"
 
-#: sabnzbd/rss.py:382
+#: sabnzbd/rss.py:321
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "Server fout (code is %s); kon geen %s van %s krijgen"
 
-#: sabnzbd/rss.py:390 # sabnzbd/urlgrabber.py:121
+#: sabnzbd/rss.py:329 # sabnzbd/urlgrabber.py:119
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Server %s gebruikt een onbetrouwbaar HTTPS certificaat"
 
-#: sabnzbd/rss.py:397
+#: sabnzbd/rss.py:336
 msgid "RSS Feed %s was empty"
 msgstr "RSS-feed %s is leeg"
 
-#: sabnzbd/rss.py:424 # sabnzbd/rss.py:426
+#: sabnzbd/rss.py:366 # sabnzbd/rss.py:368
 msgid "Incompatible feed"
 msgstr "Ongeschikte feed"
 
@@ -1611,16 +1631,16 @@ msgid "Open complete folder"
 msgstr "Open map met voltooide downloads"
 
 #: sabnzbd/sabtray.py:82 # sabnzbd/sabtraylinux.py:112
-#: sabnzbd/sabtraylinux.py:172 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:180 [Shutdown SABnzbd]
-#: sabnzbd/skintext.py:584 [Config->Scheduling]
+#: sabnzbd/sabtraylinux.py:171 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:181 [Shutdown SABnzbd]
+#: sabnzbd/skintext.py:589 [Config->Scheduling]
 msgid "Shutdown"
 msgstr "Afsluiten"
 
-#: sabnzbd/sabtray.py:88 # sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:910
+#: sabnzbd/sabtray.py:88 # sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:919
 msgid "Remaining"
 msgstr "Nog te doen"
 
-#: sabnzbd/sabtraylinux.py:102 # sabnzbd/skintext.py:761 # sabnzbd/skintext.py:866
+#: sabnzbd/sabtraylinux.py:102 # sabnzbd/skintext.py:770 # sabnzbd/skintext.py:875
 msgid "Add NZB"
 msgstr "NZB toevoegen"
 
@@ -1636,7 +1656,7 @@ msgstr "Onbekende actie: %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Taak voor niet bestaande server %s"
 
-#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:190 [Post processing pick list] # sabnzbd/skintext.py:606 [Config->RSS button "download item"]
+#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:191 [Post processing pick list] # sabnzbd/skintext.py:614 [Config->RSS button "download item"]
 msgid "Download"
 msgstr "Download"
 
@@ -1644,7 +1664,7 @@ msgstr "Download"
 msgid "Join files"
 msgstr "Samenvoegen"
 
-#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:188 # sabnzbd/skintext.py:667 [Notification Script settings]
+#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:189 # sabnzbd/skintext.py:675 [Notification Script settings]
 msgid "Script"
 msgstr "Script"
 
@@ -1660,11 +1680,11 @@ msgstr "Servers"
 msgid "Failure"
 msgstr "Mislukt"
 
-#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:244 [History: job status]
+#: sabnzbd/skintext.py:35 [PP status] # sabnzbd/skintext.py:245 [History: job status]
 msgid "Completed"
 msgstr "Voltooid"
 
-#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:942
+#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:951
 msgid "Failed"
 msgstr "Mislukt"
 
@@ -1700,11 +1720,11 @@ msgstr "Snelle Controle..."
 msgid "Verifying..."
 msgstr "Verificatie..."
 
-#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:936
+#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:945
 msgid "Downloading"
 msgstr "Downloaden"
 
-#: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:469
+#: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:472
 msgid "Propagation delay"
 msgstr "Verspreidingswachttijd"
 
@@ -1712,15 +1732,15 @@ msgstr "Verspreidingswachttijd"
 msgid "Checking"
 msgstr "Controleren"
 
-#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:577 [Config->Scheduling]
+#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:582 [Config->Scheduling]
 msgid "Frequency"
 msgstr "Frequentie"
 
-#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:578 [Config->Scheduling] # sabnzbd/skintext.py:758 [Job details page, section header]
+#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:583 [Config->Scheduling] # sabnzbd/skintext.py:767 [Job details page, section header]
 msgid "Action"
 msgstr "Actie"
 
-#: sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:579 [Config->Scheduling]
+#: sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:584 [Config->Scheduling]
 msgid "Arguments"
 msgstr "Parameters"
 
@@ -1796,8 +1816,8 @@ msgstr "Schakel quotum beheer in"
 msgid "Disable quota management"
 msgstr "Schakel quotum beheer uit"
 
-#: sabnzbd/skintext.py:77 [Prowl priority] # sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:435 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:488
+#: sabnzbd/skintext.py:77 [Prowl priority] # sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:437 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:491
 msgid "Off"
 msgstr "Uit"
 
@@ -1809,11 +1829,11 @@ msgstr "Zeer Laag"
 msgid "Moderate"
 msgstr "Gematigd"
 
-#: sabnzbd/skintext.py:80 [Prowl priority] # sabnzbd/skintext.py:198 [Priority pick list]
+#: sabnzbd/skintext.py:80 [Prowl priority] # sabnzbd/skintext.py:199 [Priority pick list]
 msgid "Normal"
 msgstr "Normaal"
 
-#: sabnzbd/skintext.py:81 [Prowl priority] # sabnzbd/skintext.py:86 [Prowl priority] # sabnzbd/skintext.py:199 [Priority pick list]
+#: sabnzbd/skintext.py:81 [Prowl priority] # sabnzbd/skintext.py:86 [Prowl priority] # sabnzbd/skintext.py:200 [Priority pick list]
 msgid "High"
 msgstr "Hoog"
 
@@ -1821,7 +1841,7 @@ msgstr "Hoog"
 msgid "Emergency"
 msgstr "Noodgeval"
 
-#: sabnzbd/skintext.py:85 [Prowl priority] # sabnzbd/skintext.py:200 [Priority pick list]
+#: sabnzbd/skintext.py:85 [Prowl priority] # sabnzbd/skintext.py:201 [Priority pick list]
 msgid "Low"
 msgstr "Laag"
 
@@ -1889,15 +1909,15 @@ msgstr "Dag van de maand"
 msgid "This week"
 msgstr "Deze Week"
 
-#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:781
+#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:790
 msgid "This month"
 msgstr "Deze Maand"
 
-#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:780
+#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:789
 msgid "Today"
 msgstr "Vandaag"
 
-#: sabnzbd/skintext.py:117 # sabnzbd/skintext.py:782
+#: sabnzbd/skintext.py:117 # sabnzbd/skintext.py:791
 msgid "Total"
 msgstr "Totaal"
 
@@ -1905,7 +1925,7 @@ msgstr "Totaal"
 msgid "on"
 msgstr "aan"
 
-#: sabnzbd/skintext.py:120 [Config: startup parameters of SABnzbd] # sabnzbd/skintext.py:668 [Notification Script settings]
+#: sabnzbd/skintext.py:120 [Config: startup parameters of SABnzbd] # sabnzbd/skintext.py:676 [Notification Script settings]
 msgid "Parameters"
 msgstr "Parameters"
 
@@ -1921,7 +1941,7 @@ msgstr "Startpagina"
 msgid "or"
 msgstr "of"
 
-#: sabnzbd/skintext.py:126 # sabnzbd/skintext.py:545 [Server hostname or IP]
+#: sabnzbd/skintext.py:126 # sabnzbd/skintext.py:548 [Server hostname or IP]
 msgid "Host"
 msgstr "Server"
 
@@ -1985,8 +2005,8 @@ msgstr "Opslaan"
 msgid "Queued"
 msgstr "Wacht"
 
-#: sabnzbd/skintext.py:144 [Used in confirmation popups] # sabnzbd/skintext.py:830 # sabnzbd/skintext.py:831
-#: sabnzbd/skintext.py:832 # sabnzbd/skintext.py:859
+#: sabnzbd/skintext.py:144 [Used in confirmation popups] # sabnzbd/skintext.py:839 # sabnzbd/skintext.py:840
+#: sabnzbd/skintext.py:841 # sabnzbd/skintext.py:868
 msgid "Are you sure?"
 msgstr "Weet je het zeker?"
 
@@ -2002,7 +2022,7 @@ msgstr "Opdrachten"
 msgid "Config"
 msgstr "Instellingen"
 
-#: sabnzbd/skintext.py:152 [Main menu item] # sabnzbd/skintext.py:246 [History table header]
+#: sabnzbd/skintext.py:152 [Main menu item] # sabnzbd/skintext.py:247 [History table header]
 msgid "Status"
 msgstr "Status"
 
@@ -2026,7 +2046,7 @@ msgstr "IRC"
 msgid "Issues"
 msgstr "Problemen"
 
-#: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:492
+#: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:495
 msgid "General"
 msgstr "Algemeen"
 
@@ -2034,7 +2054,7 @@ msgstr "Algemeen"
 msgid "Folders"
 msgstr "Mappen"
 
-#: sabnzbd/skintext.py:160 [Main menu item] # sabnzbd/skintext.py:740
+#: sabnzbd/skintext.py:160 [Main menu item] # sabnzbd/skintext.py:749
 msgid "Switches"
 msgstr "Opties"
 
@@ -2054,7 +2074,7 @@ msgstr "Meldingen"
 msgid "Email"
 msgstr "E-mail"
 
-#: sabnzbd/skintext.py:166 [Main menu item] # sabnzbd/skintext.py:570
+#: sabnzbd/skintext.py:166 [Main menu item] # sabnzbd/skintext.py:575
 msgid "Categories"
 msgstr "Categorieën"
 
@@ -2066,411 +2086,415 @@ msgstr "Sorteren"
 msgid "Special"
 msgstr "Speciaal"
 
-#: sabnzbd/skintext.py:171
+#: sabnzbd/skintext.py:169 [Main menu item] # sabnzbd/skintext.py:781
+msgid "Search"
+msgstr "Zoeken"
+
+#: sabnzbd/skintext.py:172
 msgid "Download Dir"
 msgstr "Map download"
 
-#: sabnzbd/skintext.py:172
+#: sabnzbd/skintext.py:173
 msgid "PAUSED"
 msgstr "PAUZE"
 
-#: sabnzbd/skintext.py:173
+#: sabnzbd/skintext.py:174
 msgid "Cached %s articles (%s)"
 msgstr "%s artikelen (%s) gebuffered"
 
-#: sabnzbd/skintext.py:174
+#: sabnzbd/skintext.py:175
 msgid "Sysload"
 msgstr "Sysload"
 
-#: sabnzbd/skintext.py:175
+#: sabnzbd/skintext.py:176
 msgid "WARNINGS"
 msgstr "MELDINGEN"
 
-#: sabnzbd/skintext.py:176
+#: sabnzbd/skintext.py:177
 msgid "New release %s available at"
 msgstr "Nieuwe versie %s beschikbaar op"
 
-#: sabnzbd/skintext.py:179
+#: sabnzbd/skintext.py:180
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Weet je zeker dat je SABnzbd wilt afsluiten?"
 
-#: sabnzbd/skintext.py:183 [Add NZB to queue (button)] # sabnzbd/skintext.py:184 [Add NZB to queue (header)]
+#: sabnzbd/skintext.py:184 [Add NZB to queue (button)] # sabnzbd/skintext.py:185 [Add NZB to queue (header)]
 msgid "Add"
 msgstr "Toevoegen"
 
-#: sabnzbd/skintext.py:185 [Add NZB file to queue (header]
+#: sabnzbd/skintext.py:186 [Add NZB file to queue (header]
 msgid "Add File"
 msgstr "Bestand toevoegen"
 
-#: sabnzbd/skintext.py:186 [Job category]
+#: sabnzbd/skintext.py:187 [Job category]
 msgid "Category"
 msgstr "Categorie"
 
-#: sabnzbd/skintext.py:187 # sabnzbd/skintext.py:215 [Queue page table column header]
+#: sabnzbd/skintext.py:188 # sabnzbd/skintext.py:216 [Queue page table column header]
 msgid "Processing"
 msgstr "Modus"
 
-#: sabnzbd/skintext.py:189 # sabnzbd/skintext.py:558 [Server priority]
+#: sabnzbd/skintext.py:190 # sabnzbd/skintext.py:562 [Server priority]
 msgid "Priority"
 msgstr "Prioriteit"
 
-#: sabnzbd/skintext.py:191 [Post processing pick list]
+#: sabnzbd/skintext.py:192 [Post processing pick list]
 msgid "+Repair"
 msgstr "+Repareren"
 
-#: sabnzbd/skintext.py:192 [Post processing pick list]
+#: sabnzbd/skintext.py:193 [Post processing pick list]
 msgid "+Unpack"
 msgstr "+Uitpakken"
 
-#: sabnzbd/skintext.py:193 [Post processing pick list]
+#: sabnzbd/skintext.py:194 [Post processing pick list]
 msgid "+Delete"
 msgstr "+Opschonen"
 
-#: sabnzbd/skintext.py:194 [Post processing pick list: abbreviation for "+Repair"]
+#: sabnzbd/skintext.py:195 [Post processing pick list: abbreviation for "+Repair"]
 msgid "R"
 msgstr "R"
 
-#: sabnzbd/skintext.py:195 [Post processing pick list: abbreviation for "+Unpack"]
+#: sabnzbd/skintext.py:196 [Post processing pick list: abbreviation for "+Unpack"]
 msgid "U"
 msgstr "U"
 
-#: sabnzbd/skintext.py:196 [Post processing pick list: abbreviation for "+Delete"]
+#: sabnzbd/skintext.py:197 [Post processing pick list: abbreviation for "+Delete"]
 msgid "D"
 msgstr "O"
 
-#: sabnzbd/skintext.py:197 [Priority pick list]
+#: sabnzbd/skintext.py:198 [Priority pick list]
 msgid "Force"
 msgstr "Forceren"
 
-#: sabnzbd/skintext.py:202 [Priority pick list]
+#: sabnzbd/skintext.py:203 [Priority pick list]
 msgid "Stop"
 msgstr "Stop"
 
-#: sabnzbd/skintext.py:203 [Add NZB Dialog]
+#: sabnzbd/skintext.py:204 [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "URL"
 
-#: sabnzbd/skintext.py:206 [Queue page button]
+#: sabnzbd/skintext.py:207 [Queue page button]
 msgid "Hide files"
 msgstr "Verberg bestanden"
 
-#: sabnzbd/skintext.py:207 [Queue page button]
+#: sabnzbd/skintext.py:208 [Queue page button]
 msgid "Show files"
 msgstr "Toon bestanden"
 
-#: sabnzbd/skintext.py:208 [Queue page selection menu] # sabnzbd/skintext.py:777
+#: sabnzbd/skintext.py:209 [Queue page selection menu] # sabnzbd/skintext.py:786
 msgid "On queue finish"
 msgstr "Na afronden wachtrij"
 
-#: sabnzbd/skintext.py:209 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:210 [Queue page end-of-queue action]
 msgid "Shutdown PC"
 msgstr "PC afsluiten"
 
-#: sabnzbd/skintext.py:210 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:211 [Queue page end-of-queue action]
 msgid "Standby PC"
 msgstr "PC standby"
 
-#: sabnzbd/skintext.py:211 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:212 [Queue page end-of-queue action]
 msgid "Hibernate PC"
 msgstr "PC slapen"
 
-#: sabnzbd/skintext.py:212 [Queue page end-of-queue action]
+#: sabnzbd/skintext.py:213 [Queue page end-of-queue action]
 msgid "Shutdown SABnzbd"
 msgstr "SABnzbd afsluiten"
 
-#: sabnzbd/skintext.py:213 [Queue page selection menu or entry box]
+#: sabnzbd/skintext.py:214 [Queue page selection menu or entry box]
 msgid "Speed Limit"
 msgstr "Max. snelheid"
 
-#: sabnzbd/skintext.py:214 [Queue page button or entry box]
+#: sabnzbd/skintext.py:215 [Queue page button or entry box]
 msgid "Pause for"
 msgstr "Pauzeer"
 
-#: sabnzbd/skintext.py:216 [Queue page table column header] # sabnzbd/skintext.py:592 [Config->RSS table column header]
+#: sabnzbd/skintext.py:217 [Queue page table column header] # sabnzbd/skintext.py:598 [Config->RSS table column header]
 msgid "Order"
 msgstr "Volgorde"
 
-#: sabnzbd/skintext.py:217 [Queue page table column header] # sabnzbd/skintext.py:745 [Job details page]
+#: sabnzbd/skintext.py:218 [Queue page table column header] # sabnzbd/skintext.py:754 [Job details page]
 msgid "Name"
 msgstr "Naam"
 
-#: sabnzbd/skintext.py:218 [Queue page table column header, "estimated time of arrival"]
+#: sabnzbd/skintext.py:219 [Queue page table column header, "estimated time of arrival"]
 msgid "ETA"
 msgstr "Klaar om"
 
-#: sabnzbd/skintext.py:219 [Queue page table column header, "age of the NZB"]
+#: sabnzbd/skintext.py:220 [Queue page table column header, "age of the NZB"]
 msgid "AGE"
 msgstr "Leeftijd"
 
-#: sabnzbd/skintext.py:220 [Queue page table, "Delete" button]
+#: sabnzbd/skintext.py:221 [Queue page table, "Delete" button]
 msgid "Del"
 msgstr "Wis"
 
-#: sabnzbd/skintext.py:221 [Queue page button] # sabnzbd/skintext.py:826
+#: sabnzbd/skintext.py:222 [Queue page button] # sabnzbd/skintext.py:835
 msgid "Retry"
 msgstr "Opnieuw"
 
-#: sabnzbd/skintext.py:222 [Queue end-of-queue selection box]
+#: sabnzbd/skintext.py:223 [Queue end-of-queue selection box]
 msgid "Actions"
 msgstr "Acties"
 
-#: sabnzbd/skintext.py:223 [Queue page table, script selection menu]
+#: sabnzbd/skintext.py:224 [Queue page table, script selection menu]
 msgid "Scripts"
 msgstr "Scripts"
 
-#: sabnzbd/skintext.py:225 [Confirmation popup]
+#: sabnzbd/skintext.py:226 [Confirmation popup]
 msgid "Delete all items from the queue?"
 msgstr "Verwijder alle opdrachten uit de wachtrij?"
 
-#: sabnzbd/skintext.py:226 [Queue page button]
+#: sabnzbd/skintext.py:227 [Queue page button]
 msgid "Purge NZBs"
 msgstr "Verwijder opdrachten"
 
-#: sabnzbd/skintext.py:227 [Queue page button]
+#: sabnzbd/skintext.py:228 [Queue page button]
 msgid "Purge NZBs & Delete Files"
 msgstr "Verwijderen incl. bestanden"
 
-#: sabnzbd/skintext.py:228 [Retry all failed jobs dialog box]
+#: sabnzbd/skintext.py:229 [Retry all failed jobs dialog box]
 msgid "Retry all failed jobs"
 msgstr "Probeer alle mislukte opdrachten opnieuw"
 
-#: sabnzbd/skintext.py:229 [Queue page button]
+#: sabnzbd/skintext.py:230 [Queue page button]
 msgid "Remove NZB"
 msgstr "Verwijder NZB"
 
-#: sabnzbd/skintext.py:230 [Queue page button] # sabnzbd/skintext.py:814
+#: sabnzbd/skintext.py:231 [Queue page button] # sabnzbd/skintext.py:823
 msgid "Remove NZB & Delete Files"
 msgstr "Verwijder NZB incl. bestanden"
 
-#: sabnzbd/skintext.py:231 [Queue page, as in "4G *of* 10G"]
+#: sabnzbd/skintext.py:232 [Queue page, as in "4G *of* 10G"]
 msgid "of"
 msgstr "van"
 
-#: sabnzbd/skintext.py:232 [Caption for missing articles in Queue]
+#: sabnzbd/skintext.py:233 [Caption for missing articles in Queue]
 msgid "Missing articles"
 msgstr "Ontbrekende artikelen"
 
-#: sabnzbd/skintext.py:233 [Remaining quota (displayed in Queue)]
+#: sabnzbd/skintext.py:234 [Remaining quota (displayed in Queue)]
 msgid "Quota left"
 msgstr "Quotum over"
 
-#: sabnzbd/skintext.py:234 [Manual reset of quota]
+#: sabnzbd/skintext.py:235 [Manual reset of quota]
 msgid "manual"
 msgstr "handmatig"
 
-#: sabnzbd/skintext.py:235
+#: sabnzbd/skintext.py:236
 msgid "Reset Quota now"
 msgstr "Quotum nu herstellen"
 
-#: sabnzbd/skintext.py:239 [Confirmation popup]
+#: sabnzbd/skintext.py:240 [Confirmation popup]
 msgid "Delete all completed items from History?"
 msgstr "Verwijder alle geslaagde items uit Geschiedenis?"
 
-#: sabnzbd/skintext.py:240 [Button/link hiding History job details]
+#: sabnzbd/skintext.py:241 [Button/link hiding History job details]
 msgid "Hide details"
 msgstr "Verberg details"
 
-#: sabnzbd/skintext.py:241 [Button/link showing History job details]
+#: sabnzbd/skintext.py:242 [Button/link showing History job details]
 msgid "Show details"
 msgstr "Toon details"
 
-#: sabnzbd/skintext.py:242 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
+#: sabnzbd/skintext.py:243 [Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!]
 msgid "Show Failed"
 msgstr "Toon mislukte"
 
-#: sabnzbd/skintext.py:243 [Button or link showing all History jobs]
+#: sabnzbd/skintext.py:244 [Button or link showing all History jobs]
 msgid "Show All"
 msgstr "Toon Alles"
 
-#: sabnzbd/skintext.py:245 [History table header] # sabnzbd/skintext.py:499 [Size of the download quota] # sabnzbd/skintext.py:925
+#: sabnzbd/skintext.py:246 [History table header] # sabnzbd/skintext.py:502 [Size of the download quota] # sabnzbd/skintext.py:934
 msgid "Size"
 msgstr "Omvang"
 
-#: sabnzbd/skintext.py:247 [Button to delete all failed jobs in History]
+#: sabnzbd/skintext.py:248 [Button to delete all failed jobs in History]
 msgid "Purge Failed NZBs"
 msgstr "Verwijder mislukte opdrachten"
 
-#: sabnzbd/skintext.py:248 [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py:249 [Button to delete all failed jobs in History, including files]
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "Verwijder mislukte opdrachten incl. bestanden"
 
-#: sabnzbd/skintext.py:249 [Button to delete all completed jobs in History]
+#: sabnzbd/skintext.py:250 [Button to delete all completed jobs in History]
 msgid "Purge Completed NZBs"
 msgstr "Verwijder geslaagde opdrachten"
 
-#: sabnzbd/skintext.py:250 [Button to delete jobs on current page in History]
+#: sabnzbd/skintext.py:251 [Button to delete jobs on current page in History]
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "Verwijder NZB bestanden getoond op deze pagina"
 
-#: sabnzbd/skintext.py:251 [Button to add NZB to failed job in History]
+#: sabnzbd/skintext.py:252 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
 msgstr "Eventuele extra NZB"
 
-#: sabnzbd/skintext.py:252 [Path as displayed in History details] # sabnzbd/skintext.py:926
+#: sabnzbd/skintext.py:253 [Path as displayed in History details] # sabnzbd/skintext.py:935
 msgid "Path"
 msgstr "Pad"
 
-#: sabnzbd/skintext.py:253 [Retry all failed jobs in History]
+#: sabnzbd/skintext.py:254 [Retry all failed jobs in History]
 msgid "Retry all failed"
 msgstr "Probeer alle mislukte"
 
-#: sabnzbd/skintext.py:254 [Retry all button for Retry All Failed Jobs]
+#: sabnzbd/skintext.py:255 [Retry all button for Retry All Failed Jobs]
 msgid "Retry All"
 msgstr "Alles opnieuw proberen"
 
-#: sabnzbd/skintext.py:255
+#: sabnzbd/skintext.py:256
 msgid "Virus/spam"
 msgstr "Virus/spam"
 
-#: sabnzbd/skintext.py:256 # sabnzbd/skintext.py:530
+#: sabnzbd/skintext.py:257 # sabnzbd/skintext.py:533
 msgid "Passworded"
 msgstr "Versleuteld"
 
-#: sabnzbd/skintext.py:257
+#: sabnzbd/skintext.py:258
 msgid "Out of retention"
 msgstr "Buiten retentie"
 
-#: sabnzbd/skintext.py:258
+#: sabnzbd/skintext.py:259
 msgid "Other problem"
 msgstr "Ander probleem"
 
-#: sabnzbd/skintext.py:261 [Status page button]
+#: sabnzbd/skintext.py:262 [Status page button]
 msgid "Force Disconnect"
 msgstr "Verbreek verbindingen"
 
-#: sabnzbd/skintext.py:262
+#: sabnzbd/skintext.py:263
 msgid "This will send a test email to your account."
 msgstr "Hiermee stuur je een test e-mail."
 
-#: sabnzbd/skintext.py:263 [Status page button]
+#: sabnzbd/skintext.py:264 [Status page button]
 msgid "Show Logging"
 msgstr "Toon log info"
 
-#: sabnzbd/skintext.py:264 [Status page button]
+#: sabnzbd/skintext.py:265 [Status page button]
 msgid "Test Email"
 msgstr "E-mail testen"
 
-#: sabnzbd/skintext.py:265 [Status page selection menu]
+#: sabnzbd/skintext.py:266 [Status page selection menu]
 msgid "Logging"
 msgstr "Loggen"
 
-#: sabnzbd/skintext.py:266 [Status page table header]
+#: sabnzbd/skintext.py:267 [Status page table header]
 msgid "Errors/Warning"
 msgstr "Fouten/Waarschuwingen"
 
-#: sabnzbd/skintext.py:267 [Status page logging selection value]
+#: sabnzbd/skintext.py:268 [Status page logging selection value]
 msgid "+ Info"
 msgstr "+Info"
 
-#: sabnzbd/skintext.py:268 [Status page logging selection value]
+#: sabnzbd/skintext.py:269 [Status page logging selection value]
 msgid "+ Debug"
 msgstr "+Debug"
 
-#: sabnzbd/skintext.py:269 [Status page tab header] # sabnzbd/skintext.py:550 [Server: amount of connections]
+#: sabnzbd/skintext.py:270 [Status page tab header] # sabnzbd/skintext.py:553 [Server: amount of connections]
 msgid "Connections"
 msgstr "Verbindingen"
 
-#: sabnzbd/skintext.py:270 [Status page, title for email test result]
+#: sabnzbd/skintext.py:271 [Status page, title for email test result]
 msgid "Email Test Result"
 msgstr "Test resultaat e-mail"
 
-#: sabnzbd/skintext.py:271 [Status page, table header]
+#: sabnzbd/skintext.py:272 [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Recentste meldingen"
 
-#: sabnzbd/skintext.py:272 [Status page button]
+#: sabnzbd/skintext.py:273 [Status page button]
 msgid "clear"
 msgstr "Wissen"
 
-#: sabnzbd/skintext.py:273 [Status page button] # sabnzbd/skintext.py:809
+#: sabnzbd/skintext.py:274 [Status page button] # sabnzbd/skintext.py:818
 msgid "Unblock"
 msgstr "Deblokkeren"
 
-#: sabnzbd/skintext.py:274 [Status page, article identifier]
+#: sabnzbd/skintext.py:275 [Status page, article identifier]
 msgid "Article identifier"
 msgstr "Artikelnummer"
 
-#: sabnzbd/skintext.py:275 [Status page, par-set that article belongs to]
+#: sabnzbd/skintext.py:276 [Status page, par-set that article belongs to]
 msgid "File set"
 msgstr "Bestandsverzameling"
 
-#: sabnzbd/skintext.py:276 [Status page, table column header, when error occured]
+#: sabnzbd/skintext.py:277 [Status page, table column header, when error occured]
 msgid "When"
 msgstr "Wanneer"
 
-#: sabnzbd/skintext.py:277 [Status page, table column header, type of message] # sabnzbd/skintext.py:593 [Config->RSS table column header]
+#: sabnzbd/skintext.py:278 [Status page, table column header, type of message] # sabnzbd/skintext.py:599 [Config->RSS table column header]
 msgid "Type"
 msgstr "Soort"
 
-#: sabnzbd/skintext.py:280 [Status page, indicator that server is enabled]
+#: sabnzbd/skintext.py:281 [Status page, indicator that server is enabled]
 msgid "Enabled"
 msgstr "Actief"
 
-#: sabnzbd/skintext.py:283
+#: sabnzbd/skintext.py:284
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: sabnzbd/skintext.py:284
+#: sabnzbd/skintext.py:285
 msgid "Connection failed!"
 msgstr "Verbinding mislukt!"
 
-#: sabnzbd/skintext.py:285
+#: sabnzbd/skintext.py:286
 msgid "Local IPv4 address"
 msgstr "Lokaal IPv4-adres"
 
-#: sabnzbd/skintext.py:286
+#: sabnzbd/skintext.py:287
 msgid "Public IPv4 address"
 msgstr "Openbaar IPv4-adres"
 
-#: sabnzbd/skintext.py:287
+#: sabnzbd/skintext.py:288
 msgid "IPv6 address"
 msgstr "IPv6-adres"
 
-#: sabnzbd/skintext.py:288
+#: sabnzbd/skintext.py:289
 msgid "Nameserver / DNS Lookup"
 msgstr "Nameserver / DNS opzoeken"
 
-#: sabnzbd/skintext.py:289
+#: sabnzbd/skintext.py:290
 msgid "CPU Model"
 msgstr "CPU-model"
 
-#: sabnzbd/skintext.py:290 [Do not translate Pystone]
+#: sabnzbd/skintext.py:291 [Do not translate Pystone]
 msgid "System Performance (Pystone)"
 msgstr "Systeem prestaties (Pystone)"
 
-#: sabnzbd/skintext.py:291
+#: sabnzbd/skintext.py:292
 msgid "Download folder speed"
 msgstr "Snelheid van download map"
 
-#: sabnzbd/skintext.py:292
+#: sabnzbd/skintext.py:293
 msgid "Complete folder speed"
 msgstr "Snelheid van verwerkte downloads map"
 
-#: sabnzbd/skintext.py:293
+#: sabnzbd/skintext.py:294
 msgid "Writing speed"
 msgstr "Schrijfsnelheid"
 
-#: sabnzbd/skintext.py:294
+#: sabnzbd/skintext.py:295
 msgid "Could not write. Check that the directory is writable."
 msgstr "Kan niet schrijven. Controleer of de map beschrijfbaar is."
 
-#: sabnzbd/skintext.py:295
+#: sabnzbd/skintext.py:296
 msgid "Click on Repeat test button below to determine"
 msgstr "Klik op de Herhaal Test knop om te meten"
 
-#: sabnzbd/skintext.py:296
+#: sabnzbd/skintext.py:297
 msgid "Repeat test"
 msgstr "Herhaal test"
 
-#: sabnzbd/skintext.py:299
+#: sabnzbd/skintext.py:300
 msgid "Config File"
 msgstr "Instellingen bestand"
 
-#: sabnzbd/skintext.py:300 [Main config page, how much cache is in use]
+#: sabnzbd/skintext.py:301 [Main config page, how much cache is in use]
 msgid "Used cache"
 msgstr "Gebruikte buffer"
 
-#: sabnzbd/skintext.py:301
+#: sabnzbd/skintext.py:302
 msgid ""
 "This will restart SABnzbd.<br />Use it when you think the program has a "
 "stability problem.<br />Downloading will be paused before the restart and "
@@ -2480,12 +2504,16 @@ msgstr ""
 "vermoedt dat het programma niet stabiel is.<br />Het downloaden zal vóór de "
 "herstart gestopt worden en daarna weer doorgaan."
 
-#: sabnzbd/skintext.py:301 # sabnzbd/skintext.py:302
+#: sabnzbd/skintext.py:302 # sabnzbd/skintext.py:303
 msgid "<br />If authentication is enabled, you will need to login again."
 msgstr ""
 "<br />Als authenticatie ingeschakeld is, zal je opnieuw moeten inloggen."
 
 #: sabnzbd/skintext.py:304
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+#: sabnzbd/skintext.py:306
 msgid ""
 "There are orphaned jobs in the download folder.<br />You can choose to "
 "delete them (including files) or send them back to the queue."
@@ -2493,7 +2521,7 @@ msgstr ""
 "Er staan verweesde opdrachten in de download map.<br/>Je kunt ze verwijderen "
 "(inclusief bestanden) of ze terug naar de wachtrij sturen."
 
-#: sabnzbd/skintext.py:306
+#: sabnzbd/skintext.py:308
 msgid ""
 "The \"Repair\" button will restart SABnzbd and do a complete<br "
 "/>reconstruction of the queue content, preserving already downloaded "
@@ -2504,168 +2532,182 @@ msgstr ""
 "bestanden.<br>\r\n"
 "Dit beïnvloedt wel de volgorde."
 
-#: sabnzbd/skintext.py:307 # sabnzbd/skintext.py:858
+#: sabnzbd/skintext.py:309 # sabnzbd/skintext.py:867
 msgid "Changes have not been saved, and will be lost."
 msgstr "Wijzigingen niet opgeslagen en zullen verloren gaan."
 
-#: sabnzbd/skintext.py:308
+#: sabnzbd/skintext.py:310
 msgid ""
 "When your IP address changes or SABnzbd is restarted the session will expire."
 msgstr ""
 "Als je IP adres veranderd of SABnzbd opnieuw wordt opgestart, zal de sessie "
 "verlopen."
 
-#: sabnzbd/skintext.py:310
+#: sabnzbd/skintext.py:312
 msgid "Enable Unzip"
 msgstr "Unzip toestaan"
 
-#: sabnzbd/skintext.py:311
+#: sabnzbd/skintext.py:313
 msgid "Enable 7zip"
 msgstr "7Zip toestaan"
 
-#: sabnzbd/skintext.py:312
+#: sabnzbd/skintext.py:314
 msgid ""
 "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will "
 "be encrypted, however, validating a server's identity using its certificates "
 "is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
 "date local CA certificates are required."
 msgstr ""
+"Beveiligde (SSL) verbindingen van SABnzbd naar nieuws servers en naar HTTPS "
+"websites worden versleuteld. Maar verificatie van de server identiteit is "
+"niet mogelijk. Python 2.7.9 of hoger en OpenSSL 1.0.2 of hoger en actuele "
+"lokale CA certificaten zijn nodig."
 
-#: sabnzbd/skintext.py:313
+#: sabnzbd/skintext.py:315
 msgid "Version"
 msgstr "Versie"
 
-#: sabnzbd/skintext.py:314
+#: sabnzbd/skintext.py:316
 msgid "Uptime"
 msgstr "Actief"
 
-#: sabnzbd/skintext.py:315 [Indicates that server is Backup server in Status page]
+#: sabnzbd/skintext.py:317 [Indicates that server is Backup server in Status page]
 msgid "Backup"
 msgstr "Reserve"
 
-#: sabnzbd/skintext.py:316 # sabnzbd/skintext.py:458 # sabnzbd/skintext.py:460
-#: sabnzbd/skintext.py:462 # sabnzbd/skintext.py:464 # sabnzbd/skintext.py:671 [Notification Script settings]
+#: sabnzbd/skintext.py:318 # sabnzbd/skintext.py:461 # sabnzbd/skintext.py:463
+#: sabnzbd/skintext.py:465 # sabnzbd/skintext.py:467 # sabnzbd/skintext.py:679 [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Lees de Wiki pagina over dit onderwerp"
 
 #: sabnzbd/skintext.py:319
+msgid "Restarting SABnzbd..."
+msgstr "SABnzbd herstart nu..."
+
+#: sabnzbd/skintext.py:322
 msgid "Changes will require a SABnzbd restart!"
 msgstr "Wijzigingen worden pas actief na herstart!"
 
-#: sabnzbd/skintext.py:320
+#: sabnzbd/skintext.py:323
 msgid "SABnzbd Web Server"
 msgstr "Web server"
 
-#: sabnzbd/skintext.py:321
+#: sabnzbd/skintext.py:324
 msgid "SABnzbd Host"
 msgstr "Host"
 
-#: sabnzbd/skintext.py:322
+#: sabnzbd/skintext.py:325
 msgid "Host SABnzbd should listen on."
 msgstr "Host adres waar op SABnzbd luistert."
 
-#: sabnzbd/skintext.py:323
+#: sabnzbd/skintext.py:326
 msgid "SABnzbd Port"
 msgstr "Poort"
 
-#: sabnzbd/skintext.py:324
+#: sabnzbd/skintext.py:327
 msgid "Port SABnzbd should listen on."
 msgstr "Poort waar op SABnzbd luistert."
 
-#: sabnzbd/skintext.py:325 # sabnzbd/skintext.py:795
+#: sabnzbd/skintext.py:328 # sabnzbd/skintext.py:804
 msgid "Web Interface"
 msgstr "Gebruikersinterface"
 
-#: sabnzbd/skintext.py:326
+#: sabnzbd/skintext.py:329
 msgid "Choose a skin."
 msgstr "Kies een bedieningsstijl (<i>herstart nodig</i>)."
 
-#: sabnzbd/skintext.py:327
+#: sabnzbd/skintext.py:330
 msgid "Secondary Web Interface"
 msgstr "Tweede Gebruikersinterface"
 
-#: sabnzbd/skintext.py:328
+#: sabnzbd/skintext.py:331
 msgid "Activate an alternative skin."
 msgstr "Aktiveer een tweede bedieningsstijl (<i>herstart nodig</i>)."
 
-#: sabnzbd/skintext.py:329
+#: sabnzbd/skintext.py:332
 msgid "SABnzbd Username"
 msgstr "Gebruikersnaam"
 
-#: sabnzbd/skintext.py:330
+#: sabnzbd/skintext.py:333
 msgid "Optional authentication username."
 msgstr "Gebruikersnaam voor web login."
 
-#: sabnzbd/skintext.py:331
+#: sabnzbd/skintext.py:334
 msgid "SABnzbd Password"
 msgstr "Wachtwoord"
 
-#: sabnzbd/skintext.py:332
+#: sabnzbd/skintext.py:335
 msgid "Optional authentication password."
 msgstr "Wachtwoord voor web login."
 
-#: sabnzbd/skintext.py:333
+#: sabnzbd/skintext.py:336
+msgid "Security"
+msgstr "Beveiliging"
+
+#: sabnzbd/skintext.py:337
 msgid "HTTPS Support"
 msgstr "HTTPS ondersteuning"
 
-#: sabnzbd/skintext.py:334
+#: sabnzbd/skintext.py:338
 msgid "Enable HTTPS"
 msgstr "Maak HTTPS mogelijk"
 
-#: sabnzbd/skintext.py:335
+#: sabnzbd/skintext.py:339
 msgid "not installed"
 msgstr "niet geinstalleerd"
 
-#: sabnzbd/skintext.py:336
+#: sabnzbd/skintext.py:340
 msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Sta gebruik van HTTPS toe."
 
-#: sabnzbd/skintext.py:337
+#: sabnzbd/skintext.py:341
 msgid "HTTPS Port"
 msgstr "HTTPS Poort"
 
-#: sabnzbd/skintext.py:338
+#: sabnzbd/skintext.py:342
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "Indien leeg, werkt de standaard poort uitsluitend met HTTPS."
 
-#: sabnzbd/skintext.py:339
+#: sabnzbd/skintext.py:343
 msgid "HTTPS Certificate"
 msgstr "HTTPS Certificaat"
 
-#: sabnzbd/skintext.py:340
+#: sabnzbd/skintext.py:344
 msgid "File name or path to HTTPS Certificate."
 msgstr "Naam of pad van het HTTPS-Certificaatbestand."
 
-#: sabnzbd/skintext.py:341
+#: sabnzbd/skintext.py:345
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
+"Maak een nieuw zelf-ondertekend certificaat en sleutel. SABnzbd moet dan "
+"opnieuw gestart worden."
 
-#: sabnzbd/skintext.py:342
+#: sabnzbd/skintext.py:346
 msgid "HTTPS Key"
 msgstr "HTTPS-Sleutelbestand"
 
-#: sabnzbd/skintext.py:343
+#: sabnzbd/skintext.py:347
 msgid "File name or path to HTTPS Key."
 msgstr "Naam of pad van het HTTPS-Sleutelbestand."
 
-#: sabnzbd/skintext.py:344
+#: sabnzbd/skintext.py:348
 msgid "HTTPS Chain Certifcates"
 msgstr "\"HTTPS Chain\"-bestand"
 
-#: sabnzbd/skintext.py:345
+#: sabnzbd/skintext.py:349
 msgid "File name or path to HTTPS Chain."
 msgstr "Bestandsnaam of padnaam van \"HTTPS chain\"-bestand"
 
-#: sabnzbd/skintext.py:346
+#: sabnzbd/skintext.py:350
 msgid "Tuning"
 msgstr "Afstelling"
 
-#: sabnzbd/skintext.py:347
+#: sabnzbd/skintext.py:351
 msgid "RSS Checking Interval"
 msgstr "RSS uitlees interval"
 
-#: sabnzbd/skintext.py:348
+#: sabnzbd/skintext.py:352
 msgid ""
 "Checking interval (in minutes, at least 15). Not active when you use the "
 "Scheduler!"
@@ -2673,25 +2715,25 @@ msgstr ""
 "Minuten tussen het uitlezen (minimaal 15). Niet actief bij gebruik van de "
 "Taakplanner!"
 
-#: sabnzbd/skintext.py:349
+#: sabnzbd/skintext.py:353
 msgid "Maximum line speed"
 msgstr "Maximale snelheid internet verbinding"
 
-#: sabnzbd/skintext.py:350
+#: sabnzbd/skintext.py:354
 msgid "Percentage of line speed"
 msgstr "Percentage van snelheid internet verbinding"
 
-#: sabnzbd/skintext.py:351
+#: sabnzbd/skintext.py:355
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
 msgstr ""
 "Welk percentage van de maximale internet snelheid mag SABnzbd gebruiken? "
 "B.v. 50"
 
-#: sabnzbd/skintext.py:352
+#: sabnzbd/skintext.py:356
 msgid "Article Cache Limit"
 msgstr "Artikel buffer grootte"
 
-#: sabnzbd/skintext.py:353
+#: sabnzbd/skintext.py:357
 msgid ""
 "Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally "
 "follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
@@ -2699,11 +2741,11 @@ msgstr ""
 "Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).<br "
 "/><i>In bytes, in K,M,G notatie. Bijvoorbeeld: \"64M\" of \"128M\"</i>"
 
-#: sabnzbd/skintext.py:354
+#: sabnzbd/skintext.py:358
 msgid "Cleanup List"
 msgstr "Opschoon lijst"
 
-#: sabnzbd/skintext.py:355
+#: sabnzbd/skintext.py:359
 msgid ""
 "List of file extensions that should be deleted after download.<br />For "
 "example: <b>nfo</b> or <b>nfo, sfv</b>"
@@ -2711,27 +2753,27 @@ msgstr ""
 "Lijst van extensies die na downloaden verwijderd moeten worden.<br "
 "/>Voorbeeld: <b>nfo</b> of <b>nfo, sfv</b>"
 
-#: sabnzbd/skintext.py:356
+#: sabnzbd/skintext.py:360
 msgid "Save Changes"
 msgstr "Opslaan"
 
-#: sabnzbd/skintext.py:357
+#: sabnzbd/skintext.py:361
 msgid "Restore Defaults"
 msgstr "Beginwaarden terugzetten"
 
-#: sabnzbd/skintext.py:358 # sabnzbd/skintext.py:894
+#: sabnzbd/skintext.py:362 # sabnzbd/skintext.py:903
 msgid "Reset"
 msgstr "Herstel"
 
-#: sabnzbd/skintext.py:359
+#: sabnzbd/skintext.py:363
 msgid "Language"
 msgstr "Taal"
 
-#: sabnzbd/skintext.py:360
+#: sabnzbd/skintext.py:364
 msgid "Select a web interface language."
 msgstr "Kies een taal"
 
-#: sabnzbd/skintext.py:361
+#: sabnzbd/skintext.py:365
 msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
@@ -2739,107 +2781,100 @@ msgstr ""
 "Help ons om SABnzbd in jouw taal te vertalen! <br/>Met nieuwe vertalingen of "
 "verbeteringen kun je hier terecht:"
 
-#: sabnzbd/skintext.py:362 # sabnzbd/skintext.py:519
+#: sabnzbd/skintext.py:366 # sabnzbd/skintext.py:522
 msgid "API Key"
 msgstr "API-sleutel"
 
-#: sabnzbd/skintext.py:363
+#: sabnzbd/skintext.py:367
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Met deze sleutel heeft een extern programma volledige toegang tot SABnzbd."
 
-#: sabnzbd/skintext.py:364
+#: sabnzbd/skintext.py:368
 msgid "NZB Key"
 msgstr "NZB-sleutel"
 
-#: sabnzbd/skintext.py:365
+#: sabnzbd/skintext.py:369
 msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
 msgstr ""
 "Met deze sleutel kan een extern programma NZB-bestanden naar SABnzbd sturen."
 
-#: sabnzbd/skintext.py:366
+#: sabnzbd/skintext.py:370
 msgid "Generate New Key"
 msgstr "Maak een nieuwe sleutel"
 
-#: sabnzbd/skintext.py:367
-msgid "Disable API-key"
-msgstr "API-sleutel niet gebruiken"
-
-#: sabnzbd/skintext.py:368
-msgid "Do not require the API key."
-msgstr "Gebruik van de API-sleutel niet afdwingen."
-
-#: sabnzbd/skintext.py:369 [Explanation for QR code of APIKEY]
+#: sabnzbd/skintext.py:371 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
 msgstr "QR-code van de API-sleutel"
 
-#: sabnzbd/skintext.py:370
+#: sabnzbd/skintext.py:372
 msgid "List of local network ranges"
 msgstr "Lijst van lokale netwerk bereiken"
 
-#: sabnzbd/skintext.py:371
+#: sabnzbd/skintext.py:373
 msgid ""
 "All local network addresses start with these prefixes (often \"192.168.1.\")"
 msgstr ""
 "Alle lokale netwerk adressen die beginnen met deze reeks (vaak "
 "\"192.168.1.\")"
 
-#: sabnzbd/skintext.py:372
+#: sabnzbd/skintext.py:374
 msgid "External internet access"
 msgstr "Externe toegang vanaf internet"
 
-#: sabnzbd/skintext.py:373
-msgid "You can set access rights for systems outside your local network"
+#: sabnzbd/skintext.py:375
+msgid ""
+"You can set access rights for systems outside your local network. Requires "
+"List of local network ranges to be defined."
 msgstr ""
-"Je kunt toegangsrechten instellen voor systemen buiten je lokale netwerk"
 
-#: sabnzbd/skintext.py:374
+#: sabnzbd/skintext.py:376
 msgid "No access"
 msgstr "Geen toegang"
 
-#: sabnzbd/skintext.py:375
+#: sabnzbd/skintext.py:377
 msgid "Add NZB files "
 msgstr "Voeg NZB-bestanden toe "
 
-#: sabnzbd/skintext.py:376
+#: sabnzbd/skintext.py:378
 msgid "API (no Config)"
 msgstr "API (geen Configuratie)"
 
-#: sabnzbd/skintext.py:377
+#: sabnzbd/skintext.py:379
 msgid "Full API"
 msgstr "Volledige API"
 
-#: sabnzbd/skintext.py:378
+#: sabnzbd/skintext.py:380
 msgid "Full Web interface"
 msgstr "Volledig web interface"
 
-#: sabnzbd/skintext.py:379
+#: sabnzbd/skintext.py:381
 msgid "Only external access requires login"
 msgstr "Alleen voor externe toegang is aanmelden nodig"
 
-#: sabnzbd/skintext.py:382
+#: sabnzbd/skintext.py:384
 msgid ""
 "<em>NOTE:</em> Folders will be created automatically when Saving. You may "
 "use absolute paths to save outside of the default folders."
 msgstr "<em>Let op:</em> mappen worden vanzelf aangemaakt bij \"Opslaan\"."
 
-#: sabnzbd/skintext.py:383
+#: sabnzbd/skintext.py:385
 msgid "User Folders"
 msgstr "Gebruikersmappen"
 
-#: sabnzbd/skintext.py:384 # sabnzbd/skintext.py:817
+#: sabnzbd/skintext.py:386 # sabnzbd/skintext.py:826
 msgid "Browse"
 msgstr "Bladeren"
 
-#: sabnzbd/skintext.py:385
+#: sabnzbd/skintext.py:387
 msgid "In"
 msgstr "In"
 
-#: sabnzbd/skintext.py:386
+#: sabnzbd/skintext.py:388
 msgid "Temporary Download Folder"
 msgstr "Tijdelijke download map"
 
-#: sabnzbd/skintext.py:387
+#: sabnzbd/skintext.py:389
 msgid ""
 "Location to store unprocessed downloads.<br /><i>Can only be changed when "
 "queue is empty.</i>"
@@ -2847,90 +2882,90 @@ msgstr ""
 "Plaats om onbewerkte downloads op te slaan<br /><i>Kan alleen gewijzigd "
 "worden als de wachtrij leeg is.</i>"
 
-#: sabnzbd/skintext.py:388
+#: sabnzbd/skintext.py:390
 msgid "Minimum Free Space for Temporary Download Folder"
 msgstr "Minimale vrije ruimte voor tijdelijke download map"
 
-#: sabnzbd/skintext.py:389
+#: sabnzbd/skintext.py:391
 msgid ""
 "Auto-pause when free space is beneath this value.<br /><i>In bytes, "
 "optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
 msgstr "Download wordt gepauzeerd als er te weinig ruimte vrij is"
 
-#: sabnzbd/skintext.py:390
+#: sabnzbd/skintext.py:392
 msgid "Completed Download Folder"
 msgstr "Map voor verwerkte downloads"
 
-#: sabnzbd/skintext.py:391
+#: sabnzbd/skintext.py:393
 msgid ""
 "Location to store finished, fully processed downloads.<br /><i>Can be "
 "overruled by user-defined categories.</i>"
 msgstr "(kan aangepast worden door de categorieën)."
 
-#: sabnzbd/skintext.py:392
+#: sabnzbd/skintext.py:394
 msgid "Permissions for completed downloads"
 msgstr "Toegangsrechten voor verwerkte downloads"
 
-#: sabnzbd/skintext.py:393
+#: sabnzbd/skintext.py:395
 msgid ""
 "Set permissions pattern for completed files/folders.<br /><i>In octal "
 "notation. For example: \"755\" or \"777\"</i>"
 msgstr ""
 "Zet toegangsrechten voor verwerkte bestanden/mappen, alleen octale notatie!"
 
-#: sabnzbd/skintext.py:394
+#: sabnzbd/skintext.py:396
 msgid "Watched Folder"
 msgstr "Bewaakte map"
 
-#: sabnzbd/skintext.py:395
+#: sabnzbd/skintext.py:397
 msgid ""
 "Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
 "archives for .nzb files.</i>"
 msgstr ".NZB en .ZIP-bestanden in deze map worden automatisch gedownload."
 
-#: sabnzbd/skintext.py:396
+#: sabnzbd/skintext.py:398
 msgid "Watched Folder Scan Speed"
 msgstr "Bewaakte map verversingsinterval"
 
-#: sabnzbd/skintext.py:397
+#: sabnzbd/skintext.py:399
 msgid "Number of seconds between scans for .nzb files."
 msgstr "Aantal seconden tussen lezen van de bewaakte map."
 
-#: sabnzbd/skintext.py:398
-msgid "Post-Processing Scripts Folder"
-msgstr "Map met gebruikers scripts"
-
-#: sabnzbd/skintext.py:399
-msgid "Folder containing user scripts for post-processing."
-msgstr "Map waarin zich de nabewerkingsscripts bevinden."
-
 #: sabnzbd/skintext.py:400
+msgid "Scripts Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py:401
+msgid "Folder containing user scripts."
+msgstr ""
+
+#: sabnzbd/skintext.py:402
 msgid "Email Templates Folder"
 msgstr "Map met e-mailsjablonen"
 
-#: sabnzbd/skintext.py:401
+#: sabnzbd/skintext.py:403
 msgid "Folder containing user-defined email templates."
 msgstr "Map met e-mailsjablonen."
 
-#: sabnzbd/skintext.py:402
+#: sabnzbd/skintext.py:404
 msgid "Password file"
 msgstr "Wachtwoordenbestand"
 
-#: sabnzbd/skintext.py:403
+#: sabnzbd/skintext.py:405
 msgid "File containing all passwords to be tried on encrypted RAR files."
 msgstr ""
 "Bestand met alle wachtwoorden die uitgeprobeerd moeten worden op "
 "versleutelde RAR-bestanden."
 
-#: sabnzbd/skintext.py:404
+#: sabnzbd/skintext.py:406
 msgid "System Folders"
 msgstr "Systeemmappen"
 
-#: sabnzbd/skintext.py:405
+#: sabnzbd/skintext.py:407
 msgid "Administrative Folder"
 msgstr "Administratieve map"
 
-#: sabnzbd/skintext.py:406
+#: sabnzbd/skintext.py:408
 msgid ""
 "Location for queue admin and history database.<br /><i>Can only be changed "
 "when queue is empty.</i>"
@@ -2938,48 +2973,48 @@ msgstr ""
 "Map waar de wachtrij en geschiedenisdatabase worden opgeslagen.<br /><i>Kan "
 "alleen gewijzigd worden als de wachtrij leeg is.</i>"
 
-#: sabnzbd/skintext.py:407
+#: sabnzbd/skintext.py:409
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>De bestanden worden <b>niet</b> verplaatst. SABnzbd moet herstart "
 "worden!</i>"
 
-#: sabnzbd/skintext.py:408
+#: sabnzbd/skintext.py:410
 msgid "Log Folder"
 msgstr "Map voor logging"
 
-#: sabnzbd/skintext.py:409
+#: sabnzbd/skintext.py:411
 msgid ""
 "Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"
 msgstr ""
 "Map waarin de log bestanden worden opgeslagen<br /><i>Vereist een "
 "herstart</i>."
 
-#: sabnzbd/skintext.py:410
+#: sabnzbd/skintext.py:412
 msgid ".nzb Backup Folder"
 msgstr "Map voor het bewaren van NZB-bestanden"
 
-#: sabnzbd/skintext.py:411
+#: sabnzbd/skintext.py:413
 msgid "Location where .nzb files will be stored."
 msgstr "Map waar reserve kopieën opgeslagen worden."
 
-#: sabnzbd/skintext.py:412
+#: sabnzbd/skintext.py:414
 msgid "Default Base Folder"
 msgstr "Standaard map"
 
-#: sabnzbd/skintext.py:415
+#: sabnzbd/skintext.py:417
 msgid "Enable Quick Check"
 msgstr "Snelle controle toestaan"
 
-#: sabnzbd/skintext.py:416
+#: sabnzbd/skintext.py:418
 msgid "Skip par2 checking when files are 100% valid."
 msgstr "Geen uitgebreide PAR2 controle als de bestanden 100% in orde zijn."
 
-#: sabnzbd/skintext.py:417
+#: sabnzbd/skintext.py:419
 msgid "Download all par2 files"
 msgstr "Download alle PAR2-bestanden"
 
-#: sabnzbd/skintext.py:418
+#: sabnzbd/skintext.py:420
 msgid ""
 "This prevents multiple repair runs. QuickCheck on: download all par2 files "
 "when needed. QuickCheck off: always download all par2 files."
@@ -2988,38 +3023,38 @@ msgstr ""
 "bestanden downloaden indien nodig. QuickCheck uit: altijd alle PAR2-"
 "bestanden downloaden."
 
-#: sabnzbd/skintext.py:419
+#: sabnzbd/skintext.py:421
 msgid "Enable recursive unpacking"
 msgstr "Recursief uitpakken toestaan"
 
-#: sabnzbd/skintext.py:420
+#: sabnzbd/skintext.py:422
 msgid "Unpack archives (rar, zip, 7z) within archives."
 msgstr "Uitpakken van archieven (rar, zip, 7z) binnen archieven toestaan"
 
-#: sabnzbd/skintext.py:421
+#: sabnzbd/skintext.py:423
 msgid "Ignore any folders inside archives"
 msgstr "Negeer mappen binnen archieven"
 
-#: sabnzbd/skintext.py:422
+#: sabnzbd/skintext.py:424
 msgid "All files will go into a single folder."
 msgstr "Alle bestanden gaan in één map"
 
-#: sabnzbd/skintext.py:423
+#: sabnzbd/skintext.py:425
 msgid "When unpacking, overwrite existing files"
 msgstr "Overschrijf bestaande bestanden bij het uitpakken"
 
-#: sabnzbd/skintext.py:424
+#: sabnzbd/skintext.py:426
 msgid ""
 "This will overwrite existing files instead of creating an alternative name."
 msgstr ""
 "Dit zorgt er voor dat bestaande bestanden overschreven worden, in plaats van "
 "dat ze een andere naam krijgen."
 
-#: sabnzbd/skintext.py:425
+#: sabnzbd/skintext.py:427
 msgid "Only Get Articles for Top of Queue"
 msgstr "Download alleen artikelen van het begin van de wachtrij"
 
-#: sabnzbd/skintext.py:426
+#: sabnzbd/skintext.py:428
 msgid ""
 "Enable for less memory usage. Disable to prevent slow jobs from blocking the "
 "queue."
@@ -3027,96 +3062,101 @@ msgstr ""
 "Aanzetten zal leiden tot minder geheugen gebruik.<br />Uitzetten om te "
 "voorkomen dat langzame opdrachten de wachtrij blokkeren."
 
-#: sabnzbd/skintext.py:427
+#: sabnzbd/skintext.py:429
 msgid "Post-Process Only Verified Jobs"
 msgstr "Verwerk alleen correct geverifieerde downloads"
 
-#: sabnzbd/skintext.py:428
+#: sabnzbd/skintext.py:430
 msgid "Only perform post-processing on jobs that passed all PAR2 checks."
 msgstr ""
 "Voer de nabewerking alleen uit op downloads die alle PAR2 controles hebben "
 "doorlopen."
 
-#: sabnzbd/skintext.py:429
+#: sabnzbd/skintext.py:431
 msgid "Action when encrypted RAR is downloaded"
 msgstr "Actie wanneer versleuteld RAR-bestand wordt gedownload"
 
-#: sabnzbd/skintext.py:430
+#: sabnzbd/skintext.py:432
 msgid ""
 "In case of \"Pause\", you'll need to set a password and resume the job."
 msgstr ""
 "Als je \"Pause\" kiest, dan dien een wachtwoord in te stellen en de download "
 "vrij te geven"
 
-#: sabnzbd/skintext.py:431
+#: sabnzbd/skintext.py:433
 msgid "Detect Duplicate Downloads"
 msgstr "Detecteer dubbele opdrachten"
 
-#: sabnzbd/skintext.py:432
-msgid "Detect identical NZB files (based on NZB content)"
-msgstr "Detecteer identieke NZB-bestanden (gebaseerd op de inhoud)"
+#: sabnzbd/skintext.py:434
+msgid ""
+"Detect identical NZB files (based on items in your History or files in .nzb "
+"Backup Folder)"
+msgstr ""
 
-#: sabnzbd/skintext.py:433
+#: sabnzbd/skintext.py:435
 msgid "Detect duplicate episodes in series"
 msgstr "Detecteer dubbele afleveringen in series"
 
-#: sabnzbd/skintext.py:434
+#: sabnzbd/skintext.py:436
 msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\")"
+"Detect identical episodes in series (based on \"name/season/episode\" of "
+"items in your History)"
 msgstr ""
-"Detecteer dubbele afleveringen in series (gebaseerd op "
-"\"naam/seizoen/aflevering\")"
 
-#: sabnzbd/skintext.py:436 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:438 [Three way switch for duplicates]
 msgid "Discard"
 msgstr "Verwerpen"
 
-#: sabnzbd/skintext.py:438 [Three way switch for encrypted posts]
+#: sabnzbd/skintext.py:440 [Three way switch for duplicates]
+msgid "Fail job (move to History)"
+msgstr ""
+
+#: sabnzbd/skintext.py:441 [Three way switch for encrypted posts]
 msgid "Abort"
 msgstr "Afbreken"
 
-#: sabnzbd/skintext.py:439
+#: sabnzbd/skintext.py:442
 msgid "Action when unwanted extension detected"
 msgstr "Actie bij ontdekken van ongewenste extensie"
 
-#: sabnzbd/skintext.py:440
+#: sabnzbd/skintext.py:443
 msgid "Action when an unwanted extension is detected in RAR files"
 msgstr ""
 "Actie wanneer een ongewenste extensie wordt gevonden in een RAR-bestand"
 
-#: sabnzbd/skintext.py:441
+#: sabnzbd/skintext.py:444
 msgid "Unwanted extensions"
 msgstr "Ongewenste extensies"
 
-#: sabnzbd/skintext.py:442
+#: sabnzbd/skintext.py:445
 msgid ""
 "List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
 msgstr ""
 "Lijst van alle ongewenste extensies. Voorbeeld: <b>exe</b> or <b>exe, com</b>"
 
-#: sabnzbd/skintext.py:443
+#: sabnzbd/skintext.py:446
 msgid "Enable SFV-based checks"
 msgstr "Voer SFV-gebaseerde controles uit"
 
-#: sabnzbd/skintext.py:444
+#: sabnzbd/skintext.py:447
 msgid "Do an extra verification based on SFV files."
 msgstr "Doe een extra verificatie m.b.v. SFV-bestanden"
 
-#: sabnzbd/skintext.py:445
+#: sabnzbd/skintext.py:448
 msgid "Check result of unpacking"
 msgstr "Controleer resultaat van uitpakken"
 
-#: sabnzbd/skintext.py:446
+#: sabnzbd/skintext.py:449
 msgid "Check result of unpacking (needs to be off for some file systems)."
 msgstr ""
 "Controleer resultaat van uitpakken (moet \"uit\" staan voor sommige "
 "bestandssystemen)."
 
-#: sabnzbd/skintext.py:447
+#: sabnzbd/skintext.py:450
 msgid "User script can flag job as failed"
 msgstr "Een gebruikersscript kan een opdracht afkeuren"
 
-#: sabnzbd/skintext.py:448
+#: sabnzbd/skintext.py:451
 msgid ""
 "When the user script returns a non-zero exit code, the job will be flagged "
 "as failed."
@@ -3124,20 +3164,20 @@ msgstr ""
 "Wanneer het script een exit code anders dan 0 geeft, zal de opdracht worden "
 "afgekeurd."
 
-#: sabnzbd/skintext.py:449
+#: sabnzbd/skintext.py:452
 msgid "On failure, try alternative NZB"
 msgstr "Bij mislukking: probeer alternatieve NZB"
 
-#: sabnzbd/skintext.py:450
+#: sabnzbd/skintext.py:453
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
 
-#: sabnzbd/skintext.py:451
+#: sabnzbd/skintext.py:454
 msgid "Use tags from indexer"
 msgstr "Gebruik markeringen (tags) van de indexer"
 
-#: sabnzbd/skintext.py:452
+#: sabnzbd/skintext.py:455
 msgid ""
 "Use tags from indexer for title, season, episode, etc. Otherwise all naming "
 "is derived from the NZB name."
@@ -3145,11 +3185,11 @@ msgstr ""
 "Gebruik indexer markeringen (tags) voor titel, seizoen, episode, enz. Zo "
 "niet, dan wordt alles afgeleid uit de NZB naam."
 
-#: sabnzbd/skintext.py:453
+#: sabnzbd/skintext.py:456
 msgid "Enable folder rename"
 msgstr "Gebruik tijdelijke mapnamen"
 
-#: sabnzbd/skintext.py:454
+#: sabnzbd/skintext.py:457
 msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
@@ -3157,48 +3197,48 @@ msgstr ""
 "Gebruik tijdelijke mapnamen tijdens de nabewerking. Zet dit uit wanneer je "
 "systeem daar problemen mee heeft."
 
-#: sabnzbd/skintext.py:455
+#: sabnzbd/skintext.py:458
 msgid "Pre-queue user script"
 msgstr "Wachtrij filter script"
 
-#: sabnzbd/skintext.py:456
+#: sabnzbd/skintext.py:459
 msgid "Used before an NZB enters the queue."
 msgstr "Wordt uitgevoerd vóór een NZB de queue in gaat"
 
-#: sabnzbd/skintext.py:457
+#: sabnzbd/skintext.py:460
 msgid "Enable MultiCore Par2"
 msgstr "MultiCore Par2 toestaan"
 
-#: sabnzbd/skintext.py:459
+#: sabnzbd/skintext.py:462
 msgid "Extra PAR2 Parameters"
 msgstr "Extra PAR2 parameters:"
 
-#: sabnzbd/skintext.py:461
+#: sabnzbd/skintext.py:464
 msgid "Nice Parameters"
 msgstr "\"Nice\" parameters"
 
-#: sabnzbd/skintext.py:463
+#: sabnzbd/skintext.py:466
 msgid "IONice Parameters"
 msgstr "\"IONice\" parameters"
 
-#: sabnzbd/skintext.py:465
+#: sabnzbd/skintext.py:468
 msgid "Disconnect on Empty Queue"
 msgstr "Verbreek verbindingen wanneer er niets te doen is"
 
-#: sabnzbd/skintext.py:466
+#: sabnzbd/skintext.py:469
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr ""
 "Verbreek verbindingen wanneer de wachtrij leeg is of er gepauzeerd wordt."
 
-#: sabnzbd/skintext.py:467
+#: sabnzbd/skintext.py:470
 msgid "Sort by Age"
 msgstr "Sorteer op leeftijd"
 
-#: sabnzbd/skintext.py:468
+#: sabnzbd/skintext.py:471
 msgid "Automatically sort items by (average) age."
 msgstr "Automatisch sorteren op basis van gemiddelde leeftijd."
 
-#: sabnzbd/skintext.py:470
+#: sabnzbd/skintext.py:473
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
@@ -3206,122 +3246,122 @@ msgstr ""
 "Posts zullen gepauzeerd worden tot ze minimaal deze leeftijd hebben. "
 "Instellen van prioriteit Forceren zal de download meteen starten."
 
-#: sabnzbd/skintext.py:471
+#: sabnzbd/skintext.py:474
 msgid "Check for New Release"
 msgstr "Periodieke controle voor nieuwe versies"
 
-#: sabnzbd/skintext.py:472
+#: sabnzbd/skintext.py:475
 msgid "Weekly check for new SABnzbd release."
 msgstr "Informeer iedere week naar nieuwe SABnzbd versies."
 
-#: sabnzbd/skintext.py:473 [Pick list for weekly test for new releases]
+#: sabnzbd/skintext.py:476 [Pick list for weekly test for new releases]
 msgid "Also test releases"
 msgstr "Ook test versies"
 
-#: sabnzbd/skintext.py:474
+#: sabnzbd/skintext.py:477
 msgid "Replace Spaces in Foldername"
 msgstr "Vervang spaties in mapnamen"
 
-#: sabnzbd/skintext.py:475
+#: sabnzbd/skintext.py:478
 msgid "Replace spaces with underscores in folder names."
 msgstr "Vervang spaties door onderliggende streepjes in namen van mappen."
 
-#: sabnzbd/skintext.py:476
+#: sabnzbd/skintext.py:479
 msgid "Replace dots in Foldername"
 msgstr "Vervang punten in mapnamen"
 
-#: sabnzbd/skintext.py:477
+#: sabnzbd/skintext.py:480
 msgid "Replace dots with spaces in folder names."
 msgstr "Vervang punten door spaties in namen van mappen."
 
-#: sabnzbd/skintext.py:478
+#: sabnzbd/skintext.py:481
 msgid "Replace Illegal Characters in Folder Names"
 msgstr "Vervang verboden tekens in mapnamen"
 
-#: sabnzbd/skintext.py:479
+#: sabnzbd/skintext.py:482
 msgid ""
 "Replace illegal characters in folder names by equivalents (otherwise remove)."
 msgstr ""
 "Vervang verboden tekens in mapnamen door gelijkende tekens (anders "
 "verwijderen)."
 
-#: sabnzbd/skintext.py:480
+#: sabnzbd/skintext.py:483
 msgid "Make Windows compatible"
 msgstr "Maak compatibel met Windows"
 
-#: sabnzbd/skintext.py:481
+#: sabnzbd/skintext.py:484
 msgid "For servers: make sure names are compatible with Windows."
 msgstr "Voor opslag op servers: gebruik namen die werken op Windows"
 
-#: sabnzbd/skintext.py:482
+#: sabnzbd/skintext.py:485
 msgid "Launch Browser on Startup"
 msgstr "Start webbrowser bij opstarten"
 
-#: sabnzbd/skintext.py:483
+#: sabnzbd/skintext.py:486
 msgid "Launch the default web browser when starting SABnzbd."
 msgstr "Start de web browser wanneer SABnzbd opstart."
 
-#: sabnzbd/skintext.py:484
+#: sabnzbd/skintext.py:487
 msgid "Pause Downloading During Post-Processing"
 msgstr "Onderbreek downloaden tijdens nabewerken"
 
-#: sabnzbd/skintext.py:485
+#: sabnzbd/skintext.py:488
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
 msgstr "Onderbreek downloaden tijdens nabewerken."
 
-#: sabnzbd/skintext.py:486
+#: sabnzbd/skintext.py:489
 msgid "Ignore Samples"
 msgstr "Verwerking van \"sample\"-bestanden"
 
-#: sabnzbd/skintext.py:487
+#: sabnzbd/skintext.py:490
 msgid "Filter out sample files (e.g. video samples)."
 msgstr "Wat te doen met \"sample\"-bestanden?"
 
-#: sabnzbd/skintext.py:489
+#: sabnzbd/skintext.py:492
 msgid "Delete after download"
 msgstr "Verwijderen na download"
 
-#: sabnzbd/skintext.py:490
+#: sabnzbd/skintext.py:493
 msgid "HTTPS certificate verification"
 msgstr "HTTPS certificaat controle"
 
-#: sabnzbd/skintext.py:491
+#: sabnzbd/skintext.py:494
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
 "Controleer certificaten bij beveiligde verbindingen met indexers en RSS-"
 "bronnen"
 
-#: sabnzbd/skintext.py:493
+#: sabnzbd/skintext.py:496
 msgid "Server"
 msgstr "Server"
 
-#: sabnzbd/skintext.py:495
+#: sabnzbd/skintext.py:498
 msgid "Post processing"
 msgstr "Nabewerking"
 
-#: sabnzbd/skintext.py:496
+#: sabnzbd/skintext.py:499
 msgid "Naming"
 msgstr "Naamgeving"
 
-#: sabnzbd/skintext.py:497
+#: sabnzbd/skintext.py:500
 msgid "Quota"
 msgstr "Quotum"
 
-#: sabnzbd/skintext.py:498
+#: sabnzbd/skintext.py:501
 msgid "Indexing"
 msgstr "Indexering"
 
-#: sabnzbd/skintext.py:500
+#: sabnzbd/skintext.py:503
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Hoeval mag deze maand worden gedownload (K/M/G)"
 
-#: sabnzbd/skintext.py:501 [Reset day of the download quota]
+#: sabnzbd/skintext.py:504 [Reset day of the download quota]
 msgid "Reset day"
 msgstr "Herstel dag"
 
-#: sabnzbd/skintext.py:502
+#: sabnzbd/skintext.py:505
 msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
@@ -3329,63 +3369,64 @@ msgstr ""
 "Op welke dag van de maand of week (1=maandag) wordt het quotum hersteld? "
 "(Eventueel met hh:mm)"
 
-#: sabnzbd/skintext.py:503 [Auto-resume download on the reset day]
+#: sabnzbd/skintext.py:506 [Auto-resume download on the reset day]
 msgid "Auto resume"
 msgstr "Automatisch doorgaan"
 
-#: sabnzbd/skintext.py:504
+#: sabnzbd/skintext.py:507
 msgid "Should downloading resume after the quota is reset?"
 msgstr ""
 "Moet het downloaden automatisch doorgaan bij het ingaan van het nieuwe "
 "quotum?"
 
-#: sabnzbd/skintext.py:505 [Does the quota get reset every day, week or month?]
+#: sabnzbd/skintext.py:508 [Does the quota get reset every day, week or month?]
 msgid "Quota period"
 msgstr "Quotum periode"
 
-#: sabnzbd/skintext.py:506
+#: sabnzbd/skintext.py:509
 msgid "Does the quota get reset each day, week or month?"
 msgstr "Wordt het quotum elke dag, week of maand hersteld?"
 
-#: sabnzbd/skintext.py:507
+#: sabnzbd/skintext.py:510
 msgid "Check before download"
 msgstr "Controle vóór downloaden"
 
-#: sabnzbd/skintext.py:508
+#: sabnzbd/skintext.py:511
 msgid "Try to predict successful completion before actual download (slower!)"
 msgstr ""
 "Probeer de succes kans van een download van te voren in te schatten "
 "(langzamer!)"
 
-#: sabnzbd/skintext.py:509
+#: sabnzbd/skintext.py:512
 msgid "SSL Ciphers"
-msgstr ""
+msgstr "SSL-sleutels"
 
-#: sabnzbd/skintext.py:510
+#: sabnzbd/skintext.py:513
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
+"Verhoog de prestaties door een eenvoudigere SSL versleuteling toe te passen."
 
-#: sabnzbd/skintext.py:511
+#: sabnzbd/skintext.py:514
 msgid "Maximum retries"
 msgstr "Maximum aantal pogingen"
 
-#: sabnzbd/skintext.py:512
+#: sabnzbd/skintext.py:515
 msgid "Maximum number of retries per server"
 msgstr "Maximaal aantal pogingen per server"
 
-#: sabnzbd/skintext.py:513
+#: sabnzbd/skintext.py:516
 msgid "Only for optional servers"
 msgstr "Alleen voor optionele servers"
 
-#: sabnzbd/skintext.py:514
+#: sabnzbd/skintext.py:517
 msgid "Apply maximum retries only to optional servers"
 msgstr "Stel alleen een maximaal aantal pogingen in voor optionele servers"
 
-#: sabnzbd/skintext.py:515
+#: sabnzbd/skintext.py:518
 msgid "Abort jobs that cannot be completed"
 msgstr "Afbreken als niet kan worden voltooid"
 
-#: sabnzbd/skintext.py:516
+#: sabnzbd/skintext.py:519
 msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
@@ -3393,11 +3434,11 @@ msgstr ""
 "Als tijdens de download duidelijk wordt dat te veel data ontbreekt, breek "
 "dan de download af"
 
-#: sabnzbd/skintext.py:517
-msgid "Enable OZnzb Integration"
-msgstr "OZnzb integratie inschakelen"
+#: sabnzbd/skintext.py:520
+msgid "Enable Indexer Integration"
+msgstr ""
 
-#: sabnzbd/skintext.py:518
+#: sabnzbd/skintext.py:521
 msgid ""
 "Enhanced functionality including ratings and extra status information is "
 "available when connected to OZnzb indexer."
@@ -3405,186 +3446,195 @@ msgstr ""
 "Uitgebreide functionaliteit met waarderingen en extra status informatie "
 "wanneer gekoppeld aan OZnzb indexer."
 
-#: sabnzbd/skintext.py:520 # sabnzbd/skintext.py:631 [Address of Growl server]
+#: sabnzbd/skintext.py:523 # sabnzbd/skintext.py:639 [Address of Growl server]
 msgid "Server address"
 msgstr "Server adres"
 
-#: sabnzbd/skintext.py:521
+#: sabnzbd/skintext.py:524
 msgid ""
-"This key provides identity to indexer. Refer to "
-"https://www.oznzb.com/profile."
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
 msgstr ""
-"Deze sleutel is het toegangsbewijs voor de indexer. Kijk op "
-"https://www.oznzb.com/profile."
 
-#: sabnzbd/skintext.py:522
+#: sabnzbd/skintext.py:525
 msgid "Automatic Feedback"
 msgstr "Automatische terugkoppeling"
 
-#: sabnzbd/skintext.py:523
+#: sabnzbd/skintext.py:526
 msgid ""
 "Send automatically calculated validation results for downloads to indexer."
 msgstr "Verzend berekende validatie gegevens over downloads naar de indexer."
 
-#: sabnzbd/skintext.py:524
+#: sabnzbd/skintext.py:527
 msgid "Enable Filtering"
 msgstr "Filtering aan"
 
-#: sabnzbd/skintext.py:525
+#: sabnzbd/skintext.py:528
 msgid "Action downloads according to filtering rules."
 msgstr "Verwerk downloads volgens de filter regels"
 
-#: sabnzbd/skintext.py:526
+#: sabnzbd/skintext.py:529
 msgid "Abort If"
 msgstr "Afbreken indien"
 
-#: sabnzbd/skintext.py:527
+#: sabnzbd/skintext.py:530
 msgid "Else Pause If"
 msgstr "Anders pauzeren indien"
 
-#: sabnzbd/skintext.py:528
+#: sabnzbd/skintext.py:531
 msgid "Video rating"
 msgstr "Video rating"
 
-#: sabnzbd/skintext.py:529
+#: sabnzbd/skintext.py:532
 msgid "Audio rating"
 msgstr "Audio rating"
 
-#: sabnzbd/skintext.py:531
+#: sabnzbd/skintext.py:534
 msgid "Spam"
 msgstr "Spam"
 
-#: sabnzbd/skintext.py:532
+#: sabnzbd/skintext.py:535
 msgid "Confirmed"
 msgstr "Bevestigd"
 
-#: sabnzbd/skintext.py:533
+#: sabnzbd/skintext.py:536
 msgid "More thumbs down than up"
 msgstr "Meer duimen omlaag dan omhoog"
 
-#: sabnzbd/skintext.py:534
+#: sabnzbd/skintext.py:537
 msgid "Title keywords"
 msgstr "Titel trefwoorden"
 
-#: sabnzbd/skintext.py:535
+#: sabnzbd/skintext.py:538
 msgid "Comma separated list"
 msgstr "Door comma's gescheiden lijst"
 
-#: sabnzbd/skintext.py:536
+#: sabnzbd/skintext.py:539
 msgid "Server load-balancing"
 msgstr "Balanceren van server belasting"
 
-#: sabnzbd/skintext.py:537
+#: sabnzbd/skintext.py:540
 msgid "Prevent load-balancing"
 msgstr "Schaken balancering uit"
 
-#: sabnzbd/skintext.py:538
+#: sabnzbd/skintext.py:541
 msgid "Allow load-balancing"
 msgstr "Schakel balancering in"
 
-#: sabnzbd/skintext.py:539
+#: sabnzbd/skintext.py:542
 msgid "Allow load-balancing with optimization for IPv6"
 msgstr "Schakel balancering met optimalisatie voor IPv6 in"
 
-#: sabnzbd/skintext.py:540
+#: sabnzbd/skintext.py:543
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr "Nuttig wanneer een server meer dan één IPv4 of IPv6-adres heeft"
 
-#: sabnzbd/skintext.py:543 [Caption] # sabnzbd/skintext.py:562 [Button: Add server]
+#: sabnzbd/skintext.py:546 [Caption] # sabnzbd/skintext.py:567 [Button: Add server]
 msgid "Add Server"
 msgstr "Voeg server toe"
 
-#: sabnzbd/skintext.py:544 [User defined name for server]
+#: sabnzbd/skintext.py:547 [User defined name for server]
 msgid "Server description"
 msgstr "Servernaam"
 
-#: sabnzbd/skintext.py:546 [Server port]
+#: sabnzbd/skintext.py:549 [Server port]
 msgid "Port"
 msgstr "Poortnummer"
 
-#: sabnzbd/skintext.py:547 [Server username]
+#: sabnzbd/skintext.py:550 [Server username]
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: sabnzbd/skintext.py:548 [Server password]
+#: sabnzbd/skintext.py:551 [Server password]
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: sabnzbd/skintext.py:549 [Server timeout]
+#: sabnzbd/skintext.py:552 [Server timeout]
 msgid "Timeout"
 msgstr "Tijdslimiet"
 
-#: sabnzbd/skintext.py:551 [Server's retention time in days]
+#: sabnzbd/skintext.py:554 [Server's retention time in days]
 msgid "Retention time"
 msgstr "Bewaartijd"
 
-#: sabnzbd/skintext.py:552 [Server SSL tickbox]
+#: sabnzbd/skintext.py:555 [Server SSL tickbox]
 msgid "SSL"
 msgstr "SSL"
 
-#: sabnzbd/skintext.py:553
-msgid "Certificate verification"
+#: sabnzbd/skintext.py:556 [Server SSL tickbox]
+msgid "Secure connection to server"
 msgstr ""
 
-#: sabnzbd/skintext.py:554
+#: sabnzbd/skintext.py:557
+msgid "Certificate verification"
+msgstr "Certificaat verificatie"
+
+#: sabnzbd/skintext.py:558
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
+"Standaard: wanneer SSL aktief is, verifieer de identiteit van de server "
+"m.b.v. diens certificaten. Strikt: verifieer ook of de server naam "
+"overeenkomt met het certificaat."
 
-#: sabnzbd/skintext.py:555 # sabnzbd/skintext.py:785 # sabnzbd/skintext.py:898
+#: sabnzbd/skintext.py:559 # sabnzbd/skintext.py:794 # sabnzbd/skintext.py:907
 msgid "Disabled"
 msgstr "Uit"
 
-#: sabnzbd/skintext.py:557
+#: sabnzbd/skintext.py:561
 msgid "Strict"
-msgstr ""
+msgstr "Strikt"
 
-#: sabnzbd/skintext.py:559 [Explain server priority]
+#: sabnzbd/skintext.py:563 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 is de hoogste en 100 de laagste prioriteit"
 
-#: sabnzbd/skintext.py:560 [Server optional tickbox]
+#: sabnzbd/skintext.py:564 [Server optional tickbox]
 msgid "Optional"
 msgstr "Optioneel"
 
-#: sabnzbd/skintext.py:561 [Enable server tickbox]
+#: sabnzbd/skintext.py:565 [Explain server optional tickbox]
+msgid "For unreliable servers, will be ignored longer in case of failures"
+msgstr ""
+
+#: sabnzbd/skintext.py:566 [Enable server tickbox]
 msgid "Enable"
 msgstr "Inschakelen"
 
-#: sabnzbd/skintext.py:563 [Button: Remove server]
+#: sabnzbd/skintext.py:568 [Button: Remove server]
 msgid "Remove Server"
 msgstr "Verwijder"
 
-#: sabnzbd/skintext.py:564 [Button: Test server] # sabnzbd/skintext.py:971 [Wizard step]
+#: sabnzbd/skintext.py:569 [Button: Test server] # sabnzbd/skintext.py:980 [Wizard step]
 msgid "Test Server"
 msgstr "Test Server"
 
-#: sabnzbd/skintext.py:565 [Button: Clear server's byte counters]
+#: sabnzbd/skintext.py:570 [Button: Clear server's byte counters]
 msgid "Clear Counters"
 msgstr "Tellers op nul"
 
-#: sabnzbd/skintext.py:566
+#: sabnzbd/skintext.py:571
 msgid "Testing server details..."
 msgstr "Server instellingen aan het testen..."
 
-#: sabnzbd/skintext.py:567
+#: sabnzbd/skintext.py:572
 msgid "Bandwidth"
 msgstr "Bandbreedte"
 
-#: sabnzbd/skintext.py:568
+#: sabnzbd/skintext.py:573
 msgid "Send Group"
 msgstr "Verzend groep"
 
-#: sabnzbd/skintext.py:569
+#: sabnzbd/skintext.py:574
 msgid "Send group command before requesting articles."
 msgstr "Verzend de groepsnaam naar de server."
 
-#: sabnzbd/skintext.py:571
+#: sabnzbd/skintext.py:576
 msgid "Only use this server for these categories."
 msgstr "Gebruik de server alleen voor deze categorieën"
 
-#: sabnzbd/skintext.py:572
+#: sabnzbd/skintext.py:577
 msgid ""
 "None of the enabled servers have the 'Default' category selected. Jobs in "
 "the queue that are not assigned to one of the server's categories will not "
@@ -3594,19 +3644,19 @@ msgstr ""
 "wachtrij die geen categorie hebben die ook aan een server is gekoppeld, "
 "zullen niet worden gedownload."
 
-#: sabnzbd/skintext.py:573
+#: sabnzbd/skintext.py:578
 msgid "Personal notes"
 msgstr "Persoonlijke aantekeningen"
 
-#: sabnzbd/skintext.py:576 [Config->Scheduling] # sabnzbd/skintext.py:580 [Config->Scheduling]
+#: sabnzbd/skintext.py:581 [Config->Scheduling] # sabnzbd/skintext.py:585 [Config->Scheduling]
 msgid "Add Schedule"
 msgstr "Taak toevoegen"
 
-#: sabnzbd/skintext.py:581 [Config->Scheduling]
+#: sabnzbd/skintext.py:586 [Config->Scheduling]
 msgid "Current Schedules"
 msgstr "Huidige taken"
 
-#: sabnzbd/skintext.py:588
+#: sabnzbd/skintext.py:593
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
 "enabled and be automatically checked for new items.<br />When a feed is "
@@ -3618,295 +3668,303 @@ msgstr ""
 "alleen nieuwe items gevonden worden en geen bestaande, behalve wanneer je de "
 "op \"Forceer download\" klikt."
 
-#: sabnzbd/skintext.py:590 [Config->RSS button]
+#: sabnzbd/skintext.py:595 [Config->RSS, placeholder (cannot be too long)]
+msgid "Seperate multiple URLs by a comma"
+msgstr ""
+
+#: sabnzbd/skintext.py:596 [Config->RSS button]
 msgid "Read Feed"
 msgstr "Uitlezen"
 
-#: sabnzbd/skintext.py:591 [Config->RSS button]
+#: sabnzbd/skintext.py:597 [Config->RSS button]
 msgid "Force Download"
 msgstr "Forceer download"
 
-#: sabnzbd/skintext.py:594 [Config->RSS table column header]
+#: sabnzbd/skintext.py:600 [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filter"
 
-#: sabnzbd/skintext.py:595 [Config->RSS table column header]
+#: sabnzbd/skintext.py:601 [Config->RSS table column header]
 msgid "Skip"
 msgstr "Overslaan"
 
-#: sabnzbd/skintext.py:596 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:602 [Config->RSS filter-type selection menu]
 msgid "Accept"
 msgstr "Accepteren"
 
-#: sabnzbd/skintext.py:597 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:603 [Config->RSS filter-type selection menu]
 msgid "Reject"
 msgstr "Verwerpen"
 
-#: sabnzbd/skintext.py:598 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:604 [Config->RSS filter-type selection menu]
 msgid "Requires"
 msgstr "Verplicht"
 
-#: sabnzbd/skintext.py:599 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:605 [Config->RSS filter-type selection menu]
 msgid "RequiresCat"
 msgstr "VerplichteCat"
 
-#: sabnzbd/skintext.py:600 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:606 [Config->RSS filter-type selection menu]
 msgid "At least"
 msgstr "Minstens"
 
-#: sabnzbd/skintext.py:601 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:607 [Config->RSS filter-type selection menu]
 msgid "At most"
 msgstr "Hoogstens"
 
-#: sabnzbd/skintext.py:602 [Config->RSS filter-type selection menu "From Season/Episode"]
+#: sabnzbd/skintext.py:608 [Config->RSS filter-type selection menu "From Season/Episode"]
 msgid "From SxxEyy"
 msgstr "Vanaf SxxEyy"
 
-#: sabnzbd/skintext.py:603 [Config->RSS section header]
+#: sabnzbd/skintext.py:609 [Config->RSS filter-type selection menu "From Show Season/Episode"]
+msgid "From Show SxxEyy"
+msgstr ""
+
+#: sabnzbd/skintext.py:610 [Config->RSS section header]
 msgid "Matched"
 msgstr "Geselecteerd"
 
-#: sabnzbd/skintext.py:604 [Config->RSS section header]
+#: sabnzbd/skintext.py:611 [Config->RSS section header]
 msgid "Not Matched"
 msgstr "Niet geselecteerd"
 
-#: sabnzbd/skintext.py:605 [Config->RSS section header]
+#: sabnzbd/skintext.py:612 [Config->RSS section header]
 msgid "Downloaded"
 msgstr "Gedaan"
 
-#: sabnzbd/skintext.py:607 [Config->RSS button]
+#: sabnzbd/skintext.py:615 [Config->RSS button]
 msgid "Read All Feeds Now"
 msgstr "Alle feeds nu uitlezen"
 
-#: sabnzbd/skintext.py:610
+#: sabnzbd/skintext.py:618
 msgid "Email Notification On Job Completion"
 msgstr "Stuur een e-mail na het voltooien van elke download"
 
-#: sabnzbd/skintext.py:611 [When to send email]
+#: sabnzbd/skintext.py:619 [When to send email]
 msgid "Never"
 msgstr "Nooit"
 
-#: sabnzbd/skintext.py:612 [When to send email]
+#: sabnzbd/skintext.py:620 [When to send email]
 msgid "Always"
 msgstr "Altijd"
 
-#: sabnzbd/skintext.py:613 [When to send email]
+#: sabnzbd/skintext.py:621 [When to send email]
 msgid "Error-only"
 msgstr "Alleen bij fouten"
 
-#: sabnzbd/skintext.py:614
+#: sabnzbd/skintext.py:622
 msgid "Disk Full Notifications"
 msgstr "Stuur een e-mail wanneer de harde schijf vol is"
 
-#: sabnzbd/skintext.py:615
+#: sabnzbd/skintext.py:623
 msgid "Send email when disk is full and SABnzbd is paused."
 msgstr ""
 "Stuur een e-mail wanneer SABnzbd gestopt is vanwege een volle harde schijf."
 
-#: sabnzbd/skintext.py:616
+#: sabnzbd/skintext.py:624
 msgid "Send RSS notifications"
 msgstr "Verstuur een e-mail voor RSS"
 
-#: sabnzbd/skintext.py:617
+#: sabnzbd/skintext.py:625
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr ""
 "Verstuur een e-mail wanneer een RSS-bron opdrachten<br />aan de wachtrij "
 "heeft toevoegd."
 
-#: sabnzbd/skintext.py:618
+#: sabnzbd/skintext.py:626
 msgid "SMTP Server"
 msgstr "SMTP-server"
 
-#: sabnzbd/skintext.py:619
+#: sabnzbd/skintext.py:627
 msgid "Set your ISP's server for outgoing email."
 msgstr "Het adres van de e-mailserver van je internet provider."
 
-#: sabnzbd/skintext.py:620
+#: sabnzbd/skintext.py:628
 msgid "Email Recipient"
 msgstr "Ontvanger"
 
-#: sabnzbd/skintext.py:621
+#: sabnzbd/skintext.py:629
 msgid "Email address to send the email to."
 msgstr "Adres waarnaar de e-mail verstuurd wordt."
 
-#: sabnzbd/skintext.py:622
+#: sabnzbd/skintext.py:630
 msgid "Email Sender"
 msgstr "Afzender"
 
-#: sabnzbd/skintext.py:623
+#: sabnzbd/skintext.py:631
 msgid "Who should we say sent the email?"
 msgstr "Wie zou de email gestuurd moeten hebben?"
 
-#: sabnzbd/skintext.py:624
+#: sabnzbd/skintext.py:632
 msgid "OPTIONAL Account Username"
 msgstr "OPTIE: Account gebruikersnaam"
 
-#: sabnzbd/skintext.py:625
+#: sabnzbd/skintext.py:633
 msgid "For authenticated email, account name."
 msgstr "Wanneer authenticatie nodig is, de gebruikersnaam."
 
-#: sabnzbd/skintext.py:626
+#: sabnzbd/skintext.py:634
 msgid "OPTIONAL Account Password"
 msgstr "OPTIE: Account wachtwoord"
 
-#: sabnzbd/skintext.py:627
+#: sabnzbd/skintext.py:635
 msgid "For authenticated email, password."
 msgstr "Wanneer authenticatie nodig is, het wachtwoord."
 
-#: sabnzbd/skintext.py:628 [Header Growl section]
+#: sabnzbd/skintext.py:636 [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
 
-#: sabnzbd/skintext.py:629 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:637 [Don't translate "Growl"]
 msgid "Enable Growl"
 msgstr "Growl meldingen activeren"
 
-#: sabnzbd/skintext.py:630 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:638 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Zend meldingen naar Growl"
 
-#: sabnzbd/skintext.py:632 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:640 [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr ""
 "Alleen gebruiken voor een Growl server op een ander systeem (server:poort)"
 
-#: sabnzbd/skintext.py:633 [Growl server password]
+#: sabnzbd/skintext.py:641 [Growl server password]
 msgid "Server password"
 msgstr "Server wachtwoord"
 
-#: sabnzbd/skintext.py:634 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:642 [Don't translate "Growl"]
 msgid "Optional password for Growl server"
 msgstr "Optioneel wachtwoord voor de Growl server"
 
-#: sabnzbd/skintext.py:635 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:643 [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD activeren"
 
-#: sabnzbd/skintext.py:636 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:644 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
 msgstr "Zend meldingen naar NotifyOSD"
 
-#: sabnzbd/skintext.py:637 # sabnzbd/skintext.py:641 [Header for OSX Notfication Center section]
+#: sabnzbd/skintext.py:645 # sabnzbd/skintext.py:649 [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Berichtencentrum"
 
-#: sabnzbd/skintext.py:638
+#: sabnzbd/skintext.py:646
 msgid "Send notifications to Notification Center"
 msgstr "Stuur meldingen naar het Berichtencentrum"
 
-#: sabnzbd/skintext.py:639
+#: sabnzbd/skintext.py:647
 msgid "Enable Windows Notifications"
 msgstr "Windows meldingen activeren"
 
-#: sabnzbd/skintext.py:642
+#: sabnzbd/skintext.py:650
 msgid "Windows Notifications"
 msgstr "Windows Meldingen"
 
-#: sabnzbd/skintext.py:643 [Header for Ubuntu's NotifyOSD notifications section]
+#: sabnzbd/skintext.py:651 [Header for Ubuntu's NotifyOSD notifications section]
 msgid "NotifyOSD"
 msgstr "NotifyOSD"
 
-#: sabnzbd/skintext.py:644 [Header for Prowl notification section]
+#: sabnzbd/skintext.py:652 [Header for Prowl notification section]
 msgid "Prowl"
 msgstr "Prowl"
 
-#: sabnzbd/skintext.py:645 [Prowl settings]
+#: sabnzbd/skintext.py:653 [Prowl settings]
 msgid "Enable Prowl notifications"
 msgstr "Prowl berichten activeren"
 
-#: sabnzbd/skintext.py:646 [Prowl settings]
+#: sabnzbd/skintext.py:654 [Prowl settings]
 msgid "Requires a Prowl account"
 msgstr "Een Prowl account is noodzakelijk"
 
-#: sabnzbd/skintext.py:647 [Prowl settings]
+#: sabnzbd/skintext.py:655 [Prowl settings]
 msgid "API key for Prowl"
 msgstr "API-sleutel voor Prowl"
 
-#: sabnzbd/skintext.py:648 [Prowl settings]
+#: sabnzbd/skintext.py:656 [Prowl settings]
 msgid "Personal API key for Prowl (required)"
 msgstr "Persoonlijke API-sleutel voor Prowl (noodzakelijk)"
 
-#: sabnzbd/skintext.py:649 [Header for Pushover notification section]
+#: sabnzbd/skintext.py:657 [Header for Pushover notification section]
 msgid "Pushover"
 msgstr "Pushover"
 
-#: sabnzbd/skintext.py:650 [Pushover settings]
+#: sabnzbd/skintext.py:658 [Pushover settings]
 msgid "Enable Pushover notifications"
 msgstr "Pushover meldingen activeren"
 
-#: sabnzbd/skintext.py:651 [Pushoversettings]
+#: sabnzbd/skintext.py:659 [Pushoversettings]
 msgid "Requires a Pushover account"
 msgstr "Hiervoor is een Pushover account nodig"
 
-#: sabnzbd/skintext.py:652 [Pushover settings]
+#: sabnzbd/skintext.py:660 [Pushover settings]
 msgid "Application Token"
 msgstr "Applicatie token"
 
-#: sabnzbd/skintext.py:653 [Pushover settings]
+#: sabnzbd/skintext.py:661 [Pushover settings]
 msgid "Application token (required)"
 msgstr "Applicatie token (verplicht)"
 
-#: sabnzbd/skintext.py:654 [Pushover settings]
+#: sabnzbd/skintext.py:662 [Pushover settings]
 msgid "User Key"
 msgstr "Gebrukers sleutel"
 
-#: sabnzbd/skintext.py:655 [Pushover settings]
+#: sabnzbd/skintext.py:663 [Pushover settings]
 msgid "User Key (required)"
 msgstr "Gebrukers sleutel (verplicht)"
 
-#: sabnzbd/skintext.py:656 [Pushover settings]
+#: sabnzbd/skintext.py:664 [Pushover settings]
 msgid "Device(s)"
 msgstr "Apparaten"
 
-#: sabnzbd/skintext.py:657 [Pushover settings]
+#: sabnzbd/skintext.py:665 [Pushover settings]
 msgid "Device(s) to which message should be sent"
 msgstr "Apparaat of apparaten die het bericht moeten ontvangen"
 
-#: sabnzbd/skintext.py:658 [Header for Pushbullet notification section]
+#: sabnzbd/skintext.py:666 [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
 
-#: sabnzbd/skintext.py:659 [Pushbullet settings]
+#: sabnzbd/skintext.py:667 [Pushbullet settings]
 msgid "Enable Pushbullet notifications"
 msgstr "Pushbullet meldingen activeren"
 
-#: sabnzbd/skintext.py:660 [Pushbulletsettings]
+#: sabnzbd/skintext.py:668 [Pushbulletsettings]
 msgid "Requires a Pushbullet account"
 msgstr "Hiervoor is een Pushbullet account nodig"
 
-#: sabnzbd/skintext.py:661 [Pushbullet settings]
+#: sabnzbd/skintext.py:669 [Pushbullet settings]
 msgid "Personal API key"
 msgstr "Persoonlijke API-sleutel"
 
-#: sabnzbd/skintext.py:662 [Pushbullet settings]
+#: sabnzbd/skintext.py:670 [Pushbullet settings]
 msgid "Your personal Pushbullet API key (required)"
 msgstr "Persoonlijke Pushbullet API-sleutel (verplicht)"
 
-#: sabnzbd/skintext.py:663 [Pushbullet settings]
+#: sabnzbd/skintext.py:671 [Pushbullet settings]
 msgid "Device"
 msgstr "Apparaat"
 
-#: sabnzbd/skintext.py:664 [Pushbullet settings]
+#: sabnzbd/skintext.py:672 [Pushbullet settings]
 msgid "Device to which message should be sent"
 msgstr "Apparaat dat de berichten moet ontvangen"
 
-#: sabnzbd/skintext.py:665 [Header for Notification Script notification section]
+#: sabnzbd/skintext.py:673 [Header for Notification Script notification section]
 msgid "Notification Script"
 msgstr "Notificatie Script"
 
-#: sabnzbd/skintext.py:666 [Notification Script settings]
+#: sabnzbd/skintext.py:674 [Notification Script settings]
 msgid "Enable notification script"
 msgstr "Notificatie script activeren"
 
-#: sabnzbd/skintext.py:669 [Notification Scriptsettings]
+#: sabnzbd/skintext.py:677 [Notification Scriptsettings]
 msgid "Executes a custom script"
 msgstr "Voer een zelfgemaakt script uit"
 
-#: sabnzbd/skintext.py:670 [Notification Scriptsettings]
+#: sabnzbd/skintext.py:678 [Notification Scriptsettings]
 msgid "Which script should we execute for notification?"
 msgstr "Welk script moet uitgevoerd worden voor de notificatie?"
 
-#: sabnzbd/skintext.py:674
+#: sabnzbd/skintext.py:682
 msgid ""
 "Indexers can supply a category inside the NZB which SABnzbd will try to "
 "match to the categories defined below. Additionally, you can add terms to "
@@ -3914,235 +3972,244 @@ msgid ""
 "separate terms. Wildcards in the terms are supported. <br>More information "
 "can be found on the Wiki."
 msgstr ""
+"Indexers kunnen een categorie in de NZB plaatsen en SABnzbd zal die proberen "
+"te passen op onderstaande categorieën. Daarnaast kun je patronen invullen in "
+"de kolom \"Indexer Categorieën/Groepen\". Gebruik komma's om patronen te "
+"scheiden. Joker tekens (? en *) zijn toegestaan.<br>Meer informatie op de "
+"Wiki."
 
-#: sabnzbd/skintext.py:675
+#: sabnzbd/skintext.py:683
 msgid ""
 "Ending the path with an asterisk * will prevent creation of job folders."
 msgstr ""
 "Als het pad eindigt met een ster *, dan worden geen aparte taak folders "
 "gemaakt."
 
-#: sabnzbd/skintext.py:676
+#: sabnzbd/skintext.py:684
 msgid "Relative folders are based on"
 msgstr "Maplocaties gebaseerd op"
 
-#: sabnzbd/skintext.py:677
+#: sabnzbd/skintext.py:685
 msgid "Folder/Path"
 msgstr "Map/Pad"
 
-#: sabnzbd/skintext.py:678
+#: sabnzbd/skintext.py:686
 msgid "Indexer Categories / Groups"
-msgstr ""
+msgstr "Indexer Categorieën / Groepen"
 
-#: sabnzbd/skintext.py:679 [Small delete button]
+#: sabnzbd/skintext.py:687 [Small delete button]
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py:682
+#: sabnzbd/skintext.py:690
 msgid "Series Sorting"
 msgstr "Serie sorteren"
 
-#: sabnzbd/skintext.py:683
+#: sabnzbd/skintext.py:691
 msgid "Enable TV Sorting"
 msgstr "TV sorteren aan"
 
-#: sabnzbd/skintext.py:684
+#: sabnzbd/skintext.py:692
 msgid "Pattern Key"
 msgstr "Uitleg"
 
-#: sabnzbd/skintext.py:685
+#: sabnzbd/skintext.py:693
 msgid "Clear"
 msgstr "Wissen"
 
-#: sabnzbd/skintext.py:686
+#: sabnzbd/skintext.py:694
+msgid "Apply filters"
+msgstr "Filters toepassen"
+
+#: sabnzbd/skintext.py:695
 msgid "Presets"
 msgstr "Voorkeuzes"
 
-#: sabnzbd/skintext.py:687
+#: sabnzbd/skintext.py:696
 msgid "Example"
 msgstr "Voorbeeld"
 
-#: sabnzbd/skintext.py:688
+#: sabnzbd/skintext.py:697
 msgid "Generic Sorting"
 msgstr "Algemeen sorteren"
 
-#: sabnzbd/skintext.py:689
+#: sabnzbd/skintext.py:698
 msgid "Enable Movie Sorting"
 msgstr "Film sorteren aan"
 
-#: sabnzbd/skintext.py:690
+#: sabnzbd/skintext.py:699
 msgid "Keep loose downloads in extra folders"
 msgstr "Zet downloads in aparte mappen"
 
-#: sabnzbd/skintext.py:691
+#: sabnzbd/skintext.py:700
 msgid "Affected Categories"
 msgstr "Beïnvloede categorieën"
 
-#: sabnzbd/skintext.py:692
+#: sabnzbd/skintext.py:701
 msgid "Meaning"
 msgstr "Betekenis"
 
-#: sabnzbd/skintext.py:693
+#: sabnzbd/skintext.py:702
 msgid "Pattern"
 msgstr "Patroon"
 
-#: sabnzbd/skintext.py:694
+#: sabnzbd/skintext.py:703
 msgid "Result"
 msgstr "Resultaat"
 
-#: sabnzbd/skintext.py:695
+#: sabnzbd/skintext.py:704
 msgid "1x05 Season Folder"
 msgstr "1x05 Seizoensmappen"
 
-#: sabnzbd/skintext.py:696
+#: sabnzbd/skintext.py:705
 msgid "S01E05 Season Folder"
 msgstr "S01E05 Seizoensmap"
 
-#: sabnzbd/skintext.py:697
+#: sabnzbd/skintext.py:706
 msgid "1x05 Episode Folder"
 msgstr "1x05 Episodemap"
 
-#: sabnzbd/skintext.py:698
+#: sabnzbd/skintext.py:707
 msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodemap"
 
-#: sabnzbd/skintext.py:699
+#: sabnzbd/skintext.py:708
 msgid "Title"
 msgstr "Titel"
 
-#: sabnzbd/skintext.py:700
+#: sabnzbd/skintext.py:709
 msgid "Movie Name"
 msgstr "Film Naam"
 
-#: sabnzbd/skintext.py:701
+#: sabnzbd/skintext.py:710
 msgid "Movie.Name"
 msgstr "Film.Naam"
 
-#: sabnzbd/skintext.py:702
+#: sabnzbd/skintext.py:711
 msgid "Movie_Name"
 msgstr "Film_Naam"
 
-#: sabnzbd/skintext.py:703 # sabnzbd/skintext.py:704
+#: sabnzbd/skintext.py:712 # sabnzbd/skintext.py:713
 msgid "Show Name"
 msgstr "Serie Naam"
 
-#: sabnzbd/skintext.py:705
+#: sabnzbd/skintext.py:714
 msgid "Show.Name"
 msgstr "Serie.Naam"
 
-#: sabnzbd/skintext.py:706
+#: sabnzbd/skintext.py:715
 msgid "Show_Name"
 msgstr "Serie_Naam"
 
-#: sabnzbd/skintext.py:707
+#: sabnzbd/skintext.py:716
 msgid "Season Number"
 msgstr "Seizoen Nummer"
 
-#: sabnzbd/skintext.py:708
+#: sabnzbd/skintext.py:717
 msgid "Episode Number"
 msgstr "Episode Nummer"
 
-#: sabnzbd/skintext.py:709 # sabnzbd/skintext.py:710
+#: sabnzbd/skintext.py:718 # sabnzbd/skintext.py:719
 msgid "Episode Name"
 msgstr "Episode Naam"
 
-#: sabnzbd/skintext.py:711
+#: sabnzbd/skintext.py:720
 msgid "Episode.Name"
 msgstr "Episode.Naam"
 
-#: sabnzbd/skintext.py:712
+#: sabnzbd/skintext.py:721
 msgid "Episode_Name"
 msgstr "Episode_Naam"
 
-#: sabnzbd/skintext.py:713
+#: sabnzbd/skintext.py:722
 msgid "File Extension"
 msgstr "Bestandsextensie"
 
-#: sabnzbd/skintext.py:714
+#: sabnzbd/skintext.py:723
 msgid "Extension"
 msgstr "Extensie"
 
-#: sabnzbd/skintext.py:715
+#: sabnzbd/skintext.py:724
 msgid "Part Number"
 msgstr "Volgnummer"
 
-#: sabnzbd/skintext.py:716
+#: sabnzbd/skintext.py:725
 msgid "Decade"
 msgstr "Decade"
 
-#: sabnzbd/skintext.py:717
+#: sabnzbd/skintext.py:726
 msgid "Original Filename"
 msgstr "Originele bestandsnaam"
 
-#: sabnzbd/skintext.py:718
+#: sabnzbd/skintext.py:727
 msgid "Original Foldername"
 msgstr "Oorspronkelijke mapnaam"
 
-#: sabnzbd/skintext.py:719
+#: sabnzbd/skintext.py:728
 msgid "Lower Case"
 msgstr "Kleine letters"
 
-#: sabnzbd/skintext.py:720
+#: sabnzbd/skintext.py:729
 msgid "TEXT"
 msgstr "TEKST"
 
-#: sabnzbd/skintext.py:721
+#: sabnzbd/skintext.py:730
 msgid "text"
 msgstr "tekst"
 
-#: sabnzbd/skintext.py:722
+#: sabnzbd/skintext.py:731
 msgid "file"
 msgstr "bestand"
 
-#: sabnzbd/skintext.py:723
+#: sabnzbd/skintext.py:732
 msgid "folder"
 msgstr "map"
 
-#: sabnzbd/skintext.py:724
+#: sabnzbd/skintext.py:733
 msgid "Sort String"
 msgstr "Sorteer formule"
 
-#: sabnzbd/skintext.py:725
+#: sabnzbd/skintext.py:734
 msgid "Multi-part label"
 msgstr "Meervoudig label"
 
-#: sabnzbd/skintext.py:726
+#: sabnzbd/skintext.py:735
 msgid "In folders"
 msgstr "In mappen"
 
-#: sabnzbd/skintext.py:727
+#: sabnzbd/skintext.py:736
 msgid "No folders"
 msgstr "Geen mappen"
 
-#: sabnzbd/skintext.py:728
+#: sabnzbd/skintext.py:737
 msgid "Date Sorting"
 msgstr "Datum sorteren"
 
-#: sabnzbd/skintext.py:729
+#: sabnzbd/skintext.py:738
 msgid "Enable Date Sorting"
 msgstr "Datum sorteren aanzetten"
 
-#: sabnzbd/skintext.py:730
+#: sabnzbd/skintext.py:739
 msgid "Show Name folder"
 msgstr "Toon Naam map"
 
-#: sabnzbd/skintext.py:731
+#: sabnzbd/skintext.py:740
 msgid "Year-Month Folders"
 msgstr "Jaar-Maand Mappen"
 
-#: sabnzbd/skintext.py:732
+#: sabnzbd/skintext.py:741
 msgid "Daily Folders"
 msgstr "Dagelijkse Mappen"
 
-#: sabnzbd/skintext.py:733 [Note for title expression in Sorting that does case adjustment]
+#: sabnzbd/skintext.py:742 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
 msgstr "Aanpassen van hoofd- en kleine letters"
 
-#: sabnzbd/skintext.py:734
+#: sabnzbd/skintext.py:743
 msgid "Processed Result"
 msgstr "Bewerkt resultaat"
 
-#: sabnzbd/skintext.py:737
+#: sabnzbd/skintext.py:746
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -4154,243 +4221,239 @@ msgstr ""
 "te lezen. Er kunnen nadelige bijwerkingen optreden.<br>De standaard "
 "instellingen staan tussen haakjes."
 
-#: sabnzbd/skintext.py:741
+#: sabnzbd/skintext.py:750
 msgid "Values"
 msgstr "Waarden"
 
-#: sabnzbd/skintext.py:744 [Job details page]
+#: sabnzbd/skintext.py:753 [Job details page]
 msgid "Edit NZB Details"
 msgstr "Bewerk NZB Details"
 
-#: sabnzbd/skintext.py:746 [Job details page, delete button]
+#: sabnzbd/skintext.py:755 [Job details page, delete button]
 msgid "Delete"
 msgstr "Verwijder"
 
-#: sabnzbd/skintext.py:747 [Job details page, move file to top]
+#: sabnzbd/skintext.py:756 [Job details page, move file to top]
 msgid "Top"
 msgstr "Boven"
 
-#: sabnzbd/skintext.py:748 [Job details page, move file one place up]
+#: sabnzbd/skintext.py:757 [Job details page, move file one place up]
 msgid "Up"
 msgstr "Hoger"
 
-#: sabnzbd/skintext.py:749 [Job details page, move file one place down]
+#: sabnzbd/skintext.py:758 [Job details page, move file one place down]
 msgid "Down"
 msgstr "Lager"
 
-#: sabnzbd/skintext.py:750 [Job details page, move file to bottom]
+#: sabnzbd/skintext.py:759 [Job details page, move file to bottom]
 msgid "Bottom"
 msgstr "Onder"
 
-#: sabnzbd/skintext.py:751 [Job details page, select all files]
+#: sabnzbd/skintext.py:760 [Job details page, select all files]
 msgid "All"
 msgstr "alles"
 
-#: sabnzbd/skintext.py:753 [Job details page, invert file selection]
+#: sabnzbd/skintext.py:762 [Job details page, invert file selection]
 msgid "Invert"
 msgstr "omkeren"
 
-#: sabnzbd/skintext.py:754 [Job details page, filename column header]
+#: sabnzbd/skintext.py:763 [Job details page, filename column header]
 msgid "Filename"
 msgstr "Bestandsnaam"
 
-#: sabnzbd/skintext.py:755 [Job details page, subject column header]
+#: sabnzbd/skintext.py:764 [Job details page, subject column header]
 msgid "Subject"
 msgstr "Onderwerp"
 
-#: sabnzbd/skintext.py:757 [Job details page, section header]
+#: sabnzbd/skintext.py:766 [Job details page, section header]
 msgid "Selection"
 msgstr "Selectie"
 
-#: sabnzbd/skintext.py:762 # sabnzbd/skintext.py:870
+#: sabnzbd/skintext.py:771 # sabnzbd/skintext.py:879
 msgid "Pause for 5 minutes"
 msgstr "Pauzeer 5 minuten"
 
-#: sabnzbd/skintext.py:763 # sabnzbd/skintext.py:871
+#: sabnzbd/skintext.py:772 # sabnzbd/skintext.py:880
 msgid "Pause for 15 minutes"
 msgstr "Pauzeer 15 minuten"
 
-#: sabnzbd/skintext.py:764 # sabnzbd/skintext.py:872
+#: sabnzbd/skintext.py:773 # sabnzbd/skintext.py:881
 msgid "Pause for 30 minutes"
 msgstr "Pauzeer 30 minuten"
 
-#: sabnzbd/skintext.py:765 # sabnzbd/skintext.py:873
+#: sabnzbd/skintext.py:774 # sabnzbd/skintext.py:882
 msgid "Pause for 1 hour"
 msgstr "Pauzeer 1 uur"
 
-#: sabnzbd/skintext.py:766 # sabnzbd/skintext.py:874
+#: sabnzbd/skintext.py:775 # sabnzbd/skintext.py:883
 msgid "Pause for 3 hours"
 msgstr "Pauzeer 3 uur"
 
-#: sabnzbd/skintext.py:767 # sabnzbd/skintext.py:875
+#: sabnzbd/skintext.py:776 # sabnzbd/skintext.py:884
 msgid "Pause for 6 hours"
 msgstr "Pauzeer 6 uur"
 
-#: sabnzbd/skintext.py:769 # sabnzbd/skintext.py:891
+#: sabnzbd/skintext.py:778 # sabnzbd/skintext.py:900
 msgid "left"
 msgstr "over"
 
-#: sabnzbd/skintext.py:770 # sabnzbd/skintext.py:912
+#: sabnzbd/skintext.py:779 # sabnzbd/skintext.py:921
 msgid "Free Space"
 msgstr "Vrije ruimte"
 
-#: sabnzbd/skintext.py:771
+#: sabnzbd/skintext.py:780
 msgid "Temp Folder"
 msgstr "Tijdelijke map"
 
-#: sabnzbd/skintext.py:772
-msgid "Search"
-msgstr "Zoeken"
-
-#: sabnzbd/skintext.py:773 # sabnzbd/skintext.py:878
+#: sabnzbd/skintext.py:782 # sabnzbd/skintext.py:887
 msgid "Multi-Operations"
 msgstr "Meervoudige bewerking"
 
-#: sabnzbd/skintext.py:774
+#: sabnzbd/skintext.py:783
 msgid "Hold shift key to select a range"
 msgstr "Houdt Shift toets ingedrukt om meer te selecteren"
 
-#: sabnzbd/skintext.py:775
+#: sabnzbd/skintext.py:784
 msgid "Check all"
 msgstr "Selecteer alles"
 
-#: sabnzbd/skintext.py:776
+#: sabnzbd/skintext.py:785
 msgid "Restart SABnzbd"
 msgstr "Start SABnzbd opnieuw"
 
-#: sabnzbd/skintext.py:778
+#: sabnzbd/skintext.py:787
 msgid "Status and interface options"
 msgstr "Status en interface opties"
 
-#: sabnzbd/skintext.py:779
+#: sabnzbd/skintext.py:788
 msgid "Or drag and drop files in the window!"
 msgstr "Of sleep bestanden in dit venster!"
 
-#: sabnzbd/skintext.py:783
+#: sabnzbd/skintext.py:792
 msgid "Lost connection to SABnzbd.."
 msgstr "Verbinding met SABnzbd verbroken"
 
-#: sabnzbd/skintext.py:784
+#: sabnzbd/skintext.py:793
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
 
-#: sabnzbd/skintext.py:796 # sabnzbd/skintext.py:950
+#: sabnzbd/skintext.py:805 # sabnzbd/skintext.py:959
 msgid "Refresh rate"
 msgstr "Ververssnelheid"
 
-#: sabnzbd/skintext.py:797
+#: sabnzbd/skintext.py:806
 msgid "Use global interface settings"
 msgstr "Instellen voor alle sessies"
 
-#: sabnzbd/skintext.py:798
+#: sabnzbd/skintext.py:807
 msgid "Queue item limit"
 msgstr "Items in wachtrij"
 
-#: sabnzbd/skintext.py:799
+#: sabnzbd/skintext.py:808
 msgid "History item limit"
 msgstr "Items in geschiedenis"
 
-#: sabnzbd/skintext.py:800
+#: sabnzbd/skintext.py:809
 msgid "Date format"
 msgstr "Datumnotatie"
 
-#: sabnzbd/skintext.py:801
+#: sabnzbd/skintext.py:810
 msgid "Extra queue column"
 msgstr "Extra kolom aan wachtrij toevoegen"
 
-#: sabnzbd/skintext.py:802
+#: sabnzbd/skintext.py:811
 msgid "Extra history column"
 msgstr "Extra kolom aan geschiedenis toevoegen"
 
-#: sabnzbd/skintext.py:803 # sabnzbd/skintext.py:896
+#: sabnzbd/skintext.py:812 # sabnzbd/skintext.py:905
 msgid "page"
 msgstr "Pagina"
 
-#: sabnzbd/skintext.py:804 # sabnzbd/skintext.py:897
+#: sabnzbd/skintext.py:813 # sabnzbd/skintext.py:906
 msgid "Everything"
 msgstr "Alles"
 
-#: sabnzbd/skintext.py:805
+#: sabnzbd/skintext.py:814
 msgid "Loading"
 msgstr "Laden"
 
-#: sabnzbd/skintext.py:806
+#: sabnzbd/skintext.py:815
 msgid "articles"
 msgstr "artikelen"
 
-#: sabnzbd/skintext.py:807 # sabnzbd/skintext.py:916
+#: sabnzbd/skintext.py:816 # sabnzbd/skintext.py:925
 msgid "Queue repair"
 msgstr "Wachtrij reparatie"
 
-#: sabnzbd/skintext.py:808
+#: sabnzbd/skintext.py:817
 msgid "Show active connections"
 msgstr "Toon actieve verbindingen"
 
-#: sabnzbd/skintext.py:810
+#: sabnzbd/skintext.py:819
 msgid "Orphaned jobs"
 msgstr "Verweesde opdrachten"
 
-#: sabnzbd/skintext.py:811
+#: sabnzbd/skintext.py:820
 msgid "Send back to queue"
 msgstr "Stuur terug naar de wachtrij"
 
-#: sabnzbd/skintext.py:812 # sabnzbd/skintext.py:951
+#: sabnzbd/skintext.py:821 # sabnzbd/skintext.py:960
 msgid "Delete All"
 msgstr "Alles wissen"
 
-#: sabnzbd/skintext.py:813 # sabnzbd/skintext.py:923 [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py:822 # sabnzbd/skintext.py:932 [Link in SMPL for "Retry all failed jobs"]
 msgid "Retry all"
 msgstr "Alles opnieuw proberen"
 
-#: sabnzbd/skintext.py:815
+#: sabnzbd/skintext.py:824
 msgid "Fetch NZB from URL"
 msgstr "Haal NZB op via URL"
 
-#: sabnzbd/skintext.py:816
+#: sabnzbd/skintext.py:825
 msgid "Upload NZB"
 msgstr "NZB ophalen"
 
-#: sabnzbd/skintext.py:818 # sabnzbd/skintext.py:908
+#: sabnzbd/skintext.py:827 # sabnzbd/skintext.py:917
 msgid "Optionally specify a filename"
 msgstr "Geef eventueel een andere naam"
 
-#: sabnzbd/skintext.py:819
+#: sabnzbd/skintext.py:828
 msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
 msgstr "Formaten: .nzb, .rar, .zip, .gz, .bz2"
 
-#: sabnzbd/skintext.py:820
+#: sabnzbd/skintext.py:829
 msgid "Submit"
 msgstr "Verstuur"
 
-#: sabnzbd/skintext.py:821 # sabnzbd/skintext.py:860
+#: sabnzbd/skintext.py:830 # sabnzbd/skintext.py:869
 msgid "Open Informational URL"
 msgstr "Open Informatie URL"
 
-#: sabnzbd/skintext.py:822
+#: sabnzbd/skintext.py:831
 msgid "Submitted. Thank you!"
 msgstr "Ingediend. Bedankt!"
 
-#: sabnzbd/skintext.py:823
+#: sabnzbd/skintext.py:832
 msgid "Nothing selected!"
 msgstr "Niets geselecteerd!"
 
-#: sabnzbd/skintext.py:824
+#: sabnzbd/skintext.py:833
 msgid "Remove all selected files"
 msgstr "Verwijder alle geselecteerde bestanden"
 
-#: sabnzbd/skintext.py:825
+#: sabnzbd/skintext.py:834
 msgid "Hide/show completed files"
 msgstr "Toon/verberg voltooide bestanden"
 
-#: sabnzbd/skintext.py:828 # sabnzbd/skintext.py:861
+#: sabnzbd/skintext.py:837 # sabnzbd/skintext.py:870
 msgid "View Script Log"
 msgstr "Toon Script resultaat"
 
-#: sabnzbd/skintext.py:833 # sabnzbd/skintext.py:869
+#: sabnzbd/skintext.py:842 # sabnzbd/skintext.py:878
 msgid "Update Available!"
 msgstr "Update beschikbaar!"
 
-#: sabnzbd/skintext.py:834 [Don't translate LocalStorage]
+#: sabnzbd/skintext.py:843 [Don't translate LocalStorage]
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4398,378 +4461,366 @@ msgstr ""
 "\"Local Storage\" (cookies) is uitgeschakeld in je web browser, niet alle "
 "instellingen zullen worden onthouden."
 
-#: sabnzbd/skintext.py:835
+#: sabnzbd/skintext.py:844
 msgid "Glitter has some (new) features you might like!"
 msgstr "Glitter heeft enkele (nieuwe) functies die je mogelijk aanspreken!"
 
-#: sabnzbd/skintext.py:836 # sabnzbd/skintext.py:948
+#: sabnzbd/skintext.py:845 # sabnzbd/skintext.py:957
 msgid "Custom"
 msgstr "Aangepast"
 
-#: sabnzbd/skintext.py:837
+#: sabnzbd/skintext.py:846
 msgid "Compact layout"
 msgstr "Compacte layout"
 
-#: sabnzbd/skintext.py:838
+#: sabnzbd/skintext.py:847
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Weergave in tabs <br/>(wachtrij en geschiedenis apart weergeven)"
 
-#: sabnzbd/skintext.py:839 # sabnzbd/skintext.py:943
+#: sabnzbd/skintext.py:848 # sabnzbd/skintext.py:952
 msgid "Speed"
 msgstr "Snelheid"
 
-#: sabnzbd/skintext.py:840 # sabnzbd/skintext.py:901
+#: sabnzbd/skintext.py:849 # sabnzbd/skintext.py:910
 msgid "Confirm Queue Deletions"
 msgstr "Bevestig verwijderen uit wachtrij"
 
-#: sabnzbd/skintext.py:841 # sabnzbd/skintext.py:902
+#: sabnzbd/skintext.py:850 # sabnzbd/skintext.py:911
 msgid "Confirm History Deletions"
 msgstr "Bevestig verwijderen uit geschiedenis"
 
-#: sabnzbd/skintext.py:842
+#: sabnzbd/skintext.py:851
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Voor hoe lang of tot wanneer wilt u Pauzeren?"
 
-#: sabnzbd/skintext.py:843
+#: sabnzbd/skintext.py:852
 msgid "Sorry, we could not interpret that. Try again."
 msgstr "Sorry, het opgegeven kunnen wij niet verwerken. Probeer nogmaals."
 
-#: sabnzbd/skintext.py:844 # sabnzbd/skintext.py:877
+#: sabnzbd/skintext.py:853 # sabnzbd/skintext.py:886
 msgid "Pause for..."
 msgstr "Pauzeer..."
 
-#: sabnzbd/skintext.py:845
+#: sabnzbd/skintext.py:854
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sorteer op Leeftijd <small>Oud&rarr;Nieuw</small>"
 
-#: sabnzbd/skintext.py:846
+#: sabnzbd/skintext.py:855
 msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
 msgstr "Sorteer op Leeftijd <small>Nieuw&rarr;Oud</small>"
 
-#: sabnzbd/skintext.py:847
+#: sabnzbd/skintext.py:856
 msgid "Sort by Name <small>A&rarr;Z</small>"
 msgstr "Sorteer op Naam <small>A&rarr;Z</small>"
 
-#: sabnzbd/skintext.py:848
+#: sabnzbd/skintext.py:857
 msgid "Sort by Name <small>Z&rarr;A</small>"
 msgstr "Sorteer op Naam <small>Z&rarr;A</small>"
 
-#: sabnzbd/skintext.py:849
+#: sabnzbd/skintext.py:858
 msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
 msgstr "Sorteer op Omvang <small>Klein&rarr;Groot</small>"
 
-#: sabnzbd/skintext.py:850
+#: sabnzbd/skintext.py:859
 msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
 msgstr "Sorteer op Omvang <small>Groot&rarr;Klein</small>"
 
-#: sabnzbd/skintext.py:851
+#: sabnzbd/skintext.py:860
 msgid "Uploading"
 msgstr "Uploaden"
 
-#: sabnzbd/skintext.py:852
+#: sabnzbd/skintext.py:861
 msgid "Forcing disconnect"
 msgstr "Verbinding verbreken"
 
-#: sabnzbd/skintext.py:853
+#: sabnzbd/skintext.py:862
 msgid "Removing job"
 msgstr "Item aan het verwijderen"
 
-#: sabnzbd/skintext.py:854
+#: sabnzbd/skintext.py:863
 msgid "Removing jobs"
 msgstr "Items aan het verwijderen"
 
-#: sabnzbd/skintext.py:862 # sabnzbd/skintext.py:931
+#: sabnzbd/skintext.py:871 # sabnzbd/skintext.py:940
 msgid "Prev"
 msgstr "Vorige"
 
-#: sabnzbd/skintext.py:863 # sabnzbd/skintext.py:932 # sabnzbd/skintext.py:963 [Button to go to next Wizard page]
+#: sabnzbd/skintext.py:872 # sabnzbd/skintext.py:941 # sabnzbd/skintext.py:972 [Button to go to next Wizard page]
 msgid "Next"
 msgstr "Volgende"
 
-#: sabnzbd/skintext.py:864
+#: sabnzbd/skintext.py:873
 msgid "Purge the History?"
 msgstr "Wis de volledige geschiedenis?"
 
-#: sabnzbd/skintext.py:865
+#: sabnzbd/skintext.py:874
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "JavaScript is nodig voor de werking van Plush!"
 
-#: sabnzbd/skintext.py:867
+#: sabnzbd/skintext.py:876
 msgid "Refresh"
 msgstr "Ververs"
 
-#: sabnzbd/skintext.py:868
+#: sabnzbd/skintext.py:877
 msgid "Options"
 msgstr "Opties"
 
-#: sabnzbd/skintext.py:876 # sabnzbd/skintext.py:934
+#: sabnzbd/skintext.py:885 # sabnzbd/skintext.py:943
 msgid "Pause for how many minutes?"
 msgstr "Hoeveel minuten pauzeren?"
 
-#: sabnzbd/skintext.py:879
+#: sabnzbd/skintext.py:888
 msgid "Top Menu"
 msgstr "Top menu aan/uit"
 
-#: sabnzbd/skintext.py:880
+#: sabnzbd/skintext.py:889
 msgid "On Finish"
 msgstr "Bij lege wachtrij"
 
-#: sabnzbd/skintext.py:881
+#: sabnzbd/skintext.py:890
 msgid "Sort"
 msgstr "Sorteren"
 
-#: sabnzbd/skintext.py:882
+#: sabnzbd/skintext.py:891
 msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
 msgstr "Sorteer op Leeftijd <small>(Oud&rarr;Nieuw)</small>"
 
-#: sabnzbd/skintext.py:883
+#: sabnzbd/skintext.py:892
 msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
 msgstr "Sorteer op Leeftijd <small>(Nieuw&rarr;Oud)</small>"
 
-#: sabnzbd/skintext.py:884
+#: sabnzbd/skintext.py:893
 msgid "Sort by Name <small>(A&rarr;Z)</small>"
 msgstr "Sorteer op Naam <small>(A&rarr;Z)</small>"
 
-#: sabnzbd/skintext.py:885
+#: sabnzbd/skintext.py:894
 msgid "Sort by Name <small>(Z&rarr;A)</small>"
 msgstr "Sorteer op Naam <small>(Z&rarr;A)</small>"
 
-#: sabnzbd/skintext.py:886
+#: sabnzbd/skintext.py:895
 msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
 msgstr "Sorteer op Omvang <small>(Klein&rarr;Groot)</small>"
 
-#: sabnzbd/skintext.py:887
+#: sabnzbd/skintext.py:896
 msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
 msgstr "Sorteer op Omvang <small>(Groot&rarr;Klein)</small>"
 
-#: sabnzbd/skintext.py:888
+#: sabnzbd/skintext.py:897
 msgid "Purge the Queue?"
 msgstr "Verwijder uit de Wachtrij?"
 
-#: sabnzbd/skintext.py:889
+#: sabnzbd/skintext.py:898
 msgid "Retry all failed jobs in History?"
 msgstr "Alle mislukte opdrachten in Geschiedenis opnieuw proberen?"
 
-#: sabnzbd/skintext.py:890
+#: sabnzbd/skintext.py:899
 msgid "Purge"
 msgstr "Opschonen"
 
-#: sabnzbd/skintext.py:892 [Used in speed menu. Split in two lines if too long.]
+#: sabnzbd/skintext.py:901 [Used in speed menu. Split in two lines if too long.]
 msgid "Max Speed"
 msgstr "Max Snelheid"
 
-#: sabnzbd/skintext.py:893
+#: sabnzbd/skintext.py:902
 msgid "Range"
 msgstr "Bereik"
 
-#: sabnzbd/skintext.py:895
+#: sabnzbd/skintext.py:904
 msgid "Apply to Selected"
 msgstr "Op selectie toepassen"
 
-#: sabnzbd/skintext.py:899
+#: sabnzbd/skintext.py:908
 msgid "Refresh Rate"
 msgstr "Verversingstempo"
 
-#: sabnzbd/skintext.py:900
+#: sabnzbd/skintext.py:909
 msgid "Container Width"
 msgstr "Breedte van kader"
 
-#: sabnzbd/skintext.py:903
+#: sabnzbd/skintext.py:912
 msgid ""
 "This will prevent refreshing content when your mouse cursor is hovering over "
 "the queue."
 msgstr ""
 "Dit voorkomt pagina verversing wanneer de muis aanwijzer in de wachtrij is."
 
-#: sabnzbd/skintext.py:904
+#: sabnzbd/skintext.py:913
 msgid "Block Refreshes on Hover"
 msgstr "Geen verversing bij popups"
 
-#: sabnzbd/skintext.py:905 [Fetch from URL button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:914 [Fetch from URL button in "Add NZB" dialog box]
 msgid "Fetch"
 msgstr "Ophalen"
 
-#: sabnzbd/skintext.py:906 [Upload button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:915 [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Ophalen"
 
-#: sabnzbd/skintext.py:907
+#: sabnzbd/skintext.py:916
 msgid "Upload: .nzb .rar .zip .gz, .bz2"
 msgstr "Upload: .nzb, .rar, .zip, .gz, .bz2"
 
-#: sabnzbd/skintext.py:909 # sabnzbd/skintext.py:955
+#: sabnzbd/skintext.py:918 # sabnzbd/skintext.py:964
 msgid "Progress"
 msgstr "Voortgang"
 
-#: sabnzbd/skintext.py:911
+#: sabnzbd/skintext.py:920
 msgid "Not enough disk space to complete downloads!"
 msgstr "Onvoldoende schijfruimte over!"
 
-#: sabnzbd/skintext.py:913
+#: sabnzbd/skintext.py:922
 msgid "Free (Temp)"
 msgstr "Vrij (tijdelijke map)"
 
-#: sabnzbd/skintext.py:914
+#: sabnzbd/skintext.py:923
 msgid "IDLE"
 msgstr "RUST"
 
-#: sabnzbd/skintext.py:915
+#: sabnzbd/skintext.py:924
 msgid "Downloads"
 msgstr "Downloads"
 
-#: sabnzbd/skintext.py:919
+#: sabnzbd/skintext.py:928
 msgid "Delete Completed"
 msgstr "Verwijder geslaagde"
 
-#: sabnzbd/skintext.py:920
+#: sabnzbd/skintext.py:929
 msgid "Delete the all failed items from the history?"
 msgstr "Verwijder alle mislukte items uit de Geschiedenis?"
 
-#: sabnzbd/skintext.py:921
+#: sabnzbd/skintext.py:930
 msgid "Delete Failed"
 msgstr "Verwijder mislukte"
 
-#: sabnzbd/skintext.py:922
+#: sabnzbd/skintext.py:931
 msgid "Retry all failed jobs?"
 msgstr "Alle mislukte opdrachten opnieuw proberen?"
 
-#: sabnzbd/skintext.py:924
+#: sabnzbd/skintext.py:933
 msgid "Links"
 msgstr "Koppelingen"
 
-#: sabnzbd/skintext.py:927
+#: sabnzbd/skintext.py:936
 msgid "Showing %s to %s out of %s results"
 msgstr "Toon %s t/m %s van %s resultaten"
 
-#: sabnzbd/skintext.py:928
+#: sabnzbd/skintext.py:937
 msgid "No results"
 msgstr "Geen resultaten"
 
-#: sabnzbd/skintext.py:929
+#: sabnzbd/skintext.py:938
 msgid "Showing one result"
 msgstr "Eén resultaat"
 
-#: sabnzbd/skintext.py:930
+#: sabnzbd/skintext.py:939
 msgid "First"
 msgstr "Eerste"
 
-#: sabnzbd/skintext.py:933
+#: sabnzbd/skintext.py:942
 msgid "Last"
 msgstr "Laatste"
 
-#: sabnzbd/skintext.py:938
+#: sabnzbd/skintext.py:947
 msgid "Email Sent!"
 msgstr "E-mail verzonden!"
 
-#: sabnzbd/skintext.py:939
+#: sabnzbd/skintext.py:948
 msgid "Notification Sent!"
 msgstr "Melding verzonden"
 
-#: sabnzbd/skintext.py:940
+#: sabnzbd/skintext.py:949
 msgid "Saving.."
 msgstr "Opslaan.."
 
-#: sabnzbd/skintext.py:941
+#: sabnzbd/skintext.py:950
 msgid "Saved"
 msgstr "Opgeslagen"
 
-#: sabnzbd/skintext.py:944
+#: sabnzbd/skintext.py:953
 msgid "Toggle Add NZB"
 msgstr "\"NZB toevoegen\" uitklappen"
 
-#: sabnzbd/skintext.py:945
+#: sabnzbd/skintext.py:954
 msgid "DualView1"
 msgstr "Dubbel1"
 
-#: sabnzbd/skintext.py:946
+#: sabnzbd/skintext.py:955
 msgid "DualView2"
 msgstr "Dubbel2"
 
-#: sabnzbd/skintext.py:949
+#: sabnzbd/skintext.py:958
 msgid "Are you sure you want to restart SABnzbd?"
 msgstr "Weet je zeker dat je SABnzbd wilt herstarten?"
 
-#: sabnzbd/skintext.py:952
+#: sabnzbd/skintext.py:961
 msgid "Hide Edit Options"
 msgstr "Verberg Opties"
 
-#: sabnzbd/skintext.py:953
+#: sabnzbd/skintext.py:962
 msgid "Show Edit Options"
 msgstr "Toon Opties"
 
-#: sabnzbd/skintext.py:954
+#: sabnzbd/skintext.py:963
 msgid "Edit"
 msgstr "Bewerk"
 
-#: sabnzbd/skintext.py:956
+#: sabnzbd/skintext.py:965
 msgid "Timeleft"
 msgstr "Te gaan"
 
-#: sabnzbd/skintext.py:960
+#: sabnzbd/skintext.py:969
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd Snelstart Hulp"
 
-#: sabnzbd/skintext.py:961
+#: sabnzbd/skintext.py:970
 msgid "SABnzbd Version"
 msgstr "SABnzbd versie"
 
-#: sabnzbd/skintext.py:962 [Button to go to previous Wizard page]
+#: sabnzbd/skintext.py:971 [Button to go to previous Wizard page]
 msgid "Previous"
 msgstr "Vorige"
 
-#: sabnzbd/skintext.py:964
+#: sabnzbd/skintext.py:973
 msgid "Server Details"
 msgstr "Server instellingen"
 
-#: sabnzbd/skintext.py:965
+#: sabnzbd/skintext.py:974
 msgid "Please enter in the details of your primary usenet provider."
 msgstr "Vul hier de gegevens van je primaire Usenet server in."
 
-#: sabnzbd/skintext.py:966
+#: sabnzbd/skintext.py:975
 msgid "The number of connections allowed by your provider"
 msgstr "Het aantal verbindingen dat je provider toestaat."
 
-#: sabnzbd/skintext.py:967 [Wizard: examples of amount of connections]
+#: sabnzbd/skintext.py:976 [Wizard: examples of amount of connections]
 msgid "E.g. 8 or 20"
 msgstr "Bv. 8 of 20"
 
-#: sabnzbd/skintext.py:968
+#: sabnzbd/skintext.py:977
 msgid "Select only if your provider allows SSL connections."
 msgstr "Vink dit alleen aan als je provider SSL-verbindingen toestaat."
 
-#: sabnzbd/skintext.py:969
+#: sabnzbd/skintext.py:978
 msgid "Click to test the entered details."
 msgstr "Klik om de verbinding te testen."
 
-#: sabnzbd/skintext.py:970 [Abbreviation for "for example"]
+#: sabnzbd/skintext.py:979 [Abbreviation for "for example"]
 msgid "E.g."
 msgstr "Voorbeeld"
 
-#: sabnzbd/skintext.py:972 [Wizard step]
-msgid "Restarting SABnzbd..."
-msgstr "SABnzbd herstart nu..."
-
-#: sabnzbd/skintext.py:973 [Wizard step]
+#: sabnzbd/skintext.py:981 [Wizard step]
 msgid "Setup is now complete!"
 msgstr "Het instellen is klaar!"
 
-#: sabnzbd/skintext.py:974 [Wizard tip]
+#: sabnzbd/skintext.py:982 [Wizard tip]
 msgid "SABnzbd will now be running in the background."
 msgstr "SABnzbd werkt op de achtergrond."
 
-#: sabnzbd/skintext.py:975 [Wizard tip]
+#: sabnzbd/skintext.py:983 [Wizard tip]
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr "Afsluiten van de browser vensters zal SABnzbd <b>niet</b> stoppen."
 
-#: sabnzbd/skintext.py:976 [Wizard tip]
-msgid ""
-"After SABnzbd has finished restarting you will be able to access it at the "
-"following location: %s"
-msgstr ""
-"Als de SABnzbd opnieuw is opgestart, kun je de bediening via deze koppeling "
-"bereiken: %s"
-
-#: sabnzbd/skintext.py:977 [Wizard tip]
+#: sabnzbd/skintext.py:984 [Wizard tip]
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4777,23 +4828,23 @@ msgstr ""
 "Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze lokatie, zodat je "
 "SABnzbd gemakkelijk terug kunt vinden."
 
-#: sabnzbd/skintext.py:978 [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py:985 [Will be appended with a wiki-link, adjust word order accordingly]
 msgid "Further help can be found on our"
 msgstr "Voor meer informatie: zie onze"
 
-#: sabnzbd/skintext.py:979 [Wizard step]
+#: sabnzbd/skintext.py:986 [Wizard step]
 msgid "Go to SABnzbd"
 msgstr "Ga naar SABnzbd"
 
-#: sabnzbd/skintext.py:980 [Wizard EXIT button on first page]
+#: sabnzbd/skintext.py:987 [Wizard EXIT button on first page]
 msgid "Exit SABnzbd"
 msgstr "Stop SABnzbd"
 
-#: sabnzbd/skintext.py:981 [Wizard START button on first page]
+#: sabnzbd/skintext.py:988 [Wizard START button on first page]
 msgid "Start Wizard"
 msgstr "Wizard starten"
 
-#: sabnzbd/skintext.py:984
+#: sabnzbd/skintext.py:991
 msgid ""
 "\n"
 "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
@@ -4822,27 +4873,31 @@ msgstr "Hernoemen van %s tot %s mislukt"
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Hernoemen van gelijkaardig bestand %s naar %s mislukt"
 
-#: sabnzbd/urlgrabber.py:124
+#: sabnzbd/urlgrabber.py:122
 msgid "Server name does not resolve"
 msgstr "Servernaam niet te vinden"
 
-#: sabnzbd/urlgrabber.py:127 # sabnzbd/urlgrabber.py:292
+#: sabnzbd/urlgrabber.py:125 # sabnzbd/urlgrabber.py:315
 msgid "Unauthorized access"
 msgstr "Geen toegangsrechten"
 
-#: sabnzbd/urlgrabber.py:130
+#: sabnzbd/urlgrabber.py:128
 msgid "File not on server"
 msgstr "Bestand bestaat niet op de server"
 
-#: sabnzbd/urlgrabber.py:269 [Error message]
+#: sabnzbd/urlgrabber.py:216
+msgid "Server could not complete request"
+msgstr ""
+
+#: sabnzbd/urlgrabber.py:270 [Error message]
 msgid "URLGRABBER CRASHED"
 msgstr "URLGRABBER FATALE FOUT"
 
-#: sabnzbd/urlgrabber.py:331
+#: sabnzbd/urlgrabber.py:354
 msgid "Unusable NZB file"
 msgstr "Onbruikbaar NZB-bestand"
 
-#: sabnzbd/urlgrabber.py:334 # sabnzbd/urlgrabber.py:338
+#: sabnzbd/urlgrabber.py:357 # sabnzbd/urlgrabber.py:361
 msgid "URL Fetching failed; %s"
 msgstr "URL ophalen mislukt; %s"
 
@@ -4876,6 +4931,7 @@ msgstr "Tijdslimiet overschreden"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
 
 #: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."
@@ -4990,11 +5046,17 @@ msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 #~ msgid "Refresh interval of the queue web-interface page(sec, 0= none)."
 #~ msgstr "Verversingsinterval van het de Wachtrij pagina (sec, 0= geen)."
 
+#~ msgid "Disable API-key"
+#~ msgstr "API-sleutel niet gebruiken"
+
 #~ msgid "USE AT YOUR OWN RISK!"
 #~ msgstr "GEBRUIK OP EIGEN RISICO!"
 
 #~ msgid "Folder configuration"
 #~ msgstr "Map instellingen"
+
+#~ msgid "Post-Processing Scripts Folder"
+#~ msgstr "Map met gebruikers scripts"
 
 #~ msgid "Switches configuration"
 #~ msgstr "Diverse instellingen"
@@ -5256,6 +5318,16 @@ msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 #~ msgid "Refer to https://www.oznzb.com/profile"
 #~ msgstr "Kijk op https://www.oznzb.com/profile"
 
+#~ msgid ""
+#~ "This key provides identity to indexer. Refer to "
+#~ "https://www.oznzb.com/profile."
+#~ msgstr ""
+#~ "Deze sleutel is het toegangsbewijs voor de indexer. Kijk op "
+#~ "https://www.oznzb.com/profile."
+
+#~ msgid "Enable OZnzb Integration"
+#~ msgstr "OZnzb integratie inschakelen"
+
 #~ msgid "OZnzb"
 #~ msgstr "OZnzb"
 
@@ -5264,6 +5336,16 @@ msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 
 #~ msgid "Email Account Settings"
 #~ msgstr "E-mail gegevens"
+
+#~ msgid ""
+#~ "After SABnzbd has finished restarting you will be able to access it at the "
+#~ "following location: %s"
+#~ msgstr ""
+#~ "Als de SABnzbd opnieuw is opgestart, kun je de bediening via deze koppeling "
+#~ "bereiken: %s"
+
+#~ msgid "Folder containing user scripts for post-processing."
+#~ msgstr "Map waarin zich de nabewerkingsscripts bevinden."
 
 #~ msgid "Enable TS Joining"
 #~ msgstr "Samenvoegen van TS-bestanden toestaan"
@@ -5274,8 +5356,19 @@ msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 #~ msgid "Cleanup par files (if verifiying/repairing succeded)."
 #~ msgstr "Ruim PAR-bestanden op (na succesvolle verificatie/reparatie)."
 
+#~ msgid "Do not require the API key."
+#~ msgstr "Gebruik van de API-sleutel niet afdwingen."
+
 #~ msgid "Site API Key"
 #~ msgstr "API-sleutel van indexer"
 
 #~ msgid "SSL type"
 #~ msgstr "SSL-type"
+
+#~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
+#~ msgstr ""
+#~ "WAARSCHUWING: Taak '%s' gepauzeerd vanwege een versleuteld RAR-bestand"
+
+#~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
+#~ msgstr ""
+#~ "WAARSCHUWING: Taak '%s' is afgebroken vanwege een versleuteld RAR-bestand"

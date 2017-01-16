@@ -55,9 +55,11 @@ resides in the global site-package this won't be needed.
 Then restart apache2 and access http://127.0.0.1:8080
 """
 
-import logging
-import sys
 import io
+import logging
+import os
+import re
+import sys
 
 import cherrypy
 from cherrypy._cpcompat import copyitems, ntob
@@ -86,14 +88,14 @@ def setup(req):
                 func()
 
     cherrypy.config.update({'log.screen': False,
-                            "tools.ignore_headers.on": True,
-                            "tools.ignore_headers.headers": ['Range'],
+                            'tools.ignore_headers.on': True,
+                            'tools.ignore_headers.headers': ['Range'],
                             })
 
     engine = cherrypy.engine
-    if hasattr(engine, "signal_handler"):
+    if hasattr(engine, 'signal_handler'):
         engine.signal_handler.unsubscribe()
-    if hasattr(engine, "console_control_handler"):
+    if hasattr(engine, 'console_control_handler'):
         engine.console_control_handler.unsubscribe()
     engine.autoreload.unsubscribe()
     cherrypy.server.unsubscribe()
@@ -147,10 +149,10 @@ def handler(req):
         # Obtain a Request object from CherryPy
         local = req.connection.local_addr
         local = httputil.Host(
-            local[0], local[1], req.connection.local_host or "")
+            local[0], local[1], req.connection.local_host or '')
         remote = req.connection.remote_addr
         remote = httputil.Host(
-            remote[0], remote[1], req.connection.remote_host or "")
+            remote[0], remote[1], req.connection.remote_host or '')
 
         scheme = req.parsed_uri[0] or 'http'
         req.get_basic_auth_pw()
@@ -163,7 +165,7 @@ def handler(req):
         except AttributeError:
             bad_value = ("You must provide a PythonOption '%s', "
                          "either 'on' or 'off', when running a version "
-                         "of mod_python < 3.1")
+                         'of mod_python < 3.1')
 
             threaded = options.get('multithread', '').lower()
             if threaded == 'on':
@@ -171,7 +173,7 @@ def handler(req):
             elif threaded == 'off':
                 threaded = False
             else:
-                raise ValueError(bad_value % "multithread")
+                raise ValueError(bad_value % 'multithread')
 
             forked = options.get('multiprocess', '').lower()
             if forked == 'on':
@@ -179,16 +181,16 @@ def handler(req):
             elif forked == 'off':
                 forked = False
             else:
-                raise ValueError(bad_value % "multiprocess")
+                raise ValueError(bad_value % 'multiprocess')
 
-        sn = cherrypy.tree.script_name(req.uri or "/")
+        sn = cherrypy.tree.script_name(req.uri or '/')
         if sn is None:
             send_response(req, '404 Not Found', [], '')
         else:
             app = cherrypy.tree.apps[sn]
             method = req.method
             path = req.uri
-            qs = req.args or ""
+            qs = req.args or ''
             reqproto = req.protocol
             headers = copyitems(req.headers_in)
             rfile = _ReadOnlyRequest(req)
@@ -198,7 +200,7 @@ def handler(req):
                 redirections = []
                 while True:
                     request, response = app.get_serving(local, remote, scheme,
-                                                        "HTTP/1.1")
+                                                        'HTTP/1.1')
                     request.login = req.user
                     request.multithread = bool(threaded)
                     request.multiprocess = bool(forked)
@@ -217,17 +219,17 @@ def handler(req):
                         if not recursive:
                             if ir.path in redirections:
                                 raise RuntimeError(
-                                    "InternalRedirector visited the same URL "
-                                    "twice: %r" % ir.path)
+                                    'InternalRedirector visited the same URL '
+                                    'twice: %r' % ir.path)
                             else:
                                 # Add the *previous* path_info + qs to
                                 # redirections.
                                 if qs:
-                                    qs = "?" + qs
+                                    qs = '?' + qs
                                 redirections.append(sn + path + qs)
 
                         # Munge environment and try again.
-                        method = "GET"
+                        method = 'GET'
                         path = ir.path
                         qs = ir.query_string
                         rfile = io.BytesIO()
@@ -250,7 +252,7 @@ def send_response(req, status, headers, body, stream=False):
     req.status = int(status[:3])
 
     # Set response headers
-    req.content_type = "text/plain"
+    req.content_type = 'text/plain'
     for header, value in headers:
         if header.lower() == 'content-type':
             req.content_type = value
@@ -262,7 +264,7 @@ def send_response(req, status, headers, body, stream=False):
         req.flush()
 
     # Set response body
-    if isinstance(body, basestring):
+    if isinstance(body, text_or_bytes):
         req.write(body)
     else:
         for seg in body:
@@ -270,8 +272,6 @@ def send_response(req, status, headers, body, stream=False):
 
 
 # --------------- Startup tools for CherryPy + mod_python --------------- #
-import os
-import re
 try:
     import subprocess
 
@@ -286,13 +286,13 @@ except ImportError:
         return pipeout
 
 
-def read_process(cmd, args=""):
-    fullcmd = "%s %s" % (cmd, args)
+def read_process(cmd, args=''):
+    fullcmd = '%s %s' % (cmd, args)
     pipeout = popen(fullcmd)
     try:
         firstline = pipeout.readline()
         cmd_not_found = re.search(
-            ntob("(not recognized|No such file|not found)"),
+            ntob('(not recognized|No such file|not found)'),
             firstline,
             re.IGNORECASE
         )
@@ -321,8 +321,8 @@ LoadModule python_module modules/mod_python.so
 </Location>
 """
 
-    def __init__(self, loc="/", port=80, opts=None, apache_path="apache",
-                 handler="cherrypy._cpmodpy::handler"):
+    def __init__(self, loc='/', port=80, opts=None, apache_path='apache',
+                 handler='cherrypy._cpmodpy::handler'):
         self.loc = loc
         self.port = port
         self.opts = opts
@@ -330,25 +330,25 @@ LoadModule python_module modules/mod_python.so
         self.handler = handler
 
     def start(self):
-        opts = "".join(["    PythonOption %s %s\n" % (k, v)
+        opts = ''.join(['    PythonOption %s %s\n' % (k, v)
                         for k, v in self.opts])
-        conf_data = self.template % {"port": self.port,
-                                     "loc": self.loc,
-                                     "opts": opts,
-                                     "handler": self.handler,
+        conf_data = self.template % {'port': self.port,
+                                     'loc': self.loc,
+                                     'opts': opts,
+                                     'handler': self.handler,
                                      }
 
-        mpconf = os.path.join(os.path.dirname(__file__), "cpmodpy.conf")
+        mpconf = os.path.join(os.path.dirname(__file__), 'cpmodpy.conf')
         f = open(mpconf, 'wb')
         try:
             f.write(conf_data)
         finally:
             f.close()
 
-        response = read_process(self.apache_path, "-k start -f %s" % mpconf)
+        response = read_process(self.apache_path, '-k start -f %s' % mpconf)
         self.ready = True
         return response
 
     def stop(self):
-        os.popen("apache -k stop")
+        os.popen('apache -k stop')
         self.ready = False

@@ -20,18 +20,18 @@
         #if $pane == "Special" then $T('cmenu-special') else ""#
         #if $pane == "RSS" then $T('cmenu-rss') else ""#
     </title>
-    
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
-    
+
     <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
     <link rel="apple-touch-icon" sizes="120x120" href="${root}staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="${root}staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="${root}staticcfg/ico/android-192x192.png" />
 
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
     <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=1.1.0" />
 
@@ -39,12 +39,13 @@
         // Keeping track of the form state
         var formHasChanged = false;
         var formWasSubmitted = false;
-        
+
         // Information we need
         var sabSession = '$session';
-        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session'; 
+        var rootURL = '${root}'
+        var folderBrowseUrl = '${root}tapi?mode=browse&output=json&apikey=$session';
         var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
-        
+
         // Translations
         var configTranslate = new Object();
         configTranslate.browseText = "$T('browse-folder')";
@@ -52,12 +53,13 @@
         configTranslate.saving = "$T('smpl-saving')";
         configTranslate.failed = "$T('smpl-failed')";
         configTranslate.explainRestart = "$T('explain-Restart')";
-        configTranslate.wizzardRestart = "$T('wizard-restarting')";
+        configTranslate.wizzardRestart = "$T('restarting-sab')";
         configTranslate.needRestart = "$T('restartRequired') $T('explain-needNewLogin')".replace(/\<br(\s*\/|)\>/g, '\n');
         configTranslate.buttonRestart = "$T('button-restart')";
         configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
+        configTranslate.searchPages = ['$T('cmenu-general')', '$T('cmenu-folders')', '$T('cmenu-switches')', '$T('cmenu-sorting')', '$T('cmenu-notif')', '$T('cmenu-special')']
     </script>
-    <script type="text/javascript" src="${root}staticcfg/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="${root}staticcfg/js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${root}staticcfg/js/script.js?p=$pid"></script>
     <script type="text/javascript">
@@ -83,6 +85,13 @@
                 return item
             }
         })
+
+        // to top right away
+        if(window.location.hash) {
+            scroll(0,0);
+            // void some browsers issue
+            setTimeout(function() { scroll(0,0); }, 1);
+        }
     </script>
 </head>
 
@@ -174,9 +183,23 @@
                         <strong>$T('menu-help')</strong>
                     </a>
                 </li>
+                <li class="dropdown" id="search-menu">
+                    <a data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-search"></span>
+                        <strong><span class="glyphicon glyphicon-search"></span></strong>
+                    </a>
+                    <ul class="dropdown-menu" id="search-dropdown">
+                        <li>
+                            <form onsubmit="return false">
+                                <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" onkeyup="doConfigSearch(this)">
+                            </form>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
+
 <div id="content" class="container">
 <!-- Content start -->

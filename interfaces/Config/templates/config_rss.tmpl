@@ -1,10 +1,10 @@
 <!--#set global $pane="RSS"#-->
-<!--#set global $help_uri="configuration/1.1/rss"#-->
+<!--#set global $help_uri="configuration/1.2/rss"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
     <div class="section">
-        <div class="padTable"> 
+        <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" autocomplete="off" novalidate>
@@ -24,7 +24,7 @@
                             <input type="text" name="feed" class="smaller_input" value="$feed" />
                         </td>
                         <td>
-                            <input type="text" name="uri" />
+                            <input type="text" name="uri" placeholder="$T('addMultipleFeeds')" />
                         </td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
@@ -47,26 +47,26 @@
                             <!--#set $odd = not $odd#-->
                             <tr class="data-row <!--#if $odd then " alt " else " "#-->">
                                 <td class="chk">
-                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" /> 
+                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" />
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                        <div class="favicon" data-domain="$rss[$feed_item]['baselink']"></div> $feed_item 
+                                         $feed_item
                                     </a>
                                 </td>
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
-                                    <input type="hidden" name="uri" value="$rss[$feed_item]['uri']" />
+                                    <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
                                     <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
                                     <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>
                                 </td>
                             </tr>
-                            <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
-                                <td></td>
-                                <td colspan="2">
-                                    <div>$rss[$feed_item]['uri']</div>
-                                </td>
-                            </tr>
+                            <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
+                                <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
+                                    <td><div class="favicon" style="background-image: url(//$rss[$feed_item]['baselink'][$uri_index]/favicon.ico);" data-domain="$rss[$feed_item]['baselink'][$uri_index]"></div></td>
+                                    <td colspan="2"><div>$uri</div></td>
+                                </tr>
+                            <!--#end for#-->
                         <!--#end for#-->
                     </tbody>
                 </table>
@@ -89,9 +89,9 @@
                     <div class="field-pair">
                         <label class="config narrow" for="rss_rate">$T('opt-rss_rate')</label>
                         <input type="number" name="rss_rate" id="rss_rate" value="$rss_rate" min="15" max="1440" />
-                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button> 
-                        <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span> 
-                        <span class="desc narrow">$T('explain-rss_rate')</span> 
+                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
+                        <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span>
+                        <span class="desc narrow">$T('explain-rss_rate')</span>
                     </div>
                 </fieldset>
             </div>
@@ -105,7 +105,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <h2 class="nomargin activeRSS">
-                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo; 
+                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo;
                 <a href="$rss[$active_feed]['uri']" onclick="window.open(this.href); return false;">$active_feed</a>
             </h2>
             <!--#if $error#-->
@@ -117,7 +117,7 @@
             <form action="upd_rss_feed" method="post">
                 <input type="hidden" name="session" value="$session" />
                 <input type="hidden" name="feed" value="$feed" />
-                <input type="hidden" name="uri" value="$rss[$feed]['uri']" />
+                <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
                 <table class="catTable">
                     <thead>
                         <tr>
@@ -140,10 +140,10 @@
                     <tbody>
                         <tr class="default">
                             <td>
-                                <input type="checkbox" disabled="disabled" class="hidden" /> 
+                                <input type="checkbox" disabled="disabled" class="hidden" />
                             </td>
                             <td>
-                                <input type="text" disabled="disabled" size="1" class="hidden" /> 
+                                <input type="text" disabled="disabled" size="1" class="hidden" />
                             </td>
                             <td>
                                 <select name="filter_type" disabled="disabled" class="hidden">
@@ -154,10 +154,11 @@
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
+                                    <option value="F"> $T('rss-from-show')</option>
                                 </select>
                             </td>
                             <td>
-                                <input type="text" disabled="disabled" value="" class="hidden" /> 
+                                <input type="text" disabled="disabled" value="" class="hidden" />
                             </td>
                             <!--#if $rss[$feed]['pick_cat']#-->
                             <td>
@@ -212,10 +213,10 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input type="checkbox" name="enabled" value="1" checked="checked" /> 
+                                <input type="checkbox" name="enabled" value="1" checked="checked" />
                             </td>
                             <td>
-                                <input type="text" name="new_index" size="1" /> 
+                                <input type="text" name="new_index" size="1" />
                             </td>
                             <td>
                                 <select name="filter_type">
@@ -225,11 +226,12 @@
                                     <option value="C"> $T('rss-mustcat')</option>
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
+                                    <option value="S"> $T('rss-from-show')</option>
                                     <option value="F"> $T('rss-from')</option>
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="filter_text" value="" /> 
+                                <input type="text" name="filter_text" value="" />
                             </td>
                             <!--#if $rss[$feed]['pick_cat']#-->
                             <td>
@@ -285,12 +287,12 @@
                     <input type="hidden" name="feed" value="$feed" />
                     <table class="catTable">
                         <tbody>
-                            <tr class="<!--#if $odd then " alt " else " "#-->">
+                            <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" then 'disabled_options_rule' else ""#-->">
                                 <td>
-                                    <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> /> 
+                                    <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> />
                                 </td>
                                 <td>
-                                    <input type="text" name="new_index" value="$fnum" size="1" /> 
+                                    <input type="text" name="new_index" value="$fnum" size="1" />
                                 </td>
                                 <td>
                                     <select name="filter_type">
@@ -300,11 +302,12 @@
                                         <option value="C" <!--#if $filter[3]=="C" then 'selected="selected"' else ""#-->> $T('rss-mustcat')</option>
                                         <option value=">" <!--#if $filter[3]==">" then 'selected="selected"' else ""#-->> $T('rss-atleast')</option>
                                         <option value="<" <!--#if $filter[3]=="<" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
+                                        <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show')</option>
                                         <option value="F" <!--#if $filter[3]=="F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" name="filter_text" value="$filter[4]" /> 
+                                    <input type="text" name="filter_text" value="$filter[4]" />
                                 </td>
                                 <!--#if $rss[$feed]['pick_cat']#-->
                                 <td>
@@ -362,7 +365,10 @@
                 <div class="padding">
                     <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
-                    <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('link-download')</button>
+                    <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('rss-done')</button>
+                    <!--#if $evalButton#-->
+                      <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
+                    <!--#end if#-->
                 </div>
             </form>
         </div>
@@ -381,11 +387,12 @@
             <table class="catTable">
                 <thead>
                     <tr>
-                        <th>$T('link-download')</th>
-                        <th>$T('rss-skip')</th>
+                        <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
+                        <th width="65%">$T('sort-title')</th>
+                        <th>$T('category')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $matched#-->
@@ -399,10 +406,11 @@
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                             </form>
                         </td>
-                        <td class="align-center">$job[2]</td>
-                        <td class="align-center"> <span>$job[3]</span> </td>
-                        <td>$job[5]</td>
+                        <td>$job[3] $job[2]</td>
+                        <td data-sort-value="$job[6]">$job[5]</td>
                         <td>$job[1]</td>
+                        <td>$job[11]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -415,11 +423,12 @@
             <table class="catTable">
                 <thead>
                     <tr>
-                        <th>$T('link-download')</th>
-                        <th>$T('rss-skip')</th>
+                        <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th>$T('sort-title')</th>
+                        <th width="65%">$T('sort-title')</th>
+                        <th>$T('category')</th>
+                        <th class="default-sort">$T('nzo-age')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $unmatched#-->
@@ -433,10 +442,11 @@
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
                             </form>
                         </td>
-                        <td class="align-center">$job[2]</td>
-                        <td class="align-center"> <span>$job[3]</span> </td>
-                        <td>$job[5]</td>
+                        <td>$job[3] $job[2]</td>
+                        <td data-sort-value="$job[6]">$job[5]</td>
                         <td>$job[1]</td>
+                        <td>$job[11]</td>
+                        <td data-sort-value="$job[8]">$job[7]</td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -452,12 +462,18 @@
                 <table class="catTable">
                     <thead>
                         <tr>
-                            <th>$T('sort-title')</th>
+                            <th class="default-sort">$T('rss-added')</th>
+                            <th>$T('size')</th>
+                            <th width="60%">$T('sort-title')</th>
+                            <th>$T('category')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
                         <tr class="infoTableSeperator">
-                            <td>$job</td>
+                            <td data-sort-value="$job[10]">$job[9]</td>
+                            <td data-sort-value="$job[6]">$job[5]</td>
+                            <td>$job[1]</td>
+                            <td>$job[11]</td>
                         </tr>
                     <!--#end for#-->
                 </table>
@@ -468,29 +484,28 @@
         </div>
         <!--#end if#-->
     </div>
-    
+
 </div>
 <!-- /colmask -->
-
+<script type="text/javascript" src="${root}staticcfg/js/jquery.tablesort.min.js"></script>
 <script type="text/javascript">
 function urlencode(str) {
-  return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+    return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
 
 \$(document).ready(function(){
     \$('.favicon').each(function(i, theContainer) {
         // Easy favicon grabber
         var favUrl = '//' + \$(theContainer).data('domain') + '/favicon.ico'
-        \$(theContainer).css({'background': 'url('+favUrl+')', 'background-size': '16px 16px'})
 
         // Does the image exist? Otherwise place a glyphicon
-        var testFavImg= new Image();
+        var testFavImg = new Image();
         testFavImg.src = favUrl;
         testFavImg.onerror = function (evt){
             \$(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
         }
     })
-    
+
     \$('.tabs a').click(function (e) {
         e.preventDefault()
         \$(this).tab('show')
@@ -498,7 +513,7 @@ function urlencode(str) {
 
     \$('.editFeed').click(function(){
         var oldURI = \$(this).prev().val();
-        var newURI = prompt("$T('feed') URL", oldURI );
+        var newURI = prompt("$T('feed') URL. \n$T('addMultipleFeeds').", oldURI );
         if(newURI != "" && newURI !== null) {
             var whichFeed = \$(this).attr("rel");
             var isEnabled = \$('.toggleFeedCheckbox[rel="'+whichFeed+'"]').attr('checked') == "checked"? 1 : 0;
@@ -525,25 +540,10 @@ function urlencode(str) {
             }).done(function( msg ) {
                 // Let us leave!
                 formWasSubmitted = true;
-                formHasChanged = false;            
+                formHasChanged = false;
                 location.reload();
             });
         }
-    });
-
-    \$('.testFeed').click(function(){
-        var whichFeed = \$(this).attr("rel");
-        \$(this).attr('disabled', true)
-        \$.ajax({
-            type: "POST",
-            url: "test_rss_feed",
-            data: {feed: whichFeed, session: "$session" }
-        }).done(function( msg ) {
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;            
-            location = '?feed=' + urlencode(whichFeed);
-        });
     });
 
     \$('.toggleFeedCheckbox').click(function(){
@@ -555,20 +555,82 @@ function urlencode(str) {
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;
-            formHasChanged = false;            
+            formHasChanged = false;
             location.reload();
         });
     });
 
+    // Only the Accept filter needs all the options
+    \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
+        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A")
+    })
+    // Trigger on-load for all
+    \$('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)
+
+    function setActiveIcon(objButton) {
+        // Let's make it look like things are happening!
+        \$(objButton).attr('disabled', true)
+        \$(objButton).find('span').remove()
+        \$(objButton).prepend('<span class="glyphicon glyphicon-transfer"></span>')
+    }
+
+    // Enable sorting and set default
+    if (\$('#rss-tab-matched table').length) {
+        \$('#rss-tab-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-matched th.default-sort'), 'desc');
+    }
+    if (\$('#rss-tab-not-matched table').length) {
+        \$('#rss-tab-not-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-not-matched th.default-sort'), 'desc');
+    }
+    if (\$('#rss-tab-done table').length) {
+        \$('#rss-tab-done table').tablesort().data('tablesort').sort(\$('#rss-tab-done th.default-sort'), 'desc');
+    }
+
+    \$('.testFeed').click(function(){
+        setActiveIcon(this)
+        var whichFeed = \$(this).attr("rel");
+        \$.ajax({
+            type: "POST",
+            url: "test_rss_feed",
+            data: {feed: whichFeed, session: "$session" }
+        }).done(function( msg ) {
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location = '?feed=' + urlencode(whichFeed);
+        });
+    });
+
     \$('.cleanFeed').click(function(){
+        setActiveIcon(this)
         var theForm = \$(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
-    
+
+    \$('.evalFeed').click(function(){
+        setActiveIcon(this)
+        var theForm = \$(this).closest("form");
+        theForm.attr("action", "eval_rss_feed").submit();
+    });
+
     \$('.delFilter').click(function(){
         var theForm = \$(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();
     });
+
+    \$('form[action="download"]').ajaxForm({
+        datatype: 'json',
+        beforeSubmit: function (_, form) {
+            \$(form).find('button').attr("disabled", "disabled")
+            // Remove icon and add new one
+            \$(form).find('button span').remove()
+            \$(form).find('button').prepend('<span class="glyphicon glyphicon-transfer"></span>')
+        },
+        success: function (_, _, _, form) {
+            // Set success
+            \$(form).find('button').html('<span class="glyphicon glyphicon-ok"></span> $T('rss-added')')
+        }
+    });
+
 });
 </script>
 

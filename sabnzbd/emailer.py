@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@
 sabnzbd.emailer - Send notification emails
 """
 
-from sabnzbd.utils import ssmtplib
 import smtplib
 import os
 import logging
@@ -80,7 +79,7 @@ def send(message, email_to, test=None):
         logging.debug("Connecting to server %s:%s", server, port)
 
         try:
-            mailconn = ssmtplib.SMTP_SSL(server, port)
+            mailconn = smtplib.SMTP_SSL(server, port)
             mailconn.ehlo()
 
             logging.debug("Connected to server %s:%s", server, port)

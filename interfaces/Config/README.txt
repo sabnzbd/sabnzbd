@@ -20,7 +20,7 @@ jQuery Form Plugin
  *    http://www.opensource.org/licenses/mit-license.php
 
 Bootstrap v3.3.6 (http://getbootstrap.com)
- * Licensed under the MIT license  
+ * Licensed under the MIT license
     Changed by Safihre, Nov 2015
     We include the icon-file directly into the CSS,
     this way we avoid errors when HTTPS is enabled

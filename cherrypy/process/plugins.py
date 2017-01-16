@@ -7,8 +7,8 @@ import sys
 import time
 import threading
 
-from cherrypy._cpcompat import basestring, get_daemon, get_thread_ident
-from cherrypy._cpcompat import ntob, Timer, SetDaemonProperty
+from cherrypy._cpcompat import text_or_bytes, get_thread_ident
+from cherrypy._cpcompat import ntob, Timer
 
 # _module__file__base is used by Autoreload to make
 # absolute any filenames retrieved from sys.modules which are not
@@ -104,8 +104,8 @@ class SignalHandler(object):
         if sys.platform[:4] == 'java':
             del self.handlers['SIGUSR1']
             self.handlers['SIGUSR2'] = self.bus.graceful
-            self.bus.log("SIGUSR1 cannot be set on the JVM platform. "
-                         "Using SIGUSR2 instead.")
+            self.bus.log('SIGUSR1 cannot be set on the JVM platform. '
+                         'Using SIGUSR2 instead.')
             self.handlers['SIGINT'] = self._jython_SIGINT_handler
 
         self._previous_handlers = {}
@@ -152,19 +152,19 @@ class SignalHandler(object):
             signame = self.signals[signum]
 
             if handler is None:
-                self.bus.log("Restoring %s handler to SIG_DFL." % signame)
+                self.bus.log('Restoring %s handler to SIG_DFL.' % signame)
                 handler = _signal.SIG_DFL
             else:
-                self.bus.log("Restoring %s handler %r." % (signame, handler))
+                self.bus.log('Restoring %s handler %r.' % (signame, handler))
 
             try:
                 our_handler = _signal.signal(signum, handler)
                 if our_handler is None:
-                    self.bus.log("Restored old %s handler %r, but our "
-                                 "handler was not registered." %
+                    self.bus.log('Restored old %s handler %r, but our '
+                                 'handler was not registered.' %
                                  (signame, handler), level=30)
             except ValueError:
-                self.bus.log("Unable to restore %s handler %r." %
+                self.bus.log('Unable to restore %s handler %r.' %
                              (signame, handler), level=40, traceback=True)
 
     def set_handler(self, signal, listener=None):
@@ -176,39 +176,39 @@ class SignalHandler(object):
         If the given signal name or number is not available on the current
         platform, ValueError is raised.
         """
-        if isinstance(signal, basestring):
+        if isinstance(signal, text_or_bytes):
             signum = getattr(_signal, signal, None)
             if signum is None:
-                raise ValueError("No such signal: %r" % signal)
+                raise ValueError('No such signal: %r' % signal)
             signame = signal
         else:
             try:
                 signame = self.signals[signal]
             except KeyError:
-                raise ValueError("No such signal: %r" % signal)
+                raise ValueError('No such signal: %r' % signal)
             signum = signal
 
         prev = _signal.signal(signum, self._handle_signal)
         self._previous_handlers[signum] = prev
 
         if listener is not None:
-            self.bus.log("Listening for %s." % signame)
+            self.bus.log('Listening for %s.' % signame)
             self.bus.subscribe(signame, listener)
 
     def _handle_signal(self, signum=None, frame=None):
         """Python signal handler (self.set_handler subscribes it for you)."""
         signame = self.signals[signum]
-        self.bus.log("Caught signal %s." % signame)
+        self.bus.log('Caught signal %s.' % signame)
         self.bus.publish(signame)
 
     def handle_SIGHUP(self):
         """Restart if daemonized, else exit."""
         if self._is_daemonized():
-            self.bus.log("SIGHUP caught while daemonized. Restarting.")
+            self.bus.log('SIGHUP caught while daemonized. Restarting.')
             self.bus.restart()
         else:
             # not daemonized (may be foreground or background)
-            self.bus.log("SIGHUP caught but not daemonized. Exiting.")
+            self.bus.log('SIGHUP caught but not daemonized. Exiting.')
             self.bus.exit()
 
 
@@ -239,14 +239,14 @@ class DropPrivileges(SimplePlugin):
     def _set_uid(self, val):
         if val is not None:
             if pwd is None:
-                self.bus.log("pwd module not available; ignoring uid.",
+                self.bus.log('pwd module not available; ignoring uid.',
                              level=30)
                 val = None
-            elif isinstance(val, basestring):
+            elif isinstance(val, text_or_bytes):
                 val = pwd.getpwnam(val)[2]
         self._uid = val
     uid = property(_get_uid, _set_uid,
-                   doc="The uid under which to run. Availability: Unix.")
+                   doc='The uid under which to run. Availability: Unix.')
 
     def _get_gid(self):
         return self._gid
@@ -254,14 +254,14 @@ class DropPrivileges(SimplePlugin):
     def _set_gid(self, val):
         if val is not None:
             if grp is None:
-                self.bus.log("grp module not available; ignoring gid.",
+                self.bus.log('grp module not available; ignoring gid.',
                              level=30)
                 val = None
-            elif isinstance(val, basestring):
+            elif isinstance(val, text_or_bytes):
                 val = grp.getgrnam(val)[2]
         self._gid = val
     gid = property(_get_gid, _set_gid,
-                   doc="The gid under which to run. Availability: Unix.")
+                   doc='The gid under which to run. Availability: Unix.')
 
     def _get_umask(self):
         return self._umask
@@ -271,7 +271,7 @@ class DropPrivileges(SimplePlugin):
             try:
                 os.umask
             except AttributeError:
-                self.bus.log("umask function not available; ignoring umask.",
+                self.bus.log('umask function not available; ignoring umask.',
                              level=30)
                 val = None
         self._umask = val
@@ -393,7 +393,7 @@ class Daemonizer(SimplePlugin):
         except OSError:
             # Python raises OSError rather than returning negative numbers.
             exc = sys.exc_info()[1]
-            sys.exit("%s: fork #1 failed: (%d) %s\n"
+            sys.exit('%s: fork #1 failed: (%d) %s\n'
                      % (sys.argv[0], exc.errno, exc.strerror))
 
         os.setsid()
@@ -406,15 +406,15 @@ class Daemonizer(SimplePlugin):
                 os._exit(0)  # Exit second parent
         except OSError:
             exc = sys.exc_info()[1]
-            sys.exit("%s: fork #2 failed: (%d) %s\n"
+            sys.exit('%s: fork #2 failed: (%d) %s\n'
                      % (sys.argv[0], exc.errno, exc.strerror))
 
-        os.chdir("/")
+        os.chdir('/')
         os.umask(0)
 
-        si = open(self.stdin, "r")
-        so = open(self.stdout, "a+")
-        se = open(self.stderr, "a+")
+        si = open(self.stdin, 'r')
+        so = open(self.stdout, 'a+')
+        se = open(self.stderr, 'a+')
 
         # os.dup2(fd, fd2) will close fd2 if necessary,
         # so we don't explicitly close stdin/out/err.
@@ -442,7 +442,7 @@ class PIDFile(SimplePlugin):
         if self.finalized:
             self.bus.log('PID %r already written to %r.' % (pid, self.pidfile))
         else:
-            open(self.pidfile, "wb").write(ntob("%s\n" % pid, 'utf8'))
+            open(self.pidfile, 'wb').write(ntob('%s\n' % pid, 'utf8'))
             self.bus.log('PID %r written to %r.' % (pid, self.pidfile))
             self.finalized = True
     start.priority = 70
@@ -481,13 +481,13 @@ class PerpetualTimer(Timer):
             except Exception:
                 if self.bus:
                     self.bus.log(
-                        "Error in perpetual timer thread function %r." %
+                        'Error in perpetual timer thread function %r.' %
                         self.function, level=40, traceback=True)
                 # Quit on first error to avoid massive logs.
                 raise
 
 
-class BackgroundTask(SetDaemonProperty, threading.Thread):
+class BackgroundTask(threading.Thread):
 
     """A subclass of threading.Thread whose run() method repeats.
 
@@ -499,7 +499,7 @@ class BackgroundTask(SetDaemonProperty, threading.Thread):
     """
 
     def __init__(self, interval, function, args=[], kwargs={}, bus=None):
-        threading.Thread.__init__(self)
+        super(BackgroundTask, self).__init__()
         self.interval = interval
         self.function = function
         self.args = args
@@ -523,7 +523,7 @@ class BackgroundTask(SetDaemonProperty, threading.Thread):
                 self.function(*self.args, **self.kwargs)
             except Exception:
                 if self.bus:
-                    self.bus.log("Error in background task thread function %r."
+                    self.bus.log('Error in background task thread function %r.'
                                  % self.function, level=40, traceback=True)
                 # Quit on first error to avoid massive logs.
                 raise
@@ -560,24 +560,24 @@ class Monitor(SimplePlugin):
                                              bus=self.bus)
                 self.thread.setName(threadname)
                 self.thread.start()
-                self.bus.log("Started monitor thread %r." % threadname)
+                self.bus.log('Started monitor thread %r.' % threadname)
             else:
-                self.bus.log("Monitor thread %r already started." % threadname)
+                self.bus.log('Monitor thread %r already started.' % threadname)
     start.priority = 70
 
     def stop(self):
         """Stop our callback's background task thread."""
         if self.thread is None:
-            self.bus.log("No thread running for %s." %
+            self.bus.log('No thread running for %s.' %
                          self.name or self.__class__.__name__)
         else:
             if self.thread is not threading.currentThread():
                 name = self.thread.getName()
                 self.thread.cancel()
-                if not get_daemon(self.thread):
-                    self.bus.log("Joining %r" % name)
+                if not self.thread.daemon:
+                    self.bus.log('Joining %r' % name)
                     self.thread.join()
-                self.bus.log("Stopped thread %r." % name)
+                self.bus.log('Stopped thread %r.' % name)
             self.thread = None
 
     def graceful(self):
@@ -674,10 +674,10 @@ class Autoreloader(Monitor):
                 else:
                     if mtime is None or mtime > oldtime:
                         # The file has been deleted or modified.
-                        self.bus.log("Restarting because %s changed." %
+                        self.bus.log('Restarting because %s changed.' %
                                      filename)
                         self.thread.cancel()
-                        self.bus.log("Stopped thread %r." %
+                        self.bus.log('Stopped thread %r.' %
                                      self.thread.getName())
                         self.bus.restart()
                         return

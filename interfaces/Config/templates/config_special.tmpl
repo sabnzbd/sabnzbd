@@ -1,5 +1,5 @@
 <!--#set global $pane="Special"#-->
-<!--#set global $help_uri="configuration/1.1/special"#-->
+<!--#set global $help_uri="configuration/1.2/special"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -17,7 +17,7 @@
                     <!--#for $option in $switches#-->
                         <div class="field-pair">
                             <label class="config wide" for="$option[0]">
-                                $option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> ) 
+                                $option[0] ( <span class="path"><!--#if $option[2] then $T('on') else $T('off')#--></span> )
                                 <!--#if $option[1] != $option[2] then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
                             </label>
                             <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if int($option[1]) > 0 then 'checked="checked"' else ""#--> />

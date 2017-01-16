@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ import re
 import logging
 import Queue
 import urllib2
+from httplib import IncompleteRead
 from threading import Thread
 
 import sabnzbd
@@ -40,7 +41,7 @@ import sabnzbd.notifier as notifier
 
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
-_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt', 
+_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt',
                     'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
 
 
@@ -98,11 +99,6 @@ class URLGrabber(Thread):
                         logging.debug('Dropping URL %s, job entry missing', url)
                         continue
 
-                logging.info('Grabbing URL %s', url)
-                req = urllib2.Request(url)
-                req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                if not any(item in url for item in _BAD_GZ_HOSTS):
-                    req.add_header('Accept-encoding', 'gzip')
                 filename = None
                 category = None
                 gzipped = False
@@ -110,9 +106,11 @@ class URLGrabber(Thread):
                 wait = 0
                 retry = True
                 fn = None
+
+                logging.info('Grabbing URL %s', url)
                 try:
-                    fn = urllib2.urlopen(req)
-                except:
+                    fn = _build_request(url)
+                except Exception, e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
@@ -129,6 +127,9 @@ class URLGrabber(Thread):
                     elif '404' in error1:
                         msg = T('File not on server')
                         retry = False
+                    elif hasattr(e, 'headers') and 'retry-after' in e.headers:
+                        # Catch if the server send retry (e.headers is case-INsensitive)
+                        wait = misc.int_conv(e.headers['retry-after'])
 
                 new_url = dereferring(url, fn)
                 if new_url:
@@ -209,7 +210,10 @@ class URLGrabber(Thread):
                 if gzipped:
                     filename += '.gz'
                 if not data:
-                    data = fn.read()
+                    try:
+                        data = fn.read()
+                    except IncompleteRead, e:
+                        bad_fetch(future_nzo, url, T('Server could not complete request'))
                 fn.close()
 
                 if '<nzb' in data and misc.get_ext(filename) != '.nzb':
@@ -265,6 +269,28 @@ class URLGrabber(Thread):
             except:
                 logging.error(T('URLGRABBER CRASHED'), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
+
+
+def _build_request(url):
+    # Detect basic auth
+    # Adapted from python-feedparser
+    urltype, rest = urllib2.splittype(url)
+    realhost, rest = urllib2.splithost(rest)
+    if realhost:
+        user_passwd, realhost = urllib2.splituser(realhost)
+        if user_passwd:
+            url = '%s://%s%s' % (urltype, realhost, rest)
+
+    # Start request
+    req = urllib2.Request(url)
+
+    # Add headers
+    req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+    if not any(item in url for item in _BAD_GZ_HOSTS):
+        req.add_header('Accept-encoding', 'gzip')
+    if user_passwd:
+        req.add_header('Authorization', 'Basic ' + user_passwd.encode('base64').strip())
+    return urllib2.urlopen(req)
 
 
 def _analyse(fn, url):

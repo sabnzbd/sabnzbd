@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -518,7 +518,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     return ''
 
 def send_windows(title, msg, gtype):
-    if sabnzbd.WINTRAY:
+    if sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
         try:
             sabnzbd.WINTRAY.sendnotification(title, msg)
         except:

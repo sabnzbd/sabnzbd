@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -165,8 +165,7 @@ class StatusIcon(Thread):
 
     def restart(self, icon):
         self.hover_text = T('Restart')
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
 
     def shutdown(self, icon):
         self.hover_text = T('Shutdown')

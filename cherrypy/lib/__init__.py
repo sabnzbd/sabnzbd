@@ -1,7 +1,5 @@
 """CherryPy Library"""
 
-# Deprecated in CherryPy 3.2 -- remove in CherryPy 3.3
-from cherrypy.lib.reprconf import unrepr, modules, attributes
 
 def is_iterator(obj):
     '''Returns a boolean indicating if the object provided implements
@@ -16,22 +14,23 @@ def is_iterator(obj):
         # Types which implement the protocol must return themselves when
         # invoking 'iter' upon them.
         return iter(obj) is obj
-        
+
+
 def is_closable_iterator(obj):
-    
+
     # Not an iterator.
     if not is_iterator(obj):
         return False
-    
+
     # A generator - the easiest thing to deal with.
     import inspect
     if inspect.isgenerator(obj):
         return True
-    
+
     # A custom iterator. Look for a close method...
     if not (hasattr(obj, 'close') and callable(obj.close)):
         return False
-    
+
     #  ... which doesn't require any arguments.
     try:
         inspect.getcallargs(obj.close)
@@ -39,6 +38,7 @@ def is_closable_iterator(obj):
         return False
     else:
         return True
+
 
 class file_generator(object):
 
@@ -77,9 +77,9 @@ def file_generator_limited(fileobj, count, chunk_size=65536):
 
 
 def set_vary_header(response, header_name):
-    "Add a Vary header to a response"
-    varies = response.headers.get("Vary", "")
-    varies = [x.strip() for x in varies.split(",") if x.strip()]
+    'Add a Vary header to a response'
+    varies = response.headers.get('Vary', '')
+    varies = [x.strip() for x in varies.split(',') if x.strip()]
     if header_name not in varies:
         varies.append(header_name)
-    response.headers['Vary'] = ", ".join(varies)
+    response.headers['Vary'] = ', '.join(varies)

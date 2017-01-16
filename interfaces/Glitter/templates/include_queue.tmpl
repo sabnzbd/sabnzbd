@@ -203,14 +203,14 @@
         </div>
         <div class="clearfix"></div>
     </form>
-    
+
     <div class="input-group search-box" data-bind="visible: queue.hasQueueSearch" style="display: none;">
         <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: queue.searchTerm, event: { keydown: queue.clearSearchTerm }" />
         <a data-bind="event: { mousedown: queue.clearSearchTerm }">
             <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !queue.searchTerm(), 'glyphicon-remove' : queue.searchTerm() }"></span>
         </a>
     </div>
-    
+
     <ul class="pagination" data-bind="foreach: queue.pagination.allpages, visible: queue.pagination.hasPagination" style="display: none;">
         <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
             <span data-bind="text: page"></span>

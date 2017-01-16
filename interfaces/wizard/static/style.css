@@ -1,5 +1,4 @@
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     background-color: #E4E4E4;
     text-align: center;
 }
@@ -49,14 +48,15 @@ body {
     display: inline;
 }
 .quoteBlock {
-    padding: 8px;
-    border: 1px solid #ccc;
+    padding: 12px;
     margin-top: 1px;
+    margin-bottom: 15px;
     background-color: #f5f5f5;
-    cursor: default;
 }
-.quoteBlock a {
-    color: blue !important;
+.quoteBlock a,
+a[target="_blank"] {
+
+    text-decoration: underline !important;
 }
 .success {
     color: #00cc22;
@@ -138,9 +138,6 @@ label {
 .bigbutton {
     font-size: 18px !important;
 }
-.bold {
-    font-weight: bold;
-}
 .correct {
     border: 2px solid #00cc22;
 }
@@ -176,11 +173,7 @@ label {
 #host-tip {
     margin-bottom: 5px;
 }
-.tips {
-    display: inline;
-    font-style: italic;
-    color: #888;
-}
+
 .error-text {
     display: inline;
     color: red;
@@ -196,9 +189,9 @@ label {
 * {
     border-radius: 0 !important;
 }
-#content a, 
-#content a:hover, 
-#content a:active, 
+#content a,
+#content a:hover,
+#content a:active,
 #content a:visited {
     color: #555;
 }

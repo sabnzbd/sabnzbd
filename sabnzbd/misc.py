@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,13 +29,9 @@ import threading
 import subprocess
 import socket
 import time
+import datetime
 import fnmatch
 import stat
-try:
-    socket.ssl
-    _HAVE_SSL = True
-except:
-    _HAVE_SSL = False
 from urlparse import urlparse
 
 import sabnzbd
@@ -59,6 +55,40 @@ def time_format(fmt):
         return fmt.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
     else:
         return fmt
+
+
+def calc_age(date, trans=False):
+    """ Calculate the age difference between now and date.
+        Value is returned as either days, hours, or minutes.
+        When 'trans' is True, time symbols will be translated.
+    """
+    if trans:
+        d = T('d')  # : Single letter abbreviation of day
+        h = T('h')  # : Single letter abbreviation of hour
+        m = T('m')  # : Single letter abbreviation of minute
+    else:
+        d = 'd'
+        h = 'h'
+        m = 'm'
+    try:
+        now = datetime.datetime.now()
+        # age = str(now - date).split(".")[0] #old calc_age
+
+        # time difference
+        dage = now - date
+        seconds = dage.seconds
+        # only one value should be returned
+        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
+        if dage.days:
+            age = '%s%s' % (dage.days, d)
+        elif seconds / 3600:
+            age = '%s%s' % (seconds / 3600, h)
+        else:
+            age = '%s%s' % (seconds / 60, m)
+    except:
+        age = "-"
+
+    return age
 
 
 def safe_lower(txt):
@@ -151,42 +181,39 @@ def wildcard_to_re(text):
 def cat_convert(cat):
     """ Convert indexer's category/group-name to user categories.
         If no match found, but indexer-cat equals user-cat, then return user-cat
+        If no match found, but the indexer-cat starts with the user-cat, return user-cat
         If no match found, return None
     """
-    newcat = cat
-    found = False
-
     if cat and cat.lower() != 'none':
-        cats = config.get_categories()
+        cats = config.get_ordered_categories()
         for ucat in cats:
             try:
-                indexer = cats[ucat].newzbin()
-                if type(indexer) != type([]):
+                indexer = ucat['newzbin']
+                if not isinstance(indexer, list):
                     indexer = [indexer]
             except:
                 indexer = []
             for name in indexer:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
-                    if '.' not in name:
-                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
+                    if '.' in name:
+                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat['name'])
                     else:
-                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
-                    newcat = ucat
-                    found = True
-                    break
-            if found:
-                break
+                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                    return ucat['name']
 
-        if not found:
-            for ucat in cats:
-                if cat.lower() == ucat.lower():
-                    found = True
-                    break
+        # Try to find full match between user category and indexer category
+        for ucat in cats:
+            if cat.lower() == ucat['name'].lower():
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                return ucat['name']
 
-    if found:
-        return newcat
-    else:
-        return None
+        # Try to find partial match between user category and indexer category
+        for ucat in cats:
+            if cat.lower().startswith(ucat['name'].lower()):
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
+                return ucat['name']
+
+    return None
 
 
 ##############################################################################
@@ -1129,34 +1156,65 @@ else:
 
 def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
-    try:
-        from OpenSSL import crypto
-        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
-             TYPE_RSA, serial
-    except:
-        logging.warning(T('pyopenssl module missing, please install for https access'))
+    if not sabnzbd.HAVE_CRYPTOGRAPHY:
+        logging.error(T('%s missing'), 'Python Cryptography')
         return False
-
-    # Create the CA Certificate
-    cakey = createKeyPair(TYPE_RSA, 2048)
-    careq = createCertRequest(cakey, digest='sha256', CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
-
-    cname = 'SABnzbd'
-    pkey = createKeyPair(TYPE_RSA, 2048)
-    req = createCertRequest(pkey, digest='sha256', CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10), digest='sha256')  # ten years
 
     # Save the key and certificate to disk
     try:
-        open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        from sabnzbd.utils.certgen import generate_key, generate_local_cert
+        private_key = generate_key(key_size=2048, output_file=ssl_key)
+        cert = generate_local_cert(private_key, days_valid=356*10, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'SABnzbd')
+        logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info=True)
         return False
 
     return True
+
+
+def get_all_passwords(nzo):
+    """ Get all passwords, from the NZB, meta and password file """
+    if nzo.password:
+        logging.info('Found a password that was set by the user: %s', nzo.password)
+        passwords = [nzo.password.strip()]
+    else:
+        passwords = []
+
+    meta_passwords = nzo.meta.get('password', [])
+    pw = nzo.nzo_info.get('password')
+    if pw:
+        meta_passwords.append(pw)
+    if meta_passwords:
+        if nzo.password == meta_passwords[0]:
+            # this nzo.password came from meta, so don't use it twice
+            passwords.extend(meta_passwords[1:])
+        else:
+            passwords.extend(meta_passwords)
+        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+    pw_file = cfg.password_file.get_path()
+    if pw_file:
+        try:
+            pwf = open(pw_file, 'r')
+            lines = pwf.read().split('\n')
+            # Remove empty lines and space-only passwords and remove surrounding spaces
+            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
+            logging.debug('Read these passwords from file: %s', pws)
+            passwords.extend(pws)
+            pwf.close()
+            logging.info('Read %s passwords from file %s', len(pws), pw_file)
+        except IOError:
+            logging.info('Failed to read the passwords file %s', pw_file)
+
+    if nzo.password:
+        # If an explicit password was set, add a retry without password, just in case.
+        passwords.append('')
+    elif not passwords or nzo.encrypted < 1:
+        # If we're not sure about encryption, start with empty password
+        # and make sure we have at least the empty password
+        passwords.insert(0, '')
+    return passwords
 
 
 def find_on_path(targets):
@@ -1293,7 +1351,7 @@ def is_writable(path):
 
 def format_source_url(url):
     """ Format URL suitable for 'Source' stage """
-    if _HAVE_SSL:
+    if sabnzbd.HAVE_SSL:
         prot = 'https'
     else:
         prot = 'http:'

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,55 +26,44 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import re
+import select
 
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
-from sabnzbd.utils.sslinfo import ssl_method
-
-try:
-    from OpenSSL import SSL
-    _ssl = SSL
-    WantReadError = _ssl.WantReadError
-    del SSL
-    HAVE_SSL = True
-
-except ImportError:
-    _ssl = None
-    HAVE_SSL = False
-
-    # Dummy class so this exception is ignored by clients without ssl installed
-    class WantReadError(Exception):
-
-        def __init__(self, value):
-            self.parameter = value
-
-        def __str__(self):
-            return repr(self.parameter)
-
-
 
 import threading
 _RLock = threading.RLock
 del threading
 
-import select
+# Import SSL if available
+if sabnzbd.HAVE_SSL:
+    import ssl
+    if sabnzbd.HAVE_SSL_CONTEXT:
+        WantReadError = ssl.SSLWantReadError
+        CertificateError = ssl.CertificateError
+    else:
+        WantReadError = ssl.SSLError
+        CertificateError = ssl.SSLError
+else:
+    # Dummy class so this exception is ignored by clients without ssl installed
+    class WantReadError(Exception):
+        def __init__(self, value):
+            self.parameter = value
+        def __str__(self):
+            return repr(self.parameter)
+    class CertificateError(Exception):
+        def __init__(self, value):
+            self.parameter = value
+        def __str__(self):
+            return repr(self.parameter)
 
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
-
-def force_bytes(p):
-    """ Force string to 8bit bytes to compensate for bug in PyOpenSSL 0.14 """
-    if isinstance(p, unicode) and p.encode('cp1252', 'replace') == p.encode('cp1252', 'ignore'):
-        return p.encode('cp1252', 'replace')
-    else:
-        return p
-
 # getaddrinfo() can be very slow. In some situations this can lead
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
-
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
@@ -130,24 +119,34 @@ def GetServerParms(host, port):
         return None
 
 
+def get_ssl_version(sock):
+    # Python <2.7.9 doesn't have SSLConnection.version()
+    try:
+        return sock.version()
+    except:
+        # We can only give an estimation from the cipher
+        return sock.cipher()[1]
+
+
 def con(sock, host, port, sslenabled, write_fds, nntp):
     if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
     try:
         sock.connect((host, port))
         sock.setblocking(0)
-        if sslenabled and _ssl:
-            while True:
-                try:
-                    sock.do_handshake()
-                    break
-                except WantReadError:
-                    select.select([sock], [], [], 1.0)
+        if sslenabled and sabnzbd.HAVE_SSL:
+            # Log SSL/TLS info
+            logging.info("%s@%s: Connected using %s (%s)",
+                                              nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
+            nntp.nw.server.ssl_info = "%s (%s)" % (get_ssl_version(sock), sock.cipher()[0])
 
         # Now it's safe to add the socket to the list of active sockets.
         # 'write_fds' is an attribute of the Downloader singleton.
         # This direct access is needed to prevent multi-threading sync problems.
         if write_fds is not None:
             write_fds[sock.fileno()] = nntp.nw
+
+    except (ssl.SSLError, CertificateError) as e:
+        nntp.error(e)
 
     except socket.error, e:
         try:
@@ -164,8 +163,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         finally:
             nntp.error(e)
 
-    except _ssl.Error, e:
-        nntp.error(e)
+
 
 
 def probablyipv4(ip):
@@ -184,7 +182,7 @@ def probablyipv6(ip):
 
 class NNTP(object):
 
-    def __init__(self, host, port, info, sslenabled, ssl_type, send_group, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
         if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
         self.host = host
         self.port = port
@@ -206,34 +204,55 @@ class NNTP(object):
         if probablyipv6(host):
             af = socket.AF_INET6
 
-        if sslenabled and _ssl:
-            ctx = _ssl.Context(ssl_method(ssl_type))
-            self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
-        elif sslenabled and not _ssl:
+        if sslenabled and sabnzbd.HAVE_SSL:
+            # Use context or just wrapper
+            if sabnzbd.HAVE_SSL_CONTEXT:
+                # Setup the SSL socket
+                ctx = ssl.create_default_context()
+
+                # Only verify hostname when we're strict
+                if(nw.server.ssl_verify < 2):
+                    ctx.check_hostname = False
+                # Certificates optional
+                if(nw.server.ssl_verify == 0):
+                    ctx.verify_mode = ssl.CERT_NONE
+
+                # Did the user set a custom cipher-string?
+                if(sabnzbd.cfg.ssl_ciphers()):
+                    # At their own risk, socket will error out in case it was invalid
+                    ctx.set_ciphers(sabnzbd.cfg.ssl_ciphers())
+
+                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=str(nw.server.host))
+            else:
+                # Ciphers have to be None, if set to empty-string it will fail on <2.7.9
+                ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
+                # Use a regular wrapper, no certificate validation
+                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=ciphers)
+
+        elif sslenabled and not sabnzbd.HAVE_SSL:
             logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            # Windows must do the connection in a separate thread due to non-blocking issues
-            # If the server wants to be blocked (for testing) then use the linux route
+            # Open the connection in a separate thread due to avoid blocking
+            # For server-testing we do want blocking
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
-                if block:
-                    self.sock.settimeout(10)
+                self.sock.settimeout(4)
                 self.sock.connect((self.host, self.port))
-                if not block:
-                    self.sock.setblocking(0)
-                if sslenabled and _ssl:
-                    while True:
-                        try:
-                            self.sock.do_handshake()
-                            break
-                        except WantReadError:
-                            select.select([self.sock], [], [], 1.0)
+
+                if sslenabled and sabnzbd.HAVE_SSL:
+                    # Log SSL/TLS info
+                    logging.info("%s@%s: Connected using %s (%s)",
+                                              self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])
+                    self.nw.server.ssl_info = "%s (%s)" % (get_ssl_version(self.sock), self.sock.cipher()[0])
+
+        except (ssl.SSLError, CertificateError) as e:
+            self.error(e)
 
         except socket.error, e:
             try:
@@ -250,12 +269,18 @@ class NNTP(object):
             finally:
                 self.error(e)
 
-        except _ssl.Error, e:
-            self.error(e)
 
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
             error = T('This server does not allow SSL on this port')
+
+        # Catch certificate errors
+        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
+            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
+            # Prevent throwing a lot of errors or when testing server
+            if error not in self.nw.server.warning and self.nw.server.id != -1:
+                logging.error(error)
+
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
         self.error_msg = msg
@@ -294,8 +319,8 @@ class NewsWrapper(object):
 
     def init_connect(self, write_fds):
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
-                         self.server.ssl_type, self.server.send_group, self,
-                         self.server.username, self.server.password, self.blocking, write_fds)
+                         self.server.send_group, self, self.server.username, self.server.password,
+                         self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
 
         self.timeout = time.time() + self.server.timeout
@@ -326,7 +351,7 @@ class NewsWrapper(object):
         if code in ('400', '502'):
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
-            command = 'authinfo user %s\r\n' % force_bytes(self.server.username)
+            command = 'authinfo user %s\r\n' % self.server.username
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
@@ -340,7 +365,7 @@ class NewsWrapper(object):
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = 'authinfo pass %s\r\n' % force_bytes(self.server.password)
+            command = 'authinfo pass %s\r\n' % self.server.password
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
@@ -381,9 +406,12 @@ class NewsWrapper(object):
                     chunk = self.recv(16384)
                 else:
                     # Get as many bytes as possible
-                    chunk = self.recv(1048576)
+                    chunk = self.recv(262144)
                 break
-            except WantReadError:
+            except WantReadError as e:
+                # Workaround for Python <2.7.9 so we only catch WantReadError's
+                if not sabnzbd.HAVE_SSL_CONTEXT and e.errno != 2:
+                    raise
                 # SSL connections will block until they are ready.
                 # Either ignore the connection until it responds
                 # Or wait in a loop until it responds
@@ -452,26 +480,3 @@ class NewsWrapper(object):
             except:
                 pass
         del self.nntp
-
-
-class SSLConnection(object):
-
-    def __init__(self, *args):
-        self._ssl_conn = apply(_ssl.Connection, args)
-        self._lock = _RLock()
-
-    for f in ('get_context', 'pending', 'send', 'write', 'recv', 'read',
-              'renegotiate', 'bind', 'listen', 'connect', 'accept',
-              'setblocking', 'fileno', 'shutdown', 'close', 'get_cipher_list',
-              'getpeername', 'getsockname', 'getsockopt', 'setsockopt',
-              'makefile', 'get_app_data', 'set_app_data', 'state_string',
-              'sock_shutdown', 'get_peer_certificate', 'want_read',
-              'want_write', 'set_connect_state', 'set_accept_state',
-              'connect_ex', 'sendall', 'do_handshake', 'settimeout'):
-        exec """def %s(self, *args):
-            self._lock.acquire()
-            try:
-                return apply(self._ssl_conn.%s, args)
-            finally:
-                self._lock.release()\n""" % (f, f)
-

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -131,8 +131,7 @@ class SABTrayThread(SysTrayIconThread):
     # menu handler
     def restart(self, icon):
         self.hover_text = self.txt_restart
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
 
     # menu handler
     def rss(self, icon):
@@ -145,8 +144,7 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
         self.hover_text = self.txt_restart
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
 
     # menu handler
     def defhost(self, icon):
@@ -154,8 +152,7 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.hover_text = self.txt_restart
-        sabnzbd.halt()
-        cherrypy.engine.restart()
+        sabnzbd.trigger_restart()
 
     # menu handler - adapted from interface.py
     def shutdown(self, icon):

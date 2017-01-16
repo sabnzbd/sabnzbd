@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,8 +35,8 @@ SAVE_CONFIG_LOCK = threading.Lock()
 
 
 CFG = {}                    # Holds INI structure
-                            # uring re-write this variable is global allow
-                            # direct access to INI structure
+                            # during re-write this variable is global
+                            # to allow direct access to INI structure
 
 database = {}               # Holds the option dictionary
 
@@ -377,10 +377,10 @@ class ConfigServer(object):
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
+        self.ssl_verify = OptionNumber(name, 'ssl_verify', 1, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
-        self.ssl_type = OptionStr(name, 'ssl_type', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
@@ -394,8 +394,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority',
-                   'categories', 'notes'):
+                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'categories', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -420,10 +419,10 @@ class ConfigServer(object):
             dict['password'] = self.password()
         dict['connections'] = self.connections()
         dict['ssl'] = self.ssl()
+        dict['ssl_verify'] = self.ssl_verify()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
-        dict['ssl_type'] = self.ssl_type()
         dict['send_group'] = self.send_group()
         dict['priority'] = self.priority()
         dict['categories'] = self.categories()
@@ -449,6 +448,7 @@ class ConfigCat(object):
         self.__name = name
         name = 'categories,' + name
 
+        self.order = OptionNumber(name, 'order', 0, 0, 100, add=False)
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
@@ -460,7 +460,7 @@ class ConfigCat(object):
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('pp', 'script', 'dir', 'newzbin', 'priority'):
+        for kw in ('order', 'pp', 'script', 'dir', 'newzbin', 'priority'):
             try:
                 value = values[kw]
             except KeyError:
@@ -472,6 +472,7 @@ class ConfigCat(object):
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
+        dict['order'] = self.order()
         dict['pp'] = self.pp()
         dict['script'] = self.script()
         dict['dir'] = self.dir()
@@ -558,7 +559,7 @@ class ConfigRSS(object):
         self.__name = name
         name = 'rss,' + name
 
-        self.uri = OptionStr(name, 'uri', add=False)
+        self.uri = OptionList(name, 'uri', add=False)
         self.cat = OptionStr(name, 'cat', add=False)
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
@@ -911,9 +912,18 @@ def get_categories(cat=0):
     if 'categories' not in database:
         database['categories'] = {}
     cats = database['categories']
+
+    # Add Default categories
     if '*' not in cats:
         ConfigCat('*', {'pp': old_def('dirscan_opts', '3'), 'script': old_def('dirscan_script', 'None'),
                         'priority': old_def('dirscan_priority', NORMAL_PRIORITY)})
+        # Add some categorie suggestions
+        ConfigCat('movies', {})
+        ConfigCat('tv', {})
+        ConfigCat('audio', {})
+        ConfigCat('software', {})
+
+        # Save config for future use
         save_config(True)
     if not isinstance(cat, int):
         try:
@@ -922,6 +932,24 @@ def get_categories(cat=0):
             cats = cats['*']
     return cats
 
+
+def get_ordered_categories():
+    """ Return list-copy of categories section that's ordered
+        by user's ordering including Default-category
+    """
+    database_cats = get_categories()
+
+    # Transform to list and sort
+    categories = []
+    for cat in database_cats.keys():
+        if cat != '*':
+            categories.append(database_cats[cat].get_dict())
+
+    # Sort and add default * category
+    categories.sort(key=lambda cat: cat['order'])
+    categories.insert(0, database_cats['*'].get_dict())
+
+    return categories
 
 def define_rss():
     """ Define rss-feeds listed in the Setup file

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@ sabnzbd.interface - webinterface
 
 import os
 import time
+import datetime
 import cherrypy
 import logging
 import urllib
@@ -37,7 +38,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, \
+    time_format, long_path, calc_age, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
@@ -53,7 +54,8 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.utils.sslinfo import ssl_protocols
+from sabnzbd.decoder import HAVE_YENC
+from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -65,7 +67,7 @@ from sabnzbd.lang import list_languages, set_language
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate, \
+    format_bytes, std_time, report, del_hist_job, Ttemplate, \
     build_queue_header, _api_test_email, _api_test_notif
 
 ##############################################################################
@@ -364,7 +366,7 @@ class MainPage(object):
             info['have_logout'] = cfg.username() and cfg.password() and (cfg.html_login() and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6))))
 
             bytespersec_list = BPSMeter.do.get_bps_list()
-            info['bytespersec_list'] = ','.join(bytespersec_list)
+            info['bytespersec_list'] = ','.join([str(bps) for bps in bytespersec_list])
 
             info['warning'] = ''
             if cfg.enable_unrar():
@@ -516,10 +518,9 @@ class MainPage(object):
     @cherrypy.expose
     def api(self, **kwargs):
         """ Handler for API over http, with explicit authentication parameters """
-        if not kwargs.get('tickleme') or not cfg.web_watchdog():
-            if cfg.api_logging():
-                logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
-                              cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+        if cfg.api_logging():
+            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
+                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         mode = kwargs.get('mode', '')
         if isinstance(mode, list):
             mode = mode[0]
@@ -787,7 +788,7 @@ class NzoPage(object):
         if kwargs['action_key'] == 'Delete':
             for key in kwargs:
                 if kwargs[key] == 'on':
-                    NzbQueue.do.remove_nzf(nzo_id, key)
+                    NzbQueue.do.remove_nzf(nzo_id, key, force_delete=True)
 
         elif kwargs['action_key'] in ('Top', 'Up', 'Down', 'Bottom'):
             nzf_ids = []
@@ -865,7 +866,7 @@ class QueuePage(object):
         nzo_id = kwargs.get('nzo_id')
         nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
-            NzbQueue.do.remove_nzf(nzo_id, nzf_id)
+            NzbQueue.do.remove_nzf(nzo_id, nzf_id, delete=True)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -941,8 +942,8 @@ class QueuePage(object):
         else:
             yield "Initiating shutdown..."
             sabnzbd.halt()
-            cherrypy.engine.exit()
             yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
+            cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
 
     @cherrypy.expose
@@ -1263,6 +1264,17 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
+        conf['have_yenc'] = HAVE_YENC
+
+        if sabnzbd.HAVE_SSL:
+            conf['have_ssl'] = 1
+            conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+            conf['ssl_version'] = ssl_version()
+            conf['ssl_protocols'] = ', '.join(ssl_protocols_labels())
+        else:
+            conf['have_ssl'] = 0
+            conf['have_ssl_context'] = 0
 
         new = {}
         for svr in config.get_servers():
@@ -1282,9 +1294,8 @@ class ConfigPage(object):
             yield msg
         else:
             yield T('Initiating restart...<br />')
-            sabnzbd.halt()
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            cherrypy.engine.restart()
+            sabnzbd.trigger_restart()
 
     @cherrypy.expose
     def repair(self, **kwargs):
@@ -1294,9 +1305,8 @@ class ConfigPage(object):
         else:
             sabnzbd.request_repair()
             yield T('Initiating restart...<br />')
-            sabnzbd.halt()
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            cherrypy.engine.restart()
+            sabnzbd.trigger_restart()
 
     @cherrypy.expose
     def delete(self, **kwargs):
@@ -1404,11 +1414,11 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only',
-             'auto_sort', 'propagation_delay', 'check_new_rel', 'auto_disconnect', 'flat_unpack',
-             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal', 'auto_browser',
+    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only', 'ssl_ciphers',
+             'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-             'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename',
+             'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
@@ -1419,8 +1429,7 @@ SWITCH_LIST = \
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
              'rating_filter_pause_audio', 'rating_filter_pause_video', 'rating_filter_pause_encrypted',
              'rating_filter_pause_encrypted_confirm', 'rating_filter_pause_spam', 'rating_filter_pause_spam_confirm',
-             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords',
-             'load_balancing', 'enable_https_verification'
+             'rating_filter_pause_downvoted', 'rating_filter_pause_keywords'
      )
 
 
@@ -1440,6 +1449,8 @@ class ConfigSwitches(object):
 
         conf = build_header(self.__prim, self.__web_dir)
 
+        conf['have_ssl'] = sabnzbd.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
@@ -1487,8 +1498,8 @@ SPECIAL_BOOL_LIST = \
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
-              'web_watchdog', 'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour',
-              'allow_duplicate_files', 'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup',
+              'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
+              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'disable_api_key',
               'api_logging', 'fixed_ports'
      )
 SPECIAL_VALUE_LIST = \
@@ -1546,9 +1557,10 @@ class ConfigSpecial(object):
 
 ##############################################################################
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'cache_limit', 'local_ranges', 'inet_exposure',
-    'enable_https', 'https_port', 'https_cert', 'https_key', 'https_chain'
+    'host', 'port', 'username', 'password', 'refresh_rate', 'cache_limit',
+    'local_ranges', 'inet_exposure', 'enable_https', 'https_port',
+    'https_cert', 'https_key', 'https_chain', 'enable_https_verification',
+    'auto_browser', 'check_new_rel'
 )
 
 
@@ -1595,10 +1607,9 @@ class ConfigGeneral(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        if sabnzbd.newswrapper.HAVE_SSL:
-            conf['have_ssl'] = 1
-        else:
-            conf['have_ssl'] = 0
+        conf['have_ssl'] = sabnzbd.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
@@ -1630,25 +1641,13 @@ class ConfigGeneral(object):
             lang_list = []
         conf['lang_list'] = lang_list
 
-        conf['disable_api_key'] = cfg.disable_key()
-        conf['host'] = cfg.cherryhost()
-        conf['port'] = cfg.cherryport()
-        conf['https_port'] = cfg.https_port()
-        conf['https_cert'] = cfg.https_cert()
-        conf['https_key'] = cfg.https_key()
-        conf['https_chain'] = cfg.https_chain()
-        conf['enable_https'] = cfg.enable_https()
-        conf['username'] = cfg.username()
-        conf['password'] = cfg.password.get_stars()
-        conf['html_login'] = cfg.html_login()
+        for kw in GENERAL_LIST:
+            conf[kw] = config.get_config('misc', kw)()
+
         conf['bandwidth_max'] = cfg.bandwidth_max()
         conf['bandwidth_perc'] = cfg.bandwidth_perc()
-        conf['refresh_rate'] = cfg.refresh_rate()
-        conf['cache_limit'] = cfg.cache_limit()
-        conf['cleanup_list'] = cfg.cleanup_list.get_string()
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
-        conf['inet_exposure'] = cfg.inet_exposure()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
         conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
         conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
@@ -1788,12 +1787,8 @@ class ConfigServer(object):
                 new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
-
-        if sabnzbd.newswrapper.HAVE_SSL:
-            conf['have_ssl'] = 1
-            conf['ssl_protocols'] = ssl_protocols()
-        else:
-            conf['have_ssl'] = 0
+        conf['have_ssl'] = sabnzbd.HAVE_SSL
+        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1933,11 +1928,13 @@ class ConfigRss(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
-        self.__refresh_readout = None  # Set to URL when new readout is needed
-        self.__refresh_download = False
-        self.__refresh_force = False
-        self.__refresh_ignore = False
-        self.__last_msg = ''
+        self.__refresh_readout = None       # Set to URL when new readout is needed
+        self.__refresh_download = False     # True when feed needs to be read
+        self.__refresh_force = False        # True if forced download of all matches is required
+        self.__refresh_ignore = False       # True if first batch of new feed must be ignored
+        self.__evaluate = False             # True if feed needs to be re-filtered
+        self.__show_eval_button = True      # True if the "Apply filers" button should be shown
+        self.__last_msg = ''                # Last error message from RSS reader
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1968,7 +1965,8 @@ class ConfigRss(object):
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
             rss[feed]['link'] = urllib.quote_plus(feed.encode('utf-8'))
-            rss[feed]['baselink'] = get_base_url(rss[feed]['uri'])
+            rss[feed]['baselink'] = [get_base_url(uri) for uri in rss[feed]['uri']]
+            rss[feed]['uris'] = feeds[feed].uri.get_string()
 
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed
@@ -1982,14 +1980,19 @@ class ConfigRss(object):
                 self.__refresh_download = False
                 self.__refresh_force = False
                 self.__refresh_ignore = False
-            msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force,
-                                 ignoreFirst=self.__refresh_ignore, readout=readout)
+            if self.__evaluate:
+                msg = sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force,
+                                           ignoreFirst=self.__refresh_ignore, readout=readout)
+            else:
+                msg = ''
+            self.__evaluate = False
             if readout:
                 sabnzbd.rss.save()
                 self.__last_msg = msg
             else:
                 msg = self.__last_msg
             self.__refresh_readout = None
+            conf['evalButton'] = self.__show_eval_button
             conf['error'] = msg
 
             conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
@@ -2038,6 +2041,8 @@ class ConfigRss(object):
             cf.set_dict(kwargs)
             config.save_config()
 
+        self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2103,6 +2108,7 @@ class ConfigRss(object):
                 self.__refresh_download = False
                 self.__refresh_force = False
                 self.__refresh_ignore = True
+                self.__evaluate = True
                 raise rssRaiser(self.__root, kwargs)
             else:
                 raise dcRaiser(self.__root, kwargs)
@@ -2140,6 +2146,8 @@ class ConfigRss(object):
                 cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
+        self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2167,6 +2175,8 @@ class ConfigRss(object):
 
         cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
+        self.__evaluate = False
+        self.__show_eval_button = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2181,6 +2191,7 @@ class ConfigRss(object):
             self.__refresh_download = True
             self.__refresh_force = True
             self.__refresh_ignore = False
+            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2190,6 +2201,7 @@ class ConfigRss(object):
         if msg:
             return msg
         sabnzbd.rss.clear_downloaded(kwargs['feed'])
+        self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2204,6 +2216,23 @@ class ConfigRss(object):
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = True
+            self.__evaluate = True
+            self.__show_eval_button = False
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def eval_rss_feed(self, *args, **kwargs):
+        """ Re-apply the filters to the feed """
+        msg = check_session(kwargs)
+        if msg:
+            return msg
+        if 'feed' in kwargs:
+            self.__refresh_download = False
+            self.__refresh_force = False
+            self.__refresh_ignore = False
+            self.__show_eval_button = False
+            self.__evaluate = True
+
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2226,6 +2255,7 @@ class ConfigRss(object):
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
+            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2422,18 +2452,18 @@ class ConfigCats(object):
         conf = build_header(self.__prim, self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
-
-        categories = config.get_categories()
-        conf['have_cats'] = len(categories) > 1
         conf['defdir'] = cfg.complete_dir.get_path()
 
-        empty = {'name': '', 'pp': '-1', 'script': '', 'dir': '', 'newzbin': '', 'priority': DEFAULT_PRIORITY}
+        categories = config.get_ordered_categories()
+        conf['have_cats'] = len(categories) > 1
+
         slotinfo = []
-        for cat in sorted(categories.keys()):
-            slot = categories[cat].get_dict()
-            slot['name'] = cat
-            slot['newzbin'] = slot['newzbin'].replace('"', '&quot;')
-            slotinfo.append(slot)
+        for cat in categories:
+            cat['newzbin'] = cat['newzbin'].replace('"', '&quot;')
+            slotinfo.append(cat)
+
+        # Add empty line
+        empty = {'name': '', 'order': '0', 'pp': '-1', 'script': '', 'dir': '', 'newzbin': '', 'priority': DEFAULT_PRIORITY}
         slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
 
@@ -2768,20 +2798,40 @@ def GetRssLog(feed):
         url = job.get('url', '')
         title = xml_name(job.get('title', ''))
         size = job.get('size')
-        if size:
-            size = to_units(size).replace(' ', '&nbsp;')
-        else:
-            size = '?'
+        age = job.get('age', 0)
+        age_ms = job.get('age', 0)
+        time_downloaded = job.get('time_downloaded')
+        time_downloaded_ms = job.get('time_downloaded')
+
         if sabnzbd.rss.special_rss_site(url):
             nzbname = ""
         else:
             nzbname = xml_name(job.get('title', ''))
+
+        if size:
+            size = to_units(size)
+
+        if age:
+            age = calc_age(age, True)
+            age_ms = time.mktime(age_ms.timetuple())
+
+        if time_downloaded:
+            time_downloaded = time.strftime(time_format('%H:%M %a %d %b'), time_downloaded).decode(codepage)
+            time_downloaded_ms = time.mktime(time_downloaded_ms)
+
+        # Also return extra fields for sorting
         return url, \
                title, \
                '*' * int(job.get('status', '').endswith('*')), \
                job.get('rule', 0), \
                nzbname, \
-               size
+               size, \
+               job.get('size'), \
+               age, \
+               age_ms, \
+               time_downloaded, \
+               time_downloaded_ms,\
+               job.get('cat')
 
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
@@ -2792,9 +2842,8 @@ def GetRssLog(feed):
     bad = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
 
     # Sort in reverse order of time stamp for 'Done'
-    dnames = [job for job in jobs.keys() if jobs[job]['status'] == 'D']
-    dnames.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
-    done = [xml_name(jobs[job]['title']) for job in dnames]
+    names.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
+    done = [make_item(jobs[job]) for job in names if jobs[job]['status'] == 'D']
 
     return done, good, bad
 
@@ -2884,6 +2933,7 @@ class ConfigNotify(object):
             conf[kw] = config.get_config('ntfosd', kw)()
         for kw in LIST_NSCRIPT:
             conf[kw] = config.get_config('nscript', kw)()
+        conf['notify_keys'] = sabnzbd.constants.NOTIFY_KEYS
         conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(file=os.path.join(self.__web_dir, 'config_notify.tmpl'),

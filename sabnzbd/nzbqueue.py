@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -267,7 +267,7 @@ class NzbQueue(TryList):
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath) 
+                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -501,7 +501,7 @@ class NzbQueue(TryList):
         return removed
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove_nzf(self, nzo_id, nzf_id):
+    def remove_nzf(self, nzo_id, nzf_id, force_delete=False):
         removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -515,6 +515,13 @@ class NzbQueue(TryList):
                         self.end_job(nzo)
                     else:
                         self.remove(nzo_id, add_to_history=False, keep_basic=False)
+                elif force_delete:
+                    # Force-remove all trace
+                    nzo.bytes -= nzf.bytes
+                    nzo.bytes_tried -= (nzf.bytes - nzf.bytes_left)
+                    del nzo.files_table[nzf_id]
+                    nzo.finished_files.remove(nzf)
+
         return removed
 
     @synchronized(NZBQUEUE_LOCK)

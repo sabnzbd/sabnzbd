@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -82,8 +82,9 @@ replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
 start_paused = OptionBool('misc', 'start_paused', False)
-enable_https_verification = OptionBool('misc', 'enable_https_verification', False)
+enable_https_verification = OptionBool('misc', 'enable_https_verification', True)
 selftest_host = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
+ssl_ciphers = OptionStr('misc', 'ssl_ciphers', '')
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)
@@ -229,7 +230,6 @@ notified_new_skin = OptionNumber('misc', 'notified_new_skin', 0)
 unwanted_extensions = OptionList('misc', 'unwanted_extensions')
 action_on_unwanted_extensions = OptionNumber('misc', 'action_on_unwanted_extensions', 0)
 
-log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
 log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
 log_level = OptionNumber('logging', 'log_level', 1, -1, 2)
 log_size = OptionStr('logging', 'max_log_size', '5242880')
@@ -400,7 +400,6 @@ wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 queue_limit = OptionNumber('misc', 'queue_limit', 20, 0)
 history_limit = OptionNumber('misc', 'history_limit', 10, 0)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
-web_watchdog = OptionBool('misc', 'web_watchdog', False)
 enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
 allow_duplicate_files = OptionBool('misc', 'allow_duplicate_files', False)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2015 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,7 +42,8 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps': 2, 'version': sabnzbd.__version__,
+                     'steps': 2,
+                     'version': sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
@@ -95,7 +96,7 @@ class Wizard(object):
         info['language'] = cfg.language()
         info['active_lang'] = info['language']
         info['T'] = Ttemplate
-        info['have_ssl'] = bool(sabnzbd.newswrapper.HAVE_SSL)
+        info['have_ssl'] = bool(sabnzbd.HAVE_SSL)
 
         servers = config.get_servers()
         if not servers:
@@ -140,6 +141,9 @@ class Wizard(object):
         info['access_url'], info['urls'] = self.get_access_info()
         info['active_lang'] = cfg.language()
         info['T'] = Ttemplate
+
+        info['download_dir'] = cfg.download_dir.get_path()
+        info['complete_dir'] = cfg.complete_dir.get_path()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)

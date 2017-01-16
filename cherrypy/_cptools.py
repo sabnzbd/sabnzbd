@@ -28,6 +28,11 @@ import warnings
 import cherrypy
 from cherrypy._helper import expose
 
+from cherrypy.lib import cptools, encoding, auth, static, jsontools
+from cherrypy.lib import sessions as _sessions, xmlrpcutil as _xmlrpc
+from cherrypy.lib import caching as _caching
+from cherrypy.lib import auth_basic, auth_digest
+
 
 def _getargs(func):
     """Return the names of all static arguments to the given function."""
@@ -45,8 +50,8 @@ def _getargs(func):
 
 
 _attr_error = (
-    "CherryPy Tools cannot be turned on directly. Instead, turn them "
-    "on via config, or use them as decorators on your page handlers."
+    'CherryPy Tools cannot be turned on directly. Instead, turn them '
+    'on via config, or use them as decorators on your page handlers.'
 )
 
 
@@ -57,7 +62,7 @@ class Tool(object):
     help(tool.callable) should give you more information about this Tool.
     """
 
-    namespace = "tools"
+    namespace = 'tools'
 
     def __init__(self, point, callable, name=None, priority=50):
         self._point = point
@@ -80,7 +85,7 @@ class Tool(object):
             for arg in _getargs(self.callable):
                 setattr(self, arg, None)
         except (TypeError, AttributeError):
-            if hasattr(self.callable, "__call__"):
+            if hasattr(self.callable, '__call__'):
                 for arg in _getargs(self.callable.__call__):
                     setattr(self, arg, None)
         # IronPython 1.0 raises NotImplementedError because
@@ -104,8 +109,8 @@ class Tool(object):
         if self._name in tm:
             conf.update(tm[self._name])
 
-        if "on" in conf:
-            del conf["on"]
+        if 'on' in conf:
+            del conf['on']
 
         return conf
 
@@ -120,15 +125,15 @@ class Tool(object):
                 return cherrypy.request.base
         """
         if args:
-            raise TypeError("The %r Tool does not accept positional "
-                            "arguments; you must use keyword arguments."
+            raise TypeError('The %r Tool does not accept positional '
+                            'arguments; you must use keyword arguments.'
                             % self._name)
 
         def tool_decorator(f):
-            if not hasattr(f, "_cp_config"):
+            if not hasattr(f, '_cp_config'):
                 f._cp_config = {}
-            subspace = self.namespace + "." + self._name + "."
-            f._cp_config[subspace + "on"] = True
+            subspace = self.namespace + '.' + self._name + '.'
+            f._cp_config[subspace + 'on'] = True
             for k, v in kwargs.items():
                 f._cp_config[subspace + k] = v
             return f
@@ -141,9 +146,9 @@ class Tool(object):
         method when the tool is "turned on" in config.
         """
         conf = self._merged_args()
-        p = conf.pop("priority", None)
+        p = conf.pop('priority', None)
         if p is None:
-            p = getattr(self.callable, "priority", self._priority)
+            p = getattr(self.callable, 'priority', self._priority)
         cherrypy.serving.request.hooks.attach(self._point, self.callable,
                                               priority=p, **conf)
 
@@ -191,9 +196,9 @@ class HandlerTool(Tool):
         method when the tool is "turned on" in config.
         """
         conf = self._merged_args()
-        p = conf.pop("priority", None)
+        p = conf.pop('priority', None)
         if p is None:
-            p = getattr(self.callable, "priority", self._priority)
+            p = getattr(self.callable, 'priority', self._priority)
         cherrypy.serving.request.hooks.attach(self._point, self._wrapper,
                                               priority=p, **conf)
 
@@ -254,11 +259,6 @@ class ErrorTool(Tool):
 
 #                              Builtin tools                              #
 
-from cherrypy.lib import cptools, encoding, auth, static, jsontools
-from cherrypy.lib import sessions as _sessions, xmlrpcutil as _xmlrpc
-from cherrypy.lib import caching as _caching
-from cherrypy.lib import auth_basic, auth_digest
-
 
 class SessionTool(Tool):
 
@@ -296,9 +296,9 @@ class SessionTool(Tool):
 
         conf = self._merged_args()
 
-        p = conf.pop("priority", None)
+        p = conf.pop('priority', None)
         if p is None:
-            p = getattr(self.callable, "priority", self._priority)
+            p = getattr(self.callable, 'priority', self._priority)
 
         hooks.attach(self._point, self.callable, priority=p, **conf)
 
@@ -374,7 +374,7 @@ class XMLRPCController(object):
         for attr in str(rpcmethod).split('.'):
             subhandler = getattr(subhandler, attr, None)
 
-        if subhandler and getattr(subhandler, "exposed", False):
+        if subhandler and getattr(subhandler, 'exposed', False):
             body = subhandler(*(vpath + rpcparams), **params)
 
         else:
@@ -384,7 +384,7 @@ class XMLRPCController(object):
             # cherrypy.lib.xmlrpcutil.on_error
             raise Exception('method "%s" is not supported' % attr)
 
-        conf = cherrypy.serving.request.toolmaps['tools'].get("xmlrpc", {})
+        conf = cherrypy.serving.request.toolmaps['tools'].get('xmlrpc', {})
         _xmlrpc.respond(body,
                         conf.get('encoding', 'utf-8'),
                         conf.get('allow_none', 0))
@@ -395,7 +395,7 @@ class SessionAuthTool(HandlerTool):
 
     def _setargs(self):
         for name in dir(cptools.SessionAuth):
-            if not name.startswith("__"):
+            if not name.startswith('__'):
                 setattr(self, name, None)
 
 
@@ -418,7 +418,7 @@ class CachingTool(Tool):
         """Hook caching into cherrypy.request."""
         conf = self._merged_args()
 
-        p = conf.pop("priority", None)
+        p = conf.pop('priority', None)
         cherrypy.serving.request.hooks.attach('before_handler', self._wrapper,
                                               priority=p, **conf)
 
@@ -447,7 +447,7 @@ class Toolbox(object):
         cherrypy.serving.request.toolmaps[self.namespace] = map = {}
 
         def populate(k, v):
-            toolname, arg = k.split(".", 1)
+            toolname, arg = k.split('.', 1)
             bucket = map.setdefault(toolname, {})
             bucket[arg] = v
         return populate
@@ -457,7 +457,7 @@ class Toolbox(object):
         map = cherrypy.serving.request.toolmaps.get(self.namespace)
         if map:
             for name, settings in map.items():
-                if settings.get("on", False):
+                if settings.get('on', False):
                     tool = getattr(self, name)
                     tool._setup()
 
@@ -472,7 +472,7 @@ class Toolbox(object):
 class DeprecatedTool(Tool):
 
     _name = None
-    warnmsg = "This Tool is deprecated."
+    warnmsg = 'This Tool is deprecated.'
 
     def __init__(self, point, warnmsg=None):
         self.point = point
@@ -490,7 +490,7 @@ class DeprecatedTool(Tool):
         warnings.warn(self.warnmsg)
 
 
-default_toolbox = _d = Toolbox("tools")
+default_toolbox = _d = Toolbox('tools')
 _d.session_auth = SessionAuthTool(cptools.session_auth)
 _d.allow = Tool('on_start_resource', cptools.allow)
 _d.proxy = Tool('before_request_body', cptools.proxy, priority=30)
@@ -512,14 +512,14 @@ _d.caching = CachingTool('before_handler', _caching.get, 'caching')
 _d.expires = Tool('before_finalize', _caching.expires)
 _d.tidy = DeprecatedTool(
     'before_finalize',
-    "The tidy tool has been removed from the standard distribution of "
-    "CherryPy. The most recent version can be found at "
-    "http://tools.cherrypy.org/browser.")
+    'The tidy tool has been removed from the standard distribution of '
+    'CherryPy. The most recent version can be found at '
+    'http://tools.cherrypy.org/browser.')
 _d.nsgmls = DeprecatedTool(
     'before_finalize',
-    "The nsgmls tool has been removed from the standard distribution of "
-    "CherryPy. The most recent version can be found at "
-    "http://tools.cherrypy.org/browser.")
+    'The nsgmls tool has been removed from the standard distribution of '
+    'CherryPy. The most recent version can be found at '
+    'http://tools.cherrypy.org/browser.')
 _d.ignore_headers = Tool('before_request_body', cptools.ignore_headers)
 _d.referer = Tool('before_request_body', cptools.referer)
 _d.basic_auth = Tool('on_start_resource', auth.basic_auth)
@@ -533,5 +533,6 @@ _d.json_in = Tool('before_request_body', jsontools.json_in, priority=30)
 _d.json_out = Tool('before_handler', jsontools.json_out, priority=30)
 _d.auth_basic = Tool('before_handler', auth_basic.basic_auth, priority=1)
 _d.auth_digest = Tool('before_handler', auth_digest.digest_auth, priority=1)
+_d.params = Tool('before_handler', cptools.convert_params)
 
 del _d, cptools, encoding, auth, static
