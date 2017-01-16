@@ -142,7 +142,7 @@
                                 <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
                             </optgroup>
                         </select>
-                    <span class="desc">$T('explain-inet_exposure').replace('.','.<br>')</span>
+                    <span class="desc">$T('explain-inet_exposure').replace('. ','.<br><span class="label label-warning">'+$T('warning').upper()+'</span> ')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="local_ranges">$T('opt-local_ranges')</label>
