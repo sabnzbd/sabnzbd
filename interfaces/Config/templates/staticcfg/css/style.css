@@ -272,6 +272,9 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     overflow: auto;
     clear: both;
 }
+.label {
+    font-style: normal;
+}
 .padTable h3 {
     margin-top: 0;
 }
