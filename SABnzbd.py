@@ -1239,7 +1239,7 @@ def main():
         try:
             from ctypes import cdll
             libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult = libc.setiopolicy_np(0, 1, 3)  # @UnusedVariable
+            boolSetResult = libc.setiopolicy_np(0, 1, 3)
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
@@ -1264,7 +1264,6 @@ def main():
     web_dirc = Web_Template(None, DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    # sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
