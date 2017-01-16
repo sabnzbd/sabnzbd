@@ -233,7 +233,7 @@ def process_job(nzo):
     nzb_list = []
     # These need to be initialized in case of a crash
     workdir_complete = ''
-    postproc_time = 0  # @UnusedVariable -- pep8 bug?
+    postproc_time = 0
     script_log = ''
     script_line = ''
     crash_msg = ''
