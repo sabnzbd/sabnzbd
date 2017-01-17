@@ -186,9 +186,11 @@ def cat_convert(cat):
     """
     if cat and cat.lower() != 'none':
         cats = config.get_ordered_categories()
+        raw_cats = config.get_categories()
         for ucat in cats:
             try:
-                indexer = ucat['newzbin']
+                # Ordered cat-list has tags only as string
+                indexer = raw_cats[ucat['name']].newzbin()
                 if not isinstance(indexer, list):
                     indexer = [indexer]
             except:
