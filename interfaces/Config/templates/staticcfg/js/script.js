@@ -402,7 +402,12 @@ $(document).ready(function () {
 
     // Hide or show HTTPS
     $('#enable_https').on('change', function() {
-        $('#enable_https_options').toggle()
+        $('.enable_https_options').toggle()
+    })
+
+    $('.advancedButton').click(function(event){
+        $('.advanced-settings').toggle()
+        return false;
     })
 });
 
