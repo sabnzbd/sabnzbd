@@ -8,6 +8,8 @@ Release Notes  -  SABnzbd 1.2.1
 - Cloaked files (rar within rar) were not detected anymore
 - RSS reading could fail on newznab attributes
 - Incorrectly marking jobs with folders inside as failed
+- Fix crashing Assembler
+- Categories were not matched properly if list of tags was set
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
