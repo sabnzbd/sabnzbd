@@ -234,7 +234,6 @@ https_chain = OptionDir('misc', 'https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
-unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 load_balancing = OptionNumber('misc', 'load_balancing', 2)
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)

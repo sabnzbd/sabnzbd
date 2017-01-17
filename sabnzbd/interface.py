@@ -1419,7 +1419,7 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
-             'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
+             'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',

@@ -532,14 +532,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
-    try:
-        zf = rarfile.RarFile(rarfile_path)
-        expected_files = zf.filelist()
-        zf.close()
-    except:
-        logging.info('Archive %s probably has full encryption', rarfile_path)
-        expected_files = []
-
     if password:
         password = '-p%s' % password
     else:
@@ -729,33 +721,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if proc:
         proc.close()
     p.wait()
-
-    if cfg.unpack_check():
-        if reliable_unpack_names() and not RAR_PROBLEM:
-            missing = []
-            # Loop through and check for the presence of all the files the archive contained
-            for path in expected_files:
-                if one_folder or cfg.flat_unpack():
-                    path = os.path.split(path)[1]
-                path = unicode2local(path)
-                if '?' in path:
-                    logging.info('Skipping check of file %s', path)
-                    continue
-                fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existence of %s", fullpath)
-                if not os.path.exists(fullpath):
-                    # There was a missing file, show a warning
-                    missing.append(path)
-                    logging.info(T('Missing expected file: %s => unrar error?'), path)
-
-            if missing:
-                nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
-                logging.debug("Expecting files: %s" % str(expected_files))
-                msg = T('Unpacking failed, these file(s) are missing:') + ';' + u';'.join([unicoder(item) for item in missing])
-                nzo.set_unpack_info('Unpack', msg, set=setname)
-                return (1, (), ())
-        else:
-            logging.info('Skipping unrar file check due to unreliable file names or old unrar')
 
     logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
