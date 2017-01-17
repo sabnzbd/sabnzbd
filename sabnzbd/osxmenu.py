@@ -727,7 +727,6 @@ class SABnzbdDelegate(NSObject):
     def restartSafeHost_(self, sender):
         sabnzbd.cfg.cherryhost.set('127.0.0.1')
         sabnzbd.cfg.cherryport.set('8080')
-        sabnzbd.cfg.https_port.set('8090')
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))

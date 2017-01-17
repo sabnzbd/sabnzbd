@@ -209,15 +209,19 @@ class Wizard(object):
         urls = []
         for sock in socks:
             if sock:
-                if cfg.enable_https():
+                if cfg.enable_https() and cfg.https_port():
                     url = 'https://%s:%s/sabnzbd/' % (sock, cfg.https_port())
+                elif cfg.enable_https():
+                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.cherryport())
                 else:
                     url = 'http://%s:%s/sabnzbd/' % (sock, cfg.cherryport())
 
                 urls.append(url)
 
-        if cfg.enable_https():
-            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.https_port())
+        if cfg.enable_https() and cfg.https_port():
+            access_url = 'https://%s:%s/sabnzbd/' % (sock, cfg.https_port())
+        elif cfg.enable_https():
+            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
         else:
             access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
 
