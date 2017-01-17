@@ -221,8 +221,6 @@ class URLGrabber(Thread):
 
                 # Sanatize filename first
                 filename = misc.sanitize_filename(filename)
-                if sabnzbd.WIN32:
-                    filename = misc.replace_win_devices(filename)
 
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
