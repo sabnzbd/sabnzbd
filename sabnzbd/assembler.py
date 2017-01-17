@@ -316,7 +316,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
         # Safe-format for Windows
         # RarFile requires de-unicoded filenames for zf.testrar()
         filepath_split = os.path.split(filepath)
-        workdir_short = short_path(filepath_split[0])
+        workdir_short = filepath_split[0]
         filepath = deunicode(os.path.join(workdir_short, filepath_split[1]))
 
         # Is it even a rarfile?

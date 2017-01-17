@@ -374,10 +374,10 @@ def process_job(nzo):
                     # set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    short_complete = short_path(tmp_workdir_complete)
-                    unpack_error, newfiles = unpack_magic(nzo, short_path(workdir), short_complete, flag_delete, one_folder, (), (), (), (), ())
-                    if short_complete != tmp_workdir_complete:
-                        newfiles = [f.replace(short_complete, tmp_workdir_complete) for f in newfiles]
+                    short_complete = tmp_workdir_complete
+                    unpack_error, newfiles = unpack_magic(nzo, workdir, short_complete, flag_delete, one_folder, (), (), (), (), ())
+                    #if short_complete != tmp_workdir_complete:
+                    #    newfiles = [f.replace(short_complete, tmp_workdir_complete) for f in newfiles]
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))

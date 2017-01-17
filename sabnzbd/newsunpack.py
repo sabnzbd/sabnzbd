@@ -574,6 +574,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         command.insert(3, '-tsm-')
 
     stup, need_shell, command, creationflags = build_command(command)
+    command = dotify_files(command)
 
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
@@ -983,6 +984,12 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     return ret, T('Could not unpack %s') % unicoder(sevenset)
 
 
+def dot_path(p):
+    if sabnzbd.WIN32:
+        return deunicode(p.replace('\\\\?\\', '\\\\.\\'))
+    else:
+        return p
+
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
@@ -1002,7 +1009,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 break
 
     # Shorten just the workdir on Windows
-    workdir = short_path(workdir)
+    # workdir = short_path(workdir)
     parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
@@ -1134,6 +1141,20 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     return readd, result
 
 
+def dotify_files(lst):
+    """ Return list with \\?\ files as \\.\ files """
+    if sabnzbd.WIN32:
+        new_lst = []
+        for item in lst:
+            if u'?' in item:
+                new_lst.append(deunicode(item.replace('\\\\?\\', '\\\\.\\')))
+            else:
+                new_lst.append(item)
+        return new_lst
+    else:
+        return lst
+
+
 _RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
 _RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
 _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
@@ -1202,6 +1223,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         command.extend(flist)
 
     stup, need_shell, command, creationflags = build_command(command)
+    command = dotify_files(command)
     logging.debug('Starting par2: %s', command)
 
     lines = []
