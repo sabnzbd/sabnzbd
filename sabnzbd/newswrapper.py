@@ -241,10 +241,9 @@ class NNTP(object):
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
             else:
-                # if blocking (server test) only wait for 4 seconds during connect until timeout
-                self.sock.settimeout(4)
+                # if blocking (server test) only wait for 15 seconds during connect until timeout
+                self.sock.settimeout(15)
                 self.sock.connect((self.host, self.port))
-
                 if sslenabled and sabnzbd.HAVE_SSL:
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
