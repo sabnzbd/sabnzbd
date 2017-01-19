@@ -156,7 +156,6 @@ class BPSMeter(object):
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """
         logging.debug('Setting default BPS meter values')
-        import sabnzbd.database
         history_db = sabnzbd.database.HistoryDB()
         grand, month, week = history_db.get_history_size()
         history_db.close()
@@ -245,9 +244,8 @@ class BPSMeter(object):
             if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
-                    from sabnzbd.downloader import Downloader
-                    if Downloader.do and not Downloader.do.paused:
-                        Downloader.do.pause()
+                    if sabnzbd.downloader.Downloader.do and not Downloader.do.paused:
+                        sabnzbd.downloader.Downloader.do.pause()
                         logging.warning(T('Quota spent, pausing downloading'))
 
         # Speedometer
@@ -465,9 +463,8 @@ class BPSMeter(object):
 
     def resume(self):
         """ Resume downloading """
-        from sabnzbd.downloader import Downloader
-        if cfg.quota_resume() and Downloader.do and Downloader.do.paused:
-            Downloader.do.resume()
+        if cfg.quota_resume() and sabnzbd.downloader.Downloader.do and sabnzbd.downloader.Downloader.do.paused:
+            sabnzbd.downloader.Downloader.do.resume()
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """
