@@ -879,7 +879,7 @@ def move_to_path(path, new_path):
         new_path = get_unique_filename(new_path)
 
     if new_path:
-        logging.debug("Moving. Old path:%s new path:%s overwrite?:%s",
+        logging.debug("Moving. Old path: %s New path: %s Overwrite: %s",
                                                   path, new_path, overwrite)
         try:
             # First try cheap rename
@@ -892,6 +892,10 @@ def move_to_path(path, new_path):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
+                # Check if the old-file actually exists (possible delete-delays)
+                if not os.path.exists(path):
+                    logging.debug("File not moved, original path gone: %s", path)
+                    return True, None
                 if not (cfg.marker_file() and cfg.marker_file() in path):
                     logging.error(T('Failed moving %s to %s'), clip_path(path), clip_path(new_path))
                     logging.info("Traceback: ", exc_info=True)
