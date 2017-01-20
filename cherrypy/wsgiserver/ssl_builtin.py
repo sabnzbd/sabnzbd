@@ -91,6 +91,11 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                     # when self-signed certificates are used. The connection
                     # can be dropped until the users adds the exception
                     return None, {}
+                elif 'inappropriate fallback' in e.args[1]:
+                    # This error is thrown when a client tries to connect
+                    # with only unsupported protocols/ciphers. Connection
+                    # cannot be finished and thus can be dropped.
+                    return None, {}
             elif 'handshake operation timed out' in e.args[0]:
                 # This error is thrown by builtin SSL after a timeout
                 # when client is speaking HTTP to an HTTPS server.
