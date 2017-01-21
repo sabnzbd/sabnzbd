@@ -539,6 +539,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     except:
         logging.info('Archive %s probably has full encryption', rarfile_path)
         expected_files = []
+        
 
     if password:
         password = '-p%s' % password
