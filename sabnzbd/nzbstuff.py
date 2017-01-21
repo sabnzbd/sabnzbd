@@ -1817,6 +1817,11 @@ def scan_password(name):
         braces = len(name)
     slash = name.find('/')
 
+    # Is it maybe in 'name / password' notation?
+    if slash >= 1 and slash == name.find(' / ') + 1:
+        # Remove the space before the password
+        slash = slash + 1
+
     # Look for name/password, but make sure that '/' comes before any {{
     if slash >= 0 and slash < braces and 'password=' not in name:
         return name[:slash].strip('. '), name[slash + 1:]
