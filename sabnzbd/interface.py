@@ -2801,11 +2801,17 @@ def GetRssLog(feed):
         # Now we apply some formatting
         job['title'] = xml_name(job['title'])
         job['skip'] = '*' * int(job.get('status', '').endswith('*'))
-        job['baselink'] = get_base_url(job['url'])
+        job['cat'] = job.get('cat', '')
 
-        if sabnzbd.rss.special_rss_site(job['url']):
-            job['nzbname'] = ""
+        # Auto-fetched jobs didn't have these fields set
+        if job.get('url'):
+            job['baselink'] = get_base_url(job.get('url'))
+            if sabnzbd.rss.special_rss_site(job.get('url')):
+                job['nzbname'] = ''
+            else:
+                job['nzbname'] = xml_name(job['title'])
         else:
+            job['baselink'] = ''
             job['nzbname'] = xml_name(job['title'])
 
         if job.get('size', 0):

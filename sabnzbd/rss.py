@@ -621,12 +621,21 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
         pp = None
 
     jobs[link] = {}
+    jobs[link]['title'] = title
+    jobs[link]['url'] = link
+    jobs[link]['cat'] = cat
+    jobs[link]['pp'] = pp
+    jobs[link]['script'] = script
+    jobs[link]['prio'] = str(priority)
     jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
     jobs[link]['age'] = age
+    jobs[link]['time'] = time.time()
+    jobs[link]['rule'] = rule
     jobs[link]['season'] = season
     jobs[link]['episode'] = episode
+
     if special_rss_site(link):
         nzbname = None
     else:
@@ -634,7 +643,6 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
 
     if download:
         jobs[link]['status'] = 'D'
-        jobs[link]['title'] = title
         jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
         sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
@@ -643,16 +651,6 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
             jobs[link]['status'] = flag + '*'
         else:
             jobs[link]['status'] = flag
-        jobs[link]['title'] = title
-        jobs[link]['url'] = link
-        jobs[link]['cat'] = cat
-        jobs[link]['pp'] = pp
-        jobs[link]['script'] = script
-        jobs[link]['prio'] = str(priority)
-
-    jobs[link]['time'] = time.time()
-    jobs[link]['rule'] = rule
-
 
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry
