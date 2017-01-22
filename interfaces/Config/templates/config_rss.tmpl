@@ -475,7 +475,11 @@
                             <td data-sort-value="$job['size']">$job['size_units']</td>
                             <td>$job['title']</td>
                             <td>$job['cat']</td>
-                            <td data-sort-value="$job['baselink']" title="$job['baselink']"><div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div></td>
+                            <td data-sort-value="$job['baselink']" title="$job['baselink']">
+                                <!--#if $job['baselink']#-->
+                                <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                                <!--#end if#-->
+                            </td>
                         </tr>
                     <!--#end for#-->
                 </table>
