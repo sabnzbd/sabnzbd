@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, short_path, get_all_passwords
+    flag_file, real_path, globber, globber_full, short_path, get_all_passwords, renamer
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -1679,11 +1679,14 @@ def QuickCheck(set, nzo):
 
     result = False
     nzf_list = nzo.finished_files
+    renames = {}
 
     for file in md5pack:
         found = False
+        file_platform = platform_encode(file)
         for nzf in nzf_list:
-            if platform_encode(file) == nzf.filename:
+            # Do a simple filename based check
+            if file_platform == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -1692,9 +1695,27 @@ def QuickCheck(set, nzo):
                     logging.info('Quick-check of file %s failed!', file)
                     return False  # When any file fails, just stop
                 break
+
+            # Now lets do obfuscation check
+            if nzf.md5sum == md5pack[file]:
+                renames[file_platform] = nzf.filename
+                logging.debug('Quick-check renamed %s to %s', nzf.filename, file_platform)
+                renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
+                nzf.filename = file_platform
+                result = True
+                found = True
+                break
+
         if not found:
             logging.info('Cannot Quick-check missing file %s!', file)
             return False  # Missing file is failure
+
+    # Save renames
+    if renames:
+        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        for name in previous or {}:
+            renames[name] = previous[name]
+        save_data(renames, RENAMES_FILE, nzo.workpath)
     return result
 
 
