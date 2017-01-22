@@ -913,8 +913,7 @@ class NzbObject(TryList):
             self.deleted = True
             self.status = Status.FAILED
             nzo_id = sabnzbd.NzbQueue.do.add(self, quiet=True)
-            sabnzbd.NzbQueue.do.remove(nzo_id)
-            self.purge_data(keep_basic=True)
+            sabnzbd.NzbQueue.do.end_job(self)
             # Raise error, so it's not added
             raise TypeError
 
