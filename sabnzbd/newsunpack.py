@@ -1139,14 +1139,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     logging.debug('Par2-classic/cmdline = %s', classic)
 
-    # We need to check for the bad par2cmdline that skips blocks
-    # Only if we're not doing multicore and user hasn't set options
-    if not tbb and not options:
-        par2text = run_simple([command[0], '-h'])
-        if 'No data skipping' in par2text:
-            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
-            command.insert(2, '-N')
-
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
@@ -1162,6 +1154,19 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
         flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
         command.extend(flist)
+
+    # We need to check for the bad par2cmdline that skips blocks
+    # Or the one that complains about basepath
+    # Only if we're not doing multicore
+    if not tbb:
+        par2text = run_simple([command[0], '-h'])
+        if 'No data skipping' in par2text:
+            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+            command.insert(2, '-N')
+        if 'Set the basepath' in par2text:
+            logging.info('Detected par2cmdline version that needs basepath, adding -B<path> parameter')
+            command.insert(2, '-B')
+            command.insert(3, parfolder)
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting par2: %s', command)
