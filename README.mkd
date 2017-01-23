@@ -10,6 +10,8 @@ Release Notes  -  SABnzbd 1.2.1
 - Incorrectly marking jobs with folders inside as failed
 - Fix crashing Assembler
 - Categories were not matched properly if list of tags was set
+- PostProcessing-script was not called on Accept&Fail or Dupe detect
+- Support for newer par2cmdline(-mt) versions that need -B parameter
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
