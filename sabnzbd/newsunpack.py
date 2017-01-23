@@ -1432,6 +1432,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
+                    # Show progress
+                    if verifytotal == 0 or verifynum < verifytotal:
+                        verifynum += 1
+                        nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
+
+            elif 'Scanning extra files' in line:
+                # Obfuscated post most likely, so reset counter to show progress
+                verifynum = 1
+
             elif 'No details available for recoverable file' in line:
                 msg = unicoder(line.strip())
                 nzo.fail_msg = msg
