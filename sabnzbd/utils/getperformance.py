@@ -28,7 +28,7 @@ def getcpu():
 
     except:
         # An exception, maybe due to a subprocess call gone wrong
-        cputype = "Exception happened"
+        cputype = "Unknown"
         pass
 
     if cputype:
