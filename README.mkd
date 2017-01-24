@@ -2,6 +2,7 @@ Release Notes  -  SABnzbd 1.2.1
 ====================================
 
 ## What's new in 1.2.1
+- QuickCheck will perform fast rename of obfuscated posts
 - RSS Downloaded page now shows icon to indicate source
 
 ## Bug fixes
