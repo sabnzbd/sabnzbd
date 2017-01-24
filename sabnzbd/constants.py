@@ -52,7 +52,7 @@ RENAMES_FILE = '__renames__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
 
-SABYENC_VERSION = '2.6.4'
+SABYENC_VERSION = '2.7.0'
 
 DB_HISTORY_VERSION = 1
 DB_QUEUE_VERSION = 1
