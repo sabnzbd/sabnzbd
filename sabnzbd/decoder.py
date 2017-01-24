@@ -77,6 +77,8 @@ class Decoder(Thread):
         self.dec_nr = dec_nr
 
     def stop(self):
+        # Put multiple to stop all decoders
+        self.queue.put(None)
         self.queue.put(None)
 
     def run(self):
