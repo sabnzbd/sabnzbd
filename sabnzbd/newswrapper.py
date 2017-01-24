@@ -440,7 +440,22 @@ class NewsWrapper(object):
         if HAVE_SABYENC:
             # Append so we can do 1 join(), much faster than multiple!
             self.data.append(chunk)
+
+            # Offical end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
+            chunk_len = len(chunk)
+            if chunk[-5:] == '\r\n.\r\n':
+                return (chunk_len, True, False)
+            elif chunk_len < 5 and len(self.data) > 1:
+                # We need to make sure the end is not split over 2 chunks
+                # This is faster than join()
+                combine_chunk = self.data[-2][-5:] + chunk
+                if combine_chunk[-5:] == '\r\n.\r\n':
+                    return (chunk_len, True, False)
+
+            # Still in middle of data, so continue!
+            return (chunk_len, False, False)
         else:
+            # Perform manditory splitting
             new_lines = chunk.split('\r\n')
             # See if incorrect newline-only was used
             # Do this as a special case to prevent using extra memory
@@ -457,14 +472,10 @@ class NewsWrapper(object):
             if not self.data:
                 self.data.append(chunk)
 
-        chunk_len = len(chunk)
-        # Offical end-of-article is ".\r\n" but that can also occur mid-article
-        if (chunk_len >= 5 and chunk[-5:] == '\r\n.\r\n') or \
-           (chunk_len == 3 and chunk == '.\r\n'):
-            # Return status info
-            return (chunk_len, True, False)
-        else:
-            return (chunk_len, False, False)
+            if self.lines and self.lines[-1] == '.':
+                return (len(chunk), True, False)
+            else:
+                return (len(chunk), False, False)
 
     def soft_reset(self):
         self.timeout = None
