@@ -28,8 +28,9 @@ from threading import Thread
 
 import sabnzbd
 from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION
-from sabnzbd.articlecache import ArticleCache
+import sabnzbd.articlecache
 import sabnzbd.downloader
+import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
@@ -82,7 +83,6 @@ class Decoder(Thread):
         self.queue.put(None)
 
     def run(self):
-        from sabnzbd.nzbqueue import NzbQueue
         while 1:
             # Sleep to allow decoder/assembler switching
             sleep(0.0001)
@@ -98,7 +98,8 @@ class Decoder(Thread):
 
             # Check if the space that's now free can let us continue the queue?
             qsize = self.queue.qsize()
-            if (ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
+            if (sabnzbd.articlecache.ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and \
+               (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
                 sabnzbd.downloader.Downloader.do.undelay()
 
             data = None
@@ -124,7 +125,7 @@ class Decoder(Thread):
 
                     sabnzbd.downloader.Downloader.do.pause()
                     article.fetcher = None
-                    NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except MemoryError, e:
@@ -136,7 +137,7 @@ class Decoder(Thread):
 
                     sabnzbd.downloader.Downloader.do.pause()
                     article.fetcher = None
-                    NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except CrcError, e:
@@ -209,13 +210,12 @@ class Decoder(Thread):
                     nzo.prospective_add(nzf)
 
             if data:
-                ArticleCache.do.save_article(article, data)
+                sabnzbd.articlecache.ArticleCache.do.save_article(article, data)
 
             if register:
-                NzbQueue.do.register_article(article, found)
+                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
 
     def __search_new_server(self, article):
-        from sabnzbd.nzbqueue import NzbQueue
         article.add_to_try_list(article.fetcher)
 
         nzf = article.nzf
@@ -242,7 +242,7 @@ class Decoder(Thread):
             article.tries = 0
 
             # Allow all servers to iterate over this nzo and nzf again
-            NzbQueue.do.reset_try_lists(nzf, nzo)
+            sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
 
             if sabnzbd.LOG_ALL:
                 logging.debug('%s => found at least one untested server', article)
