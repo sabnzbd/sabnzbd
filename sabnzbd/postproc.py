@@ -24,6 +24,7 @@ import Queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
+import xml.etree.ElementTree
 import time
 import re
 
@@ -506,11 +507,11 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line),
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, xml.sax.saxutils.escape(script_line)), unique=True)
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
 
 
         # Cleanup again, including NZB files
@@ -893,8 +894,13 @@ def one_file_or_folder(folder):
     return folder
 
 
+TAG_RE = re.compile(r'<[^>]+>')
 def get_last_line(txt):
     """ Return last non-empty line of a text, trim to 150 max """
+    # First we remove HTML code in a basic way
+    txt = TAG_RE.sub(' ', txt)
+
+    # Then we get the last line
     lines = txt.split('\n')
     n = len(lines) - 1
     while n >= 0 and not lines[n].strip('\r\t '):
