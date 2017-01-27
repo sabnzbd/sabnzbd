@@ -69,13 +69,11 @@ class BadYenc(Exception):
 
 class Decoder(Thread):
 
-    def __init__(self, servers, queue, dec_nr):
+    def __init__(self, servers, queue):
         Thread.__init__(self)
 
         self.queue = queue
         self.servers = servers
-        self.shutdown = False
-        self.dec_nr = dec_nr
 
     def stop(self):
         # Put multiple to stop all decoders
@@ -112,7 +110,7 @@ class Decoder(Thread):
                     if nzo.precheck:
                         raise BadYenc
                     register = True
-                    logging.debug("%d - Decoding %s", self.dec_nr, art_id)
+                    logging.debug("Decoding %s", art_id)
 
                     data = decode(article, lines, raw_data)
                     nzf.article_count += 1
@@ -184,7 +182,7 @@ class Decoder(Thread):
 
                 except:
                     logme = T('Unknown Error while decoding %s') % art_id
-                    logging.error(logme)
+                    logging.info(logme)
                     logging.info("Traceback: ", exc_info=True)
                     new_server_found = self.__search_new_server(article)
                     if new_server_found:
@@ -259,18 +257,14 @@ YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data, raw_data):
     # Do we have SABYenc? Let it do all the work
     if HAVE_SABYENC:
-        # Bam
-        decoded_data, output_filename, crc, crc_yenc, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
-        #decoded_data, output_filename, crc, crc_yenc, crc_correct = sabyenc.decode_string_usenet(''.join(raw_data))
-
-        # Assume it is yenc
-        article.nzf.type = 'yenc'
+        decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
 
         # CRC check
         if not crc_correct:
-            crc_yenc = '%08X' % (crc_yenc & 2 ** 32L - 1)
-            crc = '%08X' % (crc & 2 ** 32L - 1)
-            raise CrcError(crc_yenc, crc, decoded_data)
+            raise CrcError(crc_expected, crc, decoded_data)
+
+        # Assume it is yenc
+        article.nzf.type = 'yenc'
 
         # Only set the name if it was found
         if output_filename:
@@ -278,6 +272,7 @@ def decode(article, data, raw_data):
 
         return decoded_data
 
+    # Continue for _yenc or Python-yEnc
     # Filter out empty ones
     data = filter(None, data)
     # No point in continuing if we don't have any data left
