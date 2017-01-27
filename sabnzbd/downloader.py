@@ -200,10 +200,11 @@ class Downloader(Thread):
 
         self.decoder_queue = Queue.Queue()
 
-        # Initialize decoders
+        # Initialize decoders, only 1 for non-SABYenc
         self.decoder_workers = []
-        for i in range(cfg.nr_decoders()):
-            self.decoder_workers.append(Decoder(self.servers, self.decoder_queue, i))
+        nr_decoders = cfg.nr_decoders() if sabnzbd.decoder.HAVE_SABYENC else 1
+        for i in range(nr_decoders):
+            self.decoder_workers.append(Decoder(self.servers, self.decoder_queue))
 
         Downloader.do = self
 
