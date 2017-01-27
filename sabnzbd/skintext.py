@@ -414,10 +414,8 @@ SKIN_TEXT = {
     'base-folder' : TT('Default Base Folder'),
 
 # Config->Switches
-    'opt-quick_check' : TT('Enable Quick Check'),
-    'explain-quick_check' : TT('Skip par2 checking when files are 100% valid.'),
     'opt-enable_all_par' : TT('Download all par2 files'),
-    'explain-enable_all_par' : TT('This prevents multiple repair runs. QuickCheck on: download all par2 files when needed. QuickCheck off: always download all par2 files.'),
+    'explain-enable_all_par' : TT('This prevents multiple repair runs by downloading all par2 files when needed.'),
     'opt-enable_recursive' : TT('Enable recursive unpacking'),
     'explain-enable_recursive' : TT('Unpack archives (rar, zip, 7z) within archives.'),
     'opt-flat_unpack' : TT('Ignore any folders inside archives'),

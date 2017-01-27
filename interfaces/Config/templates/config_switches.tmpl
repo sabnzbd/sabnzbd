@@ -159,11 +159,6 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="quick_check">$T('opt-quick_check')</label>
-                        <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-quick_check')</span>
-                    </div>
                     <!--#if $have_multicore#-->
                     <div class="field-pair">
                         <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
