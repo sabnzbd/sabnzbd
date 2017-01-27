@@ -326,8 +326,6 @@ SKIN_TEXT = {
     'opt-port' : TT('SABnzbd Port'),
     'explain-port' : TT('Port SABnzbd should listen on.'),
     'opt-web_dir' : TT('Web Interface'),
-    'explain-web_dir' : TT('Choose a skin.'),
-    'opt-web_dir2' : TT('Secondary Web Interface'),
     'explain-web_dir2' : TT('Activate an alternative skin.'),
     'opt-web_username' : TT('SABnzbd Username'),
     'explain-web_username' : TT('Optional authentication username.'),

@@ -304,9 +304,6 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
-        # Temporarily fix that allows missing Config
-        if defweb == DEF_STDCONFIG:
-            return ''
         # end temp fix
         logging.warning(T('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
@@ -315,8 +312,6 @@ def Web_Template(key, defweb, wdir):
             logging.exception('Cannot find standard template: %s', full_dir)
             panic_tmpl(full_dir)
             exit_sab(1)
-
-    # sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -850,7 +845,6 @@ def main():
     clean_up = False
     logging_level = None
     web_dir = None
-    web_dir2 = None
     vista_plus = False
     vista64 = False
     force_web = False
@@ -884,8 +878,6 @@ def main():
             exit_sab(0)
         elif opt in ('-t', '--templates'):
             web_dir = arg
-        elif opt in ('-2', '--template2'):
-            web_dir2 = arg
         elif opt in ('-s', '--server'):
             (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
@@ -1268,20 +1260,16 @@ def main():
     os.chdir(sabnzbd.DIR_PROG)
 
     web_dir = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
-    web_dirc = Web_Template(None, DEF_STDCONFIG, '')
+    web_dir_config = Web_Template(None, DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
 
     sabnzbd.WEB_DIR = web_dir
-    sabnzbd.WEB_DIR2 = web_dir2
-    sabnzbd.WEB_DIRC = web_dirc
+    sabnzbd.WEB_DIR_CONFIG = web_dir_config
     sabnzbd.WIZARD_DIR = wizard_dir
 
     sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), web_dir)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(), web_dir2)
-    sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
     if fork and not sabnzbd.WIN32:
         daemonize()
@@ -1405,39 +1393,25 @@ def main():
 
     forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir_config, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
     appconfig = {'/sabnzbd/api': {'tools.basic_auth.on': False},
                  '/api': {'tools.basic_auth.on': False},
-                 '/m/api': {'tools.basic_auth.on': False},
                  '/rss': {'tools.basic_auth.on': False},
                  '/sabnzbd/rss': {'tools.basic_auth.on': False},
-                 '/m/rss': {'tools.basic_auth.on': False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
                  '/sabnzbd/static': static,
                  '/static': static,
                  '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static,
-                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(web_dirc, 'staticcfg', 'ico', 'favicon.ico')},
+                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(web_dir_config, 'staticcfg', 'ico', 'favicon.ico')},
                  '/sabnzbd/staticcfg': staticcfg,
                  '/staticcfg': staticcfg
                  }
 
-    if web_dir2:
-        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-        appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on': False}
-        appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on': False}
-        appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
-        appconfig['/sabnzbd/m/static'] = static2
-        appconfig['/m/static'] = static2
-        appconfig['/sabnzbd/m/wizard/static'] = wizard_static
-        appconfig['/m/wizard/static'] = wizard_static
-        appconfig['/sabnzbd/m/staticcfg'] = staticcfg
-        appconfig['/m/staticcfg'] = staticcfg
-
-    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', web_dirc, first=2)
-    cherrypy.tree.mount(login_page, '/', config=appconfig)
+    main_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir_config)
+    cherrypy.tree.mount(main_page, '/', config=appconfig)
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
