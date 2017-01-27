@@ -312,25 +312,22 @@ class NoPage(object):
 ##############################################################################
 class MainPage(object):
 
-    def __init__(self, web_dir, root, web_dir2=None, root2=None, web_dirc=None, prim=True, first=0):
+    def __init__(self, web_dir, root, web_dir_config=None, sub_mount=False):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
-        if first >= 1 and web_dir2:
-            # Setup addresses for secondary skin
-            self.m = MainPage(web_dir2, root2, web_dirc=web_dirc, prim=False)
-        if first == 2:
-            # Setup addresses with /sabnzbd prefix for primary and secondary skin
-            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', web_dirc=web_dirc, prim=True, first=1)
+        # Add all sub-pages
+        self.login = LoginPage(web_dir_config, root + 'login/')
+        self.queue = QueuePage(web_dir, root + 'queue/')
+        self.history = HistoryPage(web_dir, root + 'history/')
+        self.status = Status(web_dir, root + 'status/')
+        self.config = ConfigPage(web_dir_config, root + 'config/')
+        self.nzb = NzoPage(web_dir, root + 'nzb/')
+        self.wizard = sabnzbd.wizard.Wizard(web_dir, root + 'wizard/')
 
-        self.login = LoginPage(web_dirc, root + 'login/', prim)
-        self.queue = QueuePage(web_dir, root + 'queue/', prim)
-        self.history = HistoryPage(web_dir, root + 'history/', prim)
-        self.status = Status(web_dir, root + 'status/', prim)
-        self.config = ConfigPage(web_dirc, root + 'config/', prim)
-        self.nzb = NzoPage(web_dir, root + 'nzb/', prim)
-        self.wizard = sabnzbd.wizard.Wizard(web_dir, root + 'wizard/', prim)
+        # Add them again for the /sabnzbd/ links
+        if not sub_mount:
+            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir_config=web_dir_config, sub_mount=True)
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -352,7 +349,7 @@ class MainPage(object):
             config.save_config()
 
         if kwargs.get('skip_wizard') or config.get_servers():
-            info = build_header(self.__prim, self.__web_dir)
+            info = build_header(self.__web_dir)
 
             info['script_list'] = list_scripts(default=True)
             info['script'] = 'Default'
@@ -583,15 +580,14 @@ class MainPage(object):
 ##############################################################################
 class LoginPage(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
         # Base output var
-        info = build_header(self.__prim, self.__web_dir)
+        info = build_header(self.__web_dir)
         info['error'] = ''
 
         # Logout?
@@ -621,10 +617,9 @@ class LoginPage(object):
 ##############################################################################
 class NzoPage(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
         self.__cached_selection = {}  # None
 
     @cherrypy.expose
@@ -648,7 +643,7 @@ class NzoPage(object):
 
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo_id and nzo:
-            info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(self.__prim, self.__web_dir)
+            info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(self.__web_dir)
 
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
@@ -817,10 +812,9 @@ class NzoPage(object):
 ##############################################################################
 class QueuePage(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -832,7 +826,7 @@ class QueuePage(object):
         start = int_conv(kwargs.get('start'))
         limit = int_conv(kwargs.get('limit'))
         search = kwargs.get('search')
-        info, _pnfo_list, _bytespersec = build_queue(self.__web_dir, self.__root, self.__prim, self.__web_dir,
+        info, _pnfo_list, _bytespersec = build_queue(self.__web_dir, self.__root, self.__web_dir,
                                                      start=start, limit=limit, trans=True, search=search)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
@@ -1034,13 +1028,12 @@ class QueuePage(object):
 ##############################################################################
 class HistoryPage(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
         self.__verbose_list = []
         self.__failed_only = False
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1056,7 +1049,7 @@ class HistoryPage(object):
         if failed_only is None:
             failed_only = self.__failed_only
 
-        history = build_header(self.__prim, self.__web_dir)
+        history = build_header(self.__web_dir)
 
         history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
@@ -1235,20 +1228,19 @@ class HistoryPage(object):
 ##############################################################################
 class ConfigPage(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
-        self.folders = ConfigFolders(web_dir, root + 'folders/', prim)
-        self.notify = ConfigNotify(web_dir, root + 'notify/', prim)
-        self.general = ConfigGeneral(web_dir, root + 'general/', prim)
-        self.rss = ConfigRss(web_dir, root + 'rss/', prim)
-        self.scheduling = ConfigScheduling(web_dir, root + 'scheduling/', prim)
-        self.server = ConfigServer(web_dir, root + 'server/', prim)
-        self.switches = ConfigSwitches(web_dir, root + 'switches/', prim)
-        self.categories = ConfigCats(web_dir, root + 'categories/', prim)
-        self.sorting = ConfigSorting(web_dir, root + 'sorting/', prim)
-        self.special = ConfigSpecial(web_dir, root + 'special/', prim)
+        self.folders = ConfigFolders(web_dir, root + 'folders/')
+        self.notify = ConfigNotify(web_dir, root + 'notify/')
+        self.general = ConfigGeneral(web_dir, root + 'general/')
+        self.rss = ConfigRss(web_dir, root + 'rss/')
+        self.scheduling = ConfigScheduling(web_dir, root + 'scheduling/')
+        self.server = ConfigServer(web_dir, root + 'server/')
+        self.switches = ConfigSwitches(web_dir, root + 'switches/')
+        self.categories = ConfigCats(web_dir, root + 'categories/')
+        self.sorting = ConfigSorting(web_dir, root + 'sorting/')
+        self.special = ConfigSpecial(web_dir, root + 'special/')
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1256,7 +1248,7 @@ class ConfigPage(object):
             return Protected()
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['configfn'] = config.get_filename()
         conf['cmdline'] = sabnzbd.CMDLINE
@@ -1358,10 +1350,9 @@ LIST_DIRPAGE = (
 
 class ConfigFolders(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1370,7 +1361,7 @@ class ConfigFolders(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw)()
@@ -1431,10 +1422,9 @@ SWITCH_LIST = \
 
 class ConfigSwitches(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1443,7 +1433,7 @@ class ConfigSwitches(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
         conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
@@ -1509,10 +1499,9 @@ SPECIAL_LIST_LIST = \
 
 class ConfigSpecial(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1521,7 +1510,7 @@ class ConfigSpecial(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['nt'] = sabnzbd.WIN32
 
@@ -1561,10 +1550,9 @@ GENERAL_LIST = (
 
 class ConfigGeneral(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1595,7 +1583,7 @@ class ConfigGeneral(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['configfn'] = config.get_filename()
 
@@ -1627,7 +1615,6 @@ class ConfigGeneral(object):
                     wlist.append(rweb)
         conf['web_list'] = wlist
         conf['web_dir'] = add_color(cfg.web_dir(), cfg.web_color())
-        conf['web_dir2'] = add_color(cfg.web_dir2(), cfg.web_color2())
 
         conf['language'] = cfg.language()
         lang_list = list_languages()
@@ -1643,8 +1630,7 @@ class ConfigGeneral(object):
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
-        conf['caller_url1'] = cherrypy.request.base + '/sabnzbd/'
-        conf['caller_url2'] = cherrypy.request.base + '/sabnzbd/m/'
+        conf['caller_url'] = cherrypy.request.base + '/sabnzbd/'
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1680,19 +1666,7 @@ class ConfigGeneral(object):
         cfg.cleanup_list.set(cleanup_list)
 
         web_dir = kwargs.get('web_dir')
-        web_dir2 = kwargs.get('web_dir2')
         change_web_dir(web_dir)
-        try:
-            web_dir2, web_color2 = web_dir2.split(' - ')
-        except:
-            web_color2 = ''
-        web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
-
-        if web_dir2 == 'None':
-            cfg.web_dir2.set('')
-        elif os.path.exists(web_dir2_path):
-            cfg.web_dir2.set(web_dir2)
-        cfg.web_color2.set(web_color2)
 
         bandwidth_max = kwargs.get('bandwidth_max')
         if bandwidth_max is not None:
@@ -1757,10 +1731,9 @@ def change_web_dir(web_dir):
 ##############################################################################
 class ConfigServer(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1769,7 +1742,7 @@ class ConfigServer(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         new = []
         servers = config.get_servers()
@@ -1917,10 +1890,9 @@ def handle_server_test(kwargs, root):
 ##############################################################################
 class ConfigRss(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
         self.__refresh_readout = None       # Set to URL when new readout is needed
         self.__refresh_download = False     # True when feed needs to be read
         self.__refresh_force = False        # True if forced download of all matches is required
@@ -1936,7 +1908,7 @@ class ConfigRss(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
@@ -2271,10 +2243,9 @@ _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedl
 
 class ConfigScheduling(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2295,7 +2266,7 @@ class ConfigScheduling(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         actions = []
         actions.extend(_SCHED_ACTIONS)
@@ -2429,10 +2400,9 @@ class ConfigScheduling(object):
 ##############################################################################
 class ConfigCats(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2441,7 +2411,7 @@ class ConfigCats(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['script_list'] = list_scripts(default=True)
         conf['defdir'] = cfg.complete_dir.get_path()
@@ -2506,10 +2476,9 @@ SORT_LIST = (
 
 class ConfigSorting(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2518,7 +2487,7 @@ class ConfigSorting(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
         conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
@@ -2569,10 +2538,9 @@ LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
 
 class Status(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -2581,7 +2549,7 @@ class Status(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        header = build_status(web_dir=self.__web_dir, prim=self.__prim, skip_dashboard=kwargs.get('skip_dashboard'))
+        header = build_status(web_dir=self.__web_dir, skip_dashboard=kwargs.get('skip_dashboard'))
 
         template = Template(file=os.path.join(self.__web_dir, 'status.tmpl'),
                             filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
@@ -2894,10 +2862,9 @@ LIST_NSCRIPT = ('nscript_enable', 'nscript_script', 'nscript_parameters',
 
 class ConfigNotify(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         self.__web_dir = web_dir
-        self.__prim = prim
         self.__lastmail = None
 
     @cherrypy.expose
@@ -2907,7 +2874,7 @@ class ConfigNotify(object):
         if not check_login():
             raise NeedLogin(self.__root, kwargs)
 
-        conf = build_header(self.__prim, self.__web_dir)
+        conf = build_header(self.__web_dir)
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['lastmail'] = self.__lastmail

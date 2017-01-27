@@ -532,7 +532,7 @@ def _api_history(name, output, kwargs):
         else:
             return report(output, _MSG_NO_VALUE)
     elif not name:
-        history = build_header(prim=True)
+        history = build_header()
         if 'noofslots_total' in history:
             del history['noofslots_total']
         grand, month, week, day = BPSMeter.do.get_sums()
@@ -846,14 +846,10 @@ def _api_config_get_speedlimit(output, kwargs):
 
 
 def _api_config_set_colorscheme(output, kwargs):
-    """ API: accepts output, value(=color for primary), value2(=color for secondary) """
+    """ API: accepts output"""
     value = kwargs.get('value')
-    value2 = kwargs.get('value2')
     if value:
         cfg.web_color.set(value)
-    if value2:
-        cfg.web_color2.set(value2)
-    if value or value2:
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -1188,9 +1184,9 @@ def handle_cat_api(output, kwargs):
     return name
 
 
-def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, output=None):
+def build_status(web_dir=None, root=None, skip_dashboard=False, output=None):
     # build up header full of basic information
-    info = build_header(prim, web_dir)
+    info = build_header(web_dir)
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -1310,14 +1306,14 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
 
     return info
 
-def build_queue(web_dir=None, root=None, prim=True, webdir='', start=0, limit=0, trans=False, output=None, search=None):
+def build_queue(web_dir=None, root=None, webdir='', start=0, limit=0, trans=False, output=None, search=None):
     if output:
         converter = unicoder
     else:
         converter = xml_name
 
     # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(prim, webdir, search=search, start=start, limit=limit)
+    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(webdir, search=search, start=start, limit=limit)
 
     datestart = datetime.datetime.now()
     priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
@@ -1683,24 +1679,17 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(prim, webdir=''):
+def build_header(webdir=''):
     """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
     except:
         uptime = "-"
 
-    if prim:
-        color = sabnzbd.WEB_COLOR
-    else:
-        color = sabnzbd.WEB_COLOR2
-    if not color:
-        color = ''
-
     header = {'T': Ttemplate, 'Tspec': Tspec, 'Tx': Ttemplate, 'version': sabnzbd.__version__,
                'paused': Downloader.do.paused or Downloader.do.postproc,
                'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
-               'uptime': uptime, 'color_scheme': color}
+               'uptime': uptime, 'color_scheme': sabnzbd.WEB_COLOR or ''}
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
         speed_limit = 100
@@ -1760,10 +1749,10 @@ def build_header(prim, webdir=''):
 
 
 
-def build_queue_header(prim, webdir='', search=None, start=0, limit=0):
+def build_queue_header(webdir='', search=None, start=0, limit=0):
     """ Build full queue header """
 
-    header = build_header(prim, webdir)
+    header = build_header(webdir)
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)

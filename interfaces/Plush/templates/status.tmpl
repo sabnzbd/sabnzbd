@@ -125,15 +125,15 @@
 
   <div id="tabs-dashboard">
     <table class="rssTable">
-        <tr> 
-            <th colspan="2">$T('dashboard-title')</th> 
+        <tr>
+            <th colspan="2">$T('dashboard-title')</th>
         </tr>
         <!--#set $odd = False#-->
 
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-localIP4')</td>
-            <td>  
+            <td>
                 <!--#if $localipv4#-->
                     $localipv4
                 <!--#else#-->
@@ -141,10 +141,10 @@
                 <!--#end if#-->
             </td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-publicIP4')</td>
-            <td>  
+            <td>
                 <!--#if $publicipv4#-->
                     $publicipv4
                 <!--#else#-->
@@ -152,10 +152,10 @@
                 <!--#end if#-->
             </td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-IP6')</td>
-            <td>  
+            <td>
                 <!--#if $ipv6#-->
                     $ipv6
                 <!--#else#-->
@@ -163,10 +163,10 @@
                 <!--#end if#-->
             </td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-NameserverDNS')</td>
-            <td>  
+            <td>
                 <!--#if $dnslookup#-->
                     $dnslookup
                 <!--#else#-->
@@ -178,27 +178,27 @@
                 <!--#end if#-->
              </td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
            <td>$T('dashboard-systemPerformance')</td>
            <td>$pystone</td>
         </tr>
         <!--#if $cpumodel#-->
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-cpuModel')</td>
             <td>$cpumodel</td>
         </tr>
         <!--#end if#-->
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('opt-download_dir')</td>
             <td>$downloaddir</td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-writingSpeed')</td>
-            <td>  
+            <td>
                 <!--#if $downloaddirspeed > 0 #-->
                     $downloaddirspeed MB/s
                 <!--#elif $downloaddirspeed == 0 #-->
@@ -208,15 +208,15 @@
                 <!--#end if#-->
             </td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('opt-complete_dir')</td>
             <td>$completedir</td>
         </tr>
-        <!--#set $odd = not $odd#-->    
+        <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
             <td>$T('dashboard-writingSpeed')</td>
-            <td>  
+            <td>
                 <!--#if $completedirspeed > 0 #-->
                     $completedirspeed MB/s
                 <!--#elif $completedirspeed == 0 #-->

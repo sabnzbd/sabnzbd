@@ -36,11 +36,10 @@ import sabnzbd.cfg as cfg
 
 class Wizard(object):
 
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root):
         self.__root = root
         # Get the path for the folder named wizard
         self.__web_dir = sabnzbd.WIZARD_DIR
-        self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
                      'steps': 2,
                      'version': sabnzbd.__version__,

@@ -154,11 +154,9 @@ BROWSER_URL = None
 CMDLINE = ''  # Rendering of original command line arguments
 
 WEB_DIR = None
-WEB_DIR2 = None
-WEB_DIRC = None
+WEB_DIR_CONFIG = None
 WIZARD_DIR = None
 WEB_COLOR = None
-WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
@@ -260,9 +258,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.cherryhost.callback(guard_restart)
     cfg.cherryport.callback(guard_restart)
     cfg.web_dir.callback(guard_restart)
-    cfg.web_dir2.callback(guard_restart)
     cfg.web_color.callback(guard_restart)
-    cfg.web_color2.callback(guard_restart)
     cfg.username.callback(guard_restart)
     cfg.password.callback(guard_restart)
     cfg.log_dir.callback(guard_restart)

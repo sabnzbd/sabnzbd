@@ -39,21 +39,7 @@
                         <!--#end if#-->
                     <!--#end for#-->
                     </select>
-                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url1">$caller_url1</a></span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
-                    <select name="web_dir2" id="web_dir2">
-                        <option value="None" selected="selected">$T("None")</option>
-                        <!--#for $webline in $web_list#-->
-                            <!--#if $webline.lower() == $web_dir2.lower()#-->
-                                <option value="$webline" selected="selected">$webline</option>
-                            <!--#else#-->
-                                <option value="$webline">$webline</option>
-                            <!--#end if#-->
-                        <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-web_dir2')&nbsp;&nbsp;<a href="$caller_url2">$caller_url2</a></span>
+                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="language">$T('opt-language')</label>
