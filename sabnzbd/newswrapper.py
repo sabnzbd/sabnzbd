@@ -27,39 +27,22 @@ import time
 import logging
 import re
 import select
+import ssl
 
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
 from sabnzbd.misc import nntp_to_msg
 
-import threading
-_RLock = threading.RLock
-del threading
-
-# Import SSL if available
-if sabnzbd.HAVE_SSL:
-    import ssl
-    if sabnzbd.HAVE_SSL_CONTEXT:
-        WantReadError = ssl.SSLWantReadError
-        CertificateError = ssl.CertificateError
-    else:
-        WantReadError = ssl.SSLError
-        CertificateError = ssl.SSLError
+# Have to make errors available under Python <2.7.9
+if sabnzbd.HAVE_SSL_CONTEXT:
+    WantReadError = ssl.SSLWantReadError
+    CertificateError = ssl.CertificateError
 else:
-    # Dummy class so this exception is ignored by clients without ssl installed
-    class WantReadError(Exception):
-        def __init__(self, value):
-            self.parameter = value
-        def __str__(self):
-            return repr(self.parameter)
-    class CertificateError(Exception):
-        def __init__(self, value):
-            self.parameter = value
-        def __str__(self):
-            return repr(self.parameter)
+    WantReadError = ssl.SSLError
+    CertificateError = ssl.SSLError
 
-
+# Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
 # getaddrinfo() can be very slow. In some situations this can lead
@@ -134,7 +117,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     try:
         sock.connect((host, port))
         sock.setblocking(0)
-        if sslenabled and sabnzbd.HAVE_SSL:
+        if sslenabled:
             # Log SSL/TLS info
             logging.info("%s@%s: Connected using %s (%s)",
                                               nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
@@ -205,7 +188,7 @@ class NNTP(object):
         if probablyipv6(host):
             af = socket.AF_INET6
 
-        if sslenabled and sabnzbd.HAVE_SSL:
+        if sslenabled:
             # Use context or just wrapper
             if sabnzbd.HAVE_SSL_CONTEXT:
                 # Setup the SSL socket
@@ -229,10 +212,6 @@ class NNTP(object):
                 ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
                 # Use a regular wrapper, no certificate validation
                 self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=ciphers)
-
-        elif sslenabled and not sabnzbd.HAVE_SSL:
-            logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
-            self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
@@ -245,7 +224,7 @@ class NNTP(object):
                 # if blocking (server test) only wait for 15 seconds during connect until timeout
                 self.sock.settimeout(15)
                 self.sock.connect((self.host, self.port))
-                if sslenabled and sabnzbd.HAVE_SSL:
+                if sslenabled:
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
                                               self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])

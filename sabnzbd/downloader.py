@@ -226,7 +226,7 @@ class Downloader(Thread):
             timeout = srv.timeout()
             threads = srv.connections()
             priority = srv.priority()
-            ssl = srv.ssl() and sabnzbd.HAVE_SSL
+            ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
             username = srv.username()
             password = srv.password()

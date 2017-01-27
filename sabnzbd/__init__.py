@@ -79,19 +79,13 @@ else:
 ##############################################################################
 # SSL CHECKS
 ##############################################################################
+import ssl
 HAVE_SSL_CONTEXT = None
-HAVE_SSL = None
 try:
-    import ssl
-    HAVE_SSL = True
-    try:
-        # Test availability of SSLContext (python 2.7.9+)
-        ssl.SSLContext
-        HAVE_SSL_CONTEXT = True
-    except:
-        HAVE_SSL_CONTEXT = False
+    # Test availability of SSLContext (python 2.7.9+)
+    ssl.SSLContext
+    HAVE_SSL_CONTEXT = True
 except:
-    HAVE_SSL = False
     HAVE_SSL_CONTEXT = False
 
 try:

@@ -20,9 +20,9 @@
                         </select>
                         <span class="desc">$T('explain-load_balancing')</span>
                     </div>
-                    <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <div class="field-pair">
                         <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
-                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$ssl_ciphers"<!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$ssl_ciphers" />
                         <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
                         <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
                     </div>

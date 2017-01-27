@@ -46,10 +46,9 @@ from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
     PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
     RENAMES_FILE, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-    get_unique_path, get_admin_path, remove_all, format_source_url, \
-    sanitize_filename, globber_full, sanitize_foldername, int_conv, \
-    set_permissions, format_time_string, long_path, trim_win_path, \
-    fix_unix_encoding, calc_age
+    get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
+    sanitize_foldername, int_conv, set_permissions, format_time_string, long_path, \
+    trim_win_path, fix_unix_encoding, calc_age
 from sabnzbd.decorators import synchronized, IO_LOCK
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1324,7 +1323,7 @@ class NzbObject(TryList):
             msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
-                self.set_unpack_info('Source', format_source_url(self.url), unique=True)
+                self.set_unpack_info('Source', self.url, unique=True)
             servers = config.get_servers()
             if len(self.servercount) > 0:
                 msgs = ['%s=%sB' % (servers[server].displayname(), to_units(self.servercount[server])) for server in self.servercount if server in servers]
