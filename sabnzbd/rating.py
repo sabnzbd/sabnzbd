@@ -133,9 +133,6 @@ class Rating(Thread):
             self.ratings = {}
             self.nzo_indexer_map = {}
         Thread.__init__(self)
-        if not sabnzbd.HAVE_SSL:
-            logging.warning(T('Ratings server requires secure connection'))
-            self.stop()
 
     def stop(self):
         self.shutdown = True

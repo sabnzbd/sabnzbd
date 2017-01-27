@@ -1448,15 +1448,6 @@ def is_writable(path):
         return True
 
 
-def format_source_url(url):
-    """ Format URL suitable for 'Source' stage """
-    if sabnzbd.HAVE_SSL:
-        prot = 'https'
-    else:
-        prot = 'http:'
-    return url
-
-
 def get_base_url(url):
     """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
         But also api.althub.co.za -> althub.co.za

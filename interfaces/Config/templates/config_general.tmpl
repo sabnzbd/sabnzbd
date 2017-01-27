@@ -23,9 +23,9 @@
                     <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" />
                     <span class="desc">$T('explain-port')</span>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="enable_https">$T('opt-enable_https')</label>
-                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#-->/>
                     <span class="desc">$T('explain-enable_https')</span>
                 </div>
                 <div class="field-pair">

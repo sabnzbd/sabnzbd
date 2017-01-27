@@ -34,12 +34,7 @@
                 <tr>
                     <th scope="row">OpenSSL:</th>
                     <td>
-                        <!--#if $have_ssl#-->
-                            $ssl_version &nbsp; [$ssl_protocols]
-                        <!--#else#-->
-                            <span class="label label-danger">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
+                        $ssl_version &nbsp; [$ssl_protocols]
                     </td>
                 </tr>
                 <!--#if not $have_ssl_context#-->

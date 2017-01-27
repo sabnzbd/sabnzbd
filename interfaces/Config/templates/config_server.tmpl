@@ -29,9 +29,9 @@
                     <label class="config" for="port">$T('srv-port')</label>
                     <input type="number" name="port" id="port" size="8" value="119" />
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="ssl">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="ssl" id="ssl" value="1" />
                     <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
@@ -149,9 +149,9 @@
                     <label class="config" for="port$cur">$T('srv-port')</label>
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
