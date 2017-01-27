@@ -1413,7 +1413,7 @@ SWITCH_LIST = \
     ('par2_multicore', 'par_option', 'overwrite_files', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
-             'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
+             'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
@@ -1488,7 +1488,7 @@ class ConfigSwitches(object):
 ##############################################################################
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
-              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'ampm',
+              'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
