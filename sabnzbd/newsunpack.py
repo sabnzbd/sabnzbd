@@ -1521,6 +1521,18 @@ def fix_env():
     else:
         return None
 
+def userxbit(filename):
+    # Returns boolean if the x-bit for user is set on the given file
+    # This is a workaround: os.access(filename, os.X_OK) does not work on certain mounted file systems
+    # Does not work on Windows, but it is not called on Windows
+
+    # rwx rwx rwx
+    # 876 543 210      # we want bit 6 from the right, counting from 0
+    userxbit = 1<<6 # bit 6 
+    rwxbits = os.stat(filename)[0] # the first element of os.stat() is "mode"
+    # do logical AND, check if it is not 0:
+    xbitset = (rwxbits & userxbit) > 0
+    return xbitset
 
 def build_command(command):
     """ Prepare list from running an external program """
@@ -1531,7 +1543,7 @@ def build_command(command):
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
-                if not os.access(command[0], os.X_OK):
+                if not userxbit(command[0]):
                     # Inform user that Python scripts need x-bit and then stop
                     logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
                     raise IOError
