@@ -64,6 +64,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
@@ -2054,7 +2055,7 @@ def list_scripts(default=False, none=True):
                 if (sabnzbd.WIN32 and os.path.splitext(script)[1].lower() in PATHEXT and
                                       not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN) or \
                    script.endswith('.py') or \
-                   (not sabnzbd.WIN32 and os.access(script, os.X_OK) and not os.path.basename(script).startswith('.')):
+                   (not sabnzbd.WIN32 and userxbit(script) and not os.path.basename(script).startswith('.')):
                     lst.append(os.path.basename(script))
         if none:
             lst.insert(0, 'None')
