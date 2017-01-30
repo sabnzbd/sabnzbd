@@ -1411,7 +1411,7 @@ SWITCH_LIST = \
              'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
-             'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
+             'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',
              'rating_enable', 'rating_host', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
              'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
@@ -1479,7 +1479,7 @@ class ConfigSwitches(object):
 
 ##############################################################################
 SPECIAL_BOOL_LIST = \
-    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders',
+    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders', 'enable_meta',
               'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
