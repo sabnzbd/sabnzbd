@@ -715,7 +715,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             if proc:
                 proc.close()
             p.wait()
-
+            logging.debug('UNRAR output %s', '\n'.join(lines))
             return fail, (), ()
 
     if proc:
@@ -1528,7 +1528,7 @@ def userxbit(filename):
 
     # rwx rwx rwx
     # 876 543 210      # we want bit 6 from the right, counting from 0
-    userxbit = 1<<6 # bit 6 
+    userxbit = 1<<6 # bit 6
     rwxbits = os.stat(filename)[0] # the first element of os.stat() is "mode"
     # do logical AND, check if it is not 0:
     xbitset = (rwxbits & userxbit) > 0
