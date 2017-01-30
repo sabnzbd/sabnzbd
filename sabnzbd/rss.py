@@ -492,9 +492,15 @@ class RSSQueue(object):
 
                     if cfg.no_dupes() and self.check_duplicate(title):
                         if cfg.no_dupes() == 1:
+                            # Dupe-detection: Discard
                             logging.info("Ignoring duplicate job %s", title)
                             continue
+                        elif cfg.no_dupes() == 3:
+                            # Dupe-detection: Fail
+                            # We accept it so the Queue can send it to the History
+                            logging.info("Found duplicate job %s", title)
                         else:
+                            # Dupe-detection: Pause
                             myPrio = DUP_PRIORITY
 
                     act = download and not first
