@@ -434,7 +434,7 @@ def print_modules():
         logging.warning(T('_yenc module... NOT found!'))
 
     if sabnzbd.HAVE_CRYPTOGRAPHY:
-        logging.info('Cryptography module... found!')
+        logging.info('Cryptography module (v%s)... found!', sabnzbd.HAVE_CRYPTOGRAPHY)
     else:
         logging.info('Cryptography module... NOT found!')
 

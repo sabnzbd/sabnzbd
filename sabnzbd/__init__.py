@@ -96,7 +96,7 @@ except:
 
 try:
     import cryptography
-    HAVE_CRYPTOGRAPHY = True
+    HAVE_CRYPTOGRAPHY = cryptography.__version__
 except:
     HAVE_CRYPTOGRAPHY = False
 

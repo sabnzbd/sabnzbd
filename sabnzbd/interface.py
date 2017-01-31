@@ -1264,7 +1264,7 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
+        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
         conf['have_yenc'] = HAVE_YENC
 
         if sabnzbd.HAVE_SSL:
@@ -1609,7 +1609,7 @@ class ConfigGeneral(object):
 
         conf['have_ssl'] = sabnzbd.HAVE_SSL
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
+        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
