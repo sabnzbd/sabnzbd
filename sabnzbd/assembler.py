@@ -346,6 +346,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
+                                except:
+                                    # On weird passwords the setpassword() will fail
+                                    # but the actual rartest() will work
+                                    pass
+                                try:
                                     zf.testrar()
                                     password_hit = password
                                     break
