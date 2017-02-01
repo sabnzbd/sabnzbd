@@ -1260,7 +1260,6 @@ class NzbObject(TryList):
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset all try lists
                     self.reset_all_try_lists()
-                    sabnzbd.NzbQueue.do.reset_try_list()
 
 
     def check_quality(self, req_ratio=0):
