@@ -70,7 +70,7 @@ Basically:
 - `feature/my_feature` is a temporary feature branch based on `develop`.
 - `hotfix/my_hotfix` is an optional temporary branch for bugfix(es) based on `develop`.
 
-Condtions:
+Conditions:
 - Merging of a stable release into `master` will be simple: the release branch is always right.
 - `master` is not merged back to `develop`.
 - `develop` is not re-based on `master`.
