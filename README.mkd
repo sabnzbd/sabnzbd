@@ -18,6 +18,7 @@ Release Notes  -  SABnzbd 1.2.1
 - Fixed some newsservers would report timeout on connect
 - Duplicate detection set to Fail would not work for RSS feeds
 - More robust detection of execute permissions for scripts
+- CPU type reporting on Windows and macOS
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
