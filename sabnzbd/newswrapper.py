@@ -276,6 +276,7 @@ class NNTP(object):
         # Catch certificate errors
         if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
             error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
+            error += ' - https://sabnzbd.org/certificate-errors'
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and self.nw.server.id != -1:
                 logging.error(error)

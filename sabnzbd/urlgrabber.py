@@ -117,6 +117,7 @@ class URLGrabber(Thread):
                     logging.debug('Error "%s" trying to get the url %s', error1, url)
                     if 'certificate_verify_failed' in error1 or 'certificateerror' in error0:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % ''
+                        msg += ' - https://sabnzbd.org/certificate-errors'
                         retry = False
                     elif 'nodename nor servname provided' in error1:
                         msg = T('Server name does not resolve')

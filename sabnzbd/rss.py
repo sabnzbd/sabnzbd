@@ -327,6 +327,7 @@ class RSSQueue(object):
                     msg = str(feed_parsed['bozo_exception'])
                     if 'CERTIFICATE_VERIFY_FAILED' in msg:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
+                        msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
                     else:
                         msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
