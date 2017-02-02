@@ -358,7 +358,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                     # On CRC error we can continue!
                                     password_hit = password
                                     break
-                                except:
+                                except Exception as e:
+                                    # Did we start from the right volume?
+                                    if 'need to start extraction from a previous volume' in e[0]:
+                                        return encrypted, unwanted
+                                    # This one failed
                                     pass
 
                         # Did any work?
