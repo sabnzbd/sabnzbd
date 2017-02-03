@@ -64,6 +64,7 @@ else:
 ##############################################################################
 quick_check = OptionBool('misc', 'quick_check', True)
 sfv_check = OptionBool('misc', 'sfv_check', True)
+quick_check_ext_ignore = OptionList('misc', 'quick_check_ext_ignore', ['nfo', 'sfv', 'srr'])
 
 email_server = OptionStr('misc', 'email_server', validation=validate_server)
 email_to = OptionList('misc', 'email_to', validation=validate_email)
