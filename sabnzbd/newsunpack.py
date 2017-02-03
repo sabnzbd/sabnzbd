@@ -1714,7 +1714,16 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
     renames = {}
 
+    # Files to ignore
+    ignore_ext = cfg.quick_check_ext_ignore()
+
     for file in md5pack:
+        # Ignore these files
+        if os.path.splitext(file)[1].lower().replace('.', '') in ignore_ext:
+            logging.debug('Quick-check ignoring file %s', file)
+            result = True
+            continue
+
         found = False
         file_platform = platform_encode(file)
         for nzf in nzf_list:

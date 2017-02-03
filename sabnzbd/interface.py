@@ -1509,7 +1509,7 @@ SPECIAL_VALUE_LIST = \
               'ipv6_servers', 'selftest_host', 'nr_decoders'
      )
 SPECIAL_LIST_LIST = \
-    ('rss_odd_titles', 'prio_sort_list'
+    ('rss_odd_titles', 'prio_sort_list', 'quick_check_ext_ignore'
      )
 
 
