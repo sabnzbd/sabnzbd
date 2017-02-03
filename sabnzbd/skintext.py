@@ -514,8 +514,6 @@ SKIN_TEXT = {
     'opt-rating_api_key' : TT('API Key'),
     'opt-rating_host' : TT('Server address'),
     'explain-rating_api_key' : TT('This key provides identity to indexer. Check your profile on the indexer\'s website.'),
-    'opt-rating_feedback' : TT('Automatic Feedback'),
-    'explain-rating_feedback' : TT('Send automatically calculated validation results for downloads to indexer.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),
     'explain-rating_filter_enable' : TT('Action downloads according to filtering rules.'),
     'opt-rating_filter_abort_if' : TT('Abort If'),

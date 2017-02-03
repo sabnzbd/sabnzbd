@@ -1410,7 +1410,7 @@ SWITCH_LIST = \
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',
-             'rating_enable', 'rating_host', 'rating_api_key', 'rating_feedback', 'rating_filter_enable',
+             'rating_enable', 'rating_host', 'rating_api_key', 'rating_filter_enable',
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
              'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
              'rating_filter_abort_downvoted', 'rating_filter_abort_keywords',
