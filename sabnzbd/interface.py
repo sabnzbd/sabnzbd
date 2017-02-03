@@ -2255,7 +2255,6 @@ class ConfigRss(object):
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
-            self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
