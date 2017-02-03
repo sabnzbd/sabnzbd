@@ -124,6 +124,9 @@ def Raiser(root, **kwargs):
         if val:
             args[key] = val
     root = '%s?%s' % (root, urllib.urlencode(args))
+    # Optionally add the leading /sabnzbd/
+    if not root.startswith('/sabnzbd'):
+        root = cherrypy.request.script_name + root
     return cherrypy.HTTPRedirect(root)
 
 
@@ -303,6 +306,8 @@ def check_apikey(kwargs, nokey=False):
 class MainPage(object):
 
     def __init__(self):
+        self.__root = '/'
+
         # Add all sub-pages
         self.login = LoginPage()
         self.queue = QueuePage('/queue/')
@@ -1198,16 +1203,16 @@ class ConfigPage(object):
 
     def __init__(self, root):
         self.__root = root
-        self.folders = ConfigFolders('/folders/')
-        self.notify = ConfigNotify('/notify/')
-        self.general = ConfigGeneral('/general/')
-        self.rss = ConfigRss('/rss/')
-        self.scheduling = ConfigScheduling('/scheduling/')
-        self.server = ConfigServer('/server/')
-        self.switches = ConfigSwitches('/switches/')
-        self.categories = ConfigCats('/categories/')
-        self.sorting = ConfigSorting('/sorting/')
-        self.special = ConfigSpecial('/special/')
+        self.folders = ConfigFolders('/config/folders/')
+        self.notify = ConfigNotify('/config/notify/')
+        self.general = ConfigGeneral('/config/general/')
+        self.rss = ConfigRss('/config/rss/')
+        self.scheduling = ConfigScheduling('/config/scheduling/')
+        self.server = ConfigServer('/config/server/')
+        self.switches = ConfigSwitches('/config/switches/')
+        self.categories = ConfigCats('/config/categories/')
+        self.sorting = ConfigSorting('/config/sorting/')
+        self.special = ConfigSpecial('/config/special/')
 
     @cherrypy.expose
     def index(self, **kwargs):
