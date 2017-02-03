@@ -1259,16 +1259,11 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    web_dir_config = Web_Template(None, DEF_STDCONFIG, '')
+    sabnzbd.WEB_DIR = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
+    sabnzbd.WEB_DIR_CONFIG = Web_Template(None, DEF_STDCONFIG, '')
+    sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
 
-    wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-
-    sabnzbd.WEB_DIR = web_dir
-    sabnzbd.WEB_DIR_CONFIG = web_dir_config
-    sabnzbd.WIZARD_DIR = wizard_dir
-
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), web_dir)
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
 
     if fork and not sabnzbd.WIN32:
@@ -1386,32 +1381,29 @@ def main():
                             'tools.gzip.on': True,
                             'tools.gzip.mime_types': mime_gzip,
                             'request.show_tracebacks': True,
-                            'checker.check_localhost': bool(consoleLogging),
                             'error_page.401': sabnzbd.panic.error_page_401,
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
+    # Force mimetypes (OS might overwrite them)
     forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
-    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir_config, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
-    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
-    appconfig = {'/sabnzbd/api': {'tools.basic_auth.on': False},
-                 '/api': {'tools.basic_auth.on': False},
+    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
+    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+
+    appconfig = {'/api': {'tools.basic_auth.on': False},
                  '/rss': {'tools.basic_auth.on': False},
-                 '/sabnzbd/rss': {'tools.basic_auth.on': False},
-                 '/sabnzbd/shutdown': {'streamResponse': True},
-                 '/sabnzbd/static': static,
                  '/static': static,
-                 '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static,
-                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(web_dir_config, 'staticcfg', 'ico', 'favicon.ico')},
-                 '/sabnzbd/staticcfg': staticcfg,
+                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg', 'ico', 'favicon.ico')},
                  '/staticcfg': staticcfg
                  }
 
-    main_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir_config)
+    # Make available from both URLs
+    main_page = sabnzbd.interface.MainPage()
     cherrypy.tree.mount(main_page, '/', config=appconfig)
+    cherrypy.tree.mount(main_page, '/sabnzbd/', config=appconfig)
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
