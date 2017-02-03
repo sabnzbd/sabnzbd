@@ -321,11 +321,7 @@
                     <div class="field-pair">
                         <label class="config" for="rating_enable">$T('opt-rating_enable')</label>
                         <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if int($rating_enable) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-rating_enable')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="rating_host">$T('opt-rating_host')</label>
-                        <input type="text" name="rating_host" id="rating_host" value="$rating_host" />
+                        <span class="desc">$T('explain-rating_enable').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>
