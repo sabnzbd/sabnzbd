@@ -721,13 +721,14 @@ class Downloader(Thread):
                         self.__request_article(nw)
 
                     elif nw.status_code in ('411', '423', '430'):
-                        done = True
-                        nw.lines = []
-                        nw.data = []
 
                         logging.info('Thread %s@%s: Article ' +
                                         '%s missing (error=%s)',
                                         nw.thrdnum, nw.server.id, article.article, nw.status_code)
+                        done = True
+                        nw.lines = []
+                        nw.data = []
+
 
                     elif nw.status_code == '480':
                         if server.active:
