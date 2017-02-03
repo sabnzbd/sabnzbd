@@ -233,7 +233,7 @@ class Rating(Thread):
 
     @synchronized(RATING_LOCK)
     def update_auto_flag(self, nzo_id, flag, flag_detail=None):
-        if not flag or not cfg.rating_enable() or not cfg.rating_feedback() or (nzo_id not in self.nzo_indexer_map):
+        if not flag or not cfg.rating_enable() or (nzo_id not in self.nzo_indexer_map):
             return
         logging.debug('Updating auto flag (%s: %s)', nzo_id, flag)
         indexer_id = self.nzo_indexer_map[nzo_id]
