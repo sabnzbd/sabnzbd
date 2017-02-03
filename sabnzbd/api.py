@@ -1184,9 +1184,9 @@ def handle_cat_api(output, kwargs):
     return name
 
 
-def build_status(web_dir=None, root=None, skip_dashboard=False, output=None):
+def build_status(skip_dashboard=False, output=None):
     # build up header full of basic information
-    info = build_header(web_dir)
+    info = build_header()
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -1306,14 +1306,14 @@ def build_status(web_dir=None, root=None, skip_dashboard=False, output=None):
 
     return info
 
-def build_queue(web_dir=None, root=None, webdir='', start=0, limit=0, trans=False, output=None, search=None):
+def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     if output:
         converter = unicoder
     else:
         converter = xml_name
 
     # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(webdir, search=search, start=start, limit=limit)
+    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(search=search, start=start, limit=limit)
 
     datestart = datetime.datetime.now()
     priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
@@ -1718,7 +1718,7 @@ def build_header(webdir=''):
     header['my_lcldata'] = sabnzbd.DIR_LCLDATA
     header['my_home'] = sabnzbd.DIR_HOME
 
-    header['webdir'] = webdir
+    header['webdir'] = webdir or sabnzbd.WEB_DIR
     header['pid'] = os.getpid()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
@@ -1749,10 +1749,10 @@ def build_header(webdir=''):
 
 
 
-def build_queue_header(webdir='', search=None, start=0, limit=0):
+def build_queue_header(search=None, start=0, limit=0):
     """ Build full queue header """
 
-    header = build_header(webdir)
+    header = build_header()
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
