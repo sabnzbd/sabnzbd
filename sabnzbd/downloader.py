@@ -433,7 +433,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not (server.active and sabnzbd.nzbqueue.NzbQueue.do.has_articles_for(server)):
+                if not server.active:
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -443,9 +443,6 @@ class Downloader(Thread):
                             continue
                         else:
                             nw.timeout = None
-
-                    if not server.active:
-                        break
 
                     if server.info is None:
                         self.maybe_block_server(server)
