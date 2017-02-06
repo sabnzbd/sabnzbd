@@ -86,7 +86,7 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                     # The client is speaking some non-HTTP protocol.
                     # Drop the conn.
                     return None, {}
-                elif 'unknown ca' in e.args[1]:
+                elif 'unknown ca' in e.args[1] or 'unknown_ca' in e.args[1].lower():
                     # This error is thrown by builtin SSL if Safari connects
                     # when self-signed certificates are used. The connection
                     # can be dropped until the users adds the exception
