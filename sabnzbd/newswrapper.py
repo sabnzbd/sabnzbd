@@ -281,12 +281,13 @@ class NNTP(object):
             if error not in self.nw.server.warning and self.nw.server.id != -1:
                 logging.error(error)
 
-        msg = "Failed to connect: %s" % (str(error))
-        msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
-        self.error_msg = msg
+        # Blocking = server-test, pass directly to display code
         if self.blocking:
-            raise socket.error(errno.ECONNREFUSED, msg)
+            raise socket.error(errno.ECONNREFUSED, str(error))
         else:
+            msg = "Failed to connect: %s" % (str(error))
+            msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
+            self.error_msg = msg
             logging.info(msg)
             self.nw.server.warning = msg
 
