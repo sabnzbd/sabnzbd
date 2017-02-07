@@ -643,6 +643,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.error(T('ERROR: write error (%s)'), line[11:])
             fail = 1
 
+        elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
+            # Can be due to Unicode problems on Windows, let's retry
+            fail = 4
+
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
             if 'must not exceed 260' in line2:
@@ -717,7 +721,13 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 proc.close()
             p.wait()
             logging.debug('UNRAR output %s', '\n'.join(lines))
-            return fail, (), ()
+
+            # Unicode problems, lets start again but now we try without \\?\
+            # This will only fail if the download contains forbidden-Windows-names
+            if fail == 4:
+                return rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, clip_path(extraction_path), password)
+            else:
+                return fail, (), ()
 
     if proc:
         proc.close()
