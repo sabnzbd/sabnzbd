@@ -361,9 +361,11 @@ def process_job(nzo):
                 raise IOError
 
             if cfg.folder_rename() and not one_folder:
-                # Use a temporary name to avoid any unicode-problems
-                tmp_workdir_complete = os.path.join(complete_dir, '_UNPACK_' + nzo.nzo_id)
-                renamer(workdir_complete, tmp_workdir_complete)
+                tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
+                try:
+                    renamer(workdir_complete, tmp_workdir_complete)
+                except:
+                    pass  # On failure, just use the original name
             else:
                 tmp_workdir_complete = workdir_complete
 
@@ -855,6 +857,14 @@ def cleanup_list(wdir, skip_nzb):
                 remove_dir(wdir)
             except:
                 pass
+
+
+def prefix(path, pre):
+    """ Apply prefix to last part of path
+        '/my/path' and 'hi_' will give '/my/hi_path'
+    """
+    p, d = os.path.split(path)
+    return os.path.join(p, pre + d)
 
 
 def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
