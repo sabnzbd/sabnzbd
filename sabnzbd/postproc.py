@@ -776,7 +776,14 @@ def try_rar_check(nzo, workdir, setname):
             # Set path to unrar and open the file
             # Requires de-unicode for RarFile to work!
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-            zf = rarfile.RarFile(deunicode(rars[0]))
+            zf = rarfile.RarFile(deunicode(clip_path(rars[0])))
+
+            # Skip if it's encrypted
+            if zf.needs_password():
+                msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                return True
+
             # Will throw exception if something is wrong
             zf.testrar()
             # Success!
