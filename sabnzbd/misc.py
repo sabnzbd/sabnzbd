@@ -228,7 +228,7 @@ _DEVICES = ('con', 'prn', 'aux', 'nul',
 
 def replace_win_devices(name):
     ''' Remove reserved Windows device names from a name.
-        aux.txt ==> !aux.txt
+        aux.txt ==> _aux.txt
         txt.aux ==> txt.aux
     '''
     if name:
