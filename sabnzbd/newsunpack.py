@@ -524,28 +524,6 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
     return fail, new_files, rars
 
 
-
-def adjust_path(rar_path, dest_path):
-    r""" Return adjusted dest_path for unrar
-        Windows-only:
-        when the rar-file contains forbidden device names, use \\.\ notation
-        otherwise keep the \\?\
-        This is only needed because windows-unrar contains a serious bug in this area
-    """
-    try:
-        zf = rarfile.RarFile(rar_path, all_names=True)
-        names = zf.filelist()
-        zf.close()
-        for name in names:
-            if has_win_device(name):
-                return dest_path.replace('\\\\?\\', '\\\\.\\', 1)
-    except:
-        # Something went wrong with reading the RAR file
-        pass
-    return clip_path(dest_path)
-
-
-
 def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
     """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
@@ -573,8 +551,9 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         rename = '-or'    # Auto renaming
     if sabnzbd.WIN32:
         # Use all flags
+        # See: https://github.com/sabnzbd/sabnzbd/pull/771
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
-                   '%s' % clip_path(rarfile_path), '%s/' % adjust_path(rarfile_path, extraction_path)]
+                   '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
@@ -1192,6 +1171,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     stup, need_shell, command, creationflags = build_command(command)
 
     # par2 wants to see \\.\ paths on Windows
+    # See: https://github.com/sabnzbd/sabnzbd/pull/771
     if sabnzbd.WIN32:
         command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
 
