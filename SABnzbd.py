@@ -492,6 +492,9 @@ def all_localhosts():
     ips = []
     for item in info:
         item = item[4][0]
+        # Avoid problems on strange Linux settings
+        if not isinstance(item, basestring):
+            continue
         # Only return IPv6 when enabled
         if item not in ips and ('::1' not in item or sabnzbd.cfg.ipv6_hosting()):
             ips.append(item)
