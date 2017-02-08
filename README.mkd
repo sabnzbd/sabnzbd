@@ -1,24 +1,28 @@
-Release Notes  -  SABnzbd 1.2.1
-====================================
+Release Notes  -  SABnzbd 1.2.1 Beta 1
+==============================================
 
-## What's new in 1.2.1
+## What's new in 1.2.1 Beta 1
 - QuickCheck will perform fast rename of obfuscated posts
 - RSS Downloaded page now shows icon to indicate source
 - HTML tags are filtered from single-line script output
 
-## Bug fixes
-- Cloaked files (rar within rar) were not detected anymore
+## Bug fixes in 1.2.1 Beta 1
+- Fix crashing Assembler
+- Cloaked files (RAR within RAR) were not detected anymore
+- 'Only Download Top of Queue' was broken for a long time
 - Incorrectly labeled some downloads as Encrypted
 - RSS reading could fail on newznab attributes
 - Incorrectly marking jobs with folders inside as failed
-- Fix crashing Assembler
-- Categories were not matched properly if list of tags was set
+- Handle jobs on Windows with forbidden names (Con.*, Aux.*,..)
+- Categories were not matched properly if a list of tags was set
 - PostProcessing-script was not called on Accept&Fail or Dupe detect
 - Support for newer par2cmdline(-mt) versions that need -B parameter
-- Fixed some newsservers would report timeout on connect
+- Some newsservers would report timeout on connect
 - Duplicate detection set to Fail would not work for RSS feeds
 - More robust detection of execute permissions for scripts
 - CPU type reporting on Windows and macOS
+- Failed to start with some localhost configs
+- Removed some more stalling issues
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
