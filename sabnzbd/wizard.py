@@ -95,6 +95,7 @@ class Wizard(object):
         info['language'] = cfg.language()
         info['active_lang'] = info['language']
         info['T'] = Ttemplate
+        info['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
 
         servers = config.get_servers()
         if not servers:
@@ -104,6 +105,7 @@ class Wizard(object):
             info['password'] = ''
             info['connections'] = ''
             info['ssl'] = 0
+            info['ssl_verify'] = 2
         else:
             for server in servers:
                 # If there are multiple servers, just use the first enabled one
@@ -113,8 +115,8 @@ class Wizard(object):
                 info['username'] = s.username()
                 info['password'] = s.password.get_stars()
                 info['connections'] = s.connections()
-
                 info['ssl'] = s.ssl()
+                info['ssl_verify'] = s.ssl_verify()
                 if s.enable():
                     break
         template = Template(file=os.path.join(self.__web_dir, 'one.html'),
