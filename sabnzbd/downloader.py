@@ -421,6 +421,10 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         BPSMeter.do.update()
 
+        # TEMP Disable sabyenc?
+        if not cfg.enable_sabyenc():
+            sabnzbd.decoder.HAVE_SABYENC = False
+
         while 1:
             for server in self.servers:
                 if 0: assert isinstance(server, Server) # Assert only for debug purposes

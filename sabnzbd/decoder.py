@@ -49,8 +49,6 @@ try:
         raise ImportError
 except ImportError:
     HAVE_SABYENC = False
-if not cfg.enable_sabyenc():
-    HAVE_SABYENC = False
 
 class CrcError(Exception):
 
@@ -256,7 +254,7 @@ class Decoder(Thread):
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data, raw_data):
     # Do we have SABYenc? Let it do all the work
-    if HAVE_SABYENC:
+    if sabnzbd.decoder.HAVE_SABYENC:
         decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
 
         # CRC check

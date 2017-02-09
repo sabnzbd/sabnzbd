@@ -32,7 +32,6 @@ import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
 from sabnzbd.misc import nntp_to_msg
-from sabnzbd.decoder import HAVE_SABYENC
 
 import threading
 _RLock = threading.RLock
@@ -437,7 +436,7 @@ class NewsWrapper(object):
                     return (0, False, True)
 
         # Data is processed differently depending on C-yEnc version
-        if HAVE_SABYENC:
+        if sabnzbd.decoder.HAVE_SABYENC:
             # Append so we can do 1 join(), much faster than multiple!
             self.data.append(chunk)
 
@@ -472,7 +471,7 @@ class NewsWrapper(object):
             if not self.data:
                 self.data.append(chunk)
 
-            if self.lines and self.lines[-1] == '.':
+            if self.lines and (self.lines[-1] == '.' or self.lines[-2] == '.'):
                 return (len(chunk), True, False)
             else:
                 return (len(chunk), False, False)
