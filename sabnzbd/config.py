@@ -377,7 +377,7 @@ class ConfigServer(object):
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
-        self.ssl_verify = OptionNumber(name, 'ssl_verify', 1, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)

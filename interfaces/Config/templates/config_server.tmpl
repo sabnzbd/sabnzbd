@@ -63,8 +63,8 @@
                     <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
                     <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
                           <option value="0">$T('ssl_verify-disabled')</option>
-                          <option value="1" selected>$T('ssl_verify-normal')</option>
-                          <option value="2">$T('ssl_verify-strict')</option>
+                          <option value="1">$T('ssl_verify-normal')</option>
+                          <option value="2" selected>$T('ssl_verify-strict')</option>
                     </select>
                     <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                 </div>
