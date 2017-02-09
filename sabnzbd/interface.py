@@ -1375,7 +1375,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'overwrite_files', 'top_only', 'ssl_ciphers',
+    ('par2_multicore', 'par_option', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
@@ -1450,7 +1450,7 @@ class ConfigSwitches(object):
 
 ##############################################################################
 SPECIAL_BOOL_LIST = \
-    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'create_group_folders', 'enable_meta',
+    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'create_group_folders',
               'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
               'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
@@ -1458,7 +1458,7 @@ SPECIAL_BOOL_LIST = \
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
               'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
               'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'disable_api_key',
-              'api_logging', 'fixed_ports', 'enable_sabyenc'
+              'api_logging', 'fixed_ports', 'enable_meta', 'enable_sabyenc'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',

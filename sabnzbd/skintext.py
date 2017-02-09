@@ -418,8 +418,6 @@ SKIN_TEXT = {
     'explain-enable_recursive' : TT('Unpack archives (rar, zip, 7z) within archives.'),
     'opt-flat_unpack' : TT('Ignore any folders inside archives'),
     'explain-flat_unpack' : TT('All files will go into a single folder.'),
-    'opt-overwrite_files' : TT('When unpacking, overwrite existing files'),
-    'explain-overwrite_files' : TT('This will overwrite existing files instead of creating an alternative name.'),
     'opt-top_only' : TT('Only Get Articles for Top of Queue'),
     'explain-top_only' : TT('Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.'),
     'opt-safe_postproc' : TT('Post-Process Only Verified Jobs'),
