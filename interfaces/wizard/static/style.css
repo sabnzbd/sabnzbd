@@ -62,7 +62,7 @@ a[target="_blank"] {
     color: #00cc22;
 }
 .failed {
-    color: red;
+    color: red !important;
 }
 #rightGreyText {
     color: #ccc;
@@ -164,16 +164,12 @@ label {
     text-decoration: line-through;
     color: #ccc;
 }
-#serverQuote {
-    opacity: 0.8;
-    box-shadow: none !important;
-    white-space: normal;
-    width: 100%;
+#serverResponse {
+    padding: 6px 10px;
 }
 #host-tip {
     margin-bottom: 5px;
 }
-
 .error-text {
     display: inline;
     color: red;
@@ -192,7 +188,8 @@ label {
 #content a,
 #content a:hover,
 #content a:active,
-#content a:visited {
+#content a:visited,
+#serverResponse {
     color: #555;
 }
 .btn {
