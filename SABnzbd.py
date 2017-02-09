@@ -130,24 +130,6 @@ def guard_loglevel():
     LOG_FLAG = True
 
 
-class FilterCP3:
-    # Filter out all CherryPy3-Access logging that we receive,
-    # because we have the root logger
-
-    def __init__(self):
-        pass
-
-    def filter(self, record):
-        _cplogging = record.module == '_cplogging'
-        # Python2.4 fix
-        # record has no attribute called funcName under python 2.4
-        if hasattr(record, 'funcName'):
-            access = record.funcName == 'access'
-        else:
-            access = True
-        return not (_cplogging and access)
-
-
 class guiHandler(logging.Handler):
     """ Logging handler collects the last warnings/errors/exceptions
         to be displayed in the web-gui
@@ -1136,7 +1118,6 @@ def main():
 
         logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(logformat))
-        rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
         logger.setLevel(LOGLEVELS[logging_level + 1])
@@ -1166,7 +1147,6 @@ def main():
 
             if consoleLogging:
                 console = logging.StreamHandler()
-                console.addFilter(FilterCP3())
                 console.setLevel(LOGLEVELS[logging_level + 1])
                 console.setFormatter(logging.Formatter(logformat))
                 logger.addHandler(console)
@@ -1292,23 +1272,6 @@ def main():
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
     logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
-    cherrylogtoscreen = False
-    sabnzbd.WEBLOGFILE = None
-
-    if cherrypylogging:
-        if logdir:
-            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        # Define our custom logger for cherrypy errors
-        cherrypy_logging(sabnzbd.WEBLOGFILE, logging.handlers.RotatingFileHandler)
-        if not fork:
-            try:
-                x = sys.stderr.fileno
-                x = sys.stdout.fileno
-                if cherrypylogging == 1:
-                    cherrylogtoscreen = True
-            except:
-                pass
-
     https_cert = sabnzbd.cfg.https_cert.get_path()
     https_key = sabnzbd.cfg.https_key.get_path()
     https_chain = sabnzbd.cfg.https_chain.get_path()
@@ -1375,7 +1338,9 @@ def main():
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
                             'server.shutdown_timeout': 0,
-                            'log.screen': cherrylogtoscreen,
+                            'log.screen': False,
+                            'log.error_log.propagate': True,
+                            'log.access_log.propagate': False,
                             'engine.autoreload.on': False,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
@@ -1384,6 +1349,11 @@ def main():
                             'error_page.401': sabnzbd.panic.error_page_401,
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
+
+    # Do we want CherryPy Logging?
+    if cherrypylogging:
+        sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
+        cherrypy.config.update({'log.screen': True, 'log.access_log.propagate': True, 'log.access_file': str(sabnzbd.WEBLOGFILE)})
 
     # Force mimetypes (OS might overwrite them)
     forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
