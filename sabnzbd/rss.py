@@ -307,20 +307,19 @@ class RSSQueue(object):
                 logging.debug("Running feedparser on %s", uri)
                 feed_parsed = feedparser.parse(uri.replace('feed://', 'http://'))
                 logging.debug("Done parsing %s", uri)
+
                 if not feed_parsed:
                     msg = T('Failed to retrieve RSS from %s: %s') % (uri, '?')
                     logging.info(msg)
-                    return unicoder(msg)
 
                 status = feed_parsed.get('status', 999)
                 if status in (401, 402, 403):
                     msg = T('Do not have valid authentication for feed %s') % feed
                     logging.info(msg)
-                    return unicoder(msg)
+
                 if status >= 500 and status <= 599:
                     msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
                     logging.info(msg)
-                    return unicoder(msg)
 
                 entries = feed_parsed.get('entries')
                 if 'bozo_exception' in feed_parsed and not entries:
@@ -332,7 +331,7 @@ class RSSQueue(object):
                     else:
                         msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
                     logging.info(msg)
-                    return unicoder(msg)
+
                 if not entries:
                     msg = T('RSS Feed %s was empty') % uri
                     logging.info(msg)
@@ -526,7 +525,7 @@ class RSSQueue(object):
             emailer.rss_mail(feed, new_downloads)
 
         remove_obsolete(jobs, newlinks)
-        return ''
+        return msg
 
     def run(self):
         """ Run all the URI's and filters """
