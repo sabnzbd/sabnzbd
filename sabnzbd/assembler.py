@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, flag_file, long_path, clip_path, get_all_passwords
+    set_permissions, flag_file, long_path, clip_path, has_win_device, get_all_passwords
 from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -76,6 +76,7 @@ class Assembler(Thread):
 
             if nzf:
                 sabnzbd.CheckFreeSpace()
+                # We allow win_devices because otherwise par2cmdline fails to repair
                 filename = sanitize_filename(nzf.filename, allow_win_devices=True)
                 nzf.filename = filename
 
@@ -312,8 +313,12 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
     if (cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions()) or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
         # These checks should not break the assembler
         try:
-            # RarFile requires de-unicoded filenames for zf.testrar() but not for is_rarfile
-            filepath_rar = deunicode(filepath)
+            # Rarfile freezes on Windows special names, so don't try those!
+            if sabnzbd.WIN32 and has_win_device(filepath):
+                return encrypted, unwanted
+
+            # RarFile requires de-unicoded and clipped filenames for zf.testrar() but not for is_rarfile
+            filepath_rar = deunicode(clip_path(filepath))
 
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
