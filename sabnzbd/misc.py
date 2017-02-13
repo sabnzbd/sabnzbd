@@ -918,6 +918,7 @@ def move_to_path(path, new_path):
             renamer(path, new_path)
         except:
             # Cannot rename, try copying
+            logging.debug("File could not be renamed, trying copying: %s", path)
             try:
                 if not os.path.exists(os.path.dirname(new_path)):
                     create_dirs(os.path.dirname(new_path))
@@ -1344,6 +1345,18 @@ def renamer(old, new):
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
+            # First we try 3 times with os.rename
+            if retries > 12:
+                try:
+                    os.rename(old, new)
+                    return
+                except:
+                    retries -= 1
+                    time.sleep(3)
+                    continue
+
+            # Now we try the back-up method
+            logging.debug('Could not rename, trying move for %s to %s', old, new)
             try:
                 shutil.move(old, new)
                 return
