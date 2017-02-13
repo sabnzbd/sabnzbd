@@ -91,6 +91,11 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                     # when self-signed certificates are used. The connection
                     # can be dropped until the users adds the exception
                     return None, {}
+                elif 'certificate unknown' in e.args[1]:
+                    # Another error thrown when the browser doesn't complete
+                    # the handshake due to a self-signed or untrusted certificate
+                    # provided by this server
+                    return None, {}
                 elif 'inappropriate fallback' in e.args[1]:
                     # This error is thrown when a client tries to connect
                     # with only unsupported protocols/ciphers. Connection
