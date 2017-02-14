@@ -79,7 +79,7 @@ class Option(object):
 
     def get(self):
         """ Retrieve value field """
-        if self.__value != None:
+        if self.__value is not None:
             return self.__value
         else:
             return self.__default_val
@@ -340,7 +340,7 @@ class OptionPassword(Option):
 
 @synchronized(CONFIG_LOCK)
 def add_to_database(section, keyword, obj):
-    """ add object as secion/keyword to INI database """
+    """ add object as section/keyword to INI database """
     global database
     if section not in database:
         database[section] = {}
@@ -607,7 +607,7 @@ class ConfigRSS(object):
 
 
 def get_dconfig(section, keyword, nested=False):
-    """ Return a config values dictonary,
+    """ Return a config values dictionary,
         Single item or slices based on 'section', 'keyword'
     """
     data = {}
@@ -917,7 +917,7 @@ def get_categories(cat=0):
     if '*' not in cats:
         ConfigCat('*', {'pp': old_def('dirscan_opts', '3'), 'script': old_def('dirscan_script', 'None'),
                         'priority': old_def('dirscan_priority', NORMAL_PRIORITY)})
-        # Add some categorie suggestions
+        # Add some category suggestions
         ConfigCat('movies', {})
         ConfigCat('tv', {})
         ConfigCat('audio', {})
@@ -950,6 +950,7 @@ def get_ordered_categories():
     categories.insert(0, database_cats['*'].get_dict())
 
     return categories
+
 
 def define_rss():
     """ Define rss-feeds listed in the Setup file
