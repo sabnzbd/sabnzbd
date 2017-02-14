@@ -1162,7 +1162,7 @@ if sabnzbd.WIN32:
     except:
         pass
 
-    def diskfree(_dir):
+    def diskfree_base(_dir):
         """ Return amount of free diskspace in GBytes """
         _dir = find_dir(_dir)
         try:
@@ -1171,7 +1171,7 @@ if sabnzbd.WIN32:
         except:
             return 0.0
 
-    def disktotal(_dir):
+    def disktotal_base(_dir):
         """ Return amount of free diskspace in GBytes """
         _dir = find_dir(_dir)
         try:
@@ -1184,7 +1184,7 @@ else:
         os.statvfs
         # posix diskfree
 
-        def diskfree(_dir):
+        def diskfree_base(_dir):
             """ Return amount of free diskspace in GBytes """
             _dir = find_dir(_dir)
             try:
@@ -1196,7 +1196,7 @@ else:
             except OSError:
                 return 0.0
 
-        def disktotal(_dir):
+        def disktotal_base(_dir):
             """ Return amount of total diskspace in GBytes """
             _dir = find_dir(_dir)
             try:
@@ -1208,13 +1208,38 @@ else:
             except OSError:
                 return 0.0
     except ImportError:
-        def diskfree(_dir):
+        def diskfree_base(_dir):
             return 10.0
 
-        def disktotal(_dir):
+        def disktotal_base(_dir):
             return 20.0
 
 
+_LAST_DISK_FREE = 0.0
+_LAST_DISK_FREE_CALL = 0.0
+_LAST_DISK_TOTAL = 0.0
+_LAST_DISK_TOTAL_CALL = 0.0
+
+# Wrappers so we can cache the result, only every 10 seconds
+def diskfree(_dir, force=False):
+    global _LAST_DISK_FREE_CALL, _LAST_DISK_FREE
+    if force or time.time() > _LAST_DISK_FREE_CALL + 10.0:
+        _LAST_DISK_FREE = diskfree_base(_dir)
+        _LAST_DISK_FREE_CALL = time.time()
+    return _LAST_DISK_FREE
+
+
+def disktotal(_dir, force=False):
+    global _LAST_DISK_TOTAL_CALL, _LAST_DISK_TOTAL
+    if force or time.time() > _LAST_DISK_TOTAL_CALL + 10.0:
+        _LAST_DISK_TOTAL = disktotal_base(_dir)
+        _LAST_DISK_TOTAL_CALL = time.time()
+    return _LAST_DISK_TOTAL
+
+
+##############################################################################
+# Other support functions
+##############################################################################
 def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
     if not sabnzbd.HAVE_CRYPTOGRAPHY:
