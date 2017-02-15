@@ -187,7 +187,7 @@ def print_help():
     print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
     print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
-    print "  -w  --weblogging <0..2>  Set cherrypy logging (0= off, 1= on, 2= file-only) [*]"
+    print "  -w  --weblogging         Enable cherrypy access logging"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
     if sabnzbd.WIN32:
@@ -762,7 +762,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates', 'ipv6_hosting=',
+                                    'weblogging', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'console', 'pidfile=',
@@ -874,13 +874,7 @@ def main():
         elif opt in ('-c', '--clean'):
             clean_up = True
         elif opt in ('-w', '--weblogging'):
-            try:
-                cherrypylogging = int(arg)
-            except:
-                cherrypylogging = -1
-            if cherrypylogging < 0 or cherrypylogging > 2:
-                print_help()
-                exit_sab(1)
+            cherrypylogging = True
         elif opt in ('-l', '--logging'):
             try:
                 logging_level = int(arg)
@@ -1339,8 +1333,6 @@ def main():
                             'server.socket_port': cherryport,
                             'server.shutdown_timeout': 0,
                             'log.screen': False,
-                            'log.error_log.propagate': True,
-                            'log.access_log.propagate': False,
                             'engine.autoreload.on': False,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
@@ -1350,10 +1342,15 @@ def main():
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-    # Do we want CherryPy Logging?
+
+    # Do we want CherryPy Logging? Cannot be done via the config
     if cherrypylogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        cherrypy.config.update({'log.screen': True, 'log.access_log.propagate': True, 'log.access_file': str(sabnzbd.WEBLOGFILE)})
+        cherrypy.log.screen = True
+        cherrypy.log.access_log.propagate = True
+        cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
+    else:
+        cherrypy.log.access_log.propagate = False
 
     # Force mimetypes (OS might overwrite them)
     forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
