@@ -2800,7 +2800,9 @@ def GetRssLog(feed):
         # Now we apply some formatting
         job['title'] = xml_name(job['title'])
         job['skip'] = '*' * int(job.get('status', '').endswith('*'))
+        # These fields could be empty
         job['cat'] = job.get('cat', '')
+        job['size'] = job.get('size', '')
 
         # Auto-fetched jobs didn't have these fields set
         if job.get('url'):
