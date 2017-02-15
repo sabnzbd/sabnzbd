@@ -1180,10 +1180,14 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    # par2 wants to see \\.\ paths on Windows
+    # par2multicore wants to see \\.\ paths on Windows
+    # But par2cmdline doesn't support that notation, or \\?\ notation
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
-    if sabnzbd.WIN32:
+    if sabnzbd.WIN32 and (tbb or has_win_device(parfile)):
         command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
+    elif sabnzbd.WIN32:
+        # For par2cmdline on Windows we need clipped paths
+        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
 
     # Run the external command
     logging.debug('Starting par2: %s', command)
