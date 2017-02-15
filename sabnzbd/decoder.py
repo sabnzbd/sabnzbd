@@ -142,7 +142,7 @@ class Decoder(Thread):
 
                     data = e.data
 
-                except BadYenc:
+                except (BadYenc, ValueError):
                     # Handles precheck and badly formed articles
                     killed = False
                     found = False
