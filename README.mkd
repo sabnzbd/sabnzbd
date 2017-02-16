@@ -1,39 +1,34 @@
-Release Notes  -  SABnzbd 1.2.1RC1
+Release Notes  -  SABnzbd 2.0.0
 ==============================================
 
-## What's new in 1.2.1 RC1
-- On Windows paths passed to scripts were in \\?\ notation
-- New self-signed certificates now list local IP in SAN-list
-- Retry rename 3x before falling back to copy during "Moving"
-- Fix RSS page problems with missing fields
-- Passwords were not parsed correctly from filenames
-- Catch several SSL errors of the webserver
-- Multi-feed RSS will not stop if only 1 feed is not functioning
-- More incorrectly labeled some downloads as Encrypted
+## What's new in 2.0.0
+- Certificate Validation set to Strict for new newsservers
+- Schedule items can now be enabled and disabled
+- Remove Secondary Web Interface option
 
 
-## What's new in 1.2.1 Beta 1
-- QuickCheck will perform fast rename of obfuscated posts
-- RSS Downloaded page now shows icon to indicate source
-- HTML tags are filtered from single-line script output
+## Bug fixes in 2.0.0
 
-## Bug fixes in 1.2.1 Beta 1
-- Fix crashing Assembler
-- Cloaked files (RAR within RAR) were not detected anymore
-- 'Only Download Top of Queue' was broken for a long time
-- Incorrectly labeled some downloads as Encrypted
-- RSS reading could fail on newznab attributes
-- Incorrectly marking jobs with folders inside as failed
-- Handle jobs on Windows with forbidden names (Con.*, Aux.*,..)
-- Categories were not matched properly if a list of tags was set
-- PostProcessing-script was not called on Accept&Fail or Dupe detect
-- Support for newer par2cmdline(-mt) versions that need -B parameter
-- Some newsservers would timeout when connecting
-- Duplicate detection set to Fail would not work for RSS feeds
-- More robust detection of execute permissions for scripts
-- CPU type reporting on Windows and macOS
-- Failed to start with some localhost configs
-- Removed some more stalling issues
+
+
+## Upgrade notices
+Schedule items are converted when upgrading to 2.x.x and will break
+when reverted back to pre-2.x.x releases.
+The organization of the download queue is different from pre-1.x.x
+releases. So 2.x.x will not see the existing queue, but you can go to
+Status->QueueRepair and "Repair" the old queue.
+
+## Upgrading from 0.7.x and older
+- Finish queue
+- Stop SABnzbd
+- Install new version
+- Start SABnzbd
+
+## IMPORTANT INFORMATION about release 2.x.x
+<https://sabnzbd.org/wiki/new-features-and-changes>
+
+## Known problems and solutions
+- Read the file "ISSUES.txt"
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
@@ -43,21 +38,3 @@ Release Notes  -  SABnzbd 1.2.1RC1
   extract and clean up posts downloaded from Usenet.
 
   (c) Copyright 2007-2017 by "The SABnzbd-team" \<team@sabnzbd.org\>
-
-### IMPORTANT INFORMATION about release 1.x.x
-<https://sabnzbd.org/wiki/new-features-and-changes>
-
-### Known problems and solutions
-- Read the file "ISSUES.txt"
-
-### Upgrading from 0.7.x and older
-- Finish queue
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd
-
-The organization of the download queue is different from older versions.
-1.x.x will not see the existing queue, but you can go to
-Status->QueueRepair and "Repair" the old queue.
-Also, your sabnzbd.ini file will be upgraded, making it
-incompatible with releases older than 0.7.9
