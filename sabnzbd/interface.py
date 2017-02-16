@@ -2236,14 +2236,14 @@ class ConfigScheduling(object):
         actions = []
         actions.extend(_SCHED_ACTIONS)
         day_names = get_days()
-        conf['schedlines'] = []
         snum = 1
+        conf['schedlines'] = []
         conf['taskinfo'] = []
         for ev in scheduler.sort_schedules(all_events=False):
             line = ev[3]
             conf['schedlines'].append(line)
             try:
-                m, h, day_numbers, action = line.split(' ', 3)
+                enabled, m, h, day_numbers, action = line.split(' ', 4)
             except:
                 continue
             action = action.strip()
@@ -2277,7 +2277,8 @@ class ConfigScheduling(object):
                 days_of_week = "Weekends"
             else:
                 days_of_week = ", ".join([day_names.get(i, "**") for i in day_numbers])
-            item = (snum, '%02d' % int(h), '%02d' % int(m), days_of_week, '%s %s' % (action, value))
+
+            item = (snum, '%02d' % int(h), '%02d' % int(m), days_of_week, '%s %s' % (action, value), enabled)
 
             conf['taskinfo'].append(item)
             snum += 1
@@ -2338,8 +2339,8 @@ class ConfigScheduling(object):
 
             if action:
                 sched = cfg.schedules()
-                sched.append('%s %s %s %s %s' %
-                             (minute, hour, days_of_week, action, arguments))
+                sched.append('%s %s %s %s %s %s' %
+                             (1, minute, hour, days_of_week, action, arguments))
                 cfg.schedules.set(sched)
 
         config.save_config()
@@ -2357,8 +2358,29 @@ class ConfigScheduling(object):
         if line and line in schedules:
             schedules.remove(line)
             cfg.schedules.set(schedules)
-        config.save_config()
-        scheduler.restart(force=True)
+            config.save_config()
+            scheduler.restart(force=True)
+        raise Raiser(self.__root)
+
+    @cherrypy.expose
+    def toggleSchedule(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            return msg
+
+        schedules = cfg.schedules()
+        line = kwargs.get('line')
+        if line:
+            for i, schedule in enumerate(schedules):
+                if schedule == line:
+                    # Toggle the schedule
+                    schedule_split = schedule.split()
+                    schedule_split[0] = '%d' % (schedule_split[0] == '0')
+                    schedules[i] = ' '.join(schedule_split)
+                    break
+            cfg.schedules.set(schedules)
+            config.save_config()
+            scheduler.restart(force=True)
         raise Raiser(self.__root)
 
 

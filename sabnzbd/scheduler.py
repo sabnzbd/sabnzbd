@@ -70,10 +70,15 @@ def init():
     for schedule in cfg.schedules():
         arguments = []
         argument_list = None
+
         try:
-            m, h, d, action_name = schedule.split()
+            enabled, m, h, d, action_name = schedule.split()
         except:
-            m, h, d, action_name, argument_list = schedule.split(None, 4)
+            try:
+                enabled, m, h, d, action_name, argument_list = schedule.split(None, 5)
+            except:
+                continue  # Bad schedule, ignore
+
         if argument_list:
             arguments = argument_list.split()
 
@@ -152,10 +157,12 @@ def init():
             logging.warning(T('Unknown action: %s'), action_name)
             continue
 
-        logging.debug("scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
-
-        __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
-                             kronos.method.sequential, arguments, None)
+        if enabled == '1':
+            logging.debug("Scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
+            __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
+                                 kronos.method.sequential, arguments, None)
+        else:
+            logging.debug("Skipping %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
 
     # Set Guardian interval to 30 seconds
     __SCHED.add_interval_task(sched_guardian, "Guardian", 15, 30,
@@ -259,10 +266,10 @@ def sort_schedules(all_events, now=None):
     for schedule in cfg.schedules():
         parms = None
         try:
-            m, h, dd, action, parms = schedule.split(None, 4)
+            enabled, m, h, dd, action, parms = schedule.split(None, 5)
         except:
             try:
-                m, h, dd, action = schedule.split(None, 3)
+                enabled, m, h, dd, action = schedule.split(None, 4)
             except:
                 continue  # Bad schedule, ignore
         action = action.strip()
@@ -277,7 +284,7 @@ def sort_schedules(all_events, now=None):
                 # Expired event will occur again after a week
                 dif = dif + week_min
 
-            events.append((dif, action, parms, schedule))
+            events.append((dif, action, parms, schedule, enabled))
             if not all_events:
                 break
 
@@ -302,6 +309,11 @@ def analyse(was_paused=False, priority=None):
     for ev in sort_schedules(all_events=True):
         if priority is None:
             logging.debug('Schedule check result = %s', ev)
+
+        # Skip if disabled
+        if ev[4] == '0':
+            continue
+
         action = ev[1]
         try:
             value = ev[2]
