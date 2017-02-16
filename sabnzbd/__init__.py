@@ -312,8 +312,12 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
             else:
                 newsched.append(sched)
         cfg.schedules.set(newsched)
-        cfg.sched_converted.set(True)
+        cfg.sched_converted.set(1)
 
+    # Second time schedule conversion
+    if cfg.sched_converted() != 2:
+        cfg.schedules.set(['%s %s' % (1, schedule) for schedule in cfg.schedules()])
+        cfg.sched_converted.set(2)
 
     if check_repair_request():
         repair = 2
