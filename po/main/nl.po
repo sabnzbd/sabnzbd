@@ -1083,7 +1083,7 @@ msgstr "Dubbele NZB \"%s\" overgeslagen"
 
 #: sabnzbd/nzbstuff.py:846 [Warning message]
 msgid "Failing duplicate NZB \"%s\""
-msgstr "Opdracht geweigend omdat het een dubbele is"
+msgstr "Opdracht '%s' geweigerd omdat het een dubbele is"
 
 #: sabnzbd/nzbstuff.py:848
 msgid "Duplicate NZB"
