@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-01-08 11:51+0000\n"
-"PO-Revision-Date: 2017-01-09 01:11+0000\n"
+"PO-Revision-Date: 2017-01-29 21:27+0000\n"
 "Last-Translator: At Voogt <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-01-10 05:46+0000\n"
-"X-Generator: Launchpad (build 18302)\n"
+"X-Launchpad-Export-Date: 2017-01-30 05:50+0000\n"
+"X-Generator: Launchpad (build 18315)\n"
 
 #: SABnzbd.py:275 [Error message]
 msgid "Failed to start web-interface"
@@ -64,6 +64,7 @@ msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 #: SABnzbd.py:1440 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
+"Kan geen verbinding maken met ingestelde poort. Poort gewijzigd in %s"
 
 #: SABnzbd.py:1449 [Error message]
 msgid "Failed to start web-interface: "
@@ -182,12 +183,16 @@ msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
+"WAARSCHUWING: Opdracht \"%s\" is gepauzeerd vanwege een versleuteld RAR "
+"bestand (indien aanwezig, zijn alle wachtwoorden geprobeerd)"
 
 #: sabnzbd/assembler.py:120 [Warning message]
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
+"WAARSCHUWING: Opdracht \"%s\" is afgebroken vanwege een versleuteld RAR "
+"bestand (indien aanwezig, zijn alle wachtwoorden"
 
 #: sabnzbd/assembler.py:121
 msgid "Aborted, encryption detected"
@@ -329,7 +334,7 @@ msgstr "Decoderen van %s mislukt"
 
 #: sabnzbd/decoder.py:123
 msgid "Decoder failure: Out of memory"
-msgstr ""
+msgstr "Decoder fout: onvoldoende geheugen"
 
 #: sabnzbd/decoder.py:135
 msgid "CRC Error in %s (%s -> %s)"
@@ -822,7 +827,7 @@ msgstr "Bestand %s ontbreekt => UNRAR-fout?"
 
 #: sabnzbd/newsunpack.py:755
 msgid "Unpacking failed, an expected file was not unpacked"
-msgstr "Uitpakken mislukt, er zijn te weinig bestanden uitgepakt"
+msgstr "Uitpakken mislukt, een gewenst bestand is niet uitgepakt"
 
 #: sabnzbd/newsunpack.py:757
 msgid "Unpacking failed, these file(s) are missing:"
@@ -838,23 +843,23 @@ msgstr "%s bestanden in %s"
 
 #: sabnzbd/newsunpack.py:828 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
-msgstr "Fout \"%s\" bij uitvoeren van unzip() op %s"
+msgstr "Fout '%s' bij uitvoeren van unzip() op %s"
 
 #: sabnzbd/newsunpack.py:914
 msgid "Trying 7zip with password \"%s\""
-msgstr "Decryptie poging met 7zip en wachtwoord \"%s\""
+msgstr "Uitpakpoging met 7zip en wachtwoord '%s'"
 
 #: sabnzbd/newsunpack.py:952
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "De 7Zip set \"%s\" is niet compleet, uitpakken is niet mogelijk"
+msgstr "De 7Zip-set '%s' is incompleet, uitpakken is niet mogelijk"
 
 #: sabnzbd/newsunpack.py:983
 msgid "Could not unpack %s"
-msgstr "Kan %s niet uitpakken"
+msgstr "Uitpakken %s niet mogelijk"
 
 #: sabnzbd/newsunpack.py:1016
 msgid "Quick Checking"
-msgstr "Snelle Controle uitvoeren"
+msgstr "Snelle controle"
 
 #: sabnzbd/newsunpack.py:1016 # sabnzbd/newsunpack.py:1042
 #: sabnzbd/newsunpack.py:1249 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
@@ -867,11 +872,11 @@ msgstr "[%s] Snelle Controle OK"
 
 #: sabnzbd/newsunpack.py:1042
 msgid "Starting Repair"
-msgstr "Start reparatie"
+msgstr "Reparatie starten"
 
 #: sabnzbd/newsunpack.py:1059 [Warning message]
 msgid "Par verify failed on %s, while QuickCheck succeeded!"
-msgstr "Par verificatie van %s niet gelukt, maar QuickCheck wel gelukt!"
+msgstr "Par-verificatie van %s misgelukt, maar QuickCheck wel gelukt."
 
 #: sabnzbd/newsunpack.py:1069 # sabnzbd/newsunpack.py:1131
 msgid "Repairing failed, %s"
@@ -879,16 +884,17 @@ msgstr "Reparatie mislukt, %s"
 
 #: sabnzbd/newsunpack.py:1070 [Error message]
 msgid "Error %s while running par2_repair on set %s"
-msgstr "Fout %s bij uitvoeren van par2 reparatie op verzameling %s"
+msgstr "Fout %s bij uitvoeren van par2-reparatie op set %s"
 
 #: sabnzbd/newsunpack.py:1132 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
-msgstr "Fout \"%s\" bij reparatie van groep %s"
+msgstr "Fout '%s' bij reparatie van set %s"
 
 #: sabnzbd/newsunpack.py:1274
 msgid ""
 "[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr "[%s] De PAR2 opties zijn niet goed, controleer Instellen->Opties"
+msgstr ""
+"[%s] PAR2-opties incorrect, controleer Configuratie=>Instellingen schakelaars"
 
 #: sabnzbd/newsunpack.py:1279
 msgid "[%s] Verified in %s, all files correct"
@@ -896,7 +902,7 @@ msgstr "[%s] %s geverifieerd, alle bestanden zijn goed"
 
 #: sabnzbd/newsunpack.py:1286
 msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] Verificatie in %s, reparatie is nodig"
+msgstr "[%s] Geverifieerd in %s, reparatie is nodig"
 
 #: sabnzbd/newsunpack.py:1301
 msgid "Main packet not found..."
@@ -904,11 +910,11 @@ msgstr "Hoofdpakket niet gevonden..."
 
 #: sabnzbd/newsunpack.py:1327
 msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ongeldige par2 bestanden, verificatie en reparatie is niet mogelijk"
+msgstr "Ongeldige par2-bestanden, verificatie of reparatie niet mogelijk"
 
 #: sabnzbd/newsunpack.py:1366 # sabnzbd/newsunpack.py:1401
 msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Reparatie mislukt, te weinig herstelblokken (%s te weinig)"
+msgstr "Reparatie mislukt, te weinig herstelblokken (%s tekort)"
 
 #: sabnzbd/newsunpack.py:1396
 msgid "Fetching %s blocks..."
@@ -932,11 +938,11 @@ msgstr "Verifiëren"
 
 #: sabnzbd/newsunpack.py:1560 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
+msgstr "Python-script '%s' heeft geen uitvoerpermissie (+x)"
 
 #: sabnzbd/newswrapper.py:233 [Error message]
 msgid "Error importing OpenSSL module. Connecting with NON-SSL"
-msgstr "Fout bij importeren van module OpenSSL, probeer NON-SSL"
+msgstr "Fout bij importeren van OpenSSL-module, probeer NON-SSL"
 
 #: sabnzbd/newswrapper.py:275
 msgid "This server does not allow SSL on this port"
@@ -944,11 +950,11 @@ msgstr "De server staat geen SSL toe op deze poort"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr "De server %s gebruikt een onbetrouwbaar certificaat [%s]"
+msgstr "Server %s gebruikt een niet betrouwbaar certificaat [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
-msgstr "Start/Stop"
+msgstr "Opstarten/Afsluiten"
 
 #: sabnzbd/notifier.py:67 [Notification] # sabnzbd/skintext.py:613 [Config->RSS after adding to queue]
 msgid "Added NZB"
@@ -960,7 +966,7 @@ msgstr "Nabewerken gestart"
 
 #: sabnzbd/notifier.py:69 [Notification]
 msgid "Job finished"
-msgstr "NZB voltooid"
+msgstr "Opdracht voltooid"
 
 #: sabnzbd/notifier.py:70 [Notification]
 msgid "Job failed"
@@ -972,7 +978,7 @@ msgstr "Schijf is vol"
 
 #: sabnzbd/notifier.py:74 [Notification]
 msgid "Queue finished"
-msgstr "Wachtrij is voltooid"
+msgstr "Wachtrij voltooid"
 
 #: sabnzbd/notifier.py:76 [Notification]
 msgid "Other Messages"
@@ -985,39 +991,39 @@ msgstr "Niet beschikbaar"
 #: sabnzbd/notifier.py:393 # sabnzbd/notifier.py:428 # sabnzbd/notifier.py:468
 #: sabnzbd/notifier.py:504
 msgid "Cannot send, missing required data"
-msgstr "Versturen kan niet, verplichte gegevens ontbreken"
+msgstr "Versturen kan niet, vereiste gegevens ontbreken"
 
 #: sabnzbd/notifier.py:410 [Warning message] # sabnzbd/notifier.py:412
 msgid "Failed to send Prowl message"
-msgstr "Verzenden van Prowl bericht is mislukt"
+msgstr "Verzenden van Prowl-bericht mislukt"
 
 #: sabnzbd/notifier.py:449 [Error message]
 msgid "Bad response from Pushover (%s): %s"
-msgstr "Geen goed antwoord van Pushover (%s): %s"
+msgstr "Slecht antwoord van Pushover (%s): %s"
 
 #: sabnzbd/notifier.py:452 [Warning message] # sabnzbd/notifier.py:454
 msgid "Failed to send pushover message"
-msgstr "Niet gelukt om Pushover bericht te sturen"
+msgstr "Pushover-bericht sturen mislukt"
 
 #: sabnzbd/notifier.py:484 [Error message]
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Geen goed antwoord van Pushbullet (%s): %s"
+msgstr "Slecht antwoord van Pushbullet (%s): %s"
 
 #: sabnzbd/notifier.py:489 [Warning message] # sabnzbd/notifier.py:491
 msgid "Failed to send pushbullet message"
-msgstr "Versturen van Pushbullet bericht mislukt"
+msgstr "Pushbullet-bericht sturen mislukt"
 
 #: sabnzbd/notifier.py:512 [Error message] # sabnzbd/notifier.py:513
 msgid "Script returned exit code %s and output \"%s\""
-msgstr "Script gaf code %s en resultaat \"%s\""
+msgstr "Script gaf code %s en resultaat '%s'"
 
 #: sabnzbd/notifier.py:517
 msgid "Notification script \"%s\" does not exist"
-msgstr "Notificatie script \"%s\" bestaat niet"
+msgstr "Meldingsscript '%s' bestaat niet"
 
 #: sabnzbd/notifier.py:525 # sabnzbd/notifier.py:527
 msgid "Failed to send Windows notification"
-msgstr "Versturen Windows notificatie mislukt"
+msgstr "Versturen Windows-melding mislukt"
 
 #: sabnzbd/nzbqueue.py:82 [Warning message] # sabnzbd/postproc.py:98 [Warning message]
 msgid "Old queue detected, use Status->Repair to convert the queue"
@@ -1069,7 +1075,7 @@ msgstr "NZB-bestand %s is leeg"
 
 #: sabnzbd/nzbstuff.py:822
 msgid "Pre-queue script marked job as failed"
-msgstr ""
+msgstr "Wachtrij filter script heeft de opfraxcht afgekeurd"
 
 #: sabnzbd/nzbstuff.py:840 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
@@ -1077,11 +1083,11 @@ msgstr "Dubbele NZB \"%s\" overgeslagen"
 
 #: sabnzbd/nzbstuff.py:846 [Warning message]
 msgid "Failing duplicate NZB \"%s\""
-msgstr ""
+msgstr "Opdracht geweigend omdat het een dubbele is"
 
 #: sabnzbd/nzbstuff.py:848
 msgid "Duplicate NZB"
-msgstr ""
+msgstr "Dubbele NZB"
 
 #: sabnzbd/nzbstuff.py:854 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
@@ -2827,6 +2833,8 @@ msgid ""
 "You can set access rights for systems outside your local network. Requires "
 "List of local network ranges to be defined."
 msgstr ""
+"Je kunt toegangsrechten instellen voor systemen buiten je lokale netwerk. "
+"Hiervoor geef je een lijst van netwerk-bereiken in."
 
 #: sabnzbd/skintext.py:376
 msgid "No access"
@@ -2933,11 +2941,11 @@ msgstr "Aantal seconden tussen lezen van de bewaakte map."
 
 #: sabnzbd/skintext.py:400
 msgid "Scripts Folder"
-msgstr ""
+msgstr "Map voor scripts"
 
 #: sabnzbd/skintext.py:401
 msgid "Folder containing user scripts."
-msgstr ""
+msgstr "Map met scripts van de gebruiker"
 
 #: sabnzbd/skintext.py:402
 msgid "Email Templates Folder"
@@ -3092,6 +3100,8 @@ msgid ""
 "Detect identical NZB files (based on items in your History or files in .nzb "
 "Backup Folder)"
 msgstr ""
+"Detecteer identieke NZB bestanden (op basis van opdrachten in je "
+"Geschiedenis of bestanden in je .nzb backup map)."
 
 #: sabnzbd/skintext.py:435
 msgid "Detect duplicate episodes in series"
@@ -3102,6 +3112,8 @@ msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
 msgstr ""
+"Detecteer identieke afleveringen in series (gebaseerd op "
+"\"naam/seizoen/aflevering\" in opdrachten in je Geschiedenis)."
 
 #: sabnzbd/skintext.py:438 [Three way switch for duplicates]
 msgid "Discard"
@@ -3109,7 +3121,7 @@ msgstr "Verwerpen"
 
 #: sabnzbd/skintext.py:440 [Three way switch for duplicates]
 msgid "Fail job (move to History)"
-msgstr ""
+msgstr "Keur opdracht af"
 
 #: sabnzbd/skintext.py:441 [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3436,7 +3448,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:520
 msgid "Enable Indexer Integration"
-msgstr ""
+msgstr "Sta integratie met index websites toe"
 
 #: sabnzbd/skintext.py:521
 msgid ""
@@ -3455,6 +3467,8 @@ msgid ""
 "This key provides identity to indexer. Check your profile on the indexer's "
 "website."
 msgstr ""
+"Deze sleutel is voor je identificatie door de indexer. Kijk in je profiel op "
+"de website van de  indexer."
 
 #: sabnzbd/skintext.py:525
 msgid "Automatic Feedback"
@@ -3563,7 +3577,7 @@ msgstr "SSL"
 
 #: sabnzbd/skintext.py:556 [Server SSL tickbox]
 msgid "Secure connection to server"
-msgstr ""
+msgstr "Beveiligde verbinding met de server"
 
 #: sabnzbd/skintext.py:557
 msgid "Certificate verification"
@@ -3597,6 +3611,8 @@ msgstr "Optioneel"
 #: sabnzbd/skintext.py:565 [Explain server optional tickbox]
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr ""
+"Voor onbetrouwbare servers, deze zullen langer worden genegeerd wanneer ze "
+"fouten veroorzaken."
 
 #: sabnzbd/skintext.py:566 [Enable server tickbox]
 msgid "Enable"
@@ -3670,7 +3686,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:595 [Config->RSS, placeholder (cannot be too long)]
 msgid "Seperate multiple URLs by a comma"
-msgstr ""
+msgstr "Zet comma's tussen de URLs"
 
 #: sabnzbd/skintext.py:596 [Config->RSS button]
 msgid "Read Feed"
@@ -3718,7 +3734,7 @@ msgstr "Vanaf SxxEyy"
 
 #: sabnzbd/skintext.py:609 [Config->RSS filter-type selection menu "From Show Season/Episode"]
 msgid "From Show SxxEyy"
-msgstr ""
+msgstr "VanafShow SxxEyy"
 
 #: sabnzbd/skintext.py:610 [Config->RSS section header]
 msgid "Matched"
@@ -4887,7 +4903,7 @@ msgstr "Bestand bestaat niet op de server"
 
 #: sabnzbd/urlgrabber.py:216
 msgid "Server could not complete request"
-msgstr ""
+msgstr "De server kon de opdracht niet uitvoeren"
 
 #: sabnzbd/urlgrabber.py:270 [Error message]
 msgid "URLGRABBER CRASHED"

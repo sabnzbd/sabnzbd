@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-01-08 11:51+0000\n"
-"PO-Revision-Date: 2016-09-19 08:23+0000\n"
+"PO-Revision-Date: 2017-01-18 15:07+0000\n"
 "Last-Translator: ninjai <ninjai.us@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-01-09 05:45+0000\n"
+"X-Launchpad-Export-Date: 2017-01-19 05:58+0000\n"
 "X-Generator: Launchpad (build 18302)\n"
 
 #: SABnzbd.py:275 [Error message]
@@ -61,7 +61,7 @@ msgstr "由于缺少 CERT 及 KEY 文件，已禁用 HTTPS"
 
 #: SABnzbd.py:1440 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
-msgstr ""
+msgstr "无法绑定到设定的端口。端口变更为 %s"
 
 #: SABnzbd.py:1449 [Error message]
 msgid "Failed to start web-interface: "
@@ -179,13 +179,13 @@ msgstr "Assembler 出现致命错误"
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
-msgstr ""
+msgstr "警告：\"%s\" 任务已暂停，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #: sabnzbd/assembler.py:120 [Warning message]
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
-msgstr ""
+msgstr "警告：\"%s\" 任务已终止，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #: sabnzbd/assembler.py:121
 msgid "Aborted, encryption detected"
@@ -322,7 +322,7 @@ msgstr "%s 解码失败"
 
 #: sabnzbd/decoder.py:123
 msgid "Decoder failure: Out of memory"
-msgstr ""
+msgstr "解码器失败：内存不足"
 
 #: sabnzbd/decoder.py:135
 msgid "CRC Error in %s (%s -> %s)"
@@ -910,7 +910,7 @@ msgstr "正在验证"
 
 #: sabnzbd/newsunpack.py:1560 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
+msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 
 #: sabnzbd/newswrapper.py:233 [Error message]
 msgid "Error importing OpenSSL module. Connecting with NON-SSL"
@@ -922,7 +922,7 @@ msgstr "该服务器不允许在该端口使用 SSL"
 
 #: sabnzbd/newswrapper.py:279
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "%s 服务器使用了不受信任的证书 [%s]"
 
 #: sabnzbd/notifier.py:66 [Notification]
 msgid "Startup/Shutdown"
@@ -1047,7 +1047,7 @@ msgstr "空 NZB 文件 %s"
 
 #: sabnzbd/nzbstuff.py:822
 msgid "Pre-queue script marked job as failed"
-msgstr ""
+msgstr "预队列脚本将任务标记为失败的"
 
 #: sabnzbd/nzbstuff.py:840 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
@@ -1055,11 +1055,11 @@ msgstr "正在忽略重复 NZB \"%s\""
 
 #: sabnzbd/nzbstuff.py:846 [Warning message]
 msgid "Failing duplicate NZB \"%s\""
-msgstr ""
+msgstr "失败于重复的 NZB 文件 \"%s\""
 
 #: sabnzbd/nzbstuff.py:848
 msgid "Duplicate NZB"
-msgstr ""
+msgstr "重复的 NZB 文件"
 
 #: sabnzbd/nzbstuff.py:854 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
@@ -1519,19 +1519,19 @@ msgstr "成功使用 SFV 文件验证"
 
 #: sabnzbd/postproc.py:769 # sabnzbd/postproc.py:770
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "正在尝试基于 RAR 的验证"
 
 #: sabnzbd/postproc.py:779
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "RAR 文件验证成功"
 
 #: sabnzbd/postproc.py:784
 msgid "RAR files failed to verify"
-msgstr ""
+msgstr "RAR 文件验证失败"
 
 #: sabnzbd/postproc.py:785
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] 基于 RAR 的验证失败: %s"
 
 #: sabnzbd/postproc.py:842 [Error message] # sabnzbd/postproc.py:918 [Error message]
 msgid "Removing %s failed"
@@ -2291,7 +2291,7 @@ msgstr "清除已完成 NZB"
 
 #: sabnzbd/skintext.py:251 [Button to delete jobs on current page in History]
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "清理本页的 NZB 文件"
 
 #: sabnzbd/skintext.py:252 [Button to add NZB to failed job in History]
 msgid "Optional Supplemental NZB"
@@ -2474,7 +2474,7 @@ msgstr "<br />若启用身份认证，您将需要重新登录。"
 
 #: sabnzbd/skintext.py:304
 msgid "Advanced"
-msgstr ""
+msgstr "高级"
 
 #: sabnzbd/skintext.py:306
 msgid ""
@@ -2513,6 +2513,8 @@ msgid ""
 "is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
 "date local CA certificates are required."
 msgstr ""
+"SABnzbd 与新闻组服务器之间的安全连接 (SSL) 以及 HTTPS 网站将会被加密，只不过，使用证书来验证服务器的身份却无法实现。要求 "
+"Python 2.7.9 或以上，OpenSSL 1.0.2 或以上，以及最新的本地 CA 证书存储。"
 
 #: sabnzbd/skintext.py:315
 msgid "Version"
@@ -2593,7 +2595,7 @@ msgstr "可选身份验证密码。"
 
 #: sabnzbd/skintext.py:336
 msgid "Security"
-msgstr ""
+msgstr "安全"
 
 #: sabnzbd/skintext.py:337
 msgid "HTTPS Support"
@@ -2630,7 +2632,7 @@ msgstr "HTTPS 证书文件名或路径。"
 #: sabnzbd/skintext.py:345
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
-msgstr ""
+msgstr "生成新的自签名证书和密钥。需要重启 SABnzbd！"
 
 #: sabnzbd/skintext.py:346
 msgid "HTTPS Key"
@@ -2719,7 +2721,7 @@ msgstr "选择 web 界面的语言。"
 msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
-msgstr "帮助我们来本地化 SABnzbd ！<br/>你可以在这里来添加未被翻译的文字或者改进现有的翻译："
+msgstr "帮助我们来本地化 SABnzbd ！<br/>您可以在这里来添加未被翻译的文字或者改进现有的翻译："
 
 #: sabnzbd/skintext.py:366 # sabnzbd/skintext.py:522
 msgid "API Key"
@@ -2762,7 +2764,7 @@ msgstr "外部互联网访问"
 msgid ""
 "You can set access rights for systems outside your local network. Requires "
 "List of local network ranges to be defined."
-msgstr ""
+msgstr "您可以设定非本地网络的访问权限。要求定义本地网络列表。"
 
 #: sabnzbd/skintext.py:376
 msgid "No access"
@@ -2868,11 +2870,11 @@ msgstr "扫描 .nzb 文件的间隔时间。"
 
 #: sabnzbd/skintext.py:400
 msgid "Scripts Folder"
-msgstr ""
+msgstr "脚本文件夹"
 
 #: sabnzbd/skintext.py:401
 msgid "Folder containing user scripts."
-msgstr ""
+msgstr "包含用户脚本的文件夹。"
 
 #: sabnzbd/skintext.py:402
 msgid "Email Templates Folder"
@@ -3007,7 +3009,7 @@ msgstr "侦测重复下载"
 msgid ""
 "Detect identical NZB files (based on items in your History or files in .nzb "
 "Backup Folder)"
-msgstr ""
+msgstr "检测相同的 NZB 文件 (基于您的历史项目或 .nzb 备份文件夹中的文件)"
 
 #: sabnzbd/skintext.py:435
 msgid "Detect duplicate episodes in series"
@@ -3017,7 +3019,7 @@ msgstr "侦测同季的重复剧集"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
-msgstr ""
+msgstr "在剧目中检测相同的剧集 (基于您的历史项目，参照 \"name/season/episode\" 的规则)"
 
 #: sabnzbd/skintext.py:438 [Three way switch for duplicates]
 msgid "Discard"
@@ -3025,7 +3027,7 @@ msgstr "舍弃"
 
 #: sabnzbd/skintext.py:440 [Three way switch for duplicates]
 msgid "Fail job (move to History)"
-msgstr ""
+msgstr "失败的任务 (移动到历史)"
 
 #: sabnzbd/skintext.py:441 [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3224,12 +3226,12 @@ msgstr "下载后删除"
 
 #: sabnzbd/skintext.py:493
 msgid "HTTPS certificate verification"
-msgstr "HTTPS 证书核实"
+msgstr "HTTPS 证书验证"
 
 #: sabnzbd/skintext.py:494
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
-msgstr "当用 HTTPS 方式连接索引和RSS源时核实证书。"
+msgstr "当用 HTTPS 方式连接索引和RSS源时验证证书。"
 
 #: sabnzbd/skintext.py:496
 msgid "Server"
@@ -3291,11 +3293,11 @@ msgstr "在实际下载之前尝试预测可以成功下载的完整程度 (会�
 
 #: sabnzbd/skintext.py:512
 msgid "SSL Ciphers"
-msgstr ""
+msgstr "SSL 加密算法"
 
 #: sabnzbd/skintext.py:513
 msgid "Increase performance by forcing a lower SSL encryption strength."
-msgstr ""
+msgstr "降低 SSL 的加密难度以便获得更高的性能。"
 
 #: sabnzbd/skintext.py:514
 msgid "Maximum retries"
@@ -3325,7 +3327,7 @@ msgstr "下载时若发现缺失数据过多，则中止对应任务"
 
 #: sabnzbd/skintext.py:520
 msgid "Enable Indexer Integration"
-msgstr ""
+msgstr "启用索引集成"
 
 #: sabnzbd/skintext.py:521
 msgid ""
@@ -3341,7 +3343,7 @@ msgstr "服务器地址"
 msgid ""
 "This key provides identity to indexer. Check your profile on the indexer's "
 "website."
-msgstr ""
+msgstr "这个密钥用来向服务器表明身份。查看您在索引网站上的个人档案。"
 
 #: sabnzbd/skintext.py:525
 msgid "Automatic Feedback"
@@ -3450,17 +3452,17 @@ msgstr "SSL"
 
 #: sabnzbd/skintext.py:556 [Server SSL tickbox]
 msgid "Secure connection to server"
-msgstr ""
+msgstr "到服务器的安全连接"
 
 #: sabnzbd/skintext.py:557
 msgid "Certificate verification"
-msgstr ""
+msgstr "证书验证"
 
 #: sabnzbd/skintext.py:558
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
-msgstr ""
+msgstr "默认：当 SSL 启用时，使用其证书来验证服务器身份。严格：验证并强制主机名一致。"
 
 #: sabnzbd/skintext.py:559 # sabnzbd/skintext.py:794 # sabnzbd/skintext.py:907
 msgid "Disabled"
@@ -3468,7 +3470,7 @@ msgstr "禁用"
 
 #: sabnzbd/skintext.py:561
 msgid "Strict"
-msgstr ""
+msgstr "严格"
 
 #: sabnzbd/skintext.py:563 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
@@ -3480,7 +3482,7 @@ msgstr "可选"
 
 #: sabnzbd/skintext.py:565 [Explain server optional tickbox]
 msgid "For unreliable servers, will be ignored longer in case of failures"
-msgstr ""
+msgstr "对于不稳定的服务器，在失败后将会被忽略更长的时间"
 
 #: sabnzbd/skintext.py:566 [Enable server tickbox]
 msgid "Enable"
@@ -3549,7 +3551,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:595 [Config->RSS, placeholder (cannot be too long)]
 msgid "Seperate multiple URLs by a comma"
-msgstr ""
+msgstr "以逗号来分开多个链接"
 
 #: sabnzbd/skintext.py:596 [Config->RSS button]
 msgid "Read Feed"
@@ -3597,7 +3599,7 @@ msgstr "来自 SxxEyy"
 
 #: sabnzbd/skintext.py:609 [Config->RSS filter-type selection menu "From Show Season/Episode"]
 msgid "From Show SxxEyy"
-msgstr ""
+msgstr "来自剧目 SxxEyy"
 
 #: sabnzbd/skintext.py:610 [Config->RSS section header]
 msgid "Matched"
@@ -3847,6 +3849,8 @@ msgid ""
 "separate terms. Wildcards in the terms are supported. <br>More information "
 "can be found on the Wiki."
 msgstr ""
+"索引可以在 NZB 文件中提供分类信息，SABnzbd 会尝试在以下分类中匹配。另外，您可以在 \"索引 Categories / Groups\" "
+"中添加关键词来匹配更多的分类。使用逗号来分开关键词，关键词中可使用通配符。<br>你可以在维基中查看更多的相关信息。"
 
 #: sabnzbd/skintext.py:683
 msgid ""
@@ -3863,7 +3867,7 @@ msgstr "文件夹/路径"
 
 #: sabnzbd/skintext.py:686
 msgid "Indexer Categories / Groups"
-msgstr ""
+msgstr "索引 Categories / Groups"
 
 #: sabnzbd/skintext.py:687 [Small delete button]
 msgid "X"
@@ -3887,7 +3891,7 @@ msgstr "清除"
 
 #: sabnzbd/skintext.py:694
 msgid "Apply filters"
-msgstr ""
+msgstr "应用过滤器"
 
 #: sabnzbd/skintext.py:695
 msgid "Presets"
@@ -4746,7 +4750,7 @@ msgstr "服务器上无此文件"
 
 #: sabnzbd/urlgrabber.py:216
 msgid "Server could not complete request"
-msgstr ""
+msgstr "服务器无法完成请求"
 
 #: sabnzbd/urlgrabber.py:270 [Error message]
 msgid "URLGRABBER CRASHED"
@@ -4787,7 +4791,7 @@ msgstr "超时"
 #: sabnzbd/utils/servertests.py:102
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
+msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
 
 #: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."
