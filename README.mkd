@@ -1,5 +1,16 @@
-Release Notes  -  SABnzbd 1.2.1 Beta 1
+Release Notes  -  SABnzbd 1.2.1RC1
 ==============================================
+
+## What's new in 1.2.1 RC1
+- On Windows paths passed to scripts were in \\?\ notation
+- New self-signed certificates now list local IP in SAN-list
+- Retry rename 3x before falling back to copy during "Moving"
+- Fix RSS page problems with missing fields
+- Passwords were not parsed correctly from filenames
+- Catch several SSL errors of the webserver
+- Multi-feed RSS will not stop if only 1 feed is not functioning
+- More incorrectly labeled some downloads as Encrypted
+
 
 ## What's new in 1.2.1 Beta 1
 - QuickCheck will perform fast rename of obfuscated posts
