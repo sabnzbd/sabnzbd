@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2016 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ import sabnzbd
 import sabnzbd.cfg
 import multiprocessing.pool
 import functools
-import socket
+
 
 # decorator stuff:
 def timeout(max_timeout):
@@ -41,19 +41,20 @@ def timeout(max_timeout):
         return func_wrapper
     return timeout_decorator
 
+
 @timeout(3.0)
 def addresslookup(myhost):
-    return socket.getaddrinfo(myhost,80)
+    return socket.getaddrinfo(myhost, 80)
+
 
 @timeout(3.0)
 def addresslookup4(myhost):
-    return socket.getaddrinfo(myhost,80, socket.AF_INET)
+    return socket.getaddrinfo(myhost, 80, socket.AF_INET)
+
 
 @timeout(3.0)
 def addresslookup6(myhost):
-    return socket.getaddrinfo(myhost,80, socket.AF_INET6)
-
-
+    return socket.getaddrinfo(myhost, 80, socket.AF_INET6)
 
 
 def localipv4():
@@ -66,6 +67,7 @@ def localipv4():
         ipv4 = None
     return ipv4
 
+
 def publicipv4():
     # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention,
     # meaning forcing IPv4 connections, and not allowing IPv6 connections
@@ -75,7 +77,7 @@ def publicipv4():
         # we only want IPv4 resolving, so socket.AF_INET:
         result = addresslookup4(sabnzbd.cfg.selftest_host())
     except:
-	# something very bad: no urllib2, no resolving of selftest_host, no network at all
+    # something very bad: no urllib2, no resolving of selftest_host, no network at all
         public_ipv4 = None
         return public_ipv4
     # we got one or more IPv4 address(es), so let's connect to them
@@ -89,7 +91,7 @@ def publicipv4():
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
             # get the response
-            public_ipv4 = urllib2.urlopen(req, timeout=2).read() # timeout 2 seconds, in case website is not accessible
+            public_ipv4 = urllib2.urlopen(req, timeout=2).read()  # timeout 2 seconds, in case the website is not accessible
             # ... check the response is indeed an IPv4 address:
             socket.inet_aton(public_ipv4)  # if we got anything else than a plain IPv4 address, this will raise an exception
             # if we get here without exception, we're done:
@@ -99,9 +101,10 @@ def publicipv4():
             # the connect OR the inet_aton raised an exception, so:
             # continue the for loop to try next server IPv4 address
             pass
-    if not ipv4_found :
+    if not ipv4_found:
         public_ipv4 = None
     return public_ipv4
+
 
 def ipv6():
     try:

@@ -12,7 +12,7 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 import datetime
 import os
-import struct
+from sabnzbd.getipaddress import localipv4
 
 
 # Ported from cryptography/utils.py
@@ -20,25 +20,16 @@ def int_from_bytes(data, byteorder, signed=False):
     assert byteorder == 'big'
     assert not signed
 
-    if len(data) % 4 != 0:
-        data = (b'\x00' * (4 - (len(data) % 4))) + data
-
-    result = 0
-
-    while len(data) > 0:
-        digit, = struct.unpack('>I', data[:4])
-        result = (result << 32) + digit
-        # TODO: this is quadratic in the length of data
-        data = data[4:]
-
-    return result
+    # call bytes() on data to allow the use of bytearrays
+    return int(bytes(data).encode('hex'), 16)
 
 
-# Ported from cryptography/utils.py
+# Ported from cryptography/x509/base.py
 def random_serial_number():
     return int_from_bytes(os.urandom(20), "big") >> 1
 
 
+# Ported from cryptography docs/x509/tutorial.rst (set with no encryption)
 def generate_key(key_size=2048, output_file='key.pem'):
     # Generate our key
     private_key = rsa.generate_private_key(
@@ -53,19 +44,31 @@ def generate_key(key_size=2048, output_file='key.pem'):
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption()
+            # encryption_algorithm=serialization.BestAvailableEncryption(b"passphrase")
         ))
 
     return private_key
 
 
-def generate_local_cert(private_key, days_valid=356, output_file='cert.cert', LN='', ON='', CN=''):
+# Ported from cryptography docs/x509/tutorial.rst
+def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost'):
     # Various details about who we are. For a self-signed certificate the
     # subject and issuer are always the same.
     subject = issuer = x509.Name([
         x509.NameAttribute(NameOID.LOCALITY_NAME, LN),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, ON),
-        x509.NameAttribute(NameOID.COMMON_NAME, CN),
+        # x509.NameAttribute(NameOID.COMMON_NAME, CN),
     ])
+
+    # build SubjectAltName list since we are not using a common name
+    san_list = [
+        x509.DNSName(u"localhost"),
+        x509.DNSName(u"127.0.0.1"),
+        ]
+    # append local v4 ip (functions already has try/catch logic)
+    mylocalipv4 = localipv4()
+    if mylocalipv4:
+        san_list.append(x509.DNSName(u"" + mylocalipv4))
 
     cert = x509.CertificateBuilder().subject_name(
         subject
@@ -76,11 +79,12 @@ def generate_local_cert(private_key, days_valid=356, output_file='cert.cert', LN
     ).not_valid_before(
         datetime.datetime.utcnow()
     ).not_valid_after(
-        # Our certificate will be valid for 10 days
         datetime.datetime.utcnow() + datetime.timedelta(days=days_valid)
     ).serial_number(
         random_serial_number()
-    # Sign our certificate with our private key
+    ).add_extension(
+        x509.SubjectAlternativeName(san_list),
+        critical=True,
     ).sign(private_key, hashes.SHA256(), default_backend())
 
     # Write our certificate out to disk.
@@ -91,7 +95,6 @@ def generate_local_cert(private_key, days_valid=356, output_file='cert.cert', LN
 
 if __name__ == '__main__':
     print 'Making key'
-    private_key = generate_key(key_size=2048, output_file='key.pem')
+    private_key = generate_key()
     print 'Making cert'
-    cert = generate_local_cert(private_key, 356*10, 'cert.cert', u'SABnzbd', u'SABnzbd', u'SABnzbd')
-
+    cert = generate_local_cert(private_key)
