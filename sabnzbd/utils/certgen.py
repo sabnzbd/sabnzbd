@@ -12,7 +12,7 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 import datetime
 import os
-from sabnzbd.getipaddress import localipv4, ipv6
+from sabnzbd.getipaddress import localipv4
 
 
 # Ported from cryptography/utils.py
@@ -61,15 +61,14 @@ def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', L
     ])
 
     # build SubjectAltName list since we are not using a common name
-    san_list = [x509.DNSName(u"localhost")]
-    # add local ipv4 address
+    san_list = [
+        x509.DNSName(u"localhost"),
+        x509.DNSName(u"127.0.0.1"),
+        ]
+    # append local v4 ip (functions already has try/catch logic)
     mylocalipv4 = localipv4()
     if mylocalipv4:
         san_list.append(x509.DNSName(u"" + mylocalipv4))
-    # add local ipv6 address
-    myipv6 = ipv6()
-    if myipv6:
-        san_list.append(x509.DNSName(u"" + myipv6))
 
     cert = x509.CertificateBuilder().subject_name(
         subject
