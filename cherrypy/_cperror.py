@@ -214,18 +214,7 @@ class HTTPRedirect(CherryPyException):
         if isinstance(urls, text_or_bytes):
             urls = [urls]
 
-        abs_urls = []
-        for url in urls:
-            url = tonative(url, encoding or self.encoding)
-
-            # Note that urljoin will "do the right thing" whether url is:
-            #  1. a complete URL with host (e.g. "http://www.example.com/test")
-            #  2. a URL relative to root (e.g. "/dummy")
-            #  3. a URL relative to the current path
-            # Note that any query string in cherrypy.request is discarded.
-            url = _urljoin(cherrypy.url(), url)
-            abs_urls.append(url)
-        self.urls = abs_urls
+        self.urls = [tonative(url, encoding or self.encoding) for url in urls]
 
         # RFC 2616 indicates a 301 response code fits our goal; however,
         # browser support for 301 is quite messy. Do 302/303 instead. See
@@ -241,7 +230,7 @@ class HTTPRedirect(CherryPyException):
                 raise ValueError('status must be between 300 and 399.')
 
         self.status = status
-        CherryPyException.__init__(self, abs_urls, status)
+        CherryPyException.__init__(self, self.urls, status)
 
     def set_response(self):
         """Modify cherrypy.response status, headers, and body to represent
