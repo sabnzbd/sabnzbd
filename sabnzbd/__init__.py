@@ -896,21 +896,14 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
     path = os.path.join(path, _id)
 
     try:
-        _f = open(path, 'wb')
-        if do_pickle:
-            if cfg.use_pickle():
-                pickler = pickle.Pickler(_f, 2)
+        with open(path, 'wb') as data_file:
+            if do_pickle:
+                if cfg.use_pickle():
+                    cPickle.dump(data, data_file)
+                else:
+                    pickle.dump(data, data_file)
             else:
-                pickler = cPickle.Pickler(_f, 2)
-            pickler.dump(data)
-            _f.flush()
-            _f.close()
-            pickler.clear_memo()
-            del pickler
-        else:
-            _f.write(data)
-            _f.flush()
-            _f.close()
+                data_file.write(data)
     except:
         logging.error(T('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info=True)
@@ -929,15 +922,14 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
         logging.debug("Loading data for %s from %s", _id, path)
 
     try:
-        _f = open(path, 'rb')
-        if do_pickle:
-            if cfg.use_pickle():
-                data = pickle.load(_f)
+        with open(path, 'rb') as data_file:
+            if do_pickle:
+                if cfg.use_pickle():
+                    data = pickle.load(data_file)
+                else:
+                    data = cPickle.load(data_file)
             else:
-                data = cPickle.load(_f)
-        else:
-            data = _f.read()
-        _f.close()
+                data = data_file.read()
 
         if remove:
             os.remove(path)
@@ -962,31 +954,21 @@ def remove_data(_id, path):
 
 
 @synchronized(IO_LOCK)
-def save_admin(data, _id, do_pickle=True):
+def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
     logging.info("Saving data for %s in %s", _id, path)
 
     try:
-        _f = open(path, 'wb')
-        if do_pickle:
-            pickler = cPickle.Pickler(_f, 2)
-            pickler.dump(data)
-            _f.flush()
-            _f.close()
-            pickler.clear_memo()
-            del pickler
-        else:
-            _f.write(data)
-            _f.flush()
-            _f.close()
+        with open(path, 'wb') as data_file:
+            cPickle.dump(data, data_file)
     except:
         logging.error(T('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info=True)
 
 
 @synchronized(IO_LOCK)
-def load_admin(_id, remove=False, do_pickle=True, silent=False):
+def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
     logging.info("Loading data for %s from %s", _id, path)
@@ -996,12 +978,8 @@ def load_admin(_id, remove=False, do_pickle=True, silent=False):
         return None
 
     try:
-        f = open(path, 'rb')
-        if do_pickle:
-            data = cPickle.load(f)
-        else:
-            data = f.read()
-        f.close()
+        with open(path, 'rb') as data_file:
+            data = cPickle.load(data_file)
 
         if remove:
             os.remove(path)
