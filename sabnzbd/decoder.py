@@ -173,7 +173,7 @@ class Decoder(Thread):
                         logging.info(logme)
 
                     if not found or killed:
-                        new_server_found = self.__search_new_server(article)
+                        new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
@@ -182,7 +182,7 @@ class Decoder(Thread):
                     logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info=True)
-                    new_server_found = self.__search_new_server(article)
+                    new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                     if new_server_found:
                         register = False
                         logme = None
@@ -194,61 +194,17 @@ class Decoder(Thread):
                         nzo.inc_log('bad_art_log', art_id)
 
             else:
-                new_server_found = self.__search_new_server(article)
+                new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                 if new_server_found:
                     register = False
                 elif nzo.precheck:
                     found = False
-
-            if logme or not found:
-                # Add extra parfiles when there was a damaged article
-                if cfg.prospective_par_download() and nzo.extrapars:
-                    nzo.prospective_add(nzf)
 
             if data:
                 sabnzbd.articlecache.ArticleCache.do.save_article(article, data)
 
             if register:
                 sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
-
-    def __search_new_server(self, article):
-        article.add_to_try_list(article.fetcher)
-
-        nzf = article.nzf
-        nzo = nzf.nzo
-
-        new_server_found = False
-        fill_server_found = False
-
-        for server in self.servers:
-            if server.active and not article.server_in_try_list(server):
-                if not sabnzbd.highest_server(server):
-                    fill_server_found = True
-                else:
-                    new_server_found = True
-                    break
-
-        # Only found one (or more) fill server(s)
-        if not new_server_found and fill_server_found:
-            article.allow_fill_server = True
-            new_server_found = True
-
-        if new_server_found:
-            article.fetcher = None
-            article.tries = 0
-
-            # Allow all servers to iterate over this nzo and nzf again
-            sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
-
-            if sabnzbd.LOG_ALL:
-                logging.debug('%s => found at least one untested server', article)
-
-        else:
-            msg = T('%s => missing from all servers, discarding') % article
-            logging.info(msg)
-            article.nzf.nzo.inc_log('missing_art_log', msg)
-
-        return new_server_found
 
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])

@@ -81,8 +81,6 @@ class Article(TryList):
         TryList.__init__(self)
 
         self.fetcher = None
-        self.allow_fill_server = False
-
         self.article = article
         self.art_id = None
         self.bytes = bytes
@@ -174,7 +172,6 @@ class Article(TryList):
         TryList.__init__(self)
         self.fetcher = None
         self.fetcher_priority = 0
-        self.allow_fill_server = False
         self.tries = 0
 
     def __repr__(self):
@@ -1047,6 +1044,11 @@ class NzbObject(TryList):
                 # Update the last check time
                 sabnzbd.LAST_HISTORY_UPDATE = time.time()
                 return True, True, True
+
+        if not found:
+            # Add extra parfiles when there was a damaged article
+            if cfg.prospective_par_download() and self.extrapars:
+                self.prospective_add(nzf)
 
         if reset:
             self.reset_try_list()
