@@ -177,6 +177,11 @@ LAST_ERROR = None
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = time.time()
 
+# Performance measure for dashboard
+PYSTONE_SCORE = 0
+DOWNLOAD_DIR_SPEED = 0
+COMPLETE_DIR_SPEED = 0
+
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
 

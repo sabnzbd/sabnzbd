@@ -54,6 +54,7 @@ from sabnzbd.utils.json import JsonWriter
 
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
+from sabnzbd.utils.getperformance import getcpu
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
     starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
@@ -1198,7 +1199,19 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
     info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
 
-    # Dashboard: Begin
+    # Dashboard: Speed of System
+    info['cpumodel'] = getcpu()
+    info['pystone'] = sabnzbd.PYSTONE_SCORE
+
+    # Dashboard: Speed of Download directory:
+    info['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+    info['downloaddirspeed'] = sabnzbd.DOWNLOAD_DIR_SPEED
+
+    # Dashboard: Speed of Complete directory:
+    info['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+    info['completedirspeed'] = sabnzbd.COMPLETE_DIR_SPEED
+
+    # Dashboard: Connection information
     if not int_conv(skip_dashboard):
         info['localipv4'] = localipv4()
         info['publicipv4'] = publicipv4()
@@ -1209,33 +1222,6 @@ def build_status(web_dir=None, root=None, prim=True, skip_dashboard=False, outpu
             info['dnslookup'] = "OK"
         except:
             info['dnslookup'] = None
-
-        # Dashboard: Speed of System
-        from sabnzbd.utils.getperformance import getpystone, getcpu
-        info['pystone'] = getpystone()
-        info['cpumodel'] = getcpu()
-        # Dashboard: Speed of Download directory:
-        info['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
-        try:
-            sabnzbd.downloaddirspeed  # The persistent var
-        except:
-            # does not yet exist, so create it:
-            sabnzbd.downloaddirspeed = 0  # 0 means ... not yet determined
-        info['downloaddirspeed'] = sabnzbd.downloaddirspeed
-        # Dashboard: Speed of Complete directory:
-        info['completedir'] = sabnzbd.cfg.complete_dir.get_path()
-        try:
-            sabnzbd.completedirspeed  # The persistent var
-        except:
-            # does not yet exist, so create it:
-            sabnzbd.completedirspeed = 0  # 0 means ... not yet determined
-        info['completedirspeed'] = sabnzbd.completedirspeed
-
-        try:
-            sabnzbd.dashrefreshcounter  # The persistent var @UndefinedVariable
-        except:
-            sabnzbd.dashrefreshcounter = 0
-        info['dashrefreshcounter'] = sabnzbd.dashrefreshcounter
 
     info['servers'] = []
     servers = sorted(Downloader.do.servers[:], key=lambda svr: '%02d%s' % (svr.priority, svr.displayname.lower()))

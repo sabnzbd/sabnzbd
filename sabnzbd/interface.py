@@ -56,6 +56,8 @@ import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import HAVE_YENC, HAVE_SABYENC
 from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
+from sabnzbd.utils.diskspeed import diskspeedmeasure
+from sabnzbd.utils.getperformance import getpystone
 
 from sabnzbd.constants import \
     REC_RAR_VERSION, NORMAL_PRIORITY, \
@@ -2735,10 +2737,13 @@ class Status(object):
         if msg:
             return msg
 
-        from sabnzbd.utils.diskspeed import diskspeedmeasure
-        sabnzbd.downloaddirspeed = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        # PyStone
+        sabnzbd.PYSTONE_SCORE = getpystone()
+
+        # Diskspeed
+        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
         time.sleep(1.0)
-        sabnzbd.completedirspeed = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         raise dcRaiser(self.__root, kwargs)  # Refresh screen
 

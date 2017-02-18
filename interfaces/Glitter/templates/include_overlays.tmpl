@@ -118,30 +118,30 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-systemPerformance')</div>
-                            <div class="col-sm-6" data-bind="visible: hasStatusInfo">
+                            <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
-                                <a href="#" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="truncatedText: statusInfo.cpumodel, length: 25, attr: { 'data-original-title': statusInfo.cpumodel }" data-tooltip="true"></small>
                             </div>
-                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed')</div>
-                            <div class="col-sm-6" data-bind="visible: hasDiskStatusInfo">
+                            <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
                                 <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.downloaddir, length: 24"></span>)</small>
                             </div>
-                            <div class="col-sm-6 col-loading" data-bind="visible: !hasDiskStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed')</div>
-                            <div class="col-sm-6" data-bind="visible: hasDiskStatusInfo">
+                            <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
                                 <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.completedir, length: 24"></span>)</small>
                             </div>
-                            <div class="col-sm-6 col-loading" data-bind="visible: !hasDiskStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <hr />
                         <div class="row options-function-box">

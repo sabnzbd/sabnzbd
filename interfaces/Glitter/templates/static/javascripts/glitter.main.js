@@ -50,7 +50,7 @@ function ViewModel() {
 
     // Statusinfo container
     self.hasStatusInfo = ko.observable(false);
-    self.hasDiskStatusInfo = ko.observable(false);
+    self.hasPerformanceInfo = ko.observable(false);
     self.statusInfo = {};
     self.statusInfo.folders = ko.observableArray([]);
     self.statusInfo.servers = ko.observableArray([]);
@@ -768,7 +768,7 @@ function ViewModel() {
                 self.statusInfo.publicipv4(data.status.publicipv4)
                 self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
                 // Loaded disk info
-                self.hasDiskStatusInfo(true)
+                self.hasPerformanceInfo(true)
             }
 
             // Update the servers
@@ -818,7 +818,7 @@ function ViewModel() {
 
     // Do a disk-speedtest
     self.testDiskSpeed = function(item, event) {
-        self.hasDiskStatusInfo(false)
+        self.hasPerformanceInfo(false)
 
         // Run it and then display it
         callSpecialAPI('./status/dashrefresh/').then(function() {
