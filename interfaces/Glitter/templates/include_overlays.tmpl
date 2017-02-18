@@ -112,10 +112,9 @@
                         <hr/>
                         <div class="row">
                             <div class="col-sm-6">$T('cache')</div>
-                            <div class="col-sm-6" data-bind="visible: hasStatusInfo">
-                                <span data-bind="text: statusInfo.cache_size"></span> (<span data-bind="text: statusInfo.cache_art"></span> $T('Glitter-articles'))
+                            <div class="col-sm-6">
+                                <span data-bind="text: cacheSize"></span> (<span data-bind="text: cacheArticles"></span> $T('Glitter-articles'))
                             </div>
-                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-systemPerformance')</div>
