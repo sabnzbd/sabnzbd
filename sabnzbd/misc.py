@@ -1182,13 +1182,13 @@ else:
             try:
                 s = os.statvfs(_dir)
                 if s.f_blocks < 0:
-                    disk_size = float(sys.maxint) * float(s.f_frsize) / GIGI
+                    disk_size = float(sys.maxint) * float(s.f_frsize)
                 else:
-                    disk_size = float(s.f_blocks) * float(s.f_frsize) / GIGI
+                    disk_size = float(s.f_blocks) * float(s.f_frsize)
                 if s.f_bavail < 0:
-                    available = float(sys.maxint) * float(s.f_frsize) / GIGI
+                    available = float(sys.maxint) * float(s.f_frsize)
                 else:
-                    available = float(s.f_bavail) * float(s.f_frsize) / GIGI
+                    available = float(s.f_bavail) * float(s.f_frsize)
                 return disk_size / GIGI, available / GIGI
             except:
                 return 0.0, 0.0
