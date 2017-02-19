@@ -55,7 +55,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
-from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
+from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
     starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
@@ -1455,8 +1455,8 @@ def qstatus_data():
         "noofslots": len(pnfo_list),
         "noofslots_total": qnfo.q_fullsize,
         "have_warnings": str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1": diskfree(cfg.download_dir.get_path()),
-        "diskspace2": diskfree(cfg.complete_dir.get_path()),
+        "diskspace1": diskspace(cfg.download_dir.get_path())[1],
+        "diskspace2": diskspace(cfg.complete_dir.get_path())[1],
         "timeleft": calc_timeleft(qnfo.bytes_left, bpsnow),
         "loadavg": loadavg(),
         "speedlimit": "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit),
@@ -1683,16 +1683,16 @@ def build_header(webdir=''):
     if speed_limit_abs <= 0:
         speed_limit_abs = ''
 
-    free1 = diskfree(cfg.download_dir.get_path())
-    free2 = diskfree(cfg.complete_dir.get_path())
+    disk_total1, disk_free1 = diskspace(cfg.download_dir.get_path())
+    disk_total2, disk_free2 = diskspace(cfg.complete_dir.get_path())
 
     header['helpuri'] = 'https://sabnzbd.org/wiki/'
-    header['diskspace1'] = "%.2f" % free1
-    header['diskspace2'] = "%.2f" % free2
-    header['diskspace1_norm'] = to_units(free1 * GIGI)
-    header['diskspace2_norm'] = to_units(free2 * GIGI)
-    header['diskspacetotal1'] = "%.2f" % disktotal(cfg.download_dir.get_path())
-    header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
+    header['diskspace1'] = "%.2f" % disk_free1
+    header['diskspace2'] = "%.2f" % disk_free2
+    header['diskspace1_norm'] = to_units(disk_free1 * GIGI)
+    header['diskspace2_norm'] = to_units(disk_free2 * GIGI)
+    header['diskspacetotal1'] = "%.2f" % disk_total1
+    header['diskspacetotal2'] = "%.2f" % disk_total2
     header['loadavg'] = loadavg()
     # Special formatting so only decimal points when needed
     header['speedlimit'] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
