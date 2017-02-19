@@ -822,10 +822,16 @@ class RarFile(object):
     def testrar(self):
         """Let 'unrar' test the archive.
         """
+        # Modified for SABnzbd by clipping paths
+        # and de-unicoding only here
+        from sabnzbd.misc import clip_path
+        from sabnzbd.encoding import deunicode
+        rarpath = deunicode(clip_path(self._rarfile))
+
         cmd = [UNRAR_TOOL] + list(TEST_ARGS)
         add_password_arg(cmd, self._password)
         cmd.append('--')
-        with XTempFile(self._rarfile) as rarfile:
+        with XTempFile(rarpath) as rarfile:
             cmd.append(rarfile)
             p = custom_popen(cmd)
             output = p.communicate()[0]

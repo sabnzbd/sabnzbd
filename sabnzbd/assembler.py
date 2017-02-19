@@ -317,12 +317,9 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
             if sabnzbd.WIN32 and has_win_device(filepath):
                 return encrypted, unwanted
 
-            # RarFile requires de-unicoded and clipped filenames for zf.testrar() but not for is_rarfile
-            filepath_rar = deunicode(clip_path(filepath))
-
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
-                zf = rarfile.RarFile(filepath_rar, all_names=True)
+                zf = rarfile.RarFile(filepath, all_names=True)
 
                 # Check for encryption
                 if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(filepath, zf.namelist())):
@@ -393,7 +390,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 zf.close()
                 del zf
         except:
-            logging.info('Error during inspection of RAR-file %s', filepath_rar, exc_info=True)
+            logging.info('Error during inspection of RAR-file %s', filepath, exc_info=True)
 
     return encrypted, unwanted
 
