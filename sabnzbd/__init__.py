@@ -961,7 +961,10 @@ def save_admin(data, _id):
 
     try:
         with open(path, 'wb') as data_file:
-            cPickle.dump(data, data_file)
+            if cfg.use_pickle():
+                data = pickle.dump(data, data_file)
+            else:
+                data = cPickle.dump(data, data_file)
     except:
         logging.error(T('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info=True)
@@ -979,8 +982,10 @@ def load_admin(_id, remove=False, silent=False):
 
     try:
         with open(path, 'rb') as data_file:
-            data = cPickle.load(data_file)
-
+            if cfg.use_pickle():
+                data = pickle.load(data_file)
+            else:
+                data = cPickle.load(data_file)
         if remove:
             os.remove(path)
     except:
