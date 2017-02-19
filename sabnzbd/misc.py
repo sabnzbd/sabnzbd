@@ -1163,79 +1163,54 @@ if sabnzbd.WIN32:
     except:
         pass
 
-    def diskfree_base(_dir):
-        """ Return amount of free diskspace in GBytes """
+    def diskspace_base(_dir):
+        """ Return amount of free and used diskspace in GBytes """
         _dir = find_dir(_dir)
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
-            return available / GIGI
+            return disk_size / GIGI, available / GIGI
         except:
-            return 0.0
+            return 0.0, 0.0
 
-    def disktotal_base(_dir):
-        """ Return amount of free diskspace in GBytes """
-        _dir = find_dir(_dir)
-        try:
-            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
-            return disk_size / GIGI
-        except:
-            return 0.0
 else:
     try:
         os.statvfs
         # posix diskfree
-
-        def diskfree_base(_dir):
-            """ Return amount of free diskspace in GBytes """
-            _dir = find_dir(_dir)
-            try:
-                s = os.statvfs(_dir)
-                if s.f_bavail < 0:
-                    return float(sys.maxint) * float(s.f_frsize) / GIGI
-                else:
-                    return float(s.f_bavail) * float(s.f_frsize) / GIGI
-            except OSError:
-                return 0.0
-
-        def disktotal_base(_dir):
-            """ Return amount of total diskspace in GBytes """
+        def diskspace_base(_dir):
+            """ Return amount of free and used diskspace in GBytes """
             _dir = find_dir(_dir)
             try:
                 s = os.statvfs(_dir)
                 if s.f_blocks < 0:
-                    return float(sys.maxint) * float(s.f_frsize) / GIGI
+                    disk_size = float(sys.maxint) * float(s.f_frsize) / GIGI
                 else:
-                    return float(s.f_blocks) * float(s.f_frsize) / GIGI
-            except OSError:
-                return 0.0
+                    disk_size = float(s.f_blocks) * float(s.f_frsize) / GIGI
+                if s.f_bavail < 0:
+                    available = float(sys.maxint) * float(s.f_frsize) / GIGI
+                else:
+                    available = float(s.f_bavail) * float(s.f_frsize) / GIGI
+                return disk_size / GIGI, available / GIGI
+            except:
+                return 0.0, 0.0
     except ImportError:
-        def diskfree_base(_dir):
-            return 10.0
-
-        def disktotal_base(_dir):
-            return 20.0
+        def diskspace_base(_dir):
+            return 20.0, 10.0
 
 
-_LAST_DISK_FREE = 0.0
-_LAST_DISK_FREE_CALL = 0.0
-_LAST_DISK_TOTAL = 0.0
-_LAST_DISK_TOTAL_CALL = 0.0
+__LAST_DISK_RESULT = {}
+__LAST_DISK_CALL = {}
+def diskspace(_dir, force=False):
+    """ Wrapper to cache results """
+    if _dir not in __LAST_DISK_RESULT:
+        __LAST_DISK_RESULT[_dir] = [0.0, 0.0]
+        __LAST_DISK_CALL[_dir] = 0.0
 
-# Wrappers so we can cache the result, only every 10 seconds
-def diskfree(_dir, force=False):
-    global _LAST_DISK_FREE_CALL, _LAST_DISK_FREE
-    if force or time.time() > _LAST_DISK_FREE_CALL + 10.0:
-        _LAST_DISK_FREE = diskfree_base(_dir)
-        _LAST_DISK_FREE_CALL = time.time()
-    return _LAST_DISK_FREE
+    # Check if it was new
+    if force or time.time() > __LAST_DISK_CALL[_dir] + 10.0:
+        __LAST_DISK_RESULT[_dir] = diskspace_base(_dir)
+        __LAST_DISK_CALL[_dir] = time.time()
 
-
-def disktotal(_dir, force=False):
-    global _LAST_DISK_TOTAL_CALL, _LAST_DISK_TOTAL
-    if force or time.time() > _LAST_DISK_TOTAL_CALL + 10.0:
-        _LAST_DISK_TOTAL = disktotal_base(_dir)
-        _LAST_DISK_TOTAL_CALL = time.time()
-    return _LAST_DISK_TOTAL
+    return __LAST_DISK_RESULT[_dir]
 
 
 ##############################################################################

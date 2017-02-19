@@ -857,7 +857,7 @@ def keep_awake():
 def CheckFreeSpace():
     """ Check if enough disk space is free, if not pause downloader and send email """
     if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
-        if misc.diskfree(cfg.download_dir.get_path(), force=True) < cfg.download_free.get_float() / GIGI:
+        if misc.diskspace(cfg.download_dir.get_path(), force=True)[1] < cfg.download_free.get_float() / GIGI:
             logging.warning(T('Too little diskspace forcing PAUSE'))
             # Pause downloader, but don't save, since the disk is almost full!
             Downloader.do.pause(save=False)
