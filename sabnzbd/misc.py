@@ -1205,8 +1205,12 @@ def diskspace(_dir, force=False):
         __LAST_DISK_RESULT[_dir] = [0.0, 0.0]
         __LAST_DISK_CALL[_dir] = 0.0
 
-    # Check if it was new
-    if force or time.time() > __LAST_DISK_CALL[_dir] + 10.0:
+    # When forced, ignore any cache to avoid problems in UI
+    if force:
+        return diskspace_base(_dir)
+
+    # Check against cache
+    if time.time() > __LAST_DISK_CALL[_dir] + 10.0:
         __LAST_DISK_RESULT[_dir] = diskspace_base(_dir)
         __LAST_DISK_CALL[_dir] = time.time()
 
