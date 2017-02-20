@@ -467,16 +467,11 @@ def process_job(nzo):
             # Run the user script
             script_path = make_script_path(script)
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
-                # For windows, we use Short-Paths until 2.0.0 for compatibility
-                if sabnzbd.WIN32 and len(workdir_complete) > 259:
-                    import win32api
-                    workdir_complete = win32api.GetShortPathName(workdir_complete)
-
-                # set the current nzo status to "Ext Script...". Used in History
+                # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
+                script_log, script_ret = external_processing(script_path, clip_path(workdir_complete), nzo.filename,
                                                              dirname, cat, nzo.group, job_result,
                                                              nzo.nzo_info.get('failure', ''))
                 script_line = get_last_line(script_log)
