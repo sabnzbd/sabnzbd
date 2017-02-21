@@ -1,5 +1,5 @@
 Release Notes  -  SABnzbd 2.0.0
-==============================================
+=========================================================
 
 ## What's new in 2.0.0
 - Certificate Validation set to Strict for new newsservers
@@ -12,11 +12,14 @@ Release Notes  -  SABnzbd 2.0.0
 
 
 ## Upgrade notices
-Schedule items are converted when upgrading to 2.x.x and will break
-when reverted back to pre-2.x.x releases.
-The organization of the download queue is different from pre-1.x.x
-releases. So 2.x.x will not see the existing queue, but you can go to
-Status->QueueRepair and "Repair" the old queue.
+- Windows: When starting the Post-Processing script, the path to the job folder
+  is no longer in short-path notation but includes the full path. To support
+  long paths (>255), you might need to alter them to long-path notation (\\?\).
+- Schedule items are converted when upgrading to 2.x.x and will break when
+  reverted back to pre-2.x.x releases.
+- The organization of the download queue is different from pre-1.x.x releases.
+  So 2.x.x will not see the existing queue, but you can go to Status->QueueRepair
+  and "Repair" the old queue.
 
 ## Upgrading from 0.7.x and older
 - Finish queue
@@ -32,9 +35,9 @@ Status->QueueRepair and "Repair" the old queue.
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
-  It simplifies the process of downloading from Usenet dramatically,
-  thanks to its web-based user interface and advanced
-  built-in post-processing options that automatically verify, repair,
-  extract and clean up posts downloaded from Usenet.
+  It simplifies the process of downloading from Usenet dramatically, thanks
+  to its web-based user interface and advanced built-in post-processing options
+  that automatically verify, repair, extract and clean up posts downloaded
+  from Usenet.
 
   (c) Copyright 2007-2017 by "The SABnzbd-team" \<team@sabnzbd.org\>
