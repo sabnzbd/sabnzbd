@@ -533,9 +533,9 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
     if password:
-        password = '-p%s' % password
+        password_command = '-p%s' % password
     else:
-        password = '-p-'
+        password_command = '-p-'
 
     ############################################################################
 
@@ -552,15 +552,15 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if sabnzbd.WIN32:
         # Use all flags
         # See: https://github.com/sabnzbd/sabnzbd/pull/771
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
                    '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
                    '%s' % rarfile_path, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password_command,
                    '%s' % rarfile_path, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
