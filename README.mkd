@@ -1,39 +1,37 @@
-Release Notes  -  SABnzbd 1.2.1RC1
+Release Notes  -  SABnzbd 1.2.1
 ==============================================
 
-## What's new in 1.2.1 RC1
-- On Windows paths passed to scripts were in \\?\ notation
-- New self-signed certificates now list local IP in SAN-list
-- Retry rename 3x before falling back to copy during "Moving"
-- Fix RSS page problems with missing fields
-- Passwords were not parsed correctly from filenames
-- Catch several SSL errors of the webserver
-- Multi-feed RSS will not stop if only 1 feed is not functioning
-- More incorrectly labeled some downloads as Encrypted
-
-
-## What's new in 1.2.1 Beta 1
+## What's new in 1.2.1
 - QuickCheck will perform fast rename of obfuscated posts
 - RSS Downloaded page now shows icon to indicate source
 - HTML tags are filtered from single-line script output
-
-## Bug fixes in 1.2.1 Beta 1
-- Fix crashing Assembler
-- Cloaked files (RAR within RAR) were not detected anymore
-- 'Only Download Top of Queue' was broken for a long time
-- Incorrectly labeled some downloads as Encrypted
-- RSS reading could fail on newznab attributes
-- Incorrectly marking jobs with folders inside as failed
+- New self-signed certificates now list local IP in SAN-list
 - Handle jobs on Windows with forbidden names (Con.*, Aux.*,..)
+
+## Bug fixes in 1.2.1
+- Fix crashing Assembler
+- 'Only Download Top of Queue' was broken for a long time
+- Cloaked files (RAR within RAR) were not detected anymore
+- Incorrectly labeled some downloads as Encrypted
+- Passwords were not parsed correctly from filenames
+- RSS reading could fail on missing attributes
+- Multi-feed RSS will not stop if only 1 feed is not functioning
+- Duplicate detection set to Fail would not work for RSS feeds
+- Incorrectly marking jobs with folders inside as failed
 - Categories were not matched properly if a list of tags was set
 - PostProcessing-script was not called on Accept&Fail or Dupe detect
 - Support for newer par2cmdline(-mt) versions that need -B parameter
 - Some newsservers would timeout when connecting
-- Duplicate detection set to Fail would not work for RSS feeds
 - More robust detection of execute permissions for scripts
 - CPU type reporting on Windows and macOS
 - Failed to start with some localhost configs
 - Removed some more stalling issues
+- Retry rename 3x before falling back to copy during "Moving"
+- Catch several SSL errors of the webserver
+- Disk-space information is now only checked every 10 seconds
+
+## Translations
+- Many translations updated, thanks to our translators!
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
