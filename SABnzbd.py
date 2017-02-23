@@ -1169,10 +1169,18 @@ def main():
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
+
+    # Find encoding; relevant for unrar activities
     try:
-        logging.info('Preferred encoding = %s', locale.getpreferredencoding())
+        preferredencoding = locale.getpreferredencoding()
+        logging.info('Preferred encoding = %s', preferredencoding)
     except:
         logging.info('Preferred encoding = ERROR')
+        preferredencoding = ''
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
+    if 'UTF-8' not in preferredencoding and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        logging.warning(T("Your operating system encoding is %s, but it should be UTF-8. Please correct this, or expect problems with Unicoded file and directory names in downloads. SABnzbd cannot solve this for you.") % preferredencoding)
+
 
 
     if sabnzbd.cfg.log_level() > 1:
