@@ -492,8 +492,7 @@ class Downloader(Thread):
                         self.__request_article(nw)
                     else:
                         try:
-                            logging.info("%s@%s: Initiating connection",
-                                              nw.thrdnum, server.id)
+                            logging.info("%s@%s: Initiating connection", nw.thrdnum, server.id)
                             nw.init_connect(self.write_fds)
                         except:
                             logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.id, sys.exc_info()[1])
@@ -538,7 +537,7 @@ class Downloader(Thread):
 
                 # Why check so often when so few things happend?
                 if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
-                    time.sleep(0.01)
+                    time.sleep(0.05)
 
                 # Need to initalize the check during first 20 seconds
                 if self.can_be_slowed is None or self.can_be_slowed_timer:

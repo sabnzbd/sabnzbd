@@ -65,7 +65,6 @@ class Assembler(Thread):
         self.queue.put(job)
 
     def run(self):
-        import sabnzbd.nzbqueue
         while 1:
             job = self.queue.get()
             if not job:
